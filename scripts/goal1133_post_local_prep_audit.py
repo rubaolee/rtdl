@@ -77,6 +77,15 @@ LOCAL_GOALS = (
     },
 )
 
+EXPECTED_PUBLIC_WORDING = {
+    "database_analytics": "public_wording_not_reviewed",
+    "graph_analytics": "public_wording_blocked",
+    "hausdorff_distance": "public_wording_reviewed",
+    "polygon_pair_overlap_area_rows": "public_wording_blocked",
+    "polygon_set_jaccard": "public_wording_not_reviewed",
+    "road_hazard_screening": "public_wording_reviewed",
+}
+
 
 def _exists(rel_path: str) -> bool:
     return (ROOT / rel_path).exists()
@@ -113,11 +122,7 @@ def build_audit() -> dict[str, Any]:
     rows = [_goal_row(item) for item in LOCAL_GOALS]
     tracked_apps = sorted({app for row in rows for app in row["apps"]})
     public_wording_boundary_respected = all(
-        (
-            rt.rtx_public_wording_status(app).status == "public_wording_reviewed"
-            if app == "road_hazard_screening"
-            else rt.rtx_public_wording_status(app).status == "public_wording_not_reviewed"
-        )
+        rt.rtx_public_wording_status(app).status == EXPECTED_PUBLIC_WORDING[app]
         for app in tracked_apps
     )
     ready_for_review = all(

@@ -37,13 +37,13 @@ class Goal1216V098ReleaseCandidateAuditTest(unittest.TestCase):
     def test_public_state_stays_bounded(self) -> None:
         payload = goal1216.build_audit()
         public_state = payload["current_public_state"]
-        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 11)
+        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 12)
         self.assertEqual(
             public_state["new_reviewed_row_after_goal1208"],
             "road_hazard_screening / prepared_native_compact_summary_40k",
         )
-        self.assertEqual(public_state["database_analytics_public_speedup"], "blocked")
-        self.assertEqual(public_state["polygon_set_jaccard_public_speedup"], "blocked")
+        self.assertEqual(public_state["database_analytics_public_speedup"], "not_reviewed")
+        self.assertEqual(public_state["polygon_set_jaccard_public_speedup"], "not_reviewed")
         self.assertIn("not default app behavior", public_state["road_hazard_boundary"])
 
     def test_cli_writes_json_and_markdown(self) -> None:

@@ -79,19 +79,6 @@ APP_PLANS: dict[str, dict[str, str]] = {
         ),
         "pod_policy": "no_pod_until_candidate_chunking_changes",
     },
-    "hausdorff_distance": {
-        "action_bucket": NEEDS_SCALE_CONTRACT,
-        "priority": "p2",
-        "why": (
-            "The current threshold-decision RTX row is real but too small/trivial; Goal1060 compares "
-            "it against a microsecond CPU oracle and flags it as rejected."
-        ),
-        "next_local_action": (
-            "Define a larger nontrivial directed-threshold decision contract and dry-run correctness "
-            "locally before spending pod time."
-        ),
-        "pod_policy": "no_pod_until_scale_contract_changes",
-    },
 }
 
 
@@ -194,16 +181,15 @@ def build_audit() -> dict[str, Any]:
         "recommended_order": [
             "database_analytics",
             "graph_analytics",
-            "hausdorff_distance",
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
         ],
         "valid": (
-            len(rows) == 5
+            len(rows) == 4
             and {row["app"] for row in rows} == set(APP_PLANS)
             and bucket_counts.get(LOCAL_OPTIMIZATION_FIRST, 0) == 4
             and bucket_counts.get(NEEDS_BASELINE_REVIEW, 0) == 0
-            and bucket_counts.get(NEEDS_SCALE_CONTRACT, 0) == 1
+            and bucket_counts.get(NEEDS_SCALE_CONTRACT, 0) == 0
             and all(row["rt_core_status"] == "rt_core_ready" for row in rows)
             and all(row["readiness_status"] == "ready_for_rtx_claim_review" for row in rows)
         ),

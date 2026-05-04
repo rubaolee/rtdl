@@ -20,8 +20,8 @@ class Goal1052PostGoal1048CloudBatchManifestTest(unittest.TestCase):
         payload = module.build_manifest()
         self.assertTrue(payload["valid"], payload)
         self.assertEqual(payload["summary"]["diagnostic_rerun_count"], 2)
-        self.assertEqual(payload["summary"]["same_semantics_review_candidate_count"], 6)
-        self.assertEqual(payload["summary"]["total_command_count"], 8)
+        self.assertEqual(payload["summary"]["same_semantics_review_candidate_count"], 3)
+        self.assertEqual(payload["summary"]["total_command_count"], 5)
         self.assertIn("Do not start or stop a cloud pod per app", payload["policy"])
         self.assertIn("does not run cloud", payload["boundary"])
 

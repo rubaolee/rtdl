@@ -27,17 +27,13 @@ Do not start or stop a cloud pod per app. Run this as one batched session, copy 
 | --- | --- | --- |
 | `prepared_db_session_sales_risk` | `database_analytics` | `python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 20000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_sales_risk.json` |
 | `prepared_db_session_regional_dashboard` | `database_analytics` | `python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario regional_dashboard --copies 20000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_regional_dashboard.json` |
-| `graph_visibility_edges_gate` | `graph_analytics` | `python3 scripts/goal889_graph_visibility_optix_gate.py --copies 20000 --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1052_post_goal1048_cloud_batch/graph_visibility_edges_gate.json` |
-| `road_hazard_native_summary_gate` | `road_hazard_screening` | `python3 scripts/goal933_prepared_segment_polygon_optix_profiler.py --scenario road_hazard_prepared_summary --copies 20000 --iterations 5 --mode run --output-json docs/reports/goal1052_post_goal1048_cloud_batch/road_hazard_native_summary_gate.json` |
-| `polygon_pair_overlap_optix_native_assisted_phase_gate` | `polygon_pair_overlap_area_rows` | `python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies 20000 --output-mode summary --validation-mode analytic_summary --chunk-copies 100 --output-json docs/reports/goal1052_post_goal1048_cloud_batch/polygon_pair_overlap_optix_native_assisted_phase_gate.json` |
 | `polygon_set_jaccard_optix_native_assisted_phase_gate` | `polygon_set_jaccard` | `python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 20000 --output-mode summary --validation-mode analytic_summary --chunk-copies 20 --output-json docs/reports/goal1052_post_goal1048_cloud_batch/polygon_set_jaccard_optix_native_assisted_phase_gate.json` |
-| `directed_threshold_prepared` | `hausdorff_distance` | `python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode optix --copies 20000 --iterations 10 --radius 0.4 --output-json docs/reports/goal1052_post_goal1048_cloud_batch/directed_threshold_prepared.json` |
 
 ## Summary
 
 - diagnostic reruns: `2`
-- same-semantics review candidates: `7`
-- total commands after bootstrap: `9`
+- same-semantics review candidates: `3`
+- total commands after bootstrap: `5`
 - diagnostic rows with skip-validation: `[]`
 - duplicate output JSON paths: `[]`
 

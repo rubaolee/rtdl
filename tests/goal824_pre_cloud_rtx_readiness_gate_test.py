@@ -45,7 +45,7 @@ class Goal824PreCloudRtxReadinessGateTest(unittest.TestCase):
         payload = run_gate()
         command_audit = payload["checks"]["public_command_audit"]
         self.assertTrue(command_audit["valid"])
-        self.assertGreaterEqual(command_audit["command_count"], 296)
+        self.assertGreaterEqual(command_audit["command_count"], 252)
         self.assertEqual(
             command_audit["coverage_counts"]["goal992_scalar_fixed_radius_command_exact"],
             4,

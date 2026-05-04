@@ -3,12 +3,11 @@
   "date": "2026-04-28",
   "goal": "Goal1066 rejected RTX local remediation manifest",
   "missing_remediation": [],
-  "rejected_row_count": 8,
+  "rejected_row_count": 5,
   "remediation_class_counts": {
     "chunking_and_candidate_discovery": 2,
-    "code_path_profile": 3,
-    "rt_mapping_profile": 1,
-    "scale_contract_repair": 2
+    "code_path_profile": 2,
+    "rt_mapping_profile": 1
   },
   "rows": [
     {
@@ -61,22 +60,6 @@
     },
     {
       "acceptance_before_pod": [
-        "same-semantics Embree advantage is explained or a native OptiX optimization target is identified",
-        "no cloud rerun until the prepared segment/polygon summary path changes or a new scale contract exists"
-      ],
-      "app": "road_hazard_screening",
-      "fastest_baseline": "embree_same_semantics",
-      "goal1063_local_next": "Root-cause why Embree same-semantics summary is much faster; optimize segment/polygon OptiX native summary locally first.",
-      "local_probe_commands": [
-        "PYTHONPATH=src:. python3 scripts/goal933_prepared_segment_polygon_optix_profiler.py --scenario road_hazard_prepared_summary --copies 2000 --iterations 3 --mode dry-run --output-json /tmp/goal1066_road_hazard_dry_probe.json"
-      ],
-      "path_name": "road_hazard_native_summary_gate",
-      "pod_policy": "no_pod_until_code_or_scale_changes",
-      "ratio_baseline_over_rtx": 0.03666787401725687,
-      "remediation_class": "code_path_profile"
-    },
-    {
-      "acceptance_before_pod": [
         "candidate discovery row volume and chunking costs are bounded before cloud",
         "PostGIS/Embree baseline mismatch is addressed before any public wording review"
       ],
@@ -106,38 +89,6 @@
       "pod_policy": "no_pod_until_code_or_scale_changes",
       "ratio_baseline_over_rtx": 0.005055802554495618,
       "remediation_class": "chunking_and_candidate_discovery"
-    },
-    {
-      "acceptance_before_pod": [
-        "CPU same-semantics baseline is no longer microsecond-trivial or is explicitly excluded as a claim baseline",
-        "the threshold-decision scale remains semantically meaningful and dry-run validated"
-      ],
-      "app": "hausdorff_distance",
-      "fastest_baseline": "cpu_oracle_same_semantics",
-      "goal1063_local_next": "Define a larger nontrivial threshold-decision scale where CPU oracle is not microsecond trivial, then validate dry-run semantics before pod.",
-      "local_probe_commands": [
-        "PYTHONPATH=src:. python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode dry-run --copies 20000 --iterations 1 --radius 0.4 --output-json /tmp/goal1066_hausdorff_dry_probe.json"
-      ],
-      "path_name": "directed_threshold_prepared",
-      "pod_policy": "no_pod_until_scale_contract_changes",
-      "ratio_baseline_over_rtx": 0.00573262762311575,
-      "remediation_class": "scale_contract_repair"
-    },
-    {
-      "acceptance_before_pod": [
-        "CPU same-semantics baseline is no longer trivial or the benchmark target is reframed away from a speedup claim",
-        "node-coverage remains bounded to candidate discovery, not force-vector reduction"
-      ],
-      "app": "barnes_hut_force_app",
-      "fastest_baseline": "cpu_oracle_same_semantics",
-      "goal1063_local_next": "Define a larger Barnes-Hut node-coverage decision contract and avoid trivial CPU-baseline scale before pod.",
-      "local_probe_commands": [
-        "PYTHONPATH=src:. python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario barnes_hut_node_coverage --mode dry-run --body-count 200000 --iterations 1 --radius 10.0 --output-json /tmp/goal1066_barnes_hut_dry_probe.json"
-      ],
-      "path_name": "node_coverage_prepared",
-      "pod_policy": "no_pod_until_scale_contract_changes",
-      "ratio_baseline_over_rtx": 0.39241277246354084,
-      "remediation_class": "scale_contract_repair"
     }
   ],
   "source": "docs/reports/goal1063_pre_pod_local_completion_audit_2026-04-28.json",

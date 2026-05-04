@@ -38,7 +38,7 @@ REQUIRED_READY_PHRASES: dict[str, tuple[str, ...]] = {
         "does not authorize, tag, publish, or claim `v0.9.8`",
     ),
     "docs/v1_0_rtx_app_status.md": (
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "road_hazard_screening / prepared_native_compact_summary_40k",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
@@ -157,10 +157,10 @@ def build_gate() -> dict[str, Any]:
         "release_package_review_files": package_review_files,
         "final_authorization_files": final_authorization_files,
         "current_public_state": {
-            "reviewed_public_rtx_wording_rows": 11,
+            "reviewed_public_rtx_wording_rows": 12,
             "road_hazard_new_public_row": "road_hazard_screening / prepared_native_compact_summary_40k",
-            "database_analytics_public_speedup": "blocked",
-            "polygon_set_jaccard_public_speedup": "blocked",
+            "database_analytics_public_speedup": "not_reviewed",
+            "polygon_set_jaccard_public_speedup": "not_reviewed",
         },
         "hardware_evidence_decision": (
             "No additional pod run is required before the release-authorization "
@@ -201,10 +201,10 @@ def to_markdown(payload: dict[str, Any]) -> str:
             "",
             "## Public Claim State",
             "",
-            "- reviewed public RTX wording rows: `11`",
+            "- reviewed public RTX wording rows: `12`",
             "- new reviewed public row: `road_hazard_screening / prepared_native_compact_summary_40k`",
-            "- `database_analytics` public speedup wording: `blocked`",
-            "- `polygon_set_jaccard` public speedup wording: `blocked`",
+            "- `database_analytics` public speedup wording: `not_reviewed`",
+            "- `polygon_set_jaccard` public speedup wording: `not_reviewed`",
             "",
             "## Hardware Evidence Decision",
             "",

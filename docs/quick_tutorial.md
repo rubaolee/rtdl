@@ -22,7 +22,7 @@ is not a promise that every backend is always 10x faster.
 For the boundary between "RTDL can do this" and "RTDL is not this whole
 system", read [Capability Boundaries](capability_boundaries.md). For exact
 current backend support, read
-[Current Main Support Matrix](current_main_support_matrix.md) and
+[RTDL Current Main Support Matrix](current_main_support_matrix.md) and
 [App Engine Support Matrix](app_engine_support_matrix.md).
 
 ## Setup
@@ -208,6 +208,11 @@ Then read [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md
 For app-shaped demos, use [App And Example Quickstart](app_example_quickstart.md).
 For the full command archive, use
 [Release-Facing Examples](release_facing_examples.md).
+For app boundaries and backend support, use
+[Application Catalog](application_catalog.md) and
+[App Engine Support Matrix](app_engine_support_matrix.md).
+Repository paths: `docs/application_catalog.md` and
+`docs/app_engine_support_matrix.md`.
 
 ## Backend And Claim Boundaries
 

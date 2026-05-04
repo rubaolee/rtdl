@@ -35,7 +35,7 @@
         {
           "app": "graph_analytics",
           "maturity": "rt_core_ready",
-          "public_wording": "public_wording_not_reviewed",
+          "public_wording": "public_wording_blocked",
           "readiness": "ready_for_rtx_claim_review"
         }
       ],
@@ -61,7 +61,7 @@
         {
           "app": "road_hazard_screening",
           "maturity": "rt_core_ready",
-          "public_wording": "public_wording_not_reviewed",
+          "public_wording": "public_wording_reviewed",
           "readiness": "ready_for_rtx_claim_review"
         }
       ],
@@ -87,7 +87,7 @@
         {
           "app": "polygon_pair_overlap_area_rows",
           "maturity": "rt_core_ready",
-          "public_wording": "public_wording_not_reviewed",
+          "public_wording": "public_wording_blocked",
           "readiness": "ready_for_rtx_claim_review"
         },
         {
@@ -120,7 +120,7 @@
         {
           "app": "hausdorff_distance",
           "maturity": "rt_core_ready",
-          "public_wording": "public_wording_not_reviewed",
+          "public_wording": "public_wording_reviewed",
           "readiness": "ready_for_rtx_claim_review"
         }
       ],
@@ -145,7 +145,7 @@
   "summary": {
     "all_goal_artifacts_present": true,
     "goal_count": 5,
-    "public_wording_not_promoted": true,
+    "public_wording_boundary_respected": true,
     "ready_for_review": true,
     "tracked_app_count": 6
   },

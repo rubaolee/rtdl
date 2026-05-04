@@ -19,15 +19,14 @@ class Goal1066RejectedRtxLocalRemediationManifestTest(unittest.TestCase):
         )
         payload = module.build_manifest()
         self.assertTrue(payload["valid"])
-        self.assertEqual(payload["rejected_row_count"], 8)
+        self.assertEqual(payload["rejected_row_count"], 5)
         self.assertEqual(payload["missing_remediation"], [])
         self.assertEqual(
             payload["remediation_class_counts"],
             {
                 "chunking_and_candidate_discovery": 2,
-                "code_path_profile": 3,
+                "code_path_profile": 2,
                 "rt_mapping_profile": 1,
-                "scale_contract_repair": 2,
             },
         )
         self.assertIn("does not run cloud", payload["boundary"])
@@ -53,14 +52,7 @@ class Goal1066RejectedRtxLocalRemediationManifestTest(unittest.TestCase):
             (row["app"], row["path_name"]): row
             for row in module.build_manifest()["rows"]
         }
-        self.assertEqual(
-            rows[("hausdorff_distance", "directed_threshold_prepared")]["remediation_class"],
-            "scale_contract_repair",
-        )
-        self.assertIn(
-            "goal887_prepared_decision_phase_profiler.py",
-            rows[("hausdorff_distance", "directed_threshold_prepared")]["local_probe_commands"][0],
-        )
+        self.assertNotIn(("hausdorff_distance", "directed_threshold_prepared"), rows)
         self.assertEqual(
             rows[("polygon_set_jaccard", "polygon_set_jaccard_optix_native_assisted_phase_gate")][
                 "remediation_class"
@@ -93,7 +85,7 @@ class Goal1066RejectedRtxLocalRemediationManifestTest(unittest.TestCase):
             )
             self.assertIn('"valid": true', completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
-            self.assertEqual(payload["rejected_row_count"], 8)
+            self.assertEqual(payload["rejected_row_count"], 5)
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("Goal1066 Rejected RTX Local Remediation Manifest", markdown)
             self.assertIn("no_pod_until_code_or_scale_changes", markdown)

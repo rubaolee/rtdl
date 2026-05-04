@@ -73,6 +73,8 @@ Important public-claim rules:
 - `--backend optix` is not by itself a public NVIDIA RT-core speedup claim.
 - Public speedups require reviewed evidence for the exact prepared/native
   sub-path being described.
+- Goal748 supersedes pre-fix robot OptiX evidence because it fixed a short-ray
+  OptiX correctness issue; use post-fix Goal748 or later robot evidence.
 - Whole-app outputs may include Python continuation work such as ranking,
   clustering, force reduction, SQL-style output assembly, or graph reductions.
 - v1.5 should replace app-specific native continuations with reviewed generic

@@ -101,7 +101,7 @@ REQUIRED_EVIDENCE_PHRASES: dict[str, tuple[str, ...]] = {
         "polygon_set_jaccard",
     ),
     "docs/v1_0_rtx_app_status.md": (
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "road_hazard_screening / prepared_native_compact_summary_40k",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
@@ -191,10 +191,10 @@ def build_audit() -> dict[str, Any]:
         "closure_rows": closure_rows,
         "evidence_rows": evidence_rows,
         "current_public_state": {
-            "reviewed_public_rtx_wording_rows": 11,
+            "reviewed_public_rtx_wording_rows": 12,
             "new_reviewed_row_after_goal1208": "road_hazard_screening / prepared_native_compact_summary_40k",
-            "database_analytics_public_speedup": "blocked",
-            "polygon_set_jaccard_public_speedup": "blocked",
+            "database_analytics_public_speedup": "not_reviewed",
+            "polygon_set_jaccard_public_speedup": "not_reviewed",
             "road_hazard_boundary": (
                 "prepared native compact-summary traversal/count sub-path at 40k copies only; "
                 "not default app behavior, GIS/routing, row output, Python orchestration, or whole-app speedup"
@@ -242,8 +242,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         f"- reviewed public RTX wording rows: `{payload['current_public_state']['reviewed_public_rtx_wording_rows']}`",
         f"- new reviewed row: `{payload['current_public_state']['new_reviewed_row_after_goal1208']}`",
-        "- `database_analytics` public speedup wording: `blocked`",
-        "- `polygon_set_jaccard` public speedup wording: `blocked`",
+        "- `database_analytics` public speedup wording: `not_reviewed`",
+        "- `polygon_set_jaccard` public speedup wording: `not_reviewed`",
         f"- road-hazard boundary: {payload['current_public_state']['road_hazard_boundary']}",
         "",
         "## Local Validation",

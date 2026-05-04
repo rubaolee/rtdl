@@ -178,7 +178,7 @@ def build_manifest() -> dict[str, Any]:
         "valid": (
             diagnostic_apps == ["facility_knn_assignment", "robot_collision_screening"]
             and len(diagnostic_rows) == 2
-            and len(review_rows) == 6
+            and len(review_rows) == 3
             and not diagnostic_without_validation
             and not duplicate_outputs
         ),

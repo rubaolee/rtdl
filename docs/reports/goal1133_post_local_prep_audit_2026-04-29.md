@@ -11,7 +11,7 @@ Goal1133 is a local post-prep audit. It does not run cloud, tag, release, or aut
 - tracked apps: `6`
 - all goal artifacts present: `true`
 - ready for review: `true`
-- public wording not promoted: `true`
+- public wording boundary respected: `true`
 
 ## Cloud Policy
 

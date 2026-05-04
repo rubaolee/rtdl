@@ -13,8 +13,6 @@
   "recommended_order": [
     "database_analytics",
     "graph_analytics",
-    "road_hazard_screening",
-    "hausdorff_distance",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard"
   ],
@@ -56,7 +54,7 @@
       "action_bucket": "local_optimization_first",
       "allowed_claim": "bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths may enter claim review; no whole-app graph speedup claim",
       "app": "graph_analytics",
-      "current_boundary": "Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.",
+      "current_boundary": "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, and whole-app graph speedup remain outside this wording.",
       "goal1060_candidate_rows": [],
       "goal1060_rejected_rows": [
         {
@@ -72,41 +70,16 @@
       "performance_class": "optix_traversal",
       "pod_policy": "no_pod_until_phase_split_or_code_changes",
       "priority": "p1",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording_status": "public_wording_blocked",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "why": "Goal1060 shows the graph visibility RTX gate slower than the Embree graph-ray baseline, and graph bookkeeping phases are not cleanly separated enough for wording."
     },
     {
-      "action_bucket": "needs_larger_nontrivial_scale_contract",
-      "allowed_claim": "prepared Hausdorff <= radius decision sub-path may enter claim review; no exact-distance speedup claim",
-      "app": "hausdorff_distance",
-      "current_boundary": "Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "goal1060_candidate_rows": [],
-      "goal1060_rejected_rows": [
-        {
-          "fastest_baseline": "cpu_oracle_same_semantics",
-          "fastest_baseline_sec": 2.245791256427765e-05,
-          "path_name": "directed_threshold_prepared",
-          "ratio_baseline_over_rtx": 0.00573262762311575,
-          "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
-          "rtx_phase_sec": 0.00391755998134613
-        }
-      ],
-      "next_local_action": "Define a larger nontrivial directed-threshold decision contract and dry-run correctness locally before spending pod time.",
-      "performance_class": "optix_traversal_prepared_summary",
-      "pod_policy": "no_pod_until_scale_contract_changes",
-      "priority": "p2",
-      "public_wording_status": "public_wording_not_reviewed",
-      "readiness_status": "ready_for_rtx_claim_review",
-      "rt_core_status": "rt_core_ready",
-      "why": "The current threshold-decision RTX row is real but too small/trivial; Goal1060 compares it against a microsecond CPU oracle and flags it as rejected."
-    },
-    {
       "action_bucket": "local_optimization_first",
       "allowed_claim": "native-assisted candidate-discovery path only; no full polygon-area speedup claim",
       "app": "polygon_pair_overlap_area_rows",
-      "current_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+      "current_boundary": "Only native-assisted LSI/PIP candidate discovery is covered; exact polygon-area continuation, row materialization, Python setup, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording.",
       "goal1060_candidate_rows": [],
       "goal1060_rejected_rows": [
         {
@@ -122,7 +95,7 @@
       "performance_class": "python_interface_dominated",
       "pod_policy": "no_pod_until_candidate_chunking_changes",
       "priority": "p2",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording_status": "public_wording_blocked",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "why": "The native-assisted RTX candidate-discovery phase loses badly to the PostGIS same-unit-cell contract in Goal1060."
@@ -151,40 +124,15 @@
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "why": "The native-assisted RTX Jaccard candidate phase is slower than the Embree candidate baseline in Goal1060."
-    },
-    {
-      "action_bucket": "local_optimization_first",
-      "allowed_claim": "prepared native road-hazard summary traversal sub-path may enter claim review; no full GIS/routing or default-app speedup claim",
-      "app": "road_hazard_screening",
-      "current_boundary": "Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "goal1060_candidate_rows": [],
-      "goal1060_rejected_rows": [
-        {
-          "fastest_baseline": "embree_same_semantics",
-          "fastest_baseline_sec": 0.0035713749239221215,
-          "path_name": "road_hazard_native_summary_gate",
-          "ratio_baseline_over_rtx": 0.03666787401725687,
-          "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
-          "rtx_phase_sec": 0.09739792719483376
-        }
-      ],
-      "next_local_action": "Root-cause segment/polygon batching and summary-return overhead; keep claim scope to the prepared compact summary gate.",
-      "performance_class": "optix_traversal_prepared_summary",
-      "pod_policy": "no_pod_until_code_or_batching_changes",
-      "priority": "p1",
-      "public_wording_status": "public_wording_not_reviewed",
-      "readiness_status": "ready_for_rtx_claim_review",
-      "rt_core_status": "rt_core_ready",
-      "why": "The prepared road-hazard RTX summary is far slower than the same-semantics Embree summary in Goal1060."
     }
   ],
   "summary": {
-    "local_optimization_first": 5,
-    "needs_larger_nontrivial_scale_contract": 1,
+    "local_optimization_first": 4,
+    "needs_larger_nontrivial_scale_contract": 0,
     "needs_same_scale_or_normalized_baseline_review": 0,
-    "public_wording_blocked": 0,
-    "public_wording_not_reviewed": 6,
-    "unresolved_nvidia_public_wording_apps": 6
+    "public_wording_blocked": 2,
+    "public_wording_not_reviewed": 2,
+    "unresolved_nvidia_public_wording_apps": 4
   },
   "valid": true
 }

@@ -16,10 +16,10 @@ Date: 2026-05-01
 
 ## Public Claim State
 
-- reviewed public RTX wording rows: `11`
+- reviewed public RTX wording rows: `12`
 - new reviewed public row: `road_hazard_screening / prepared_native_compact_summary_40k`
-- `database_analytics` public speedup wording: `blocked`
-- `polygon_set_jaccard` public speedup wording: `blocked`
+- `database_analytics` public speedup wording: `not_reviewed`
+- `polygon_set_jaccard` public speedup wording: `not_reviewed`
 
 ## Hardware Evidence Decision
 

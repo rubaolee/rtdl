@@ -29,13 +29,13 @@ class Goal1218V098ReleaseAuthorizationGateTest(unittest.TestCase):
     def test_current_public_claim_state_remains_bounded(self) -> None:
         payload = goal1218.build_gate()
         public_state = payload["current_public_state"]
-        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 11)
+        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 12)
         self.assertEqual(
             public_state["road_hazard_new_public_row"],
             "road_hazard_screening / prepared_native_compact_summary_40k",
         )
-        self.assertEqual(public_state["database_analytics_public_speedup"], "blocked")
-        self.assertEqual(public_state["polygon_set_jaccard_public_speedup"], "blocked")
+        self.assertEqual(public_state["database_analytics_public_speedup"], "not_reviewed")
+        self.assertEqual(public_state["polygon_set_jaccard_public_speedup"], "not_reviewed")
 
     def test_final_authorization_files_exist_and_no_hardware_blocker_remains(self) -> None:
         payload = goal1218.build_gate()

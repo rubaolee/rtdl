@@ -2,9 +2,9 @@
   "blockers": [],
   "boundary": "Goal1218 is an authorization gate, not a release action. It does not tag, publish, push, upload packages, or bump VERSION to v0.9.8.",
   "current_public_state": {
-    "database_analytics_public_speedup": "blocked",
-    "polygon_set_jaccard_public_speedup": "blocked",
-    "reviewed_public_rtx_wording_rows": 11,
+    "database_analytics_public_speedup": "not_reviewed",
+    "polygon_set_jaccard_public_speedup": "not_reviewed",
+    "reviewed_public_rtx_wording_rows": 12,
     "road_hazard_new_public_row": "road_hazard_screening / prepared_native_compact_summary_40k"
   },
   "date": "2026-05-01",

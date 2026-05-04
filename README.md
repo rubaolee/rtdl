@@ -160,11 +160,16 @@ Detailed evidence and review trail:
 - [Goal1146 Public Wording Promotion Consensus](docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md)
 - [Goal1208 Public Wording Consensus](docs/reports/goal1208_two_ai_consensus_2026-05-01.md)
 - [Goal1224 RTX Wording Resolution Consensus](docs/reports/goal1224_two_ai_consensus_2026-05-01.md)
+- [Goal1224 RTX Wording Resolution Consensus Alias](docs/reports/goal1224_two_ai_rtx_wording_resolution_consensus_2026-05-01.md)
 
 Goal1177 is recovered clean-source RTX A5000 evidence for external-review input only.
 Goal1184 records Goal1182 RTX A4500 batch evidence as external-review input only.
 Neither goal adds a new reviewed public wording row or authorizes public speedup wording.
 Goal1177 does not add a new reviewed public wording row and does not authorize public speedup wording.
+
+Goal748 is the robot OptiX erratum boundary: pre-Goal748 robot OptiX evidence
+used a short-ray `optixReportIntersection` path later fixed by Goal748. Use
+post-fix Goal748 or later robot OptiX evidence for current claims.
 
 ## What RTDL Contains
 
@@ -201,7 +206,7 @@ RTX-class
       sub-paths named above.
 
 `v0.9.5`: earlier public release for bounded any-hit, visibility rows, and
-Python-side emitted-row reductions. earlier Linux Goal509 evidence covered the hit-count formulation, Embree, and pre-fix OptiX; new backend speedup claims need fresh gates and should use the post-fix Goal748 parity/performance report
+Python-side emitted-row reductions. Earlier Linux Goal509 evidence covered the hit-count formulation, Embree, and pre-fix OptiX; new backend speedup claims need fresh gates and should use the post-fix Goal748 short-ray parity/performance report
 instead of the old robot OptiX result. Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan evidence that separates candidate-generation timing
 from Python opening-rule and force-reduction timing.
 
@@ -212,6 +217,7 @@ beating the strongest mature exact nearest-neighbor library baselines.
 ## Demo
 
 - [Watch the public 4K demo video](https://www.youtube.com/watch?v=d3yJB7AmCLM)
+- [Short 4K demo URL](https://youtu.be/d3yJB7AmCLM)
 
 ## Repository Layout
 

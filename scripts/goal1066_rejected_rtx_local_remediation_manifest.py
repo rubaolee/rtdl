@@ -139,7 +139,7 @@ def build_manifest() -> dict[str, Any]:
         "missing_remediation": missing,
         "rows": rows,
         "valid": (
-            len(rows) == 8
+            len(rows) == 5
             and not missing
             and all(row["pod_policy"].startswith("no_pod_until") for row in rows)
             and all(row["local_probe_commands"] for row in rows)

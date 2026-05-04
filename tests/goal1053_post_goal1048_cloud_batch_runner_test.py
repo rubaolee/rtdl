@@ -19,7 +19,7 @@ class Goal1053PostGoal1048CloudBatchRunnerTest(unittest.TestCase):
         )
         payload = module.build_runner()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(len(payload["commands"]), 8)
+        self.assertEqual(len(payload["commands"]), 5)
         self.assertEqual(payload["commands"][0]["app"], "facility_knn_assignment")
         self.assertEqual(payload["commands"][1]["app"], "robot_collision_screening")
         self.assertFalse(payload["commands"][0]["contains_skip_validation"])

@@ -257,10 +257,10 @@
     }
   ],
   "current_public_state": {
-    "database_analytics_public_speedup": "blocked",
+    "database_analytics_public_speedup": "not_reviewed",
     "new_reviewed_row_after_goal1208": "road_hazard_screening / prepared_native_compact_summary_40k",
-    "polygon_set_jaccard_public_speedup": "blocked",
-    "reviewed_public_rtx_wording_rows": 11,
+    "polygon_set_jaccard_public_speedup": "not_reviewed",
+    "reviewed_public_rtx_wording_rows": 12,
     "road_hazard_boundary": "prepared native compact-summary traversal/count sub-path at 40k copies only; not default app behavior, GIS/routing, row output, Python orchestration, or whole-app speedup"
   },
   "date": "2026-05-01",
