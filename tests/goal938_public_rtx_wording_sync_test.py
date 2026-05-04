@@ -59,6 +59,7 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")
             for relative in (
+                "docs/v1_0_rtx_app_status.md",
                 "docs/rtdl_feature_guide.md",
                 "docs/release_facing_examples.md",
                 "docs/application_catalog.md",
@@ -72,6 +73,10 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, combined)
+        self.assertNotIn(
+            "exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review",
+            combined,
+        )
 
     def test_public_docs_keep_goal941_boundary_wording(self) -> None:
         combined = "\n".join(

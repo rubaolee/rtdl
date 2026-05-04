@@ -191,6 +191,8 @@ def _row(app: str) -> dict[str, Any]:
     cloud_action = NEXT_CLOUD_ACTION.get(readiness.status, maturity.cloud_policy)
     if public_wording.status == "public_wording_blocked":
         cloud_action = maturity.cloud_policy
+    if app == "polygon_pair_overlap_area_rows":
+        cloud_action = maturity.cloud_policy
     return {
         "app": app,
         "app_path": APP_PATHS[app],
@@ -335,7 +337,9 @@ def to_markdown(payload: dict[str, Any]) -> str:
         evidence_or_goal = row["evidence_or_goal"]
         non_claim_boundary = row["non_claim_boundary"]
         if row["public_wording_status"] == "public_wording_reviewed":
-            evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"
+            evidence_parts = evidence_or_goal.split("/")
+            if row["public_wording_evidence"] not in evidence_parts:
+                evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"
         if row["public_wording_status"] == "public_wording_blocked":
             readiness_status = "blocked_for_public_speedup_wording"
             evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"

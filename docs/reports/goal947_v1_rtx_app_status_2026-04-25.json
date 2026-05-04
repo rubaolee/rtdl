@@ -312,11 +312,11 @@
       "rt_core_subpath": "prepared bounded native pair-row traversal"
     },
     {
-      "allowed_claim": "native-assisted candidate-discovery path only; no full polygon-area speedup claim",
+      "allowed_claim": "Goal1263 bounded polygon-pair sub-path may be described; no full polygon-area or broad GIS speedup claim",
       "app": "polygon_pair_overlap_area_rows",
       "app_path": "examples/rtdl_polygon_pair_overlap_area_rows.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
+      "cloud_action": "Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation at 40k, 80k, and 160k copies on RTX A5000; candidate-count mismatch remains a v1.2 diagnostic boundary. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -325,9 +325,9 @@
         "optix": "direct_cli_native_assisted",
         "vulkan": "not_exposed_by_app_cli"
       },
-      "evidence_or_goal": "Goal877/Goal929",
+      "evidence_or_goal": "Goal877/Goal929/Goal1263",
       "native_continuation_contract": "native C++ exact area continuation follows RT-assisted LSI/PIP candidate discovery",
-      "non_claim_boundary": "exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review",
+      "non_claim_boundary": "monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the claim; candidate-count mismatch remains a v1.2 diagnostic item",
       "performance_class": "python_interface_dominated",
       "public_wording": "RTDL v1.1 shows bounded OptiX acceleration for the polygon-pair RTX sub-path at 40k, 80k, and 160k copies on an RTX A5000; at 160k copies the reviewed same-contract benchmark measured about 1.4x faster candidate discovery and about 1.2x faster observed pipeline versus Embree.",
       "public_wording_boundary": "Only RT-assisted LSI/PIP positive candidate discovery plus native C++ exact polygon-area continuation is covered. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording. Correctness is summary-parity under the v1.1 profiler contract; candidate-count mismatch remains a v1.2 diagnostic item.",

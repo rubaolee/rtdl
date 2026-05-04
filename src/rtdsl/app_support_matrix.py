@@ -263,7 +263,7 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Public script exposes CPU plus Embree/OptiX native-assisted modes: native LSI/PIP positive candidate discovery plus CPU exact area refinement.",
+        note="Public script exposes CPU plus Embree/OptiX native-assisted modes: native LSI/PIP positive candidate discovery plus native C++ exact area continuation.",
     ),
     "polygon_set_jaccard": _row(
         "polygon_set_jaccard",
@@ -535,10 +535,10 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     "polygon_pair_overlap_area_rows": _readiness(
         "polygon_pair_overlap_area_rows",
         READY_FOR_RTX_CLAIM_REVIEW,
-        "Goal877/Goal929",
-        "native-assisted OptiX candidate discovery has a phase-separated RTX artifact with parity; public claims still require final claim-review packaging",
-        "exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review",
-        "native-assisted candidate-discovery path only; no full polygon-area speedup claim",
+        "Goal877/Goal929/Goal1263",
+        "Goal1263 promotes bounded same-contract OptiX wording for RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation at 40k, 80k, and 160k copies",
+        "monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the claim; candidate-count mismatch remains a v1.2 diagnostic item",
+        "Goal1263 bounded polygon-pair sub-path may be described; no full polygon-area or broad GIS speedup claim",
     ),
     "polygon_set_jaccard": _readiness(
         "polygon_set_jaccard",
@@ -743,8 +743,8 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "polygon_pair_overlap_area_rows",
         RT_CORE_READY,
         RT_CORE_READY,
-        "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact area refinement; claim only the candidate-discovery sub-path.",
-        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+        "Keep OptiX native-assisted LSI/PIP positive candidate discovery split from native C++ exact area continuation; claim only the Goal1263 bounded sub-path unless broader same-semantics app timing is reviewed.",
+        "Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation at 40k, 80k, and 160k copies on RTX A5000; candidate-count mismatch remains a v1.2 diagnostic boundary. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the wording.",
     ),
     "polygon_set_jaccard": _maturity(
         "polygon_set_jaccard",
