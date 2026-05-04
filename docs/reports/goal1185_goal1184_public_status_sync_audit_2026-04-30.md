@@ -10,7 +10,7 @@ This audit checks that Goal1184 is reflected as newer Goal1182 RTX A4500 batch e
 - docs checked: `10`
 - passing docs: `10`
 - failing docs: `0`
-- expected reviewed public wording rows: `11`
+- expected reviewed public wording rows: `12`
 
 ## Rows
 

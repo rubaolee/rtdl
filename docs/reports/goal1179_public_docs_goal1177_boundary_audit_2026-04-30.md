@@ -10,7 +10,7 @@ This audit checks public-facing docs after Goal1177. Goal1177 may be described o
 - docs checked: `7`
 - passing docs: `7`
 - failing docs: `0`
-- expected reviewed public wording rows: `11`
+- expected reviewed public wording rows: `12`
 
 ## Rows
 

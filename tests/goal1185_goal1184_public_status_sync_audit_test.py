@@ -17,7 +17,7 @@ class Goal1185Goal1184PublicStatusSyncAuditTest(unittest.TestCase):
     def test_current_public_status_sync_is_valid(self) -> None:
         payload = goal1185.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["public_wording_row_count_expected"], 11)
+        self.assertEqual(payload["public_wording_row_count_expected"], 12)
         self.assertGreaterEqual(payload["doc_count"], 8)
         self.assertEqual(payload["failing_doc_count"], 0)
 
@@ -32,7 +32,7 @@ class Goal1185Goal1184PublicStatusSyncAuditTest(unittest.TestCase):
 
     def test_forbidden_phrases_reject_public_speedup_promotion(self) -> None:
         self.assertIn("Goal1184 public speedup", goal1185.FORBIDDEN_PHRASES)
-        self.assertIn("Goal1184 reviewed public RTX sub-path wording rows: `11`", goal1185.FORBIDDEN_PHRASES)
+        self.assertIn("Goal1184 reviewed public RTX sub-path wording rows: `12`", goal1185.FORBIDDEN_PHRASES)
         payload = goal1185.build_audit()
         all_forbidden = [phrase for row in payload["rows"] for phrase in row["forbidden_phrases"]]
         self.assertEqual(all_forbidden, [])
@@ -62,7 +62,7 @@ class Goal1185Goal1184PublicStatusSyncAuditTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             self.assertIn("Goal1184", markdown)
             self.assertIn("external-review input only", markdown)
-            self.assertIn("expected reviewed public wording rows: `11`", markdown)
+            self.assertIn("expected reviewed public wording rows: `12`", markdown)
 
 
 if __name__ == "__main__":

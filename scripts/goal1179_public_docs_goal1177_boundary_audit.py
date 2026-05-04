@@ -14,50 +14,50 @@ GOAL = "Goal1179 public docs Goal1177 boundary audit"
 DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "README.md": (
         "Goal1177",
-        "external",
-        "does not add a new reviewed public wording row",
+        "external-review input only",
+        "Neither goal adds a new reviewed",
         "does not authorize public speedup wording",
         "docs/v1_0_rtx_app_status.md",
     ),
     "docs/application_catalog.md": (
         "Goal1177",
         "external-review input only",
-        "does not add a new reviewed public wording row",
-        "does not authorize public speedup wording",
+        "Neither goal adds a new reviewed",
+        "authorizes public speedup wording",
         "rtdsl.rtx_public_wording_matrix()",
     ),
     "docs/release_facing_examples.md": (
         "Goal1177",
         "external",
-        "does not add a new reviewed public wording row",
-        "does not authorize public speedup wording",
+        "Neither goal adds a new reviewed",
+        "authorizes public speedup wording",
         "These commands are bounded sub-paths, not broad speedup claims",
     ),
     "docs/rtdl_feature_guide.md": (
         "Goal1177",
         "external",
-        "does not add a new reviewed public wording row",
-        "does not authorize public speedup wording",
+        "Neither goal adds a new reviewed",
+        "authorizes public speedup wording",
         "rtdsl.rtx_public_wording_matrix()",
     ),
     "docs/quick_tutorial.md": (
-        "Goal1177",
+        "Goal1177 and Goal1184",
         "external-review input only",
-        "does not authorize new public RTX",
+        "do not authorize",
         "use `--require-rt-core` only in claim-sensitive app runs",
     ),
     "docs/v1_0_rtx_app_status.md": (
         "Goal1177",
         "external-review input",
         "Goal1177 does not add a new reviewed public wording row",
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "Goal1208 adds exactly one reviewed public wording row",
     ),
     "docs/app_engine_support_matrix.md": (
         "Goal1177",
         "external-review input only",
-        "Goal1177 does not add any new reviewed public",
-        "Current reviewed public wording rows after Goal1208: `11`",
+        "Goal1177 and Goal1184 do not add any new reviewed public",
+        "Current reviewed public wording rows after Goal1224: `12`",
     ),
 }
 
@@ -66,7 +66,7 @@ FORBIDDEN_PHRASES: tuple[str, ...] = (
     "Goal1177 authorized public",
     "Goal1177 public speedup",
     "Goal1177 adds public speedup",
-    "Goal1177 reviewed public RTX sub-path wording rows: `11`",
+    "Goal1177 reviewed public RTX sub-path wording rows: `12`",
 )
 
 
@@ -97,7 +97,7 @@ def build_audit() -> dict[str, Any]:
         "passing_doc_count": len(rows) - len(failing),
         "failing_doc_count": len(failing),
         "rows": rows,
-        "public_wording_row_count_expected": 11,
+        "public_wording_row_count_expected": 12,
         "boundary": (
             "This audit checks public-facing docs after Goal1177. Goal1177 may be "
             "described only as recovered clean-source RTX evidence for external-review "

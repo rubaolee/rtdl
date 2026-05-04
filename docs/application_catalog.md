@@ -70,7 +70,9 @@ and not a whole-app robot-planning speedup claim.
 Goal1177 is recorded as recovered clean-source RTX A5000 batch evidence for
 external-review input only. Goal1184 is recorded as newer Goal1182 RTX A4500
 batch evidence for external-review input only. Neither goal adds a new reviewed
-public wording row or authorizes public speedup wording. Goal1208 authorizes
+public wording row or authorizes public speedup wording. Goal1177 does not add
+a new reviewed public wording row and does not authorize public speedup wording.
+Goal1208 authorizes
 only the bounded road-hazard prepared native compact-summary wording; full
 GIS/routing, default-app behavior, row output, and whole-app road-hazard speedup
 remain outside the claim. Goal1224 resolves the remaining graph, polygon-pair,

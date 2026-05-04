@@ -50,7 +50,7 @@ DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "Goal1184",
         "newer Goal1182 RTX A4500 batch accepted for external-review input (Goal1184): `True`",
         "Goal1184 does not add a new reviewed public wording row",
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "Goal1208 adds exactly one reviewed public wording row",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
@@ -59,7 +59,7 @@ DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "Goal1182 RTX A4500",
         "external-review input only",
         "Goal1177 and Goal1184 do not add any new reviewed",
-        "Current reviewed public wording rows after Goal1208: `11`",
+        "Current reviewed public wording rows after Goal1224: `12`",
     ),
     "docs/reports/goal1184_live_pod_goal1182_intake_2026-04-30.md": (
         "Goal1184 Live Pod Goal1182 Intake",
@@ -87,7 +87,7 @@ FORBIDDEN_PHRASES: tuple[str, ...] = (
     "Goal1184 public speedup",
     "Goal1184 adds public speedup",
     "Goal1184 adds a new reviewed public wording row",
-    "Goal1184 reviewed public RTX sub-path wording rows: `11`",
+    "Goal1184 reviewed public RTX sub-path wording rows: `12`",
 )
 
 
@@ -118,7 +118,7 @@ def build_audit() -> dict[str, Any]:
         "passing_doc_count": len(rows) - len(failing),
         "failing_doc_count": len(failing),
         "rows": rows,
-        "public_wording_row_count_expected": 11,
+        "public_wording_row_count_expected": 12,
         "boundary": (
             "This audit checks that Goal1184 is reflected as newer Goal1182 RTX A4500 "
             "batch evidence for external-review input only. It must not become release "

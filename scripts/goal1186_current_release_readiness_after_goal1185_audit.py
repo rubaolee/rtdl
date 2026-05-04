@@ -31,7 +31,7 @@ CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "Goal1184",
         "external-review input only",
         "Neither goal adds a new reviewed",
-        "Goal1177 does not add a new reviewed public wording row",
+        "Goal1177 does not add",
     ),
     "docs/release_facing_examples.md": (
         "Goal1184",
@@ -54,15 +54,15 @@ CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "Goal1184",
         "newer Goal1182 RTX A4500 batch accepted for external-review input (Goal1184): `True`",
         "Goal1184 does not add a new reviewed public wording row",
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "Goal1208 adds exactly one reviewed public wording row",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
     "docs/app_engine_support_matrix.md": (
         "Goal1184",
         "Goal1182 RTX A4500",
-        "Goal1177 and Goal1184 do not add any new reviewed public wording",
-        "Current reviewed public wording rows after Goal1208: `11`",
+        "Goal1177 and Goal1184 do not add any new reviewed public",
+        "Current reviewed public wording rows after Goal1224: `12`",
     ),
     "src/rtdsl/app_support_matrix.py": (
         "Goal1184",
@@ -84,7 +84,7 @@ GUARDRAIL_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     ),
     "tests/goal1185_goal1184_public_status_sync_audit_test.py": (
         "Goal1184 public speedup",
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "public_wording_row_count_expected",
     ),
 }
@@ -177,8 +177,8 @@ def build_audit() -> dict[str, Any]:
         "boundary": (
             "Goal1186 audits the current release-readiness surface after Goal1184/Goal1185. "
             "Goal1184 may be recorded only as external-review input. Public RTX wording "
-            "row count is now 11 only because later Goal1208 explicitly reviewed the bounded "
-            "road-hazard wording."
+            "row count is now 12 after later reviewed bounded promotions through Goal1224; "
+            "Goal1177 and Goal1184 do not add new public wording rows."
         ),
     }
 

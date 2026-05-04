@@ -31,14 +31,14 @@ class Goal1186CurrentReleaseReadinessAfterGoal1185AuditTest(unittest.TestCase):
         )
         self.assertIn("Goal1184", checked_text)
         self.assertIn("external-review input only", checked_text)
-        self.assertIn("reviewed public RTX sub-path wording rows: `11`", checked_text)
+        self.assertIn("reviewed public RTX sub-path wording rows: `12`", checked_text)
         self.assertIn("Goal1208 adds exactly one reviewed public wording row", checked_text)
         self.assertNotIn("Goal1184 authorizes public", checked_text)
         self.assertNotIn("Goal1184 public speedup", checked_text)
 
     def test_guardrails_cover_forbidden_public_promotion(self) -> None:
         self.assertIn("Goal1184 public speedup", goal1186.FORBIDDEN_PUBLIC_SURFACE_PHRASES)
-        self.assertNotIn("reviewed public RTX sub-path wording rows: `11`", goal1186.FORBIDDEN_PUBLIC_SURFACE_PHRASES)
+        self.assertNotIn("reviewed public RTX sub-path wording rows: `12`", goal1186.FORBIDDEN_PUBLIC_SURFACE_PHRASES)
         payload = goal1186.build_audit()
         forbidden_hits = [
             phrase

@@ -208,7 +208,9 @@ Goal1142 evidence and 2-AI promotion review. Goal1126 reviewed
 `robot_collision_screening / prepared_pose_flags` normalized per-pose wording
 only; it is not a same-total-work wall-time claim and not a whole-app
 robot-planning speedup claim. Goal1177 and Goal1184 do not add any new reviewed
-public wording row. Goal1208 adds exactly one reviewed public wording row for
+public wording row. Goal1177 does not add any new reviewed public wording row.
+Goal1177 and Goal1184 do not add any new reviewed public wording row.
+Goal1208 adds exactly one reviewed public wording row for
 `road_hazard_screening / prepared_native_compact_summary_40k`, limited to the
 prepared native compact-summary traversal/count sub-path at 40k copies.
 Goal1224 adds reviewed Hausdorff threshold-decision wording and keeps graph plus

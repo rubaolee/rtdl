@@ -26,7 +26,7 @@ REQUIRED_FILES: tuple[str, ...] = (
 CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "README.md": (
         "Goal1177",
-        "does not add a new reviewed public wording row",
+        "Neither goal adds a new reviewed public wording row",
         "does not authorize public speedup wording",
     ),
     "docs/application_catalog.md": (
@@ -36,29 +36,29 @@ CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     ),
     "docs/release_facing_examples.md": (
         "Goal1177",
-        "does not add a new reviewed public wording row",
+        "Neither goal adds a new reviewed public wording row",
         "These commands are bounded sub-paths, not broad speedup claims",
     ),
     "docs/rtdl_feature_guide.md": (
         "Goal1177",
-        "does not add a new reviewed public wording row",
-        "does not authorize public speedup wording",
+        "Neither goal adds a new reviewed public wording row",
+        "authorizes public speedup wording",
     ),
     "docs/quick_tutorial.md": (
         "Goal1177",
         "external-review input only",
-        "does not authorize new public RTX",
+        "do not authorize",
     ),
     "docs/v1_0_rtx_app_status.md": (
         "Goal1177",
         "Goal1177 does not add a new reviewed public wording row",
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "Goal1208 adds exactly one reviewed public wording row",
     ),
     "docs/app_engine_support_matrix.md": (
         "Goal1177",
-        "Goal1177 does not add any new reviewed public",
-        "Current reviewed public wording rows after Goal1208: `11`",
+        "Goal1177 and Goal1184 do not add any new reviewed public",
+        "Current reviewed public wording rows after Goal1224: `12`",
     ),
     "src/rtdsl/app_support_matrix.py": (
         "Goal1177",

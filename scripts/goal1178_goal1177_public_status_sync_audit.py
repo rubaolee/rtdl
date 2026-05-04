@@ -17,14 +17,14 @@ DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "external-review input only",
         "Goal1177 does not add a new reviewed public wording row",
         "does not authorize new public wording",
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "Goal1208 adds exactly one reviewed public wording row",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
     "docs/app_engine_support_matrix.md": (
         "Goal1164-Goal1177",
         "external-review input only",
-        "Goal1177 does not add any new reviewed public",
+        "Goal1177 and Goal1184 do not add any new reviewed public",
         "public_wording_reviewed",
         "not whole-app speedup",
     ),
@@ -45,7 +45,7 @@ DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
 FORBIDDEN_DOC_PHRASES: tuple[str, ...] = (
     "Goal1177 authorizes public",
     "Goal1177 authorized public",
-    "Goal1177 reviewed public RTX sub-path wording rows: `11`",
+    "Goal1177 reviewed public RTX sub-path wording rows: `12`",
     "Goal1177 public speedup",
 )
 

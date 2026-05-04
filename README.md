@@ -159,7 +159,12 @@ Detailed evidence and review trail:
 - [Goal1142 Current-Source Replacement Evidence](docs/reports/goal1142_current_source_robot_64m_replacement_report_2026-04-29.md)
 - [Goal1146 Public Wording Promotion Consensus](docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md)
 - [Goal1208 Public Wording Consensus](docs/reports/goal1208_two_ai_consensus_2026-05-01.md)
-- [Goal1224 RTX Wording Resolution Consensus](docs/reports/goal1224_two_ai_rtx_wording_resolution_consensus_2026-05-01.md)
+- [Goal1224 RTX Wording Resolution Consensus](docs/reports/goal1224_two_ai_consensus_2026-05-01.md)
+
+Goal1177 is recovered clean-source RTX A5000 evidence for external-review input only.
+Goal1184 records Goal1182 RTX A4500 batch evidence as external-review input only.
+Neither goal adds a new reviewed public wording row or authorizes public speedup wording.
+Goal1177 does not add a new reviewed public wording row and does not authorize public speedup wording.
 
 ## What RTDL Contains
 
@@ -191,6 +196,10 @@ contracts, but some paths are not a native reduction or public speedup claim.
 - [Hausdorff Linux Performance Evidence](docs/reports/goal507_hausdorff_linux_perf_report_2026-04-17.md)
 - [Robot/Barnes-Hut Linux Performance Evidence](docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
 
+RTX-class
+      performance validation remains bounded to the reviewed prepared/native
+      sub-paths named above.
+
 `v0.9.5`: earlier public release for bounded any-hit, visibility rows, and
 Python-side emitted-row reductions. earlier Linux Goal509 evidence covered the hit-count formulation, Embree, and pre-fix OptiX; new backend speedup claims need fresh gates and should use the post-fix Goal748 parity/performance report
 instead of the old robot OptiX result. Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan evidence that separates candidate-generation timing
@@ -203,13 +212,6 @@ beating the strongest mature exact nearest-neighbor library baselines.
 ## Demo
 
 - [Watch the public 4K demo video](https://www.youtube.com/watch?v=d3yJB7AmCLM)
-- [Demo walkthrough](docs/demo_media/README.md)
-
-<p>
-  <a href="https://www.youtube.com/watch?v=d3yJB7AmCLM">
-    <img src="docs/demo_media/rtdl_4k_demo_thumbnail.png" alt="RTDL 4K demo preview" width="640">
-  </a>
-</p>
 
 ## Repository Layout
 

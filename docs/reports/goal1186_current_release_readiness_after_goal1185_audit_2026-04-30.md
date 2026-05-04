@@ -2,7 +2,7 @@
 
 Date: 2026-04-30
 
-Goal1186 audits the current release-readiness surface after Goal1184/Goal1185. Goal1184 may be recorded only as external-review input. Public RTX wording row count is now 11 only because later Goal1208 explicitly reviewed the bounded road-hazard wording.
+Goal1186 audits the current release-readiness surface after Goal1184/Goal1185. Goal1184 may be recorded only as external-review input. Public RTX wording row count is now 12 after later reviewed bounded promotions through Goal1224; Goal1177 and Goal1184 do not add new public wording rows.
 
 ## Summary
 
@@ -47,5 +47,5 @@ Goal1186 audits the current release-readiness surface after Goal1184/Goal1185. G
 
 ## Boundary
 
-Goal1186 audits the current release-readiness surface after Goal1184/Goal1185. Goal1184 may be recorded only as external-review input. Public RTX wording row count is now 11 only because later Goal1208 explicitly reviewed the bounded road-hazard wording.
+Goal1186 audits the current release-readiness surface after Goal1184/Goal1185. Goal1184 may be recorded only as external-review input. Public RTX wording row count is now 12 after later reviewed bounded promotions through Goal1224; Goal1177 and Goal1184 do not add new public wording rows.
 

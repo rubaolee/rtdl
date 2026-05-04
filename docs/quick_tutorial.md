@@ -232,7 +232,7 @@ NVIDIA RT-core claim note:
 
 - `--backend optix` selects an OptiX-capable path; it is not by itself a
   NVIDIA RT-core acceleration claim.
-- Use `--require-rt-core` only in claim-sensitive app runs; public apps fail
+- use `--require-rt-core` only in claim-sensitive app runs; public apps fail
   fast unless the selected OptiX mode is a documented bounded RT-core path.
 - Start from [Application Catalog](application_catalog.md) and
   [App Engine Support Matrix](app_engine_support_matrix.md) before benchmarking

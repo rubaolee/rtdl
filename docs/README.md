@@ -55,7 +55,7 @@ audited release claims.
 | --- | --- | --- |
 | Front page and project promise | [Project Front Page](../README.md) | [Public Documentation Map](public_documentation_map.md), [Feature Guide](rtdl_feature_guide.md) |
 | Tutorials | [Quick Tutorial](quick_tutorial.md) | [RTDL Tutorials](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
-| Apps and examples | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Release-Facing Examples](release_facing_examples.md), [Examples Index](../examples/README.md) |
+| Apps and examples | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Release-Facing Examples](release_facing_examples.md), [v0.8 App Building](tutorials/v0_8_app_building.md), [Examples Index](../examples/README.md) |
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
@@ -102,8 +102,26 @@ Use these for audit trails and exact release boundaries:
 - [v0.9.8 Release Statement](release_reports/v0_9_8/release_statement.md)
 - [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 - [v0.9.8 Audit Report](release_reports/v0_9_8/audit_report.md)
+- [v0.8 Release Package](release_reports/v0_8/README.md)
+- [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
+- [v0.7 Release Package](release_reports/v0_7/README.md)
 - [Older Release Packages](release_reports/)
 - [Complete History Map](../history/COMPLETE_HISTORY.md)
+
+## Compact Historical State
+
+The current `main` carries the released bounded `v0.7.0` DB line and released
+  `v0.8.0` app-building examples:
+
+- Hausdorff distance app using `knn_rows(k=1)`.
+- ANN candidate search app using `knn_rows(k=1)`.
+- outlier detection and DBSCAN clustering apps using fixed-radius neighbor
+  rows plus Python thresholding or cluster expansion.
+- robot collision screening app using `ray_triangle_any_hit`.
+- Barnes-Hut force approximation app using `fixed_radius_neighbors`.
+
+The v0.8 app-building tutorial records future language pressure without
+    claiming new backend or language internals.
 
 ## Maintainer And History Material
 
