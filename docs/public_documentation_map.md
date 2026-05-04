@@ -18,6 +18,17 @@ goal archive.
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
 | Performance | [Performance Model](performance_model.md) | [v1.0 RTX App Status](v1_0_rtx_app_status.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 
+## Current Public Surfaces
+
+The public docs are organized around four surfaces. Use this table before opening historical reports:
+
+| Surface | Purpose | Primary pages |
+| --- | --- | --- |
+| Front page | Short project promise and current public boundary | [Project Front Page](../README.md), [Docs Index](README.md) |
+| Tutorials | Teach the kernel shape and first app runs | [Quick Tutorial](quick_tutorial.md), [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
+| Apps and examples | Show what each app does, what RTDL accelerates, and what remains outside | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
+| Architecture, model, IR, and performance | Explain how the system is built and how to read performance evidence | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [Performance Model](performance_model.md) |
+
 ## Current v1.0 Story
 
 v1.0 is a foundation release line for proving that RTDL can express useful

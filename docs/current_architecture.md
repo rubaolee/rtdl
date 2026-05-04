@@ -11,6 +11,22 @@ For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
 [RTDL Capability Boundaries](capability_boundaries.md).
 
+## v1.0 Lens
+
+Read the current architecture through this v1.0 lens:
+
+- v1.0 is the proof line for a Python-hosted RT DSL on real app-shaped
+  workloads.
+- Some app paths use app-specific native continuations so the proof apps are
+  useful and measurable.
+- Those continuations are intentionally documented in
+  [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md); they
+  are not the final engine architecture.
+- v1.5 should replace app-specific continuation code with reviewed generic
+  traversal-plus-reduction primitives.
+- v2.0 is the broader end-to-end performance target, especially for non-RT
+  phases that should not stay in Python hot loops.
+
 ## The User Contract
 
 RTDL is a Python-hosted language/runtime for workloads that can be expressed as

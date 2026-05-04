@@ -48,6 +48,21 @@ What this does not show:
 For the full inventory, read [Application Catalog](application_catalog.md) and
 [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md).
 
+## Engine Customization Boundary
+
+v1.0 includes app-specific native continuations for some apps. This is
+intentional proof machinery: it lets RTDL avoid excessive row materialization
+and demonstrate useful prepared/native sub-paths before the generic v1.5
+primitive ABI exists.
+
+Use [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) for
+the authoritative per-app list of:
+
+- the RT-accelerated traversal or candidate-generation phase
+- the v1.0 native continuation used today
+- the app phases that remain Python-owned or outside public speedup wording
+- whether public RTX wording is reviewed, blocked, not reviewed, or not a NVIDIA target
+
 ## Choose An Example Type
 
 | Example type | Start here | Why |

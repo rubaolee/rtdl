@@ -9,7 +9,8 @@ The current released version is `v0.9.8`; current released version: `v0.9.8`.
 
 ## New User Path
 
-Read these in order for the current public story:
+Use this page as a router, not as a history archive. Read these in order for
+the current public story:
 
 1. [Project Front Page](../README.md)
 2. [Public Documentation Map](public_documentation_map.md)
@@ -31,6 +32,15 @@ Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
 
 That is the intended public reading path.
+
+## Public Surfaces
+
+| Surface | What to read | What it should answer |
+| --- | --- | --- |
+| Front page | [Project Front Page](../README.md), [Public Documentation Map](public_documentation_map.md) | What RTDL is, what the current release is, and what not to overclaim. |
+| Tutorials | [Quick Tutorial](quick_tutorial.md), [RTDL Tutorials](tutorials/README.md) | How to run a first kernel and learn the authoring shape. |
+| Apps and examples | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) | Which apps exist, what RTDL accelerates, and which app phases remain outside. |
+| Architecture/model/IR/performance | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [Performance Model](performance_model.md) | How the runtime is structured, how lowering works, and how to read evidence. |
 
 ## Evaluate RTDL In Ten Minutes
 
