@@ -29,12 +29,13 @@ Recent local evidence before this package:
 - Goal1247 quick-tutorial focused suite: `12` tests OK.
 - Goal1247 quick-tutorial related suite: `73` tests OK.
 - Goal1247 broader public-doc subset: `345` tests OK, `2` skipped.
+- Goal1251 full local discovery: `2422` tests OK, `196` skipped, `0`
+  failures, `0` errors, `166.940s`.
 
 Required before final release action:
 
 - run the v1.0 release-candidate package tests;
 - run release-surface documentation audits after any last docs edits;
-- run full local discovery or an approved release-equivalent test gate;
 - save external-AI package review and Codex consensus;
 - save final release authorization before changing `VERSION` or tagging.
 

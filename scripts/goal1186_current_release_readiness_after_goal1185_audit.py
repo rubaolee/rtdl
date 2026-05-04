@@ -22,10 +22,10 @@ REQUIRED_FILES: tuple[str, ...] = (
 
 CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "Goal1184",
-        "external-review input only",
-        "Neither goal adds a new reviewed public wording row",
-        "Goal1177 does not add a new reviewed public wording row",
+        "The current released version is `v0.9.8`",
+        "Reviewed rows are bounded public sub-path wording",
+        "not automatic public speedup claims",
+        "v1.0 RTX App Status",
     ),
     "docs/application_catalog.md": (
         "Goal1184",

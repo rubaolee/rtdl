@@ -46,11 +46,10 @@ REQUIRED_GOAL_FILES: dict[str, tuple[str, ...]] = {
 
 CURRENT_PUBLIC_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "road_hazard_screening / prepared_native_compact_summary_40k",
-        "0.230652",
-        "3.53x",
-        "full road-hazard/GIS routing",
-        "These are not automatic public speedup claims",
+        "The current released version is `v0.9.8`",
+        "Reviewed rows are bounded public sub-path wording",
+        "not automatic public speedup claims",
+        "v1.0 RTX App Status",
     ),
     "docs/app_engine_support_matrix.md": (
         "Current reviewed public wording rows after Goal1224: `12`",

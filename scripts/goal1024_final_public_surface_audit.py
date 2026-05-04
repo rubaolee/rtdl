@@ -30,10 +30,10 @@ REQUIRED_FILES = (
 REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "README.md": (
         "current released version is `v0.9.8`",
+        "Reviewed rows are bounded public sub-path wording",
         "not automatic public speedup claims",
-        "robot_collision_screening / prepared_pose_flags",
-        "Goal1126",
-        "same-total-work",
+        "v1.0 App Acceleration Inventory",
+        "v1.0 RTX App Status",
     ),
     "docs/README.md": (
         "current released version is `v0.9.8`",
@@ -67,6 +67,8 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "docs/v1_0_rtx_app_status.md": (
         "not release authorization and not a public speedup claim",
         "Goal1126 promoted robot only with explicit normalized per-pose wording",
+        "robot_collision_screening / prepared_pose_flags",
+        "same-total-work",
         "rtdsl.rtx_public_wording_matrix()",
     ),
     "history/COMPLETE_HISTORY.md": (

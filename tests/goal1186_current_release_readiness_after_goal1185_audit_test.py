@@ -31,6 +31,7 @@ class Goal1186CurrentReleaseReadinessAfterGoal1185AuditTest(unittest.TestCase):
         )
         self.assertIn("Goal1184", checked_text)
         self.assertIn("external-review input only", checked_text)
+        self.assertIn("Reviewed rows are bounded public sub-path wording", checked_text)
         self.assertIn("reviewed public RTX sub-path wording rows: `12`", checked_text)
         self.assertIn("Goal1208 adds exactly one reviewed public wording row", checked_text)
         self.assertNotIn("Goal1184 authorizes public", checked_text)
