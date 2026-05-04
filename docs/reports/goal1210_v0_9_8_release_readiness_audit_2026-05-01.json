@@ -1,9 +1,9 @@
 {
   "blocked_public_speedup_wording": [
-    "database_analytics",
-    "polygon_set_jaccard"
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows"
   ],
-  "boundary": "Goal1210 audits current release-readiness evidence after Goal1209. It confirms public docs and source match the 11-row wording matrix, that Goal1204-Goal1209 have external-AI consensus trails, and that DB/Jaccard remain blocked from public speedup wording. It does not tag or release v0.9.8.",
+  "boundary": "Goal1210 is a historical release-readiness evidence audit after Goal1209, now run against the current post-Goal1224 public surface. It confirms Goal1204-Goal1209 have external-AI consensus trails, road-hazard wording remains bounded, and the current docs use the 12-row Goal1224 wording state without tagging or releasing v0.9.8.",
   "date": "2026-05-01",
   "failing_goal_count": 0,
   "failing_surface_doc_count": 0,
@@ -128,7 +128,7 @@
   "new_public_wording_rows": [
     "road_hazard_screening / prepared_native_compact_summary_40k"
   ],
-  "public_wording_row_count_expected": 11,
+  "public_wording_row_count_expected": 12,
   "recorded_checks": [
     {
       "command": "PYTHONPATH=src:. python3 -m unittest tests.goal1011_rtx_public_wording_matrix_test tests.goal947_v1_rtx_app_status_page_test tests.goal1010_public_rtx_readme_wording_test tests.goal938_public_rtx_wording_sync_test tests.goal1179_public_docs_goal1177_boundary_audit_test tests.goal1180_current_release_readiness_window_audit_test tests.goal1185_goal1184_public_status_sync_audit_test tests.goal1186_current_release_readiness_after_goal1185_audit_test -v",

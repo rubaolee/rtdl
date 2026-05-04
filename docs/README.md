@@ -5,7 +5,7 @@ history. If you are new to RTDL, do not browse everything here first. Start with
 the live path below, then branch into tutorials, apps, architecture, IR, or
 performance.
 
-Current released version: `v0.9.8`.
+The current released version is `v0.9.8`; current released version: `v0.9.8`.
 
 ## New User Path
 

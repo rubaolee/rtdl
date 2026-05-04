@@ -2,7 +2,7 @@
 
 Date: 2026-05-01
 
-Goal1210 audits current release-readiness evidence after Goal1209. It confirms public docs and source match the 11-row wording matrix, that Goal1204-Goal1209 have external-AI consensus trails, and that DB/Jaccard remain blocked from public speedup wording. It does not tag or release v0.9.8.
+Goal1210 is a historical release-readiness evidence audit after Goal1209, now run against the current post-Goal1224 public surface. It confirms Goal1204-Goal1209 have external-AI consensus trails, road-hazard wording remains bounded, and the current docs use the 12-row Goal1224 wording state without tagging or releasing v0.9.8.
 
 ## Summary
 
@@ -11,9 +11,9 @@ Goal1210 audits current release-readiness evidence after Goal1209. It confirms p
 - goals missing closure files: `0`
 - public surface docs checked: `7`
 - public surface failures: `0`
-- expected reviewed public wording rows: `11`
+- expected reviewed public wording rows: `12`
 - new public wording row: `road_hazard_screening / prepared_native_compact_summary_40k`
-- DB/Jaccard public speedup wording: `blocked`
+- graph/polygon-pair public speedup wording: `blocked`
 
 ## Goal Closure Rows
 
@@ -47,5 +47,5 @@ Goal1210 audits current release-readiness evidence after Goal1209. It confirms p
 
 ## Boundary
 
-Goal1210 audits current release-readiness evidence after Goal1209. It confirms public docs and source match the 11-row wording matrix, that Goal1204-Goal1209 have external-AI consensus trails, and that DB/Jaccard remain blocked from public speedup wording. It does not tag or release v0.9.8.
+Goal1210 is a historical release-readiness evidence audit after Goal1209, now run against the current post-Goal1224 public surface. It confirms Goal1204-Goal1209 have external-AI consensus trails, road-hazard wording remains bounded, and the current docs use the 12-row Goal1224 wording state without tagging or releasing v0.9.8.
 

@@ -49,33 +49,39 @@ CURRENT_PUBLIC_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "road_hazard_screening / prepared_native_compact_summary_40k",
         "0.230652",
         "3.53x",
-        "does not authorize full GIS/routing",
-        "whole-app road-hazard speedup",
+        "full road-hazard/GIS routing",
+        "These are not automatic public speedup claims",
     ),
     "docs/app_engine_support_matrix.md": (
-        "Current reviewed public wording rows after Goal1208: `11`",
+        "Current reviewed public wording rows after Goal1224: `12`",
         "Goal1208 adds exactly one reviewed public wording row",
         "Default app behavior, full GIS/routing, row output, Python orchestration",
     ),
     "docs/application_catalog.md": (
         "road_hazard_screening / prepared_native_compact_summary_40k",
-        "Goal1208 authorizes only the bounded road-hazard prepared native",
-        "whole-app road-hazard speedup remain outside the claim",
+        "Goal1208 authorizes",
+        "only the bounded road-hazard prepared native",
+        "whole-app road-hazard speedup",
+        "remain outside the claim",
     ),
     "docs/release_facing_examples.md": (
         "road_hazard_screening / prepared_native_compact_summary_40k",
-        "Goal1208 authorizes only the bounded road-hazard prepared native",
+        "Goal1208 authorizes only the bounded",
+        "road-hazard prepared native compact-summary wording",
         "These commands are bounded sub-paths, not broad speedup claims",
     ),
     "docs/rtdl_feature_guide.md": (
         "road_hazard_screening / prepared_native_compact_summary_40k",
-        "Goal1208 authorizes only the bounded road-hazard prepared native",
-        "whole-app road-hazard speedup remain outside the claim",
+        "Goal1208 authorizes only the bounded",
+        "road-hazard prepared native compact-summary wording",
+        "whole-app road-hazard speedup remain",
+        "outside the claim",
     ),
     "docs/v1_0_rtx_app_status.md": (
-        "reviewed public RTX sub-path wording rows: `11`",
+        "reviewed public RTX sub-path wording rows: `12`",
         "road_hazard_screening / prepared_native_compact_summary_40k",
         "Goal1208 adds exactly one reviewed public wording row",
+        "Goal1224 resolves the remaining graph, polygon-pair, and Hausdorff rows",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
     "src/rtdsl/app_support_matrix.py": (
@@ -177,15 +183,15 @@ def build_audit() -> dict[str, Any]:
         "goal_rows": goal_rows,
         "surface_rows": surface_rows,
         "recorded_checks": list(RECORDED_CHECKS),
-        "public_wording_row_count_expected": 11,
+        "public_wording_row_count_expected": 12,
         "new_public_wording_rows": ["road_hazard_screening / prepared_native_compact_summary_40k"],
-        "blocked_public_speedup_wording": ["database_analytics", "polygon_set_jaccard"],
+        "blocked_public_speedup_wording": ["graph_analytics", "polygon_pair_overlap_area_rows"],
         "boundary": (
-            "Goal1210 audits current release-readiness evidence after Goal1209. "
-            "It confirms public docs and source match the 11-row wording matrix, "
-            "that Goal1204-Goal1209 have external-AI consensus trails, and that "
-            "DB/Jaccard remain blocked from public speedup wording. It does not tag "
-            "or release v0.9.8."
+            "Goal1210 is a historical release-readiness evidence audit after Goal1209, "
+            "now run against the current post-Goal1224 public surface. It confirms "
+            "Goal1204-Goal1209 have external-AI consensus trails, road-hazard wording "
+            "remains bounded, and the current docs use the 12-row Goal1224 wording "
+            "state without tagging or releasing v0.9.8."
         ),
     }
 
@@ -207,7 +213,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- public surface failures: `{payload['failing_surface_doc_count']}`",
         f"- expected reviewed public wording rows: `{payload['public_wording_row_count_expected']}`",
         f"- new public wording row: `{payload['new_public_wording_rows'][0]}`",
-        "- DB/Jaccard public speedup wording: `blocked`",
+        "- graph/polygon-pair public speedup wording: `blocked`",
         "",
         "## Goal Closure Rows",
         "",
