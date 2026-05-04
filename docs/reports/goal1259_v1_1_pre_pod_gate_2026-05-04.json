@@ -1,0 +1,89 @@
+{
+  "blockers": [],
+  "boundary": "Goal1259 is a local pre-pod gate. It does not run cloud, change public docs, authorize release, or authorize public RTX speedup wording.",
+  "date": "2026-05-04",
+  "files": {
+    "executor": {
+      "bytes": 7017,
+      "exists": true,
+      "path": "scripts/goal1257_v1_1_embree_optix_pod_executor.sh"
+    },
+    "intake_json": {
+      "bytes": 4263,
+      "exists": true,
+      "path": "docs/reports/goal1258_v1_1_embree_optix_pod_intake_2026-05-04.json"
+    },
+    "intake_md": {
+      "bytes": 1826,
+      "exists": true,
+      "path": "docs/reports/goal1258_v1_1_embree_optix_pod_intake_2026-05-04.md"
+    },
+    "intake_script": {
+      "bytes": 13127,
+      "exists": true,
+      "path": "scripts/goal1258_v1_1_embree_optix_pod_intake.py"
+    },
+    "intake_test": {
+      "bytes": 5287,
+      "exists": true,
+      "path": "tests/goal1258_v1_1_embree_optix_pod_intake_test.py"
+    },
+    "packet_json": {
+      "bytes": 3736,
+      "exists": true,
+      "path": "docs/reports/goal1257_v1_1_embree_optix_pod_packet_2026-05-04.json"
+    },
+    "packet_md": {
+      "bytes": 2467,
+      "exists": true,
+      "path": "docs/reports/goal1257_v1_1_embree_optix_pod_packet_2026-05-04.md"
+    },
+    "packet_script": {
+      "bytes": 6373,
+      "exists": true,
+      "path": "scripts/goal1257_v1_1_embree_optix_pod_packet.py"
+    },
+    "packet_test": {
+      "bytes": 2946,
+      "exists": true,
+      "path": "tests/goal1257_v1_1_embree_optix_pod_packet_test.py"
+    },
+    "triage": {
+      "bytes": 9257,
+      "exists": true,
+      "path": "docs/reports/goal1256_v1_1_embree_optix_triage_2026-05-04.md"
+    }
+  },
+  "goal": "Goal1259 v1.1 pre-pod local gate",
+  "intake": {
+    "missing_artifact_count": 17,
+    "public_wording_authorized": false,
+    "valid": false
+  },
+  "next_action": "Start one RTX Linux pod and run Goal1257 packet commands.",
+  "packet": {
+    "active_backends": [
+      "embree",
+      "optix"
+    ],
+    "archive_exists": true,
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1257_rtdl_source_2026-05-04.tar.gz",
+    "archive_sha_ok": true,
+    "frozen_backends": [
+      "vulkan",
+      "hiprt",
+      "apple_rt"
+    ],
+    "source_commit": "3e97eba6fcbf0abbb9ec286e264e486fcc6d648a",
+    "source_commit_exists": true,
+    "target_rows": [
+      "database_analytics",
+      "graph_analytics",
+      "polygon_pair_overlap_area_rows",
+      "polygon_set_jaccard"
+    ],
+    "valid": true
+  },
+  "ready_for_pod": true,
+  "valid": true
+}
