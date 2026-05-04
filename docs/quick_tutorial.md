@@ -39,30 +39,10 @@ python -m pip install -r requirements.txt
 If your shell only provides `python3`, substitute `python3` for `python` in the
 commands below.
 
-Windows `cmd.exe`:
-
-```bat
-py -3 -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-Windows PowerShell:
-
-```powershell
-py -3 -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-If `python3 -m venv` fails on Debian/Ubuntu because `ensurepip` is missing,
-install the OS package first:
-
-```bash
-sudo apt install python3-venv
-```
+Windows users should create the same virtual environment with `py -3 -m venv
+.venv`, activate it from `cmd.exe` or PowerShell, then run the same `pip`
+commands. If `python3 -m venv` fails on Debian/Ubuntu because `ensurepip` is
+missing, install `python3-venv` first.
 
 ## Step 1: First Run
 
@@ -206,14 +186,13 @@ PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
 Then read [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md).
 
 For app-shaped demos, use [App And Example Quickstart](app_example_quickstart.md).
-For the full command archive, use
-[Release-Facing Examples](release_facing_examples.md).
-For app boundaries and backend support, use
-[Application Catalog](application_catalog.md) and
-[App Engine Support Matrix](app_engine_support_matrix.md).
+For the full command archive, use [Release-Facing Examples](release_facing_examples.md).
+For app boundaries and backend support, use [Application Catalog](application_catalog.md)
+and [App Engine Support Matrix](app_engine_support_matrix.md).
+
 Repository paths: `docs/application_catalog.md` and
-`docs/app_engine_support_matrix.md`.
-Current app entry points include `examples/rtdl_database_analytics_app.py` and
+`docs/app_engine_support_matrix.md`. Current app entry points include
+`examples/rtdl_database_analytics_app.py` and
 `examples/rtdl_apple_rt_demo_app.py`; older scenario-specific DB and Apple RT
 files are compatibility helpers rather than the recommended public start.
 
@@ -226,7 +205,7 @@ Portable first-run backends:
 - `embree` auto-builds/probes `build/librtdl_embree.*` on first use when the
   host has Embree headers/libraries available.
 
-Optional backend build commands:
+Optional native/backend build commands:
 
 ```bash
 make build-embree
