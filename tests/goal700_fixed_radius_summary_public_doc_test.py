@@ -24,16 +24,16 @@ class Goal700FixedRadiusSummaryPublicDocTest(unittest.TestCase):
 
     def test_public_docs_describe_summary_modes_and_boundaries(self):
         docs = {
-            "README.md": ROOT / "README.md",
+            "docs/v1_0_rtx_app_status.md": ROOT / "docs" / "v1_0_rtx_app_status.md",
             "examples/README.md": ROOT / "examples" / "README.md",
             "docs/application_catalog.md": ROOT / "docs" / "application_catalog.md",
             "docs/app_engine_support_matrix.md": ROOT / "docs" / "app_engine_support_matrix.md",
         }
         required_by_doc = {
-            "README.md": (
+            "docs/v1_0_rtx_app_status.md": (
                 "rt_count_threshold_prepared",
                 "rt_core_flags_prepared",
-                "RTX-class\n      performance validation",
+                "outlier_detection / prepared_fixed_radius_density_summary",
             ),
             "examples/README.md": (
                 "--optix-summary-mode\n  rt_count_threshold_prepared",

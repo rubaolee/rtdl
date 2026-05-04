@@ -10,7 +10,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 class Goal751RobotOptixErratumDocTest(unittest.TestCase):
     def test_public_docs_record_goal748_robot_optix_erratum(self) -> None:
         paths = (
-            "README.md",
             "docs/README.md",
             "docs/app_engine_support_matrix.md",
             "docs/release_facing_examples.md",

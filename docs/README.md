@@ -116,11 +116,13 @@ Use these for audit trails and exact release boundaries:
 - [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 - [v0.9.8 Audit Report](release_reports/v0_9_8/audit_report.md)
 - [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
-- [v0.8 Release Package](release_reports/v0_8/README.md)
-- [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
+- RTDL v0.8 Release Package: [v0.8 Release Package](release_reports/v0_8/README.md) (`docs/release_reports/v0_8/README.md`)
+- [RTDL v0.8 Release Statement](release_reports/v0_8/release_statement.md)
+- RTDL v0.8 Support Matrix: [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.7 Release Package](release_reports/v0_7/README.md)
 - [Older Release Packages](release_reports/)
 - [Complete History Map](../history/COMPLETE_HISTORY.md)
+- [Hausdorff Linux Performance Evidence](reports/goal507_hausdorff_linux_perf_report_2026-04-17.md)
 
 ## Compact Historical State
 

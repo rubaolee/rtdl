@@ -37,7 +37,7 @@ Current paths ready for RTX claim review:
 | Service coverage gaps | `--backend optix --optix-summary-mode gap_summary_prepared --require-rt-core` | prepared scalar covered/uncovered count only; household IDs require rows or Embree summary mode |
 | Event hotspot screening | `--backend optix --optix-summary-mode count_summary_prepared --require-rt-core` | prepared scalar hotspot count only; hotspot IDs require rows or Embree summary mode |
 | Facility KNN assignment | `--backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` | scalar service-radius coverage decision only; ranked nearest-depot assignment and uncovered-ID witnesses remain outside the claim |
-| Road hazard screening | `--backend optix --output-mode summary --optix-mode native --require-rt-core` | prepared road-hazard compact summary only; no GIS/routing or default-app speedup claim |
+| Road hazard screening | `--backend optix --output-mode summary --optix-mode native --require-rt-core` | prepared road hazard compact summary only; no GIS/routing or default-app speedup claim |
 | Segment/polygon hit count | Goal933 prepared profiler | prepared native compact hit-count traversal only; no broad segment/polygon speedup claim |
 | Segment/polygon any-hit rows | Goal934 prepared profiler | prepared bounded pair-row traversal only; no unbounded row-volume speedup claim |
 | Polygon pair overlap rows | `--backend optix --require-rt-core` | native-assisted LSI/PIP candidate discovery plus native C++ exact area continuation; no monolithic GPU polygon-area speedup claim |
@@ -53,7 +53,7 @@ These rows are claim-review candidates, not release authorization and not
 automatic speedup claims. The support matrix and current claim-review package
 define the exact scope. Still outside public NVIDIA RT-core claims: SQL/DBMS
 behavior, row-materializing DB output, full GIS/routing behavior, unbounded
-segment/polygon pair-row output, exact Hausdorff distance, ANN index/ranking,
+segment/polygon pair-row output, Hausdorff exact distance, ANN index/ranking,
 Barnes-Hut opening-rule/force reduction, and broad whole-app speedup.
 The machine-readable public wording source is
 `rtdsl.rtx_public_wording_matrix()` via the

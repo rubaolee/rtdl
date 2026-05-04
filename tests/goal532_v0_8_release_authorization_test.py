@@ -15,9 +15,7 @@ class Goal532V08ReleaseAuthorizationTest(unittest.TestCase):
 
         self.assertIn("current released version: `v0.9.8`", front_page)
         self.assertIn("current released version is `v0.9.8`", docs_index)
-        self.assertIn("released `v0.8.0` app-building", front_page)
         self.assertIn("released `v0.8.0` app-building", docs_index)
-        self.assertIn("RTDL v0.8 Release Package", front_page)
         self.assertIn("v0.8 Release Package", docs_index)
 
     def test_v08_release_package_no_longer_claims_candidate_status(self) -> None:

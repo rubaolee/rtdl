@@ -12,13 +12,6 @@ DATE = "2026-04-30"
 GOAL = "Goal1185 Goal1184 public RTX status sync audit"
 
 DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
-    "README.md": (
-        "Goal1184",
-        "Goal1182 RTX A4500 batch evidence",
-        "external-review input only",
-        "Neither goal adds a new reviewed public wording row",
-        "authorizes public speedup wording",
-    ),
     "docs/application_catalog.md": (
         "Goal1184",
         "Goal1182 RTX A4500",

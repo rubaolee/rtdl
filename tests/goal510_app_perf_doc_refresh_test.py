@@ -8,15 +8,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal510AppPerfDocRefreshTest(unittest.TestCase):
-    def test_front_page_links_goal509_and_states_backend_boundaries(self) -> None:
-        text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    def test_release_examples_link_goal509_and_state_backend_boundaries(self) -> None:
+        text = (REPO_ROOT / "docs" / "release_facing_examples.md").read_text(encoding="utf-8")
 
-        self.assertIn("Robot/Barnes-Hut Linux Performance Evidence", text)
-        self.assertIn("goal509_robot_barnes_linux_perf_report_2026-04-17.md", text)
-        self.assertIn("earlier Linux Goal509 evidence covered the hit-count formulation", text)
-        self.assertIn("post-fix Goal748 parity/performance report", text)
+        self.assertIn("Goal509 Robot/Barnes-Hut Linux Performance Report", text)
+        self.assertIn("superseded by Goal748", text)
         self.assertRegex(text, r"new backend\s+speedup claims need fresh gates")
-        self.assertIn("Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan", text)
+        self.assertIn("candidate-generation timing separately from", text)
 
     def test_release_examples_explain_goal509_and_cli_boundaries(self) -> None:
         text = (REPO_ROOT / "docs" / "release_facing_examples.md").read_text(encoding="utf-8")

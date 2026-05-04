@@ -24,7 +24,6 @@ class Goal1185Goal1184PublicStatusSyncAuditTest(unittest.TestCase):
     def test_audit_covers_public_docs_and_goal1184_reviews(self) -> None:
         payload = goal1185.build_audit()
         paths = {row["path"] for row in payload["rows"]}
-        self.assertIn("README.md", paths)
         self.assertIn("docs/v1_0_rtx_app_status.md", paths)
         self.assertIn("docs/app_engine_support_matrix.md", paths)
         self.assertIn("docs/reports/goal1184_two_ai_consensus_2026-04-30.md", paths)

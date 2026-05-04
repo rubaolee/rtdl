@@ -8,20 +8,19 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal506PublicEntryV08AlignmentTest(unittest.TestCase):
-    def test_readme_names_v0_8_app_building_without_release_overclaim(self) -> None:
-        readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    def test_docs_index_names_v0_8_app_building_without_release_overclaim(self) -> None:
+        readme = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("released `v0.8.0` app-building examples", readme)
-        self.assertIn("docs/tutorials/v0_8_app_building.md", readme)
-        self.assertIn("examples/rtdl_hausdorff_distance_app.py", readme)
-        self.assertIn("examples/rtdl_ann_candidate_app.py", readme)
-        self.assertIn("examples/rtdl_outlier_detection_app.py", readme)
-        self.assertIn("examples/rtdl_dbscan_clustering_app.py", readme)
-        self.assertIn("examples/rtdl_robot_collision_screening_app.py", readme)
-        self.assertIn("examples/rtdl_barnes_hut_force_app.py", readme)
+        self.assertIn("released\n  `v0.8.0` app-building examples", readme)
+        self.assertIn("tutorials/v0_8_app_building.md", readme)
+        self.assertIn("Hausdorff distance app", readme)
+        self.assertIn("ANN candidate search app", readme)
+        self.assertIn("outlier detection and DBSCAN clustering apps", readme)
+        self.assertIn("robot collision screening app", readme)
+        self.assertIn("Barnes-Hut force approximation app", readme)
         compact = " ".join(readme.split())
-        self.assertIn("These apps use existing RTDL features and Python-owned application logic", compact)
-        self.assertIn("not a new released backend/language surface", compact)
+        self.assertIn("released `v0.8.0` app-building examples", compact)
+        self.assertIn("without claiming new backend or language internals", compact)
 
     def test_docs_index_routes_new_users_to_v0_8_app_building(self) -> None:
         docs_index = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")

@@ -20,7 +20,7 @@ class Goal1179PublicDocsGoal1177BoundaryAuditTest(unittest.TestCase):
         self.assertEqual(payload["failing_doc_count"], 0)
         self.assertEqual(payload["public_wording_row_count_expected"], 12)
         by_path = {row["path"]: row for row in payload["rows"]}
-        self.assertEqual(by_path["README.md"]["status"], "ok")
+        self.assertNotIn("README.md", by_path)
         self.assertEqual(by_path["docs/quick_tutorial.md"]["status"], "ok")
         self.assertEqual(by_path["docs/v1_0_rtx_app_status.md"]["status"], "ok")
 

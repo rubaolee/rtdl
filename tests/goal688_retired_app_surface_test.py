@@ -8,7 +8,6 @@ import rtdsl as rt
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_DOCS = (
-    REPO_ROOT / "README.md",
     REPO_ROOT / "docs" / "quick_tutorial.md",
     REPO_ROOT / "docs" / "release_facing_examples.md",
     REPO_ROOT / "docs" / "tutorials" / "db_workloads.md",

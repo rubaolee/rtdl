@@ -19,7 +19,7 @@ class Goal1020PublicDocsRtxBoundaryAuditTest(unittest.TestCase):
         )
         payload = module.build_audit()
         self.assertTrue(payload["valid"], payload["rows"])
-        self.assertEqual(payload["doc_count"], 7)
+        self.assertEqual(payload["doc_count"], 6)
         self.assertEqual(payload["failing_doc_count"], 0)
         self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)

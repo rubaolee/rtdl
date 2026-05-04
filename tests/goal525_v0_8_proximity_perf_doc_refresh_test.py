@@ -10,7 +10,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 class Goal525V08ProximityPerfDocRefreshTest(unittest.TestCase):
     def test_public_docs_reference_goal524_without_external_speedup_claim(self) -> None:
         paths = [
-            "README.md",
             "docs/README.md",
             "docs/release_facing_examples.md",
             "docs/rtdl_feature_guide.md",

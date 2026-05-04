@@ -26,13 +26,13 @@ class Goal508HausdorffPerfDocRefreshTest(unittest.TestCase):
         self.assertIn("../reports/goal507_hausdorff_linux_perf_report_2026-04-17.md", text)
         self.assertIn("SciPy `cKDTree` and FAISS `IndexFlatL2` remain faster", text)
 
-    def test_front_page_and_cookbook_point_to_goal507(self) -> None:
-        readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    def test_docs_index_and_cookbook_point_to_goal507(self) -> None:
+        docs_index = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         cookbook = (REPO_ROOT / "docs" / "tutorials" / "feature_quickstart_cookbook.md").read_text(encoding="utf-8")
         app_building = (REPO_ROOT / "docs" / "tutorials" / "v0_8_app_building.md").read_text(encoding="utf-8")
 
-        self.assertIn("Hausdorff Linux Performance Evidence", readme)
-        self.assertIn("goal507_hausdorff_linux_perf_report_2026-04-17.md", readme)
+        self.assertIn("Hausdorff Linux Performance Evidence", docs_index)
+        self.assertIn("goal507_hausdorff_linux_perf_report_2026-04-17.md", docs_index)
         self.assertIn("Goal507 covers Embree, OptiX, Vulkan, SciPy", cookbook)
         self.assertIn("do not beat the\n  strongest mature nearest-neighbor library baselines", cookbook)
         self.assertIn("Goal507 Hausdorff Linux Performance Report", app_building)

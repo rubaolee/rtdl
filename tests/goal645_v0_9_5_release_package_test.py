@@ -26,8 +26,7 @@ class Goal645V095ReleasePackageTest(unittest.TestCase):
 
         self.assertIn("current released version: `v0.9.8`", front_page)
         self.assertIn("current released version is `v0.9.8`", docs_index)
-        self.assertIn("`v0.9.5`: earlier public release", front_page)
-        self.assertIn("RTDL v0.9.5 Release Package", front_page)
+        self.assertIn("v0.9.5 Release Package", docs_index)
         self.assertIn("v0.9.5 Release Package", docs_index)
 
     def test_v095_release_surface_and_boundaries_are_documented(self) -> None:

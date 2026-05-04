@@ -12,13 +12,6 @@ DATE = "2026-04-30"
 GOAL = "Goal1179 public docs Goal1177 boundary audit"
 
 DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
-    "README.md": (
-        "Goal1177",
-        "external-review input only",
-        "Neither goal adds a new reviewed",
-        "does not authorize public speedup wording",
-        "docs/v1_0_rtx_app_status.md",
-    ),
     "docs/application_catalog.md": (
         "Goal1177",
         "external-review input only",

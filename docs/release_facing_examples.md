@@ -78,6 +78,9 @@ RTX sub-path wording after Goal1146, Goal1208, and Goal1224.
 normalized per-pose wording only. Treat it as a real bounded RT-core pose-count
 query path, not as a same-total-work wall-time claim and not as a whole-app
 robot-planning speedup claim.
+For robot and Barnes-Hut evidence, earlier Goal509 results remain bounded
+history; new backend speedup claims need fresh gates and must respect the
+Goal748 robot OptiX erratum.
 Goal1177 is recovered clean-source RTX A5000 batch evidence for external
 review input only. Goal1184 is newer Goal1182 RTX A4500 batch evidence for
 external-review input only. Neither goal adds a new reviewed public wording row

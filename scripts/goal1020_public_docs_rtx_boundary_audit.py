@@ -12,13 +12,6 @@ DATE = "2026-04-26"
 GOAL = "Goal1020 public docs RTX boundary audit"
 
 REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
-    "README.md": (
-        "not automatic public speedup claims",
-        "robot_collision_screening / prepared_pose_flags",
-        "Goal1126",
-        "same-total-work",
-        "docs/v1_0_rtx_app_status.md",
-    ),
     "docs/v1_0_rtx_app_status.md": (
         "not release authorization and not a public speedup claim",
         "Goal1126 promoted robot only with explicit normalized per-pose wording",

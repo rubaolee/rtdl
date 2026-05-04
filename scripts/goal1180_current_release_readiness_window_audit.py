@@ -24,11 +24,6 @@ REQUIRED_FILES: tuple[str, ...] = (
 )
 
 CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
-    "README.md": (
-        "Goal1177",
-        "Neither goal adds a new reviewed public wording row",
-        "does not authorize public speedup wording",
-    ),
     "docs/application_catalog.md": (
         "Goal1177",
         "external-review input only",
