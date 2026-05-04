@@ -24,9 +24,10 @@ the current public story:
 10. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
 11. [IR And Lowering](rtdl/ir_and_lowering.md)
 12. [Performance Model](performance_model.md)
-13. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
-14. [RTDL Current Main Support Matrix](current_main_support_matrix.md)
-15. [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
+13. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
+14. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
+15. [RTDL Current Main Support Matrix](current_main_support_matrix.md)
+16. [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -69,7 +70,7 @@ audited release claims.
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
-| Performance | [Performance Model](performance_model.md) | [v1.0 RTX App Status](v1_0_rtx_app_status.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
+| Performance | [Performance Model](performance_model.md) | [v1.1 OptiX/Embree Status](v1_1_optix_status.md), [v1.0 RTX App Status](v1_0_rtx_app_status.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
 | Backend contract | [RTDL Current Main Support Matrix](current_main_support_matrix.md) | [Engine Feature Support Contract](features/engine_support_matrix.md), [Backend Maturity](backend_maturity.md) |
 
 ## Current Boundary

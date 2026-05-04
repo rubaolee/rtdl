@@ -16,7 +16,7 @@ goal archive.
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
-| Performance | [Performance Model](performance_model.md) | [v1.0 RTX App Status](v1_0_rtx_app_status.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
+| Performance | [Performance Model](performance_model.md) | [v1.1 OptiX/Embree Status](v1_1_optix_status.md), [v1.0 RTX App Status](v1_0_rtx_app_status.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 
 ## Current Public Surfaces
 
@@ -84,7 +84,8 @@ workload-specific and that v1.5 must generalize them.
 ### 5. Performance And Claims
 
 Use [Performance Model](performance_model.md) for how to read performance
-evidence. Use [v1.0 RTX App Status](v1_0_rtx_app_status.md) and
+evidence. Use [v1.1 OptiX/Embree Status](v1_1_optix_status.md),
+[v1.0 RTX App Status](v1_0_rtx_app_status.md), and
 [App Engine Support Matrix](app_engine_support_matrix.md) as the authority for
 public RTX wording. Performance docs must separate:
 

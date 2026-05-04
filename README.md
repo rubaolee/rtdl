@@ -29,6 +29,7 @@ installation metadata.
 - [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Application Catalog](docs/application_catalog.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
+- [v1.1 OptiX/Embree Status](docs/v1_1_optix_status.md)
 - [Current Main Support Matrix](docs/current_main_support_matrix.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
 - [Performance Model](docs/performance_model.md)
@@ -40,9 +41,9 @@ installation metadata.
 | --- | --- |
 | Release | current released version: `v1.0` |
 | v1.0 | released app-shaped RTDL proof, documentation, and bounded evidence |
-| Public RTX wording | `12 reviewed` bounded RTX sub-path rows after Goal1224 |
-| Still blocked | `graph_analytics`, `polygon_pair_overlap_area_rows` public speedup wording |
-| Not yet public-reviewed | `database_analytics`, `polygon_set_jaccard` public speedup wording |
+| Current main | v1.1 post-release Embree/OptiX hardening and triage |
+| v1.1 OptiX evidence | `polygon_pair_overlap_area_rows` has bounded 3-AI-reviewed positive wording |
+| Still not speedup-ready | `database_analytics`, `graph_analytics`, and `polygon_set_jaccard` |
 
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
@@ -80,6 +81,7 @@ Front-page rules:
 Detailed evidence and review trail:
 
 - [v1.0 RTX App Status](docs/v1_0_rtx_app_status.md)
+- [v1.1 OptiX/Embree Status](docs/v1_1_optix_status.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
 - [App Engine Support Matrix](docs/app_engine_support_matrix.md)
 - [Performance Model](docs/performance_model.md)
