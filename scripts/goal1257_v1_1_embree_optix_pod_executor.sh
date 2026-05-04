@@ -167,11 +167,12 @@ if [ "${build_rc}" -eq 0 ]; then
   done
 fi
 
-python3 - <<'PY' | tee "${RESULT_DIR}/goal1257_status_summary.json"
+python3 - "${RESULT_DIR}" <<'PY' | tee "${RESULT_DIR}/goal1257_status_summary.json"
 import json
+import sys
 from pathlib import Path
 
-result = Path("docs/reports/goal1257_v1_1_embree_optix_pod_results")
+result = Path(sys.argv[1])
 statuses = [json.loads(path.read_text(encoding="utf-8")) for path in sorted(result.glob("*.status.json"))]
 payload = {
     "goal": "Goal1257 v1.1 Embree/OptiX pod execution",
