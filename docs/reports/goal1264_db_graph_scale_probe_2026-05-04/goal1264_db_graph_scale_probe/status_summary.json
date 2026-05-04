@@ -1,0 +1,21 @@
+{
+  "failed": [],
+  "statuses": [
+    {
+      "label": "db_embree_sales_risk_300000",
+      "rc": 0
+    },
+    {
+      "label": "db_optix_sales_risk_300000",
+      "rc": 0
+    },
+    {
+      "label": "graph_embree_visibility_120000",
+      "rc": 0
+    },
+    {
+      "label": "graph_optix_visibility_120000",
+      "rc": 0
+    }
+  ]
+}
