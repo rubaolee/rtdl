@@ -1,0 +1,68 @@
+{
+  "archive": {
+    "archive_bytes": 1542026,
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1257_rtdl_source_2026-05-04.tar.gz",
+    "archive_sha256": "0c455b4190955292bf46cb9ed41e9600ed17132356bc5e7f7cb5e82046211048",
+    "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
+    "date": "2026-04-30",
+    "goal": "Goal1175 staged source archive builder",
+    "manifest_aggregate_sha256": "4faf2c3a666501c510198ea57c99da81a7c7f5e44859c5c44a35e9b61219e663",
+    "manifest_file_count": 1839,
+    "valid": true
+  },
+  "boundary": "This packet prepares current-source v1.1 Embree/OptiX timing collection. It does not run cloud, change public docs, authorize release, or authorize public RTX wording.",
+  "commands": {
+    "copy_back": [
+      "mkdir -p docs/reports/goal1257_live_pod_2026-05-04",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1257_v1_1_embree_optix_pod_results.tgz docs/reports/goal1257_live_pod_2026-05-04/",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1257_v1_1_embree_optix_pod_results.tgz.sha256 docs/reports/goal1257_live_pod_2026-05-04/",
+      "tar -xzf docs/reports/goal1257_live_pod_2026-05-04/goal1257_v1_1_embree_optix_pod_results.tgz -C docs/reports/goal1257_live_pod_2026-05-04"
+    ],
+    "run_on_pod": "ARCHIVE=/tmp/goal1257_rtdl_source_2026-05-04.tar.gz EXPECTED_SHA256=0c455b4190955292bf46cb9ed41e9600ed17132356bc5e7f7cb5e82046211048 WORKDIR=/workspace/rtdl_goal1257 RESULT_TGZ=/tmp/goal1257_v1_1_embree_optix_pod_results.tgz RESULT_SHA=/tmp/goal1257_v1_1_embree_optix_pod_results.tgz.sha256 bash /tmp/goal1257_executor.sh",
+    "upload": [
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1257_rtdl_source_2026-05-04.tar.gz root@<pod_host>:/tmp/goal1257_rtdl_source_2026-05-04.tar.gz",
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1257_v1_1_embree_optix_pod_executor.sh root@<pod_host>:/tmp/goal1257_executor.sh"
+    ]
+  },
+  "date": "2026-05-04",
+  "goal": "Goal1257 v1.1 Embree/OptiX current-source pod packet",
+  "pod_batch": {
+    "active_backends": [
+      "embree",
+      "optix"
+    ],
+    "frozen_backends": [
+      "vulkan",
+      "hiprt",
+      "apple_rt"
+    ],
+    "local_copyback_dir": "docs/reports/goal1257_live_pod_2026-05-04",
+    "pod_executor": "scripts/goal1257_v1_1_embree_optix_pod_executor.sh",
+    "remote_archive": "/tmp/goal1257_rtdl_source_2026-05-04.tar.gz",
+    "remote_executor": "/tmp/goal1257_executor.sh",
+    "remote_result": "/tmp/goal1257_v1_1_embree_optix_pod_results.tgz",
+    "remote_result_sha": "/tmp/goal1257_v1_1_embree_optix_pod_results.tgz.sha256",
+    "target_rows": [
+      "database_analytics",
+      "graph_analytics",
+      "polygon_pair_overlap_area_rows",
+      "polygon_set_jaccard"
+    ],
+    "triage_report": "docs/reports/goal1256_v1_1_embree_optix_triage_2026-05-04.md"
+  },
+  "preconditions": [
+    "Use one RTX-class Linux pod session and reuse it for all rows.",
+    "Do not open Vulkan, HIPRT, or Apple RT implementation work.",
+    "Copy back result tgz and sha256 before interpretation.",
+    "Interpretation must be a separate intake/review step before any public wording."
+  ],
+  "source_commit": "3e97eba6fcbf0abbb9ec286e264e486fcc6d648a",
+  "valid": true,
+  "verification": {
+    "actual_sha256": "0c455b4190955292bf46cb9ed41e9600ed17132356bc5e7f7cb5e82046211048",
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1257_rtdl_source_2026-05-04.tar.gz",
+    "exists": true,
+    "expected_sha256": "0c455b4190955292bf46cb9ed41e9600ed17132356bc5e7f7cb5e82046211048",
+    "valid": true
+  }
+}
