@@ -1,0 +1,135 @@
+{
+  "boundary": "Goal1258 interprets copied Goal1257 pod artifacts only. It does not run cloud, does not change public docs, and does not authorize public RTX speedup wording.",
+  "consensus_requirement": "Goal1258 is result intake only. Any public wording, release gate, architecture commitment, or major performance conclusion is a key goal and requires 3-AI consensus unless the user explicitly classifies it lower.",
+  "database_analytics": [
+    {
+      "copies": 30000,
+      "embree_review_status": null,
+      "embree_row_materializing_ops": null,
+      "embree_sec": null,
+      "embree_status": null,
+      "optix_review_status": null,
+      "optix_row_materializing_ops": null,
+      "optix_sec": null,
+      "optix_status": null,
+      "ratio_embree_over_optix": null
+    },
+    {
+      "copies": 100000,
+      "embree_review_status": null,
+      "embree_row_materializing_ops": null,
+      "embree_sec": null,
+      "embree_status": null,
+      "optix_review_status": null,
+      "optix_row_materializing_ops": null,
+      "optix_sec": null,
+      "optix_status": null,
+      "ratio_embree_over_optix": null
+    }
+  ],
+  "date": "2026-05-04",
+  "decisions": {
+    "database_analytics": "baseline_contract_incomplete",
+    "graph_analytics": "baseline_contract_incomplete",
+    "polygon_pair_overlap_area_rows": "baseline_contract_incomplete",
+    "polygon_set_jaccard": "baseline_contract_incomplete"
+  },
+  "goal": "Goal1258 v1.1 Embree/OptiX pod result intake",
+  "graph_analytics": [
+    {
+      "copies": 30000,
+      "embree_sec": null,
+      "optix_anyhit_kernel_sec": null,
+      "optix_record_status": null,
+      "optix_status": null,
+      "optix_strict_pass": null,
+      "optix_total_sec": null,
+      "ratio_embree_over_optix_kernel": null,
+      "ratio_embree_over_optix_total": null
+    },
+    {
+      "copies": 60000,
+      "embree_sec": null,
+      "optix_anyhit_kernel_sec": null,
+      "optix_record_status": null,
+      "optix_status": null,
+      "optix_strict_pass": null,
+      "optix_total_sec": null,
+      "ratio_embree_over_optix_kernel": null,
+      "ratio_embree_over_optix_total": null
+    }
+  ],
+  "input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1257_live_pod_2026-05-04/docs/reports/goal1257_v1_1_embree_optix_pod_results",
+  "missing_artifacts": [
+    "goal1257_status_summary.json",
+    "db_embree_30000.json",
+    "db_embree_100000.json",
+    "db_optix_30000.json",
+    "db_optix_100000.json",
+    "graph_embree_visibility_30000.json",
+    "graph_embree_visibility_60000.json",
+    "graph_optix_visibility_30000.json",
+    "graph_optix_visibility_60000.json",
+    "polygon_pair_embree_10000.json",
+    "polygon_pair_embree_40000.json",
+    "polygon_pair_optix_10000.json",
+    "polygon_pair_optix_40000.json",
+    "polygon_jaccard_embree_4096.json",
+    "polygon_jaccard_embree_8192.json",
+    "polygon_jaccard_optix_4096.json",
+    "polygon_jaccard_optix_8192.json"
+  ],
+  "polygon_pair_overlap_area_rows": [
+    {
+      "candidate_count_matches_expected": null,
+      "copies": 10000,
+      "embree_sec": null,
+      "optix_sec": null,
+      "optix_status": null,
+      "parity_vs_cpu": null,
+      "ratio_embree_over_optix": null
+    },
+    {
+      "candidate_count_matches_expected": null,
+      "copies": 40000,
+      "embree_sec": null,
+      "optix_sec": null,
+      "optix_status": null,
+      "parity_vs_cpu": null,
+      "ratio_embree_over_optix": null
+    }
+  ],
+  "polygon_set_jaccard": [
+    {
+      "candidate_count_matches_expected": null,
+      "chunk_copies": null,
+      "chunk_policy": null,
+      "chunk_public_safe": null,
+      "copies": 4096,
+      "embree_sec": null,
+      "optix_sec": null,
+      "optix_status": null,
+      "parity_vs_cpu": null,
+      "ratio_embree_over_optix": null
+    },
+    {
+      "candidate_count_matches_expected": null,
+      "chunk_copies": null,
+      "chunk_policy": null,
+      "chunk_public_safe": null,
+      "copies": 8192,
+      "embree_sec": null,
+      "optix_sec": null,
+      "optix_status": null,
+      "parity_vs_cpu": null,
+      "ratio_embree_over_optix": null
+    }
+  ],
+  "public_wording_authorized": false,
+  "status_summary": {
+    "failed_count": null,
+    "failed_labels": [],
+    "status_count": null
+  },
+  "valid": false
+}
