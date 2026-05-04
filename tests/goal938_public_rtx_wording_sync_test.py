@@ -48,10 +48,30 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             "Graph, facility KNN, polygon overlap/Jaccard",
             "graph, facility KNN, polygon overlap/Jaccard",
             "This app has no OptiX/NVIDIA RT-core surface today",
+            "keeps graph plus polygon-pair public speedup wording blocked",
+            "graph and polygon-pair public speedup wording stay blocked",
         )
         for phrase in stale_phrases:
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, combined)
+
+    def test_current_public_docs_name_goal1263_polygon_pair_boundary(self) -> None:
+        combined = "\n".join(
+            (ROOT / relative).read_text(encoding="utf-8")
+            for relative in (
+                "docs/rtdl_feature_guide.md",
+                "docs/release_facing_examples.md",
+                "docs/application_catalog.md",
+                "docs/app_engine_support_matrix.md",
+            )
+        )
+        for phrase in (
+            "Goal1263 promotes bounded polygon-pair wording",
+            "RT-assisted LSI/PIP positive candidate discovery",
+            "whole-app polygon-overlap speedup remain outside",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, combined)
 
     def test_public_docs_keep_goal941_boundary_wording(self) -> None:
         combined = "\n".join(

@@ -115,8 +115,11 @@ or authorizes public speedup wording. Goal1208 authorizes only the bounded
 road-hazard prepared native compact-summary wording; full GIS/routing,
 default-app behavior, row output, and whole-app road-hazard speedup remain
 outside the claim. Goal1224 reviews Hausdorff threshold-decision wording and
-keeps graph plus polygon-pair public speedup wording blocked under current
-same-contract evidence.
+keeps graph public speedup wording blocked under current same-contract evidence.
+Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive
+candidate discovery plus native C++ exact area continuation; monolithic polygon
+overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app
+polygon-overlap speedup remain outside the claim.
 
 Current supported workload families:
 

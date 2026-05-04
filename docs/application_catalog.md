@@ -75,10 +75,13 @@ a new reviewed public wording row and does not authorize public speedup wording.
 Goal1208 authorizes
 only the bounded road-hazard prepared native compact-summary wording; full
 GIS/routing, default-app behavior, row output, and whole-app road-hazard speedup
-remain outside the claim. Goal1224 resolves the remaining graph, polygon-pair,
-and Hausdorff wording rows: Hausdorff is reviewed, while graph and polygon-pair
-public speedup wording stay blocked because current same-contract evidence shows
-OptiX slower than Embree.
+remain outside the claim. Goal1224 reviews Hausdorff threshold-decision wording
+and keeps graph public speedup wording blocked because current same-contract
+evidence shows OptiX slower than Embree. Goal1263 promotes bounded polygon-pair
+wording for RT-assisted LSI/PIP positive candidate discovery plus native C++
+exact area continuation;
+monolithic polygon overlay, broad GIS acceleration, arbitrary polygon geometry,
+and whole-app polygon-overlap speedup remain outside the claim.
 
 The original RTDL root spatial workloads are still first-class:
 [LSI](features/lsi/README.md) turns segment sets into segment-intersection
