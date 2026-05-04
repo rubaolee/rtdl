@@ -1,0 +1,164 @@
+{
+  "boundary": "This is a documentation release-surface audit. It does not release v1.0, update VERSION, authorize a tag, or authorize new performance claims.",
+  "date": "2026-05-04",
+  "failure_count": 0,
+  "goal": "Goal1250 v1.0 release-surface documentation audit",
+  "next_steps": [
+    "Run full local discovery or an approved release-equivalent gate.",
+    "Seek final external review and final authorization.",
+    "Update VERSION and tag only after final authorization."
+  ],
+  "pod_decision": "No pod is required for this release-surface documentation gate. Use a pod only if new public speedup wording is added or existing blocked/not-reviewed RTX rows are promoted.",
+  "pod_needed_now": false,
+  "recommendation": "v1_0_release_surface_ready_for_full_local_discovery",
+  "rows": [
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 117,
+      "missing_required_phrases": [],
+      "path": "README.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 168,
+      "missing_required_phrases": [],
+      "path": "docs/README.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 102,
+      "missing_required_phrases": [],
+      "path": "docs/public_documentation_map.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 241,
+      "missing_required_phrases": [],
+      "path": "docs/quick_tutorial.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 114,
+      "missing_required_phrases": [],
+      "path": "docs/tutorials/README.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 102,
+      "missing_required_phrases": [],
+      "path": "docs/app_example_quickstart.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 237,
+      "missing_required_phrases": [],
+      "path": "docs/application_catalog.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 64,
+      "missing_required_phrases": [],
+      "path": "docs/v1_0_app_acceleration_inventory.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 252,
+      "missing_required_phrases": [],
+      "path": "docs/current_architecture.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 191,
+      "missing_required_phrases": [],
+      "path": "docs/rtdl/itre_app_model.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 147,
+      "missing_required_phrases": [],
+      "path": "docs/rtdl/ir_and_lowering.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 143,
+      "missing_required_phrases": [],
+      "path": "docs/performance_model.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 104,
+      "missing_required_phrases": [],
+      "path": "docs/v1_0_rtx_app_status.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 76,
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/README.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 47,
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/release_statement.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 63,
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/support_matrix.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 69,
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/audit_report.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "line_count": 50,
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/tag_preparation.md",
+      "status": "ok"
+    }
+  ],
+  "surface_count": 18,
+  "valid": true,
+  "version": "v0.9.8",
+  "version_ok": true
+}
