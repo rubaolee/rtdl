@@ -54,6 +54,13 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, combined)
 
+    def test_root_quickstart_matches_source_tree_usage_contract(self) -> None:
+        text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+
+        self.assertNotIn("python3 -m pip install -e .", text)
+        self.assertIn("RTDL v1.0 is used directly from the source tree", text)
+        self.assertIn("PYTHONPATH=src:. python examples/rtdl_hello_world.py", text)
+
     def test_docs_new_user_path_is_concise(self) -> None:
         text = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         section = text.split("## New User Path", 1)[1].split("## Evaluate RTDL", 1)[0]

@@ -13,10 +13,13 @@ The current released version is `v1.0`.
 ## Start Fast
 
 ```bash
-python3 -m pip install -e .
 PYTHONPATH=src:. python examples/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend embree
 ```
+
+RTDL v1.0 is used directly from the source tree. Keep `PYTHONPATH=src:.` in
+front of example and test commands unless a later packaged release adds
+installation metadata.
 
 ## Read Next
 
