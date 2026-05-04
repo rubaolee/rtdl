@@ -42,7 +42,7 @@ class Goal1166PostGoal1165NextPodPacketTest(unittest.TestCase):
         self.assertIn("packed_arrays", rows["robot_pose_flags_large_timing"]["command"])
         self.assertIn("pose_count", rows["robot_pose_flags_large_timing"]["command"])
 
-        self.assertIn("512", rows["jaccard_safe_chunk_validation"]["command"])
+        self.assertIn("1024", rows["jaccard_safe_chunk_validation"]["command"])
         self.assertIn("256", rows["jaccard_boundary_diagnostic_small_chunk"]["command"])
         self.assertIn("Expected to fail", rows["jaccard_boundary_diagnostic_small_chunk"]["expected_goal1165_effect"])
 

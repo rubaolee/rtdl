@@ -7,7 +7,7 @@
 namespace {
 
 constexpr size_t kDbMaxRowsPerJob = 1000000;
-constexpr size_t kDbMaxCandidateRowsPerJob = 250000;
+constexpr size_t kDbMaxCandidateRowsPerJob = 1000000;
 constexpr size_t kDbMaxGroupsPerJob = 65536;
 std::atomic<size_t> g_embree_thread_override {0};
 

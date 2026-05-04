@@ -72,7 +72,7 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
                 copies=1,
                 output_mode="summary",
                 validation_mode="analytic_summary",
-                chunk_copies=512,
+                chunk_copies=1024,
             )
         self.assertEqual(payload["status"], "pass")
         self.assertEqual(payload["chunk_count"], 1)
@@ -90,7 +90,7 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
                 copies=1,
                 output_mode="summary",
                 validation_mode="analytic_summary",
-                chunk_copies=64,
+                chunk_copies=512,
             )
         self.assertEqual(payload["status"], "diagnostic_chunk_config")
         self.assertFalse(payload["chunk_policy"]["public_safe"])

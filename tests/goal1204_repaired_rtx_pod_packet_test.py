@@ -10,14 +10,14 @@ class Goal1204RepairedRtxPodPacketTest(unittest.TestCase):
         self.assertIn("db_optix_100000_chunked_repair", labels)
         self.assertIn("db_embree_300000_chunked_repair", labels)
         self.assertIn("db_optix_300000_chunked_repair", labels)
-        self.assertIn("jaccard_optix_8192_public_safe_chunk_512", labels)
+        self.assertIn("jaccard_optix_8192_public_safe_chunk_1024", labels)
         self.assertIn("jaccard_optix_8192_diagnostic_chunk_64", labels)
         self.assertIn("road_hazard_embree_control_40000", labels)
         self.assertIn("road_hazard_optix_control_40000", labels)
 
     def test_public_safe_jaccard_row_uses_reviewed_chunk_policy(self):
-        row = next(row for row in ROWS if row["label"] == "jaccard_optix_8192_public_safe_chunk_512")
-        self.assertIn("--chunk-copies 512", row["command"])
+        row = next(row for row in ROWS if row["label"] == "jaccard_optix_8192_public_safe_chunk_1024")
+        self.assertIn("--chunk-copies 1024", row["command"])
         self.assertIn("--validation-mode analytic_summary", row["command"])
 
     def test_diagnostic_jaccard_row_is_not_named_claim_ready(self):

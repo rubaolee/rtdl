@@ -163,7 +163,7 @@ if [ "${build_rc}" -eq 0 ]; then
     run_step "polygon_jaccard_embree_${copies}" \
       "python3 examples/rtdl_polygon_set_jaccard.py --backend embree --copies ${copies} --output-mode summary > ${RESULT_DIR}/polygon_jaccard_embree_${copies}.json"
     run_step "polygon_jaccard_optix_${copies}" \
-      "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies ${copies} --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json ${RESULT_DIR}/polygon_jaccard_optix_${copies}.json"
+      "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies ${copies} --output-mode summary --validation-mode analytic_summary --chunk-copies 1024 --output-json ${RESULT_DIR}/polygon_jaccard_optix_${copies}.json"
   done
 fi
 

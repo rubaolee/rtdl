@@ -42,7 +42,7 @@ echo "Running 9/12: polygon jaccard embree candidate baseline"
 python3 examples/rtdl_polygon_set_jaccard.py --backend embree --copies 8192 --output-mode summary > "${OUTDIR}/polygon_jaccard_safe_chunk_embree.json"
 
 echo "Running 10/12: polygon jaccard optix candidate discovery"
-python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json "${OUTDIR}/polygon_jaccard_safe_chunk_optix.json"
+python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 1024 --output-json "${OUTDIR}/polygon_jaccard_safe_chunk_optix.json"
 
 echo "Running 11/12: hausdorff embree baseline"
 python3 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 200000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > "${OUTDIR}/hausdorff_threshold_prepared_embree.json"

@@ -48,10 +48,10 @@ ROWS: tuple[dict[str, Any], ...] = (
         "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 300000 --iterations 2 --output-mode compact_summary --strict --output-json ${RESULT_DIR}/db_optix_300000_chunked_repair.json",
     },
     {
-        "label": "jaccard_optix_8192_public_safe_chunk_512",
+        "label": "jaccard_optix_8192_public_safe_chunk_1024",
         "app": "polygon_set_jaccard",
-        "purpose": "Collect Jaccard claim-path evidence using the reviewed public-safe chunk policy.",
-        "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json ${RESULT_DIR}/jaccard_optix_8192_public_safe_chunk_512.json",
+        "purpose": "Collect Jaccard evidence using the Goal1262-superseded safe chunk policy.",
+        "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 1024 --output-json ${RESULT_DIR}/jaccard_optix_8192_public_safe_chunk_1024.json",
     },
     {
         "label": "jaccard_optix_8192_diagnostic_chunk_64",

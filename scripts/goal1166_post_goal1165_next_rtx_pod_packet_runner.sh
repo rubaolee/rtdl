@@ -40,8 +40,8 @@ python3 scripts/goal760_optix_robot_pose_flags_phase_profiler.py --mode optix --
 echo "Completed docs/reports/goal1166_post_goal1165_next_rtx_pod_packet/robot_pose_flags_262144_timing.json"
 
 echo "Running 5/6: jaccard_safe_chunk_validation"
-python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json docs/reports/goal1166_post_goal1165_next_rtx_pod_packet/polygon_jaccard_8192_chunk512_validation.json
-echo "Completed docs/reports/goal1166_post_goal1165_next_rtx_pod_packet/polygon_jaccard_8192_chunk512_validation.json"
+python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 1024 --output-json docs/reports/goal1166_post_goal1165_next_rtx_pod_packet/polygon_jaccard_8192_chunk1024_validation.json
+echo "Completed docs/reports/goal1166_post_goal1165_next_rtx_pod_packet/polygon_jaccard_8192_chunk1024_validation.json"
 
 echo "Running 6/6: jaccard_boundary_diagnostic_small_chunk"
 set +e

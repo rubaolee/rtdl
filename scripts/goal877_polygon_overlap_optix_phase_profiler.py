@@ -25,7 +25,7 @@ from examples import rtdl_polygon_set_jaccard as jaccard_app
 GOAL = "Goal877 polygon overlap OptiX phase profiler"
 DATE = "2026-04-24"
 SCHEMA_VERSION = "goal877_polygon_overlap_optix_phase_contract_v2"
-JACCARD_PUBLIC_SAFE_CHUNK_MIN = 512
+JACCARD_PUBLIC_SAFE_CHUNK_MIN = 1024
 JACCARD_PUBLIC_SAFE_CHUNK_MAX = 4096
 
 
@@ -40,9 +40,9 @@ def _jaccard_chunk_policy(app: str, output_mode: str, chunk_copies: int) -> dict
         "safe_min": JACCARD_PUBLIC_SAFE_CHUNK_MIN,
         "safe_max": JACCARD_PUBLIC_SAFE_CHUNK_MAX,
         "reason": (
-            "Goal1164/Goal1200 evidence supports public Jaccard summary checks only for reviewed safe chunks."
+            "Goal1260 evidence supports public Jaccard summary checks only for reviewed safe chunks."
             if public_safe
-            else "This chunk size is diagnostic-only; prior RTX evidence showed some smaller chunks can miss candidates."
+            else "This chunk size is diagnostic-only; current RTX evidence showed chunk 512 can miss candidates."
         ),
     }
 
@@ -477,11 +477,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--chunk-copies",
         type=int,
-        default=512,
+        default=1024,
         help=(
-            "Copies per OptiX chunk. Goal1164 RTX evidence showed that "
-            "polygon-set Jaccard at 8192 copies is safe at 512-4096, while "
-            "256 can miss candidates and 8192 can overflow output capacity."
+            "Copies per OptiX chunk. Goal1260 RTX evidence showed that "
+            "polygon-set Jaccard at 8192 copies is safe at 1024-4096, while "
+            "512 can miss candidates and 8192 can overflow output capacity."
         ),
     )
     parser.add_argument("--output-json", type=Path, required=True)

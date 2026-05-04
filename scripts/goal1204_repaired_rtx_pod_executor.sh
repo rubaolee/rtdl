@@ -169,8 +169,8 @@ run_step "db_embree_300000_chunked_repair" \
 run_step "db_optix_300000_chunked_repair" \
   "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 300000 --iterations 2 --output-mode compact_summary --strict --output-json ${RESULT_DIR}/db_optix_300000_chunked_repair.json"
 
-run_step "jaccard_optix_8192_public_safe_chunk_512" \
-  "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json ${RESULT_DIR}/jaccard_optix_8192_public_safe_chunk_512.json"
+run_step "jaccard_optix_8192_public_safe_chunk_1024" \
+  "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 1024 --output-json ${RESULT_DIR}/jaccard_optix_8192_public_safe_chunk_1024.json"
 run_step "jaccard_optix_8192_diagnostic_chunk_64" \
   "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 64 --output-json ${RESULT_DIR}/jaccard_optix_8192_diagnostic_chunk_64.json"
 

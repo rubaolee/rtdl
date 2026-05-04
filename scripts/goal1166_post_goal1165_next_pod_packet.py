@@ -159,11 +159,11 @@ def build_manifest() -> dict[str, Any]:
             app="polygon_set_jaccard",
             path_name="optix_native_assisted_candidate_discovery",
             phase="safe_chunk_validation",
-            output_name="polygon_jaccard_8192_chunk512_validation.json",
-            purpose="Confirm the Goal1165 safe default chunk size on RTX at the Goal1164 Jaccard scale.",
+            output_name="polygon_jaccard_8192_chunk1024_validation.json",
+            purpose="Confirm the superseding safe default chunk size on RTX at the Goal1164 Jaccard scale.",
             requires_validation=True,
             timing_floor_sec=None,
-            expected_goal1165_effect="Should pass parity with chunk_copies=512.",
+            expected_goal1165_effect="Should pass parity with chunk_copies=1024.",
             command=_command(
                 "python3",
                 "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
@@ -178,7 +178,7 @@ def build_manifest() -> dict[str, Any]:
                 "--validation-mode",
                 "analytic_summary",
                 "--chunk-copies",
-                "512",
+                "1024",
             ),
         ),
         _row(

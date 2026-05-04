@@ -89,7 +89,7 @@ class Goal1258V11EmbreeOptixPodIntakeTest(unittest.TestCase):
                     {
                         "status": "pass",
                         "parity_vs_cpu": True,
-                        "chunk_copies": 512,
+                        "chunk_copies": 1024,
                         "chunk_policy": {"policy": "public_safe", "public_safe": True},
                         "phases": {"optix_candidate_discovery_sec": 2.0},
                         "candidate_diagnostics": {"candidate_count_matches_expected": True},

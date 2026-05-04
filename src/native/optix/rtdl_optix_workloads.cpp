@@ -11,7 +11,7 @@ constexpr uint32_t kDbOpGe = 5u;
 constexpr uint32_t kDbOpBetween = 6u;
 
 constexpr size_t kDbMaxRowsPerJob = 1000000;
-constexpr size_t kDbMaxCandidateRowsPerJob = 250000;
+constexpr size_t kDbMaxCandidateRowsPerJob = 1000000;
 constexpr size_t kDbMaxGroupsPerJob = 65536;
 constexpr float kDbBoxPad = 1.0e-3f;
 constexpr float kGraphEdgeBoxPad = 1.0e-3f;
@@ -621,7 +621,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
             continue;
         }
         if (row_indices.size() >= kDbMaxCandidateRowsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB lowering exceeded the 250000-candidate ceiling");
+            throw std::runtime_error("first-wave OptiX DB lowering exceeded the 1000000-candidate ceiling");
         }
         if (!db_row_matches_all_clauses(fields, field_count, row_values, row_index, clauses, clause_count)) {
             continue;
@@ -715,7 +715,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         }
         raw_candidate_count += 1;
         if (row_indices.size() >= kDbMaxCandidateRowsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB lowering exceeded the 250000-candidate ceiling");
+            throw std::runtime_error("first-wave OptiX DB lowering exceeded the 1000000-candidate ceiling");
         }
         if (!db_row_matches_all_clauses(
                 dataset.fields.data(),

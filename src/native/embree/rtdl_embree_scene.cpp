@@ -1058,7 +1058,7 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
     }
     state->seen_row_ids->insert(box.row_id);
     if (state->seen_row_ids->size() > state->max_candidate_rows) {
-      db_set_limit_error("first-wave Embree DB lowering exceeded the 250000-candidate ceiling");
+      db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
       return;
     }
     state->rows->push_back({box.row_id});
@@ -1080,7 +1080,7 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
     }
     state->seen_row_ids->insert(box.row_id);
     if (state->seen_row_ids->size() > state->max_candidate_rows) {
-      db_set_limit_error("first-wave Embree DB lowering exceeded the 250000-candidate ceiling");
+      db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
       return;
     }
     const RtdlDbScalar& group_value = db_row_value(
@@ -1109,7 +1109,7 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
   }
   state->seen_row_ids->insert(box.row_id);
   if (state->seen_row_ids->size() > state->max_candidate_rows) {
-    db_set_limit_error("first-wave Embree DB lowering exceeded the 250000-candidate ceiling");
+    db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
     return;
   }
   const RtdlDbScalar& group_value = db_row_value(
