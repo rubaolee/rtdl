@@ -24,7 +24,7 @@ Read these in order for the current public story:
 11. [IR And Lowering](rtdl/ir_and_lowering.md)
 12. [Performance Model](performance_model.md)
 13. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
-14. [App Engine Support Matrix](app_engine_support_matrix.md)
+14. [RTDL Current Main Support Matrix](current_main_support_matrix.md)
 15. [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 
 Older release packages remain linked below for auditability, but they are not
@@ -60,6 +60,7 @@ audited release claims.
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
 | Performance | [Performance Model](performance_model.md) | [v1.0 RTX App Status](v1_0_rtx_app_status.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
+| Backend contract | [RTDL Current Main Support Matrix](current_main_support_matrix.md) | [Engine Feature Support Contract](features/engine_support_matrix.md), [Backend Maturity](backend_maturity.md) |
 
 ## Current Boundary
 
@@ -104,6 +105,7 @@ Use these for audit trails and exact release boundaries:
 - [v0.9.8 Release Statement](release_reports/v0_9_8/release_statement.md)
 - [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 - [v0.9.8 Audit Report](release_reports/v0_9_8/audit_report.md)
+- [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
 - [v0.8 Release Package](release_reports/v0_8/README.md)
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.7 Release Package](release_reports/v0_7/README.md)
@@ -115,6 +117,9 @@ Use these for audit trails and exact release boundaries:
 The current `main` carries the released bounded `v0.7.0` DB line and released
   `v0.8.0` app-building examples:
 
+This is the released `v0.8.0` app-building layer, not a new backend or language
+contract.
+
 - Hausdorff distance app using `knn_rows(k=1)`.
 - ANN candidate search app using `knn_rows(k=1)`.
 - outlier detection and DBSCAN clustering apps using fixed-radius neighbor
@@ -124,6 +129,15 @@ The current `main` carries the released bounded `v0.7.0` DB line and released
 
 The v0.8 app-building tutorial records future language pressure without
     claiming new backend or language internals.
+
+Goal524 characterizes ANN candidate, outlier, and DBSCAN proximity apps. SciPy
+was not installed in that gate, so the result is not an external-baseline
+speedup claim.
+
+## Demo
+
+- [Short 4K demo URL](https://youtu.be/d3yJB7AmCLM)
+- Primary visual demo: `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py`
 
 ## Maintainer And History Material
 

@@ -213,6 +213,9 @@ For app boundaries and backend support, use
 [App Engine Support Matrix](app_engine_support_matrix.md).
 Repository paths: `docs/application_catalog.md` and
 `docs/app_engine_support_matrix.md`.
+Current app entry points include `examples/rtdl_database_analytics_app.py` and
+`examples/rtdl_apple_rt_demo_app.py`; older scenario-specific DB and Apple RT
+files are compatibility helpers rather than the recommended public start.
 
 ## Backend And Claim Boundaries
 

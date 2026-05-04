@@ -29,6 +29,8 @@ Useful first reads:
 - [Release-Facing Examples](docs/release_facing_examples.md)
 - [Application Catalog](docs/application_catalog.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
+- [RTDL Current Main Support Matrix](docs/current_main_support_matrix.md)
+- [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
 - [Performance Model](docs/performance_model.md)
 - [v1.0 RTX App Status](docs/v1_0_rtx_app_status.md)
 - [Docs Index](docs/README.md)
@@ -68,6 +70,8 @@ pattern in Python:
 - `examples/rtdl_dbscan_clustering_app.py`
 - `examples/rtdl_robot_collision_screening_app.py`
 - `examples/rtdl_barnes_hut_force_app.py`
+- `examples/rtdl_database_analytics_app.py`
+- `examples/rtdl_apple_rt_demo_app.py`
 - tutorial: `docs/tutorials/v0_8_app_building.md`
 
 These apps use existing RTDL features and Python-owned application logic; they
@@ -150,26 +154,28 @@ Detailed evidence and review trail:
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
 - [App Engine Support Matrix](docs/app_engine_support_matrix.md)
 - [Performance Model](docs/performance_model.md)
-- [Goal1008 Large Repeat Artifact Intake](docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md)
-- [Goal1009 Public RTX Wording Review Packet](docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md)
-- [Goal1058 Three-AI Same-Semantics Consensus](docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md)
-- [Goal1121 Current-Source RTX Pod Run](docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md)
+- [Large Repeat Artifact Intake](docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md)
+- [Public RTX Wording Review Packet](docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md)
+- [Three-AI Same-Semantics Consensus](docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md)
+- [Current-Source RTX Pod Run](docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md)
 - [Goal1123 Two-AI Consensus](docs/reports/goal1123_two_ai_consensus_2026-04-29.md)
 - [Goal1126 Three-AI Consensus](docs/reports/goal1126_three_ai_consensus_2026-04-29.md)
 - [Goal1142 Current-Source Replacement Evidence](docs/reports/goal1142_current_source_robot_64m_replacement_report_2026-04-29.md)
 - [Goal1146 Public Wording Promotion Consensus](docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md)
 - [Goal1208 Public Wording Consensus](docs/reports/goal1208_two_ai_consensus_2026-05-01.md)
-- [Goal1224 RTX Wording Resolution Consensus](docs/reports/goal1224_two_ai_consensus_2026-05-01.md)
+- [RTX Wording Resolution Consensus](docs/reports/goal1224_two_ai_consensus_2026-05-01.md)
 - [Goal1224 RTX Wording Resolution Consensus Alias](docs/reports/goal1224_two_ai_rtx_wording_resolution_consensus_2026-05-01.md)
 
 Goal1177 is recovered clean-source RTX A5000 evidence for external-review input only.
 Goal1184 records Goal1182 RTX A4500 batch evidence as external-review input only.
 Neither goal adds a new reviewed public wording row or authorizes public speedup wording.
-Goal1177 does not add a new reviewed public wording row and does not authorize public speedup wording.
+They do not authorize public speedup wording.
+Goal1177 does not authorize public speedup wording.
 
 Goal748 is the robot OptiX erratum boundary: pre-Goal748 robot OptiX evidence
-used a short-ray `optixReportIntersection` path later fixed by Goal748. Use
-post-fix Goal748 or later robot OptiX evidence for current claims.
+used a short-ray `optixReportIntersection` path later fixed by Goal748. Use the
+post-fix Goal748 parity/performance report or later robot OptiX evidence for
+current claims.
 
 ## What RTDL Contains
 
@@ -200,13 +206,14 @@ contracts, but some paths are not a native reduction or public speedup claim.
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [Hausdorff Linux Performance Evidence](docs/reports/goal507_hausdorff_linux_perf_report_2026-04-17.md)
 - [Robot/Barnes-Hut Linux Performance Evidence](docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
+- [Goal524 v0.8 Stage-1 Proximity Linux Performance](docs/reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md)
 
 RTX-class
       performance validation remains bounded to the reviewed prepared/native
       sub-paths named above.
 
 `v0.9.5`: earlier public release for bounded any-hit, visibility rows, and
-Python-side emitted-row reductions. Earlier Linux Goal509 evidence covered the hit-count formulation, Embree, and pre-fix OptiX; new backend speedup claims need fresh gates and should use the post-fix Goal748 short-ray parity/performance report
+Python-side emitted-row reductions. For audit continuity: earlier Linux Goal509 evidence covered the hit-count formulation, Embree, and pre-fix OptiX; new backend speedup claims need fresh gates and should use the post-fix Goal748 short-ray parity/performance report
 instead of the old robot OptiX result. Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan evidence that separates candidate-generation timing
 from Python opening-rule and force-reduction timing.
 
@@ -214,10 +221,15 @@ The Hausdorff Linux Performance Evidence covers Embree, OptiX, Vulkan, SciPy,
 and FAISS baselines. It supports bounded backend evidence but does not show RTDL
 beating the strongest mature exact nearest-neighbor library baselines.
 
+Goal524 characterizes ANN candidate, outlier, and DBSCAN proximity apps. SciPy
+was not installed in that gate, so the result is not an external-baseline
+speedup claim.
+
 ## Demo
 
 - [Watch the public 4K demo video](https://www.youtube.com/watch?v=d3yJB7AmCLM)
 - [Short 4K demo URL](https://youtu.be/d3yJB7AmCLM)
+- Primary visual demo: `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py`
 
 ## Repository Layout
 

@@ -108,11 +108,12 @@ def build_manifest() -> dict[str, Any]:
             ),
         ),
     ]
-    blocked_apps = sorted(
+    matrix_blocked_apps = sorted(
         app for app, row in rt.rtx_public_wording_matrix().items()
         if row.status == "public_wording_blocked"
     )
-    if "robot_collision_screening" not in blocked_apps:
+    blocked_apps = ["robot_collision_screening"] if "robot_collision_screening" in matrix_blocked_apps else []
+    if not blocked_apps:
         rows = []
     validation_rows = [row for row in rows if row["phase"] == "correctness_validation"]
     timing_rows = [row for row in rows if row["phase"] == "large_timing_repeat"]
@@ -123,6 +124,7 @@ def build_manifest() -> dict[str, Any]:
         "date": DATE,
         "report_dir": REPORT_DIR,
         "blocked_apps": blocked_apps,
+        "matrix_blocked_apps_at_generation": matrix_blocked_apps,
         "rows": rows,
         "summary": {
             "row_count": len(rows),
