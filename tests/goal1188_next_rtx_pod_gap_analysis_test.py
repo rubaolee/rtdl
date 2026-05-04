@@ -17,9 +17,9 @@ class Goal1188NextRtxPodGapAnalysisTest(unittest.TestCase):
     def test_current_gap_analysis_is_valid(self) -> None:
         payload = goal1188.build_analysis()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["reviewed_public_wording_count"], 11)
-        self.assertEqual(payload["needs_public_wording_evidence_count"], 5)
-        self.assertEqual(payload["blocked_public_wording_count"], 0)
+        self.assertEqual(payload["reviewed_public_wording_count"], 12)
+        self.assertEqual(payload["needs_public_wording_evidence_count"], 2)
+        self.assertEqual(payload["blocked_public_wording_count"], 2)
 
     def test_expected_apps_need_public_wording_evidence(self) -> None:
         payload = goal1188.build_analysis()
@@ -27,10 +27,7 @@ class Goal1188NextRtxPodGapAnalysisTest(unittest.TestCase):
             set(payload["needs_public_wording_apps"]),
             {
                 "database_analytics",
-                "graph_analytics",
-                "polygon_pair_overlap_area_rows",
                 "polygon_set_jaccard",
-                "hausdorff_distance",
             },
         )
         for row in payload["rows"]:
@@ -72,7 +69,7 @@ class Goal1188NextRtxPodGapAnalysisTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             self.assertIn("Goal1188 Next RTX Pod Gap Analysis", markdown)
             self.assertIn("Do not spend another pod session", markdown)
-            self.assertIn("apps needing public-wording evidence: `5`", markdown)
+            self.assertIn("apps needing public-wording evidence: `2`", markdown)
 
 
 if __name__ == "__main__":

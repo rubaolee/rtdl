@@ -71,9 +71,9 @@ def build_plan() -> dict[str, Any]:
             len(rows) == 16
             and [row["app"] for row in diagnostic_reruns]
             == ["facility_knn_assignment", "robot_collision_screening"]
-            and len(reviewed_keep) == 11
-            and len(blocked) == 0
-            and len(same_semantics_review) == 5
+            and len(reviewed_keep) == 12
+            and len(blocked) == 2
+            and len(same_semantics_review) == 2
         ),
         "inputs": [
             "docs/reports/gemini_v1_0_project_foundational_review_2026-04-27.md",

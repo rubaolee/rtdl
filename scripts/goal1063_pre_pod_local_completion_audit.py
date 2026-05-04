@@ -112,7 +112,7 @@ def build_audit() -> dict[str, Any]:
                 }
             )
 
-    pod_ready_now = blocked_apps_in_manifest == blocked and goal1062["valid"]
+    pod_ready_now = bool(blocked_rows) and blocked_apps_in_manifest == blocked and goal1062["valid"]
     local_only_blockers = [
         row for row in rejected_rows
         if row["pod_policy"].startswith("no_pod_until")
@@ -138,9 +138,9 @@ def build_audit() -> dict[str, Any]:
         "not_reviewed_apps": not_reviewed,
         "pod_ready_now": pod_ready_now,
         "pod_ready_scope": (
-            "No currently blocked public-wording rows remain after Goal1126. "
-            "Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale."
-            if not blocked
+            "No currently blocked public-wording rows from the current matrix are covered by the stale Goal1062 pod manifest. "
+            "Do not rerun blocked or rejected not-reviewed rows on paid cloud until local analysis changes code, scale, or the rerun contract."
+            if not blocked_rows
             else (
                 "Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. "
                 "Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale."
@@ -150,12 +150,12 @@ def build_audit() -> dict[str, Any]:
         "rejected_rows_requiring_local_work": rejected_rows,
         "unreviewed_candidate_rows_requiring_goal1062_pod": stale_candidates,
         "valid": (
-            len(reviewed) == 11
-            and blocked == []
-            and len(not_reviewed) == 5
-            and len(rejected_rows) == 6
+            len(reviewed) == 12
+            and blocked == ["graph_analytics", "polygon_pair_overlap_area_rows"]
+            and len(not_reviewed) == 2
+            and len(rejected_rows) == 5
             and len(blocked_rows) == 0
-            and pod_ready_now
+            and not pod_ready_now
             and all(row["pod_policy"].startswith("no_pod_until") for row in rejected_rows)
         ),
         "boundary": (

@@ -1,5 +1,8 @@
 {
-  "blocked_apps": [],
+  "blocked_apps": [
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows"
+  ],
   "boundary": "Goal1063 is a local planning/audit artifact. It does not run a pod, change public wording, authorize release, or authorize speedup claims.",
   "date": "2026-04-28",
   "goal": "Goal1063 pre-pod local completion audit",
@@ -11,14 +14,10 @@
   ],
   "not_reviewed_apps": [
     "database_analytics",
-    "graph_analytics",
-    "hausdorff_distance",
-    "polygon_pair_overlap_area_rows",
-    "polygon_set_jaccard",
-    "road_hazard_screening"
+    "polygon_set_jaccard"
   ],
-  "pod_ready_now": true,
-  "pod_ready_scope": "No currently blocked public-wording rows remain after Goal1126. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.",
+  "pod_ready_now": false,
+  "pod_ready_scope": "No currently blocked public-wording rows from the current matrix are covered by the stale Goal1062 pod manifest. Do not rerun blocked or rejected not-reviewed rows on paid cloud until local analysis changes code, scale, or the rerun contract.",
   "rejected_rows_requiring_local_work": [
     {
       "app": "database_analytics",
@@ -54,17 +53,6 @@
       "rtx_phase_sec": 1.316054504364729
     },
     {
-      "app": "road_hazard_screening",
-      "fastest_baseline": "embree_same_semantics",
-      "fastest_baseline_sec": 0.0035713749239221215,
-      "local_next": "Root-cause why Embree same-semantics summary is much faster; optimize segment/polygon OptiX native summary locally first.",
-      "path_name": "road_hazard_native_summary_gate",
-      "pod_policy": "no_pod_until_code_or_scale_changes",
-      "ratio_baseline_over_rtx": 0.03666787401725687,
-      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
-      "rtx_phase_sec": 0.09739792719483376
-    },
-    {
       "app": "polygon_pair_overlap_area_rows",
       "fastest_baseline": "postgis_when_available_for_same_unit_cell_contract",
       "fastest_baseline_sec": 0.00147143192589283,
@@ -85,28 +73,6 @@
       "ratio_baseline_over_rtx": 0.005055802554495618,
       "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
       "rtx_phase_sec": 2.613548282533884
-    },
-    {
-      "app": "hausdorff_distance",
-      "fastest_baseline": "cpu_oracle_same_semantics",
-      "fastest_baseline_sec": 2.245791256427765e-05,
-      "local_next": "Define a larger nontrivial threshold-decision scale where CPU oracle is not microsecond trivial, then validate dry-run semantics before pod.",
-      "path_name": "directed_threshold_prepared",
-      "pod_policy": "no_pod_until_scale_contract_changes",
-      "ratio_baseline_over_rtx": 0.00573262762311575,
-      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
-      "rtx_phase_sec": 0.00391755998134613
-    },
-    {
-      "app": "barnes_hut_force_app",
-      "fastest_baseline": "cpu_oracle_same_semantics",
-      "fastest_baseline_sec": 0.0006991670234128833,
-      "local_next": "Define a larger Barnes-Hut node-coverage decision contract and avoid trivial CPU-baseline scale before pod.",
-      "path_name": "node_coverage_prepared",
-      "pod_policy": "no_pod_until_scale_contract_changes",
-      "ratio_baseline_over_rtx": 0.39241277246354084,
-      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
-      "rtx_phase_sec": 0.001781713217496872
     }
   ],
   "reviewed_apps": [
@@ -115,19 +81,21 @@
     "dbscan_clustering",
     "event_hotspot_screening",
     "facility_knn_assignment",
+    "hausdorff_distance",
     "outlier_detection",
+    "road_hazard_screening",
     "robot_collision_screening",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
     "service_coverage_gaps"
   ],
   "summary": {
-    "blocked_public_wording_apps": 0,
+    "blocked_public_wording_apps": 2,
     "blocked_rows_ready_for_one_pod": 0,
-    "local_only_blockers_before_broader_pod": 8,
-    "not_reviewed_public_wording_apps": 6,
-    "rejected_current_speedup_rows": 8,
-    "reviewed_public_wording_apps": 10
+    "local_only_blockers_before_broader_pod": 5,
+    "not_reviewed_public_wording_apps": 2,
+    "rejected_current_speedup_rows": 5,
+    "reviewed_public_wording_apps": 12
   },
   "unreviewed_candidate_rows_requiring_goal1062_pod": [],
   "valid": true

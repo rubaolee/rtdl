@@ -12,8 +12,8 @@ This pre-cloud audit checks readiness coverage only. It does not run cloud, tag,
 - deferred manifest entries: `9`
 - missing NVIDIA targets: `0`
 - unexpected non-NVIDIA manifest targets: `0`
-- public wording reviewed apps: `10`
-- public wording blocked apps: `[]`
+- public wording reviewed apps: `12`
+- public wording blocked apps: `['graph_analytics', 'polygon_pair_overlap_area_rows']`
 - RTX hardware precondition present: `True`
 - manifest blocks speedup claims: `True`
 
@@ -26,17 +26,17 @@ Do not start a paid pod for one app. Goal1048 completed the consolidated RTX A50
 | App | Readiness | Maturity | Public wording | Manifest buckets | Paths |
 |---|---|---|---|---|---:|
 | `database_analytics` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `active` | 2 |
-| `graph_analytics` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `deferred` | 1 |
+| `graph_analytics` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_blocked` | `deferred` | 1 |
 | `apple_rt_demo` | `exclude_from_rtx_app_benchmark` | `not_nvidia_rt_core_target` | `not_nvidia_public_wording_target` | `` | 0 |
 | `service_coverage_gaps` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `active` | 1 |
 | `event_hotspot_screening` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `active` | 1 |
 | `facility_knn_assignment` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `active` | 1 |
-| `road_hazard_screening` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `deferred` | 1 |
+| `road_hazard_screening` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `deferred` | 1 |
 | `segment_polygon_hitcount` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `deferred` | 1 |
 | `segment_polygon_anyhit_rows` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `deferred` | 1 |
-| `polygon_pair_overlap_area_rows` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `deferred` | 1 |
+| `polygon_pair_overlap_area_rows` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_blocked` | `deferred` | 1 |
 | `polygon_set_jaccard` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `deferred` | 1 |
-| `hausdorff_distance` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `deferred` | 1 |
+| `hausdorff_distance` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `deferred` | 1 |
 | `ann_candidate_search` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `deferred` | 1 |
 | `outlier_detection` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `active` | 1 |
 | `dbscan_clustering` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `active` | 1 |

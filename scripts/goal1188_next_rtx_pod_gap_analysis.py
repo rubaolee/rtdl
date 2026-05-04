@@ -19,25 +19,10 @@ APP_NEXT_ACTIONS: dict[str, dict[str, str]] = {
         "next_local": "prepare a larger same-contract DB compact-summary scale or repeat-count plan that clears the timing floor without changing semantics",
         "next_pod": "rerun compact_summary prepared warm-query with same-contract CPU/Embree baseline and enough work to exceed the public-review timing floor",
     },
-    "graph_analytics": {
-        "gap": "public wording not reviewed for graph visibility/native graph-ray candidate paths",
-        "next_local": "define same-semantics graph visibility-edge and native graph-ray summary baselines; keep BFS orchestration outside the claim",
-        "next_pod": "collect graph visibility/native graph-ray timing with matching CPU/Embree baseline and phase metadata",
-    },
-    "polygon_pair_overlap_area_rows": {
-        "gap": "public wording not reviewed; candidate discovery is RT-assisted but exact area continuation remains separate",
-        "next_local": "split candidate-discovery timing from exact area continuation and define a candidate-only public wording candidate",
-        "next_pod": "collect candidate-discovery-only OptiX timing with CPU/Embree candidate baseline; do not claim exact area speedup",
-    },
     "polygon_set_jaccard": {
         "gap": "public wording not reviewed; chunked candidate discovery is bounded and exact Jaccard continuation remains separate",
         "next_local": "choose a stable chunk-size contract and same-contract candidate baseline; keep exact Jaccard outside the claim",
         "next_pod": "collect safe-chunk candidate-discovery timing with baseline and explicit chunk metadata",
-    },
-    "hausdorff_distance": {
-        "gap": "public wording not reviewed; latest prepared threshold timing is far below the 0.1s review floor",
-        "next_local": "prepare larger/repeated directed_threshold_prepared decision workload while preserving oracle-match semantics",
-        "next_pod": "collect prepared threshold decision timing with oracle/baseline and enough repeated work to exceed the timing floor",
     },
 }
 
@@ -108,9 +93,9 @@ def build_analysis() -> dict[str, Any]:
         "rows": rows,
         "blockers": blockers,
         "pod_recommendation": (
-            "Do not spend another pod session until the five needs_public_wording_evidence "
+            "Do not spend another pod session until the two needs_public_wording_evidence "
             "apps have explicit same-contract baseline commands and timing-floor scale choices. "
-            "The next pod should batch those five rows plus optional ANN/robot timing-only "
+            "The next pod should batch those two rows plus optional ANN/robot timing-only "
             "replacements only if their wording contract changes."
         ),
         "boundary": (

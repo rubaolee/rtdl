@@ -22,27 +22,25 @@ Do not start paid cloud per app. Use one batched pod only after local manifest, 
 
 | App | Why | Command |
 | --- | --- | --- |
-| `facility_knn_assignment` | `Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1146 promoted narrow prepared coverage-threshold public wording only; ranked KNN assignment, fallback assignment, Python setup, and whole-app speedup remain outside the claim.` | `PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` |
-| `robot_collision_screening` | `Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1142 replaced stale-source 64M robot timing with same-source bounded sub-path evidence. Goal1126 accepted explicit normalized per-pose public wording only; this is not a same-total-work wall-time or whole-app robot-planning claim.` | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` |
+| `facility_knn_assignment` | `Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1146 promoted narrow prepared coverage-threshold public wording only; Goal1164/Goal1165/Goal1166/Goal1177/Goal1184 are follow-up engineering and clean-source batch evidence, not new public wording. ranked KNN assignment, fallback assignment, Python setup, and whole-app speedup remain outside the claim.` | `PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` |
+| `robot_collision_screening` | `Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1142 replaced stale-source 64M robot timing with same-source bounded sub-path evidence. Goal1164 exposed large-scale robot timing bottlenecks, Goal1165 removed avoidable CPU validation from prepared timing paths, Goal1166 prepared the next validation/timing pod packet, and Goal1177 accepted the recovered clean-source staged-archive robot timing row as timing-only review input. Goal1184 accepted the newer RTX A4500 robot timing row as timing-only external-review input. Goal1126 accepted explicit normalized per-pose public wording only; this is not a same-total-work wall-time or whole-app robot-planning claim.` | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` |
 
 ## Same-Semantics Review Needed
 
 | App | Claim Scope | Boundary |
 | --- | --- | --- |
 | `database_analytics` | prepared DB compact-summary traversal/filter/grouping sub-path may enter claim review; no DBMS or SQL-engine speedup claim | DB claims must stay limited to compact-summary prepared sub-paths; no SQL engine, DBMS, full dashboard, row-materializing, or broad whole-app speedup claim is allowed |
-| `graph_analytics` | bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths may enter claim review; no whole-app graph speedup claim | Goal929 covers bounded graph RT sub-paths only; CPU-side frontier bookkeeping, triangle set-intersection, shortest-path, graph database, distributed analytics, and whole-app graph-system acceleration remain outside the claim |
-| `road_hazard_screening` | prepared native road-hazard summary traversal sub-path may enter claim review; no full GIS/routing or default-app speedup claim | claim is limited to the prepared compact road-hazard summary gate; default public app behavior, full GIS/routing, and broad road-hazard speedup remain outside the claim |
-| `polygon_pair_overlap_area_rows` | native-assisted candidate-discovery path only; no full polygon-area speedup claim | exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review |
 | `polygon_set_jaccard` | native-assisted candidate-discovery path only; no full Jaccard speedup claim | exact set-area/Jaccard refinement remains CPU/Python-owned, and larger chunk sizes are diagnostic failures until root-caused |
-| `hausdorff_distance` | prepared Hausdorff <= radius decision sub-path may enter claim review; no exact-distance speedup claim | exact Hausdorff distance, KNN-row output, nearest-neighbor ranking, and whole-app speedup remain outside the claim |
 
 ## Reviewed Rows To Preserve
 
 - `service_coverage_gaps`
 - `event_hotspot_screening`
 - `facility_knn_assignment`
+- `road_hazard_screening`
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
+- `hausdorff_distance`
 - `ann_candidate_search`
 - `outlier_detection`
 - `dbscan_clustering`

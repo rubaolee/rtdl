@@ -34,7 +34,7 @@
       "path_names": [
         "graph_visibility_edges_gate"
       ],
-      "public_wording": "public_wording_not_reviewed",
+      "public_wording": "public_wording_blocked",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -95,7 +95,7 @@
       "path_names": [
         "road_hazard_native_summary_gate"
       ],
-      "public_wording": "public_wording_not_reviewed",
+      "public_wording": "public_wording_reviewed",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -134,7 +134,7 @@
       "path_names": [
         "polygon_pair_overlap_optix_native_assisted_phase_gate"
       ],
-      "public_wording": "public_wording_not_reviewed",
+      "public_wording": "public_wording_blocked",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -160,7 +160,7 @@
       "path_names": [
         "directed_threshold_prepared"
       ],
-      "public_wording": "public_wording_not_reviewed",
+      "public_wording": "public_wording_reviewed",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -300,11 +300,15 @@
   },
   "missing_nvidia_targets": [],
   "public_app_count": 18,
-  "public_wording_blocked_apps": [],
+  "public_wording_blocked_apps": [
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows"
+  ],
   "public_wording_counts": {
     "not_nvidia_public_wording_target": 2,
-    "public_wording_not_reviewed": 6,
-    "public_wording_reviewed": 10
+    "public_wording_blocked": 2,
+    "public_wording_not_reviewed": 2,
+    "public_wording_reviewed": 12
   },
   "public_wording_reviewed_apps": [
     "ann_candidate_search",
@@ -312,7 +316,9 @@
     "dbscan_clustering",
     "event_hotspot_screening",
     "facility_knn_assignment",
+    "hausdorff_distance",
     "outlier_detection",
+    "road_hazard_screening",
     "robot_collision_screening",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",

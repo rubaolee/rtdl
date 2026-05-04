@@ -3,7 +3,7 @@
     {
       "app": "database_analytics",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "python_interface_dominated",
       "public_wording_boundary": "Prepared DB compact-summary traversal/filter/grouping is RT-core ready, but no public speedup wording is authorized yet.",
@@ -14,11 +14,11 @@
     {
       "app": "graph_analytics",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal",
-      "public_wording_boundary": "Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording_boundary": "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, and whole-app graph speedup remain outside this wording.",
+      "public_wording_status": "public_wording_blocked",
       "required_action": "Keep visibility_edges any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping and neighbor-set intersection outside the RT-core claim.",
       "target_status": "rt_core_ready"
     },
@@ -36,7 +36,7 @@
     {
       "app": "service_coverage_gaps",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only the prepared gap-summary query/native sub-path is covered; row output, nearest-clinic output, and service-coverage optimization are outside this wording.",
@@ -47,7 +47,7 @@
     {
       "app": "event_hotspot_screening",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only the prepared count-summary query phase is covered; whole-app hotspot screening, neighbor-row output, Python-side postprocessing, validation, and unrelated app stages are outside this wording.",
@@ -58,7 +58,7 @@
     {
       "app": "facility_knn_assignment",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1146 promoted narrow prepared coverage-threshold public wording only; ranked KNN assignment, fallback assignment, Python setup, and whole-app speedup remain outside the claim.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1146 promoted narrow prepared coverage-threshold public wording only; Goal1164/Goal1165/Goal1166/Goal1177/Goal1184 are follow-up engineering and clean-source batch evidence, not new public wording. ranked KNN assignment, fallback assignment, Python setup, and whole-app speedup remain outside the claim.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup remain outside this wording.",
@@ -69,18 +69,18 @@
     {
       "app": "road_hazard_screening",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording_boundary": "Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording_boundary": "Only the prepared native road-hazard compact-summary traversal/count sub-path at 40k copies is covered; default app behavior, full GIS/routing, row output, Python orchestration, and whole-app road-hazard speedup remain outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep the prepared native road-hazard compact-summary gate separate from default app behavior and full GIS/routing claims.",
       "target_status": "rt_core_ready"
     },
     {
       "app": "segment_polygon_hitcount",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only prepared compact hit-count traversal is covered; pair-row output and broader segment/polygon app behavior are outside this wording.",
@@ -91,7 +91,7 @@
     {
       "app": "segment_polygon_anyhit_rows",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal",
       "public_wording_boundary": "Only bounded prepared pair-row traversal at the reviewed output capacity is covered; unbounded row-volume performance is outside this wording.",
@@ -102,18 +102,18 @@
     {
       "app": "polygon_pair_overlap_area_rows",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "python_interface_dominated",
-      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording_boundary": "Only native-assisted LSI/PIP candidate discovery is covered; exact polygon-area continuation, row materialization, Python setup, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording.",
+      "public_wording_status": "public_wording_blocked",
       "required_action": "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact area refinement; claim only the candidate-discovery sub-path.",
       "target_status": "rt_core_ready"
     },
     {
       "app": "polygon_set_jaccard",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "python_interface_dominated",
       "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
@@ -124,29 +124,29 @@
     {
       "app": "hausdorff_distance",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording_boundary": "Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording_boundary": "Only the prepared Hausdorff <= radius threshold-decision traversal sub-path is covered; exact Hausdorff distance, KNN rows, nearest-neighbor ranking, violating-ID witness output, Python setup, validation, and whole-app speedup remain outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Use directed_threshold_prepared as the only RT-core Hausdorff claim path; exact-distance KNN rows remain outside the claim.",
       "target_status": "rt_core_ready"
     },
     {
       "app": "ann_candidate_search",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only the prepared ANN candidate-coverage decision sub-path is covered; full ANN indexing, nearest-neighbor ranking, and recall policy are outside this wording.",
       "public_wording_status": "public_wording_reviewed",
-      "required_action": "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim.",
+      "required_action": "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim. Goal1165 replaced the tiled validation path with the single-tile analytic expectation so large prepared timing runs do not accidentally validate an O(copies^2) fixture.",
       "target_status": "rt_core_ready"
     },
     {
       "app": "outlier_detection",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only the prepared fixed-radius scalar threshold-count sub-path is covered; per-point labels and full anomaly-detection behavior are outside this wording.",
@@ -157,7 +157,7 @@
     {
       "app": "dbscan_clustering",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only the prepared fixed-radius scalar core-count sub-path is covered; per-point core flags and Python cluster expansion are outside this wording.",
@@ -168,7 +168,7 @@
     {
       "app": "robot_collision_screening",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1142 replaced stale-source 64M robot timing with same-source bounded sub-path evidence. Goal1126 accepted explicit normalized per-pose public wording only; this is not a same-total-work wall-time or whole-app robot-planning claim.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1142 replaced stale-source 64M robot timing with same-source bounded sub-path evidence. Goal1164 exposed large-scale robot timing bottlenecks, Goal1165 removed avoidable CPU validation from prepared timing paths, Goal1166 prepared the next validation/timing pod packet, and Goal1177 accepted the recovered clean-source staged-archive robot timing row as timing-only review input. Goal1184 accepted the newer RTX A4500 robot timing row as timing-only external-review input. Goal1126 accepted explicit normalized per-pose public wording only; this is not a same-total-work wall-time or whole-app robot-planning claim.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal",
       "public_wording_boundary": "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path. Full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside the wording.",
@@ -179,7 +179,7 @@
     {
       "app": "barnes_hut_force_app",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "cloud_policy": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording_boundary": "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside this wording.",
@@ -202,7 +202,7 @@
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
   "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example. Public speedup wording is tracked separately by rtdsl.rtx_public_wording_matrix().",
   "date": "2026-04-23",
-  "generated_at": "2026-04-30T07:49:58",
+  "generated_at": "2026-05-03T22:47:42",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {
@@ -321,11 +321,11 @@
     "second_wave": []
   },
   "summary": {
-    "blocked_public_wording": 0,
+    "blocked_public_wording": 2,
     "needs_redesign_or_new_surface": 0,
     "out_of_scope_for_nvidia_rt": 2,
     "public_app_count": 18,
-    "reviewed_public_wording": 10,
+    "reviewed_public_wording": 12,
     "rt_core_partial_ready_now": 0,
     "rt_core_ready_now": 16
   }
