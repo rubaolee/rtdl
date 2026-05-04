@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "file": "polygon_pair_embree_160000.json",
+      "parity": null,
+      "phases": {
+        "input_construction_sec": 2.450094631873071,
+        "native_exact_continuation_sec": 24.013311438262463,
+        "rt_candidate_discovery_sec": 25.55446626804769
+      },
+      "status": "pass",
+      "total_sec": null
+    },
+    {
+      "file": "polygon_pair_embree_80000.json",
+      "parity": null,
+      "phases": {
+        "input_construction_sec": 1.2510303994640708,
+        "native_exact_continuation_sec": 11.68341912701726,
+        "rt_candidate_discovery_sec": 13.65885659120977
+      },
+      "status": "pass",
+      "total_sec": null
+    },
+    {
+      "file": "polygon_pair_optix_160000.json",
+      "parity": true,
+      "phases": {
+        "cpu_exact_refinement_sec": 22.32878724206239,
+        "cpu_reference_sec": null,
+        "input_build_sec": 0.0,
+        "native_exact_continuation_sec": 22.32878724206239,
+        "optix_candidate_discovery_sec": 18.078617822378874
+      },
+      "status": "pass",
+      "total_sec": null
+    },
+    {
+      "file": "polygon_pair_optix_80000.json",
+      "parity": true,
+      "phases": {
+        "cpu_exact_refinement_sec": 11.648699309676886,
+        "cpu_reference_sec": null,
+        "input_build_sec": 0.0,
+        "native_exact_continuation_sec": 11.648699309676886,
+        "optix_candidate_discovery_sec": 9.314851565286517
+      },
+      "status": "pass",
+      "total_sec": null
+    }
+  ]
+}
