@@ -164,13 +164,14 @@ Detailed evidence and review trail:
 - [Goal1146 Public Wording Promotion Consensus](docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md)
 - [Goal1208 Public Wording Consensus](docs/reports/goal1208_two_ai_consensus_2026-05-01.md)
 - [RTX Wording Resolution Consensus](docs/reports/goal1224_two_ai_consensus_2026-05-01.md)
-- [Goal1224 RTX Wording Resolution Consensus Alias](docs/reports/goal1224_two_ai_rtx_wording_resolution_consensus_2026-05-01.md)
+- [RTX Wording Resolution Consensus Alias](docs/reports/goal1224_two_ai_rtx_wording_resolution_consensus_2026-05-01.md)
 
 Goal1177 is recovered clean-source RTX A5000 evidence for external-review input only.
 Goal1184 records Goal1182 RTX A4500 batch evidence as external-review input only.
 Neither goal adds a new reviewed public wording row or authorizes public speedup wording.
 They do not authorize public speedup wording.
 Goal1177 does not authorize public speedup wording.
+Goal1177 does not add a new reviewed public wording row.
 
 Goal748 is the robot OptiX erratum boundary: pre-Goal748 robot OptiX evidence
 used a short-ray `optixReportIntersection` path later fixed by Goal748. Use the
