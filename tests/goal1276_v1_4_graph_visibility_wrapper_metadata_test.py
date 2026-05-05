@@ -55,6 +55,8 @@ class Goal1276V14GraphVisibilityWrapperMetadataTest(unittest.TestCase):
         self.assertEqual(contract["alternate_summary_primitive"], "REDUCE_INT(COUNT)")
         self.assertEqual(contract["backend_scope"], ("embree", "optix"))
         self.assertTrue(contract["active_v1_4_backend"])
+        self.assertEqual(contract["backend_contract_role"], "nvidia_rt_target")
+        self.assertTrue(contract["same_contract_baseline_required"])
         self.assertEqual(contract["mode"], "prepared")
         self.assertEqual(contract["prepared_state"], "build_geometry_and_probe_rays_reusable")
         self.assertIn("BFS", contract["claim_boundary"])
@@ -73,6 +75,8 @@ class Goal1276V14GraphVisibilityWrapperMetadataTest(unittest.TestCase):
         self.assertEqual(section["summary"], {"visible_edge_count": 1, "blocked_edge_count": 3})
         self.assertEqual(contract["backend"], "cpu_python_reference")
         self.assertFalse(contract["active_v1_4_backend"])
+        self.assertEqual(contract["backend_contract_role"], "compatibility_or_inactive")
+        self.assertFalse(contract["same_contract_baseline_required"])
         self.assertEqual(contract["mode"], "one_shot")
         self.assertEqual(contract["summary_primitive"], "COUNT_HITS")
         self.assertIn("query_visibility_pair_rows_sec", section["run_phases"])
@@ -96,9 +100,38 @@ class Goal1276V14GraphVisibilityWrapperMetadataTest(unittest.TestCase):
         self.assertEqual(section["native_continuation_backend"], "optix_prepared_visibility_anyhit_count")
         self.assertEqual(contract["backend"], "optix")
         self.assertTrue(contract["active_v1_4_backend"])
+        self.assertEqual(contract["backend_contract_role"], "nvidia_rt_target")
+        self.assertTrue(contract["same_contract_baseline_required"])
         self.assertEqual(contract["mode"], "prepared")
         self.assertEqual(contract["prepared_state"], "build_geometry_and_probe_rays_reusable")
         self.assertIn("query_anyhit_count_sec", contract["phase_counters"])
+
+    def test_mocked_embree_summary_attaches_cpu_rt_baseline_contract(self) -> None:
+        rows = (
+            {"observer_id": 1, "target_id": 10, "visible": 0},
+            {"observer_id": 1, "target_id": 11, "visible": 0},
+            {"observer_id": 2, "target_id": 10, "visible": 0},
+            {"observer_id": 2, "target_id": 11, "visible": 1},
+        )
+        with mock.patch.object(graph_app.rt, "visibility_pair_rows", return_value=rows) as visibility_pair_rows:
+            payload = graph_app.run_app(
+                "embree",
+                scenario="visibility_edges",
+                copies=1,
+                output_mode="summary",
+            )
+
+        section = payload["sections"]["visibility_edges"]
+        contract = section["primitive_contract"]
+        visibility_pair_rows.assert_called_once()
+        self.assertEqual(section["summary"], {"visible_edge_count": 1, "blocked_edge_count": 3})
+        self.assertEqual(section["native_continuation_backend"], "none")
+        self.assertEqual(contract["backend"], "embree")
+        self.assertTrue(contract["active_v1_4_backend"])
+        self.assertEqual(contract["backend_contract_role"], "cpu_rt_baseline_and_fallback")
+        self.assertTrue(contract["same_contract_baseline_required"])
+        self.assertEqual(contract["mode"], "one_shot")
+        self.assertEqual(contract["prepared_state"], "none_required_for_row_materialization")
 
 
 if __name__ == "__main__":

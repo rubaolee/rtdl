@@ -8,6 +8,14 @@ from typing import Any
 ACTIVE_V1_4_BACKENDS = ("embree", "optix")
 
 
+def _backend_contract_role(backend: str) -> str:
+    if backend == "embree":
+        return "cpu_rt_baseline_and_fallback"
+    if backend == "optix":
+        return "nvidia_rt_target"
+    return "compatibility_or_inactive"
+
+
 def visibility_edges_primitive_contract(
     *,
     backend: str,
@@ -24,6 +32,8 @@ def visibility_edges_primitive_contract(
         "backend": normalized_backend,
         "backend_scope": ACTIVE_V1_4_BACKENDS,
         "active_v1_4_backend": normalized_backend in ACTIVE_V1_4_BACKENDS,
+        "backend_contract_role": _backend_contract_role(normalized_backend),
+        "same_contract_baseline_required": normalized_backend in ACTIVE_V1_4_BACKENDS,
         "mode": "prepared" if prepared_summary else "one_shot",
         "build_layout": "triangle2d_blocker_buffer",
         "probe_layout": "visibility_ray2d_probe_buffer",
