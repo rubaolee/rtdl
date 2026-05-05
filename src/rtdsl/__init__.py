@@ -439,6 +439,7 @@ from .primitive_contract_registry import v1_4_primitive_contract_inventory
 from .primitive_contract_registry import validate_v1_4_primitive_contract_inventory
 from .generic_primitives import ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS
 from .generic_primitives import FROZEN_BEFORE_V2_1_GENERIC_BACKENDS
+from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .graph_reference import csr_graph
@@ -682,6 +683,7 @@ __all__ = [
     "validate_v1_4_primitive_contract_inventory",
     "ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS",
     "FROZEN_BEFORE_V2_1_GENERIC_BACKENDS",
+    "run_generic_prepared_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",
     "PredicateSet",

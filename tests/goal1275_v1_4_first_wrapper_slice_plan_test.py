@@ -63,6 +63,7 @@ class Goal1275V14FirstWrapperSlicePlanTest(unittest.TestCase):
     def test_current_optix_summary_source_contains_prepared_anyhit_count_boundary(self) -> None:
         app_source = (ROOT / "examples" / "rtdl_graph_analytics_app.py").read_text(encoding="utf-8")
         wrapper_source = (ROOT / "src" / "rtdsl" / "graph_visibility_primitives.py").read_text(encoding="utf-8")
+        generic_source = (ROOT / "src" / "rtdsl" / "generic_primitives.py").read_text(encoding="utf-8")
 
         for phrase in (
             "prepare_optix_ray_triangle_any_hit_2d",
@@ -75,11 +76,18 @@ class Goal1275V14FirstWrapperSlicePlanTest(unittest.TestCase):
                 self.assertIn(phrase, app_source)
 
         for phrase in (
-            "prepared_scene.count(prepared_rays)",
+            "run_generic_prepared_ray_triangle_any_hit_count",
             "query_anyhit_count_sec",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, wrapper_source)
+
+        for phrase in (
+            "prepared_scene.count(prepared_rays)",
+            "query_anyhit_count_sec",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, generic_source)
 
 
 if __name__ == "__main__":
