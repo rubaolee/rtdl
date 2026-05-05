@@ -115,6 +115,45 @@ def _native_jaccard_rows_for_candidates(
     )
 
 
+def _collect_candidate_pairs_bounded(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    *,
+    backend: str,
+    collection_capacity: int | None,
+):
+    capacity = len(left) * len(right) if collection_capacity is None else collection_capacity
+    if backend == "embree":
+        try:
+            return rt.collect_polygon_pair_candidates_bounded_embree(
+                left,
+                right,
+                candidate_capacity=capacity,
+            )
+        except ValueError as exc:
+            if "rtdl_embree_collect_polygon_pair_candidates_bounded" not in str(exc):
+                raise
+            pairs = _positive_candidate_pairs_embree(left, right)
+    elif backend == "optix":
+        try:
+            return rt.collect_polygon_pair_candidates_bounded_optix(
+                left,
+                right,
+                candidate_capacity=capacity,
+            )
+        except ValueError as exc:
+            if "rtdl_optix_collect_polygon_pair_candidates_bounded" not in str(exc):
+                raise
+            pairs = _positive_candidate_pairs_optix(left, right)
+    else:
+        raise ValueError("backend must be 'embree' or 'optix'")
+    fallback = rt.collect_k_bounded_candidate_pairs(pairs, k=collection_capacity)
+    fallback["backend"] = backend
+    fallback["native_collection"] = False
+    fallback["native_collection_backend"] = "python_lsi_pip_fallback"
+    return fallback
+
+
 def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
     return _run_native_assisted(left, right, candidate_backend="embree")
 
@@ -157,40 +196,48 @@ def run_case(
         candidate_row_count = None
     elif backend == "embree":
         candidate_start = time.perf_counter()
-        candidate_pairs = _positive_candidate_pairs_embree(case["left"], case["right"])
+        collection = _collect_candidate_pairs_bounded(
+            case["left"],
+            case["right"],
+            backend=backend,
+            collection_capacity=collection_capacity,
+        )
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
         generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
             left=case["left"],
             right=case["right"],
-            candidate_pairs=candidate_pairs,
+            collection=collection,
             backend=backend,
             exact_score_fn=_native_jaccard_rows_for_candidates,
-            collection_capacity=collection_capacity,
         )
         rows = generic_jaccard_summary["rows"]
         run_phases.update(generic_jaccard_summary["run_phases"])
         run_phases["native_exact_continuation_sec"] = generic_jaccard_summary["run_phases"][
             "query_polygon_jaccard_reduce_float_sum_sec"
         ]
-        candidate_row_count = len(candidate_pairs)
+        candidate_row_count = generic_jaccard_summary["candidate_pair_count"]
     elif backend == "optix":
         candidate_start = time.perf_counter()
-        candidate_pairs = _positive_candidate_pairs_optix(case["left"], case["right"])
+        collection = _collect_candidate_pairs_bounded(
+            case["left"],
+            case["right"],
+            backend=backend,
+            collection_capacity=collection_capacity,
+        )
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
         generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
             left=case["left"],
             right=case["right"],
-            candidate_pairs=candidate_pairs,
+            collection=collection,
             backend=backend,
             exact_score_fn=_native_jaccard_rows_for_candidates,
-            collection_capacity=collection_capacity,
         )
         rows = generic_jaccard_summary["rows"]
         run_phases.update(generic_jaccard_summary["run_phases"])
         run_phases["native_exact_continuation_sec"] = generic_jaccard_summary["run_phases"][
             "query_polygon_jaccard_reduce_float_sum_sec"
         ]
-        candidate_row_count = len(candidate_pairs)
+        candidate_row_count = generic_jaccard_summary["candidate_pair_count"]
     else:
         raise ValueError(f"unsupported backend `{backend}`")
     summary_start = time.perf_counter()

@@ -11,6 +11,13 @@ def _candidate_pairs(*_args, **_kwargs):
     return {(2, 11), (1, 10)}
 
 
+def _native_collection(*_args, **_kwargs):
+    return rt.collect_k_bounded_candidate_pairs(_candidate_pairs(), k=2) | {
+        "backend": "embree",
+        "native_collection_backend": "test_native_collection",
+    }
+
+
 def _score_rows(_left, _right, candidate_pairs):
     pairs = tuple(sorted(candidate_pairs))
     return (
@@ -83,7 +90,7 @@ class Goal1311V15JaccardGenericFailClosedCollectionTest(unittest.TestCase):
 
     def test_app_embree_summary_uses_generic_collection_metadata(self) -> None:
         with (
-            mock.patch.object(jaccard_app, "_positive_candidate_pairs_embree", side_effect=_candidate_pairs),
+            mock.patch.object(jaccard_app, "_collect_candidate_pairs_bounded", side_effect=_native_collection),
             mock.patch.object(jaccard_app, "_native_jaccard_rows_for_candidates", side_effect=_score_rows),
         ):
             payload = jaccard_app.run_case("embree", copies=1, output_mode="summary", collection_capacity=2)
@@ -97,7 +104,11 @@ class Goal1311V15JaccardGenericFailClosedCollectionTest(unittest.TestCase):
     def test_app_embree_summary_fails_closed_before_score_on_overflow(self) -> None:
         score_fn = mock.Mock(side_effect=_score_rows)
         with (
-            mock.patch.object(jaccard_app, "_positive_candidate_pairs_embree", side_effect=_candidate_pairs),
+            mock.patch.object(
+                jaccard_app,
+                "_collect_candidate_pairs_bounded",
+                side_effect=RuntimeError("COLLECT_K_BOUNDED overflowed capacity 1"),
+            ),
             mock.patch.object(jaccard_app, "_native_jaccard_rows_for_candidates", side_effect=score_fn),
         ):
             with self.assertRaisesRegex(RuntimeError, "COLLECT_K_BOUNDED overflowed capacity 1"):

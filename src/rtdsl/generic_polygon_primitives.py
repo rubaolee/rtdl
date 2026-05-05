@@ -108,7 +108,8 @@ def run_generic_polygon_set_jaccard_summary(
     *,
     left: Any,
     right: Any,
-    candidate_pairs: Any,
+    candidate_pairs: Any = None,
+    collection: dict[str, Any] | None = None,
     backend: str,
     exact_score_fn,
     collection_capacity: int | None = None,
@@ -116,7 +117,26 @@ def run_generic_polygon_set_jaccard_summary(
     """Run Jaccard scoring only after fail-closed bounded collection succeeds."""
     normalized_backend = _validate_backend(backend)
     collect_start = time.perf_counter()
-    collection = collect_k_bounded_candidate_pairs(candidate_pairs, k=collection_capacity)
+    if collection is None:
+        if candidate_pairs is None:
+            raise ValueError("candidate_pairs or collection must be provided")
+        collection = collect_k_bounded_candidate_pairs(candidate_pairs, k=collection_capacity)
+        native_collection = False
+    else:
+        native_collection = bool(collection.get("native_collection", True))
+        if collection.get("primitive") != "COLLECT_K_BOUNDED":
+            raise ValueError("native collection must use primitive COLLECT_K_BOUNDED")
+        if collection.get("backend") != normalized_backend:
+            raise ValueError("native collection backend does not match requested backend")
+        if collection.get("overflowed"):
+            raise RuntimeError(
+                "COLLECT_K_BOUNDED native collection reported overflow; "
+                f"failure_mode={collection.get('failure_mode', 'fail_closed_overflow')}"
+            )
+        if not collection.get("complete_candidate_coverage"):
+            raise RuntimeError("COLLECT_K_BOUNDED native collection did not report complete candidate coverage")
+        if "candidate_pairs" not in collection:
+            raise ValueError("native collection must include candidate_pairs")
     collect_sec = time.perf_counter() - collect_start
     score_start = time.perf_counter()
     rows = tuple(exact_score_fn(left, right, frozenset(collection["candidate_pairs"])))
@@ -145,7 +165,9 @@ def run_generic_polygon_set_jaccard_summary(
         "result_layout": "single_jaccard_summary_row",
         "dtype": "float64",
         "candidate_pair_count": len(collection["candidate_pairs"]),
-        "collection": {key: value for key, value in collection.items() if key != "candidate_pairs"},
+        "collection": {
+            key: value for key, value in collection.items() if key != "candidate_pairs"
+        } | {"native_collection": native_collection},
         "summary": summary,
         "rows": rows,
         "abs_tol": V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL,
