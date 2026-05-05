@@ -389,7 +389,7 @@ class PreparedSalesRiskSession:
         if output_mode != "compact_summary":
             summary["risky_order_ids"] = risky_order_ids
         native_continuation_backend = _native_db_continuation_backend(self.backend, output_mode, run_phases)
-        return {
+        payload = {
             "app": "sales_risk_screening",
             "backend": self.backend,
             "copies": self.copies,
@@ -416,6 +416,7 @@ class PreparedSalesRiskSession:
                 "grouped_sum": list(sum_rows),
             },
         }
+        return rt.attach_sales_risk_primitive_contract(payload, backend=self.backend, output_mode=output_mode)
 
     def _run_chunked(self, output_mode: str = "full") -> dict[str, object]:
         if output_mode != "compact_summary":
@@ -446,7 +447,7 @@ class PreparedSalesRiskSession:
             ]
         )
         chunk_copies = [int(payload["copies"]) for payload in chunk_payloads]
-        return {
+        payload = {
             "app": "sales_risk_screening",
             "backend": self.backend,
             "copies": self.copies,
@@ -482,6 +483,7 @@ class PreparedSalesRiskSession:
             },
             "rows": {},
         }
+        return rt.attach_sales_risk_primitive_contract(payload, backend=self.backend, output_mode=output_mode)
 
 
 def prepare_session(backend: str, copies: int = 1) -> PreparedSalesRiskSession:
@@ -507,7 +509,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
         str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
         for row in sum_rows
     }
-    return {
+    payload = {
         "app": "sales_risk_screening",
         "backend": backend,
         "copies": copies,
@@ -534,6 +536,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
             "grouped_sum": list(sum_rows),
         },
     }
+    return rt.attach_sales_risk_primitive_contract(payload, backend=backend, output_mode=output_mode)
 
 
 def main(argv: list[str] | None = None) -> int:

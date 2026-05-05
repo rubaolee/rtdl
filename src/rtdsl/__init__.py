@@ -426,6 +426,8 @@ from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
 from .db_reference import PredicateBundle
 from .db_reference import PredicateClause
+from .db_primitives import attach_sales_risk_primitive_contract
+from .db_primitives import sales_risk_primitive_contract
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -654,6 +656,8 @@ __all__ = [
     "Predicate",
     "PredicateBundle",
     "PredicateClause",
+    "attach_sales_risk_primitive_contract",
+    "sales_risk_primitive_contract",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",
