@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import time
 from typing import Any
 
 
@@ -69,3 +70,42 @@ def attach_visibility_edges_primitive_contract(
         prepared_summary=prepared_summary,
     )
     return payload
+
+
+def run_prepared_visibility_anyhit_count(
+    *,
+    blockers: Any,
+    rays: Any,
+    prepare_scene,
+    prepare_rays,
+    visibility_query_repeats: int,
+) -> dict[str, Any]:
+    """Run the prepared `ANY_HIT` plus aggregate count compatibility wrapper."""
+    if visibility_query_repeats <= 0:
+        raise ValueError("visibility_query_repeats must be positive")
+
+    scene_prepare_start = time.perf_counter()
+    with prepare_scene(blockers) as prepared_scene:
+        scene_prepare_sec = time.perf_counter() - scene_prepare_start
+        ray_prepare_start = time.perf_counter()
+        with prepare_rays(rays) as prepared_rays:
+            ray_prepare_sec = time.perf_counter() - ray_prepare_start
+            query_times = []
+            blocked_count = 0
+            for _ in range(visibility_query_repeats):
+                query_start = time.perf_counter()
+                blocked_count = int(prepared_scene.count(prepared_rays))
+                query_times.append(time.perf_counter() - query_start)
+            query_sec = sum(query_times)
+
+    return {
+        "blocked_count": blocked_count,
+        "run_phases": {
+            "scene_prepare_sec": scene_prepare_sec,
+            "ray_prepare_sec": ray_prepare_sec,
+            "query_anyhit_count_sec": query_sec,
+            "query_anyhit_count_first_sec": float(query_times[0]) if query_times else 0.0,
+            "query_anyhit_count_mean_sec": float(query_sec / len(query_times)) if query_times else 0.0,
+            "query_anyhit_count_min_sec": float(min(query_times)) if query_times else 0.0,
+        },
+    }

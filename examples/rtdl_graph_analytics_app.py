@@ -158,19 +158,14 @@ def _run_visibility_edges(
     if backend == "optix" and output_mode == "summary":
         packed_case = _pack_visibility_summary_rays(copies)
         rays = packed_case["rays"]
-        scene_prepare_start = time.perf_counter()
-        with rt.prepare_optix_ray_triangle_any_hit_2d(packed_case["blockers"]) as prepared_scene:
-            scene_prepare_sec = time.perf_counter() - scene_prepare_start
-            ray_prepare_start = time.perf_counter()
-            with rt.prepare_optix_rays_2d(rays) as prepared_rays:
-                ray_prepare_sec = time.perf_counter() - ray_prepare_start
-                query_times = []
-                blocked_count = 0
-                for _ in range(visibility_query_repeats):
-                    query_start = time.perf_counter()
-                    blocked_count = int(prepared_scene.count(prepared_rays))
-                    query_times.append(time.perf_counter() - query_start)
-                query_sec = sum(query_times)
+        prepared_result = rt.run_prepared_visibility_anyhit_count(
+            blockers=packed_case["blockers"],
+            rays=rays,
+            prepare_scene=rt.prepare_optix_ray_triangle_any_hit_2d,
+            prepare_rays=rt.prepare_optix_rays_2d,
+            visibility_query_repeats=visibility_query_repeats,
+        )
+        blocked_count = int(prepared_result["blocked_count"])
         rows = ()
         postprocess_start = time.perf_counter()
         visible_count = int(packed_case["ray_count"]) - blocked_count
@@ -181,12 +176,7 @@ def _run_visibility_edges(
             "input_construction_sec": float(packed_case["input_construction_sec"]),
             "blocker_pack_sec": float(packed_case["blocker_pack_sec"]),
             "ray_pack_sec": float(packed_case["ray_pack_sec"]),
-            "scene_prepare_sec": scene_prepare_sec,
-            "ray_prepare_sec": ray_prepare_sec,
-            "query_anyhit_count_sec": query_sec,
-            "query_anyhit_count_first_sec": float(query_times[0]) if query_times else 0.0,
-            "query_anyhit_count_mean_sec": float(query_sec / len(query_times)) if query_times else 0.0,
-            "query_anyhit_count_min_sec": float(min(query_times)) if query_times else 0.0,
+            **prepared_result["run_phases"],
             "summary_postprocess_sec": postprocess_sec,
         }
         observer_count = int(packed_case["observer_count"])

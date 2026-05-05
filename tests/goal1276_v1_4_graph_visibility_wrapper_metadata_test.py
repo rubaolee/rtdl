@@ -27,6 +27,21 @@ class _FakePreparedRays:
 
 
 class Goal1276V14GraphVisibilityWrapperMetadataTest(unittest.TestCase):
+    def test_prepared_anyhit_count_wrapper_delegates_to_supplied_backend_factories(self) -> None:
+        result = rt.run_prepared_visibility_anyhit_count(
+            blockers=("blockers",),
+            rays=("rays",),
+            prepare_scene=lambda blockers: _FakePreparedScene(),
+            prepare_rays=lambda rays: _FakePreparedRays(),
+            visibility_query_repeats=2,
+        )
+
+        self.assertEqual(result["blocked_count"], 3)
+        self.assertIn("scene_prepare_sec", result["run_phases"])
+        self.assertIn("ray_prepare_sec", result["run_phases"])
+        self.assertIn("query_anyhit_count_sec", result["run_phases"])
+        self.assertGreaterEqual(result["run_phases"]["query_anyhit_count_sec"], 0.0)
+
     def test_contract_helper_defines_v1_4_graph_visibility_scope(self) -> None:
         contract = rt.visibility_edges_primitive_contract(
             backend="optix",

@@ -24,6 +24,12 @@ The wrapper does not change traversal behavior. It delegates to the current
 graph app paths and preserves the existing JSON shape, counts, phase counters,
 and `native_continuation_backend` values.
 
+Follow-up local routing work moved the OptiX prepared any-hit/count loop behind
+`run_prepared_visibility_anyhit_count(...)`. The app still supplies the same
+OptiX prepare functions and still reports
+`optix_prepared_visibility_anyhit_count`; the change only starts separating the
+generic primitive execution helper from the app-owned JSON assembly.
+
 ## Boundary
 
 This metadata covers only candidate graph edges lowered to ray/triangle
@@ -49,12 +55,28 @@ PYTHONPATH=src:. python3 -m unittest \
   tests.goal1129_graph_phase_split_contract_test
 ```
 
-Result: 43 tests passed.
+Initial result: 43 tests passed.
+
+After routing the prepared count loop through the wrapper helper:
+
+```text
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal1276_v1_4_graph_visibility_wrapper_metadata_test \
+  tests.goal1275_v1_4_first_wrapper_slice_plan_test \
+  tests.goal1274_v1_3_primitive_contract_test \
+  tests.goal889_graph_visibility_optix_gate_test \
+  tests.goal957_graph_hausdorff_native_continuation_metadata_test \
+  tests.goal814_graph_optix_rt_core_honesty_gate_test \
+  tests.goal1129_graph_phase_split_contract_test
+```
+
+Result: 44 tests passed.
 
 ## Next Step
 
-The next implementation slice should route the graph visibility summary path
-through a generic wrapper function while continuing to delegate to the current
-OptiX prepared any-hit count implementation. No pod is required until local
-metadata and routing are stable; the next pod run should validate parity and
-phase counters before any performance conclusion is recorded.
+The next implementation slice should add Embree-side compatibility metadata and
+same-contract checks for the visibility row path, then decide whether a
+prepared Embree visibility-count wrapper is needed for v1.5 parity. No pod is
+required until local metadata and routing are stable; the next pod run should
+validate parity and phase counters before any performance conclusion is
+recorded.

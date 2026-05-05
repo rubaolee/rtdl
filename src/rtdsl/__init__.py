@@ -412,6 +412,7 @@ from .reference import visibility_ray_pairs
 from .reference import visibility_rows_cpu
 from .reference import visibility_rows_from_any_hit
 from .graph_visibility_primitives import attach_visibility_edges_primitive_contract
+from .graph_visibility_primitives import run_prepared_visibility_anyhit_count
 from .graph_visibility_primitives import visibility_edges_primitive_contract
 from .visibility_runtime import visibility_pair_rows
 from .visibility_runtime import visibility_rows
@@ -680,6 +681,7 @@ __all__ = [
     "validate_csr_graph",
     "visibility_rows_cpu",
     "attach_visibility_edges_primitive_contract",
+    "run_prepared_visibility_anyhit_count",
     "visibility_edges_primitive_contract",
     "visibility_pair_rows",
     "visibility_rows",
