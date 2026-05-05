@@ -110,6 +110,7 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         class FakePreparedRays:
             def __init__(self, rays):
                 self.rays = rays
+                self.count = getattr(rays, "count", len(rays) if hasattr(rays, "__len__") else 0)
 
             def __enter__(self):
                 return self
@@ -147,8 +148,70 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertEqual(section["summary"], {"visible_edge_count": 2, "blocked_edge_count": 6})
         self.assertEqual(section["native_continuation_backend"], "optix_prepared_visibility_anyhit_count")
         self.assertTrue(section["native_continuation_active"])
-        self.assertEqual(len(prepare_rays.call_args.args[0]), 8)
+        rays_arg = prepare_rays.call_args.args[0]
+        ray_count = rays_arg.count if not isinstance(rays_arg, tuple) else len(rays_arg)
+        self.assertEqual(ray_count, 8)
+        self.assertIn(section["ray_pack_mode"], {"numpy_packed_rays", "python_ray_object_fallback"})
         prepare_scene.assert_called_once()
+
+    def test_optix_visibility_summary_packs_rays_without_point_edge_objects(self) -> None:
+        from unittest import mock
+
+        class FakePackedRays:
+            count = 12
+
+        class FakePreparedScene:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return None
+
+            def count(self, prepared_rays):
+                return 9
+
+        class FakePreparedRays:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return None
+
+        with (
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "pack_rays_2d_from_arrays",
+                return_value=FakePackedRays(),
+            ) as pack_rays,
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "prepare_optix_ray_triangle_any_hit_2d",
+                return_value=FakePreparedScene(),
+            ),
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "prepare_optix_rays_2d",
+                return_value=FakePreparedRays(),
+            ),
+            mock.patch.object(
+                rtdl_graph_analytics_app,
+                "make_visibility_edge_case",
+                side_effect=AssertionError("OptiX summary should not build Point/edge tuples"),
+            ),
+        ):
+            payload = rtdl_graph_analytics_app.run_app(
+                "optix",
+                "visibility_edges",
+                copies=3,
+                output_mode="summary",
+                require_rt_core=True,
+            )
+
+        section = payload["sections"]["visibility_edges"]
+        self.assertEqual(section["row_count"], 12)
+        self.assertEqual(section["summary"], {"visible_edge_count": 3, "blocked_edge_count": 9})
+        self.assertEqual(section["ray_pack_mode"], "numpy_packed_rays")
+        pack_rays.assert_called_once()
 
     def test_cli_require_rt_core_exits_nonzero_without_optix_library(self) -> None:
         result = subprocess.run(

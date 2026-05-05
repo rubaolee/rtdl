@@ -73,27 +73,59 @@ def make_visibility_edge_case(copies: int = 1) -> dict[str, tuple[object, ...]]:
     }
 
 
+def _pack_visibility_summary_rays(copies: int):
+    offsets = [float(copy_index * 20) for copy_index in range(copies)]
+    id_offsets = [copy_index * 100 for copy_index in range(copies)]
+    ray_count = copies * 4
+    blockers = tuple(
+        rt.Triangle(
+            id=int(id_offset + 100),
+            x0=float(offset + 5.0),
+            y0=-1.0,
+            x1=float(offset + 5.0),
+            y1=1.0,
+            x2=float(offset + 6.0),
+            y2=0.0,
+        )
+        for offset, id_offset in zip(offsets, id_offsets)
+    )
+    ids = list(range(ray_count))
+    ox = [offset for offset in offsets for _ in range(4)]
+    oy = [value for _ in range(copies) for value in (0.0, 0.0, 2.0, 2.0)]
+    dx = [10.0] * ray_count
+    dy = [value for _ in range(copies) for value in (0.0, 2.0, -2.0, 0.0)]
+    tmax = [1.0] * ray_count
+    try:
+        rays = rt.pack_rays_2d_from_arrays(ids=ids, ox=ox, oy=oy, dx=dx, dy=dy, tmax=tmax)
+        ray_pack_mode = "numpy_packed_rays"
+    except RuntimeError:
+        rays = tuple(
+            rt.Ray2D(id=ids[index], ox=ox[index], oy=oy[index], dx=dx[index], dy=dy[index], tmax=tmax[index])
+            for index in range(ray_count)
+        )
+        ray_pack_mode = "python_ray_object_fallback"
+    return {
+        "blockers": blockers,
+        "rays": rays,
+        "ray_count": ray_count,
+        "observer_count": copies * 2,
+        "target_count": copies * 2,
+        "blocker_count": copies,
+        "ray_pack_mode": ray_pack_mode,
+    }
+
+
 def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[str, Any]:
-    input_start = time.perf_counter()
-    case = make_visibility_edge_case(copies)
-    input_construction_sec = time.perf_counter() - input_start
     visibility_backend = "cpu" if backend == "cpu_python_reference" else backend
     if backend == "optix" and output_mode == "summary":
+        input_start = time.perf_counter()
+        packed_case = _pack_visibility_summary_rays(copies)
+        input_construction_sec = time.perf_counter() - input_start
         ray_pack_start = time.perf_counter()
-        rays = tuple(
-            rt.Ray2D(
-                id=ray_id,
-                ox=observer.x,
-                oy=observer.y,
-                dx=target.x - observer.x,
-                dy=target.y - observer.y,
-                tmax=1.0,
-            )
-            for ray_id, (observer, target) in enumerate(case["candidate_edges"])
-        )
+        rays = packed_case["rays"]
         ray_pack_sec = time.perf_counter() - ray_pack_start
         scene_prepare_start = time.perf_counter()
-        with rt.prepare_optix_ray_triangle_any_hit_2d(case["blockers"]) as prepared_scene:
+        with rt.prepare_optix_ray_triangle_any_hit_2d(packed_case["blockers"]) as prepared_scene:
             scene_prepare_sec = time.perf_counter() - scene_prepare_start
             ray_prepare_start = time.perf_counter()
             with rt.prepare_optix_rays_2d(rays) as prepared_rays:
@@ -103,7 +135,7 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
                 query_sec = time.perf_counter() - query_start
         rows = ()
         postprocess_start = time.perf_counter()
-        visible_count = len(case["candidate_edges"]) - blocked_count
+        visible_count = int(packed_case["ray_count"]) - blocked_count
         native_continuation_active = True
         native_continuation_backend = "optix_prepared_visibility_anyhit_count"
         postprocess_sec = time.perf_counter() - postprocess_start
@@ -115,7 +147,15 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
             "query_anyhit_count_sec": query_sec,
             "summary_postprocess_sec": postprocess_sec,
         }
+        observer_count = int(packed_case["observer_count"])
+        target_count = int(packed_case["target_count"])
+        candidate_edge_count = int(packed_case["ray_count"])
+        blocker_count = int(packed_case["blocker_count"])
+        ray_pack_mode = str(packed_case["ray_pack_mode"])
     else:
+        input_start = time.perf_counter()
+        case = make_visibility_edge_case(copies)
+        input_construction_sec = time.perf_counter() - input_start
         query_start = time.perf_counter()
         rows = rt.visibility_pair_rows(
             case["candidate_edges"],
@@ -134,22 +174,28 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
             "query_visibility_pair_rows_sec": query_sec,
             "summary_postprocess_sec": postprocess_sec,
         }
+        observer_count = len(case["observers"])
+        target_count = len(case["targets"])
+        candidate_edge_count = len(case["candidate_edges"])
+        blocker_count = len(case["blockers"])
+        ray_pack_mode = "not_applicable"
     return {
         "app": "graph_visibility_edges",
         "backend": backend,
         "copies": copies,
         "output_mode": output_mode,
-        "observer_count": len(case["observers"]),
-        "target_count": len(case["targets"]),
-        "candidate_edge_count": len(case["candidate_edges"]),
-        "blocker_count": len(case["blockers"]),
-        "row_count": len(case["candidate_edges"]),
+        "observer_count": observer_count,
+        "target_count": target_count,
+        "candidate_edge_count": candidate_edge_count,
+        "blocker_count": blocker_count,
+        "row_count": candidate_edge_count,
         "rows": rows if output_mode == "rows" else [],
         "summary": {
             "visible_edge_count": visible_count,
             "blocked_edge_count": blocked_count,
         },
         "run_phases": run_phases,
+        "ray_pack_mode": ray_pack_mode,
         "native_continuation_active": native_continuation_active,
         "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": backend == "optix",
