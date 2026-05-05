@@ -1,0 +1,7 @@
+{
+  "boundary": "This gate validates the v1.4 contract inventory snapshot only. It does not authorize public RTX wording or backend promotion.",
+  "checked_contract_count": 20,
+  "failure_count": 0,
+  "failures": [],
+  "valid": true
+}
