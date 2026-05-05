@@ -121,6 +121,8 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
         self.assertIn("Goal1263 promotes bounded polygon-pair wording", markdown)
         self.assertIn("Graph remains blocked", markdown)
         self.assertIn("reviewed public RTX sub-path wording rows: `13`", markdown)
+        self.assertIn("Goal889/Goal905/Goal929/Goal1224/Goal1264", markdown)
+        self.assertNotIn("Goal1224/Goal1264/Goal1224/Goal1264", markdown)
 
     def test_checked_in_json_artifacts_include_public_wording_layer(self) -> None:
         for name in (

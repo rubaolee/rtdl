@@ -115,8 +115,9 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
         hausdorff = rt.rtx_public_wording_status("hausdorff_distance")
 
         self.assertEqual(graph.status, "public_wording_blocked")
-        self.assertEqual(graph.evidence, "Goal1224")
-        self.assertIn("0.50x", graph.reviewed_wording)
+        self.assertEqual(graph.evidence, "Goal1224/Goal1264")
+        self.assertIn("total OptiX path slower than Embree", graph.reviewed_wording)
+        self.assertIn("host-side input construction", graph.reviewed_wording)
         self.assertIn("BFS frontier bookkeeping", graph.boundary)
         self.assertEqual(polygon_pair.status, "public_wording_reviewed")
         self.assertEqual(polygon_pair.evidence, "Goal1263")

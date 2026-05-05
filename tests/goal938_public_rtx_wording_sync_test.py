@@ -98,6 +98,25 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
         self.assertNotIn("larger chunk sizes are diagnostic failures until root-caused", combined)
         self.assertNotIn("larger diagnostic chunk failures", combined)
 
+    def test_current_public_docs_name_goal1264_db_graph_boundary(self) -> None:
+        combined = "\n".join(
+            (ROOT / relative).read_text(encoding="utf-8")
+            for relative in (
+                "docs/v1_0_rtx_app_status.md",
+                "docs/v1_0_app_acceleration_inventory.md",
+                "docs/app_engine_support_matrix.md",
+                "docs/v1_1_optix_status.md",
+            )
+        )
+        for phrase in (
+            "Goal1262/Goal1264 show execution-unblocked but mixed evidence",
+            "warm-query median still favors Embree",
+            "Goal1264 confirms graph visibility correctness",
+            "host-side input construction, scene/ray prepare, and ray packing dominate",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, combined)
+
     def test_public_docs_keep_goal941_boundary_wording(self) -> None:
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")

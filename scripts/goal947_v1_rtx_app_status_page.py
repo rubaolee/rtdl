@@ -214,6 +214,22 @@ def _row(app: str) -> dict[str, Any]:
     }
 
 
+def _merge_evidence(existing: str, extra: str) -> str:
+    parts = existing.split("/") if existing else []
+    for item in extra.split("/"):
+        if item and item not in parts:
+            parts.append(item)
+    return "/".join(parts)
+
+
+def _merge_boundary(primary: str, extra: str) -> str:
+    if not extra or extra in primary:
+        return primary
+    if not primary or primary in extra:
+        return extra
+    return f"{primary} {extra}"
+
+
 def build_status_page() -> dict[str, Any]:
     rows = [_row(app) for app in rt.public_apps()]
     ready_rows = [row for row in rows if row["readiness_status"] == "ready_for_rtx_claim_review"]
@@ -337,15 +353,13 @@ def to_markdown(payload: dict[str, Any]) -> str:
         evidence_or_goal = row["evidence_or_goal"]
         non_claim_boundary = row["non_claim_boundary"]
         if row["public_wording_status"] == "public_wording_reviewed":
-            evidence_parts = evidence_or_goal.split("/")
-            if row["public_wording_evidence"] not in evidence_parts:
-                evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"
+            evidence_or_goal = _merge_evidence(evidence_or_goal, row["public_wording_evidence"])
         if row["public_wording_status"] == "public_wording_blocked":
             readiness_status = "blocked_for_public_speedup_wording"
-            evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"
-            non_claim_boundary = (
-                f"{row['public_wording_boundary']} "
-                f"{row['non_claim_boundary']}"
+            evidence_or_goal = _merge_evidence(evidence_or_goal, row["public_wording_evidence"])
+            non_claim_boundary = _merge_boundary(
+                row["public_wording_boundary"],
+                row["non_claim_boundary"],
             )
         lines.append(
             "| "
