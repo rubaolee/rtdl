@@ -77,4 +77,54 @@ score-reduction wrapper may call the native oracle continuation underneath; it
 does not claim a new device-side fused reduction and does not promote public
 NVIDIA speedup wording.
 
-Next required evidence is pod OptiX app-route validation from GitHub state.
+## Pod OptiX Evidence
+
+Pushed commit:
+
+```text
+e8a2c2f Add generic Jaccard score reduction surface
+```
+
+Pod checkout:
+
+```text
+root@213.173.99.11 -p 39006
+/workspace/rtdl_goal1292
+```
+
+The pod reset from GitHub `origin/main`, rebuilt OptiX, and validated focused
+tests:
+
+```text
+RTDL_OPTIX_LIB=/workspace/rtdl_goal1292/build/librtdl_optix.so PYTHONPATH=src:. python3 -m unittest tests.goal1320_v1_5_jaccard_generic_score_reduction_test tests.goal1318_v1_5_jaccard_native_collection_routing_test
+```
+
+Result:
+
+```text
+Ran 8 tests in 0.006s
+OK
+```
+
+Real OptiX app-route run:
+
+```text
+RTDL_OPTIX_LIB=/workspace/rtdl_goal1292/build/librtdl_optix.so PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py --backend optix --copies 2 --output-mode summary --collection-capacity 16
+```
+
+Observed:
+
+- `collection.native_collection=true`
+- `collection.backend=optix`
+- `collection.emitted_count=4`
+- `collection.complete_candidate_coverage=true`
+- `score_reduction_primitive=POLYGON_SET_JACCARD_SCORE_REDUCTION`
+- `score_reduction.summary_primitive=REDUCE_FLOAT(SUM)`
+- `score_reduction.result_layout=summary_float64_sums_plus_ratio`
+- `score_reduction.integer_parity_values`: intersection `10`, left `26`,
+  right `22`, union `38`
+- final `jaccard_similarity=0.2631578947368421`
+
+The OptiX route remains diagnostic because timing is still dominated by
+multi-pass candidate discovery plus native continuation, not a fused GPU
+Jaccard reduction.
