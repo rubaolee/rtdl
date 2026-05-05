@@ -53,10 +53,13 @@ class Goal1310V15JaccardCollectKBoundedContractTest(unittest.TestCase):
         by_row = {(row["app"], row["subpath"]): row for row in inventory}
         row = by_row[("polygon_set_jaccard", "chunked_candidate_scoring")]
 
-        self.assertEqual(row["goal"], "Goal1310")
+        self.assertEqual(row["goal"], "Goal1311")
         self.assertEqual(row["status"], "diagnostic_blocked")
         self.assertEqual(row["generic_primitive"], "COLLECT_K_BOUNDED")
-        self.assertIn("native fail-closed bounded collection implementation", row["remaining_app_specific_work"])
+        self.assertIn(
+            "native device-level fail-closed bounded collection implementation",
+            row["remaining_app_specific_work"],
+        )
         self.assertIn("no silent truncation", row["boundary"])
         self.assertFalse(row["public_wording_authorized"])
 

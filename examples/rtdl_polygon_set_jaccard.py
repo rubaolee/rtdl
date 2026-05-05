@@ -136,6 +136,7 @@ def run_case(
     copies: int = 1,
     output_mode: str = "rows",
     require_rt_core: bool = False,
+    collection_capacity: int | None = None,
 ) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError("output_mode must be 'rows' or 'summary'")
@@ -143,6 +144,7 @@ def run_case(
     input_start = time.perf_counter()
     case = make_authored_polygon_set_jaccard_case(copies=copies)
     run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
+    generic_jaccard_summary = None
     if backend == "cpu_python_reference":
         query_start = time.perf_counter()
         rows = rt.run_cpu_python_reference(polygon_set_jaccard_reference, **case)
@@ -157,17 +159,37 @@ def run_case(
         candidate_start = time.perf_counter()
         candidate_pairs = _positive_candidate_pairs_embree(case["left"], case["right"])
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
-        exact_start = time.perf_counter()
-        rows = _native_jaccard_rows_for_candidates(case["left"], case["right"], candidate_pairs)
-        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
+        generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
+            left=case["left"],
+            right=case["right"],
+            candidate_pairs=candidate_pairs,
+            backend=backend,
+            exact_score_fn=_native_jaccard_rows_for_candidates,
+            collection_capacity=collection_capacity,
+        )
+        rows = generic_jaccard_summary["rows"]
+        run_phases.update(generic_jaccard_summary["run_phases"])
+        run_phases["native_exact_continuation_sec"] = generic_jaccard_summary["run_phases"][
+            "query_polygon_jaccard_reduce_float_sum_sec"
+        ]
         candidate_row_count = len(candidate_pairs)
     elif backend == "optix":
         candidate_start = time.perf_counter()
         candidate_pairs = _positive_candidate_pairs_optix(case["left"], case["right"])
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
-        exact_start = time.perf_counter()
-        rows = _native_jaccard_rows_for_candidates(case["left"], case["right"], candidate_pairs)
-        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
+        generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
+            left=case["left"],
+            right=case["right"],
+            candidate_pairs=candidate_pairs,
+            backend=backend,
+            exact_score_fn=_native_jaccard_rows_for_candidates,
+            collection_capacity=collection_capacity,
+        )
+        rows = generic_jaccard_summary["rows"]
+        run_phases.update(generic_jaccard_summary["run_phases"])
+        run_phases["native_exact_continuation_sec"] = generic_jaccard_summary["run_phases"][
+            "query_polygon_jaccard_reduce_float_sum_sec"
+        ]
         candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
@@ -200,6 +222,7 @@ def run_case(
         "row_count": len(rows),
         "candidate_row_count": candidate_row_count,
         "summary": summary,
+        "generic_jaccard_summary": generic_jaccard_summary,
         "run_phases": run_phases,
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
@@ -227,6 +250,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
     parser.add_argument(
+        "--collection-capacity",
+        type=int,
+        default=None,
+        help="Optional COLLECT_K_BOUNDED candidate-pair capacity; overflow fails closed.",
+    )
+    parser.add_argument(
         "--require-rt-core",
         action="store_true",
         help="Require the native-assisted OptiX candidate-discovery path.",
@@ -239,6 +268,7 @@ def main(argv: list[str] | None = None) -> int:
                 copies=args.copies,
                 output_mode=args.output_mode,
                 require_rt_core=args.require_rt_core,
+                collection_capacity=args.collection_capacity,
             ),
             indent=2,
             sort_keys=True,

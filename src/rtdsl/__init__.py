@@ -462,8 +462,10 @@ from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL
 from .float_reduction_contracts import v1_5_float_sum_reduction_contracts
 from .float_reduction_contracts import validate_v1_5_float_sum_reduction_contracts
 from .generic_polygon_primitives import ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS
+from .generic_polygon_primitives import collect_k_bounded_candidate_pairs
 from .generic_polygon_primitives import FROZEN_BEFORE_V2_1_POLYGON_BACKENDS
 from .generic_polygon_primitives import run_generic_polygon_pair_exact_area_summary
+from .generic_polygon_primitives import run_generic_polygon_set_jaccard_summary
 from .generic_prepared_status import generic_prepared_anyhit_count_backend_status
 from .generic_prepared_status import generic_prepared_anyhit_count_blockers
 from .grouped_reduction_contracts import V1_5_EXPERIMENTAL_PRIMITIVES
@@ -732,8 +734,10 @@ __all__ = [
     "v1_5_float_sum_reduction_contracts",
     "validate_v1_5_float_sum_reduction_contracts",
     "ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS",
+    "collect_k_bounded_candidate_pairs",
     "FROZEN_BEFORE_V2_1_POLYGON_BACKENDS",
     "run_generic_polygon_pair_exact_area_summary",
+    "run_generic_polygon_set_jaccard_summary",
     "generic_prepared_anyhit_count_backend_status",
     "generic_prepared_anyhit_count_blockers",
     "V1_5_EXPERIMENTAL_PRIMITIVES",

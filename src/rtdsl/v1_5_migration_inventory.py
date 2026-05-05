@@ -167,7 +167,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "boundary": "candidate discovery plus exact integer-grid area summary only; no generic overlay, broad GIS, or public speedup wording",
         },
         {
-            "goal": "Goal1310",
+            "goal": "Goal1311",
             "app": "polygon_set_jaccard",
             "subpath": "chunked_candidate_scoring",
             "status": "diagnostic_blocked",
@@ -175,12 +175,12 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "summary_primitive": "REDUCE_FLOAT(SUM)",
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": (
-                "native fail-closed bounded collection implementation",
-                "score reduction after complete candidate coverage",
+                "native device-level fail-closed bounded collection implementation",
+                "native score reduction after complete candidate coverage",
                 "optix_still_slower_with_reason",
             ),
             "public_wording_authorized": False,
-            "boundary": "diagnostic only; COLLECT_K_BOUNDED policy is fail-closed with no silent truncation and no public wording promotion",
+            "boundary": "diagnostic only; Python generic wrapper is fail-closed with no silent truncation; native device-level promotion and public wording remain blocked",
         },
     )
 
