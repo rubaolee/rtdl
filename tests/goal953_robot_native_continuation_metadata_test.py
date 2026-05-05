@@ -8,6 +8,32 @@ sys.path.insert(0, ".")
 from examples import rtdl_robot_collision_screening_app as robot
 
 
+class _FakeGenericPreparedCount:
+    def __init__(self, count: int = 2):
+        self.count = count
+
+    def __call__(
+        self,
+        *,
+        triangles,
+        rays,
+        backend: str,
+        query_repeats: int = 1,
+        prepare_scene=None,
+        prepare_rays=None,
+    ):
+        return {
+            "primitive": "ANY_HIT",
+            "summary_primitive": "COUNT_HITS",
+            "hit_count": self.count,
+            "run_phases": {
+                "scene_prepare_sec": 0.001,
+                "ray_prepare_sec": 0.001,
+                "query_anyhit_count_sec": 0.001,
+            },
+        }
+
+
 class _FakePreparedScene:
     def __init__(self, count: int = 2, pose_flags=(False, True, True, False)):
         self.count_value = count
@@ -36,15 +62,18 @@ class _FakePreparedRays:
 
 class Goal953RobotNativeContinuationMetadataTest(unittest.TestCase):
     def test_prepared_count_reports_native_continuation(self) -> None:
-        with (
-            mock.patch.object(robot.rt, "prepare_optix_ray_triangle_any_hit_2d", return_value=_FakePreparedScene(count=7)),
-            mock.patch.object(robot.rt, "prepare_optix_rays_2d", return_value=_FakePreparedRays()),
+        with mock.patch.object(
+            robot.rt,
+            "run_generic_prepared_ray_triangle_any_hit_count",
+            side_effect=_FakeGenericPreparedCount(count=7),
         ):
             payload = robot.run_app("optix", optix_summary_mode="prepared_count")
 
         self.assertTrue(payload["native_continuation_active"])
         self.assertEqual(payload["native_continuation_backend"], "optix_prepared_any_hit_count")
         self.assertEqual(payload["output_mode"], "hit_count")
+        self.assertEqual(payload["prepared_summary"]["generic_primitive"], "ANY_HIT")
+        self.assertEqual(payload["prepared_summary"]["summary_primitive"], "COUNT_HITS")
         self.assertTrue(payload["matches_oracle"])
 
     def test_prepared_pose_flags_reports_native_continuation(self) -> None:
@@ -93,8 +122,11 @@ class Goal953RobotNativeContinuationMetadataTest(unittest.TestCase):
                 "examples.rtdl_robot_collision_screening_app.rt.ray_triangle_any_hit_cpu",
                 side_effect=AssertionError("skip_validation should not run CPU oracle"),
             ),
-            mock.patch.object(robot.rt, "prepare_optix_ray_triangle_any_hit_2d", return_value=_FakePreparedScene(count=7)),
-            mock.patch.object(robot.rt, "prepare_optix_rays_2d", return_value=_FakePreparedRays()),
+            mock.patch.object(
+                robot.rt,
+                "run_generic_prepared_ray_triangle_any_hit_count",
+                side_effect=_FakeGenericPreparedCount(count=7),
+            ),
         ):
             payload = robot.run_app("optix", optix_summary_mode="prepared_count", skip_validation=True)
 

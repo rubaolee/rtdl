@@ -193,14 +193,21 @@ def _run_optix_prepared_hit_edge_count(
     edge_rays: tuple[rt.Ray2D, ...],
     obstacle_triangles: tuple[rt.Triangle, ...],
 ) -> dict[str, object]:
-    with rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles) as prepared_scene:
-        with rt.prepare_optix_rays_2d(edge_rays) as prepared_rays:
-            hit_edge_count = prepared_scene.count(prepared_rays)
+    result = rt.run_generic_prepared_ray_triangle_any_hit_count(
+        triangles=obstacle_triangles,
+        rays=edge_rays,
+        backend="optix",
+        prepare_scene=rt.prepare_optix_ray_triangle_any_hit_2d,
+        prepare_rays=rt.prepare_optix_rays_2d,
+    )
     return {
         "mode": "optix_prepared_hit_edge_count",
-        "hit_edge_count": int(hit_edge_count),
+        "hit_edge_count": int(result["hit_count"]),
         "edge_ray_count": len(edge_rays),
         "obstacle_triangle_count": len(obstacle_triangles),
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
+        "run_phases": result["run_phases"],
     }
 
 
