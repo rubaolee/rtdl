@@ -97,7 +97,7 @@ def polygon_jaccard_diagnostic_contract(
         "candidate_primitive": "ANY_HIT" if native_candidate_discovery else "not_applicable",
         "experimental_collection_primitive": "COLLECT_K_BOUNDED",
         "future_score_primitive": "REDUCE_FLOAT(SUM)",
-        "future_score_primitive_status": "blocked_by_collect_k_bounded_runtime",
+        "future_score_primitive_status": "blocked_by_native_score_reduction",
         "backend": normalized_backend,
         "backend_scope": ACTIVE_V1_4_POLYGON_BACKENDS,
         "active_v1_4_backend": normalized_backend in ACTIVE_V1_4_POLYGON_BACKENDS,
@@ -133,10 +133,11 @@ def polygon_jaccard_diagnostic_contract(
         ),
         "claim_boundary": (
             "polygon_set_jaccard remains diagnostic: native RT traversal can "
-            "identify candidate polygon pairs, but bounded collection, chunk "
-            "policy, and exact set-area scoring remain outside stable v1.4 "
-            "primitive promotion. Public wording remains blocked while OptiX is "
-            "slower than Embree."
+            "identify candidate polygon pairs and native bounded collection is "
+            "routed for Embree/OptiX summary mode, but exact set-area scoring "
+            "still uses native continuation outside a stable generic score "
+            "reduction primitive. Public wording remains blocked while OptiX "
+            "is slower than Embree."
         ),
         "migration_status": "diagnostic_metadata_only",
     }

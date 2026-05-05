@@ -167,7 +167,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "boundary": "candidate discovery plus exact integer-grid area summary only; no generic overlay, broad GIS, or public speedup wording",
         },
         {
-            "goal": "Goal1311",
+            "goal": "Goal1318",
             "app": "polygon_set_jaccard",
             "subpath": "chunked_candidate_scoring",
             "status": "diagnostic_blocked",
@@ -175,11 +175,10 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "summary_primitive": "REDUCE_FLOAT(SUM)",
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": (
-                "native device-level fail-closed bounded collection implementation",
                 "native score reduction after complete candidate coverage",
             ),
             "public_wording_authorized": False,
-            "boundary": "diagnostic only; Python generic wrapper is fail-closed with no silent truncation; OptiX-slower reason is recorded; native device-level promotion and public wording remain blocked",
+            "boundary": "diagnostic only; native bounded collection is routed and pod-validated with no silent truncation; OptiX-slower reason is recorded; native score reduction and public wording remain blocked",
         },
     )
 
@@ -189,7 +188,7 @@ def v1_5_generic_migration_blockers() -> tuple[str, ...]:
         "prepared_pose_flags requires grouped REDUCE_INT(COUNT) with count-to-boolean result layout before it can leave app-specific OptiX code",
         "database compact summaries require generic grouped integer COUNT/SUM wrappers",
         "polygon exact area and Jaccard scoring require reviewed REDUCE_FLOAT(SUM) tolerance and result-shape contracts",
-        "COLLECT_K_BOUNDED remains experimental and must fail closed on overflow before Jaccard score reduction can run",
+        "Jaccard remains diagnostic until native REDUCE_FLOAT(SUM) score reduction runs after complete bounded collection",
         "public NVIDIA wording remains blocked until exact-subpath evidence receives 3-AI consensus",
     )
 

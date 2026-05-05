@@ -24,13 +24,19 @@ class Goal1280V14PolygonJaccardDiagnosticContractTest(unittest.TestCase):
         self.assertEqual(contract["primitive"], "ANY_HIT")
         self.assertEqual(contract["experimental_collection_primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(contract["future_score_primitive"], "REDUCE_FLOAT(SUM)")
+        self.assertEqual(contract["future_score_primitive_status"], "blocked_by_native_score_reduction")
         self.assertFalse(contract["public_wording_allowed"])
         self.assertTrue(contract["chunk_policy_required_for_public_evidence"])
         self.assertEqual(contract["migration_status"], "diagnostic_metadata_only")
+        self.assertIn("native bounded collection is routed", contract["claim_boundary"])
         self.assertIn("Public wording remains blocked", contract["claim_boundary"])
 
     def test_optix_summary_attaches_non_promoting_diagnostic_contract(self) -> None:
-        with mock.patch.object(jaccard_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
+        collection = rt.collect_k_bounded_candidate_pairs(_candidate_pairs(), k=2) | {
+            "backend": "optix",
+            "native_collection_backend": "test_native_collection",
+        }
+        with mock.patch.object(jaccard_app, "_collect_candidate_pairs_bounded", return_value=collection):
             payload = jaccard_app.run_case("optix", copies=1, output_mode="summary")
 
         contract = payload["primitive_contract"]
@@ -44,7 +50,11 @@ class Goal1280V14PolygonJaccardDiagnosticContractTest(unittest.TestCase):
         self.assertEqual(contract["exact_score_continuation"], "app_specific_native_cpp")
 
     def test_embree_summary_attaches_baseline_diagnostic_contract(self) -> None:
-        with mock.patch.object(jaccard_app, "_positive_candidate_pairs_embree", side_effect=_candidate_pairs):
+        collection = rt.collect_k_bounded_candidate_pairs(_candidate_pairs(), k=2) | {
+            "backend": "embree",
+            "native_collection_backend": "test_native_collection",
+        }
+        with mock.patch.object(jaccard_app, "_collect_candidate_pairs_bounded", return_value=collection):
             payload = jaccard_app.run_case("embree", copies=1, output_mode="summary")
 
         contract = payload["primitive_contract"]
