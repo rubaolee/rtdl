@@ -87,6 +87,64 @@ def _validate_prepared_anyhit_count_backend(backend: str) -> str:
     return normalized_backend
 
 
+def _validate_fixed_radius_count_backend(backend: str) -> str:
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS:
+        raise ValueError(
+            f"{normalized_backend} is frozen before v2.1; v1.5 generic primitives are Embree/OptiX only"
+        )
+    if normalized_backend not in ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS:
+        raise ValueError("generic fixed_radius_count_threshold backend must be one of: cpu, embree, optix")
+    return normalized_backend
+
+
+def _validate_prepared_fixed_radius_count_backend(backend: str) -> str:
+    normalized_backend = _validate_fixed_radius_count_backend(backend)
+    if normalized_backend == "cpu":
+        raise ValueError("prepared generic fixed_radius_count_threshold currently supports embree and optix")
+    return normalized_backend
+
+
+def _point_xy(point: Any) -> tuple[float, float]:
+    try:
+        return float(point.x), float(point.y)
+    except AttributeError:
+        if len(point) >= 2:
+            return float(point[0]), float(point[1])
+        raise TypeError("generic fixed_radius_count_threshold requires 2-D point-like inputs") from None
+
+
+def _cpu_fixed_radius_count_threshold_rows(
+    query_points: Any,
+    search_points: Any,
+    *,
+    radius: float,
+    threshold: int,
+) -> tuple[dict[str, int], ...]:
+    radius_sq = float(radius) * float(radius)
+    search_xy = [_point_xy(point) for point in search_points]
+    rows = []
+    for query_index, query_point in enumerate(query_points):
+        qx, qy = _point_xy(query_point)
+        query_id = int(getattr(query_point, "id", query_index))
+        neighbor_count = 0
+        for sx, sy in search_xy:
+            dx = qx - sx
+            dy = qy - sy
+            if dx * dx + dy * dy <= radius_sq:
+                neighbor_count += 1
+                if threshold > 0 and neighbor_count >= threshold:
+                    break
+        rows.append(
+            {
+                "query_id": query_id,
+                "neighbor_count": neighbor_count,
+                "threshold_reached": 1 if threshold > 0 and neighbor_count >= threshold else 0,
+            }
+        )
+    return tuple(rows)
+
+
 def run_generic_ray_triangle_any_hit(
     rays: tuple[Ray2D | Ray3D, ...],
     triangles: tuple[Triangle | Triangle3D, ...],
@@ -151,6 +209,71 @@ def run_generic_ray_triangle_any_hit_count(
     if include_rows:
         result["rows"] = rows
     return result
+
+
+def run_generic_fixed_radius_count_threshold_2d(
+    query_points: Any,
+    search_points: Any | None = None,
+    *,
+    radius: float,
+    threshold: int = 0,
+    backend: str = "cpu",
+) -> dict[str, Any]:
+    """Run app-name-free 2-D fixed-radius counts with optional threshold flags."""
+    normalized_backend = _validate_fixed_radius_count_backend(backend)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    if search_points is None:
+        search_points = query_points
+
+    query_start = time.perf_counter()
+    if normalized_backend == "cpu":
+        rows = _cpu_fixed_radius_count_threshold_rows(
+            query_points,
+            search_points,
+            radius=radius,
+            threshold=threshold,
+        )
+    elif normalized_backend == "embree":
+        from .embree_runtime import fixed_radius_count_threshold_2d_embree
+
+        rows = fixed_radius_count_threshold_2d_embree(
+            query_points,
+            search_points,
+            radius=radius,
+            threshold=threshold,
+        )
+    else:
+        from .optix_runtime import fixed_radius_count_threshold_2d_optix
+
+        rows = fixed_radius_count_threshold_2d_optix(
+            query_points,
+            search_points,
+            radius=radius,
+            threshold=threshold,
+        )
+    query_sec = time.perf_counter() - query_start
+    threshold_reached_count = sum(int(row["threshold_reached"]) for row in rows)
+    return {
+        "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+        "summary_primitive": "REDUCE_INT(COUNT)",
+        "backend": normalized_backend,
+        "active_v1_5_backend": normalized_backend in {"embree", "optix"},
+        "radius": float(radius),
+        "threshold": int(threshold),
+        "row_count": len(rows),
+        "threshold_reached_count": threshold_reached_count,
+        "rows": rows,
+        "run_phases": {
+            "query_fixed_radius_count_threshold_sec": query_sec,
+        },
+        "claim_boundary": (
+            "Generic v1.5 2-D fixed-radius count-threshold primitive only; "
+            "not app-specific ANN, DBSCAN, coverage, Hausdorff, Barnes-Hut, or public speedup wording."
+        ),
+    }
 
 
 class GenericPreparedRayTriangleAnyHitScene:
@@ -250,6 +373,185 @@ class GenericPreparedRayTriangleAnyHitScene:
             self.close()
         except Exception:
             pass
+
+
+class GenericPreparedFixedRadiusCountThreshold2D:
+    """App-name-free prepared 2-D fixed-radius threshold-count scene."""
+
+    def __init__(
+        self,
+        *,
+        search_points: Any,
+        backend: str = "optix",
+        max_radius: float | None = None,
+        prepare_scene=None,
+    ) -> None:
+        self.backend = _validate_prepared_fixed_radius_count_backend(backend)
+        if max_radius is not None and max_radius < 0:
+            raise ValueError("max_radius must be non-negative")
+        if prepare_scene is None:
+            if self.backend == "embree":
+                from .embree_runtime import prepare_embree_fixed_radius_count_threshold_2d as prepare_scene
+            else:
+                from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d as prepare_scene
+
+        self._scene_cm = None
+        self._prepared_scene = None
+        self._closed = False
+        self.query_batch_count = 0
+
+        scene_prepare_start = time.perf_counter()
+        if self.backend == "optix":
+            if max_radius is None:
+                raise ValueError("max_radius is required for prepared generic fixed_radius_count_threshold optix")
+            self._scene_cm = prepare_scene(search_points, max_radius=max_radius)
+        else:
+            self._scene_cm = prepare_scene(search_points)
+        self._prepared_scene = self._scene_cm.__enter__()
+        self.scene_prepare_sec = time.perf_counter() - scene_prepare_start
+
+    def run(
+        self,
+        query_points: Any,
+        *,
+        radius: float,
+        threshold: int = 0,
+    ) -> dict[str, Any]:
+        if self._closed:
+            raise RuntimeError("generic prepared fixed-radius count-threshold scene is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+
+        query_start = time.perf_counter()
+        rows = self._prepared_scene.run(query_points, radius=radius, threshold=threshold)
+        query_sec = time.perf_counter() - query_start
+        self.query_batch_count += 1
+        threshold_reached_count = sum(int(row["threshold_reached"]) for row in rows)
+        return {
+            "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend": self.backend,
+            "prepared": True,
+            "scene_reusable": True,
+            "query_batch_index": self.query_batch_count,
+            "radius": float(radius),
+            "threshold": int(threshold),
+            "row_count": len(rows),
+            "threshold_reached_count": threshold_reached_count,
+            "rows": rows,
+            "run_phases": {
+                "scene_prepare_sec": self.scene_prepare_sec,
+                "scene_prepare_sec_this_batch": 0.0,
+                "query_fixed_radius_count_threshold_sec": query_sec,
+            },
+            "claim_boundary": (
+                "Generic v1.5 reusable prepared 2-D fixed-radius count-threshold primitive only; "
+                "not app-specific ANN, DBSCAN, coverage, Hausdorff, Barnes-Hut, or public speedup wording."
+            ),
+        }
+
+    def count_threshold_reached(
+        self,
+        query_points: Any,
+        *,
+        radius: float,
+        threshold: int,
+    ) -> dict[str, Any]:
+        if self._closed:
+            raise RuntimeError("generic prepared fixed-radius count-threshold scene is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+
+        query_start = time.perf_counter()
+        if hasattr(self._prepared_scene, "count_threshold_reached"):
+            threshold_reached_count = int(
+                self._prepared_scene.count_threshold_reached(query_points, radius=radius, threshold=threshold)
+            )
+        else:
+            rows = self._prepared_scene.run(query_points, radius=radius, threshold=threshold)
+            threshold_reached_count = sum(int(row["threshold_reached"]) for row in rows)
+        query_sec = time.perf_counter() - query_start
+        self.query_batch_count += 1
+        return {
+            "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend": self.backend,
+            "prepared": True,
+            "scene_reusable": True,
+            "query_batch_index": self.query_batch_count,
+            "radius": float(radius),
+            "threshold": int(threshold),
+            "threshold_reached_count": threshold_reached_count,
+            "result_layout": "aggregate_threshold_reached_count",
+            "run_phases": {
+                "scene_prepare_sec": self.scene_prepare_sec,
+                "scene_prepare_sec_this_batch": 0.0,
+                "query_fixed_radius_threshold_reached_count_sec": query_sec,
+            },
+            "claim_boundary": (
+                "Generic v1.5 reusable prepared scalar threshold-reached count only; "
+                "not app-specific ANN, DBSCAN, coverage, Hausdorff, Barnes-Hut, or public speedup wording."
+            ),
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        if self._scene_cm is not None:
+            self._scene_cm.__exit__(None, None, None)
+
+    def __enter__(self) -> "GenericPreparedFixedRadiusCountThreshold2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_generic_fixed_radius_count_threshold_2d(
+    *,
+    search_points: Any,
+    backend: str = "optix",
+    max_radius: float | None = None,
+    prepare_scene=None,
+) -> GenericPreparedFixedRadiusCountThreshold2D:
+    """Prepare an app-name-free reusable 2-D fixed-radius threshold-count scene."""
+    return GenericPreparedFixedRadiusCountThreshold2D(
+        search_points=search_points,
+        backend=backend,
+        max_radius=max_radius,
+        prepare_scene=prepare_scene,
+    )
+
+
+def run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+    *,
+    search_points: Any,
+    query_points: Any,
+    radius: float,
+    threshold: int,
+    backend: str = "optix",
+    max_radius: float | None = None,
+    prepare_scene=None,
+) -> dict[str, Any]:
+    """Run prepared fixed-radius threshold-reached scalar count once."""
+    with prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=search_points,
+        backend=backend,
+        max_radius=max_radius,
+        prepare_scene=prepare_scene,
+    ) as prepared_scene:
+        return prepared_scene.count_threshold_reached(query_points, radius=radius, threshold=threshold)
 
 
 def prepare_generic_ray_triangle_any_hit_scene(
