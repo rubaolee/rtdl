@@ -450,6 +450,9 @@ from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .generic_prepared_status import generic_prepared_anyhit_count_backend_status
 from .generic_prepared_status import generic_prepared_anyhit_count_blockers
+from .v1_5_migration_inventory import v1_5_generic_migration_blockers
+from .v1_5_migration_inventory import v1_5_generic_migration_inventory
+from .v1_5_migration_inventory import validate_v1_5_generic_migration_inventory
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -702,6 +705,9 @@ __all__ = [
     "run_generic_ray_triangle_any_hit_count",
     "generic_prepared_anyhit_count_backend_status",
     "generic_prepared_anyhit_count_blockers",
+    "v1_5_generic_migration_blockers",
+    "v1_5_generic_migration_inventory",
+    "validate_v1_5_generic_migration_inventory",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",

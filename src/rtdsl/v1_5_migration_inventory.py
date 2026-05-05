@@ -1,0 +1,222 @@
+from __future__ import annotations
+
+from typing import Any
+
+
+ACTIVE_V1_5_BACKENDS = ("embree", "optix")
+FROZEN_BEFORE_V2_1_BACKENDS = ("vulkan", "hiprt", "apple_rt")
+
+
+def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
+    """Return the current internal v1.5 app-to-generic-primitive migration map."""
+    return (
+        {
+            "goal": "Goal1297",
+            "app": "graph_analytics",
+            "subpath": "visibility_edges_reusable_batches",
+            "status": "pod_verified_generic",
+            "generic_primitive": "ANY_HIT",
+            "summary_primitive": "COUNT_HITS",
+            "backend_scope": ("optix",),
+            "remaining_app_specific_work": (),
+            "public_wording_authorized": False,
+            "boundary": "visibility any-hit count only; graph BFS, triangle counting, and graph-system analytics remain outside scope",
+        },
+        {
+            "goal": "Goal1299",
+            "app": "service_coverage_gaps",
+            "subpath": "gap_summary_prepared",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ACTIVE_V1_5_BACKENDS,
+            "remaining_app_specific_work": (),
+            "public_wording_authorized": False,
+            "boundary": "coverage gap threshold-decision path only",
+        },
+        {
+            "goal": "Goal1299",
+            "app": "event_hotspot_screening",
+            "subpath": "count_summary_prepared",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ACTIVE_V1_5_BACKENDS,
+            "remaining_app_specific_work": (),
+            "public_wording_authorized": False,
+            "boundary": "fixed-radius hotspot threshold-count path only",
+        },
+        {
+            "goal": "Goal1300",
+            "app": "ann_candidate_search",
+            "subpath": "candidate_threshold_prepared",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ("optix",),
+            "remaining_app_specific_work": ("ann_indexing", "nearest_neighbor_ranking"),
+            "public_wording_authorized": False,
+            "boundary": "candidate threshold-decision path only",
+        },
+        {
+            "goal": "Goal1300",
+            "app": "facility_knn_assignment",
+            "subpath": "coverage_threshold_prepared",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ("optix",),
+            "remaining_app_specific_work": ("ranked_knn_assignment",),
+            "public_wording_authorized": False,
+            "boundary": "facility service-coverage threshold-decision path only",
+        },
+        {
+            "goal": "Goal1301",
+            "app": "outlier_detection",
+            "subpath": "density_count",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ACTIVE_V1_5_BACKENDS,
+            "remaining_app_specific_work": ("neighbor_row_materialization", "broad_outlier_analytics"),
+            "public_wording_authorized": False,
+            "boundary": "fixed-radius density threshold count only",
+        },
+        {
+            "goal": "Goal1301",
+            "app": "dbscan_clustering",
+            "subpath": "core_count",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ACTIVE_V1_5_BACKENDS,
+            "remaining_app_specific_work": ("cluster_expansion", "connected_components"),
+            "public_wording_authorized": False,
+            "boundary": "fixed-radius DBSCAN core predicate count only",
+        },
+        {
+            "goal": "Goal1302",
+            "app": "barnes_hut_force_app",
+            "subpath": "node_coverage_prepared",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ("optix",),
+            "remaining_app_specific_work": ("opening_rule", "force_vector_reduction"),
+            "public_wording_authorized": False,
+            "boundary": "node-coverage threshold-decision path only",
+        },
+        {
+            "goal": "Goal1302",
+            "app": "hausdorff_distance",
+            "subpath": "directed_threshold_prepared",
+            "status": "pod_verified_generic",
+            "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend_scope": ("optix",),
+            "remaining_app_specific_work": ("exact_distance", "nearest_neighbor_rows"),
+            "public_wording_authorized": False,
+            "boundary": "Hausdorff threshold-decision path only",
+        },
+        {
+            "goal": "Goal1303",
+            "app": "robot_collision_screening",
+            "subpath": "prepared_count",
+            "status": "pod_verified_generic",
+            "generic_primitive": "ANY_HIT",
+            "summary_primitive": "COUNT_HITS",
+            "backend_scope": ("optix",),
+            "remaining_app_specific_work": ("prepared_pose_flags", "grouped_pose_flag_reduction"),
+            "public_wording_authorized": False,
+            "boundary": "scalar hit-edge count only",
+        },
+        {
+            "goal": "Goal1303",
+            "app": "robot_collision_screening",
+            "subpath": "prepared_pose_flags",
+            "status": "deferred_app_specific",
+            "generic_primitive": "ANY_HIT",
+            "summary_primitive": "GROUPED_ANY_BOOL",
+            "backend_scope": ("optix",),
+            "remaining_app_specific_work": ("define grouped boolean reduction ABI",),
+            "public_wording_authorized": False,
+            "boundary": "pose-level grouped reduction is not yet in the v1.5 generic ABI",
+        },
+        {
+            "goal": "Goal1274",
+            "app": "database_analytics",
+            "subpath": "sales_risk_compact_summary",
+            "status": "deferred_app_specific",
+            "generic_primitive": "REDUCE_INT",
+            "summary_primitive": "REDUCE_INT(COUNT|SUM)",
+            "backend_scope": ACTIVE_V1_5_BACKENDS,
+            "remaining_app_specific_work": ("numeric predicate lowering", "grouped count/sum wrapper"),
+            "public_wording_authorized": False,
+            "boundary": "DB compact-summary native continuation remains app-specific until grouped integer reduction is generalized",
+        },
+        {
+            "goal": "Goal1274",
+            "app": "polygon_pair_overlap_area_rows",
+            "subpath": "candidate_discovery_and_exact_area",
+            "status": "deferred_app_specific",
+            "generic_primitive": "ANY_HIT",
+            "summary_primitive": "REDUCE_FLOAT(SUM)",
+            "backend_scope": ACTIVE_V1_5_BACKENDS,
+            "remaining_app_specific_work": ("exact_polygon_area", "float_sum_tolerance_contract"),
+            "public_wording_authorized": False,
+            "boundary": "candidate discovery is separable; exact area reduction remains app-specific",
+        },
+        {
+            "goal": "Goal1274",
+            "app": "polygon_set_jaccard",
+            "subpath": "chunked_candidate_scoring",
+            "status": "diagnostic_blocked",
+            "generic_primitive": "COLLECT_K_BOUNDED",
+            "summary_primitive": "REDUCE_FLOAT(SUM)",
+            "backend_scope": ACTIVE_V1_5_BACKENDS,
+            "remaining_app_specific_work": ("bounded collection overflow policy", "score reduction", "optix_still_slower_with_reason"),
+            "public_wording_authorized": False,
+            "boundary": "diagnostic only; no public wording promotion",
+        },
+    )
+
+
+def v1_5_generic_migration_blockers() -> tuple[str, ...]:
+    return (
+        "prepared_pose_flags requires a grouped boolean reduction ABI before it can leave app-specific OptiX code",
+        "database compact summaries require generic grouped integer COUNT/SUM wrappers",
+        "polygon exact area and Jaccard scoring require reviewed REDUCE_FLOAT(SUM) tolerance and result-shape contracts",
+        "COLLECT_K_BOUNDED remains experimental and must declare overflow/truncation/failure behavior",
+        "public NVIDIA wording remains blocked until exact-subpath evidence receives 3-AI consensus",
+    )
+
+
+def validate_v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
+    inventory = v1_5_generic_migration_inventory()
+    valid_statuses = {"pod_verified_generic", "deferred_app_specific", "diagnostic_blocked"}
+    valid_backend_scope = set(ACTIVE_V1_5_BACKENDS)
+    for row in inventory:
+        for field in (
+            "goal",
+            "app",
+            "subpath",
+            "status",
+            "generic_primitive",
+            "summary_primitive",
+            "backend_scope",
+            "remaining_app_specific_work",
+            "public_wording_authorized",
+            "boundary",
+        ):
+            if field not in row:
+                raise ValueError(f"missing v1.5 migration inventory field: {field}")
+        if row["status"] not in valid_statuses:
+            raise ValueError(f"invalid v1.5 migration status: {row['status']}")
+        backend_scope = tuple(row["backend_scope"])
+        if not backend_scope:
+            raise ValueError("backend_scope must not be empty")
+        if any(backend not in valid_backend_scope for backend in backend_scope):
+            raise ValueError(f"invalid active v1.5 backend scope: {backend_scope}")
+        if row["public_wording_authorized"]:
+            raise ValueError("v1.5 migration inventory must not authorize public wording")
+    return inventory
