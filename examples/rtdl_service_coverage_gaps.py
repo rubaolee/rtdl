@@ -69,27 +69,35 @@ def _run_rows(backend: str, case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict
 
 
 def _run_embree_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, int], ...]:
-    return rt.fixed_radius_count_threshold_2d_embree(
+    result = rt.run_generic_fixed_radius_count_threshold_2d(
         case["households"],
         case["clinics"],
         radius=RADIUS,
         threshold=1,
+        backend="embree",
     )
+    return tuple(result["rows"])
 
 
 def _run_optix_prepared_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | None | str]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["clinics"], max_radius=RADIUS) as prepared:
-        covered_count = prepared.count_threshold_reached(
-            case["households"],
-            radius=RADIUS,
-            threshold=1,
-        )
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=case["clinics"],
+        query_points=case["households"],
+        radius=RADIUS,
+        threshold=1,
+        backend="optix",
+        max_radius=RADIUS,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    covered_count = int(result["threshold_reached_count"])
     return {
         "covered_household_count": int(covered_count),
         "uncovered_household_count": len(case["households"]) - int(covered_count),
         "uncovered_household_ids": None,
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
     }
 
 

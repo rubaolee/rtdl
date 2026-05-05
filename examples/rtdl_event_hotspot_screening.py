@@ -63,33 +63,40 @@ def _run_rows(backend: str, case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict
 
 
 def _run_embree_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, int], ...]:
-    count_rows = rt.fixed_radius_count_threshold_2d_embree(
+    result = rt.run_generic_fixed_radius_count_threshold_2d(
         case["events"],
         case["events"],
         radius=RADIUS,
         threshold=0,
+        backend="embree",
     )
     return tuple(
         {
             "query_id": int(row["query_id"]),
             "neighbor_count": max(0, int(row["neighbor_count"]) - 1),
         }
-        for row in count_rows
+        for row in result["rows"]
     )
 
 
 def _run_optix_prepared_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | None | str]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["events"], max_radius=RADIUS) as prepared:
-        hotspot_count = prepared.count_threshold_reached(
-            case["events"],
-            radius=RADIUS,
-            threshold=HOTSPOT_THRESHOLD + 1,
-        )
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=case["events"],
+        query_points=case["events"],
+        radius=RADIUS,
+        threshold=HOTSPOT_THRESHOLD + 1,
+        backend="optix",
+        max_radius=RADIUS,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    hotspot_count = int(result["threshold_reached_count"])
     return {
         "hotspot_count": int(hotspot_count),
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
         "hotspots": None,
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
     }
 
 
