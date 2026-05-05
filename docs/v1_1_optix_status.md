@@ -3,6 +3,11 @@
 This page summarizes the current `main` post-v1.0 OptiX/Embree evidence. It is
 not a new release package and does not move the `v1.0` tag.
 
+v1.1, v1.2, v1.3, and v1.4 are internal engineering milestones only. Do not
+create public release packages, release gates, or tags for those milestones;
+the next planned public release line is v1.5 unless the roadmap is explicitly
+changed.
+
 ## Current Decision
 
 | App row | v1.1 status | Public boundary |
@@ -56,7 +61,7 @@ Do not describe this as:
 
 ## Next Work
 
-v1.2 should focus on NVIDIA OptiX performance work. v1.5 should replace
+v1.2 should focus on internal NVIDIA OptiX performance work. v1.5 should replace
 app-specific native paths with reviewed generic traversal-plus-reduction
 primitives. Vulkan, HIPRT, and Apple RT remain existing proof surfaces and are
 not active implementation targets before v2.1.

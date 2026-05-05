@@ -17,6 +17,9 @@ class Goal1266V12OptixPlanTest(unittest.TestCase):
             "Embree remains the same-contract CPU RT/BVH baseline",
             "Vulkan, HIPRT, and Apple RT receive no new implementation work before v2.1",
             "does not authorize public wording",
+            "does not authorize public wording,\nrelease claims, public release gates, tags",
+            "v1.1, v1.2, v1.3, and v1.4 are internal milestones on `main`",
+            "Do not create public release packages, public release gates, or tags\n  before v1.5",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)

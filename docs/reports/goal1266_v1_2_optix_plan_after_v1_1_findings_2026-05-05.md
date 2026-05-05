@@ -3,7 +3,7 @@
 Date: 2026-05-05
 
 Status: internal v1.2 execution plan. This does not authorize public wording,
-release claims, or new backend scope.
+release claims, public release gates, tags, or new backend scope.
 
 ## Scope
 
@@ -17,6 +17,9 @@ Active implementation scope before v2.1:
 - Vulkan, HIPRT, and Apple RT receive no new implementation work before v2.1.
 - Existing Vulkan/HIPRT/Apple proof surfaces remain documented and tested where
   already present.
+- v1.1, v1.2, v1.3, and v1.4 are internal milestones on `main`, not public
+  releases. Do not create public release packages, public release gates, or tags
+  before v1.5 unless the roadmap is explicitly changed.
 
 ## Source Inputs
 

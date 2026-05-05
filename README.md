@@ -41,18 +41,23 @@ installation metadata.
 | --- | --- |
 | Release | current released version: `v1.0` |
 | v1.0 | released app-shaped RTDL proof, documentation, and bounded evidence |
-| Current main | v1.1 post-release Embree/OptiX hardening and triage |
+| Current main | v1.1-v1.4 are internal milestones toward v1.5 |
 | v1.1 OptiX evidence | `polygon_pair_overlap_area_rows` has bounded 3-AI-reviewed positive wording |
 | Still not speedup-ready | `database_analytics`, `graph_analytics`, and `polygon_set_jaccard` |
 
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-## v1.0 Direction
+## Roadmap Boundary
 
 v1.0 is for proving that a Python-hosted RT DSL works on real app-shaped
 workloads. It may use app-specific engine customization where needed to make
 supported apps measurable and useful. That is v1.0 proof machinery, not the final architecture.
+
+v1.1 through v1.4 are internal engineering milestones on `main`, not public
+release packages or tags. They harden Embree/OptiX evidence, push NVIDIA RT
+performance, define the primitive ABI/parity contracts, and migrate the first
+compatibility wrappers.
 
 v1.5 is planned to replace app-specific engine customization with reviewed
 generic traversal-plus-reduction primitives. v2.0 targets broader end-to-end performance through explicit zero-copy partnership with GPU compute tools for
