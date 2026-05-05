@@ -125,8 +125,11 @@ Goal1262 confirms `polygon_set_jaccard` correctness at chunk `1024`, including
 speedup wording is authorized. Goal1262/Goal1264 show `database_analytics`
 execution-unblocked but mixed, with warm-query median still favoring Embree.
 Goal1264 confirms graph visibility correctness and a fast OptiX any-hit kernel,
-but total graph OptiX time remains slower because host-side input construction,
-scene/ray prepare, and ray packing dominate.
+but total graph OptiX time remains slower in accepted evidence because host-side
+input construction, scene/ray prepare, and ray packing dominate. Current v1.2
+main locally remediates the visibility-edge ray packing path with direct packed
+rays; Goal1267 pod timing must verify whether that changes NVIDIA total-path
+timing before any speedup wording changes.
 
 Current supported workload families:
 

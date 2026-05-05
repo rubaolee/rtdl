@@ -114,7 +114,9 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             "Goal1262/Goal1264 show execution-unblocked but mixed evidence",
             "warm-query median still favors Embree",
             "Goal1264 confirms graph visibility correctness",
-            "host-side input construction, scene/ray prepare, and ray packing dominate",
+            "accepted evidence because host-side\ninput construction, scene/ray prepare, and ray packing dominate",
+            "Goal1267 pod timing must verify",
+            "`numpy_packed_rays` metadata",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, combined)

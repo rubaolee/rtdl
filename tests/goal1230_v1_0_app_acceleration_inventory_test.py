@@ -38,6 +38,8 @@ class Goal1230V10AppAccelerationInventoryTest(unittest.TestCase):
         self.assertIn("warm-query median still favors Embree", text)
         self.assertIn("Goal1264 confirms correctness and fast OptiX any-hit kernel", text)
         self.assertIn("host preparation dominates", text)
+        self.assertIn("current v1.2 main adds direct packed-ray construction", text)
+        self.assertIn("Goal1267 must verify NVIDIA total-path impact", text)
         self.assertIn("Goal1263 reviewed bounded positive wording", text)
         self.assertIn("candidate-count mismatch remains a v1.2 diagnostic boundary", text)
         self.assertIn("Goal1262 confirms correctness at chunk `1024`", text)

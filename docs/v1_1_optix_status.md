@@ -14,7 +14,7 @@ changed.
 | --- | --- | --- |
 | `polygon_pair_overlap_area_rows` | accepted bounded positive OptiX candidate | RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation only |
 | `database_analytics` | execution-unblocked, still mixed | compact-summary DB path only; no SQL, DBMS, full dashboard, row materialization, or broad DB speedup claim |
-| `graph_analytics` | correctness-ready, total OptiX path still slower | bounded visibility any-hit path only; no graph database, BFS system, triangle analytics, or whole graph speedup claim |
+| `graph_analytics` | correctness-ready, accepted total OptiX evidence still slower; v1.2 main has local packed-ray remediation awaiting pod timing | bounded visibility any-hit path only; no graph database, BFS system, triangle analytics, or whole graph speedup claim |
 | `polygon_set_jaccard` | correctness-ready at chunk `1024`, still slower | chunked native-assisted candidate discovery plus native exact continuation only |
 
 ## How To Read Slower OptiX Rows
@@ -28,6 +28,11 @@ Embree but the cause is identified, such as host input construction,
 scene/ray prepare, ray packing, Python materialization, or non-RT continuation.
 That outcome is valid engineering evidence and v1.5/v2.0 design input, but it
 does not authorize positive public RTX speedup wording.
+
+Current v1.2 `main` locally remediates the graph visibility-edge ray-packing
+path by constructing packed rays directly. That is an implementation change and
+metadata contract update only; Goal1267 pod timing must confirm whether the
+NVIDIA total path improves.
 
 ## Allowed Polygon-Pair Wording
 
@@ -58,6 +63,8 @@ Do not describe this as:
 - [Goal1263 polygon-pair scale sweep intake](reports/goal1263_polygon_pair_scale_sweep_intake_2026-05-04.md)
 - [Goal1263 three-AI consensus](reports/goal1263_three_ai_consensus_polygon_pair_v1_1_2026-05-04.md)
 - [Goal1264 DB/graph scale probe intake](reports/goal1264_db_graph_scale_probe_intake_2026-05-04.md)
+- Goal1267 current-source pod packet: tracks `ray_pack_mode` and requires
+  `numpy_packed_rays` metadata for graph OptiX visibility artifacts.
 
 ## Next Work
 

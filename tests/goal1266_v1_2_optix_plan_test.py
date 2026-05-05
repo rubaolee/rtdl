@@ -45,7 +45,8 @@ class Goal1266V12OptixPlanTest(unittest.TestCase):
             "`database_analytics`",
             "`polygon_set_jaccard`",
             "candidate_count_matches_expected: false",
-            "host-side input construction, scene/ray prepare, and ray packing dominate",
+            "Current v1.2 `main` locally replaces the visibility-edge ray object path",
+            "records `ray_pack_mode`",
             "warm-query median still favors Embree",
             "chunk `1024`",
         ):
