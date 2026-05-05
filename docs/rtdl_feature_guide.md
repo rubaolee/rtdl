@@ -120,6 +120,13 @@ Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive
 candidate discovery plus native C++ exact area continuation; monolithic polygon
 overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app
 polygon-overlap speedup remain outside the claim.
+Goal1262 confirms `polygon_set_jaccard` correctness at chunk `1024`, including
+8192 copies, but OptiX remains slower than Embree and no positive Jaccard
+speedup wording is authorized. Goal1262/Goal1264 show `database_analytics`
+execution-unblocked but mixed, with warm-query median still favoring Embree.
+Goal1264 confirms graph visibility correctness and a fast OptiX any-hit kernel,
+but total graph OptiX time remains slower because host-side input construction,
+scene/ray prepare, and ray packing dominate.
 
 Current supported workload families:
 
@@ -317,7 +324,8 @@ RTDL does not yet claim:
 - that every backend/workload/boundary combination is equally mature
 - full polygon overlay materialization (`overlay` is still a seed analogue)
 - generic continuous polygon Jaccard or generic continuous overlap-area closure
-- native Embree/OptiX/Vulkan Jaccard maturity
+- positive public Jaccard speedup wording; the current safe chunk is `1024`
+  and the accepted evidence still has OptiX slower than Embree
 - arbitrary SQL execution or DBMS behavior in the `v0.7.0` DB line
 - faithful full Barnes-Hut or full N-body solver acceleration
 - robot Vulkan support before the Goal509 hit-count parity defect is fixed

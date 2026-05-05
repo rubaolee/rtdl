@@ -86,6 +86,7 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
                 "docs/v1_0_app_acceleration_inventory.md",
                 "docs/app_engine_support_matrix.md",
                 "docs/v1_1_optix_status.md",
+                "docs/rtdl_feature_guide.md",
             )
         )
         for phrase in (
@@ -106,6 +107,7 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
                 "docs/v1_0_app_acceleration_inventory.md",
                 "docs/app_engine_support_matrix.md",
                 "docs/v1_1_optix_status.md",
+                "docs/rtdl_feature_guide.md",
             )
         )
         for phrase in (
