@@ -226,24 +226,32 @@ def _run_optix_directed_threshold(
     radius: float,
     label: str,
 ) -> dict[str, object]:
-    prepare_start = time.perf_counter()
-    prepared_context = rt.prepare_optix_fixed_radius_count_threshold_2d(target, max_radius=radius)
-    prepare_sec = time.perf_counter() - prepare_start
-    with prepared_context as prepared:
-        query_start = time.perf_counter()
-        covered_count = prepared.count_threshold_reached(source, radius=radius, threshold=1)
-        query_sec = time.perf_counter() - query_start
-    violating = [] if int(covered_count) == len(source) else None
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=target,
+        query_points=source,
+        radius=radius,
+        threshold=1,
+        backend="optix",
+        max_radius=radius,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    covered_count = int(result["threshold_reached_count"])
+    run_phases = result["run_phases"]
+    prepare_sec = float(run_phases["scene_prepare_sec"])
+    query_sec = float(run_phases["query_fixed_radius_threshold_reached_count_sec"])
+    violating = [] if covered_count == len(source) else None
     return {
         "label": label,
         "radius": radius,
         "source_count": len(source),
-        "covered_source_count": int(covered_count),
-        "within_threshold": int(covered_count) == len(source),
+        "covered_source_count": covered_count,
+        "within_threshold": covered_count == len(source),
         "violating_source_ids": violating,
         "identity_parity_available": violating is not None,
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
         "run_phases": {
             "optix_prepare_sec": prepare_sec,
             "optix_query_sec": query_sec,

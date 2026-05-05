@@ -7,34 +7,44 @@ from examples import rtdl_barnes_hut_force_app as app
 
 
 class _PreparedNodeCoverage:
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc, tb) -> None:
-        return None
-
-    def run(self, bodies, *, radius: float, threshold: int):
-        raise AssertionError("node coverage app path should not materialize count rows")
-
-    def count_threshold_reached(self, bodies, *, radius: float, threshold: int):
-        self.body_count = len(bodies)
+    def __call__(
+        self,
+        *,
+        search_points,
+        query_points,
+        radius: float,
+        threshold: int,
+        backend: str,
+        max_radius: float,
+        prepare_scene,
+    ):
+        self.body_count = len(query_points)
         self.radius = radius
         self.threshold = threshold
-        return len(bodies)
+        self.backend = backend
+        self.max_radius = max_radius
+        return {
+            "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "threshold_reached_count": len(query_points),
+        }
 
 
 class _PartialPreparedNodeCoverage(_PreparedNodeCoverage):
-    def count_threshold_reached(self, bodies, *, radius: float, threshold: int):
-        self.body_count = len(bodies)
-        self.radius = radius
-        self.threshold = threshold
-        return max(0, len(bodies) - 1)
+    def __call__(self, **kwargs):
+        result = super().__call__(**kwargs)
+        result["threshold_reached_count"] = max(0, self.body_count - 1)
+        return result
 
 
 class Goal882BarnesHutNodeCoverageOptixSubpathTest(unittest.TestCase):
     def test_optix_node_coverage_mode_uses_prepared_traversal(self) -> None:
         prepared = _PreparedNodeCoverage()
-        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", return_value=prepared) as mocked:
+        with mock.patch.object(
+            app.rt,
+            "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+            side_effect=prepared,
+        ) as mocked:
             payload = app.run_app(
                 "optix",
                 optix_summary_mode="node_coverage_prepared",
@@ -46,9 +56,12 @@ class Goal882BarnesHutNodeCoverageOptixSubpathTest(unittest.TestCase):
         self.assertEqual(prepared.body_count, payload["body_count"])
         self.assertEqual(prepared.radius, app.NODE_DISCOVERY_RADIUS)
         self.assertEqual(prepared.threshold, 1)
+        self.assertEqual(prepared.backend, "optix")
         self.assertTrue(payload["rt_core_accelerated"])
         self.assertTrue(payload["node_coverage"]["all_bodies_have_node_candidate"])
         self.assertEqual(payload["node_coverage"]["summary_mode"], "scalar_threshold_count")
+        self.assertEqual(payload["node_coverage"]["generic_primitive"], "FIXED_RADIUS_COUNT_THRESHOLD_2D")
+        self.assertEqual(payload["node_coverage"]["summary_primitive"], "REDUCE_INT(COUNT)")
         self.assertIsNone(payload["node_coverage"]["row_count"])
         self.assertTrue(payload["node_coverage"]["identity_parity_available"])
         self.assertTrue(payload["matches_oracle"])
@@ -58,7 +71,11 @@ class Goal882BarnesHutNodeCoverageOptixSubpathTest(unittest.TestCase):
         self.assertIn("not force-vector reduction", payload["boundary"])
 
     def test_optix_node_coverage_failure_keeps_scalar_identity_boundary(self) -> None:
-        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", return_value=_PartialPreparedNodeCoverage()):
+        with mock.patch.object(
+            app.rt,
+            "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+            side_effect=_PartialPreparedNodeCoverage(),
+        ):
             payload = app.run_app(
                 "optix",
                 optix_summary_mode="node_coverage_prepared",

@@ -376,17 +376,27 @@ def _run_optix_node_coverage(
     *,
     radius: float,
 ) -> dict[str, object]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(_node_points(nodes), max_radius=radius) as prepared:
-        covered_count = prepared.count_threshold_reached(_body_points(bodies), radius=radius, threshold=1)
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=_node_points(nodes),
+        query_points=_body_points(bodies),
+        radius=radius,
+        threshold=1,
+        backend="optix",
+        max_radius=radius,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    covered_count = int(result["threshold_reached_count"])
     return {
         "radius": radius,
         "body_count": len(bodies),
-        "covered_body_count": int(covered_count),
-        "all_bodies_have_node_candidate": int(covered_count) == len(bodies),
-        "uncovered_body_ids": [] if int(covered_count) == len(bodies) else None,
-        "identity_parity_available": int(covered_count) == len(bodies),
+        "covered_body_count": covered_count,
+        "all_bodies_have_node_candidate": covered_count == len(bodies),
+        "uncovered_body_ids": [] if covered_count == len(bodies) else None,
+        "identity_parity_available": covered_count == len(bodies),
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
     }
 
 

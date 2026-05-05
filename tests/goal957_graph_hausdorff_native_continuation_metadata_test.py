@@ -8,21 +8,26 @@ from examples import rtdl_hausdorff_distance_app as hausdorff_app
 
 
 class _FakePreparedThreshold:
-    def __init__(self, target, max_radius: float):
-        self.target = target
-        self.max_radius = max_radius
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc, tb) -> None:
-        return None
-
-    def run(self, query_points, *, radius: float, threshold: int):
-        raise AssertionError("Hausdorff OptiX threshold metadata path should use scalar count")
-
-    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
-        return len(query_points)
+    def __call__(
+        self,
+        *,
+        search_points,
+        query_points,
+        radius: float,
+        threshold: int,
+        backend: str,
+        max_radius: float,
+        prepare_scene,
+    ):
+        return {
+            "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "threshold_reached_count": len(query_points),
+            "run_phases": {
+                "scene_prepare_sec": 0.001,
+                "query_fixed_radius_threshold_reached_count_sec": 0.002,
+            },
+        }
 
 
 class _FakePreparedScene:
@@ -92,8 +97,8 @@ class Goal957GraphHausdorffNativeContinuationMetadataTest(unittest.TestCase):
     def test_hausdorff_optix_threshold_reports_native_continuation(self) -> None:
         with mock.patch.object(
             hausdorff_app.rt,
-            "prepare_optix_fixed_radius_count_threshold_2d",
-            side_effect=_FakePreparedThreshold,
+            "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+            side_effect=_FakePreparedThreshold(),
         ):
             payload = hausdorff_app.run_app(
                 "optix",

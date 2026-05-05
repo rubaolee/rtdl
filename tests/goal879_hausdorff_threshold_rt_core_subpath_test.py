@@ -7,37 +7,48 @@ from examples import rtdl_hausdorff_distance_app as app
 
 
 class _FakePreparedThreshold:
-    def __init__(self, target, max_radius: float):
-        self.target = target
-        self.max_radius = max_radius
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc, tb) -> None:
-        return None
-
-    def run(self, query_points, *, radius: float, threshold: int):
-        raise AssertionError("directed threshold app path should not materialize count rows")
-
-    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
+    def __call__(
+        self,
+        *,
+        search_points,
+        query_points,
+        radius: float,
+        threshold: int,
+        backend: str,
+        max_radius: float,
+        prepare_scene,
+    ):
         self.query_count = len(query_points)
         self.radius = radius
         self.threshold = threshold
-        return len(query_points)
+        self.backend = backend
+        self.max_radius = max_radius
+        return {
+            "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "threshold_reached_count": len(query_points),
+            "run_phases": {
+                "scene_prepare_sec": 0.001,
+                "query_fixed_radius_threshold_reached_count_sec": 0.002,
+            },
+        }
 
 
 class _PartialPreparedThreshold(_FakePreparedThreshold):
-    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
-        self.query_count = len(query_points)
-        self.radius = radius
-        self.threshold = threshold
-        return max(0, len(query_points) - 1)
+    def __call__(self, **kwargs):
+        result = super().__call__(**kwargs)
+        result["threshold_reached_count"] = max(0, self.query_count - 1)
+        return result
 
 
 class Goal879HausdorffThresholdRtCoreSubpathTest(unittest.TestCase):
     def test_optix_threshold_summary_matches_oracle_when_radius_covers_fixture(self) -> None:
-        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=_FakePreparedThreshold):
+        fake = _FakePreparedThreshold()
+        with mock.patch.object(
+            app.rt,
+            "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+            side_effect=fake,
+        ):
             payload = app.run_app(
                 "optix",
                 copies=2,
@@ -51,13 +62,19 @@ class Goal879HausdorffThresholdRtCoreSubpathTest(unittest.TestCase):
         self.assertTrue(payload["matches_oracle"])
         self.assertIsNone(payload["hausdorff_distance"])
         self.assertEqual(payload["directed_a_to_b"]["summary_mode"], "scalar_threshold_count")
+        self.assertEqual(payload["directed_a_to_b"]["generic_primitive"], "FIXED_RADIUS_COUNT_THRESHOLD_2D")
+        self.assertEqual(payload["directed_a_to_b"]["summary_primitive"], "REDUCE_INT(COUNT)")
         self.assertIsNone(payload["directed_a_to_b"]["row_count"])
         self.assertTrue(payload["directed_a_to_b"]["identity_parity_available"])
         self.assertTrue(payload["oracle_decision_matches"])
         self.assertTrue(payload["oracle_identity_matches"])
 
     def test_optix_threshold_failure_keeps_scalar_identity_boundary(self) -> None:
-        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=_PartialPreparedThreshold):
+        with mock.patch.object(
+            app.rt,
+            "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+            side_effect=_PartialPreparedThreshold(),
+        ):
             payload = app.run_app(
                 "optix",
                 copies=1,
