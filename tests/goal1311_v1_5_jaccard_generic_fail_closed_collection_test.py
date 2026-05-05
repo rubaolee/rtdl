@@ -70,6 +70,17 @@ class Goal1311V15JaccardGenericFailClosedCollectionTest(unittest.TestCase):
 
         score_fn.assert_not_called()
 
+    def test_generic_jaccard_summary_rejects_empty_score_rows_for_non_empty_candidates(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "exact_score_fn returned no rows"):
+            rt.run_generic_polygon_set_jaccard_summary(
+                left=(),
+                right=(),
+                candidate_pairs={(1, 10)},
+                backend="embree",
+                exact_score_fn=lambda *_args: (),
+                collection_capacity=1,
+            )
+
     def test_app_embree_summary_uses_generic_collection_metadata(self) -> None:
         with (
             mock.patch.object(jaccard_app, "_positive_candidate_pairs_embree", side_effect=_candidate_pairs),

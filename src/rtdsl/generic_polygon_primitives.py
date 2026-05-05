@@ -120,6 +120,11 @@ def run_generic_polygon_set_jaccard_summary(
     collect_sec = time.perf_counter() - collect_start
     score_start = time.perf_counter()
     rows = tuple(exact_score_fn(left, right, frozenset(collection["candidate_pairs"])))
+    if not rows and collection["candidate_pairs"]:
+        raise RuntimeError(
+            "exact_score_fn returned no rows for non-empty candidate_pairs; "
+            "cannot produce Jaccard summary"
+        )
     score_sec = time.perf_counter() - score_start
     summary = (
         dict(rows[0])
