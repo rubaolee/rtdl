@@ -1,13 +1,13 @@
 {
   "archive": {
-    "archive_bytes": 1559079,
+    "archive_bytes": 1561676,
     "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz",
-    "archive_sha256": "9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1",
+    "archive_sha256": "b2e9810823153a2746f49c87bd60a0eff06856dbde9e89fbe51cdfc4a1f30106",
     "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
     "date": "2026-04-30",
     "goal": "Goal1175 staged source archive builder",
-    "manifest_aggregate_sha256": "2d3ebfa92bba42ea636f720d2dea8a55cf9fa57b66dbc3b38a16663ad6164687",
-    "manifest_file_count": 1849,
+    "manifest_aggregate_sha256": "3825c22c216d2ed09f8ee32bcb8562ff72dc88ab6a69fe845744895584c0063c",
+    "manifest_file_count": 1851,
     "valid": true
   },
   "boundary": "This packet is execution-only v1.2 evidence collection. It does not authorize public wording, release claims, or positive speedup claims. Slower OptiX results may close only as optix_still_slower_with_reason when correctness and bottleneck evidence are preserved.",
@@ -18,7 +18,7 @@
       "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 docs/reports/goal1267_live_pod_2026-05-05/",
       "tar -xzf docs/reports/goal1267_live_pod_2026-05-05/goal1267_v1_2_optix_targeted_pod_results.tgz -C docs/reports/goal1267_live_pod_2026-05-05"
     ],
-    "run_on_pod": "ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1 WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh",
+    "run_on_pod": "ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=b2e9810823153a2746f49c87bd60a0eff06856dbde9e89fbe51cdfc4a1f30106 WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh",
     "upload": [
       "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz root@<pod_host>:/tmp/goal1267_rtdl_source_2026-05-05.tar.gz",
       "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1267_v1_2_optix_targeted_pod_executor.sh root@<pod_host>:/tmp/goal1267_executor.sh"
@@ -137,19 +137,20 @@
   "preconditions": [
     "Run only after local inspection says pod timing is needed.",
     "Use one RTX-class Linux pod session and reuse it for all four target rows.",
+    "Run scripts/rtdl_pod_env_probe.sh on the pod and preserve rtdl_pod_env.json with the copied artifacts.",
     "Collect same-contract Embree and OptiX artifacts before interpretation.",
     "Run the graph prepared-repeat probe from Goal1269 to separate repeated query cost from one-time scene/ray preparation.",
     "Preserve Goal1270 candidate diagnostics for polygon-pair and Jaccard artifacts.",
     "Do not open Vulkan, HIPRT, or Apple RT implementation work before v2.1.",
     "Copy back result tgz and sha256 before any intake report."
   ],
-  "source_commit": "4d1cbc7fd16859d07c83728705713bd53d106df3",
+  "source_commit": "4ce2ddd96e6c56d43dcb2704483f72bd5dbd6db2",
   "valid": true,
   "verification": {
-    "actual_sha256": "9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1",
+    "actual_sha256": "b2e9810823153a2746f49c87bd60a0eff06856dbde9e89fbe51cdfc4a1f30106",
     "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz",
     "exists": true,
-    "expected_sha256": "9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1",
+    "expected_sha256": "b2e9810823153a2746f49c87bd60a0eff06856dbde9e89fbe51cdfc4a1f30106",
     "valid": true
   }
 }

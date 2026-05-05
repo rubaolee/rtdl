@@ -3,14 +3,14 @@
 Date: 2026-05-05
 
 Valid: `True`
-Source commit: `4d1cbc7fd16859d07c83728705713bd53d106df3`
+Source commit: `4ce2ddd96e6c56d43dcb2704483f72bd5dbd6db2`
 Plan source: `docs/reports/goal1266_v1_2_optix_plan_after_v1_1_findings_2026-05-05.md`
 
 ## Archive
 
 - path: `/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz`
-- sha256: `9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1`
-- bytes: `1559079`
+- sha256: `b2e9810823153a2746f49c87bd60a0eff06856dbde9e89fbe51cdfc4a1f30106`
+- bytes: `1561676`
 
 ## Targets
 
@@ -25,6 +25,7 @@ Plan source: `docs/reports/goal1266_v1_2_optix_plan_after_v1_1_findings_2026-05-
 
 - Run only after local inspection says pod timing is needed.
 - Use one RTX-class Linux pod session and reuse it for all four target rows.
+- Run scripts/rtdl_pod_env_probe.sh on the pod and preserve rtdl_pod_env.json with the copied artifacts.
 - Collect same-contract Embree and OptiX artifacts before interpretation.
 - Run the graph prepared-repeat probe from Goal1269 to separate repeated query cost from one-time scene/ray preparation.
 - Preserve Goal1270 candidate diagnostics for polygon-pair and Jaccard artifacts.
@@ -43,7 +44,7 @@ scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1267_v
 ## Run On Pod
 
 ```bash
-ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1 WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh
+ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=b2e9810823153a2746f49c87bd60a0eff06856dbde9e89fbe51cdfc4a1f30106 WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh
 ```
 
 ## Copy Back
