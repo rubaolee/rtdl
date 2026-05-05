@@ -88,4 +88,53 @@ and replaces it with a backend-neutral native polygon-pair area summary. The
 path remains diagnostic: no public Jaccard speedup wording, no fused GPU
 Jaccard kernel claim, and no Vulkan/HIPRT/Apple RT work before v2.1.
 
-Next required evidence is pod OptiX validation from GitHub state.
+## Pod OptiX Evidence
+
+Pushed commit:
+
+```text
+628820a Add backend-neutral polygon area summary ABI
+```
+
+Pod checkout:
+
+```text
+root@213.173.99.11 -p 39006
+/workspace/rtdl_goal1292
+```
+
+The pod reset from GitHub `origin/main`, rebuilt OptiX, and validated focused
+tests:
+
+```text
+RTDL_OPTIX_LIB=/workspace/rtdl_goal1292/build/librtdl_optix.so PYTHONPATH=src:. python3 -m unittest tests.goal1321_v1_5_native_polygon_pair_area_summary_abi_test tests.goal1320_v1_5_jaccard_generic_score_reduction_test tests.goal1318_v1_5_jaccard_native_collection_routing_test
+```
+
+Result:
+
+```text
+Ran 11 tests in 5.141s
+OK
+```
+
+Real OptiX app-route run:
+
+```text
+RTDL_OPTIX_LIB=/workspace/rtdl_goal1292/build/librtdl_optix.so PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py --backend optix --copies 2 --output-mode summary --collection-capacity 16
+```
+
+Observed:
+
+- `collection.native_collection=true`
+- `collection.backend=optix`
+- `collection.complete_candidate_coverage=true`
+- `native_continuation_backend=native_polygon_pair_area_summary`
+- `exact_score_continuation=backend_neutral_native_polygon_pair_area_summary`
+- `mode=diagnostic_native_candidate_plus_generic_area_summary`
+- `score_reduction_primitive=POLYGON_SET_JACCARD_SCORE_REDUCTION`
+- `score_reduction.integer_parity_values`: intersection `10`, left `26`,
+  right `22`, union `38`
+- final `jaccard_similarity=0.2631578947368421`
+
+The path remains diagnostic because the OptiX route is still slower than Embree
+and public speedup wording is not authorized.
