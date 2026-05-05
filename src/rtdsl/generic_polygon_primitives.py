@@ -104,6 +104,82 @@ def collect_k_bounded_candidate_pairs(
     return metadata
 
 
+def _validate_complete_collection(collection: dict[str, Any], *, backend: str) -> tuple[tuple[int, int], ...]:
+    if collection.get("primitive") != "COLLECT_K_BOUNDED":
+        raise ValueError("native collection must use primitive COLLECT_K_BOUNDED")
+    if collection.get("backend") != backend:
+        raise ValueError("native collection backend does not match requested backend")
+    if collection.get("overflowed"):
+        raise RuntimeError(
+            "COLLECT_K_BOUNDED native collection reported overflow; "
+            f"failure_mode={collection.get('failure_mode', 'fail_closed_overflow')}"
+        )
+    if not collection.get("complete_candidate_coverage"):
+        raise RuntimeError("COLLECT_K_BOUNDED native collection did not report complete candidate coverage")
+    if "candidate_pairs" not in collection:
+        raise ValueError("native collection must include candidate_pairs")
+    return tuple((int(left_id), int(right_id)) for left_id, right_id in collection["candidate_pairs"])
+
+
+def run_generic_polygon_set_jaccard_score_reduction(
+    *,
+    left: Any,
+    right: Any,
+    collection: dict[str, Any],
+    backend: str,
+    exact_score_fn,
+) -> dict[str, Any]:
+    """Run generic Jaccard score reduction after complete bounded collection."""
+    normalized_backend = _validate_backend(backend)
+    candidate_pairs = _validate_complete_collection(collection, backend=normalized_backend)
+    score_start = time.perf_counter()
+    rows = tuple(exact_score_fn(left, right, frozenset(candidate_pairs)))
+    if not rows and candidate_pairs:
+        raise RuntimeError(
+            "exact_score_fn returned no rows for non-empty candidate_pairs; "
+            "cannot produce Jaccard summary"
+        )
+    score_sec = time.perf_counter() - score_start
+    summary = (
+        dict(rows[0])
+        if rows
+        else {
+            "intersection_area": 0,
+            "left_area": 0,
+            "right_area": 0,
+            "union_area": 0,
+            "jaccard_similarity": 0.0,
+        }
+    )
+    integer_parity_values = {
+        "intersection_area": int(summary["intersection_area"]),
+        "left_area": int(summary["left_area"]),
+        "right_area": int(summary["right_area"]),
+        "union_area": int(summary["union_area"]),
+    }
+    return {
+        "primitive": "POLYGON_SET_JACCARD_SCORE_REDUCTION",
+        "summary_primitive": "REDUCE_FLOAT(SUM)",
+        "backend": normalized_backend,
+        "candidate_pair_count": len(candidate_pairs),
+        "result_layout": "summary_float64_sums_plus_ratio",
+        "dtype": "float64",
+        "summary": summary,
+        "rows": rows,
+        "integer_parity_values": integer_parity_values,
+        "abs_tol": V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL,
+        "rel_tol": V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL,
+        "run_phases": {
+            "query_polygon_jaccard_reduce_float_sum_sec": score_sec,
+        },
+        "claim_boundary": (
+            "Generic v1.5 diagnostic polygon-set Jaccard score reduction after complete "
+            "COLLECT_K_BOUNDED coverage; current implementation may call a native continuation "
+            "function but is not a fused GPU Jaccard kernel and not public speedup wording."
+        ),
+    }
+
+
 def run_generic_polygon_set_jaccard_summary(
     *,
     left: Any,
@@ -124,57 +200,37 @@ def run_generic_polygon_set_jaccard_summary(
         native_collection = False
     else:
         native_collection = bool(collection.get("native_collection", True))
-        if collection.get("primitive") != "COLLECT_K_BOUNDED":
-            raise ValueError("native collection must use primitive COLLECT_K_BOUNDED")
-        if collection.get("backend") != normalized_backend:
-            raise ValueError("native collection backend does not match requested backend")
-        if collection.get("overflowed"):
-            raise RuntimeError(
-                "COLLECT_K_BOUNDED native collection reported overflow; "
-                f"failure_mode={collection.get('failure_mode', 'fail_closed_overflow')}"
-            )
-        if not collection.get("complete_candidate_coverage"):
-            raise RuntimeError("COLLECT_K_BOUNDED native collection did not report complete candidate coverage")
-        if "candidate_pairs" not in collection:
-            raise ValueError("native collection must include candidate_pairs")
+        _validate_complete_collection(collection, backend=normalized_backend)
     collect_sec = time.perf_counter() - collect_start
-    score_start = time.perf_counter()
-    rows = tuple(exact_score_fn(left, right, frozenset(collection["candidate_pairs"])))
-    if not rows and collection["candidate_pairs"]:
-        raise RuntimeError(
-            "exact_score_fn returned no rows for non-empty candidate_pairs; "
-            "cannot produce Jaccard summary"
-        )
-    score_sec = time.perf_counter() - score_start
-    summary = (
-        dict(rows[0])
-        if rows
-        else {
-            "intersection_area": 0,
-            "left_area": 0,
-            "right_area": 0,
-            "union_area": 0,
-            "jaccard_similarity": 0.0,
-        }
+    score_reduction = run_generic_polygon_set_jaccard_score_reduction(
+        left=left,
+        right=right,
+        collection=collection | {"backend": normalized_backend},
+        backend=normalized_backend,
+        exact_score_fn=exact_score_fn,
     )
     return {
         "primitive": "POLYGON_SET_JACCARD_SUMMARY",
         "collection_primitive": collection["primitive"],
-        "summary_primitive": "REDUCE_FLOAT(SUM)",
+        "score_reduction_primitive": score_reduction["primitive"],
+        "summary_primitive": score_reduction["summary_primitive"],
         "backend": normalized_backend,
         "result_layout": "single_jaccard_summary_row",
         "dtype": "float64",
-        "candidate_pair_count": len(collection["candidate_pairs"]),
+        "candidate_pair_count": score_reduction["candidate_pair_count"],
         "collection": {
             key: value for key, value in collection.items() if key != "candidate_pairs"
         } | {"native_collection": native_collection},
-        "summary": summary,
-        "rows": rows,
+        "score_reduction": {
+            key: value for key, value in score_reduction.items() if key not in {"rows", "summary"}
+        },
+        "summary": score_reduction["summary"],
+        "rows": score_reduction["rows"],
         "abs_tol": V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL,
         "rel_tol": V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL,
         "run_phases": {
             "query_polygon_collect_k_bounded_sec": collect_sec,
-            "query_polygon_jaccard_reduce_float_sum_sec": score_sec,
+            **score_reduction["run_phases"],
         },
         "claim_boundary": (
             "Generic v1.5 diagnostic Jaccard scoring over fail-closed bounded candidate pairs; "
