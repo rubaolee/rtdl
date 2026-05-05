@@ -67,11 +67,15 @@ def attach_polygon_pair_primitive_contract(
 ) -> dict[str, Any]:
     result = deepcopy(payload)
     candidate_row_count = result.get("candidate_row_count")
-    result["primitive_contract"] = polygon_pair_primitive_contract(
+    contract = polygon_pair_primitive_contract(
         backend=backend,
         output_mode=output_mode,
         candidate_row_count=int(candidate_row_count) if candidate_row_count is not None else None,
     )
+    from .primitive_contract_schema import validate_primitive_contract
+
+    validate_primitive_contract(contract)
+    result["primitive_contract"] = contract
     return result
 
 
@@ -130,9 +134,13 @@ def attach_polygon_jaccard_diagnostic_contract(
 ) -> dict[str, Any]:
     result = deepcopy(payload)
     candidate_row_count = result.get("candidate_row_count")
-    result["primitive_contract"] = polygon_jaccard_diagnostic_contract(
+    contract = polygon_jaccard_diagnostic_contract(
         backend=backend,
         output_mode=output_mode,
         candidate_row_count=int(candidate_row_count) if candidate_row_count is not None else None,
     )
+    from .primitive_contract_schema import validate_primitive_contract
+
+    validate_primitive_contract(contract)
+    result["primitive_contract"] = contract
     return result

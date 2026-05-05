@@ -82,10 +82,14 @@ def attach_sales_risk_primitive_contract(
         "materialize" in str(phase) for phase in run_phases
     )
     session = result.get("session", {})
-    result["primitive_contract"] = sales_risk_primitive_contract(
+    contract = sales_risk_primitive_contract(
         backend=backend,
         output_mode=output_mode,
         materialization_free=materialization_free,
         chunked=bool(isinstance(session, dict) and session.get("chunked_compact_summary")),
     )
+    from .primitive_contract_schema import validate_primitive_contract
+
+    validate_primitive_contract(contract)
+    result["primitive_contract"] = contract
     return result

@@ -74,11 +74,15 @@ def attach_visibility_edges_primitive_contract(
 ) -> dict[str, Any]:
     """Attach v1.4 primitive metadata without mutating the caller's payload."""
     payload = deepcopy(section)
-    payload["primitive_contract"] = visibility_edges_primitive_contract(
+    contract = visibility_edges_primitive_contract(
         backend=backend,
         output_mode=output_mode,
         prepared_summary=prepared_summary,
     )
+    from .primitive_contract_schema import validate_primitive_contract
+
+    validate_primitive_contract(contract)
+    payload["primitive_contract"] = contract
     return payload
 
 
