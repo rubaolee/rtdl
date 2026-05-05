@@ -1,6 +1,19 @@
 #pragma once
 
-#include <embree4/rtcore.h>
+#if defined(__has_include)
+#  if __has_include(<embree4/rtcore.h>)
+#    include <embree4/rtcore.h>
+#    define RTDL_EMBREE_API_MAJOR 4
+#  elif __has_include(<embree3/rtcore.h>)
+#    include <embree3/rtcore.h>
+#    define RTDL_EMBREE_API_MAJOR 3
+#  else
+#    error "RTDL Embree backend requires Embree 3 or Embree 4 headers"
+#  endif
+#else
+#  include <embree4/rtcore.h>
+#  define RTDL_EMBREE_API_MAJOR 4
+#endif
 
 #include <algorithm>
 #include <atomic>
@@ -18,6 +31,35 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+
+#if RTDL_EMBREE_API_MAJOR < 4
+using RTCIntersectArguments = RTCIntersectContext;
+using RTCOccludedArguments = RTCIntersectContext;
+
+inline void rtcInitIntersectArguments(RTCIntersectArguments* args) {
+  rtcInitIntersectContext(args);
+}
+
+inline void rtcInitOccludedArguments(RTCOccludedArguments* args) {
+  rtcInitIntersectContext(args);
+}
+
+inline void rtdlRtcIntersect1(RTCScene scene, RTCRayHit* rayhit, RTCIntersectArguments* args) {
+  rtcIntersect1(scene, args, rayhit);
+}
+
+inline void rtdlRtcOccluded1(RTCScene scene, RTCRay* ray, RTCOccludedArguments* args) {
+  rtcOccluded1(scene, args, ray);
+}
+#else
+inline void rtdlRtcIntersect1(RTCScene scene, RTCRayHit* rayhit, RTCIntersectArguments* args) {
+  rtcIntersect1(scene, rayhit, args);
+}
+
+inline void rtdlRtcOccluded1(RTCScene scene, RTCRay* ray, RTCOccludedArguments* args) {
+  rtcOccluded1(scene, ray, args);
+}
+#endif
 
 #if defined(__has_include)
 #  if __has_include(<geos_c.h>)

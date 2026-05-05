@@ -3268,6 +3268,23 @@ def _default_embree_prefix(system: str) -> Path:
     return Path("/usr")
 
 
+def _embree_header_dir_name(embree_prefix: Path) -> str | None:
+    include = embree_prefix / "include"
+    if (include / "embree4" / "rtcore.h").exists():
+        return "embree4"
+    if (include / "embree3" / "rtcore.h").exists():
+        return "embree3"
+    return None
+
+
+def _embree_library_name(header_dir_name: str) -> str:
+    if header_dir_name == "embree4":
+        return "embree4"
+    if header_dir_name == "embree3":
+        return "embree3"
+    raise ValueError(f"unsupported Embree header directory: {header_dir_name}")
+
+
 @functools.lru_cache(maxsize=1)
 def _load_embree_library():
     library_path = _ensure_embree_library()
@@ -3831,11 +3848,14 @@ def _ensure_embree_library() -> Path:
     geos_libs = _geos_pkg_config_flags("--libs")
 
     embree_include = embree_prefix / "include"
-    if not embree_prefix.exists() or not embree_include.exists():
+    embree_header_dir_name = _embree_header_dir_name(embree_prefix)
+    if not embree_prefix.exists() or not embree_include.exists() or embree_header_dir_name is None:
         raise RuntimeError(
             "Embree is not installed at the configured prefix. "
-            "Set RTDL_EMBREE_PREFIX to a prefix with include/embree4 or install Embree first."
+            "Set RTDL_EMBREE_PREFIX to a prefix with include/embree4 or "
+            "include/embree3, or install Embree first."
         )
+    embree_library_name = _embree_library_name(embree_header_dir_name)
 
     newest_source_mtime = max(path.stat().st_mtime for path in source_paths)
     force_build = os.environ.get("RTDL_FORCE_EMBREE_REBUILD", "").lower() in {"1", "true", "yes"}
@@ -3856,13 +3876,13 @@ def _ensure_embree_library() -> Path:
         if embree_lib.exists():
             if system == "Windows":
                 command.extend([
-                    str(embree_lib / "embree4.lib"),
+                    str(embree_lib / f"{embree_library_name}.lib"),
                     str(embree_lib / "tbb12.lib"),
                 ])
             else:
                 command.extend([
                     f"-L{embree_lib}",
-                    "-lembree4",
+                    f"-l{embree_library_name}",
                 ])
                 command.append(f"-Wl,-rpath,{embree_lib}")
         elif system == "Darwin":
@@ -3871,7 +3891,7 @@ def _ensure_embree_library() -> Path:
                 "Set RTDL_EMBREE_PREFIX to the Homebrew embree prefix."
             )
         elif system != "Windows":
-            command.append("-lembree4")
+            command.append(f"-l{embree_library_name}")
         if system != "Windows" and tbb_prefix.exists() and (tbb_prefix / "lib").exists():
             command.append(f"-L{tbb_prefix / 'lib'}")
             command.append(f"-Wl,-rpath,{tbb_prefix / 'lib'}")

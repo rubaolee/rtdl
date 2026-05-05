@@ -671,6 +671,8 @@ void segment_intersect(const RTCIntersectFunctionNArguments* args) {
   }
 }
 
+void polygon_intersect_filter(const RTCFilterFunctionNArguments* args);
+
 void polygon_intersect(const RTCIntersectFunctionNArguments* args) {
   if (args->N != 1 || args->valid[0] != -1 || g_query_state == nullptr) {
     return;
@@ -694,7 +696,11 @@ void polygon_intersect(const RTCIntersectFunctionNArguments* args) {
     filter_args.ray = reinterpret_cast<RTCRayN*>(&rayhit->ray);
     filter_args.hit = reinterpret_cast<RTCHitN*>(&rayhit->hit);
     filter_args.N = 1;
+#if RTDL_EMBREE_API_MAJOR < 4
+    polygon_intersect_filter(&filter_args);
+#else
     rtcInvokeIntersectFilterFromGeometry(args, &filter_args);
+#endif
     return;
   }
   if (g_query_kind == QueryKind::kOverlay) {

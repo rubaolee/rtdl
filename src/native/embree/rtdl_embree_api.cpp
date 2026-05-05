@@ -631,7 +631,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
             set_ray(&rayhit, probe.a, direction, 1.0f);
             RTCIntersectArguments args;
             rtcInitIntersectArguments(&args);
-            rtcIntersect1(holder.scene, &rayhit, &args);
+            rtdlRtcIntersect1(holder.scene, &rayhit, &args);
             g_query_kind = QueryKind::kNone;
             g_query_state = nullptr;
             std::stable_sort(
@@ -802,7 +802,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
         set_ray(&rayhit, start, dir, 1.0f);
         RTCIntersectArguments args;
         rtcInitIntersectArguments(&args);
-        rtcIntersect1(holder.scene, &rayhit, &args);
+        rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       }
       for (const Polygon2D& right_polygon : right_values) {
         OverlayPairFlags flags = flags_by_right_id[right_polygon.id];
@@ -868,7 +868,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_hitcount(
       set_ray(&rayhit, ray.o, ray.d, ray.tmax);
       RTCIntersectArguments args;
       rtcInitIntersectArguments(&args);
-      rtcIntersect1(holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       rows.push_back({ray.id, hit_count});
     }
     g_query_kind = QueryKind::kNone;
@@ -935,7 +935,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_hitcount_3d(
       set_ray_3d(&rayhit, ray.o, ray.d, ray.tmax);
       RTCIntersectArguments args;
       rtcInitIntersectArguments(&args);
-      rtcIntersect1(holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       rows.push_back({ray.id, hit_count});
     }
     g_query_kind = QueryKind::kNone;
@@ -996,7 +996,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_anyhit(
       set_ray_occluded(&embree_ray, ray.o, ray.d, ray.tmax);
       RTCOccludedArguments args;
       rtcInitOccludedArguments(&args);
-      rtcOccluded1(holder.scene, &embree_ray, &args);
+      rtdlRtcOccluded1(holder.scene, &embree_ray, &args);
       rows.push_back({ray.id, any_hit});
     }
     g_query_kind = QueryKind::kNone;
@@ -1062,7 +1062,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_anyhit_3d(
       set_ray_occluded_3d(&embree_ray, ray.o, ray.d, ray.tmax);
       RTCOccludedArguments args;
       rtcInitOccludedArguments(&args);
-      rtcOccluded1(holder.scene, &embree_ray, &args);
+      rtdlRtcOccluded1(holder.scene, &embree_ray, &args);
       rows.push_back({ray.id, any_hit});
     }
     g_query_kind = QueryKind::kNone;
@@ -1131,7 +1131,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_closest_hit_3d(
       set_ray_3d(&rayhit, ray.o, ray.d, ray.tmax);
       RTCIntersectArguments args;
       rtcInitIntersectArguments(&args);
-      rtcIntersect1(holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       if (has_hit) {
         rows.push_back({ray.id, best_triangle_id, best_t});
       }
@@ -2194,7 +2194,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
       rtcInitIntersectArguments(&args);
       g_query_kind = QueryKind::kGraphBfsExpand;
       g_query_state = &state;
-      rtcIntersect1(holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
     }
@@ -2323,7 +2323,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
       rtcInitIntersectArguments(&u_args);
       g_query_kind = QueryKind::kGraphTriangleProbe;
       g_query_state = &u_state;
-      rtcIntersect1(holder.scene, &u_rayhit, &u_args);
+      rtdlRtcIntersect1(holder.scene, &u_rayhit, &u_args);
 
       std::vector<uint32_t> v_neighbors;
       GraphTriangleProbeQueryState v_state {
@@ -2338,7 +2338,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
       RTCIntersectArguments v_args;
       rtcInitIntersectArguments(&v_args);
       g_query_state = &v_state;
-      rtcIntersect1(holder.scene, &v_rayhit, &v_args);
+      rtdlRtcIntersect1(holder.scene, &v_rayhit, &v_args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
 
@@ -2451,7 +2451,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
       rtcInitIntersectArguments(&args);
       g_query_kind = QueryKind::kDbScanRay;
       g_query_state = &state;
-      rtcIntersect1(holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
       db_throw_if_limit_error();
@@ -2532,7 +2532,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_count(
       rtcInitIntersectArguments(&args);
       g_query_kind = QueryKind::kDbGroupedCountRay;
       g_query_state = &state;
-      rtcIntersect1(holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
       db_throw_if_limit_error();
@@ -2624,7 +2624,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
       rtcInitIntersectArguments(&args);
       g_query_kind = QueryKind::kDbGroupedSumRay;
       g_query_state = &state;
-      rtcIntersect1(holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
       db_throw_if_limit_error();
@@ -2807,7 +2807,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_conjunctive_scan(
     db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
       g_query_kind = QueryKind::kDbScanRay;
       g_query_state = &state;
-      rtcIntersect1(impl->holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
     });
@@ -2865,7 +2865,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_count(
     db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
       g_query_kind = QueryKind::kDbGroupedCountRay;
       g_query_state = &state;
-      rtcIntersect1(impl->holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
     });
@@ -2937,7 +2937,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_sum(
     db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
       g_query_kind = QueryKind::kDbGroupedSumRay;
       g_query_state = &state;
-      rtcIntersect1(impl->holder.scene, &rayhit, &args);
+      rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
     });

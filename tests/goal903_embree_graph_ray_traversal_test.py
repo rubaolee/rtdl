@@ -102,10 +102,10 @@ class Goal903EmbreeGraphRayTraversalTest(unittest.TestCase):
             "RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan", 1
         )[0]
         self.assertIn("rtcSetGeometryIntersectFunction(holder.geometry, graph_edge_point_intersect)", bfs_body)
-        self.assertIn("rtcIntersect1(holder.scene", bfs_body)
+        self.assertIn("rtdlRtcIntersect1(holder.scene", bfs_body)
         self.assertNotIn("rtcPointQuery", bfs_body)
         self.assertIn("rtcSetGeometryIntersectFunction(holder.geometry, graph_edge_point_intersect)", triangle_body)
-        self.assertIn("rtcIntersect1(holder.scene", triangle_body)
+        self.assertIn("rtdlRtcIntersect1(holder.scene", triangle_body)
         self.assertNotIn("rtcPointQuery", triangle_body)
 
 
