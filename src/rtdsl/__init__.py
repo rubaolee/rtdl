@@ -316,6 +316,8 @@ from .ir import Predicate
 from .ir import RayJoinPlan
 from .ir import RTExecutionPlan
 from .ir import RefineOp
+from .jaccard_performance_diagnostics import polygon_set_jaccard_optix_slower_reason
+from .jaccard_performance_diagnostics import validate_polygon_set_jaccard_optix_slower_reason
 from .lowering import lower_to_execution_plan
 from .lowering import lower_to_rayjoin
 from .oracle_runtime import oracle_version
@@ -672,6 +674,7 @@ __all__ = [
     "point_nearest_segment",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard",
+    "polygon_set_jaccard_optix_slower_reason",
     "prepare_hiprt",
     "prepare_hiprt_db_table",
     "prepare_hiprt_fixed_radius_neighbors_3d",
@@ -711,6 +714,7 @@ __all__ = [
     "polygon_pair_primitive_contract",
     "primitive_contract_schema_errors",
     "validate_primitive_contract",
+    "validate_polygon_set_jaccard_optix_slower_reason",
     "FROZEN_BEFORE_V2_1_BACKENDS",
     "v1_4_primitive_contract_inventory",
     "validate_v1_4_primitive_contract_inventory",

@@ -60,7 +60,9 @@ class Goal1310V15JaccardCollectKBoundedContractTest(unittest.TestCase):
             "native device-level fail-closed bounded collection implementation",
             row["remaining_app_specific_work"],
         )
+        self.assertNotIn("optix_still_slower_with_reason", row["remaining_app_specific_work"])
         self.assertIn("no silent truncation", row["boundary"])
+        self.assertIn("OptiX-slower reason is recorded", row["boundary"])
         self.assertFalse(row["public_wording_authorized"])
 
 

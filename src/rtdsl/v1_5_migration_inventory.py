@@ -177,10 +177,9 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "remaining_app_specific_work": (
                 "native device-level fail-closed bounded collection implementation",
                 "native score reduction after complete candidate coverage",
-                "optix_still_slower_with_reason",
             ),
             "public_wording_authorized": False,
-            "boundary": "diagnostic only; Python generic wrapper is fail-closed with no silent truncation; native device-level promotion and public wording remain blocked",
+            "boundary": "diagnostic only; Python generic wrapper is fail-closed with no silent truncation; OptiX-slower reason is recorded; native device-level promotion and public wording remain blocked",
         },
     )
 

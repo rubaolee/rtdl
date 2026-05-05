@@ -1,0 +1,123 @@
+{
+  "app": "polygon_set_jaccard",
+  "backend": "embree",
+  "backend_mode": "embree_native_assisted",
+  "boundary": "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact grid-cell set-area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery and the same native C++ continuation. These modes are RT-candidate plus native-continuation pipelines, not monolithic GPU Jaccard kernels.",
+  "candidate_row_count": 384,
+  "copies": 128,
+  "generic_jaccard_summary": {
+    "abs_tol": 1e-09,
+    "backend": "embree",
+    "candidate_pair_count": 384,
+    "claim_boundary": "Generic v1.5 diagnostic Jaccard scoring over fail-closed bounded candidate pairs; score reduction runs only after complete candidate coverage; not public speedup wording.",
+    "collection": {
+      "capacity": 512,
+      "complete_candidate_coverage": true,
+      "emitted_count": 384,
+      "failure_mode": "fail_closed_overflow",
+      "ordering_policy": "stable_by_left_id_then_right_id_after_candidate_discovery",
+      "overflow_policy": "no_silent_truncation",
+      "overflowed": false,
+      "primitive": "COLLECT_K_BOUNDED",
+      "public_wording_allowed": false,
+      "status": "experimental_diagnostic_only",
+      "truncation_allowed": false
+    },
+    "collection_primitive": "COLLECT_K_BOUNDED",
+    "dtype": "float64",
+    "primitive": "POLYGON_SET_JACCARD_SUMMARY",
+    "rel_tol": 1e-09,
+    "result_layout": "single_jaccard_summary_row",
+    "rows": [
+      {
+        "intersection_area": 640,
+        "jaccard_similarity": 0.2631578947368421,
+        "left_area": 1664,
+        "right_area": 1408,
+        "union_area": 2432
+      }
+    ],
+    "run_phases": {
+      "query_polygon_collect_k_bounded_sec": 0.00020368583500385284,
+      "query_polygon_jaccard_reduce_float_sum_sec": 0.03697788529098034
+    },
+    "summary": {
+      "intersection_area": 640,
+      "jaccard_similarity": 0.2631578947368421,
+      "left_area": 1664,
+      "right_area": 1408,
+      "union_area": 2432
+    },
+    "summary_primitive": "REDUCE_FLOAT(SUM)"
+  },
+  "left_polygon_count": 256,
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp",
+  "optix_performance": {
+    "class": "python_interface_dominated",
+    "note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell set-area/Jaccard continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU Jaccard kernel."
+  },
+  "output_mode": "summary",
+  "primitive_contract": {
+    "active_v1_4_backend": true,
+    "app_row": "polygon_set_jaccard",
+    "backend": "embree",
+    "backend_contract_role": "cpu_rt_baseline_and_fallback",
+    "backend_scope": [
+      "embree",
+      "optix"
+    ],
+    "bounded_collection_policy": {
+      "collection_primitive": "COLLECT_K_BOUNDED",
+      "complete_candidate_coverage_required": true,
+      "failure_mode": "fail_closed_overflow",
+      "overflow_policy": "no_silent_truncation",
+      "score_reduction_allowed_on_overflow": false,
+      "status": "experimental_diagnostic_only",
+      "truncation_allowed": false
+    },
+    "build_layout": "polygon2d_build_buffer",
+    "candidate_primitive": "ANY_HIT",
+    "candidate_row_count": 384,
+    "chunk_policy_required_for_public_evidence": true,
+    "claim_boundary": "polygon_set_jaccard remains diagnostic: native RT traversal can identify candidate polygon pairs, but bounded collection, chunk policy, and exact set-area scoring remain outside stable v1.4 primitive promotion. Public wording remains blocked while OptiX is slower than Embree.",
+    "exact_score_continuation": "app_specific_native_cpp",
+    "experimental_collection_primitive": "COLLECT_K_BOUNDED",
+    "future_score_primitive": "REDUCE_FLOAT(SUM)",
+    "future_score_primitive_status": "blocked_by_collect_k_bounded_runtime",
+    "migration_status": "diagnostic_metadata_only",
+    "mode": "diagnostic_native_candidate_plus_app_specific_exact_score",
+    "output_mode": "summary",
+    "phase_counters": [
+      "rt_candidate_discovery_sec",
+      "native_exact_continuation_sec",
+      "query_and_materialize_sec",
+      "summary_postprocess_sec"
+    ],
+    "primitive": "ANY_HIT",
+    "probe_layout": "polygon2d_probe_buffer",
+    "public_wording_allowed": false,
+    "result_layout": "single_jaccard_summary_row",
+    "same_contract_baseline_required": true,
+    "status": "optix_still_slower_with_reason"
+  },
+  "right_polygon_count": 256,
+  "row_count": 1,
+  "rt_core_accelerated": false,
+  "rt_core_candidate_discovery_active": false,
+  "run_phases": {
+    "input_construction_sec": 0.002977496013045311,
+    "native_exact_continuation_sec": 0.03697788529098034,
+    "query_polygon_collect_k_bounded_sec": 0.00020368583500385284,
+    "query_polygon_jaccard_reduce_float_sum_sec": 0.03697788529098034,
+    "rt_candidate_discovery_sec": 0.1197133231908083,
+    "summary_postprocess_sec": 9.909272193908691e-07
+  },
+  "summary": {
+    "intersection_area": 640,
+    "jaccard_similarity": 0.2631578947368421,
+    "left_area": 1664,
+    "right_area": 1408,
+    "union_area": 2432
+  }
+}

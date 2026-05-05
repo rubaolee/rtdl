@@ -1,0 +1,18 @@
+{
+  "app": "polygon_set_jaccard",
+  "candidate_discovery_slowdown": 11.232191869498777,
+  "claim_boundary": "Correctness-ready diagnostic only; no positive Jaccard speedup wording, no whole-app GIS claim, and no native device-level Jaccard reduction promotion.",
+  "embree_candidate_discovery_sec": 0.1197133231908083,
+  "embree_candidate_row_count": 384,
+  "embree_native_exact_continuation_sec": 0.03697788529098034,
+  "embree_observed_pipeline_sec": 0.15669120848178864,
+  "native_exact_continuation_slowdown": 1.7637671729660633,
+  "observed_pipeline_slowdown": 8.99771856555866,
+  "optix_candidate_discovery_sec": 1.3446430154144764,
+  "optix_candidate_row_count": 256,
+  "optix_native_exact_continuation_sec": 0.06522038020193577,
+  "optix_observed_pipeline_sec": 1.4098633956164122,
+  "reason": "The bounded Jaccard path is not a monolithic GPU Jaccard kernel. It performs multi-pass RT-assisted candidate discovery, transfers/normalizes candidate-pair IDs, then runs native exact set-area scoring. In the recorded pod run, OptiX produced a smaller complete candidate set than Embree but spent more time in candidate discovery and exact native continuation, so final correctness matched while observed performance remained slower.",
+  "same_exact_summary": true,
+  "status": "optix_slower_reason_recorded"
+}
