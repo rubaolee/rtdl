@@ -75,6 +75,7 @@ from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import configure_embree
+from .embree_runtime import collect_polygon_pair_candidates_bounded_embree
 from .embree_runtime import embree_thread_config
 from .embree_runtime import embree_version
 from .embree_runtime import EmbreeThreadConfig
@@ -839,6 +840,7 @@ __all__ = [
     "PreparedEmbreeFixedRadiusCountThreshold2D",
     "PreparedEmbreeKnnRows2D",
     "configure_embree",
+    "collect_polygon_pair_candidates_bounded_embree",
     "embree_thread_config",
     "embree_version",
     "OptixRowView",
