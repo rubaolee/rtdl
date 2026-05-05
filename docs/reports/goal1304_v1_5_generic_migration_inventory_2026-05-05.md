@@ -47,8 +47,8 @@ v1_5_generic_migration_blockers()
 
 | App | Subpath | Status | What unblocks it |
 | --- | --- | --- | --- |
-| `robot_collision_screening` | `prepared_pose_flags` | `deferred_app_specific` | Define a grouped boolean reduction ABI. |
-| `database_analytics` | `sales_risk_compact_summary` | `deferred_app_specific` | Define generic grouped integer `COUNT/SUM` wrappers for numeric predicate lowering. |
+| `robot_collision_screening` | `prepared_pose_flags` | `deferred_app_specific` | Define grouped `REDUCE_INT(COUNT)` with count-to-boolean result layout. |
+| `database_analytics` | `sales_risk_compact_summary` | `deferred_app_specific` | Define generic grouped integer `REDUCE_INT(COUNT)` and `REDUCE_INT(SUM)` wrappers for numeric predicate lowering. |
 | `polygon_pair_overlap_area_rows` | `candidate_discovery_and_exact_area` | `deferred_app_specific` | Define reviewed `REDUCE_FLOAT(SUM)` tolerance/result-shape contract for exact area aggregation. |
 | `polygon_set_jaccard` | `chunked_candidate_scoring` | `diagnostic_blocked` | Define `COLLECT_K_BOUNDED` overflow behavior and scoring reduction, then prove correctness/performance; current status remains slower/diagnostic. |
 

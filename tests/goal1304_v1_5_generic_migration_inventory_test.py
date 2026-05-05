@@ -36,12 +36,12 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             "deferred_app_specific",
         )
         self.assertIn(
-            "define grouped boolean reduction ABI",
+            "define grouped count-to-boolean result layout",
             by_row[("robot_collision_screening", "prepared_pose_flags")]["remaining_app_specific_work"],
         )
         self.assertEqual(
             by_row[("database_analytics", "sales_risk_compact_summary")]["summary_primitive"],
-            "REDUCE_INT(COUNT|SUM)",
+            "REDUCE_INT(COUNT), REDUCE_INT(SUM)",
         )
         self.assertEqual(
             by_row[("polygon_pair_overlap_area_rows", "candidate_discovery_and_exact_area")]["summary_primitive"],
@@ -61,7 +61,7 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
 
     def test_blockers_name_grouped_reductions_and_public_wording_gate(self) -> None:
         blockers = "\n".join(rt.v1_5_generic_migration_blockers())
-        self.assertIn("grouped boolean reduction ABI", blockers)
+        self.assertIn("grouped REDUCE_INT(COUNT)", blockers)
         self.assertIn("grouped integer COUNT/SUM", blockers)
         self.assertIn("REDUCE_FLOAT(SUM)", blockers)
         self.assertIn("COLLECT_K_BOUNDED", blockers)

@@ -450,6 +450,10 @@ from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .generic_prepared_status import generic_prepared_anyhit_count_backend_status
 from .generic_prepared_status import generic_prepared_anyhit_count_blockers
+from .grouped_reduction_contracts import V1_5_EXPERIMENTAL_PRIMITIVES
+from .grouped_reduction_contracts import V1_5_STABLE_REDUCTION_PRIMITIVES
+from .grouped_reduction_contracts import v1_5_grouped_reduction_contracts
+from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
 from .v1_5_migration_inventory import v1_5_generic_migration_blockers
 from .v1_5_migration_inventory import v1_5_generic_migration_inventory
 from .v1_5_migration_inventory import validate_v1_5_generic_migration_inventory
@@ -705,6 +709,10 @@ __all__ = [
     "run_generic_ray_triangle_any_hit_count",
     "generic_prepared_anyhit_count_backend_status",
     "generic_prepared_anyhit_count_blockers",
+    "V1_5_EXPERIMENTAL_PRIMITIVES",
+    "V1_5_STABLE_REDUCTION_PRIMITIVES",
+    "v1_5_grouped_reduction_contracts",
+    "validate_v1_5_grouped_reduction_contracts",
     "v1_5_generic_migration_blockers",
     "v1_5_generic_migration_inventory",
     "validate_v1_5_generic_migration_inventory",

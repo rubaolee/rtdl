@@ -136,11 +136,11 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "subpath": "prepared_pose_flags",
             "status": "deferred_app_specific",
             "generic_primitive": "ANY_HIT",
-            "summary_primitive": "GROUPED_ANY_BOOL",
+            "summary_primitive": "REDUCE_INT(COUNT)",
             "backend_scope": ("optix",),
-            "remaining_app_specific_work": ("define grouped boolean reduction ABI",),
+            "remaining_app_specific_work": ("define grouped count-to-boolean result layout",),
             "public_wording_authorized": False,
-            "boundary": "pose-level grouped reduction is not yet in the v1.5 generic ABI",
+            "boundary": "pose-level grouped count-to-boolean output is not yet in the v1.5 generic ABI",
         },
         {
             "goal": "Goal1274",
@@ -148,7 +148,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "subpath": "sales_risk_compact_summary",
             "status": "deferred_app_specific",
             "generic_primitive": "REDUCE_INT",
-            "summary_primitive": "REDUCE_INT(COUNT|SUM)",
+            "summary_primitive": "REDUCE_INT(COUNT), REDUCE_INT(SUM)",
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": ("numeric predicate lowering", "grouped count/sum wrapper"),
             "public_wording_authorized": False,
@@ -183,7 +183,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
 
 def v1_5_generic_migration_blockers() -> tuple[str, ...]:
     return (
-        "prepared_pose_flags requires a grouped boolean reduction ABI before it can leave app-specific OptiX code",
+        "prepared_pose_flags requires grouped REDUCE_INT(COUNT) with count-to-boolean result layout before it can leave app-specific OptiX code",
         "database compact summaries require generic grouped integer COUNT/SUM wrappers",
         "polygon exact area and Jaccard scoring require reviewed REDUCE_FLOAT(SUM) tolerance and result-shape contracts",
         "COLLECT_K_BOUNDED remains experimental and must declare overflow/truncation/failure behavior",
