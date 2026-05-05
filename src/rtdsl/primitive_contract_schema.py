@@ -80,6 +80,24 @@ def primitive_contract_schema_errors(contract: dict[str, Any]) -> tuple[str, ...
             errors.append("Jaccard public_wording_allowed must be false")
         if contract.get("migration_status") != "diagnostic_metadata_only":
             errors.append("Jaccard must remain diagnostic_metadata_only")
+        bounded_collection_policy = contract.get("bounded_collection_policy")
+        if not isinstance(bounded_collection_policy, dict):
+            errors.append("Jaccard must declare bounded_collection_policy")
+        else:
+            if bounded_collection_policy.get("collection_primitive") != "COLLECT_K_BOUNDED":
+                errors.append("Jaccard bounded collection primitive must be COLLECT_K_BOUNDED")
+            if bounded_collection_policy.get("status") != "experimental_diagnostic_only":
+                errors.append("Jaccard bounded collection must remain experimental_diagnostic_only")
+            if bounded_collection_policy.get("overflow_policy") != "no_silent_truncation":
+                errors.append("Jaccard bounded collection must reject silent truncation")
+            if bounded_collection_policy.get("failure_mode") != "fail_closed_overflow":
+                errors.append("Jaccard bounded collection must fail closed on overflow")
+            if bounded_collection_policy.get("truncation_allowed") is not False:
+                errors.append("Jaccard bounded collection truncation_allowed must be false")
+            if bounded_collection_policy.get("complete_candidate_coverage_required") is not True:
+                errors.append("Jaccard bounded collection requires complete candidate coverage")
+            if bounded_collection_policy.get("score_reduction_allowed_on_overflow") is not False:
+                errors.append("Jaccard score reduction must not run after overflow")
 
     return tuple(errors)
 

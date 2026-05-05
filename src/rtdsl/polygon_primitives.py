@@ -3,6 +3,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from .bounded_collection_contracts import v1_5_collect_k_bounded_contracts
+
 
 ACTIVE_V1_4_POLYGON_BACKENDS = ("embree", "optix")
 
@@ -87,6 +89,7 @@ def polygon_jaccard_diagnostic_contract(
 ) -> dict[str, Any]:
     normalized_backend = backend.lower().replace("-", "_")
     native_candidate_discovery = normalized_backend in ACTIVE_V1_4_POLYGON_BACKENDS
+    collect_k_contract = v1_5_collect_k_bounded_contracts()[0]
     return {
         "app_row": "polygon_set_jaccard",
         "status": "optix_still_slower_with_reason",
@@ -94,7 +97,7 @@ def polygon_jaccard_diagnostic_contract(
         "candidate_primitive": "ANY_HIT" if native_candidate_discovery else "not_applicable",
         "experimental_collection_primitive": "COLLECT_K_BOUNDED",
         "future_score_primitive": "REDUCE_FLOAT(SUM)",
-        "future_score_primitive_status": "deferred_until_generic_float_reduction_contract",
+        "future_score_primitive_status": "blocked_by_collect_k_bounded_runtime",
         "backend": normalized_backend,
         "backend_scope": ACTIVE_V1_4_POLYGON_BACKENDS,
         "active_v1_4_backend": normalized_backend in ACTIVE_V1_4_POLYGON_BACKENDS,
@@ -107,6 +110,19 @@ def polygon_jaccard_diagnostic_contract(
         "output_mode": output_mode,
         "candidate_row_count": candidate_row_count,
         "chunk_policy_required_for_public_evidence": True,
+        "bounded_collection_policy": {
+            "collection_primitive": collect_k_contract["collection_primitive"],
+            "status": collect_k_contract["status"],
+            "overflow_policy": collect_k_contract["overflow_policy"],
+            "failure_mode": collect_k_contract["failure_mode"],
+            "truncation_allowed": collect_k_contract["truncation_allowed"],
+            "complete_candidate_coverage_required": collect_k_contract[
+                "complete_candidate_coverage_required"
+            ],
+            "score_reduction_allowed_on_overflow": collect_k_contract[
+                "score_reduction_allowed_on_overflow"
+            ],
+        },
         "public_wording_allowed": False,
         "exact_score_continuation": "app_specific_native_cpp",
         "phase_counters": (

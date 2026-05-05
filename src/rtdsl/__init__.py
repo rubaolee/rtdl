@@ -109,6 +109,11 @@ from .app_support_matrix import (
 from .app_support_matrix import APP_ENGINES
 from .app_support_matrix import APP_SUPPORT_STATUSES
 from .app_support_matrix import public_apps
+from .bounded_collection_contracts import V1_5_BOUNDED_COLLECTION_FAILURE_MODES
+from .bounded_collection_contracts import V1_5_BOUNDED_COLLECTION_PRIMITIVES
+from .bounded_collection_contracts import V1_5_BOUNDED_COLLECTION_PUBLIC_WORDING_ALLOWED
+from .bounded_collection_contracts import v1_5_collect_k_bounded_contracts
+from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contracts
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1002,6 +1007,11 @@ __all__ = [
     "APP_ENGINES",
     "ENGINE_SUPPORT_STATUSES",
     "APP_SUPPORT_STATUSES",
+    "V1_5_BOUNDED_COLLECTION_FAILURE_MODES",
+    "V1_5_BOUNDED_COLLECTION_PRIMITIVES",
+    "V1_5_BOUNDED_COLLECTION_PUBLIC_WORDING_ALLOWED",
+    "v1_5_collect_k_bounded_contracts",
+    "validate_v1_5_collect_k_bounded_contracts",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",

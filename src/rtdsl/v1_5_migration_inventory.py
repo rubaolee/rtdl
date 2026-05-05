@@ -167,16 +167,20 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "boundary": "candidate discovery plus exact integer-grid area summary only; no generic overlay, broad GIS, or public speedup wording",
         },
         {
-            "goal": "Goal1274",
+            "goal": "Goal1310",
             "app": "polygon_set_jaccard",
             "subpath": "chunked_candidate_scoring",
             "status": "diagnostic_blocked",
             "generic_primitive": "COLLECT_K_BOUNDED",
             "summary_primitive": "REDUCE_FLOAT(SUM)",
             "backend_scope": ACTIVE_V1_5_BACKENDS,
-            "remaining_app_specific_work": ("bounded collection overflow policy", "score reduction", "optix_still_slower_with_reason"),
+            "remaining_app_specific_work": (
+                "native fail-closed bounded collection implementation",
+                "score reduction after complete candidate coverage",
+                "optix_still_slower_with_reason",
+            ),
             "public_wording_authorized": False,
-            "boundary": "diagnostic only; no public wording promotion",
+            "boundary": "diagnostic only; COLLECT_K_BOUNDED policy is fail-closed with no silent truncation and no public wording promotion",
         },
     )
 
@@ -186,7 +190,7 @@ def v1_5_generic_migration_blockers() -> tuple[str, ...]:
         "prepared_pose_flags requires grouped REDUCE_INT(COUNT) with count-to-boolean result layout before it can leave app-specific OptiX code",
         "database compact summaries require generic grouped integer COUNT/SUM wrappers",
         "polygon exact area and Jaccard scoring require reviewed REDUCE_FLOAT(SUM) tolerance and result-shape contracts",
-        "COLLECT_K_BOUNDED remains experimental and must declare overflow/truncation/failure behavior",
+        "COLLECT_K_BOUNDED remains experimental and must fail closed on overflow before Jaccard score reduction can run",
         "public NVIDIA wording remains blocked until exact-subpath evidence receives 3-AI consensus",
     )
 
