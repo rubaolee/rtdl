@@ -167,6 +167,39 @@ if [ "${build_rc}" -eq 0 ]; then
   done
 fi
 
+python3 - "${RESULT_DIR}" <<'PY' | tee "${RESULT_DIR}/goal1267_graph_ray_pack_metadata.json"
+import json
+import sys
+from pathlib import Path
+
+result = Path(sys.argv[1])
+rows = []
+for path in sorted(result.glob("graph_optix_visibility_*.json")):
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    for record in payload.get("records", []):
+        if record.get("label") != "optix_visibility_anyhit":
+            continue
+        section_phases = record.get("section_run_phases", {})
+        rows.append({
+            "artifact": str(path),
+            "copies": payload.get("copies"),
+            "ray_pack_mode": record.get("ray_pack_mode"),
+            "has_ray_pack_mode": "ray_pack_mode" in record,
+            "ray_pack_sec": section_phases.get("ray_pack_sec"),
+            "scene_prepare_sec": section_phases.get("scene_prepare_sec"),
+            "ray_prepare_sec": section_phases.get("ray_prepare_sec"),
+            "query_anyhit_count_sec": section_phases.get("query_anyhit_count_sec"),
+        })
+summary = {
+    "goal": "Goal1267 graph ray-pack metadata check",
+    "artifact_count": len(rows),
+    "all_numpy_packed_rays": bool(rows) and all(row["ray_pack_mode"] == "numpy_packed_rays" for row in rows),
+    "rows": rows,
+    "boundary": "Diagnostic metadata only; no public speedup claim is authorized.",
+}
+print(json.dumps(summary, indent=2, sort_keys=True))
+PY
+
 python3 - "${RESULT_DIR}" <<'PY' | tee "${RESULT_DIR}/goal1267_status_summary.json"
 import json
 import sys
@@ -182,6 +215,7 @@ payload = {
     "statuses": statuses,
     "boundary": "Execution summary only; no public wording, release, or speedup claims are authorized.",
     "allowed_exit": "optix_improved or optix_still_slower_with_reason after separate intake.",
+    "metadata_checks": ["goal1267_graph_ray_pack_metadata.json"],
 }
 print(json.dumps(payload, indent=2, sort_keys=True))
 PY
