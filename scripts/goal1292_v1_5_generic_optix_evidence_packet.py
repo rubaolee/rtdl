@@ -14,6 +14,10 @@ GOAL = "Goal1292 v1.5 generic OptiX evidence packet"
 DEFAULT_JSON = ROOT / "docs/reports/goal1292_v1_5_generic_optix_evidence_packet_2026-05-05.json"
 DEFAULT_MD = ROOT / "docs/reports/goal1292_v1_5_generic_optix_evidence_packet_2026-05-05.md"
 RESULT_DIR = "docs/reports/goal1292_v1_5_generic_optix_pod_results"
+PRIMITIVE_COPIES = 256
+PRIMITIVE_QUERY_REPEATS = 100
+GRAPH_COPIES = 30000
+GRAPH_QUERY_REPEATS = 100
 
 
 def _git_head() -> str:
@@ -62,12 +66,12 @@ def build_packet() -> dict[str, Any]:
             ],
             "primitive_runner": (
                 "PYTHONPATH=src:. python3 scripts/goal1292_v1_5_generic_optix_evidence_runner.py "
-                f"--copies 10000 --query-repeats 100 --output {primitive_output}"
+                f"--copies {PRIMITIVE_COPIES} --query-repeats {PRIMITIVE_QUERY_REPEATS} --output {primitive_output}"
             ),
             "graph_wrapper": (
                 "PYTHONPATH=src:. python3 examples/rtdl_graph_analytics_app.py "
                 "--backend optix --scenario visibility_edges --output-mode summary "
-                f"--copies 30000 --visibility-query-repeats 100 > {graph_output}"
+                f"--copies {GRAPH_COPIES} --visibility-query-repeats {GRAPH_QUERY_REPEATS} > {graph_output}"
             ),
             "local_sanity": (
                 "PYTHONPATH=src:. python3 -m unittest "
@@ -85,6 +89,7 @@ def build_packet() -> dict[str, Any]:
         "success_criteria": [
             "Environment probe is preserved before any failure interpretation.",
             "Primitive runner records CPU oracle rows and OptiX direct ANY_HIT plus COUNT_HITS parity.",
+            "Primitive fixture scale remains bounded because the CPU oracle is O(rays*triangles).",
             "Prepared OptiX COUNT_HITS hit_count matches CPU oracle hit_count.",
             "Graph wrapper artifact preserves visibility_query_repeats=100 and run_phases query mean/min/first timings.",
             "If OptiX remains slower than Embree, classify as optix_still_slower_with_reason only when correctness and bottleneck evidence are present.",

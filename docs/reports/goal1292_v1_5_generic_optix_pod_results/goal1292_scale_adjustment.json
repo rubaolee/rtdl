@@ -1,0 +1,7 @@
+{
+  "status": "accepted_packet_primitive_scale_interrupted",
+  "original_command": "goal1292_v1_5_generic_optix_evidence_runner.py --copies 10000 --query-repeats 100",
+  "observed_issue": "CPU oracle/direct CPU stage ran over 7 minutes at 99 percent CPU without producing generic_optix_evidence.json because the fixture is O(rays*triangles)",
+  "action": "rerun primitive evidence at --copies 256 --query-repeats 100 and preserve environment/build artifacts",
+  "boundary": "internal diagnostic scale adjustment only; no public speedup wording"
+}

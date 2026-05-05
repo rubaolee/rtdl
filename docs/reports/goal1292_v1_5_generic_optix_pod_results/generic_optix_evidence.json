@@ -1,0 +1,6235 @@
+{
+  "active_backends": [
+    "embree",
+    "optix"
+  ],
+  "boundary": "v1.5 internal generic raw ray/triangle ANY_HIT plus COUNT_HITS evidence only; no public speedup wording, app-class claim, or Vulkan/HIPRT/Apple RT work is authorized.",
+  "direct_anyhit_count": {
+    "cpu": {
+      "backend": "cpu",
+      "claim_boundary": "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; no app-specific visibility, graph, DB, polygon, or public speedup claim.",
+      "elapsed_sec": 0.691967785358429,
+      "hit_count": 256,
+      "row_count": 512,
+      "rows": [
+        {
+          "any_hit": 1,
+          "ray_id": 0
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 1
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 2
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 3
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 4
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 5
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 6
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 7
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 8
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 9
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 10
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 11
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 12
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 13
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 14
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 15
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 16
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 17
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 18
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 19
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 20
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 21
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 22
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 23
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 24
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 25
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 26
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 27
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 28
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 29
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 30
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 31
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 32
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 33
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 34
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 35
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 36
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 37
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 38
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 39
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 40
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 41
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 42
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 43
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 44
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 45
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 46
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 47
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 48
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 49
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 50
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 51
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 52
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 53
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 54
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 55
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 56
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 57
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 58
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 59
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 60
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 61
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 62
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 63
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 64
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 65
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 66
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 67
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 68
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 69
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 70
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 71
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 72
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 73
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 74
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 75
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 76
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 77
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 78
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 79
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 80
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 81
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 82
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 83
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 84
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 85
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 86
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 87
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 88
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 89
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 90
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 91
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 92
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 93
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 94
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 95
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 96
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 97
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 98
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 99
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 100
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 101
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 102
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 103
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 104
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 105
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 106
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 107
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 108
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 109
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 110
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 111
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 112
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 113
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 114
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 115
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 116
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 117
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 118
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 119
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 120
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 121
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 122
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 123
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 124
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 125
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 126
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 127
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 128
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 129
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 130
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 131
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 132
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 133
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 134
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 135
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 136
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 137
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 138
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 139
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 140
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 141
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 142
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 143
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 144
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 145
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 146
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 147
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 148
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 149
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 150
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 151
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 152
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 153
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 154
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 155
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 156
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 157
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 158
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 159
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 160
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 161
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 162
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 163
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 164
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 165
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 166
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 167
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 168
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 169
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 170
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 171
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 172
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 173
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 174
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 175
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 176
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 177
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 178
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 179
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 180
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 181
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 182
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 183
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 184
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 185
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 186
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 187
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 188
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 189
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 190
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 191
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 192
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 193
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 194
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 195
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 196
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 197
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 198
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 199
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 200
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 201
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 202
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 203
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 204
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 205
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 206
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 207
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 208
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 209
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 210
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 211
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 212
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 213
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 214
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 215
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 216
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 217
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 218
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 219
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 220
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 221
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 222
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 223
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 224
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 225
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 226
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 227
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 228
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 229
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 230
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 231
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 232
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 233
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 234
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 235
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 236
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 237
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 238
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 239
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 240
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 241
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 242
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 243
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 244
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 245
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 246
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 247
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 248
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 249
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 250
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 251
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 252
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 253
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 254
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 255
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 256
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 257
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 258
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 259
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 260
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 261
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 262
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 263
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 264
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 265
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 266
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 267
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 268
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 269
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 270
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 271
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 272
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 273
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 274
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 275
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 276
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 277
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 278
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 279
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 280
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 281
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 282
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 283
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 284
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 285
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 286
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 287
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 288
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 289
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 290
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 291
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 292
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 293
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 294
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 295
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 296
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 297
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 298
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 299
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 300
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 301
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 302
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 303
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 304
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 305
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 306
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 307
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 308
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 309
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 310
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 311
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 312
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 313
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 314
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 315
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 316
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 317
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 318
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 319
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 320
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 321
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 322
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 323
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 324
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 325
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 326
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 327
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 328
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 329
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 330
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 331
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 332
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 333
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 334
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 335
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 336
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 337
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 338
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 339
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 340
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 341
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 342
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 343
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 344
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 345
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 346
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 347
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 348
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 349
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 350
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 351
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 352
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 353
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 354
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 355
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 356
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 357
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 358
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 359
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 360
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 361
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 362
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 363
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 364
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 365
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 366
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 367
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 368
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 369
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 370
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 371
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 372
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 373
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 374
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 375
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 376
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 377
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 378
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 379
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 380
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 381
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 382
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 383
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 384
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 385
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 386
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 387
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 388
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 389
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 390
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 391
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 392
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 393
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 394
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 395
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 396
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 397
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 398
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 399
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 400
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 401
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 402
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 403
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 404
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 405
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 406
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 407
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 408
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 409
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 410
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 411
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 412
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 413
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 414
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 415
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 416
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 417
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 418
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 419
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 420
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 421
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 422
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 423
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 424
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 425
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 426
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 427
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 428
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 429
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 430
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 431
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 432
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 433
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 434
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 435
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 436
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 437
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 438
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 439
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 440
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 441
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 442
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 443
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 444
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 445
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 446
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 447
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 448
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 449
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 450
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 451
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 452
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 453
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 454
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 455
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 456
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 457
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 458
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 459
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 460
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 461
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 462
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 463
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 464
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 465
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 466
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 467
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 468
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 469
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 470
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 471
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 472
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 473
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 474
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 475
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 476
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 477
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 478
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 479
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 480
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 481
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 482
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 483
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 484
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 485
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 486
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 487
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 488
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 489
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 490
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 491
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 492
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 493
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 494
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 495
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 496
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 497
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 498
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 499
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 500
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 501
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 502
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 503
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 504
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 505
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 506
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 507
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 508
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 509
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 510
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 511
+        }
+      ],
+      "status": "ok"
+    },
+    "embree": {
+      "backend": "embree",
+      "claim_boundary": "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; no app-specific visibility, graph, DB, polygon, or public speedup claim.",
+      "elapsed_sec": 7.192865138873458,
+      "hit_count": 256,
+      "row_count": 512,
+      "rows": [
+        {
+          "any_hit": 1,
+          "ray_id": 0
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 1
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 2
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 3
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 4
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 5
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 6
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 7
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 8
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 9
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 10
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 11
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 12
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 13
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 14
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 15
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 16
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 17
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 18
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 19
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 20
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 21
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 22
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 23
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 24
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 25
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 26
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 27
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 28
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 29
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 30
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 31
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 32
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 33
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 34
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 35
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 36
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 37
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 38
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 39
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 40
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 41
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 42
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 43
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 44
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 45
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 46
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 47
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 48
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 49
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 50
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 51
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 52
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 53
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 54
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 55
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 56
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 57
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 58
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 59
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 60
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 61
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 62
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 63
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 64
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 65
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 66
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 67
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 68
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 69
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 70
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 71
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 72
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 73
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 74
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 75
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 76
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 77
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 78
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 79
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 80
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 81
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 82
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 83
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 84
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 85
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 86
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 87
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 88
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 89
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 90
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 91
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 92
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 93
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 94
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 95
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 96
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 97
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 98
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 99
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 100
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 101
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 102
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 103
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 104
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 105
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 106
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 107
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 108
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 109
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 110
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 111
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 112
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 113
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 114
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 115
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 116
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 117
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 118
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 119
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 120
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 121
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 122
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 123
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 124
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 125
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 126
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 127
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 128
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 129
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 130
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 131
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 132
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 133
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 134
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 135
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 136
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 137
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 138
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 139
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 140
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 141
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 142
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 143
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 144
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 145
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 146
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 147
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 148
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 149
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 150
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 151
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 152
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 153
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 154
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 155
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 156
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 157
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 158
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 159
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 160
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 161
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 162
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 163
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 164
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 165
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 166
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 167
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 168
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 169
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 170
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 171
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 172
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 173
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 174
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 175
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 176
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 177
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 178
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 179
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 180
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 181
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 182
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 183
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 184
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 185
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 186
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 187
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 188
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 189
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 190
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 191
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 192
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 193
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 194
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 195
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 196
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 197
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 198
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 199
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 200
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 201
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 202
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 203
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 204
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 205
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 206
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 207
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 208
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 209
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 210
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 211
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 212
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 213
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 214
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 215
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 216
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 217
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 218
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 219
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 220
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 221
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 222
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 223
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 224
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 225
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 226
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 227
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 228
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 229
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 230
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 231
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 232
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 233
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 234
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 235
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 236
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 237
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 238
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 239
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 240
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 241
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 242
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 243
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 244
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 245
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 246
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 247
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 248
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 249
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 250
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 251
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 252
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 253
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 254
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 255
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 256
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 257
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 258
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 259
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 260
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 261
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 262
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 263
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 264
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 265
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 266
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 267
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 268
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 269
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 270
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 271
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 272
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 273
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 274
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 275
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 276
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 277
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 278
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 279
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 280
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 281
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 282
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 283
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 284
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 285
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 286
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 287
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 288
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 289
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 290
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 291
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 292
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 293
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 294
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 295
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 296
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 297
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 298
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 299
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 300
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 301
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 302
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 303
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 304
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 305
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 306
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 307
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 308
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 309
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 310
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 311
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 312
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 313
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 314
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 315
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 316
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 317
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 318
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 319
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 320
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 321
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 322
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 323
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 324
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 325
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 326
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 327
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 328
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 329
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 330
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 331
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 332
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 333
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 334
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 335
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 336
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 337
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 338
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 339
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 340
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 341
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 342
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 343
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 344
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 345
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 346
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 347
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 348
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 349
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 350
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 351
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 352
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 353
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 354
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 355
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 356
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 357
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 358
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 359
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 360
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 361
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 362
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 363
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 364
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 365
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 366
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 367
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 368
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 369
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 370
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 371
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 372
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 373
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 374
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 375
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 376
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 377
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 378
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 379
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 380
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 381
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 382
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 383
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 384
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 385
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 386
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 387
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 388
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 389
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 390
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 391
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 392
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 393
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 394
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 395
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 396
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 397
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 398
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 399
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 400
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 401
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 402
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 403
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 404
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 405
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 406
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 407
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 408
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 409
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 410
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 411
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 412
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 413
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 414
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 415
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 416
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 417
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 418
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 419
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 420
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 421
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 422
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 423
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 424
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 425
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 426
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 427
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 428
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 429
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 430
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 431
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 432
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 433
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 434
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 435
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 436
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 437
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 438
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 439
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 440
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 441
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 442
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 443
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 444
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 445
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 446
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 447
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 448
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 449
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 450
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 451
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 452
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 453
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 454
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 455
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 456
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 457
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 458
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 459
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 460
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 461
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 462
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 463
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 464
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 465
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 466
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 467
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 468
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 469
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 470
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 471
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 472
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 473
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 474
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 475
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 476
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 477
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 478
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 479
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 480
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 481
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 482
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 483
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 484
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 485
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 486
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 487
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 488
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 489
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 490
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 491
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 492
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 493
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 494
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 495
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 496
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 497
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 498
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 499
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 500
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 501
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 502
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 503
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 504
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 505
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 506
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 507
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 508
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 509
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 510
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 511
+        }
+      ],
+      "status": "ok"
+    },
+    "optix": {
+      "backend": "optix",
+      "claim_boundary": "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; no app-specific visibility, graph, DB, polygon, or public speedup claim.",
+      "elapsed_sec": 1.319918129593134,
+      "hit_count": 256,
+      "row_count": 512,
+      "rows": [
+        {
+          "any_hit": 1,
+          "ray_id": 0
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 1
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 2
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 3
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 4
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 5
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 6
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 7
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 8
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 9
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 10
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 11
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 12
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 13
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 14
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 15
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 16
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 17
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 18
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 19
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 20
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 21
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 22
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 23
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 24
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 25
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 26
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 27
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 28
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 29
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 30
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 31
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 32
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 33
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 34
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 35
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 36
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 37
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 38
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 39
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 40
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 41
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 42
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 43
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 44
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 45
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 46
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 47
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 48
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 49
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 50
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 51
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 52
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 53
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 54
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 55
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 56
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 57
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 58
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 59
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 60
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 61
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 62
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 63
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 64
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 65
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 66
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 67
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 68
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 69
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 70
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 71
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 72
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 73
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 74
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 75
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 76
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 77
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 78
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 79
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 80
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 81
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 82
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 83
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 84
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 85
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 86
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 87
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 88
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 89
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 90
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 91
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 92
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 93
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 94
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 95
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 96
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 97
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 98
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 99
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 100
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 101
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 102
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 103
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 104
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 105
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 106
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 107
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 108
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 109
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 110
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 111
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 112
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 113
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 114
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 115
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 116
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 117
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 118
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 119
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 120
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 121
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 122
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 123
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 124
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 125
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 126
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 127
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 128
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 129
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 130
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 131
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 132
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 133
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 134
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 135
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 136
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 137
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 138
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 139
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 140
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 141
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 142
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 143
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 144
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 145
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 146
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 147
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 148
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 149
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 150
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 151
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 152
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 153
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 154
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 155
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 156
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 157
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 158
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 159
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 160
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 161
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 162
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 163
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 164
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 165
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 166
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 167
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 168
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 169
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 170
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 171
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 172
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 173
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 174
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 175
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 176
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 177
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 178
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 179
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 180
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 181
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 182
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 183
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 184
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 185
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 186
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 187
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 188
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 189
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 190
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 191
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 192
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 193
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 194
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 195
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 196
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 197
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 198
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 199
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 200
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 201
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 202
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 203
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 204
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 205
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 206
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 207
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 208
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 209
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 210
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 211
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 212
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 213
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 214
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 215
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 216
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 217
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 218
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 219
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 220
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 221
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 222
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 223
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 224
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 225
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 226
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 227
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 228
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 229
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 230
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 231
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 232
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 233
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 234
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 235
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 236
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 237
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 238
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 239
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 240
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 241
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 242
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 243
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 244
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 245
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 246
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 247
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 248
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 249
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 250
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 251
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 252
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 253
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 254
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 255
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 256
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 257
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 258
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 259
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 260
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 261
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 262
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 263
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 264
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 265
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 266
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 267
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 268
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 269
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 270
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 271
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 272
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 273
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 274
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 275
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 276
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 277
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 278
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 279
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 280
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 281
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 282
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 283
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 284
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 285
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 286
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 287
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 288
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 289
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 290
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 291
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 292
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 293
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 294
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 295
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 296
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 297
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 298
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 299
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 300
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 301
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 302
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 303
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 304
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 305
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 306
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 307
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 308
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 309
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 310
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 311
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 312
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 313
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 314
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 315
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 316
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 317
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 318
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 319
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 320
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 321
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 322
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 323
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 324
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 325
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 326
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 327
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 328
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 329
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 330
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 331
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 332
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 333
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 334
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 335
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 336
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 337
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 338
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 339
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 340
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 341
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 342
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 343
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 344
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 345
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 346
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 347
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 348
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 349
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 350
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 351
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 352
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 353
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 354
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 355
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 356
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 357
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 358
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 359
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 360
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 361
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 362
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 363
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 364
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 365
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 366
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 367
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 368
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 369
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 370
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 371
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 372
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 373
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 374
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 375
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 376
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 377
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 378
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 379
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 380
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 381
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 382
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 383
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 384
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 385
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 386
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 387
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 388
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 389
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 390
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 391
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 392
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 393
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 394
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 395
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 396
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 397
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 398
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 399
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 400
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 401
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 402
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 403
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 404
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 405
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 406
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 407
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 408
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 409
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 410
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 411
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 412
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 413
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 414
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 415
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 416
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 417
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 418
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 419
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 420
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 421
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 422
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 423
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 424
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 425
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 426
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 427
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 428
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 429
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 430
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 431
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 432
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 433
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 434
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 435
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 436
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 437
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 438
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 439
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 440
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 441
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 442
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 443
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 444
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 445
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 446
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 447
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 448
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 449
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 450
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 451
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 452
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 453
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 454
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 455
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 456
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 457
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 458
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 459
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 460
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 461
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 462
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 463
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 464
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 465
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 466
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 467
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 468
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 469
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 470
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 471
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 472
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 473
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 474
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 475
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 476
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 477
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 478
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 479
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 480
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 481
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 482
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 483
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 484
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 485
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 486
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 487
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 488
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 489
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 490
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 491
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 492
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 493
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 494
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 495
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 496
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 497
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 498
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 499
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 500
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 501
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 502
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 503
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 504
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 505
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 506
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 507
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 508
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 509
+        },
+        {
+          "any_hit": 1,
+          "ray_id": 510
+        },
+        {
+          "any_hit": 0,
+          "ray_id": 511
+        }
+      ],
+      "status": "ok"
+    }
+  },
+  "fixture": {
+    "copies": 256,
+    "expected_hit_count": 256,
+    "ray_count": 512,
+    "triangle_count": 256
+  },
+  "frozen_backends_before_v2_1": [
+    "vulkan",
+    "hiprt",
+    "apple_rt"
+  ],
+  "goal": "Goal1292 v1.5 generic OptiX evidence runner",
+  "parity": {
+    "embree": {
+      "hit_count_matches": true,
+      "rows_match": true,
+      "status": "ok"
+    },
+    "optix": {
+      "hit_count_matches": true,
+      "rows_match": true,
+      "status": "ok"
+    },
+    "optix_prepared_count": {
+      "hit_count_matches": true,
+      "status": "ok"
+    }
+  },
+  "platform": {
+    "machine": "x86_64",
+    "python": "3.11.10",
+    "release": "6.8.0-87-generic",
+    "system": "Linux"
+  },
+  "prepared_optix_anyhit_count": {
+    "backend": "optix",
+    "claim_boundary": "Generic v1.5 prepared raw ray/triangle ANY_HIT plus COUNT_HITS only; currently OptiX-focused and not public speedup wording.",
+    "elapsed_sec": 0.533106217160821,
+    "hit_count": 256,
+    "query_repeats": 100,
+    "run_phases": {
+      "query_anyhit_count_first_sec": 0.00016002729535102844,
+      "query_anyhit_count_mean_sec": 6.801595911383629e-05,
+      "query_anyhit_count_min_sec": 6.192363798618317e-05,
+      "query_anyhit_count_sec": 0.006801595911383629,
+      "ray_prepare_sec": 0.0009756814688444138,
+      "scene_prepare_sec": 0.5251577571034431
+    },
+    "status": "ok"
+  },
+  "public_wording_authorized": false,
+  "source_commit": "f5464d36b2f068683e15a7bb92988d65e33bcb80"
+}

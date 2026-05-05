@@ -13,7 +13,7 @@
       ". docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.sh",
       "make build-optix"
     ],
-    "primitive_runner": "PYTHONPATH=src:. python3 scripts/goal1292_v1_5_generic_optix_evidence_runner.py --copies 10000 --query-repeats 100 --output docs/reports/goal1292_v1_5_generic_optix_pod_results/generic_optix_evidence.json"
+    "primitive_runner": "PYTHONPATH=src:. python3 scripts/goal1292_v1_5_generic_optix_evidence_runner.py --copies 256 --query-repeats 100 --output docs/reports/goal1292_v1_5_generic_optix_pod_results/generic_optix_evidence.json"
   },
   "date": "2026-05-05",
   "env_probe": {
@@ -45,10 +45,11 @@
     "docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.sh"
   ],
   "result_dir": "docs/reports/goal1292_v1_5_generic_optix_pod_results",
-  "source_commit": "dd89f68da26fe050d0fb24356f18706442218f99",
+  "source_commit": "f5464d36b2f068683e15a7bb92988d65e33bcb80",
   "success_criteria": [
     "Environment probe is preserved before any failure interpretation.",
     "Primitive runner records CPU oracle rows and OptiX direct ANY_HIT plus COUNT_HITS parity.",
+    "Primitive fixture scale remains bounded because the CPU oracle is O(rays*triangles).",
     "Prepared OptiX COUNT_HITS hit_count matches CPU oracle hit_count.",
     "Graph wrapper artifact preserves visibility_query_repeats=100 and run_phases query mean/min/first timings.",
     "If OptiX remains slower than Embree, classify as optix_still_slower_with_reason only when correctness and bottleneck evidence are present."

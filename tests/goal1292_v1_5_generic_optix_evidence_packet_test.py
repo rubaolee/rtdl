@@ -24,6 +24,8 @@ class Goal1292V15GenericOptixEvidencePacketTest(unittest.TestCase):
         self.assertIn("nvidia_smi_tail", payload["env_probe"]["required_fields"])
         self.assertIn("make build-optix", "\n".join(payload["commands"]["prepare"]))
         self.assertIn("goal1292_v1_5_generic_optix_evidence_runner.py", payload["commands"]["primitive_runner"])
+        self.assertIn("--copies 256", payload["commands"]["primitive_runner"])
+        self.assertIn("CPU oracle is O(rays*triangles)", " ".join(payload["success_criteria"]))
         runner_text = (ROOT / "scripts" / "goal1292_v1_5_generic_optix_evidence_runner.py").read_text()
         self.assertIn("run_generic", runner_text)
         self.assertIn("--visibility-query-repeats 100", payload["commands"]["graph_wrapper"])
