@@ -55,8 +55,9 @@ class Goal821PublicDocsRequireRtCoreTest(unittest.TestCase):
                 "may enter bounded claim review",
             ),
             "docs/tutorials/segment_polygon_workloads.md": (
-                "native-assisted\ncandidate discovery",
-                "not a fully native Jaccard or whole-app speedup claim",
+                "native-assisted: Embree performs LSI/PIP candidate\ndiscovery",
+                "native\nC++ exact set-area/Jaccard continuation",
+                "no positive public\nJaccard speedup wording is authorized",
             ),
         }
         for relative, phrases in checks.items():
@@ -64,6 +65,23 @@ class Goal821PublicDocsRequireRtCoreTest(unittest.TestCase):
                 text = (ROOT / relative).read_text(encoding="utf-8")
                 for phrase in phrases:
                     self.assertIn(phrase, text)
+
+    def test_polygon_docs_do_not_revert_to_python_exact_refinement_boundary(self) -> None:
+        combined = "\n".join(
+            (ROOT / relative).read_text(encoding="utf-8")
+            for relative in (
+                "docs/release_facing_examples.md",
+                "docs/tutorials/segment_polygon_workloads.md",
+            )
+        )
+        stale_phrases = (
+            "CPU/Python performs exact bounded area/Jaccard refinement",
+            "Exact overlap-area refinement remains CPU/Python",
+            "Exact set-area/Jaccard refinement remains CPU/Python",
+        )
+        for phrase in stale_phrases:
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase, combined)
 
 
 if __name__ == "__main__":

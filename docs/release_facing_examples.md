@@ -703,8 +703,10 @@ PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backen
 
 For both polygon-overlap examples, `--backend embree` and `--backend optix` are
 native-assisted: the backend performs LSI/PIP candidate discovery and
-CPU/Python performs exact bounded area/Jaccard refinement. This is not a fully
-native polygon-area/Jaccard kernel or a public RTX speedup claim.
+native C++ exact grid-cell area/Jaccard continuation computes the final compact
+result. This is not a monolithic GPU polygon-area/Jaccard kernel; only the
+Goal1263 polygon-pair sub-path has reviewed bounded positive wording, and
+Jaccard remains correctness-ready but not positive-speedup-ready.
 
 ## App-style example
 
