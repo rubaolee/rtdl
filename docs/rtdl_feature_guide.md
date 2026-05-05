@@ -124,12 +124,15 @@ Goal1262 confirms `polygon_set_jaccard` correctness at chunk `1024`, including
 8192 copies, but OptiX remains slower than Embree and no positive Jaccard
 speedup wording is authorized. Goal1262/Goal1264 show `database_analytics`
 execution-unblocked but mixed, with warm-query median still favoring Embree.
-Goal1264 confirms graph visibility correctness and a fast OptiX any-hit kernel,
-but total graph OptiX time remains slower in accepted evidence because host-side
-input construction, scene/ray prepare, and ray packing dominate. Current v1.2
-main locally remediates the visibility-edge ray packing path with direct packed
-rays; Goal1267 pod timing must verify whether that changes NVIDIA total-path
-timing before any speedup wording changes.
+Goal1264 confirms graph visibility correctness and a fast OptiX any-hit kernel.
+Goal1267 verifies the current v1.2 direct packed-ray path on a live NVIDIA pod:
+the OptiX any-hit query is around `0.0002s` at the tested 30k/60k-copy scales,
+but total graph timing remains governed by scene preparation and host-side
+preparation, with mixed results versus Embree. The next graph performance work
+is prepared-scene reuse or amortization, not public speedup wording.
+Goal1268 makes the Embree backend accept both Embree 3 and Embree 4 so Linux
+pods with distro `libembree-dev` can run the same CPU RT baseline without
+manual Embree4 installation.
 
 Current supported workload families:
 

@@ -143,7 +143,7 @@ materialization, validation, and post-processing.
 | App | Readiness | Next goal | Allowed claim today |
 | --- | --- | --- | --- |
 | `examples/rtdl_database_analytics_app.py` | `ready_for_rtx_claim_review` | Goal921/Goal941/Goal1262/Goal1264 | prepared DB compact-summary traversal/filter/grouping sub-path is execution-ready but not positive-speedup-ready; no DBMS or SQL-engine speedup claim |
-| `examples/rtdl_graph_analytics_app.py` | `ready_for_rtx_claim_review` | Goal889/Goal905/Goal929/Goal1224/Goal1264 | bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths are correctness-ready but not total-path speedup-ready; no whole-app graph speedup claim |
+| `examples/rtdl_graph_analytics_app.py` | `ready_for_rtx_claim_review` | Goal889/Goal905/Goal929/Goal1224/Goal1264/Goal1267 | bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths are correctness-ready; Goal1267 shows traversal is fast but total path is scene-preparation dominated and mixed versus Embree; no whole-app graph speedup claim |
 | `examples/rtdl_apple_rt_demo_app.py` | `exclude_from_rtx_app_benchmark` | none | Apple RT demo claim only, not NVIDIA OptiX |
 | `examples/rtdl_service_coverage_gaps.py` | `ready_for_rtx_claim_review` | Goal917 | bounded prepared gap-summary path may enter claim review; no whole-app service-coverage speedup claim |
 | `examples/rtdl_event_hotspot_screening.py` | `ready_for_rtx_claim_review` | Goal917/Goal919 | bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim |
@@ -214,8 +214,10 @@ Goal1208 adds exactly one reviewed public wording row for
 `road_hazard_screening / prepared_native_compact_summary_40k`, limited to the
 prepared native compact-summary traversal/count sub-path at 40k copies.
 Goal1224 adds reviewed Hausdorff threshold-decision wording and keeps graph
-public speedup wording blocked because current same-contract evidence shows
-OptiX slower than Embree. Goal1263 promotes bounded polygon-pair wording for
+public speedup wording blocked. Goal1267 confirms graph direct packed-ray
+OptiX traversal is extremely fast, but total graph timing is still
+scene-preparation dominated and mixed versus Embree. Goal1263 promotes
+bounded polygon-pair wording for
 RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area
 continuation; monolithic polygon overlay, broad GIS acceleration, arbitrary
 polygon geometry, and whole-app polygon-overlap speedup remain outside the

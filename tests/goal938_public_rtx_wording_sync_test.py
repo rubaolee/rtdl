@@ -113,10 +113,10 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
         for phrase in (
             "Goal1262/Goal1264 show execution-unblocked but mixed evidence",
             "warm-query median still favors Embree",
-            "Goal1264 confirms graph visibility correctness",
-            "accepted evidence because host-side\ninput construction, scene/ray prepare, and ray packing dominate",
-            "Goal1267 pod timing must verify",
-            "`numpy_packed_rays` metadata",
+            "Goal1267 verifies direct packed-ray OptiX traversal is extremely fast",
+            "scene-preparation dominated and mixed versus Embree",
+            "Goal1267 verifies the current v1.2 direct packed-ray path",
+            "`0.0002s`",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, combined)

@@ -471,10 +471,10 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     "graph_analytics": _readiness(
         "graph_analytics",
         READY_FOR_RTX_CLAIM_REVIEW,
-        "Goal889/Goal905/Goal929/Goal1224/Goal1264",
-        "Goal1264 confirms graph visibility remains correctness-ready and the OptiX any-hit kernel is fast, but the total OptiX path is still slower than Embree because input construction, scene/ray prepare, and ray packing dominate",
+        "Goal889/Goal905/Goal929/Goal1224/Goal1264/Goal1267",
+        "Goal1267 confirms graph visibility remains correctness-ready and direct packed-ray OptiX traversal is extremely fast, but total graph timing is scene-preparation dominated and mixed versus Embree",
         "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, host prepare/pack overhead, and whole-app graph speedup remain outside this wording.",
-        "bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths are correctness-ready but not total-path speedup-ready; no whole-app graph speedup claim",
+        "bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths are correctness-ready; Goal1267 shows traversal is fast but total path is scene-preparation dominated and mixed versus Embree; no whole-app graph speedup claim",
     ),
     "apple_rt_demo": _readiness(
         "apple_rt_demo",
@@ -819,8 +819,8 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     "graph_analytics": _public_wording(
         "graph_analytics",
         PUBLIC_WORDING_BLOCKED,
-        "RTDL's graph visibility_edges RTX sub-path is correctness-ready and the OptiX any-hit kernel is fast, but Goal1264 still shows the total OptiX path slower than Embree because host-side input construction, scene/ray prepare, and ray packing dominate; no positive public RTX speedup wording is authorized.",
-        "Goal1224/Goal1264",
+        "RTDL's graph visibility_edges RTX sub-path is correctness-ready. Goal1267 verifies direct packed-ray OptiX traversal is extremely fast, but total graph timing is scene-preparation dominated and mixed versus Embree; no positive public RTX speedup wording is authorized.",
+        "Goal1224/Goal1264/Goal1267",
         "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, host prepare/pack overhead, and whole-app graph speedup remain outside this wording.",
     ),
     "apple_rt_demo": _public_wording(
