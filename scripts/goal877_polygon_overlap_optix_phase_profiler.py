@@ -367,19 +367,44 @@ def run_profile(
         phases["native_exact_continuation_sec"] = None
 
     parity = optix_payload is not None and cpu_payload is not None and _canonical(optix_payload) == _canonical(cpu_payload)
+    expected_positive_pair_count = (
+        cpu_payload.get("row_count") if isinstance(cpu_payload, dict) else None
+    )
+    optix_positive_pair_count = (
+        optix_payload.get("row_count") if isinstance(optix_payload, dict) else None
+    )
+    expected_candidate_count = (
+        cpu_payload.get("candidate_row_count") if isinstance(cpu_payload, dict) else None
+    )
+    optix_candidate_count = (
+        optix_payload.get("candidate_row_count") if isinstance(optix_payload, dict) else None
+    )
     candidate_diagnostics = {
-        "expected_or_cpu_candidate_row_count": (
-            cpu_payload.get("candidate_row_count") if isinstance(cpu_payload, dict) else None
-        ),
-        "optix_candidate_row_count": (
-            optix_payload.get("candidate_row_count") if isinstance(optix_payload, dict) else None
-        ),
+        "expected_or_cpu_candidate_row_count": expected_candidate_count,
+        "optix_candidate_row_count": optix_candidate_count,
         "candidate_count_matches_expected": (
             None
             if not isinstance(cpu_payload, dict)
             or not isinstance(optix_payload, dict)
-            or cpu_payload.get("candidate_row_count") is None
+            or expected_candidate_count is None
             else cpu_payload.get("candidate_row_count") == optix_payload.get("candidate_row_count")
+        ),
+        "candidate_count_delta_vs_expected": (
+            None
+            if expected_candidate_count is None or optix_candidate_count is None
+            else optix_candidate_count - expected_candidate_count
+        ),
+        "expected_positive_pair_count": expected_positive_pair_count,
+        "optix_positive_pair_count": optix_positive_pair_count,
+        "positive_pair_count_matches_expected": (
+            None
+            if expected_positive_pair_count is None or optix_positive_pair_count is None
+            else expected_positive_pair_count == optix_positive_pair_count
+        ),
+        "comparison_note": (
+            "candidate_count_matches_expected compares against a conservative "
+            "candidate upper-bound/counting model; positive_pair_count_matches_expected "
+            "compares final positive overlap rows."
         ),
     }
     if error is not None:

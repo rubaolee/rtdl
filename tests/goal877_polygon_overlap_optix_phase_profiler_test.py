@@ -63,6 +63,11 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
         self.assertEqual(payload["candidate_diagnostics"]["expected_or_cpu_candidate_row_count"], 6)
         self.assertEqual(payload["candidate_diagnostics"]["optix_candidate_row_count"], 4)
         self.assertFalse(payload["candidate_diagnostics"]["candidate_count_matches_expected"])
+        self.assertEqual(payload["candidate_diagnostics"]["candidate_count_delta_vs_expected"], -2)
+        self.assertEqual(payload["candidate_diagnostics"]["expected_positive_pair_count"], 4)
+        self.assertEqual(payload["candidate_diagnostics"]["optix_positive_pair_count"], 4)
+        self.assertTrue(payload["candidate_diagnostics"]["positive_pair_count_matches_expected"])
+        self.assertIn("conservative", payload["candidate_diagnostics"]["comparison_note"])
 
     def test_jaccard_summary_analytic_chunks_without_cpu_reference(self) -> None:
         with mock.patch.object(goal877.jaccard_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
@@ -81,6 +86,9 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
         self.assertEqual(payload["optix_digest"]["summary"]["intersection_area"], 5)
         self.assertAlmostEqual(payload["optix_digest"]["summary"]["jaccard_similarity"], 5 / 19)
         self.assertEqual(payload["candidate_diagnostics"]["expected_or_cpu_candidate_row_count"], 3)
+        self.assertEqual(payload["candidate_diagnostics"]["expected_positive_pair_count"], 1)
+        self.assertEqual(payload["candidate_diagnostics"]["optix_positive_pair_count"], 1)
+        self.assertTrue(payload["candidate_diagnostics"]["positive_pair_count_matches_expected"])
 
     def test_jaccard_summary_small_chunk_is_diagnostic_only_even_with_parity(self) -> None:
         with mock.patch.object(goal877.jaccard_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
