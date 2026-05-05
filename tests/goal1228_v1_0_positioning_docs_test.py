@@ -33,12 +33,12 @@ class Goal1228V10PositioningDocsTest(unittest.TestCase):
 
     def test_v1_0_positioning_is_explicit_on_front_page(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn("## v1.0 Direction", readme)
+        self.assertIn("## Roadmap Boundary", readme)
         self.assertIn("v1.0 proof machinery, not the final architecture", readme)
-        self.assertIn("v1.5 is planned to replace", readme)
-        self.assertIn("app-specific engine customization", readme)
+        self.assertIn("v1.5 internal primitive migration is pod-verified", readme)
+        self.assertIn("not a public release yet", readme)
         self.assertIn("v2.0 targets broader end-to-end performance", readme)
-        self.assertIn("12 reviewed", readme)
+        self.assertIn("Reviewed rows are bounded public sub-path wording", readme)
 
     def test_goal1228_plan_records_custom_engine_inventory(self) -> None:
         plan = (

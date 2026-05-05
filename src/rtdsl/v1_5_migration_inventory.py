@@ -183,9 +183,8 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
 
 def v1_5_generic_migration_blockers() -> tuple[str, ...]:
     return (
-        "prepared_pose_flags requires grouped REDUCE_INT(COUNT) with count-to-boolean result layout before it can leave app-specific OptiX code",
-        "database compact summaries require generic grouped integer COUNT/SUM wrappers",
-        "polygon exact area and Jaccard scoring require reviewed REDUCE_FLOAT(SUM) tolerance and result-shape contracts",
+        "app-level continuations remain outside v1.5 generic subpath scope where inventory rows name remaining_app_specific_work",
+        "whole-app speedup wording remains blocked for graph, DB, polygon, ranking, clustering, SQL-style materialization, exact-distance rows, and force-vector reductions",
         "public NVIDIA wording remains blocked until exact-subpath evidence receives 3-AI consensus",
     )
 

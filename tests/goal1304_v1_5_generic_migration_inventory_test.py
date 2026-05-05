@@ -85,12 +85,14 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
                 self.assertFalse(set(row["backend_scope"]) & frozen)
                 self.assertFalse(row["public_wording_authorized"])
 
-    def test_blockers_name_grouped_reductions_and_public_wording_gate(self) -> None:
+    def test_blockers_name_only_remaining_scope_and_public_wording_gates(self) -> None:
         blockers = "\n".join(rt.v1_5_generic_migration_blockers())
-        self.assertIn("grouped REDUCE_INT(COUNT)", blockers)
-        self.assertIn("grouped integer COUNT/SUM", blockers)
-        self.assertIn("REDUCE_FLOAT(SUM)", blockers)
+        self.assertIn("remaining_app_specific_work", blockers)
+        self.assertIn("whole-app speedup wording remains blocked", blockers)
         self.assertIn("3-AI consensus", blockers)
+        self.assertNotIn("prepared_pose_flags requires", blockers)
+        self.assertNotIn("database compact summaries require", blockers)
+        self.assertNotIn("polygon exact area and Jaccard scoring require", blockers)
 
 
 if __name__ == "__main__":
