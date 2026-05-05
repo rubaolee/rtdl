@@ -429,6 +429,8 @@ from .db_reference import PredicateClause
 from .db_primitives import attach_sales_risk_primitive_contract
 from .db_primitives import sales_risk_primitive_contract
 from .polygon_primitives import attach_polygon_pair_primitive_contract
+from .polygon_primitives import attach_polygon_jaccard_diagnostic_contract
+from .polygon_primitives import polygon_jaccard_diagnostic_contract
 from .polygon_primitives import polygon_pair_primitive_contract
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
@@ -661,6 +663,8 @@ __all__ = [
     "attach_sales_risk_primitive_contract",
     "sales_risk_primitive_contract",
     "attach_polygon_pair_primitive_contract",
+    "attach_polygon_jaccard_diagnostic_contract",
+    "polygon_jaccard_diagnostic_contract",
     "polygon_pair_primitive_contract",
     "PredicateSet",
     "PredicateSetLayout",
