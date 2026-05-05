@@ -45,7 +45,7 @@
     "docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.sh"
   ],
   "result_dir": "docs/reports/goal1292_v1_5_generic_optix_pod_results",
-  "source_commit": "75165621c2c012cf23b8495872c76674f8494198",
+  "source_commit": "dd89f68da26fe050d0fb24356f18706442218f99",
   "success_criteria": [
     "Environment probe is preserved before any failure interpretation.",
     "Primitive runner records CPU oracle rows and OptiX direct ANY_HIT plus COUNT_HITS parity.",

@@ -1,7 +1,7 @@
 # Goal1292 v1.5 Generic OptiX Evidence Packet
 
 Date: 2026-05-05
-Source commit: `75165621c2c012cf23b8495872c76674f8494198`
+Source commit: `dd89f68da26fe050d0fb24356f18706442218f99`
 Result dir: `docs/reports/goal1292_v1_5_generic_optix_pod_results`
 
 ## Scope
