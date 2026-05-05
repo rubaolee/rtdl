@@ -20,6 +20,7 @@ from .reference import _triangle_dimension
 from .reference import visibility_ray_pairs
 from .reference import visibility_rows_cpu
 from .reference import visibility_rows_from_any_hit
+from .generic_primitives import run_generic_ray_triangle_any_hit
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
@@ -123,23 +124,17 @@ def visibility_pair_rows(
         raise ValueError("visibility_pair_rows blocker triangles must match observer/target dimensionality")
 
     normalized_backend = backend.lower().replace("-", "_")
-    if normalized_backend in {"cpu", "cpu_python_reference", "python"}:
-        from .reference import ray_triangle_any_hit_cpu
-
-        any_hit_rows = ray_triangle_any_hit_cpu(tuple(rays), blockers)
+    if normalized_backend in {"cpu", "cpu_python_reference", "python", "embree", "optix"}:
+        any_hit_rows = run_generic_ray_triangle_any_hit(
+            tuple(rays),
+            blockers,
+            backend=normalized_backend,
+        )
     else:
         kernel = _visibility_any_hit_3d_kernel if isinstance(rays[0], Ray3D) else _visibility_any_hit_2d_kernel
         inputs = {"rays": tuple(rays), "triangles": blockers}
 
-        if normalized_backend == "embree":
-            from .embree_runtime import run_embree
-
-            any_hit_rows = run_embree(kernel, **inputs)
-        elif normalized_backend == "optix":
-            from .optix_runtime import run_optix
-
-            any_hit_rows = run_optix(kernel, **inputs)
-        elif normalized_backend == "vulkan":
+        if normalized_backend == "vulkan":
             from .vulkan_runtime import run_vulkan
 
             any_hit_rows = run_vulkan(kernel, **inputs)
