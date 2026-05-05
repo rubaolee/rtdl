@@ -53,6 +53,10 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
             "v1.0 still uses app-specific native continuations",
             "v2.0 is the broader performance target",
             "RTDL accelerates <exact prepared/native sub-path>",
+            "Embree is a ray-tracing/BVH backend",
+            "optix_still_slower_with_reason",
+            "slower OptiX result is acceptable engineering evidence",
+            "cannot authorize\npositive public RTX speedup wording",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, perf_text)

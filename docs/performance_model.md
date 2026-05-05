@@ -92,6 +92,29 @@ shows the same lesson with Embree: dict-return paths can be far slower than
 native, while raw/prepared raw paths are much closer to the native wrapper
 baseline.
 
+## When OptiX Is Slower Than Embree
+
+Embree is a ray-tracing/BVH backend, not a plain Python baseline. For supported
+Embree app paths, the CPU comparison is still an RT-style traversal comparison
+with native continuation where documented.
+
+A slower OptiX result is acceptable engineering evidence when the same-contract
+comparison is clean and the bottleneck is identified. It can close a v1.1/v1.2
+investigation as `optix_still_slower_with_reason`, but it cannot authorize
+positive public RTX speedup wording.
+
+Use slower-than-Embree results to decide the next architecture step:
+
+- if native traversal is fast but host input construction, scene/ray prepare,
+  ray packing, or Python output dominates, the v1.2 target is overhead removal;
+- if native traversal itself is slower, the target is backend kernel/layout
+  work or a narrower claim boundary;
+- if parity or same-contract timing is incomplete, the result stays
+  `baseline_contract_incomplete`;
+- if the app needs reductions, grouping, ranking, graph analytics, or SQL-style
+  materialization outside traversal, that is v1.5/v2.0 design input rather than
+  a failed OptiX proof.
+
 ## What v1.5 Should Fix
 
 v1.5 should replace app-specific native continuations with reviewed generic
