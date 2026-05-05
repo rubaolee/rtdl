@@ -78,6 +78,26 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             combined,
         )
 
+    def test_current_public_docs_name_goal1262_jaccard_safe_chunk_boundary(self) -> None:
+        combined = "\n".join(
+            (ROOT / relative).read_text(encoding="utf-8")
+            for relative in (
+                "docs/v1_0_rtx_app_status.md",
+                "docs/v1_0_app_acceleration_inventory.md",
+                "docs/app_engine_support_matrix.md",
+                "docs/v1_1_optix_status.md",
+            )
+        )
+        for phrase in (
+            "Goal1262 confirms Jaccard correctness at chunk 1024",
+            "OptiX remains slower than Embree",
+            "no positive public speedup wording",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, combined)
+        self.assertNotIn("larger chunk sizes are diagnostic failures until root-caused", combined)
+        self.assertNotIn("larger diagnostic chunk failures", combined)
+
     def test_public_docs_keep_goal941_boundary_wording(self) -> None:
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")

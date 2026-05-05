@@ -37,6 +37,8 @@ class Goal1230V10AppAccelerationInventoryTest(unittest.TestCase):
         self.assertIn("Blocked because current same-contract OptiX evidence is slower than Embree", text)
         self.assertIn("Goal1263 reviewed bounded positive wording", text)
         self.assertIn("candidate-count mismatch remains a v1.2 diagnostic boundary", text)
+        self.assertIn("Goal1262 confirms correctness at chunk `1024`", text)
+        self.assertIn("no positive public speedup wording is authorized", text)
         self.assertIn("Reviewed normalized per-pose sub-path wording only", text)
 
     def test_feature_guide_current_release_and_links_are_current(self) -> None:

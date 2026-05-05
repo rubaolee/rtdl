@@ -273,7 +273,7 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Public script exposes CPU plus Embree/OptiX native-assisted modes: native LSI/PIP positive candidate discovery plus CPU exact set-area/Jaccard refinement.",
+        note="Public script exposes CPU plus Embree/OptiX native-assisted modes: native LSI/PIP positive candidate discovery plus native C++ exact set-area/Jaccard continuation.",
     ),
     "hausdorff_distance": _row(
         "hausdorff_distance",
@@ -543,10 +543,10 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     "polygon_set_jaccard": _readiness(
         "polygon_set_jaccard",
         READY_FOR_RTX_CLAIM_REVIEW,
-        "Goal877/Goal929",
-        "native-assisted OptiX candidate discovery has a phase-separated RTX artifact with parity at the reviewed chunk-copies=20 contract; public claims still require final claim-review packaging",
-        "exact set-area/Jaccard refinement remains CPU/Python-owned, and larger chunk sizes are diagnostic failures until root-caused",
-        "native-assisted candidate-discovery path only; no full Jaccard speedup claim",
+        "Goal877/Goal929/Goal1262",
+        "Goal1262 confirms the native-assisted OptiX Jaccard path is correctness-ready at chunk 1024, including 8192 copies, but OptiX remains slower than Embree",
+        "chunk 1024 is the current safe default; arbitrary chunk sizes, exact Jaccard whole-app speedup, row materialization, Python setup, and positive public speedup wording remain outside the claim",
+        "safe-chunk native-assisted candidate-discovery path only; no positive Jaccard or whole-app speedup claim",
     ),
     "hausdorff_distance": _readiness(
         "hausdorff_distance",
@@ -750,8 +750,8 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "polygon_set_jaccard",
         RT_CORE_READY,
         RT_CORE_READY,
-        "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact set-area/Jaccard refinement; claim only the reviewed chunked candidate-discovery sub-path.",
-        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+        "Keep OptiX native-assisted LSI/PIP candidate discovery split from native C++ exact set-area/Jaccard continuation; use chunk 1024 as the current safe default and do not claim positive public speedup.",
+        "Goal1262 confirms Jaccard correctness at chunk 1024, including 8192 copies, but OptiX remains slower than Embree. This is correctness-ready safe-chunk evidence only; positive Jaccard speedup wording, arbitrary chunk sizes, monolithic GPU Jaccard, row materialization, Python setup, and whole-app speedup remain outside the wording.",
     ),
     "hausdorff_distance": _maturity(
         "hausdorff_distance",
@@ -883,8 +883,8 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
         "polygon_set_jaccard",
         PUBLIC_WORDING_NOT_REVIEWED,
         _NO_GOAL1009_REVIEW,
-        "Goal877/Goal929",
-        "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+        "Goal877/Goal929/Goal1262",
+        "Native-assisted LSI/PIP candidate discovery is correctness-ready at chunk 1024, but no positive public speedup wording is authorized.",
     ),
     "hausdorff_distance": _public_wording(
         "hausdorff_distance",

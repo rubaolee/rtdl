@@ -338,7 +338,7 @@
       "rt_core_subpath": "native-assisted LSI/PIP candidate discovery"
     },
     {
-      "allowed_claim": "native-assisted candidate-discovery path only; no full Jaccard speedup claim",
+      "allowed_claim": "safe-chunk native-assisted candidate-discovery path only; no positive Jaccard or whole-app speedup claim",
       "app": "polygon_set_jaccard",
       "app_path": "examples/rtdl_polygon_set_jaccard.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core",
@@ -351,13 +351,13 @@
         "optix": "direct_cli_native_assisted",
         "vulkan": "not_exposed_by_app_cli"
       },
-      "evidence_or_goal": "Goal877/Goal929",
+      "evidence_or_goal": "Goal877/Goal929/Goal1262",
       "native_continuation_contract": "native C++ exact set-area continuation follows RT-assisted LSI/PIP candidate discovery",
-      "non_claim_boundary": "exact set-area/Jaccard refinement remains CPU/Python-owned, and larger chunk sizes are diagnostic failures until root-caused",
+      "non_claim_boundary": "chunk 1024 is the current safe default; arbitrary chunk sizes, exact Jaccard whole-app speedup, row materialization, Python setup, and positive public speedup wording remain outside the claim",
       "performance_class": "python_interface_dominated",
       "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
-      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_evidence": "Goal877/Goal929",
+      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is correctness-ready at chunk 1024, but no positive public speedup wording is authorized.",
+      "public_wording_evidence": "Goal877/Goal929/Goal1262",
       "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
