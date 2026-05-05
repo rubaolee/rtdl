@@ -1,0 +1,89 @@
+{
+  "app": "database_analytics",
+  "copies": 256,
+  "execution_mode": "prepared_session",
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_db_compact_summary",
+  "output_mode": "compact_summary",
+  "primitive_contract": {
+    "active_v1_4_backend": true,
+    "alternate_primitive": "REDUCE_INT(COUNT)",
+    "app_row": "database_analytics.sales_risk",
+    "backend": "optix",
+    "backend_contract_role": "nvidia_rt_target",
+    "backend_scope": [
+      "embree",
+      "optix"
+    ],
+    "build_layout": "columnar_denorm_table",
+    "chunked_compact_summary": false,
+    "claim_boundary": "database_analytics.sales_risk compact-summary only: bounded predicate count, grouped integer count, and grouped integer sum over an application-owned denormalized table. This excludes SQL engines, DBMS behavior, query planning, joins, transactions, indexes as a database feature, and row-materializing output.",
+    "materialization_free": true,
+    "migration_status": "compatibility_wrapper_metadata_only",
+    "mode": "prepared_compact_summary",
+    "phase_counters": [
+      "query_compact_summary_batch_sec",
+      "query_conjunctive_scan_count_sec",
+      "query_grouped_count_summary_sec",
+      "query_grouped_sum_summary_sec",
+      "query_conjunctive_scan_and_materialize_sec",
+      "query_grouped_count_and_materialize_sec",
+      "query_grouped_sum_and_materialize_sec",
+      "python_summary_postprocess_sec"
+    ],
+    "prepared_state": "prepared_columnar_dataset_reusable",
+    "primitive": "COUNT_HITS",
+    "probe_layout": "predicate_bundle_and_grouped_query",
+    "result_layout": "aggregate_scan_count_and_grouped_integer_maps",
+    "same_contract_baseline_required": true,
+    "secondary_primitive": "REDUCE_INT(SUM)"
+  },
+  "requested_backend": "optix",
+  "rt_core_accelerated": true,
+  "sales_generic_compact_summary": {
+    "backend": "optix",
+    "claim_boundary": "Generic v1.5 prepared DB compact-summary primitive only: scan count, grouped integer count, and grouped integer sum over an application-owned denormalized table; not SQL, DBMS behavior, joins, indexes, transactions, query planning, row output, or public speedup wording.",
+    "materialization_free": true,
+    "primitive": "DB_COMPACT_SUMMARY",
+    "request_count": 3,
+    "request_operations": [
+      "conjunctive_scan_count",
+      "grouped_count_summary",
+      "grouped_sum_summary"
+    ],
+    "result_layout": "aggregate_scan_count_and_grouped_integer_maps",
+    "summary_primitives": [
+      "COUNT_HITS",
+      "REDUCE_INT(COUNT)",
+      "REDUCE_INT(SUM)"
+    ]
+  },
+  "sales_native_db_phase_keys": [
+    "compact_summary_batch"
+  ],
+  "sales_row_counts": {
+    "grouped_count": 3,
+    "grouped_sum": 3,
+    "scan": 1024
+  },
+  "sales_run_phases": {
+    "python_summary_postprocess_sec": 1.6432255506515503e-05,
+    "query_compact_summary_batch_sec": 0.45060478523373604,
+    "query_generic_db_compact_summary_batch_sec": 0.45060478523373604
+  },
+  "sales_summary": {
+    "highest_risk_region": "west",
+    "risky_order_count": 1024,
+    "risky_order_count_by_region": {
+      "central": 256,
+      "east": 256,
+      "west": 512
+    },
+    "risky_revenue_by_region": {
+      "central": 66560,
+      "east": 79360,
+      "west": 110080
+    }
+  },
+  "scenario": "sales_risk"
+}

@@ -41,6 +41,14 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             (),
         )
         self.assertEqual(
+            by_row[("database_analytics", "sales_risk_compact_summary")]["status"],
+            "pod_verified_generic",
+        )
+        self.assertEqual(
+            by_row[("database_analytics", "sales_risk_compact_summary")]["remaining_app_specific_work"],
+            (),
+        )
+        self.assertEqual(
             by_row[("database_analytics", "sales_risk_compact_summary")]["summary_primitive"],
             "REDUCE_INT(COUNT), REDUCE_INT(SUM)",
         )

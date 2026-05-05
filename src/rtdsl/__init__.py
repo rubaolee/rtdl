@@ -449,6 +449,9 @@ from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_groupe
 from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
+from .generic_db_primitives import ACTIVE_V1_5_GENERIC_DB_BACKENDS
+from .generic_db_primitives import FROZEN_BEFORE_V2_1_DB_BACKENDS
+from .generic_db_primitives import run_generic_db_compact_summary_batch
 from .generic_prepared_status import generic_prepared_anyhit_count_backend_status
 from .generic_prepared_status import generic_prepared_anyhit_count_blockers
 from .grouped_reduction_contracts import V1_5_EXPERIMENTAL_PRIMITIVES
@@ -709,6 +712,9 @@ __all__ = [
     "run_generic_prepared_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",
+    "ACTIVE_V1_5_GENERIC_DB_BACKENDS",
+    "FROZEN_BEFORE_V2_1_DB_BACKENDS",
+    "run_generic_db_compact_summary_batch",
     "generic_prepared_anyhit_count_backend_status",
     "generic_prepared_anyhit_count_blockers",
     "V1_5_EXPERIMENTAL_PRIMITIVES",

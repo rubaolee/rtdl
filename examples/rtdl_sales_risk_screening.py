@@ -277,6 +277,7 @@ class PreparedSalesRiskSession:
         prepared_dataset = None
         run_phases: dict[str, float] = {}
         native_db_phases: dict[str, object] = {}
+        generic_compact_summary = None
         if self.backend in {"embree", "optix", "vulkan"}:
             assert self._dataset is not None
             predicates = self.scan_case["predicates"]
@@ -295,17 +296,36 @@ class PreparedSalesRiskSession:
                     {"name": "risky_order_count_by_region", "operation": "grouped_count_summary", "query": count_query},
                     {"name": "risky_revenue_by_region", "operation": "grouped_sum_summary", "query": query},
                 )
-                batch_results, run_phases["query_compact_summary_batch_sec"] = _timed_call(
-                    lambda: self._dataset.compact_summary_batch(batch_requests)
+                generic_summary = rt.run_generic_db_compact_summary_batch(
+                    prepared_dataset=self._dataset,
+                    requests=batch_requests,
+                    backend=self.backend,
                 )
+                run_phases.update(generic_summary["run_phases"])
+                run_phases["query_compact_summary_batch_sec"] = generic_summary["run_phases"][
+                    "query_generic_db_compact_summary_batch_sec"
+                ]
+                batch_results = generic_summary["results"]
                 risky_scan_count = int(batch_results["risky_scan_count"])
                 risky_rows = ()
                 compact_count_summary = batch_results["risky_order_count_by_region"]
                 compact_sum_summary = batch_results["risky_revenue_by_region"]
                 count_rows = ()
                 sum_rows = ()
-                if hasattr(self._dataset, "last_compact_summary_batch_phase_timings"):
-                    native_db_phases["compact_summary_batch"] = self._dataset.last_compact_summary_batch_phase_timings()
+                native_db_phases["compact_summary_batch"] = generic_summary["native_db_phases"]
+                generic_compact_summary = {
+                    key: generic_summary[key]
+                    for key in (
+                        "primitive",
+                        "summary_primitives",
+                        "backend",
+                        "result_layout",
+                        "materialization_free",
+                        "request_count",
+                        "request_operations",
+                        "claim_boundary",
+                    )
+                }
             elif output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
                 risky_scan_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
                     lambda: self._dataset.conjunctive_scan_count(predicates)
@@ -401,6 +421,7 @@ class PreparedSalesRiskSession:
             },
             "run_phases": run_phases,
             "native_db_phases": native_db_phases,
+            "generic_compact_summary": generic_compact_summary,
             "native_continuation_active": native_continuation_backend != "none",
             "native_continuation_backend": native_continuation_backend,
             "prepared_dataset": prepared_dataset,
