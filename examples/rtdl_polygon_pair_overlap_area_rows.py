@@ -373,7 +373,7 @@ def run_case(
     }
     if output_mode == "rows":
         payload["rows"] = rows
-    return payload
+    return rt.attach_polygon_pair_primitive_contract(payload, backend=backend, output_mode=output_mode)
 
 
 def main(argv: list[str] | None = None) -> int:

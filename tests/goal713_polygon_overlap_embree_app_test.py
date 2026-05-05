@@ -19,6 +19,7 @@ def _canonical(value):
                 "candidate_row_count",
                 "native_continuation_active",
                 "native_continuation_backend",
+                "primitive_contract",
                 "rt_core_accelerated",
                 "rt_core_candidate_discovery_active",
                 "run_phases",
