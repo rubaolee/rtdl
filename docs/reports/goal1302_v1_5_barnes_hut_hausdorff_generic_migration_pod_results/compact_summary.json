@@ -1,0 +1,23 @@
+{
+  "barnes_hut": {
+    "body_count": 4096,
+    "covered_body_count": 4096,
+    "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "matches_oracle": true,
+    "node_count": 4,
+    "rt_core_accelerated": true,
+    "summary_primitive": "REDUCE_INT(COUNT)"
+  },
+  "commit": "9ff886a6a1bed9a61934ef72667fa332823977b2",
+  "hausdorff": {
+    "generic_primitive_a_to_b": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "generic_primitive_b_to_a": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "matches_oracle": true,
+    "point_count_a": 4096,
+    "point_count_b": 4096,
+    "rt_core_accelerated": true,
+    "summary_primitive_a_to_b": "REDUCE_INT(COUNT)",
+    "summary_primitive_b_to_a": "REDUCE_INT(COUNT)",
+    "within_threshold": true
+  }
+}
