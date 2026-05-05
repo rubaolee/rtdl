@@ -246,8 +246,16 @@ def _run_optix_candidate_threshold(
     *,
     radius: float,
 ) -> dict[str, object]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["candidate_points"], max_radius=radius) as prepared:
-        covered_count = prepared.count_threshold_reached(case["query_points"], radius=radius, threshold=1)
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=case["candidate_points"],
+        query_points=case["query_points"],
+        radius=radius,
+        threshold=1,
+        backend="optix",
+        max_radius=radius,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    covered_count = int(result["threshold_reached_count"])
     within_candidate_radius = int(covered_count) == len(case["query_points"])
     return {
         "radius": radius,
@@ -258,6 +266,8 @@ def _run_optix_candidate_threshold(
         "identity_parity_available": within_candidate_radius,
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
     }
 
 

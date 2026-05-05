@@ -177,8 +177,16 @@ def _run_optix_coverage_threshold(
     *,
     radius: float,
 ) -> dict[str, object]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["depots"], max_radius=radius) as prepared:
-        covered_count = prepared.count_threshold_reached(case["customers"], radius=radius, threshold=1)
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=case["depots"],
+        query_points=case["customers"],
+        radius=radius,
+        threshold=1,
+        backend="optix",
+        max_radius=radius,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    covered_count = int(result["threshold_reached_count"])
     all_customers_covered = int(covered_count) == len(case["customers"])
     return {
         "radius": radius,
@@ -189,6 +197,8 @@ def _run_optix_coverage_threshold(
         "identity_parity_available": all_customers_covered,
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
     }
 
 
