@@ -1,0 +1,13 @@
+{
+  "commit": "9b6d401d27af83331610d420c1aac3be7d0a92fc",
+  "robot": {
+    "edge_ray_count": 16384,
+    "generic_primitive": "ANY_HIT",
+    "hit_edge_count": 11904,
+    "native_continuation_backend": "optix_prepared_any_hit_count",
+    "obstacle_triangle_count": 2048,
+    "pose_count": 4096,
+    "summary_primitive": "COUNT_HITS",
+    "validation_mode": "skipped"
+  }
+}
