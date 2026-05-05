@@ -1,0 +1,68 @@
+{
+  "active_backends": [
+    "optix"
+  ],
+  "all_batches_match_cpu": true,
+  "batch_results": [
+    {
+      "expected_hit_count": 128,
+      "hit_count": 128,
+      "label": "batch_a",
+      "matches_cpu": true,
+      "query_batch_index": 1,
+      "ray_count": 256,
+      "run_phases": {
+        "query_anyhit_count_first_sec": 0.00014013610780239105,
+        "query_anyhit_count_mean_sec": 7.259244099259376e-05,
+        "query_anyhit_count_min_sec": 6.16610050201416e-05,
+        "query_anyhit_count_sec": 0.0072592440992593765,
+        "ray_prepare_sec": 0.0006600804626941681,
+        "scene_prepare_sec": 0.8000057451426983,
+        "scene_prepare_sec_this_batch": 0.0
+      },
+      "scene_reusable": true
+    },
+    {
+      "expected_hit_count": 128,
+      "hit_count": 128,
+      "label": "batch_b",
+      "matches_cpu": true,
+      "query_batch_index": 2,
+      "ray_count": 256,
+      "run_phases": {
+        "query_anyhit_count_first_sec": 6.359070539474487e-05,
+        "query_anyhit_count_mean_sec": 5.480503663420677e-05,
+        "query_anyhit_count_min_sec": 5.292147397994995e-05,
+        "query_anyhit_count_sec": 0.005480503663420677,
+        "ray_prepare_sec": 0.0002804994583129883,
+        "scene_prepare_sec": 0.8000057451426983,
+        "scene_prepare_sec_this_batch": 0.0
+      },
+      "scene_reusable": true
+    }
+  ],
+  "boundary": "Internal v1.5 reusable prepared scene evidence only; no public speedup wording, whole-app claim, or Vulkan/HIPRT/Apple RT work is authorized.",
+  "fixture": {
+    "batch_count": 2,
+    "copies": 256,
+    "query_repeats_per_batch": 100,
+    "ray_count": 512,
+    "triangle_count": 256
+  },
+  "frozen_backends_before_v2_1": [
+    "vulkan",
+    "hiprt",
+    "apple_rt"
+  ],
+  "goal": "Goal1296 v1.5 prepared scene session evidence",
+  "platform": {
+    "machine": "x86_64",
+    "python": "3.11.10",
+    "release": "6.8.0-87-generic",
+    "system": "Linux"
+  },
+  "public_wording_authorized": false,
+  "scene_prepare_paid_once": true,
+  "scene_prepare_sec": 0.8000057451426983,
+  "source_commit": "b2506bdabf0eb5bfe8d84ee920899bd64b3d93b4"
+}
