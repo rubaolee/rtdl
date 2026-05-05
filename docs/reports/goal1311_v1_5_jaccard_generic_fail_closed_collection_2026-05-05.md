@@ -46,3 +46,38 @@ git diff --check
 ```
 
 Result: passed on 2026-05-05.
+
+## Pod Diagnostic
+
+Pod workspace: `/workspace/rtdl_goal1311_min`
+
+OptiX library: `/workspace/rtdl_goal1292/build/librtdl_optix.so`
+
+Compact artifact:
+
+- `docs/reports/goal1311_v1_5_jaccard_generic_fail_closed_collection_pod_results/compact_summary.json`
+
+Commands:
+
+```bash
+export RTDL_OPTIX_LIB=/workspace/rtdl_goal1292/build/librtdl_optix.so
+PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py \
+  --backend embree --copies 128 --output-mode summary --collection-capacity 512
+PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py \
+  --backend optix --copies 128 --output-mode summary --collection-capacity 512 --require-rt-core
+PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py \
+  --backend embree --copies 128 --output-mode summary --collection-capacity 1
+```
+
+Result:
+
+| Check | Result |
+|---|---|
+| Embree candidate pairs | 384 |
+| OptiX candidate pairs | 256 |
+| Embree Jaccard summary | intersection `640`, union `2432`, similarity `0.2631578947368421` |
+| OptiX Jaccard summary | intersection `640`, union `2432`, similarity `0.2631578947368421` |
+| OptiX RT-core candidate discovery | active |
+| Capacity 1 overflow | exit `1`, `COLLECT_K_BOUNDED overflowed capacity 1; emitted 384; failure_mode=fail_closed_overflow` |
+
+The Embree/OptiX candidate counts differ because the candidate-discovery subpaths can emit different positive-candidate supersets, but both produce the same exact Jaccard score after native exact scoring. This remains diagnostic because native device-level bounded collection and native score reduction are not implemented.

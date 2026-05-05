@@ -1,0 +1,52 @@
+{
+  "embree_candidate_row_count": 384,
+  "embree_collection": {
+    "capacity": 512,
+    "complete_candidate_coverage": true,
+    "emitted_count": 384,
+    "failure_mode": "fail_closed_overflow",
+    "ordering_policy": "stable_by_left_id_then_right_id_after_candidate_discovery",
+    "overflow_policy": "no_silent_truncation",
+    "overflowed": false,
+    "primitive": "COLLECT_K_BOUNDED",
+    "public_wording_allowed": false,
+    "status": "experimental_diagnostic_only",
+    "truncation_allowed": false
+  },
+  "embree_summary": {
+    "intersection_area": 640,
+    "jaccard_similarity": 0.2631578947368421,
+    "left_area": 1664,
+    "right_area": 1408,
+    "union_area": 2432
+  },
+  "optix_candidate_row_count": 256,
+  "optix_collection": {
+    "capacity": 512,
+    "complete_candidate_coverage": true,
+    "emitted_count": 256,
+    "failure_mode": "fail_closed_overflow",
+    "ordering_policy": "stable_by_left_id_then_right_id_after_candidate_discovery",
+    "overflow_policy": "no_silent_truncation",
+    "overflowed": false,
+    "primitive": "COLLECT_K_BOUNDED",
+    "public_wording_allowed": false,
+    "status": "experimental_diagnostic_only",
+    "truncation_allowed": false
+  },
+  "optix_rt_core_candidate_discovery_active": true,
+  "optix_summary": {
+    "intersection_area": 640,
+    "jaccard_similarity": 0.2631578947368421,
+    "left_area": 1664,
+    "right_area": 1408,
+    "union_area": 2432
+  },
+  "overflow_exit": 1,
+  "overflow_stderr_tail": [
+    "                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/workspace/rtdl_goal1311_min/src/rtdsl/generic_polygon_primitives.py\", line 100, in collect_k_bounded_candidate_pairs",
+    "    raise RuntimeError(",
+    "RuntimeError: COLLECT_K_BOUNDED overflowed capacity 1; emitted 384; failure_mode=fail_closed_overflow"
+  ]
+}
