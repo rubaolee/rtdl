@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 60000 --output-mode summary > /workspace/rtdl_goal1267/rtdl_staged_source/docs/reports/goal1267_embree4_recovery/graph_embree_visibility_60000_recovery.json",
+  "exit_code": 0,
+  "label": "graph_embree_visibility_60000_recovery",
+  "log": "/workspace/rtdl_goal1267/rtdl_staged_source/docs/reports/goal1267_embree4_recovery/graph_embree_visibility_60000_recovery.log",
+  "status": "ok"
+}

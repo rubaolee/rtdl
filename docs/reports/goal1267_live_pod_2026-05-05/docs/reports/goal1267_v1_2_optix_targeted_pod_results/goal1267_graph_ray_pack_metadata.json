@@ -1,0 +1,35 @@
+{
+  "all_numpy_packed_rays": true,
+  "all_numpy_packed_triangles": true,
+  "artifact_count": 2,
+  "boundary": "Diagnostic metadata only; no public speedup claim is authorized.",
+  "goal": "Goal1267 graph ray-pack metadata check",
+  "rows": [
+    {
+      "artifact": "docs/reports/goal1267_v1_2_optix_targeted_pod_results/graph_optix_visibility_30000.json",
+      "blocker_pack_mode": "numpy_packed_triangles",
+      "blocker_pack_sec": 0.2270741667598486,
+      "copies": 30000,
+      "has_blocker_pack_mode": true,
+      "has_ray_pack_mode": true,
+      "query_anyhit_count_sec": 0.00019475258886814117,
+      "ray_pack_mode": "numpy_packed_rays",
+      "ray_pack_sec": 0.027677107602357864,
+      "ray_prepare_sec": 0.0011837445199489594,
+      "scene_prepare_sec": 1.3013613726943731
+    },
+    {
+      "artifact": "docs/reports/goal1267_v1_2_optix_targeted_pod_results/graph_optix_visibility_60000.json",
+      "blocker_pack_mode": "numpy_packed_triangles",
+      "blocker_pack_sec": 0.20042873732745647,
+      "copies": 60000,
+      "has_blocker_pack_mode": true,
+      "has_ray_pack_mode": true,
+      "query_anyhit_count_sec": 0.00023854151368141174,
+      "ray_pack_mode": "numpy_packed_rays",
+      "ray_pack_sec": 0.055902713909745216,
+      "ray_prepare_sec": 0.003445034846663475,
+      "scene_prepare_sec": 1.0547744315117598
+    }
+  ]
+}

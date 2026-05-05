@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 160000 --output-mode summary > /workspace/rtdl_goal1267/rtdl_staged_source/docs/reports/goal1267_embree4_recovery/polygon_pair_embree_160000_recovery.json",
+  "exit_code": 0,
+  "label": "polygon_pair_embree_160000_recovery",
+  "log": "/workspace/rtdl_goal1267/rtdl_staged_source/docs/reports/goal1267_embree4_recovery/polygon_pair_embree_160000_recovery.log",
+  "status": "ok"
+}

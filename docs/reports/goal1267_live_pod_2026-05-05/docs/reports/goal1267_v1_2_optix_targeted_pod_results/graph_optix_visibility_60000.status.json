@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal889_graph_visibility_optix_gate.py --copies 60000 --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1267_v1_2_optix_targeted_pod_results/graph_optix_visibility_60000.json",
+  "exit_code": 0,
+  "label": "graph_optix_visibility_60000",
+  "log": "docs/reports/goal1267_v1_2_optix_targeted_pod_results/graph_optix_visibility_60000.log",
+  "status": "ok"
+}

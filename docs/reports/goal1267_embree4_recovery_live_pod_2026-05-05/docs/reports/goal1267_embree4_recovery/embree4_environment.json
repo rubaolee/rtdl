@@ -1,0 +1,14 @@
+{
+  "embree_version": [
+    4,
+    4,
+    0
+  ],
+  "goal": "Goal1267 Embree4 recovery environment",
+  "has_header": true,
+  "lib_files": [
+    "libembree4.so",
+    "libembree4.so.4"
+  ],
+  "rtdl_embree_prefix": "/opt"
+}

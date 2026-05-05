@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 300000 --iterations 5 --output-mode compact_summary --strict --output-json /workspace/rtdl_goal1267/rtdl_staged_source/docs/reports/goal1267_embree4_recovery/db_embree_sales_risk_300000_recovery.json",
+  "exit_code": 0,
+  "label": "db_embree_sales_risk_300000_recovery",
+  "log": "/workspace/rtdl_goal1267/rtdl_staged_source/docs/reports/goal1267_embree4_recovery/db_embree_sales_risk_300000_recovery.log",
+  "status": "ok"
+}

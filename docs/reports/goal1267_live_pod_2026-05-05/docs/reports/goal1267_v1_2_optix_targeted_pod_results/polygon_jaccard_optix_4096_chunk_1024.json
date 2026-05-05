@@ -1,0 +1,93 @@
+{
+  "app": "jaccard",
+  "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from native C++ exact area/Jaccard continuation. It does not authorize full polygon-overlap RTX speedup claims.",
+  "candidate_diagnostics": {
+    "candidate_count_matches_expected": false,
+    "expected_or_cpu_candidate_row_count": 12288,
+    "optix_candidate_row_count": 8192
+  },
+  "chunk_copies": 1024,
+  "chunk_count": 4,
+  "chunk_policy": {
+    "chunk_copies": 1024,
+    "policy": "public_safe",
+    "public_safe": true,
+    "reason": "Goal1260 evidence supports public Jaccard summary checks only for reviewed safe chunks.",
+    "safe_max": 4096,
+    "safe_min": 1024
+  },
+  "cloud_claim_contract": {
+    "chunk_policy": "polygon-set Jaccard public evidence requires chunk_policy.public_safe=true",
+    "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
+    "non_claim": "not a monolithic GPU Jaccard kernel and not a full app RTX speedup claim",
+    "required_phase_groups": [
+      "input_build_sec",
+      "cpu_reference_sec",
+      "optix_candidate_discovery_sec",
+      "cpu_exact_refinement_sec",
+      "native_exact_continuation_sec",
+      "parity_vs_cpu",
+      "rt_core_candidate_discovery_active",
+      "validation_mode",
+      "output_mode"
+    ]
+  },
+  "copies": 4096,
+  "cpu_digest": {
+    "app": "polygon_set_jaccard",
+    "copies": 4096,
+    "output_mode": "summary",
+    "row_count": 1,
+    "summary": {
+      "intersection_area": 20480,
+      "jaccard_similarity": 0.263157894737,
+      "left_area": 53248,
+      "right_area": 45056,
+      "union_area": 77824
+    }
+  },
+  "date": "2026-04-24",
+  "error": null,
+  "generated_at": "2026-05-05T16:13:41",
+  "goal": "Goal877 polygon overlap OptiX phase profiler",
+  "host": {
+    "hostname": "d1e48a0bb41e",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-52-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "mode": "optix",
+  "optix_digest": {
+    "app": "polygon_set_jaccard",
+    "copies": 4096,
+    "output_mode": "summary",
+    "row_count": 1,
+    "summary": {
+      "intersection_area": 20480,
+      "jaccard_similarity": 0.263157894737,
+      "left_area": 53248,
+      "right_area": 45056,
+      "union_area": 77824
+    }
+  },
+  "optix_metadata": {
+    "backend_mode": "optix_native_assisted",
+    "native_continuation_active": false,
+    "native_continuation_backend": null,
+    "rt_core_accelerated": false,
+    "rt_core_candidate_discovery_active": true
+  },
+  "output_mode": "summary",
+  "parity_vs_cpu": true,
+  "phases": {
+    "cpu_exact_refinement_sec": 0.8231111597269773,
+    "cpu_reference_sec": null,
+    "input_build_sec": 0.0,
+    "native_exact_continuation_sec": 0.8231111597269773,
+    "optix_candidate_discovery_sec": 2.107985367998481
+  },
+  "schema_version": "goal877_polygon_overlap_optix_phase_contract_v2",
+  "source_commit": "goal1267-archive-6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+  "status": "pass",
+  "validation_mode": "analytic_summary"
+}
