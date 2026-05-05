@@ -38,17 +38,24 @@ Local validation completed:
 - `py_compile` for the Python runtime files.
 - `git diff --check`.
 
-Pod validation is still required because macOS local does not have CUDA/OptiX
-headers or libraries. The current pod SSH endpoint refused connection during
-this slice, so no native shared-library build or runtime candidate collection
-artifact is recorded yet.
+Pod validation completed after syncing through git:
+
+- Pushed `main` to GitHub at commit `492ab680`.
+- Pod checkout `/workspace/rtdl_goal1292` reset to `origin/main`.
+- GPU: NVIDIA RTX 2000 Ada Generation, driver 570.195.03.
+- Built `build/librtdl_optix.so` with `make build-optix`.
+- Ran 14 focused surface/ABI tests with
+  `RTDL_OPTIX_LIB=/workspace/rtdl_goal1292/build/librtdl_optix.so`.
+- Real native ctypes call returned candidate pairs `((1, 10), (2, 11))` for a
+  two-pair authored case.
+- Capacity `1` failed closed with:
+  `native bounded OptiX polygon-pair candidate collection overflowed capacity 1; emitted at least 2; failure_mode=fail_closed_overflow`.
 
 ## Boundary
 
 This does not promote `polygon_set_jaccard`. Remaining blockers are:
 
-- Pod build of the OptiX shared library with the new export.
-- Runtime parity against the existing Python/OptiX candidate discovery.
-- Fail-closed overflow runtime artifact.
-- Symmetric Embree same-contract wrapper.
 - Native score reduction after complete candidate coverage.
+- App routing through the native bounded collection wrappers with same-summary
+  evidence.
+- Performance characterization of the native collection wrapper.
