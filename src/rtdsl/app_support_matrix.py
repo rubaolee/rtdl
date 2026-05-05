@@ -537,7 +537,7 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
         READY_FOR_RTX_CLAIM_REVIEW,
         "Goal877/Goal929/Goal1263",
         "Goal1263 promotes bounded same-contract OptiX wording for RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation at 40k, 80k, and 160k copies",
-        "monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the claim; candidate-count mismatch remains a v1.2 diagnostic item",
+        "monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the claim; Goal1270 clarifies the candidate-count mismatch as a conservative candidate-upper-bound diagnostic with separate positive-pair parity fields",
         "Goal1263 bounded polygon-pair sub-path may be described; no full polygon-area or broad GIS speedup claim",
     ),
     "polygon_set_jaccard": _readiness(
@@ -744,7 +744,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep OptiX native-assisted LSI/PIP positive candidate discovery split from native C++ exact area continuation; claim only the Goal1263 bounded sub-path unless broader same-semantics app timing is reviewed.",
-        "Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation at 40k, 80k, and 160k copies on RTX A5000; candidate-count mismatch remains a v1.2 diagnostic boundary. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the wording.",
+        "Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation at 40k, 80k, and 160k copies on RTX A5000; Goal1270 clarifies the candidate-count mismatch as a conservative candidate-upper-bound diagnostic while positive-pair parity is reported separately. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the wording.",
     ),
     "polygon_set_jaccard": _maturity(
         "polygon_set_jaccard",
@@ -877,7 +877,7 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
         PUBLIC_WORDING_REVIEWED,
         "RTDL v1.1 shows bounded OptiX acceleration for the polygon-pair RTX sub-path at 40k, 80k, and 160k copies on an RTX A5000; at 160k copies the reviewed same-contract benchmark measured about 1.4x faster candidate discovery and about 1.2x faster observed pipeline versus Embree.",
         "Goal1263",
-        "Only RT-assisted LSI/PIP positive candidate discovery plus native C++ exact polygon-area continuation is covered. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording. Correctness is summary-parity under the v1.1 profiler contract; candidate-count mismatch remains a v1.2 diagnostic item.",
+        "Only RT-assisted LSI/PIP positive candidate discovery plus native C++ exact polygon-area continuation is covered. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording. Correctness is summary-parity under the v1.1 profiler contract; Goal1270 clarifies the candidate-count mismatch as a conservative candidate-upper-bound diagnostic with positive-pair parity reported separately.",
     ),
     "polygon_set_jaccard": _public_wording(
         "polygon_set_jaccard",

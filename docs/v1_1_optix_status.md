@@ -49,8 +49,9 @@ faster candidate discovery and about `1.2x` faster observed pipeline than
 Embree under the reviewed same-contract benchmark.
 
 Correctness is confirmed by summary parity under the current v1.1 profiler
-contract. `candidate_count_matches_expected: false` remains an unresolved
-diagnostic boundary and a tracked v1.2 reconciliation item.
+contract. Goal1270 clarifies `candidate_count_matches_expected: false` as a
+conservative candidate-upper-bound diagnostic; final positive-pair parity is
+reported separately with `positive_pair_count_matches_expected`.
 
 ## Blocked Wording
 
