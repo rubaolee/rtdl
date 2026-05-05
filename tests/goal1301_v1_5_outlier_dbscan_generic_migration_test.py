@@ -53,6 +53,8 @@ class Goal1301OutlierDbscanGenericMigrationTest(unittest.TestCase):
         self.assertTrue(payload["matches_oracle"])
         self.assertEqual(payload["outlier_count"], 2)
         self.assertEqual(payload["summary_mode"], "scalar_threshold_count")
+        self.assertEqual(payload["generic_primitive"], "FIXED_RADIUS_COUNT_THRESHOLD_2D")
+        self.assertEqual(payload["summary_primitive"], "REDUCE_INT(COUNT)")
         run_generic.assert_called_once()
         self.assertEqual(run_generic.call_args.kwargs["backend"], "optix")
 
@@ -101,6 +103,8 @@ class Goal1301OutlierDbscanGenericMigrationTest(unittest.TestCase):
         self.assertTrue(payload["matches_oracle"])
         self.assertEqual(payload["core_count"], 7)
         self.assertEqual(payload["summary_mode"], "scalar_threshold_count")
+        self.assertEqual(payload["generic_primitive"], "FIXED_RADIUS_COUNT_THRESHOLD_2D")
+        self.assertEqual(payload["summary_primitive"], "REDUCE_INT(COUNT)")
         run_generic.assert_called_once()
         self.assertEqual(run_generic.call_args.kwargs["backend"], "optix")
 

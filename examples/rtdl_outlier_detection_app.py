@@ -496,6 +496,12 @@ def run_app(
         "oracle_density_rows": oracle_rows,
         "oracle_outlier_count": oracle_outlier_count,
         "summary_mode": scalar_density_count["summary_mode"] if scalar_density_count is not None else None,
+        "generic_primitive": (
+            scalar_density_count.get("generic_primitive") if scalar_density_count is not None else None
+        ),
+        "summary_primitive": (
+            scalar_density_count.get("summary_primitive") if scalar_density_count is not None else None
+        ),
         "matches_oracle": matches_oracle,
         "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.",
         "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",

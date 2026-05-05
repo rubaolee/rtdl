@@ -591,6 +591,12 @@ def run_app(
         "oracle_core_flag_rows": oracle_core_flag_rows,
         "oracle_core_count": sum(1 for row in oracle_core_flag_rows if bool(row.get("is_core", False))),
         "summary_mode": scalar_core_count["summary_mode"] if scalar_core_count is not None else None,
+        "generic_primitive": (
+            scalar_core_count.get("generic_primitive") if scalar_core_count is not None else None
+        ),
+        "summary_primitive": (
+            scalar_core_count.get("summary_primitive") if scalar_core_count is not None else None
+        ),
         "matches_oracle": matches_oracle,
         "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.",
         "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
