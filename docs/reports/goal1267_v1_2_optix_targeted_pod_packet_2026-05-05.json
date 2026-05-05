@@ -1,12 +1,12 @@
 {
   "archive": {
-    "archive_bytes": 1557133,
+    "archive_bytes": 1559079,
     "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz",
-    "archive_sha256": "6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+    "archive_sha256": "9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1",
     "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
     "date": "2026-04-30",
     "goal": "Goal1175 staged source archive builder",
-    "manifest_aggregate_sha256": "54c90be4edb58dd5f295e37f66819e39359e63aa8439b668b3e2f07bf8da44b3",
+    "manifest_aggregate_sha256": "2d3ebfa92bba42ea636f720d2dea8a55cf9fa57b66dbc3b38a16663ad6164687",
     "manifest_file_count": 1849,
     "valid": true
   },
@@ -18,7 +18,7 @@
       "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 docs/reports/goal1267_live_pod_2026-05-05/",
       "tar -xzf docs/reports/goal1267_live_pod_2026-05-05/goal1267_v1_2_optix_targeted_pod_results.tgz -C docs/reports/goal1267_live_pod_2026-05-05"
     ],
-    "run_on_pod": "ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh",
+    "run_on_pod": "ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1 WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh",
     "upload": [
       "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz root@<pod_host>:/tmp/goal1267_rtdl_source_2026-05-05.tar.gz",
       "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1267_v1_2_optix_targeted_pod_executor.sh root@<pod_host>:/tmp/goal1267_executor.sh"
@@ -54,10 +54,11 @@
         "current_state": "fast OptiX any-hit kernel, slower total path",
         "expected_metadata": {
           "blocker_pack_mode": "numpy_packed_triangles",
-          "ray_pack_mode": "numpy_packed_rays"
+          "ray_pack_mode": "numpy_packed_rays",
+          "visibility_query_repeats": 100
         },
         "priority": 1,
-        "question": "Can host preparation and ray packing be amortized enough to improve total timing?",
+        "question": "Can prepared-scene reuse amortize scene/ray preparation enough to improve total timing?",
         "required_fields": [
           "ray_pack_mode",
           "blocker_pack_mode",
@@ -66,6 +67,10 @@
           "scene_prepare_sec",
           "ray_prepare_sec",
           "query_anyhit_count_sec",
+          "query_anyhit_count_first_sec",
+          "query_anyhit_count_mean_sec",
+          "query_anyhit_count_min_sec",
+          "visibility_query_repeats",
           "summary_postprocess_sec"
         ],
         "row": "graph_analytics",
@@ -75,11 +80,15 @@
         ]
       },
       {
-        "current_state": "bounded positive wording exists; candidate diagnostic remains disclosed",
+        "current_state": "bounded positive wording exists; Goal1270 clarified candidate diagnostics",
         "priority": 2,
-        "question": "Can the candidate-count diagnostic be reconciled without expanding the claim?",
+        "question": "Does the pod artifact preserve positive-pair parity while keeping candidate upper-bound mismatch explicit?",
         "required_fields": [
           "candidate_count_matches_expected",
+          "candidate_count_delta_vs_expected",
+          "positive_pair_count_matches_expected",
+          "expected_positive_pair_count",
+          "optix_positive_pair_count",
           "candidate_discovery_seconds",
           "native_exact_continuation_seconds",
           "output_seconds"
@@ -129,16 +138,18 @@
     "Run only after local inspection says pod timing is needed.",
     "Use one RTX-class Linux pod session and reuse it for all four target rows.",
     "Collect same-contract Embree and OptiX artifacts before interpretation.",
+    "Run the graph prepared-repeat probe from Goal1269 to separate repeated query cost from one-time scene/ray preparation.",
+    "Preserve Goal1270 candidate diagnostics for polygon-pair and Jaccard artifacts.",
     "Do not open Vulkan, HIPRT, or Apple RT implementation work before v2.1.",
     "Copy back result tgz and sha256 before any intake report."
   ],
-  "source_commit": "71515f9e33d764cc6b990263be1c763e2951983d",
+  "source_commit": "4d1cbc7fd16859d07c83728705713bd53d106df3",
   "valid": true,
   "verification": {
-    "actual_sha256": "6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+    "actual_sha256": "9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1",
     "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz",
     "exists": true,
-    "expected_sha256": "6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+    "expected_sha256": "9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1",
     "valid": true
   }
 }

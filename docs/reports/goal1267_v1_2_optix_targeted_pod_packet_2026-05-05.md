@@ -3,21 +3,21 @@
 Date: 2026-05-05
 
 Valid: `True`
-Source commit: `71515f9e33d764cc6b990263be1c763e2951983d`
+Source commit: `4d1cbc7fd16859d07c83728705713bd53d106df3`
 Plan source: `docs/reports/goal1266_v1_2_optix_plan_after_v1_1_findings_2026-05-05.md`
 
 ## Archive
 
 - path: `/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz`
-- sha256: `6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a`
-- bytes: `1557133`
+- sha256: `9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1`
+- bytes: `1559079`
 
 ## Targets
 
 | Priority | Row | Scales | Required evidence |
 | --- | --- | --- | --- |
-| 1 | `graph_analytics` | 30000, 60000 | `ray_pack_mode`, `blocker_pack_mode`, `blocker_pack_sec`, `ray_pack_sec`, `scene_prepare_sec`, `ray_prepare_sec`, `query_anyhit_count_sec`, `summary_postprocess_sec` |
-| 2 | `polygon_pair_overlap_area_rows` | 40000, 80000, 160000 | `candidate_count_matches_expected`, `candidate_discovery_seconds`, `native_exact_continuation_seconds`, `output_seconds` |
+| 1 | `graph_analytics` | 30000, 60000 | `ray_pack_mode`, `blocker_pack_mode`, `blocker_pack_sec`, `ray_pack_sec`, `scene_prepare_sec`, `ray_prepare_sec`, `query_anyhit_count_sec`, `query_anyhit_count_first_sec`, `query_anyhit_count_mean_sec`, `query_anyhit_count_min_sec`, `visibility_query_repeats`, `summary_postprocess_sec` |
+| 2 | `polygon_pair_overlap_area_rows` | 40000, 80000, 160000 | `candidate_count_matches_expected`, `candidate_count_delta_vs_expected`, `positive_pair_count_matches_expected`, `expected_positive_pair_count`, `optix_positive_pair_count`, `candidate_discovery_seconds`, `native_exact_continuation_seconds`, `output_seconds` |
 | 3 | `database_analytics` | 100000, 300000 | `warm_query_median_seconds`, `prepare_seconds`, `one_shot_seconds`, `row_materializing_operation_count` |
 | 4 | `polygon_set_jaccard` | 4096, 8192 | `chunk_copies`, `candidate_discovery_seconds`, `native_exact_continuation_seconds`, `output_seconds` |
 
@@ -26,6 +26,8 @@ Plan source: `docs/reports/goal1266_v1_2_optix_plan_after_v1_1_findings_2026-05-
 - Run only after local inspection says pod timing is needed.
 - Use one RTX-class Linux pod session and reuse it for all four target rows.
 - Collect same-contract Embree and OptiX artifacts before interpretation.
+- Run the graph prepared-repeat probe from Goal1269 to separate repeated query cost from one-time scene/ray preparation.
+- Preserve Goal1270 candidate diagnostics for polygon-pair and Jaccard artifacts.
 - Do not open Vulkan, HIPRT, or Apple RT implementation work before v2.1.
 - Copy back result tgz and sha256 before any intake report.
 
@@ -41,7 +43,7 @@ scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1267_v
 ## Run On Pod
 
 ```bash
-ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh
+ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=9e3c1f045d3eb9709ad9030893cfd38b5659105f6d244ad5f46a68c404a550f1 WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh
 ```
 
 ## Copy Back
