@@ -36,7 +36,7 @@ class Goal1310V15JaccardCollectKBoundedContractTest(unittest.TestCase):
         self.assertTrue(policy["complete_candidate_coverage_required"])
         self.assertFalse(policy["score_reduction_allowed_on_overflow"])
         self.assertFalse(contract["public_wording_allowed"])
-        self.assertEqual(contract["future_score_primitive_status"], "blocked_by_native_score_reduction")
+        self.assertEqual(contract["future_score_primitive_status"], "pod_verified_generic_non_public")
         self.assertEqual(contract["migration_status"], "diagnostic_metadata_only")
 
     def test_jaccard_summary_payload_keeps_diagnostic_boundary(self) -> None:

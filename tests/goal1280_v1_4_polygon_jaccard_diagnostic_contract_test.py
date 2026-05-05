@@ -24,7 +24,7 @@ class Goal1280V14PolygonJaccardDiagnosticContractTest(unittest.TestCase):
         self.assertEqual(contract["primitive"], "ANY_HIT")
         self.assertEqual(contract["experimental_collection_primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(contract["future_score_primitive"], "REDUCE_FLOAT(SUM)")
-        self.assertEqual(contract["future_score_primitive_status"], "blocked_by_native_score_reduction")
+        self.assertEqual(contract["future_score_primitive_status"], "pod_verified_generic_non_public")
         self.assertFalse(contract["public_wording_allowed"])
         self.assertTrue(contract["chunk_policy_required_for_public_evidence"])
         self.assertEqual(contract["migration_status"], "diagnostic_metadata_only")

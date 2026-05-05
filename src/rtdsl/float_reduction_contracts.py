@@ -8,12 +8,12 @@ V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL = 1e-9
 
 
 def v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
-    """Return v1.5 REDUCE_FLOAT(SUM) contracts for deferred polygon rows."""
+    """Return v1.5 REDUCE_FLOAT(SUM) contracts for polygon summary rows."""
     return (
         {
             "app": "polygon_pair_overlap_area_rows",
             "subpath": "exact_area_sum",
-            "status": "design_required",
+            "status": "pod_verified_generic_non_public",
             "input_rows": "positive_polygon_pair_area_rows",
             "reduction_primitive": "REDUCE_FLOAT(SUM)",
             "group_key": "summary",
@@ -23,7 +23,7 @@ def v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "abs_tol": V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL,
             "rel_tol": V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL,
             "determinism_policy": "backend must publish reduction order or validate within tolerance",
-            "current_oracle_policy": "integer-grid unit-cell area still requires exact integer parity before float tolerance is applied",
+            "current_oracle_policy": "backend-neutral native polygon-pair area summary preserves exact integer parity before float tolerance is applied",
             "claim_boundary": "exact area summary only; not generic polygon overlay, GIS, or public speedup wording; public speedup wording remains blocked",
         },
         {

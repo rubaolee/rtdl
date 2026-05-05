@@ -80,8 +80,8 @@ def primitive_contract_schema_errors(contract: dict[str, Any]) -> tuple[str, ...
             errors.append("Jaccard public_wording_allowed must be false")
         if contract.get("migration_status") != "diagnostic_metadata_only":
             errors.append("Jaccard must remain diagnostic_metadata_only")
-        if contract.get("future_score_primitive_status") != "blocked_by_native_score_reduction":
-            errors.append("Jaccard score primitive must remain blocked by native score reduction")
+        if contract.get("future_score_primitive_status") != "pod_verified_generic_non_public":
+            errors.append("Jaccard score primitive must remain pod_verified_generic_non_public")
         bounded_collection_policy = contract.get("bounded_collection_policy")
         if not isinstance(bounded_collection_policy, dict):
             errors.append("Jaccard must declare bounded_collection_policy")

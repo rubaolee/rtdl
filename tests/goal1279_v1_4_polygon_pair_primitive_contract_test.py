@@ -23,13 +23,13 @@ class Goal1279V14PolygonPairPrimitiveContractTest(unittest.TestCase):
         self.assertEqual(contract["primitive"], "ANY_HIT")
         self.assertEqual(contract["candidate_primitive"], "ANY_HIT")
         self.assertEqual(contract["future_area_primitive"], "REDUCE_FLOAT(SUM)")
-        self.assertEqual(contract["future_area_primitive_status"], "deferred_until_generic_float_reduction_contract")
+        self.assertEqual(contract["future_area_primitive_status"], "pod_verified_generic_non_public")
         self.assertEqual(contract["backend_scope"], ("embree", "optix"))
         self.assertEqual(contract["backend_contract_role"], "nvidia_rt_target")
         self.assertTrue(contract["same_contract_baseline_required"])
         self.assertTrue(contract["goal1270_diagnostic_split_preserved"])
-        self.assertEqual(contract["exact_area_continuation"], "app_specific_native_cpp")
-        self.assertIn("not a generic area-reduction", contract["claim_boundary"])
+        self.assertEqual(contract["exact_area_continuation"], "backend_neutral_native_polygon_pair_area_summary")
+        self.assertIn("not a generic polygon overlay engine", contract["claim_boundary"])
 
     def test_optix_summary_attaches_candidate_contract_without_claiming_area_primitive(self) -> None:
         with mock.patch.object(pair_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
@@ -43,7 +43,7 @@ class Goal1279V14PolygonPairPrimitiveContractTest(unittest.TestCase):
         self.assertEqual(contract["backend"], "optix")
         self.assertEqual(contract["primitive"], "ANY_HIT")
         self.assertEqual(contract["future_area_primitive"], "REDUCE_FLOAT(SUM)")
-        self.assertEqual(contract["exact_area_continuation"], "app_specific_native_cpp")
+        self.assertEqual(contract["exact_area_continuation"], "backend_neutral_native_polygon_pair_area_summary")
 
     def test_embree_summary_attaches_cpu_rt_baseline_contract(self) -> None:
         with mock.patch.object(pair_app, "_positive_candidate_pairs_embree", side_effect=_candidate_pairs):

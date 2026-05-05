@@ -30,7 +30,9 @@ def polygon_pair_primitive_contract(
         "primitive": "ANY_HIT" if native_candidate_discovery else "row_materialization",
         "candidate_primitive": "ANY_HIT" if native_candidate_discovery else "not_applicable",
         "future_area_primitive": "REDUCE_FLOAT(SUM)",
-        "future_area_primitive_status": "deferred_until_generic_float_reduction_contract",
+        "future_area_primitive_status": (
+            "pod_verified_generic_non_public" if output_mode == "summary" else "row_mode_uses_exact_rows"
+        ),
         "backend": normalized_backend,
         "backend_scope": ACTIVE_V1_4_POLYGON_BACKENDS,
         "active_v1_4_backend": normalized_backend in ACTIVE_V1_4_POLYGON_BACKENDS,
@@ -43,7 +45,11 @@ def polygon_pair_primitive_contract(
         "output_mode": output_mode,
         "candidate_row_count": candidate_row_count,
         "goal1270_diagnostic_split_preserved": True,
-        "exact_area_continuation": "app_specific_native_cpp",
+        "exact_area_continuation": (
+            "backend_neutral_native_polygon_pair_area_summary"
+            if native_candidate_discovery and output_mode == "summary"
+            else "app_specific_native_cpp"
+        ),
         "phase_counters": (
             "rt_candidate_discovery_sec",
             "native_exact_continuation_sec",
@@ -53,9 +59,9 @@ def polygon_pair_primitive_contract(
         "claim_boundary": (
             "polygon_pair_overlap_area_rows candidate discovery only: native "
             "RT traversal identifies positive polygon-pair candidates before an "
-            "app-specific exact grid-cell area continuation. This is not a "
-            "generic polygon overlay engine, not a generic area-reduction "
-            "primitive, and not public whole-app speedup wording."
+            "backend-neutral exact grid-cell area summary in summary mode. "
+            "This is not a generic polygon overlay engine and not public "
+            "whole-app speedup wording."
         ),
         "migration_status": "compatibility_wrapper_metadata_only",
     }
@@ -97,7 +103,7 @@ def polygon_jaccard_diagnostic_contract(
         "candidate_primitive": "ANY_HIT" if native_candidate_discovery else "not_applicable",
         "experimental_collection_primitive": "COLLECT_K_BOUNDED",
         "future_score_primitive": "REDUCE_FLOAT(SUM)",
-        "future_score_primitive_status": "blocked_by_native_score_reduction",
+        "future_score_primitive_status": "pod_verified_generic_non_public",
         "backend": normalized_backend,
         "backend_scope": ACTIVE_V1_4_POLYGON_BACKENDS,
         "active_v1_4_backend": normalized_backend in ACTIVE_V1_4_POLYGON_BACKENDS,
