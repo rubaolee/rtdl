@@ -16,28 +16,31 @@ class Goal1305V15GroupedReductionContractTest(unittest.TestCase):
         pose = by_row[("robot_collision_screening", "prepared_pose_flags")]
 
         self.assertEqual(pose["input_primitive"], "ANY_HIT")
+        self.assertEqual(pose["status"], "pod_verified_generic_non_public")
         self.assertEqual(pose["reduction_primitive"], "REDUCE_INT(COUNT)")
         self.assertEqual(pose["result_layout"], "grouped_threshold_bool")
         self.assertIn("count > 0", pose["dtype_policy"])
 
-    def test_deferred_db_rows_split_count_and_sum_primitives(self) -> None:
+    def test_db_rows_are_verified_and_split_count_and_sum_primitives(self) -> None:
         contracts = rt.validate_v1_5_grouped_reduction_contracts()
         db_rows = {
-            row["subpath"]: row["reduction_primitive"]
+            row["subpath"]: row
             for row in contracts
             if row["app"] == "database_analytics"
         }
 
-        self.assertEqual(db_rows["sales_risk_grouped_count"], "REDUCE_INT(COUNT)")
-        self.assertEqual(db_rows["sales_risk_grouped_sum"], "REDUCE_INT(SUM)")
+        self.assertEqual(db_rows["sales_risk_grouped_count"]["status"], "pod_verified_generic_non_public")
+        self.assertEqual(db_rows["sales_risk_grouped_count"]["reduction_primitive"], "REDUCE_INT(COUNT)")
+        self.assertEqual(db_rows["sales_risk_grouped_sum"]["status"], "pod_verified_generic_non_public")
+        self.assertEqual(db_rows["sales_risk_grouped_sum"]["reduction_primitive"], "REDUCE_INT(SUM)")
 
-    def test_experimental_collect_k_stays_blocked(self) -> None:
+    def test_collect_k_stays_experimental_diagnostic_but_verified_non_public(self) -> None:
         contracts = rt.validate_v1_5_grouped_reduction_contracts()
         jaccard = [
             row for row in contracts if row["input_primitive"] == "COLLECT_K_BOUNDED"
         ]
         self.assertEqual(len(jaccard), 1)
-        self.assertEqual(jaccard[0]["status"], "experimental_blocked")
+        self.assertEqual(jaccard[0]["status"], "pod_verified_generic_non_public")
         self.assertIn("truncation", jaccard[0]["dtype_policy"])
 
     def test_inventory_no_longer_uses_grouped_as_primitive_name(self) -> None:

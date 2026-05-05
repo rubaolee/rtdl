@@ -16,18 +16,18 @@ V1_5_EXPERIMENTAL_PRIMITIVES = ("COLLECT_K_BOUNDED",)
 
 
 def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
-    """Return the v1.5 grouped-reduction contracts that unblock deferred rows.
+    """Return the v1.5 grouped-reduction contracts for migrated rows.
 
-    These rows are design gates, not public claims and not proof that a native
-    backend implementation exists. They deliberately express grouped boolean
-    output as grouped integer count plus a boolean result layout, avoiding a new
-    stable primitive outside the accepted v1.5 primitive set.
+    These rows are internal contract metadata, not public claims. They
+    deliberately express grouped boolean output as grouped integer count plus a
+    boolean result layout, avoiding a new stable primitive outside the accepted
+    v1.5 primitive set.
     """
     return (
         {
             "app": "robot_collision_screening",
             "subpath": "prepared_pose_flags",
-            "status": "design_required",
+            "status": "pod_verified_generic_non_public",
             "input_primitive": "ANY_HIT",
             "reduction_primitive": "REDUCE_INT(COUNT)",
             "group_key": "pose_id",
@@ -35,12 +35,12 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "dtype_policy": "uint32 hit counts; boolean flag is count > 0",
             "determinism_policy": "integer count is deterministic for fixed ray order",
             "correctness_contract": "per-pose flag must match app-specific prepared_pose_flags oracle",
-            "unblocks": "replace app-specific pose grouping after OptiX and Embree expose grouped count output",
+            "unblocks": "replaces app-specific pose grouping for the verified prepared_pose_flags subpath",
         },
         {
             "app": "database_analytics",
             "subpath": "sales_risk_grouped_count",
-            "status": "design_required",
+            "status": "pod_verified_generic_non_public",
             "input_primitive": "numeric_predicate_rows",
             "reduction_primitive": "REDUCE_INT(COUNT)",
             "group_key": "risk_bucket_or_region_id",
@@ -53,7 +53,7 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
         {
             "app": "database_analytics",
             "subpath": "sales_risk_grouped_sum",
-            "status": "design_required",
+            "status": "pod_verified_generic_non_public",
             "input_primitive": "numeric_predicate_rows",
             "reduction_primitive": "REDUCE_INT(SUM)",
             "group_key": "risk_bucket_or_region_id",
@@ -66,7 +66,7 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
         {
             "app": "polygon_pair_overlap_area_rows",
             "subpath": "exact_area_sum",
-            "status": "design_required",
+            "status": "pod_verified_generic_non_public",
             "input_primitive": "candidate_overlap_rows",
             "reduction_primitive": "REDUCE_FLOAT(SUM)",
             "group_key": "polygon_pair_id",
@@ -74,20 +74,20 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "dtype_policy": "float64 preferred; float32 requires explicit tolerance override",
             "determinism_policy": "backend must publish reduction order or tolerance schema",
             "correctness_contract": "area sums must satisfy documented abs/rel tolerance versus Python oracle",
-            "unblocks": "move exact polygon area aggregation out of app-specific continuation",
+            "unblocks": "moves exact polygon area summary out of app-specific continuation for verified summary mode",
         },
         {
             "app": "polygon_set_jaccard",
             "subpath": "chunked_candidate_scoring",
-            "status": "experimental_blocked",
+            "status": "pod_verified_generic_non_public",
             "input_primitive": "COLLECT_K_BOUNDED",
             "reduction_primitive": "REDUCE_FLOAT(SUM)",
             "group_key": "polygon_pair_id",
             "result_layout": "bounded_pairs_plus_grouped_float64_score",
             "dtype_policy": "float64 preferred for scores; bounded collection must report truncation",
             "determinism_policy": "collection order, overflow, and score tolerance must be explicit",
-            "correctness_contract": "bounded candidate scoring must prove no silent truncation before promotion",
-            "unblocks": "only diagnostic work until COLLECT_K_BOUNDED has reviewed overflow/failure behavior",
+            "correctness_contract": "bounded candidate scoring must prove no silent truncation before score reduction",
+            "unblocks": "diagnostic generic Jaccard score reduction after complete bounded collection",
         },
     )
 
@@ -107,7 +107,11 @@ def validate_v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
         "correctness_contract",
         "unblocks",
     )
-    valid_statuses = {"design_required", "experimental_blocked"}
+    valid_statuses = {
+        "design_required",
+        "experimental_blocked",
+        "pod_verified_generic_non_public",
+    }
     valid_reductions = set(V1_5_STABLE_REDUCTION_PRIMITIVES)
     valid_inputs = {"ANY_HIT", "numeric_predicate_rows", "candidate_overlap_rows"} | set(
         V1_5_EXPERIMENTAL_PRIMITIVES
@@ -125,8 +129,11 @@ def validate_v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
         if contract["reduction_primitive"] not in valid_reductions:
             raise ValueError(f"invalid grouped reduction primitive: {contract['reduction_primitive']}")
         if contract["input_primitive"] in V1_5_EXPERIMENTAL_PRIMITIVES:
-            if contract["status"] != "experimental_blocked":
-                raise ValueError("experimental grouped input must remain experimental_blocked")
+            if contract["status"] not in {
+                "experimental_blocked",
+                "pod_verified_generic_non_public",
+            }:
+                raise ValueError("experimental grouped input must stay blocked or verified non-public")
         if contract["reduction_primitive"].startswith("GROUPED_"):
             raise ValueError("grouping is a result layout, not a new primitive name")
     return contracts
