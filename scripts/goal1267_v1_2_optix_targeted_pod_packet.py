@@ -38,6 +38,7 @@ TARGETS = [
         "required_fields": [
             "ray_pack_mode",
             "blocker_pack_mode",
+            "blocker_pack_sec",
             "ray_pack_sec",
             "scene_prepare_sec",
             "ray_prepare_sec",

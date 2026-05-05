@@ -187,6 +187,7 @@ for path in sorted(result.glob("graph_optix_visibility_*.json")):
             "blocker_pack_mode": record.get("blocker_pack_mode"),
             "has_ray_pack_mode": "ray_pack_mode" in record,
             "has_blocker_pack_mode": "blocker_pack_mode" in record,
+            "blocker_pack_sec": section_phases.get("blocker_pack_sec"),
             "ray_pack_sec": section_phases.get("ray_pack_sec"),
             "scene_prepare_sec": section_phases.get("scene_prepare_sec"),
             "ray_prepare_sec": section_phases.get("ray_prepare_sec"),

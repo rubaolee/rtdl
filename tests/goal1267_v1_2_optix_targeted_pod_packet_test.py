@@ -43,6 +43,7 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         targets = {target["row"]: target for target in goal1267.TARGETS}
         self.assertIn("ray_pack_mode", targets["graph_analytics"]["required_fields"])
         self.assertIn("blocker_pack_mode", targets["graph_analytics"]["required_fields"])
+        self.assertIn("blocker_pack_sec", targets["graph_analytics"]["required_fields"])
         self.assertIn("ray_pack_sec", targets["graph_analytics"]["required_fields"])
         self.assertEqual(targets["graph_analytics"]["expected_metadata"]["ray_pack_mode"], "numpy_packed_rays")
         self.assertEqual(targets["graph_analytics"]["expected_metadata"]["blocker_pack_mode"], "numpy_packed_triangles")
@@ -74,6 +75,7 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         self.assertIn("all_numpy_packed_triangles", text)
         self.assertIn("ray_pack_mode", text)
         self.assertIn("blocker_pack_mode", text)
+        self.assertIn("blocker_pack_sec", text)
         self.assertIn("no public wording", text)
 
     def test_cli_writes_packet_outputs(self) -> None:

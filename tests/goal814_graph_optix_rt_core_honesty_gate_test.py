@@ -148,6 +148,10 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertEqual(section["summary"], {"visible_edge_count": 2, "blocked_edge_count": 6})
         self.assertEqual(section["native_continuation_backend"], "optix_prepared_visibility_anyhit_count")
         self.assertTrue(section["native_continuation_active"])
+        self.assertIn("blocker_pack_sec", section["run_phases"])
+        self.assertIn("ray_pack_sec", section["run_phases"])
+        self.assertGreaterEqual(section["run_phases"]["blocker_pack_sec"], 0.0)
+        self.assertGreaterEqual(section["run_phases"]["ray_pack_sec"], 0.0)
         rays_arg = prepare_rays.call_args.args[0]
         ray_count = rays_arg.count if not isinstance(rays_arg, tuple) else len(rays_arg)
         self.assertEqual(ray_count, 8)
