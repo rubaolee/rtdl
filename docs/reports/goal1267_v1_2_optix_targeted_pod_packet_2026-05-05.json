@@ -1,0 +1,144 @@
+{
+  "archive": {
+    "archive_bytes": 1557133,
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz",
+    "archive_sha256": "6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+    "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
+    "date": "2026-04-30",
+    "goal": "Goal1175 staged source archive builder",
+    "manifest_aggregate_sha256": "54c90be4edb58dd5f295e37f66819e39359e63aa8439b668b3e2f07bf8da44b3",
+    "manifest_file_count": 1849,
+    "valid": true
+  },
+  "boundary": "This packet is execution-only v1.2 evidence collection. It does not authorize public wording, release claims, or positive speedup claims. Slower OptiX results may close only as optix_still_slower_with_reason when correctness and bottleneck evidence are preserved.",
+  "commands": {
+    "copy_back": [
+      "mkdir -p docs/reports/goal1267_live_pod_2026-05-05",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz docs/reports/goal1267_live_pod_2026-05-05/",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 docs/reports/goal1267_live_pod_2026-05-05/",
+      "tar -xzf docs/reports/goal1267_live_pod_2026-05-05/goal1267_v1_2_optix_targeted_pod_results.tgz -C docs/reports/goal1267_live_pod_2026-05-05"
+    ],
+    "run_on_pod": "ARCHIVE=/tmp/goal1267_rtdl_source_2026-05-05.tar.gz EXPECTED_SHA256=6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a WORKDIR=/workspace/rtdl_goal1267 RESULT_TGZ=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz RESULT_SHA=/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256 bash /tmp/goal1267_executor.sh",
+    "upload": [
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz root@<pod_host>:/tmp/goal1267_rtdl_source_2026-05-05.tar.gz",
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1267_v1_2_optix_targeted_pod_executor.sh root@<pod_host>:/tmp/goal1267_executor.sh"
+    ]
+  },
+  "date": "2026-05-05",
+  "goal": "Goal1267 v1.2 targeted OptiX pod packet",
+  "pod_batch": {
+    "active_backends": [
+      "embree",
+      "optix"
+    ],
+    "frozen_backends": [
+      "vulkan",
+      "hiprt",
+      "apple_rt"
+    ],
+    "local_copyback_dir": "docs/reports/goal1267_live_pod_2026-05-05",
+    "plan_source": "docs/reports/goal1266_v1_2_optix_plan_after_v1_1_findings_2026-05-05.md",
+    "pod_executor": "scripts/goal1267_v1_2_optix_targeted_pod_executor.sh",
+    "remote_archive": "/tmp/goal1267_rtdl_source_2026-05-05.tar.gz",
+    "remote_executor": "/tmp/goal1267_executor.sh",
+    "remote_result": "/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz",
+    "remote_result_sha": "/tmp/goal1267_v1_2_optix_targeted_pod_results.tgz.sha256",
+    "target_rows": [
+      "graph_analytics",
+      "polygon_pair_overlap_area_rows",
+      "database_analytics",
+      "polygon_set_jaccard"
+    ],
+    "targets": [
+      {
+        "current_state": "fast OptiX any-hit kernel, slower total path",
+        "expected_metadata": {
+          "blocker_pack_mode": "numpy_packed_triangles",
+          "ray_pack_mode": "numpy_packed_rays"
+        },
+        "priority": 1,
+        "question": "Can host preparation and ray packing be amortized enough to improve total timing?",
+        "required_fields": [
+          "ray_pack_mode",
+          "blocker_pack_mode",
+          "blocker_pack_sec",
+          "ray_pack_sec",
+          "scene_prepare_sec",
+          "ray_prepare_sec",
+          "query_anyhit_count_sec",
+          "summary_postprocess_sec"
+        ],
+        "row": "graph_analytics",
+        "scales": [
+          30000,
+          60000
+        ]
+      },
+      {
+        "current_state": "bounded positive wording exists; candidate diagnostic remains disclosed",
+        "priority": 2,
+        "question": "Can the candidate-count diagnostic be reconciled without expanding the claim?",
+        "required_fields": [
+          "candidate_count_matches_expected",
+          "candidate_discovery_seconds",
+          "native_exact_continuation_seconds",
+          "output_seconds"
+        ],
+        "row": "polygon_pair_overlap_area_rows",
+        "scales": [
+          40000,
+          80000,
+          160000
+        ]
+      },
+      {
+        "current_state": "sales_risk reaches 300k, warm-query median still favors Embree",
+        "priority": 3,
+        "question": "Can warm-query OptiX timing improve under the retained compact-summary contract?",
+        "required_fields": [
+          "warm_query_median_seconds",
+          "prepare_seconds",
+          "one_shot_seconds",
+          "row_materializing_operation_count"
+        ],
+        "row": "database_analytics",
+        "scales": [
+          100000,
+          300000
+        ]
+      },
+      {
+        "current_state": "chunk 1024 is the safe correctness default; OptiX remains slower",
+        "priority": 4,
+        "question": "Can candidate-discovery timing improve while preserving chunk 1024 correctness?",
+        "required_fields": [
+          "chunk_copies",
+          "candidate_discovery_seconds",
+          "native_exact_continuation_seconds",
+          "output_seconds"
+        ],
+        "row": "polygon_set_jaccard",
+        "scales": [
+          4096,
+          8192
+        ]
+      }
+    ]
+  },
+  "preconditions": [
+    "Run only after local inspection says pod timing is needed.",
+    "Use one RTX-class Linux pod session and reuse it for all four target rows.",
+    "Collect same-contract Embree and OptiX artifacts before interpretation.",
+    "Do not open Vulkan, HIPRT, or Apple RT implementation work before v2.1.",
+    "Copy back result tgz and sha256 before any intake report."
+  ],
+  "source_commit": "71515f9e33d764cc6b990263be1c763e2951983d",
+  "valid": true,
+  "verification": {
+    "actual_sha256": "6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1267_rtdl_source_2026-05-05.tar.gz",
+    "exists": true,
+    "expected_sha256": "6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+    "valid": true
+  }
+}
