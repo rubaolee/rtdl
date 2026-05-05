@@ -1,0 +1,56 @@
+{
+  "active_backends": [
+    "embree",
+    "optix"
+  ],
+  "boundary": "This is an internal v1.5 NVIDIA evidence packet. It does not authorize public release wording, whole-app speedup claims, or new Vulkan/HIPRT/Apple RT implementation before v2.1.",
+  "commands": {
+    "graph_wrapper": "PYTHONPATH=src:. python3 examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --output-mode summary --copies 30000 --visibility-query-repeats 100 > docs/reports/goal1292_v1_5_generic_optix_pod_results/graph_visibility_optix_repeats.json",
+    "local_sanity": "PYTHONPATH=src:. python3 -m unittest tests.goal1288_v1_5_generic_anyhit_count_test tests.goal1290_v1_5_generic_prepared_anyhit_count_test tests.goal1291_v1_5_embree_prepared_parity_status_test",
+    "prepare": [
+      "mkdir -p docs/reports/goal1292_v1_5_generic_optix_pod_results",
+      "OUTPUT_JSON=docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.json OUTPUT_ENV=docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.sh bash scripts/rtdl_pod_env_probe.sh",
+      ". docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.sh",
+      "make build-optix"
+    ],
+    "primitive_runner": "PYTHONPATH=src:. python3 scripts/goal1292_v1_5_generic_optix_evidence_runner.py --copies 10000 --query-repeats 100 --output docs/reports/goal1292_v1_5_generic_optix_pod_results/generic_optix_evidence.json"
+  },
+  "date": "2026-05-05",
+  "env_probe": {
+    "output_json": "docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.json",
+    "required_fields": [
+      "os_id",
+      "package_manager",
+      "cuda_prefix",
+      "nvcc",
+      "nvcc_exists",
+      "optix_prefix",
+      "optix_header_exists",
+      "nvidia_smi_tail"
+    ],
+    "script": "scripts/rtdl_pod_env_probe.sh"
+  },
+  "frozen_backends_before_v2_1": [
+    "vulkan",
+    "hiprt",
+    "apple_rt"
+  ],
+  "goal": "Goal1292 v1.5 generic OptiX evidence packet",
+  "known_gap": "Embree prepared-scene parity for generic prepared ANY_HIT plus COUNT_HITS is not implemented yet; Goal1291 records it as blocked pending a scene/probe split or reviewed fallback.",
+  "public_wording_authorized": false,
+  "required_artifacts": [
+    "docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.json",
+    "docs/reports/goal1292_v1_5_generic_optix_pod_results/generic_optix_evidence.json",
+    "docs/reports/goal1292_v1_5_generic_optix_pod_results/graph_visibility_optix_repeats.json",
+    "docs/reports/goal1292_v1_5_generic_optix_pod_results/rtdl_pod_env.sh"
+  ],
+  "result_dir": "docs/reports/goal1292_v1_5_generic_optix_pod_results",
+  "source_commit": "75165621c2c012cf23b8495872c76674f8494198",
+  "success_criteria": [
+    "Environment probe is preserved before any failure interpretation.",
+    "Primitive runner records CPU oracle rows and OptiX direct ANY_HIT plus COUNT_HITS parity.",
+    "Prepared OptiX COUNT_HITS hit_count matches CPU oracle hit_count.",
+    "Graph wrapper artifact preserves visibility_query_repeats=100 and run_phases query mean/min/first timings.",
+    "If OptiX remains slower than Embree, classify as optix_still_slower_with_reason only when correctness and bottleneck evidence are present."
+  ]
+}
