@@ -119,6 +119,18 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, combined)
 
+    def test_v1_1_status_explains_slower_optix_outcome(self) -> None:
+        text = (ROOT / "docs" / "v1_1_optix_status.md").read_text(encoding="utf-8")
+
+        for phrase in (
+            "Embree is the same-contract CPU RT/BVH baseline",
+            "optix_still_slower_with_reason",
+            "A slower OptiX result can still be useful v1.1/v1.2 evidence",
+            "does not authorize positive public RTX speedup wording",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
     def test_public_docs_keep_goal941_boundary_wording(self) -> None:
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")

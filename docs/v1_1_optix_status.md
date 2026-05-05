@@ -12,6 +12,18 @@ not a new release package and does not move the `v1.0` tag.
 | `graph_analytics` | correctness-ready, total OptiX path still slower | bounded visibility any-hit path only; no graph database, BFS system, triangle analytics, or whole graph speedup claim |
 | `polygon_set_jaccard` | correctness-ready at chunk `1024`, still slower | chunked native-assisted candidate discovery plus native exact continuation only |
 
+## How To Read Slower OptiX Rows
+
+Embree is the same-contract CPU RT/BVH baseline for these app rows, not a plain
+Python fallback. A slower OptiX result can still be useful v1.1/v1.2 evidence
+when correctness is clean and the bottleneck is explained.
+
+Use `optix_still_slower_with_reason` for rows where OptiX remains slower than
+Embree but the cause is identified, such as host input construction,
+scene/ray prepare, ray packing, Python materialization, or non-RT continuation.
+That outcome is valid engineering evidence and v1.5/v2.0 design input, but it
+does not authorize positive public RTX speedup wording.
+
 ## Allowed Polygon-Pair Wording
 
 RTDL v1.1 shows bounded OptiX acceleration for
