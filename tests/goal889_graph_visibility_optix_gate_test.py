@@ -139,7 +139,7 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
 
         optix_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
         optix_visibility["sections"]["visibility_edges"]["ray_pack_mode"] = "numpy_packed_rays"
-        optix_visibility["sections"]["visibility_edges"]["blocker_pack_mode"] = "packed_triangles"
+        optix_visibility["sections"]["visibility_edges"]["blocker_pack_mode"] = "numpy_packed_triangles"
         optix_visibility["sections"]["visibility_edges"]["run_phases"]["ray_pack_sec"] = 0.1
         optix_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=1, output_mode="summary")
         optix_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=1, output_mode="summary")
@@ -157,7 +157,7 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
 
         visibility_record = next(record for record in payload["records"] if record["label"] == "optix_visibility_anyhit")
         self.assertEqual(visibility_record["ray_pack_mode"], "numpy_packed_rays")
-        self.assertEqual(visibility_record["blocker_pack_mode"], "packed_triangles")
+        self.assertEqual(visibility_record["blocker_pack_mode"], "numpy_packed_triangles")
         self.assertEqual(visibility_record["section_run_phases"]["ray_pack_sec"], 0.1)
 
     def test_chunked_visibility_preserves_aggregate_phase_metadata(self) -> None:

@@ -2216,6 +2216,60 @@ def pack_rays_2d_from_arrays(
     return PackedRays(records=arr, count=n, dimension=2)
 
 
+def pack_triangles_2d_from_arrays(
+    ids,
+    x0,
+    y0,
+    x1,
+    y1,
+    x2,
+    y2,
+) -> PackedTriangles:
+    """Fast bulk packing of 2-D triangles from array-like inputs."""
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        raise RuntimeError("pack_triangles_2d_from_arrays requires numpy")
+
+    ids_a = _np.asarray(ids, dtype=_np.uint32)
+    x0_a = _np.asarray(x0, dtype=_np.float64)
+    y0_a = _np.asarray(y0, dtype=_np.float64)
+    x1_a = _np.asarray(x1, dtype=_np.float64)
+    y1_a = _np.asarray(y1, dtype=_np.float64)
+    x2_a = _np.asarray(x2, dtype=_np.float64)
+    y2_a = _np.asarray(y2, dtype=_np.float64)
+
+    n = len(ids_a)
+    if any(len(field) != n for field in (x0_a, y0_a, x1_a, y1_a, x2_a, y2_a)):
+        raise ValueError("triangle arrays must have equal lengths")
+
+    _dtype = _np.dtype({
+        "names": ["id", "x0", "y0", "x1", "y1", "x2", "y2"],
+        "formats": [_np.uint32, _np.float64, _np.float64, _np.float64, _np.float64, _np.float64, _np.float64],
+        "offsets": [
+            _RtdlTriangle.id.offset,
+            _RtdlTriangle.x0.offset,
+            _RtdlTriangle.y0.offset,
+            _RtdlTriangle.x1.offset,
+            _RtdlTriangle.y1.offset,
+            _RtdlTriangle.x2.offset,
+            _RtdlTriangle.y2.offset,
+        ],
+        "itemsize": ctypes.sizeof(_RtdlTriangle),
+    })
+    buf = _np.empty(n, dtype=_dtype)
+    buf["id"] = ids_a
+    buf["x0"] = x0_a
+    buf["y0"] = y0_a
+    buf["x1"] = x1_a
+    buf["y1"] = y1_a
+    buf["x2"] = x2_a
+    buf["y2"] = y2_a
+
+    arr = (_RtdlTriangle * n).from_buffer_copy(buf)
+    return PackedTriangles(records=arr, count=n, dimension=2)
+
+
 def pack_rays(
     records=None,
     *,

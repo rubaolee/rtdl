@@ -45,7 +45,7 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         self.assertIn("blocker_pack_mode", targets["graph_analytics"]["required_fields"])
         self.assertIn("ray_pack_sec", targets["graph_analytics"]["required_fields"])
         self.assertEqual(targets["graph_analytics"]["expected_metadata"]["ray_pack_mode"], "numpy_packed_rays")
-        self.assertEqual(targets["graph_analytics"]["expected_metadata"]["blocker_pack_mode"], "packed_triangles")
+        self.assertEqual(targets["graph_analytics"]["expected_metadata"]["blocker_pack_mode"], "numpy_packed_triangles")
         self.assertIn(
             "candidate_count_matches_expected",
             targets["polygon_pair_overlap_area_rows"]["required_fields"],
@@ -71,7 +71,7 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         self.assertIn("--chunk-copies 1024", text)
         self.assertIn("goal1267_graph_ray_pack_metadata.json", text)
         self.assertIn("all_numpy_packed_rays", text)
-        self.assertIn("all_packed_triangles", text)
+        self.assertIn("all_numpy_packed_triangles", text)
         self.assertIn("ray_pack_mode", text)
         self.assertIn("blocker_pack_mode", text)
         self.assertIn("no public wording", text)

@@ -77,16 +77,36 @@ def _pack_visibility_summary_rays(copies: int):
     offsets = [float(copy_index * 20) for copy_index in range(copies)]
     id_offsets = [copy_index * 100 for copy_index in range(copies)]
     ray_count = copies * 4
-    blockers = rt.pack_triangles(
-        ids=[id_offset + 100 for id_offset in id_offsets],
-        x0=[offset + 5.0 for offset in offsets],
-        y0=[-1.0] * copies,
-        x1=[offset + 5.0 for offset in offsets],
-        y1=[1.0] * copies,
-        x2=[offset + 6.0 for offset in offsets],
-        y2=[0.0] * copies,
-        dimension=2,
-    )
+    blocker_ids = [id_offset + 100 for id_offset in id_offsets]
+    blocker_x0 = [offset + 5.0 for offset in offsets]
+    blocker_y0 = [-1.0] * copies
+    blocker_x1 = [offset + 5.0 for offset in offsets]
+    blocker_y1 = [1.0] * copies
+    blocker_x2 = [offset + 6.0 for offset in offsets]
+    blocker_y2 = [0.0] * copies
+    try:
+        blockers = rt.pack_triangles_2d_from_arrays(
+            ids=blocker_ids,
+            x0=blocker_x0,
+            y0=blocker_y0,
+            x1=blocker_x1,
+            y1=blocker_y1,
+            x2=blocker_x2,
+            y2=blocker_y2,
+        )
+        blocker_pack_mode = "numpy_packed_triangles"
+    except RuntimeError:
+        blockers = rt.pack_triangles(
+            ids=blocker_ids,
+            x0=blocker_x0,
+            y0=blocker_y0,
+            x1=blocker_x1,
+            y1=blocker_y1,
+            x2=blocker_x2,
+            y2=blocker_y2,
+            dimension=2,
+        )
+        blocker_pack_mode = "packed_triangles"
     ids = list(range(ray_count))
     ox = [offset for offset in offsets for _ in range(4)]
     oy = [value for _ in range(copies) for value in (0.0, 0.0, 2.0, 2.0)]
@@ -110,7 +130,7 @@ def _pack_visibility_summary_rays(copies: int):
         "target_count": copies * 2,
         "blocker_count": copies,
         "ray_pack_mode": ray_pack_mode,
-        "blocker_pack_mode": "packed_triangles",
+        "blocker_pack_mode": blocker_pack_mode,
     }
 
 

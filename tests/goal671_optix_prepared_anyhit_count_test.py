@@ -148,6 +148,27 @@ class Goal671OptixPreparedAnyHitCountPortableTest(unittest.TestCase):
         self.assertEqual(packed.records[0].id, 10)
         self.assertEqual(packed.records[1].ox, 2.0)
 
+    def test_pack_triangles_2d_from_arrays_preserves_c_abi_records(self) -> None:
+        try:
+            import numpy as np
+        except ImportError:
+            self.skipTest("numpy is not available")
+        packed = rt.pack_triangles_2d_from_arrays(
+            ids=np.array([20, 21], dtype=np.uint32),
+            x0=np.array([1.0, 2.0]),
+            y0=np.array([3.0, 4.0]),
+            x1=np.array([5.0, 6.0]),
+            y1=np.array([7.0, 8.0]),
+            x2=np.array([9.0, 10.0]),
+            y2=np.array([11.0, 12.0]),
+        )
+        self.assertEqual(packed.count, 2)
+        self.assertEqual(packed.dimension, 2)
+        self.assertIsInstance(packed, rt.PackedTriangles)
+        self.assertEqual(packed.records[0].id, 20)
+        self.assertEqual(packed.records[1].x0, 2.0)
+        self.assertEqual(packed.records[1].y2, 12.0)
+
 
 @unittest.skipUnless(optix_prepared_anyhit_available(), "current OptiX prepared any-hit symbols are not available")
 class Goal671OptixPreparedAnyHitCountNativeTest(unittest.TestCase):

@@ -196,7 +196,9 @@ summary = {
     "goal": "Goal1267 graph ray-pack metadata check",
     "artifact_count": len(rows),
     "all_numpy_packed_rays": bool(rows) and all(row["ray_pack_mode"] == "numpy_packed_rays" for row in rows),
-    "all_packed_triangles": bool(rows) and all(row["blocker_pack_mode"] == "packed_triangles" for row in rows),
+    "all_numpy_packed_triangles": (
+        bool(rows) and all(row["blocker_pack_mode"] == "numpy_packed_triangles" for row in rows)
+    ),
     "rows": rows,
     "boundary": "Diagnostic metadata only; no public speedup claim is authorized.",
 }
