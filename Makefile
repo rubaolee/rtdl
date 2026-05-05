@@ -41,13 +41,17 @@ OPTIX_CANDIDATES := \
 	$(HOME)/Downloads/NVIDIA-OptiX-SDK \
 	$(HOME)/Downloads/NVIDIA-OptiX-SDK-9.0.0-linux64-x86_64
 OPTIX_PREFIX ?= $(or $(firstword $(wildcard $(OPTIX_CANDIDATES))),/opt/optix)
-ifneq ("$(wildcard /usr/local/cuda)","")
-CUDA_PREFIX ?= /usr/local/cuda
-else ifneq ("$(wildcard /usr/lib/cuda)","")
-CUDA_PREFIX ?= /usr/lib/cuda
-else
-CUDA_PREFIX ?= /usr/local/cuda
-endif
+CUDA_CANDIDATES := \
+	/usr/local/cuda \
+	/usr/local/cuda-13.0 \
+	/usr/local/cuda-12.8 \
+	/usr/local/cuda-12.6 \
+	/usr/local/cuda-12.5 \
+	/usr/local/cuda-12.4 \
+	$(wildcard /usr/local/cuda-*) \
+	/usr/lib/cuda \
+	/opt/cuda
+CUDA_PREFIX ?= $(or $(firstword $(wildcard $(CUDA_CANDIDATES))),/usr/local/cuda)
 
 OPTIX_INCLUDE := $(OPTIX_PREFIX)/include
 CUDA_INCLUDE := $(CUDA_PREFIX)/include

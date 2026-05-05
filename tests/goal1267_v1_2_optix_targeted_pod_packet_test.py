@@ -38,6 +38,7 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         self.assertIn("execution-only", payload["boundary"])
         self.assertIn("does not authorize public wording", payload["boundary"])
         self.assertIn("speedup claims", payload["boundary"])
+        self.assertIn("rtdl_pod_env.json", " ".join(payload["preconditions"]))
 
     def test_packet_records_required_phase_fields(self) -> None:
         targets = {target["row"]: target for target in goal1267.TARGETS}
@@ -68,9 +69,8 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
 
     def test_executor_uses_current_scales_and_not_stale_db_all_scenario(self) -> None:
         text = EXECUTOR.read_text(encoding="utf-8")
-        self.assertIn("libgeos-dev", text)
-        self.assertIn("libembree-dev", text)
-        self.assertIn("cuda-nvcc-13-0", text)
+        self.assertIn("scripts/rtdl_pod_env_probe.sh", text)
+        self.assertIn("rtdl_pod_env.json", text)
         self.assertIn("run_step()", text)
         self.assertIn(".status.json", text)
         self.assertIn("goal1267_status_summary.json", text)

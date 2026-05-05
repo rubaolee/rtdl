@@ -37,9 +37,10 @@ tar -xzf "${ARCHIVE}" -C "${WORKDIR}"
 cd "${SOURCE_DIR}"
 
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
-apt-get install -y build-essential git cmake pkg-config libgeos-dev libembree-dev python3-dev python3-pip
-apt-get install -y cuda-nvcc-13-0 cuda-nvrtc-dev-13-0 cuda-cudart-dev-13-0 || true
+OUTPUT_ENV="${RESULT_DIR}/rtdl_pod_env.sh" \
+OUTPUT_JSON="${RESULT_DIR}/rtdl_pod_env.json" \
+bash scripts/rtdl_pod_env_probe.sh 2>&1 | tee "${RESULT_DIR}/rtdl_pod_env_probe.log"
+source "${RESULT_DIR}/rtdl_pod_env.sh"
 
 cat > .gitignore <<'EOF'
 __pycache__/
@@ -73,20 +74,17 @@ mkdir -p "${RESULT_DIR}"
   python3 --version || true
   which nvcc || true
   nvcc --version || true
+  echo "RTDL_POD_OS_ID=${RTDL_POD_OS_ID:-unknown}"
+  echo "CUDA_PREFIX=${CUDA_PREFIX}"
+  echo "NVCC=${NVCC}"
+  echo "OPTIX_PREFIX=${OPTIX_PREFIX}"
+  cat "${RESULT_DIR}/rtdl_pod_env.json" || true
   sha256sum "${ARCHIVE}"
   echo "rtdl_source_commit=${RTDL_SOURCE_COMMIT}"
   git rev-parse HEAD
   git status --short
 } | tee "${RESULT_DIR}/goal1267_environment.log"
 
-mkdir -p /root/vendor
-if [ ! -d /root/vendor/optix-dev ]; then
-  git clone --depth 1 --branch v8.0.0 https://github.com/NVIDIA/optix-dev.git /root/vendor/optix-dev
-fi
-
-export OPTIX_PREFIX="${OPTIX_PREFIX:-/root/vendor/optix-dev}"
-export CUDA_PREFIX="${CUDA_PREFIX:-/usr/local/cuda}"
-export NVCC="${NVCC:-${CUDA_PREFIX}/bin/nvcc}"
 export RTDL_OPTIX_PTX_COMPILER="${RTDL_OPTIX_PTX_COMPILER:-nvcc}"
 
 set +e

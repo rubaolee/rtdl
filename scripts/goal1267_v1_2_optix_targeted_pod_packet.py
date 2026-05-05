@@ -159,6 +159,7 @@ def build_packet(archive_path: Path = DEFAULT_ARCHIVE) -> dict[str, Any]:
         "preconditions": [
             "Run only after local inspection says pod timing is needed.",
             "Use one RTX-class Linux pod session and reuse it for all four target rows.",
+            "Run scripts/rtdl_pod_env_probe.sh on the pod and preserve rtdl_pod_env.json with the copied artifacts.",
             "Collect same-contract Embree and OptiX artifacts before interpretation.",
             "Run the graph prepared-repeat probe from Goal1269 to separate repeated query cost from one-time scene/ray preparation.",
             "Preserve Goal1270 candidate diagnostics for polygon-pair and Jaccard artifacts.",
