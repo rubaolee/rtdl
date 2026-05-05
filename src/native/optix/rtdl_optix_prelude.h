@@ -102,6 +102,11 @@ struct RtdlPolygonRef {
     uint32_t vertex_count;
 };
 
+struct RtdlPolygonPairCandidate {
+    uint32_t left_polygon_id;
+    uint32_t right_polygon_id;
+};
+
 struct RtdlTriangle {
     uint32_t id;
     double x0, y0, x1, y1, x2, y2;
@@ -398,6 +403,14 @@ int  rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
          const RtdlPolygonRef* polygons, size_t polygon_count,
          const double* vertices_xy,      size_t vertex_xy_count,
          RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+         size_t* emitted_count_out, uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_polygon_pair_candidates_bounded(
+         const RtdlPolygonRef* left_polygons, size_t left_count,
+         const double* left_vertices_xy,      size_t left_vertex_xy_count,
+         const RtdlPolygonRef* right_polygons, size_t right_count,
+         const double* right_vertices_xy,      size_t right_vertex_xy_count,
+         RtdlPolygonPairCandidate* candidates_out, size_t candidate_capacity,
          size_t* emitted_count_out, uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_prepare_segment_polygon_anyhit_rows_2d(

@@ -423,6 +423,32 @@ extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_collect_polygon_pair_candidates_bounded(
+        const RtdlPolygonRef* left_polygons, size_t left_count,
+        const double* left_vertices_xy, size_t left_vertex_xy_count,
+        const RtdlPolygonRef* right_polygons, size_t right_count,
+        const double* right_vertices_xy, size_t right_vertex_xy_count,
+        RtdlPolygonPairCandidate* candidates_out, size_t candidate_capacity,
+        size_t* emitted_count_out, uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!emitted_count_out || !overflowed_out)
+            throw std::runtime_error("emitted_count_out and overflowed_out must not be null");
+        *emitted_count_out = 0;
+        *overflowed_out = 0;
+        if (!candidates_out && candidate_capacity != 0)
+            throw std::runtime_error("candidates_out must not be null when candidate_capacity is nonzero");
+        collect_polygon_pair_candidates_bounded_optix(
+            left_polygons, left_count,
+            left_vertices_xy, left_vertex_xy_count,
+            right_polygons, right_count,
+            right_vertices_xy, right_vertex_xy_count,
+            candidates_out, candidate_capacity,
+            emitted_count_out, overflowed_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepare_segment_polygon_anyhit_rows_2d(
         const RtdlPolygonRef* polygons, size_t polygon_count,
         const double* vertices_xy, size_t vertex_xy_count,

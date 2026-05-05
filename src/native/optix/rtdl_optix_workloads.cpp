@@ -2545,6 +2545,192 @@ static void run_pip_optix(
     *row_count_out = out_count;
 }
 
+static void validate_polygon_ref_span_for_collection(
+        const RtdlPolygonRef* polygons,
+        size_t polygon_count,
+        const double* vertices_xy,
+        size_t vertex_xy_count,
+        const char* label)
+{
+    if (!polygons && polygon_count != 0) {
+        throw std::runtime_error(std::string(label) + " polygons pointer must not be null when count is nonzero");
+    }
+    if (!vertices_xy && vertex_xy_count != 0) {
+        throw std::runtime_error(std::string(label) + " vertices_xy pointer must not be null when count is nonzero");
+    }
+    const size_t vertex_count = vertex_xy_count / 2;
+    for (size_t i = 0; i < polygon_count; ++i) {
+        if (polygons[i].vertex_count < 3) {
+            throw std::runtime_error(std::string(label) + " polygon vertex_count must be at least 3");
+        }
+        const size_t offset = polygons[i].vertex_offset;
+        const size_t count = polygons[i].vertex_count;
+        if (offset > vertex_count || count > vertex_count - offset) {
+            throw std::runtime_error(std::string(label) + " polygon offset/count exceeds vertices_xy");
+        }
+    }
+}
+
+static std::vector<RtdlSegment> segments_from_polygon_refs_for_collection(
+        const RtdlPolygonRef* polygons,
+        size_t polygon_count,
+        const double* vertices_xy)
+{
+    std::vector<RtdlSegment> segments;
+    for (size_t poly_index = 0; poly_index < polygon_count; ++poly_index) {
+        const RtdlPolygonRef& polygon = polygons[poly_index];
+        for (uint32_t vertex_index = 0; vertex_index < polygon.vertex_count; ++vertex_index) {
+            const uint32_t next_index = (vertex_index + 1u) % polygon.vertex_count;
+            const size_t start = static_cast<size_t>(polygon.vertex_offset + vertex_index) * 2u;
+            const size_t end = static_cast<size_t>(polygon.vertex_offset + next_index) * 2u;
+            segments.push_back(RtdlSegment{
+                polygon.id,
+                vertices_xy[start],
+                vertices_xy[start + 1u],
+                vertices_xy[end],
+                vertices_xy[end + 1u],
+            });
+        }
+    }
+    return segments;
+}
+
+static std::vector<RtdlPoint> first_vertex_points_from_polygon_refs_for_collection(
+        const RtdlPolygonRef* polygons,
+        size_t polygon_count,
+        const double* vertices_xy)
+{
+    std::vector<RtdlPoint> points;
+    points.reserve(polygon_count);
+    for (size_t poly_index = 0; poly_index < polygon_count; ++poly_index) {
+        const RtdlPolygonRef& polygon = polygons[poly_index];
+        const size_t first = static_cast<size_t>(polygon.vertex_offset) * 2u;
+        points.push_back(RtdlPoint{
+            polygon.id,
+            vertices_xy[first],
+            vertices_xy[first + 1u],
+        });
+    }
+    return points;
+}
+
+static void collect_polygon_pair_candidates_bounded_optix(
+        const RtdlPolygonRef* left_polygons,
+        size_t left_count,
+        const double* left_vertices_xy,
+        size_t left_vertex_xy_count,
+        const RtdlPolygonRef* right_polygons,
+        size_t right_count,
+        const double* right_vertices_xy,
+        size_t right_vertex_xy_count,
+        RtdlPolygonPairCandidate* candidates_out,
+        size_t candidate_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out)
+{
+    if (!emitted_count_out || !overflowed_out) {
+        throw std::runtime_error("emitted_count_out and overflowed_out must not be null");
+    }
+    *emitted_count_out = 0;
+    *overflowed_out = 0;
+    if (!candidates_out && candidate_capacity != 0) {
+        throw std::runtime_error("candidates_out must not be null when candidate_capacity is nonzero");
+    }
+    if (left_count == 0 || right_count == 0) {
+        return;
+    }
+    validate_polygon_ref_span_for_collection(
+        left_polygons, left_count, left_vertices_xy, left_vertex_xy_count, "left");
+    validate_polygon_ref_span_for_collection(
+        right_polygons, right_count, right_vertices_xy, right_vertex_xy_count, "right");
+
+    const std::vector<RtdlSegment> left_segments =
+        segments_from_polygon_refs_for_collection(left_polygons, left_count, left_vertices_xy);
+    const std::vector<RtdlSegment> right_segments =
+        segments_from_polygon_refs_for_collection(right_polygons, right_count, right_vertices_xy);
+    RtdlLsiRow* raw_lsi_rows = nullptr;
+    size_t lsi_row_count = 0;
+    run_lsi_optix(
+        left_segments.data(), left_segments.size(),
+        right_segments.data(), right_segments.size(),
+        &raw_lsi_rows, &lsi_row_count);
+    std::unique_ptr<RtdlLsiRow, decltype(&std::free)> lsi_rows(raw_lsi_rows, &std::free);
+
+    std::vector<RtdlPolygonPairCandidate> candidates;
+    candidates.reserve(lsi_row_count);
+    for (size_t i = 0; i < lsi_row_count; ++i) {
+        candidates.push_back({lsi_rows.get()[i].left_id, lsi_rows.get()[i].right_id});
+    }
+
+    const std::vector<RtdlPoint> left_first_points =
+        first_vertex_points_from_polygon_refs_for_collection(left_polygons, left_count, left_vertices_xy);
+    RtdlPipRow* raw_left_in_right_rows = nullptr;
+    size_t left_in_right_count = 0;
+    run_pip_optix(
+        left_first_points.data(), left_first_points.size(),
+        right_polygons, right_count,
+        right_vertices_xy, right_vertex_xy_count,
+        1u,
+        &raw_left_in_right_rows, &left_in_right_count);
+    std::unique_ptr<RtdlPipRow, decltype(&std::free)> left_in_right_rows(raw_left_in_right_rows, &std::free);
+    for (size_t i = 0; i < left_in_right_count; ++i) {
+        if (left_in_right_rows.get()[i].contains == 1u) {
+            candidates.push_back({
+                left_in_right_rows.get()[i].point_id,
+                left_in_right_rows.get()[i].polygon_id,
+            });
+        }
+    }
+
+    const std::vector<RtdlPoint> right_first_points =
+        first_vertex_points_from_polygon_refs_for_collection(right_polygons, right_count, right_vertices_xy);
+    RtdlPipRow* raw_right_in_left_rows = nullptr;
+    size_t right_in_left_count = 0;
+    run_pip_optix(
+        right_first_points.data(), right_first_points.size(),
+        left_polygons, left_count,
+        left_vertices_xy, left_vertex_xy_count,
+        1u,
+        &raw_right_in_left_rows, &right_in_left_count);
+    std::unique_ptr<RtdlPipRow, decltype(&std::free)> right_in_left_rows(raw_right_in_left_rows, &std::free);
+    for (size_t i = 0; i < right_in_left_count; ++i) {
+        if (right_in_left_rows.get()[i].contains == 1u) {
+            candidates.push_back({
+                right_in_left_rows.get()[i].polygon_id,
+                right_in_left_rows.get()[i].point_id,
+            });
+        }
+    }
+
+    std::sort(
+        candidates.begin(),
+        candidates.end(),
+        [](const RtdlPolygonPairCandidate& a, const RtdlPolygonPairCandidate& b) {
+            if (a.left_polygon_id != b.left_polygon_id) {
+                return a.left_polygon_id < b.left_polygon_id;
+            }
+            return a.right_polygon_id < b.right_polygon_id;
+        });
+    candidates.erase(
+        std::unique(
+            candidates.begin(),
+            candidates.end(),
+            [](const RtdlPolygonPairCandidate& a, const RtdlPolygonPairCandidate& b) {
+                return a.left_polygon_id == b.left_polygon_id &&
+                       a.right_polygon_id == b.right_polygon_id;
+            }),
+        candidates.end());
+
+    *emitted_count_out = candidates.size();
+    if (candidates.size() > candidate_capacity) {
+        *overflowed_out = 1u;
+        return;
+    }
+    if (!candidates.empty()) {
+        std::memcpy(candidates_out, candidates.data(), sizeof(RtdlPolygonPairCandidate) * candidates.size());
+    }
+}
+
 // ---------- Overlay ----------------------------------------------------------
 
 struct OverlayLaunchParams {
