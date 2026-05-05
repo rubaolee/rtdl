@@ -191,6 +191,16 @@ class _RtdlPolygonSetJaccardRow(ctypes.Structure):
     ]
 
 
+class _RtdlPolygonPairAreaSummary(ctypes.Structure):
+    _fields_ = [
+        ("overlap_pair_count", ctypes.c_uint32),
+        ("intersection_area", ctypes.c_uint32),
+        ("left_area", ctypes.c_uint32),
+        ("right_area", ctypes.c_uint32),
+        ("union_area", ctypes.c_uint32),
+    ]
+
+
 class _RtdlPolygonPairCandidate(ctypes.Structure):
     _fields_ = [
         ("left_polygon_id", ctypes.c_uint32),
@@ -1324,6 +1334,45 @@ def refine_polygon_set_jaccard_for_pairs(
         library.rtdl_oracle_free_rows(rows_ptr)
 
 
+def reduce_polygon_pair_exact_area_summary_for_candidates(
+    left_polygons,
+    right_polygons,
+    candidate_pairs,
+) -> dict[str, object]:
+    library = _load_oracle_library()
+    left_refs, left_vertices = _encode_polygons(left_polygons)
+    right_refs, right_vertices = _encode_polygons(right_polygons)
+    normalized_pairs = sorted({(int(left_id), int(right_id)) for left_id, right_id in candidate_pairs})
+    candidate_array = (_RtdlPolygonPairCandidate * len(normalized_pairs))(*[
+        _RtdlPolygonPairCandidate(left_id, right_id) for left_id, right_id in normalized_pairs
+    ])
+    summary = _RtdlPolygonPairAreaSummary()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_native_reduce_polygon_pair_exact_area_summary(
+        left_refs,
+        len(left_polygons),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right_polygons),
+        right_vertices,
+        len(right_vertices),
+        candidate_array,
+        len(normalized_pairs),
+        ctypes.byref(summary),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return {
+        "overlap_pair_count": int(summary.overlap_pair_count),
+        "intersection_area": int(summary.intersection_area),
+        "left_area": int(summary.left_area),
+        "right_area": int(summary.right_area),
+        "union_area": int(summary.union_area),
+    }
+
+
 def _run_point_nearest_segment_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
     points_name = compiled.candidates.left.name
     segments_name = compiled.candidates.right.name
@@ -1782,6 +1831,23 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_refine_polygon_set_jaccard_for_pairs.restype = ctypes.c_int
+
+    library.rtdl_native_reduce_polygon_pair_exact_area_summary.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonPairCandidate),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonPairAreaSummary),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_native_reduce_polygon_pair_exact_area_summary.restype = ctypes.c_int
 
     library.rtdl_oracle_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),

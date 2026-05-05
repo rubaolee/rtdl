@@ -103,7 +103,7 @@ def polygon_jaccard_diagnostic_contract(
         "active_v1_4_backend": normalized_backend in ACTIVE_V1_4_POLYGON_BACKENDS,
         "backend_contract_role": _backend_contract_role(normalized_backend),
         "same_contract_baseline_required": normalized_backend in ACTIVE_V1_4_POLYGON_BACKENDS,
-        "mode": "diagnostic_native_candidate_plus_app_specific_exact_score" if native_candidate_discovery else "exact_rows",
+        "mode": "diagnostic_native_candidate_plus_generic_area_summary" if native_candidate_discovery else "exact_rows",
         "build_layout": "polygon2d_build_buffer",
         "probe_layout": "polygon2d_probe_buffer",
         "result_layout": "single_jaccard_summary_row",
@@ -124,7 +124,7 @@ def polygon_jaccard_diagnostic_contract(
             ],
         },
         "public_wording_allowed": False,
-        "exact_score_continuation": "app_specific_native_cpp",
+        "exact_score_continuation": "backend_neutral_native_polygon_pair_area_summary",
         "phase_counters": (
             "rt_candidate_discovery_sec",
             "native_exact_continuation_sec",
@@ -135,9 +135,9 @@ def polygon_jaccard_diagnostic_contract(
             "polygon_set_jaccard remains diagnostic: native RT traversal can "
             "identify candidate polygon pairs and native bounded collection is "
             "routed for Embree/OptiX summary mode, but exact set-area scoring "
-            "still uses native continuation outside a stable generic score "
-            "reduction primitive. Public wording remains blocked while OptiX "
-            "is slower than Embree."
+            "uses a backend-neutral native polygon-pair area summary before "
+            "computing the ratio. Public wording remains blocked while OptiX is "
+            "slower than Embree."
         ),
         "migration_status": "diagnostic_metadata_only",
     }

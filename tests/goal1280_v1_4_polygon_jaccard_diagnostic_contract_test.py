@@ -47,7 +47,10 @@ class Goal1280V14PolygonJaccardDiagnosticContractTest(unittest.TestCase):
         self.assertEqual(contract["status"], "optix_still_slower_with_reason")
         self.assertEqual(contract["candidate_row_count"], 2)
         self.assertFalse(contract["public_wording_allowed"])
-        self.assertEqual(contract["exact_score_continuation"], "app_specific_native_cpp")
+        self.assertEqual(
+            contract["exact_score_continuation"],
+            "backend_neutral_native_polygon_pair_area_summary",
+        )
 
     def test_embree_summary_attaches_baseline_diagnostic_contract(self) -> None:
         collection = rt.collect_k_bounded_candidate_pairs(_candidate_pairs(), k=2) | {

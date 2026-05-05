@@ -63,8 +63,8 @@ class Goal948PolygonNativeContinuationTest(unittest.TestCase):
             payload = jaccard_app.run_case("optix")
         self.assertTrue(payload["rt_core_candidate_discovery_active"])
         self.assertTrue(payload["native_continuation_active"])
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp")
-        self.assertIn("native C++ exact grid-cell set-area continuation", payload["boundary"])
+        self.assertEqual(payload["native_continuation_backend"], "native_polygon_pair_area_summary")
+        self.assertIn("backend-neutral native polygon-pair set-area summary", payload["boundary"])
 
 
 if __name__ == "__main__":

@@ -325,6 +325,7 @@ from .lowering import lower_to_rayjoin
 from .oracle_runtime import oracle_version
 from .oracle_runtime import refine_polygon_pair_overlap_area_rows_for_pairs
 from .oracle_runtime import refine_polygon_set_jaccard_for_pairs
+from .oracle_runtime import reduce_polygon_pair_exact_area_summary_for_candidates
 from .oracle_runtime import summarize_bfs_row_view
 from .oracle_runtime import summarize_bfs_rows
 from .oracle_runtime import summarize_fixed_radius_rows
@@ -668,6 +669,7 @@ __all__ = [
     "oracle_version",
     "refine_polygon_pair_overlap_area_rows_for_pairs",
     "refine_polygon_set_jaccard_for_pairs",
+    "reduce_polygon_pair_exact_area_summary_for_candidates",
     "summarize_bfs_row_view",
     "summarize_bfs_rows",
     "summarize_fixed_radius_rows",

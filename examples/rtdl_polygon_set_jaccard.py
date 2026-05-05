@@ -109,9 +109,16 @@ def _native_jaccard_rows_for_candidates(
     right: tuple[rt.Polygon, ...],
     candidate_pairs: set[tuple[int, int]],
 ):
-    return tuple(
-        dict(row)
-        for row in rt.refine_polygon_set_jaccard_for_pairs(left, right, candidate_pairs)
+    summary = rt.reduce_polygon_pair_exact_area_summary_for_candidates(left, right, candidate_pairs)
+    union_area = int(summary["union_area"])
+    return (
+        {
+            "intersection_area": int(summary["intersection_area"]),
+            "left_area": int(summary["left_area"]),
+            "right_area": int(summary["right_area"]),
+            "union_area": union_area,
+            "jaccard_similarity": 0.0 if union_area == 0 else int(summary["intersection_area"]) / union_area,
+        },
     )
 
 
@@ -134,6 +141,8 @@ def _collect_candidate_pairs_bounded(
             if "rtdl_embree_collect_polygon_pair_candidates_bounded" not in str(exc):
                 raise
             pairs = _positive_candidate_pairs_embree(left, right)
+        except FileNotFoundError:
+            pairs = _positive_candidate_pairs_embree(left, right)
     elif backend == "optix":
         try:
             return rt.collect_polygon_pair_candidates_bounded_optix(
@@ -144,6 +153,8 @@ def _collect_candidate_pairs_bounded(
         except ValueError as exc:
             if "rtdl_optix_collect_polygon_pair_candidates_bounded" not in str(exc):
                 raise
+            pairs = _positive_candidate_pairs_optix(left, right)
+        except FileNotFoundError:
             pairs = _positive_candidate_pairs_optix(left, right)
     else:
         raise ValueError("backend must be 'embree' or 'optix'")
@@ -274,16 +285,18 @@ def run_case(
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
         "native_continuation_active": backend in {"embree", "optix"},
-        "native_continuation_backend": "oracle_cpp" if backend in {"embree", "optix"} else None,
+        "native_continuation_backend": (
+            "native_polygon_pair_area_summary" if backend in {"embree", "optix"} else None
+        ),
         "optix_performance": {
             "class": rt.optix_app_performance_support("polygon_set_jaccard").performance_class,
             "note": rt.optix_app_performance_support("polygon_set_jaccard").note,
         },
         "boundary": (
-            "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact "
-            "grid-cell set-area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate "
-            "discovery and the same native C++ continuation. These modes are RT-candidate plus "
-            "native-continuation pipelines, not monolithic GPU Jaccard kernels."
+            "Embree mode uses native Embree bounded candidate discovery and a backend-neutral native "
+            "polygon-pair set-area summary. OptiX mode uses native OptiX bounded candidate discovery "
+            "and the same backend-neutral native polygon-pair set-area summary. These modes are "
+            "RT-candidate plus native summary-reduction pipelines, not monolithic GPU Jaccard kernels."
         ),
     }
     if output_mode == "rows":

@@ -401,7 +401,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "polygon_set_jaccard": OptixAppPerformanceSupport(
         app="polygon_set_jaccard",
         performance_class=PYTHON_INTERFACE_DOMINATED,
-        note="Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell set-area/Jaccard continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU Jaccard kernel.",
+        note="Public app exposes OptiX native bounded candidate discovery, then a backend-neutral native polygon-pair set-area summary before computing the Jaccard ratio. This is real traversal-assisted filtering plus native summary reduction, not a monolithic GPU Jaccard kernel.",
     ),
     "hausdorff_distance": OptixAppPerformanceSupport(
         app="hausdorff_distance",

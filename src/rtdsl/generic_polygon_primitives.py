@@ -174,8 +174,9 @@ def run_generic_polygon_set_jaccard_score_reduction(
         },
         "claim_boundary": (
             "Generic v1.5 diagnostic polygon-set Jaccard score reduction after complete "
-            "COLLECT_K_BOUNDED coverage; current implementation may call a native continuation "
-            "function but is not a fused GPU Jaccard kernel and not public speedup wording."
+            "COLLECT_K_BOUNDED coverage; current app route uses a backend-neutral native "
+            "polygon-pair area summary before computing the ratio, but this is not a fused "
+            "GPU Jaccard kernel and not public speedup wording."
         ),
     }
 

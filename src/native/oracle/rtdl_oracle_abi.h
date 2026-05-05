@@ -103,6 +103,14 @@ struct RtdlPolygonSetJaccardRow {
   double jaccard_similarity;
 };
 
+struct RtdlPolygonPairAreaSummary {
+  uint32_t overlap_pair_count;
+  uint32_t intersection_area;
+  uint32_t left_area;
+  uint32_t right_area;
+  uint32_t union_area;
+};
+
 struct RtdlPolygonPairCandidate {
   uint32_t left_polygon_id;
   uint32_t right_polygon_id;
@@ -325,6 +333,20 @@ int rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
     size_t candidate_count,
     RtdlPolygonSetJaccardRow** rows_out,
     size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_native_reduce_polygon_pair_exact_area_summary(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    const RtdlPolygonPairCandidate* candidates,
+    size_t candidate_count,
+    RtdlPolygonPairAreaSummary* summary_out,
     char* error_out,
     size_t error_size);
 int rtdl_oracle_run_point_nearest_segment(
