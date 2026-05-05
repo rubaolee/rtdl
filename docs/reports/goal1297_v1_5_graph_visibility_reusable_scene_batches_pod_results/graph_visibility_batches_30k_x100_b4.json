@@ -1,0 +1,189 @@
+{
+  "app": "graph_analytics",
+  "backend": "optix",
+  "copies": 30000,
+  "data_flow": [
+    "application graph data",
+    "bounded RTDL graph kernels",
+    "BFS discovery rows and triangle rows",
+    "visibility edge rows for the RT-core sub-path",
+    "native C++ summary continuation for BFS and triangle_count summary mode",
+    "Python-owned unified app JSON assembly"
+  ],
+  "graph_phase_totals_sec": {
+    "blocker_pack_sec": 0.2842858899384737,
+    "input_construction_sec": 0.020167388021945953,
+    "query_anyhit_count_first_sec": 0.0001653563231229782,
+    "query_anyhit_count_mean_sec": 6.683429237455129e-05,
+    "query_anyhit_count_min_sec": 6.304308772087097e-05,
+    "query_anyhit_count_sec": 0.02673371694982052,
+    "ray_pack_sec": 0.03096035122871399,
+    "ray_prepare_sec": 0.0005995091050863266,
+    "scene_prepare_sec": 0.8149793520569801,
+    "summary_postprocess_sec": 4.0978193283081055e-07
+  },
+  "honesty_boundary": "Unified app over bounded graph kernels. Embree BFS and triangle_count use CPU ray-tracing traversal for candidate generation. Only visibility_edges is an OptiX ray/triangle any-hit RT-core candidate; OptiX BFS and triangle_count remain host-indexed by default, and native graph-ray mode remains gated. BFS and triangle_count summary mode uses native C++ continuation, but this is not a full graph database or distributed graph analytics system.",
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_reusable_prepared_visibility_anyhit_count",
+  "optix_graph_mode": "auto",
+  "optix_performance": {
+    "class": "optix_traversal",
+    "note": "Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal; summary mode uses prepared any-hit count to avoid row materialization. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, and graph summary mode uses native C++ continuation after rows are produced. The default remains host-indexed until RTX validation."
+  },
+  "output_mode": "summary",
+  "phase_contract": "Graph phase totals split fixture construction, ray packing or row query/materialization, prepared any-hit count, and summary postprocess where the public app can observe them. They are local diagnostics, not public RTX speedup claims.",
+  "ray_tracing_accelerated": true,
+  "ray_tracing_note": "For Embree, BFS and triangle_count now use ray traversal over graph-edge primitives for candidate generation, and visibility_edges uses ray/triangle any-hit. For OptiX, BFS and triangle_count have an explicit native graph-ray mode behind --optix-graph-mode native, visibility_edges summary mode uses prepared any-hit count to avoid row materialization, and graph summary mode uses native C++ continuation after rows are produced. Only visibility_edges is a current RT-core claim until cloud validation promotes the graph-ray path.",
+  "rt_core_accelerated": true,
+  "scenario": "visibility_edges",
+  "sections": {
+    "visibility_edges": {
+      "app": "graph_visibility_edges",
+      "backend": "optix",
+      "blocker_count": 30000,
+      "blocker_pack_mode": "numpy_packed_triangles",
+      "boundary": "Graph visibility_edges maps candidate graph edges to RTDL visibility rays and uses ray/triangle any-hit traversal. It is not BFS, triangle-count, shortest path, or general graph database acceleration.",
+      "candidate_edge_count": 120000,
+      "copies": 30000,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_reusable_prepared_visibility_anyhit_count",
+      "observer_count": 60000,
+      "output_mode": "summary",
+      "prepared_scene_reused_across_ray_batches": true,
+      "primitive_contract": {
+        "active_v1_4_backend": true,
+        "alternate_summary_primitive": "REDUCE_INT(COUNT)",
+        "app_row": "graph_analytics.visibility_edges",
+        "backend": "optix",
+        "backend_contract_role": "nvidia_rt_target",
+        "backend_scope": [
+          "embree",
+          "optix"
+        ],
+        "build_layout": "triangle2d_blocker_buffer",
+        "claim_boundary": "graph_analytics.visibility_edges only: candidate graph edges lowered to ray/triangle any-hit and optional aggregate count. This excludes BFS, triangle counting, shortest path, graph databases, frontier bookkeeping, and graph reductions.",
+        "migration_status": "compatibility_wrapper_metadata_only",
+        "mode": "prepared",
+        "phase_counters": [
+          "input_construction_sec",
+          "blocker_pack_sec",
+          "ray_pack_sec",
+          "scene_prepare_sec",
+          "ray_prepare_sec",
+          "query_anyhit_count_sec",
+          "query_visibility_pair_rows_sec",
+          "summary_postprocess_sec"
+        ],
+        "prepared_state": "build_geometry_and_probe_rays_reusable",
+        "primitive": "ANY_HIT",
+        "probe_layout": "visibility_ray2d_probe_buffer",
+        "result_layout": "aggregate_visible_blocked_counts",
+        "same_contract_baseline_required": true,
+        "summary_primitive": "COUNT_HITS"
+      },
+      "ray_batch_summaries": [
+        {
+          "batch_index": 1,
+          "blocked_count": 22500,
+          "copies": 7500,
+          "copy_start": 0,
+          "ray_count": 30000,
+          "ray_pack_mode": "numpy_packed_rays",
+          "ray_pack_sec": 0.008760195225477219,
+          "run_phases": {
+            "query_anyhit_count_first_sec": 0.0001653563231229782,
+            "query_anyhit_count_mean_sec": 6.93296641111374e-05,
+            "query_anyhit_count_min_sec": 6.385147571563721e-05,
+            "query_anyhit_count_sec": 0.006932966411113739,
+            "ray_prepare_sec": 0.00019371695816516876,
+            "scene_prepare_sec": 0.8149793520569801,
+            "scene_prepare_sec_this_batch": 0.0
+          }
+        },
+        {
+          "batch_index": 2,
+          "blocked_count": 22500,
+          "copies": 7500,
+          "copy_start": 7500,
+          "ray_count": 30000,
+          "ray_pack_mode": "numpy_packed_rays",
+          "ray_pack_sec": 0.008832618594169617,
+          "run_phases": {
+            "query_anyhit_count_first_sec": 0.00012941472232341766,
+            "query_anyhit_count_mean_sec": 6.589068099856377e-05,
+            "query_anyhit_count_min_sec": 6.304308772087097e-05,
+            "query_anyhit_count_sec": 0.006589068099856377,
+            "ray_prepare_sec": 0.00015143491327762604,
+            "scene_prepare_sec": 0.8149793520569801,
+            "scene_prepare_sec_this_batch": 0.0
+          }
+        },
+        {
+          "batch_index": 3,
+          "blocked_count": 22500,
+          "copies": 7500,
+          "copy_start": 15000,
+          "ray_count": 30000,
+          "ray_pack_mode": "numpy_packed_rays",
+          "ray_pack_sec": 0.007065320387482643,
+          "run_phases": {
+            "query_anyhit_count_first_sec": 0.00012204237282276154,
+            "query_anyhit_count_mean_sec": 6.657533347606659e-05,
+            "query_anyhit_count_min_sec": 6.408244371414185e-05,
+            "query_anyhit_count_sec": 0.006657533347606659,
+            "ray_prepare_sec": 0.00012649409472942352,
+            "scene_prepare_sec": 0.8149793520569801,
+            "scene_prepare_sec_this_batch": 0.0
+          }
+        },
+        {
+          "batch_index": 4,
+          "blocked_count": 22500,
+          "copies": 7500,
+          "copy_start": 22500,
+          "ray_count": 30000,
+          "ray_pack_mode": "numpy_packed_rays",
+          "ray_pack_sec": 0.006302217021584511,
+          "run_phases": {
+            "query_anyhit_count_first_sec": 0.00012109056115150452,
+            "query_anyhit_count_mean_sec": 6.554149091243744e-05,
+            "query_anyhit_count_min_sec": 6.30989670753479e-05,
+            "query_anyhit_count_sec": 0.006554149091243744,
+            "ray_prepare_sec": 0.00012786313891410828,
+            "scene_prepare_sec": 0.8149793520569801,
+            "scene_prepare_sec_this_batch": 0.0
+          }
+        }
+      ],
+      "ray_pack_mode": "numpy_packed_rays",
+      "row_count": 120000,
+      "rows": [],
+      "rt_core_accelerated": true,
+      "run_phases": {
+        "blocker_pack_sec": 0.2842858899384737,
+        "input_construction_sec": 0.020167388021945953,
+        "query_anyhit_count_first_sec": 0.0001653563231229782,
+        "query_anyhit_count_mean_sec": 6.683429237455129e-05,
+        "query_anyhit_count_min_sec": 6.304308772087097e-05,
+        "query_anyhit_count_sec": 0.02673371694982052,
+        "ray_pack_sec": 0.03096035122871399,
+        "ray_prepare_sec": 0.0005995091050863266,
+        "scene_prepare_sec": 0.8149793520569801,
+        "summary_postprocess_sec": 4.0978193283081055e-07
+      },
+      "summary": {
+        "blocked_edge_count": 90000,
+        "visible_edge_count": 30000
+      },
+      "target_count": 60000,
+      "visibility_query_repeats": 100,
+      "visibility_ray_batches": 4
+    }
+  },
+  "unifies": [
+    "examples/rtdl_graph_bfs.py",
+    "examples/rtdl_graph_triangle_count.py"
+  ],
+  "visibility_query_repeats": 100,
+  "visibility_ray_batches": 4
+}
