@@ -148,8 +148,12 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertEqual(section["summary"], {"visible_edge_count": 2, "blocked_edge_count": 6})
         self.assertEqual(section["native_continuation_backend"], "optix_prepared_visibility_anyhit_count")
         self.assertTrue(section["native_continuation_active"])
+        self.assertEqual(section["visibility_query_repeats"], 1)
         self.assertIn("blocker_pack_sec", section["run_phases"])
         self.assertIn("ray_pack_sec", section["run_phases"])
+        self.assertIn("query_anyhit_count_first_sec", section["run_phases"])
+        self.assertIn("query_anyhit_count_mean_sec", section["run_phases"])
+        self.assertIn("query_anyhit_count_min_sec", section["run_phases"])
         self.assertGreaterEqual(section["run_phases"]["blocker_pack_sec"], 0.0)
         self.assertGreaterEqual(section["run_phases"]["ray_pack_sec"], 0.0)
         rays_arg = prepare_rays.call_args.args[0]
@@ -226,6 +230,64 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         pack_rays.assert_called_once()
         pack_triangles.assert_called_once()
 
+    def test_optix_visibility_summary_can_repeat_prepared_query_without_rebuilding_scene(self) -> None:
+        from unittest import mock
+
+        class FakePreparedScene:
+            def __init__(self):
+                self.count_calls = 0
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return None
+
+            def count(self, prepared_rays):
+                self.count_calls += 1
+                return 6
+
+        class FakePreparedRays:
+            count = 8
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return None
+
+        prepared_scene = FakePreparedScene()
+        with (
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "prepare_optix_ray_triangle_any_hit_2d",
+                return_value=prepared_scene,
+            ) as prepare_scene_call,
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "prepare_optix_rays_2d",
+                return_value=FakePreparedRays(),
+            ) as prepare_rays,
+        ):
+            payload = rtdl_graph_analytics_app.run_app(
+                "optix",
+                "visibility_edges",
+                copies=2,
+                output_mode="summary",
+                require_rt_core=True,
+                visibility_query_repeats=5,
+            )
+
+        section = payload["sections"]["visibility_edges"]
+        self.assertEqual(section["summary"], {"visible_edge_count": 2, "blocked_edge_count": 6})
+        self.assertEqual(section["visibility_query_repeats"], 5)
+        self.assertEqual(payload["visibility_query_repeats"], 5)
+        self.assertEqual(prepared_scene.count_calls, 5)
+        prepare_scene_call.assert_called_once()
+        prepare_rays.assert_called_once()
+        self.assertGreaterEqual(section["run_phases"]["query_anyhit_count_sec"], 0.0)
+        self.assertGreaterEqual(section["run_phases"]["query_anyhit_count_mean_sec"], 0.0)
+
     def test_cli_require_rt_core_exits_nonzero_without_optix_library(self) -> None:
         result = subprocess.run(
             [
@@ -243,6 +305,16 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("limited to --scenario visibility_edges", result.stderr)
+
+    def test_visibility_query_repeats_are_limited_to_optix_visibility_summary(self) -> None:
+        with self.assertRaisesRegex(ValueError, "visibility_query_repeats is only supported"):
+            rtdl_graph_analytics_app.run_app(
+                "embree",
+                "visibility_edges",
+                copies=1,
+                output_mode="summary",
+                visibility_query_repeats=2,
+            )
 
 
 if __name__ == "__main__":

@@ -35,6 +35,9 @@ pod timing confirmed the intended packed metadata (`all_numpy_packed_rays` and
 `0.0002s` at the tested 30k/60k-copy scales. The remaining bottleneck is
 OptiX scene preparation plus host-side preparation, so the next graph work is
 prepared-scene reuse or amortization, not any-hit kernel micro-optimization.
+Goal1269 adds the internal `--visibility-query-repeats` diagnostic for the
+OptiX `visibility_edges` summary path so the next pod run can measure repeated
+prepared-query cost separately from one-time scene and ray-buffer preparation.
 
 ## Allowed Polygon-Pair Wording
 
@@ -67,6 +70,7 @@ Do not describe this as:
 - [Goal1264 DB/graph scale probe intake](reports/goal1264_db_graph_scale_probe_intake_2026-05-04.md)
 - [Goal1267 v1.2 targeted OptiX pod intake](reports/goal1267_v1_2_targeted_optix_pod_intake_2026-05-05.md)
 - [Goal1268 Embree 3/4 flexible runtime](reports/goal1268_embree3_4_flexible_runtime_2026-05-05.md)
+- [Goal1269 graph visibility prepared-reuse probe](reports/goal1269_graph_visibility_prepared_reuse_probe_2026-05-05.md)
 
 ## Next Work
 

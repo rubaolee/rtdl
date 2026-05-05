@@ -145,7 +145,15 @@ def _pack_visibility_summary_rays(copies: int):
     }
 
 
-def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[str, Any]:
+def _run_visibility_edges(
+    backend: str,
+    copies: int,
+    output_mode: str,
+    *,
+    visibility_query_repeats: int = 1,
+) -> dict[str, Any]:
+    if visibility_query_repeats <= 0:
+        raise ValueError("visibility_query_repeats must be positive")
     visibility_backend = "cpu" if backend == "cpu_python_reference" else backend
     if backend == "optix" and output_mode == "summary":
         packed_case = _pack_visibility_summary_rays(copies)
@@ -156,9 +164,13 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
             ray_prepare_start = time.perf_counter()
             with rt.prepare_optix_rays_2d(rays) as prepared_rays:
                 ray_prepare_sec = time.perf_counter() - ray_prepare_start
-                query_start = time.perf_counter()
-                blocked_count = int(prepared_scene.count(prepared_rays))
-                query_sec = time.perf_counter() - query_start
+                query_times = []
+                blocked_count = 0
+                for _ in range(visibility_query_repeats):
+                    query_start = time.perf_counter()
+                    blocked_count = int(prepared_scene.count(prepared_rays))
+                    query_times.append(time.perf_counter() - query_start)
+                query_sec = sum(query_times)
         rows = ()
         postprocess_start = time.perf_counter()
         visible_count = int(packed_case["ray_count"]) - blocked_count
@@ -172,6 +184,9 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
             "scene_prepare_sec": scene_prepare_sec,
             "ray_prepare_sec": ray_prepare_sec,
             "query_anyhit_count_sec": query_sec,
+            "query_anyhit_count_first_sec": float(query_times[0]) if query_times else 0.0,
+            "query_anyhit_count_mean_sec": float(query_sec / len(query_times)) if query_times else 0.0,
+            "query_anyhit_count_min_sec": float(min(query_times)) if query_times else 0.0,
             "summary_postprocess_sec": postprocess_sec,
         }
         observer_count = int(packed_case["observer_count"])
@@ -208,6 +223,7 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
         blocker_count = len(case["blockers"])
         ray_pack_mode = "not_applicable"
         blocker_pack_mode = "not_applicable"
+        visibility_query_repeats = 1
     return {
         "app": "graph_visibility_edges",
         "backend": backend,
@@ -226,6 +242,7 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
         "run_phases": run_phases,
         "ray_pack_mode": ray_pack_mode,
         "blocker_pack_mode": blocker_pack_mode,
+        "visibility_query_repeats": visibility_query_repeats,
         "native_continuation_active": native_continuation_active,
         "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": backend == "optix",
@@ -245,6 +262,7 @@ def run_app(
     *,
     require_rt_core: bool = False,
     optix_graph_mode: str = "auto",
+    visibility_query_repeats: int = 1,
 ) -> dict[str, Any]:
     if backend not in BACKENDS:
         raise ValueError(f"unsupported backend: {backend}")
@@ -256,6 +274,15 @@ def run_app(
         raise ValueError(f"unsupported output_mode: {output_mode}")
     if optix_graph_mode not in {"auto", "host_indexed", "native"}:
         raise ValueError(f"unsupported optix_graph_mode: {optix_graph_mode}")
+    if visibility_query_repeats <= 0:
+        raise ValueError("visibility_query_repeats must be positive")
+    if visibility_query_repeats != 1 and not (
+        backend == "optix" and scenario == "visibility_edges" and output_mode == "summary"
+    ):
+        raise ValueError(
+            "visibility_query_repeats is only supported for "
+            "--backend optix --scenario visibility_edges --output-mode summary"
+        )
     _enforce_rt_core_requirement(backend, scenario, require_rt_core)
 
     sections: dict[str, Any] = {}
@@ -274,7 +301,12 @@ def run_app(
             optix_graph_mode=optix_graph_mode,
         )
     if scenario in {"visibility_edges", "all"}:
-        sections["visibility_edges"] = _run_visibility_edges(backend, copies=copies, output_mode=output_mode)
+        sections["visibility_edges"] = _run_visibility_edges(
+            backend,
+            copies=copies,
+            output_mode=output_mode,
+            visibility_query_repeats=visibility_query_repeats,
+        )
     native_continuation_backends = tuple(
         str(section.get("native_continuation_backend", "none"))
         for section in sections.values()
@@ -292,6 +324,7 @@ def run_app(
         "copies": copies,
         "output_mode": output_mode,
         "optix_graph_mode": optix_graph_mode if backend == "optix" else "not_applicable",
+        "visibility_query_repeats": visibility_query_repeats,
         "sections": sections,
         "data_flow": [
             "application graph data",
@@ -367,6 +400,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-mode", default="rows", choices=("rows", "summary"))
     parser.add_argument("--optix-graph-mode", default="auto", choices=("auto", "host_indexed", "native"))
     parser.add_argument(
+        "--visibility-query-repeats",
+        type=int,
+        default=1,
+        help=(
+            "OptiX visibility_edges summary only: repeat the prepared any-hit "
+            "count against the same prepared scene/rays to measure amortized "
+            "query cost."
+        ),
+    )
+    parser.add_argument(
         "--require-rt-core",
         action="store_true",
         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
@@ -381,6 +424,7 @@ def main(argv: list[str] | None = None) -> int:
                 output_mode=args.output_mode,
                 require_rt_core=args.require_rt_core,
                 optix_graph_mode=args.optix_graph_mode,
+                visibility_query_repeats=args.visibility_query_repeats,
             ),
             indent=2,
             sort_keys=True,
