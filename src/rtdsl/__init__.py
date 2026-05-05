@@ -445,6 +445,7 @@ from .generic_primitives import prepare_generic_fixed_radius_count_threshold_2d
 from .generic_primitives import prepare_generic_ray_triangle_any_hit_scene
 from .generic_primitives import run_generic_fixed_radius_count_threshold_2d
 from .generic_primitives import run_generic_prepared_fixed_radius_threshold_reached_count_2d
+from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool
 from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
@@ -704,6 +705,7 @@ __all__ = [
     "prepare_generic_ray_triangle_any_hit_scene",
     "run_generic_fixed_radius_count_threshold_2d",
     "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+    "run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool",
     "run_generic_prepared_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",

@@ -220,9 +220,17 @@ def _run_optix_prepared_pose_flags(
     pose_ids = tuple(int(pose["pose_id"]) for pose in poses)
     pose_index_by_id = {pose_id: index for index, pose_id in enumerate(pose_ids)}
     pose_indices = tuple(pose_index_by_id[int(ray_metadata[int(ray.id)]["pose_id"])] for ray in edge_rays)
-    with rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles) as prepared_scene:
-        with rt.prepare_optix_rays_2d(edge_rays) as prepared_rays:
-            pose_flags = prepared_scene.pose_flags_packed(prepared_rays, pose_indices, pose_count=len(pose_ids))
+    result = rt.run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool(
+        triangles=obstacle_triangles,
+        rays=edge_rays,
+        group_indices=pose_indices,
+        group_count=len(pose_ids),
+        backend="optix",
+        prepare_scene=rt.prepare_optix_ray_triangle_any_hit_2d,
+        prepare_rays=rt.prepare_optix_rays_2d,
+        prepare_group_indices=rt.prepare_optix_pose_indices_2d,
+    )
+    pose_flags = tuple(bool(flag) for flag in result["group_flags"])
     return {
         "mode": "optix_prepared_pose_flags",
         "pose_collision_flags": tuple(
@@ -233,6 +241,10 @@ def _run_optix_prepared_pose_flags(
         "colliding_pose_count": sum(1 for flag in pose_flags if flag),
         "edge_ray_count": len(edge_rays),
         "obstacle_triangle_count": len(obstacle_triangles),
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
+        "result_layout": result["result_layout"],
+        "run_phases": result["run_phases"],
     }
 
 
@@ -409,18 +421,11 @@ def run_app(
         expected_colliding_pose_ids = None
         validation_mode = "skipped"
         if not skip_validation:
-            if pose_count is not None:
-                expected_pose_flags = _expected_scaled_pose_flags(poses)
-                expected_colliding_pose_ids = [
-                    int(row["pose_id"]) for row in expected_pose_flags if bool(row["collides"])
-                ]
-                validation_mode = "analytic_scaled_fixture"
-            else:
-                oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
-                oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
-                expected_pose_flags = oracle_summary["pose_collision_flags"]
-                expected_colliding_pose_ids = oracle_summary["colliding_pose_ids"]
-                validation_mode = "cpu_oracle"
+            oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
+            oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
+            expected_pose_flags = oracle_summary["pose_collision_flags"]
+            expected_colliding_pose_ids = oracle_summary["colliding_pose_ids"]
+            validation_mode = "cpu_oracle"
         return {
             "app": "robot_collision_screening",
             "backend": backend,

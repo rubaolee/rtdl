@@ -1,0 +1,52 @@
+[
+  {
+    "app": "robot_collision_screening",
+    "artifact": "robot_pose_flags_generic_validation_512.json",
+    "backend": "optix",
+    "colliding_pose_count": 427,
+    "edge_ray_count": 2048,
+    "generic_primitive": "ANY_HIT",
+    "matches_oracle": true,
+    "native_continuation_backend": "optix_prepared_pose_flags",
+    "obstacle_triangle_count": 256,
+    "pose_count": 512,
+    "result_layout": "grouped_threshold_bool",
+    "run_phases": {
+      "group_index_prepare_sec": 0.00042621418833732605,
+      "query_grouped_count_threshold_bool_first_sec": 0.3789548184722662,
+      "query_grouped_count_threshold_bool_mean_sec": 0.3789548184722662,
+      "query_grouped_count_threshold_bool_min_sec": 0.3789548184722662,
+      "query_grouped_count_threshold_bool_sec": 0.3789548184722662,
+      "ray_prepare_sec": 0.003078743815422058,
+      "scene_prepare_sec": 0.8073829989880323,
+      "scene_prepare_sec_this_batch": 0.0
+    },
+    "summary_primitive": "REDUCE_INT(COUNT)",
+    "validation_mode": "cpu_oracle"
+  },
+  {
+    "app": "robot_collision_screening",
+    "artifact": "robot_pose_flags_generic_timing_4096_skip_validation.json",
+    "backend": "optix",
+    "colliding_pose_count": 3968,
+    "edge_ray_count": 16384,
+    "generic_primitive": "ANY_HIT",
+    "matches_oracle": null,
+    "native_continuation_backend": "optix_prepared_pose_flags",
+    "obstacle_triangle_count": 2048,
+    "pose_count": 4096,
+    "result_layout": "grouped_threshold_bool",
+    "run_phases": {
+      "group_index_prepare_sec": 0.003145642578601837,
+      "query_grouped_count_threshold_bool_first_sec": 0.3886180892586708,
+      "query_grouped_count_threshold_bool_mean_sec": 0.3886180892586708,
+      "query_grouped_count_threshold_bool_min_sec": 0.3886180892586708,
+      "query_grouped_count_threshold_bool_sec": 0.3886180892586708,
+      "ray_prepare_sec": 0.020849943161010742,
+      "scene_prepare_sec": 0.819066857919097,
+      "scene_prepare_sec_this_batch": 0.0
+    },
+    "summary_primitive": "REDUCE_INT(COUNT)",
+    "validation_mode": "skipped"
+  }
+]

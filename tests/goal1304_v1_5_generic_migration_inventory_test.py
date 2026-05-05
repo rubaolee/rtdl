@@ -21,6 +21,7 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             ("barnes_hut_force_app", "node_coverage_prepared"),
             ("hausdorff_distance", "directed_threshold_prepared"),
             ("robot_collision_screening", "prepared_count"),
+            ("robot_collision_screening", "prepared_pose_flags"),
         }
         self.assertLessEqual(expected_completed, set(by_row))
         for key in expected_completed:
@@ -33,11 +34,11 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
 
         self.assertEqual(
             by_row[("robot_collision_screening", "prepared_pose_flags")]["status"],
-            "deferred_app_specific",
+            "pod_verified_generic",
         )
-        self.assertIn(
-            "define grouped count-to-boolean result layout",
+        self.assertEqual(
             by_row[("robot_collision_screening", "prepared_pose_flags")]["remaining_app_specific_work"],
+            (),
         )
         self.assertEqual(
             by_row[("database_analytics", "sales_risk_compact_summary")]["summary_primitive"],

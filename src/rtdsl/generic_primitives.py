@@ -355,6 +355,105 @@ class GenericPreparedRayTriangleAnyHitScene:
             ),
         }
 
+    def grouped_count_threshold_bool(
+        self,
+        rays: Any,
+        group_indices: Any,
+        *,
+        group_count: int,
+        threshold: int = 1,
+        query_repeats: int = 1,
+        prepare_rays=None,
+        prepare_group_indices=None,
+    ) -> dict[str, Any]:
+        """Return grouped boolean flags as `REDUCE_INT(COUNT)` threshold output."""
+        if self._closed:
+            raise RuntimeError("generic prepared ray/triangle scene is closed")
+        if group_count < 0:
+            raise ValueError("group_count must be non-negative")
+        if threshold != 1:
+            raise ValueError("grouped_count_threshold_bool currently supports threshold=1")
+        if query_repeats <= 0:
+            raise ValueError("query_repeats must be positive")
+        if prepare_rays is None:
+            prepare_rays = self._prepare_rays
+        if prepare_group_indices is None and self.backend == "optix":
+            from .optix_runtime import prepare_optix_pose_indices_2d as prepare_group_indices
+
+        normalized_group_indices = tuple(int(index) for index in group_indices)
+        if any(index < 0 or index >= group_count for index in normalized_group_indices):
+            raise ValueError("group_indices entries must be within [0, group_count)")
+
+        ray_prepare_start = time.perf_counter()
+        group_prepare_sec = 0.0
+        with prepare_rays(rays) as prepared_rays:
+            ray_prepare_sec = time.perf_counter() - ray_prepare_start
+            query_times = []
+            group_flags: tuple[bool, ...] = tuple(False for _ in range(group_count))
+
+            if prepare_group_indices is not None and hasattr(self._prepared_scene, "pose_flags_prepared_indices"):
+                group_prepare_start = time.perf_counter()
+                with prepare_group_indices(normalized_group_indices) as prepared_group_indices:
+                    group_prepare_sec = time.perf_counter() - group_prepare_start
+                    for _ in range(query_repeats):
+                        query_start = time.perf_counter()
+                        group_flags = tuple(
+                            bool(flag)
+                            for flag in self._prepared_scene.pose_flags_prepared_indices(
+                                prepared_rays,
+                                prepared_group_indices,
+                                pose_count=group_count,
+                            )
+                        )
+                        query_times.append(time.perf_counter() - query_start)
+            else:
+                for _ in range(query_repeats):
+                    query_start = time.perf_counter()
+                    group_flags = tuple(
+                        bool(flag)
+                        for flag in self._prepared_scene.pose_flags_packed(
+                            prepared_rays,
+                            normalized_group_indices,
+                            pose_count=group_count,
+                        )
+                    )
+                    query_times.append(time.perf_counter() - query_start)
+
+        query_sec = sum(query_times)
+        threshold_reached_count = sum(1 for flag in group_flags if flag)
+        self.query_batch_count += 1
+        return {
+            "primitive": "ANY_HIT",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "result_layout": "grouped_threshold_bool",
+            "backend": self.backend,
+            "prepared": True,
+            "scene_reusable": True,
+            "query_batch_index": self.query_batch_count,
+            "query_repeats": query_repeats,
+            "group_count": int(group_count),
+            "threshold": int(threshold),
+            "group_flags": group_flags,
+            "threshold_reached_count": threshold_reached_count,
+            "run_phases": {
+                "scene_prepare_sec": self.scene_prepare_sec,
+                "scene_prepare_sec_this_batch": 0.0,
+                "ray_prepare_sec": ray_prepare_sec,
+                "group_index_prepare_sec": group_prepare_sec,
+                "query_grouped_count_threshold_bool_sec": query_sec,
+                "query_grouped_count_threshold_bool_first_sec": float(query_times[0]) if query_times else 0.0,
+                "query_grouped_count_threshold_bool_mean_sec": (
+                    float(query_sec / len(query_times)) if query_times else 0.0
+                ),
+                "query_grouped_count_threshold_bool_min_sec": float(min(query_times)) if query_times else 0.0,
+            },
+            "claim_boundary": (
+                "Generic v1.5 reusable prepared raw ray/triangle ANY_HIT plus grouped "
+                "REDUCE_INT(COUNT) threshold-bool result layout only; not whole-app collision planning "
+                "or public speedup wording."
+            ),
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -592,4 +691,37 @@ def run_generic_prepared_ray_triangle_any_hit_count(
             rays,
             query_repeats=query_repeats,
             prepare_rays=prepare_rays,
+        )
+
+
+def run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool(
+    *,
+    triangles: Any,
+    rays: Any,
+    group_indices: Any,
+    group_count: int,
+    backend: str = "optix",
+    threshold: int = 1,
+    query_repeats: int = 1,
+    prepare_scene=None,
+    prepare_rays=None,
+    prepare_group_indices=None,
+) -> dict[str, Any]:
+    """Run prepared `ANY_HIT` with grouped `REDUCE_INT(COUNT)` bool output."""
+    if query_repeats <= 0:
+        raise ValueError("query_repeats must be positive")
+    with prepare_generic_ray_triangle_any_hit_scene(
+        triangles=triangles,
+        backend=backend,
+        prepare_scene=prepare_scene,
+        prepare_rays=prepare_rays,
+    ) as prepared_scene:
+        return prepared_scene.grouped_count_threshold_bool(
+            rays,
+            group_indices,
+            group_count=group_count,
+            threshold=threshold,
+            query_repeats=query_repeats,
+            prepare_rays=prepare_rays,
+            prepare_group_indices=prepare_group_indices,
         )

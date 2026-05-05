@@ -42,12 +42,12 @@ v1_5_generic_migration_blockers()
 | Goal1302 | `barnes_hut_force_app` | `node_coverage_prepared` | `FIXED_RADIUS_COUNT_THRESHOLD_2D` | `REDUCE_INT(COUNT)` |
 | Goal1302 | `hausdorff_distance` | `directed_threshold_prepared` | `FIXED_RADIUS_COUNT_THRESHOLD_2D` | `REDUCE_INT(COUNT)` |
 | Goal1303 | `robot_collision_screening` | `prepared_count` | `ANY_HIT` | `COUNT_HITS` |
+| Goal1306 | `robot_collision_screening` | `prepared_pose_flags` | `ANY_HIT` | `REDUCE_INT(COUNT)` |
 
 ## Deferred Rows
 
 | App | Subpath | Status | What unblocks it |
 | --- | --- | --- | --- |
-| `robot_collision_screening` | `prepared_pose_flags` | `deferred_app_specific` | Define grouped `REDUCE_INT(COUNT)` with count-to-boolean result layout. |
 | `database_analytics` | `sales_risk_compact_summary` | `deferred_app_specific` | Define generic grouped integer `REDUCE_INT(COUNT)` and `REDUCE_INT(SUM)` wrappers for numeric predicate lowering. |
 | `polygon_pair_overlap_area_rows` | `candidate_discovery_and_exact_area` | `deferred_app_specific` | Define reviewed `REDUCE_FLOAT(SUM)` tolerance/result-shape contract for exact area aggregation. |
 | `polygon_set_jaccard` | `chunked_candidate_scoring` | `diagnostic_blocked` | Define `COLLECT_K_BOUNDED` overflow behavior and scoring reduction, then prove correctness/performance; current status remains slower/diagnostic. |

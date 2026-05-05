@@ -131,16 +131,16 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "boundary": "scalar hit-edge count only",
         },
         {
-            "goal": "Goal1303",
+            "goal": "Goal1306",
             "app": "robot_collision_screening",
             "subpath": "prepared_pose_flags",
-            "status": "deferred_app_specific",
+            "status": "pod_verified_generic",
             "generic_primitive": "ANY_HIT",
             "summary_primitive": "REDUCE_INT(COUNT)",
             "backend_scope": ("optix",),
-            "remaining_app_specific_work": ("define grouped count-to-boolean result layout",),
+            "remaining_app_specific_work": (),
             "public_wording_authorized": False,
-            "boundary": "pose-level grouped count-to-boolean output is not yet in the v1.5 generic ABI",
+            "boundary": "pose-level grouped count-to-boolean output only; no whole-app collision planning claim",
         },
         {
             "goal": "Goal1274",
@@ -193,7 +193,12 @@ def v1_5_generic_migration_blockers() -> tuple[str, ...]:
 
 def validate_v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
     inventory = v1_5_generic_migration_inventory()
-    valid_statuses = {"pod_verified_generic", "deferred_app_specific", "diagnostic_blocked"}
+    valid_statuses = {
+        "pod_verified_generic",
+        "local_generic_pending_pod",
+        "deferred_app_specific",
+        "diagnostic_blocked",
+    }
     valid_backend_scope = set(ACTIVE_V1_5_BACKENDS)
     for row in inventory:
         for field in (
