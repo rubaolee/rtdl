@@ -434,6 +434,9 @@ from .polygon_primitives import polygon_jaccard_diagnostic_contract
 from .polygon_primitives import polygon_pair_primitive_contract
 from .primitive_contract_schema import primitive_contract_schema_errors
 from .primitive_contract_schema import validate_primitive_contract
+from .primitive_contract_registry import FROZEN_BEFORE_V2_1_BACKENDS
+from .primitive_contract_registry import v1_4_primitive_contract_inventory
+from .primitive_contract_registry import validate_v1_4_primitive_contract_inventory
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -670,6 +673,9 @@ __all__ = [
     "polygon_pair_primitive_contract",
     "primitive_contract_schema_errors",
     "validate_primitive_contract",
+    "FROZEN_BEFORE_V2_1_BACKENDS",
+    "v1_4_primitive_contract_inventory",
+    "validate_v1_4_primitive_contract_inventory",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",
