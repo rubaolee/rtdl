@@ -44,8 +44,8 @@ return rt.emit(
 Run:
 
 ```bash
-python examples/rtdl_polygon_set_jaccard.py
-python examples/rtdl_polygon_set_jaccard.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix
 ```
 
 Use `python3` instead if that is what your shell exposes.
@@ -53,7 +53,7 @@ Use `python3` instead if that is what your shell exposes.
 Generate a runnable handoff bundle:
 
 ```bash
-python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
+PYTHONPATH=src:. python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 ## Best Practices

@@ -51,8 +51,8 @@ return rt.emit(
 Run:
 
 ```bash
-python examples/rtdl_polygon_pair_overlap_area_rows.py
-python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
 Use `python3` instead if that is what your shell exposes.
@@ -84,4 +84,7 @@ Use `python3` instead if that is what your shell exposes.
 - current backend maturity is intentionally narrower than the segment/polygon line
 - Embree and OptiX app modes use native LSI/PIP positive candidate discovery,
   then native C++ exact grid-cell area continuation
-- this is not a monolithic GPU polygon-area kernel or a public RTX speedup claim
+- this is not a monolithic GPU polygon-area kernel; only the Goal1263 bounded
+  RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area
+  continuation wording is public, and whole-app polygon speedup remains outside
+  the claim

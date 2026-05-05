@@ -26,8 +26,7 @@ the current public story:
 12. [Performance Model](performance_model.md)
 13. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
 14. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
-15. [RTDL Current Main Support Matrix](current_main_support_matrix.md)
-16. [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
+15. [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
