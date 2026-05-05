@@ -167,18 +167,16 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "boundary": "candidate discovery plus exact integer-grid area summary only; no generic overlay, broad GIS, or public speedup wording",
         },
         {
-            "goal": "Goal1318",
+            "goal": "Goal1322",
             "app": "polygon_set_jaccard",
             "subpath": "chunked_candidate_scoring",
-            "status": "diagnostic_blocked",
+            "status": "pod_verified_generic",
             "generic_primitive": "COLLECT_K_BOUNDED",
             "summary_primitive": "REDUCE_FLOAT(SUM)",
             "backend_scope": ACTIVE_V1_5_BACKENDS,
-            "remaining_app_specific_work": (
-                "native score reduction after complete candidate coverage",
-            ),
+            "remaining_app_specific_work": (),
             "public_wording_authorized": False,
-            "boundary": "diagnostic only; native bounded collection is routed and pod-validated with no silent truncation; OptiX-slower reason is recorded; native score reduction and public wording remain blocked",
+            "boundary": "diagnostic native candidate-plus-backend-neutral area-summary pipeline; native bounded collection is pod-validated with no silent truncation; backend-neutral score reduction is pod-validated; OptiX remains slower than Embree; no public speedup wording; no fused GPU Jaccard kernel claim",
         },
     )
 
@@ -188,7 +186,6 @@ def v1_5_generic_migration_blockers() -> tuple[str, ...]:
         "prepared_pose_flags requires grouped REDUCE_INT(COUNT) with count-to-boolean result layout before it can leave app-specific OptiX code",
         "database compact summaries require generic grouped integer COUNT/SUM wrappers",
         "polygon exact area and Jaccard scoring require reviewed REDUCE_FLOAT(SUM) tolerance and result-shape contracts",
-        "Jaccard remains diagnostic until native REDUCE_FLOAT(SUM) score reduction runs after complete bounded collection",
         "public NVIDIA wording remains blocked until exact-subpath evidence receives 3-AI consensus",
     )
 

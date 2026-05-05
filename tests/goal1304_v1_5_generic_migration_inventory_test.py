@@ -24,6 +24,7 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             ("robot_collision_screening", "prepared_pose_flags"),
             ("database_analytics", "sales_risk_compact_summary"),
             ("polygon_pair_overlap_area_rows", "candidate_discovery_and_exact_area"),
+            ("polygon_set_jaccard", "chunked_candidate_scoring"),
         }
         self.assertLessEqual(expected_completed, set(by_row))
         for key in expected_completed:
@@ -70,11 +71,11 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
         )
         self.assertEqual(
             by_row[("polygon_set_jaccard", "chunked_candidate_scoring")]["status"],
-            "diagnostic_blocked",
+            "pod_verified_generic",
         )
         self.assertEqual(
             by_row[("polygon_set_jaccard", "chunked_candidate_scoring")]["remaining_app_specific_work"],
-            ("native score reduction after complete candidate coverage",),
+            (),
         )
 
     def test_inventory_has_no_frozen_backend_scope_or_public_wording(self) -> None:
@@ -89,7 +90,6 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
         self.assertIn("grouped REDUCE_INT(COUNT)", blockers)
         self.assertIn("grouped integer COUNT/SUM", blockers)
         self.assertIn("REDUCE_FLOAT(SUM)", blockers)
-        self.assertIn("complete bounded collection", blockers)
         self.assertIn("3-AI consensus", blockers)
 
 

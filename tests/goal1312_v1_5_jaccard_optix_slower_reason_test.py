@@ -35,9 +35,9 @@ class Goal1312V15JaccardOptixSlowerReasonTest(unittest.TestCase):
         by_row = {(row["app"], row["subpath"]): row for row in inventory}
         row = by_row[("polygon_set_jaccard", "chunked_candidate_scoring")]
 
-        self.assertEqual(row["status"], "diagnostic_blocked")
+        self.assertEqual(row["status"], "pod_verified_generic")
         self.assertNotIn("optix_still_slower_with_reason", row["remaining_app_specific_work"])
-        self.assertIn("OptiX-slower reason is recorded", row["boundary"])
+        self.assertIn("OptiX remains slower than Embree", row["boundary"])
 
 
 if __name__ == "__main__":

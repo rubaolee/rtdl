@@ -48,26 +48,19 @@ class Goal1310V15JaccardCollectKBoundedContractTest(unittest.TestCase):
         self.assertEqual(contract["bounded_collection_policy"]["failure_mode"], "fail_closed_overflow")
         self.assertFalse(contract["public_wording_allowed"])
 
-    def test_inventory_records_native_collection_done_but_score_reduction_blocked(self) -> None:
+    def test_inventory_records_jaccard_internal_generic_but_non_public(self) -> None:
         inventory = rt.validate_v1_5_generic_migration_inventory()
         by_row = {(row["app"], row["subpath"]): row for row in inventory}
         row = by_row[("polygon_set_jaccard", "chunked_candidate_scoring")]
 
-        self.assertEqual(row["goal"], "Goal1318")
-        self.assertEqual(row["status"], "diagnostic_blocked")
+        self.assertEqual(row["goal"], "Goal1322")
+        self.assertEqual(row["status"], "pod_verified_generic")
         self.assertEqual(row["generic_primitive"], "COLLECT_K_BOUNDED")
-        self.assertIn(
-            "native score reduction after complete candidate coverage",
-            row["remaining_app_specific_work"],
-        )
-        self.assertNotIn(
-            "native device-level fail-closed bounded collection implementation",
-            row["remaining_app_specific_work"],
-        )
+        self.assertEqual(row["remaining_app_specific_work"], ())
         self.assertNotIn("optix_still_slower_with_reason", row["remaining_app_specific_work"])
         self.assertIn("no silent truncation", row["boundary"])
-        self.assertIn("native bounded collection is routed and pod-validated", row["boundary"])
-        self.assertIn("OptiX-slower reason is recorded", row["boundary"])
+        self.assertIn("backend-neutral score reduction", row["boundary"])
+        self.assertIn("OptiX remains slower than Embree", row["boundary"])
         self.assertFalse(row["public_wording_authorized"])
 
 

@@ -29,7 +29,7 @@ def v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
         {
             "app": "polygon_set_jaccard",
             "subpath": "exact_score_sum",
-            "status": "blocked_by_collect_k_bounded",
+            "status": "pod_verified_generic_non_public",
             "input_rows": "bounded_candidate_pair_score_rows",
             "reduction_primitive": "REDUCE_FLOAT(SUM)",
             "group_key": "summary",
@@ -39,8 +39,8 @@ def v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "abs_tol": V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL,
             "rel_tol": V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL,
             "determinism_policy": "backend must publish collection order and reduction tolerance",
-            "current_oracle_policy": "no silent bounded-collection truncation; score parity requires complete candidate coverage",
-            "claim_boundary": "diagnostic only while COLLECT_K_BOUNDED overflow policy and OptiX slower status remain unresolved; public speedup wording remains blocked",
+            "current_oracle_policy": "complete bounded collection required before backend-neutral native polygon-pair area summary and ratio computation",
+            "claim_boundary": "diagnostic only because OptiX remains slower than Embree; public speedup wording remains blocked",
         },
     )
 
@@ -63,7 +63,7 @@ def validate_v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
         "current_oracle_policy",
         "claim_boundary",
     )
-    valid_statuses = {"design_required", "blocked_by_collect_k_bounded"}
+    valid_statuses = {"design_required", "blocked_by_collect_k_bounded", "pod_verified_generic_non_public"}
     for contract in contracts:
         for field in required_fields:
             if field not in contract:

@@ -21,13 +21,13 @@ class Goal1308V15PolygonFloatSumContractTest(unittest.TestCase):
         self.assertEqual(contract["value_fields"], ("intersection_area", "union_area"))
         self.assertIn("exact integer parity", contract["current_oracle_policy"])
 
-    def test_jaccard_float_sum_remains_blocked_by_collect_k(self) -> None:
+    def test_jaccard_float_sum_contract_remains_non_public_after_generic_route(self) -> None:
         contracts = rt.validate_v1_5_float_sum_reduction_contracts()
         by_row = {(row["app"], row["subpath"]): row for row in contracts}
         contract = by_row[("polygon_set_jaccard", "exact_score_sum")]
 
-        self.assertEqual(contract["status"], "blocked_by_collect_k_bounded")
-        self.assertIn("no silent bounded-collection truncation", contract["current_oracle_policy"])
+        self.assertEqual(contract["status"], "pod_verified_generic_non_public")
+        self.assertIn("complete bounded collection", contract["current_oracle_policy"])
         self.assertIn("diagnostic only", contract["claim_boundary"])
 
     def test_inventory_remaining_polygon_rows_match_float_contract(self) -> None:
@@ -41,7 +41,7 @@ class Goal1308V15PolygonFloatSumContractTest(unittest.TestCase):
         self.assertEqual(polygon["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(polygon["status"], "pod_verified_generic")
         self.assertEqual(jaccard["summary_primitive"], "REDUCE_FLOAT(SUM)")
-        self.assertEqual(jaccard["status"], "diagnostic_blocked")
+        self.assertEqual(jaccard["status"], "pod_verified_generic")
 
 
 if __name__ == "__main__":
