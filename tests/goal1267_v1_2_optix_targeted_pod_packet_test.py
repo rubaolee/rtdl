@@ -45,10 +45,22 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         self.assertIn("blocker_pack_mode", targets["graph_analytics"]["required_fields"])
         self.assertIn("blocker_pack_sec", targets["graph_analytics"]["required_fields"])
         self.assertIn("ray_pack_sec", targets["graph_analytics"]["required_fields"])
+        self.assertIn("query_anyhit_count_mean_sec", targets["graph_analytics"]["required_fields"])
+        self.assertIn("query_anyhit_count_min_sec", targets["graph_analytics"]["required_fields"])
+        self.assertIn("visibility_query_repeats", targets["graph_analytics"]["required_fields"])
         self.assertEqual(targets["graph_analytics"]["expected_metadata"]["ray_pack_mode"], "numpy_packed_rays")
         self.assertEqual(targets["graph_analytics"]["expected_metadata"]["blocker_pack_mode"], "numpy_packed_triangles")
+        self.assertEqual(targets["graph_analytics"]["expected_metadata"]["visibility_query_repeats"], 100)
         self.assertIn(
             "candidate_count_matches_expected",
+            targets["polygon_pair_overlap_area_rows"]["required_fields"],
+        )
+        self.assertIn(
+            "candidate_count_delta_vs_expected",
+            targets["polygon_pair_overlap_area_rows"]["required_fields"],
+        )
+        self.assertIn(
+            "positive_pair_count_matches_expected",
             targets["polygon_pair_overlap_area_rows"]["required_fields"],
         )
         self.assertIn("warm_query_median_seconds", targets["database_analytics"]["required_fields"])
@@ -63,6 +75,7 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         self.assertIn(".status.json", text)
         self.assertIn("goal1267_status_summary.json", text)
         self.assertIn("tar -czf", text)
+        self.assertIn("--visibility-query-repeats 100", text)
         self.assertIn("--scenario sales_risk --copies ${copies}", text)
         self.assertIn("for copies in 100000 300000", text)
         self.assertNotIn("--scenario all --copies 300000", text)
@@ -76,6 +89,8 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         self.assertIn("ray_pack_mode", text)
         self.assertIn("blocker_pack_mode", text)
         self.assertIn("blocker_pack_sec", text)
+        self.assertIn("query_anyhit_count_mean_sec", text)
+        self.assertIn("query_anyhit_count_min_sec", text)
         self.assertIn("no public wording", text)
 
     def test_cli_writes_packet_outputs(self) -> None:

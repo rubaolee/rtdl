@@ -45,8 +45,10 @@ class Goal1266V12OptixPlanTest(unittest.TestCase):
             "`database_analytics`",
             "`polygon_set_jaccard`",
             "candidate_count_matches_expected: false",
+            "final positive-pair parity is reported separately",
             "Current v1.2 `main` locally replaces the visibility-edge ray object path",
             "records `ray_pack_mode`",
+            "Goal1269 adds prepared query repeats",
             "warm-query median still favors Embree",
             "chunk `1024`",
         ):

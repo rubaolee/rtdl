@@ -143,6 +143,8 @@ if [ "${build_rc}" -eq 0 ]; then
       "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies ${copies} --output-mode summary > ${RESULT_DIR}/graph_embree_visibility_${copies}.json"
     run_step "graph_optix_visibility_${copies}" \
       "python3 scripts/goal889_graph_visibility_optix_gate.py --copies ${copies} --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json ${RESULT_DIR}/graph_optix_visibility_${copies}.json"
+    run_step "graph_optix_visibility_repeats_${copies}" \
+      "python3 examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --copies ${copies} --output-mode summary --require-rt-core --visibility-query-repeats 100 > ${RESULT_DIR}/graph_optix_visibility_repeats_${copies}.json"
   done
 
   for copies in 40000 80000 160000; do
@@ -176,6 +178,27 @@ result = Path(sys.argv[1])
 rows = []
 for path in sorted(result.glob("graph_optix_visibility_*.json")):
     payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("app") == "graph_analytics":
+        section = payload.get("sections", {}).get("visibility_edges", {})
+        section_phases = section.get("run_phases", {})
+        rows.append({
+            "artifact": str(path),
+            "copies": payload.get("copies"),
+            "ray_pack_mode": section.get("ray_pack_mode"),
+            "blocker_pack_mode": section.get("blocker_pack_mode"),
+            "visibility_query_repeats": section.get("visibility_query_repeats"),
+            "has_ray_pack_mode": "ray_pack_mode" in section,
+            "has_blocker_pack_mode": "blocker_pack_mode" in section,
+            "blocker_pack_sec": section_phases.get("blocker_pack_sec"),
+            "ray_pack_sec": section_phases.get("ray_pack_sec"),
+            "scene_prepare_sec": section_phases.get("scene_prepare_sec"),
+            "ray_prepare_sec": section_phases.get("ray_prepare_sec"),
+            "query_anyhit_count_sec": section_phases.get("query_anyhit_count_sec"),
+            "query_anyhit_count_first_sec": section_phases.get("query_anyhit_count_first_sec"),
+            "query_anyhit_count_mean_sec": section_phases.get("query_anyhit_count_mean_sec"),
+            "query_anyhit_count_min_sec": section_phases.get("query_anyhit_count_min_sec"),
+        })
+        continue
     for record in payload.get("records", []):
         if record.get("label") != "optix_visibility_anyhit":
             continue
@@ -185,6 +208,7 @@ for path in sorted(result.glob("graph_optix_visibility_*.json")):
             "copies": payload.get("copies"),
             "ray_pack_mode": record.get("ray_pack_mode"),
             "blocker_pack_mode": record.get("blocker_pack_mode"),
+            "visibility_query_repeats": record.get("visibility_query_repeats", 1),
             "has_ray_pack_mode": "ray_pack_mode" in record,
             "has_blocker_pack_mode": "blocker_pack_mode" in record,
             "blocker_pack_sec": section_phases.get("blocker_pack_sec"),
@@ -192,6 +216,9 @@ for path in sorted(result.glob("graph_optix_visibility_*.json")):
             "scene_prepare_sec": section_phases.get("scene_prepare_sec"),
             "ray_prepare_sec": section_phases.get("ray_prepare_sec"),
             "query_anyhit_count_sec": section_phases.get("query_anyhit_count_sec"),
+            "query_anyhit_count_first_sec": section_phases.get("query_anyhit_count_first_sec"),
+            "query_anyhit_count_mean_sec": section_phases.get("query_anyhit_count_mean_sec"),
+            "query_anyhit_count_min_sec": section_phases.get("query_anyhit_count_min_sec"),
         })
 summary = {
     "goal": "Goal1267 graph ray-pack metadata check",
