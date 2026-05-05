@@ -31,9 +31,10 @@ TARGETS = [
         "current_state": "fast OptiX any-hit kernel, slower total path",
         "question": "Can host preparation and ray packing be amortized enough to improve total timing?",
         "scales": [30000, 60000],
-        "expected_metadata": {"ray_pack_mode": "numpy_packed_rays"},
+        "expected_metadata": {"ray_pack_mode": "numpy_packed_rays", "blocker_pack_mode": "packed_triangles"},
         "required_fields": [
             "ray_pack_mode",
+            "blocker_pack_mode",
             "ray_pack_sec",
             "scene_prepare_sec",
             "ray_prepare_sec",

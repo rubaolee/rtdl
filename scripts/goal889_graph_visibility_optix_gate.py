@@ -57,6 +57,7 @@ def _section_metadata(payload: dict[str, object], section_name: str) -> dict[str
         "native_continuation_active": bool(section.get("native_continuation_active", False)),  # type: ignore[attr-defined]
         "native_continuation_backend": section.get("native_continuation_backend", "none"),  # type: ignore[attr-defined]
         "ray_pack_mode": section.get("ray_pack_mode", "not_reported"),  # type: ignore[attr-defined]
+        "blocker_pack_mode": section.get("blocker_pack_mode", "not_reported"),  # type: ignore[attr-defined]
         "row_count": int(section.get("row_count", 0)),  # type: ignore[attr-defined]
         "row_materialization_sec": float(section.get("run_phases", {}).get("row_materialization_sec", 0.0)),  # type: ignore[attr-defined]
         "query_raw_view_sec": float(section.get("run_phases", {}).get("query_raw_view_sec", 0.0)),  # type: ignore[attr-defined]

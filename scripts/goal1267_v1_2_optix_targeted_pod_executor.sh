@@ -184,7 +184,9 @@ for path in sorted(result.glob("graph_optix_visibility_*.json")):
             "artifact": str(path),
             "copies": payload.get("copies"),
             "ray_pack_mode": record.get("ray_pack_mode"),
+            "blocker_pack_mode": record.get("blocker_pack_mode"),
             "has_ray_pack_mode": "ray_pack_mode" in record,
+            "has_blocker_pack_mode": "blocker_pack_mode" in record,
             "ray_pack_sec": section_phases.get("ray_pack_sec"),
             "scene_prepare_sec": section_phases.get("scene_prepare_sec"),
             "ray_prepare_sec": section_phases.get("ray_prepare_sec"),
@@ -194,6 +196,7 @@ summary = {
     "goal": "Goal1267 graph ray-pack metadata check",
     "artifact_count": len(rows),
     "all_numpy_packed_rays": bool(rows) and all(row["ray_pack_mode"] == "numpy_packed_rays" for row in rows),
+    "all_packed_triangles": bool(rows) and all(row["blocker_pack_mode"] == "packed_triangles" for row in rows),
     "rows": rows,
     "boundary": "Diagnostic metadata only; no public speedup claim is authorized.",
 }

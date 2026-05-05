@@ -152,6 +152,7 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         ray_count = rays_arg.count if not isinstance(rays_arg, tuple) else len(rays_arg)
         self.assertEqual(ray_count, 8)
         self.assertIn(section["ray_pack_mode"], {"numpy_packed_rays", "python_ray_object_fallback"})
+        self.assertEqual(section["blocker_pack_mode"], "packed_triangles")
         prepare_scene.assert_called_once()
 
     def test_optix_visibility_summary_packs_rays_without_point_edge_objects(self) -> None:
@@ -187,7 +188,7 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
                 rtdl_graph_analytics_app.rt,
                 "prepare_optix_ray_triangle_any_hit_2d",
                 return_value=FakePreparedScene(),
-            ),
+            ) as prepare_scene,
             mock.patch.object(
                 rtdl_graph_analytics_app.rt,
                 "prepare_optix_rays_2d",
@@ -211,6 +212,8 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertEqual(section["row_count"], 12)
         self.assertEqual(section["summary"], {"visible_edge_count": 3, "blocked_edge_count": 9})
         self.assertEqual(section["ray_pack_mode"], "numpy_packed_rays")
+        self.assertEqual(section["blocker_pack_mode"], "packed_triangles")
+        self.assertIsInstance(prepare_scene.call_args.args[0], rtdl_graph_analytics_app.rt.PackedTriangles)
         pack_rays.assert_called_once()
 
     def test_cli_require_rt_core_exits_nonzero_without_optix_library(self) -> None:
