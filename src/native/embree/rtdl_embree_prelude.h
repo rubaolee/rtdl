@@ -101,6 +101,11 @@ struct RtdlPolygonRef {
   uint32_t vertex_count;
 };
 
+struct RtdlPolygonPairCandidate {
+  uint32_t left_polygon_id;
+  uint32_t right_polygon_id;
+};
+
 struct RtdlTriangle {
   uint32_t id;
   double x0;
@@ -393,6 +398,21 @@ int rtdl_embree_run_segment_polygon_anyhit_rows(
     size_t vertex_xy_count,
     RtdlSegmentPolygonAnyHitRow** rows_out,
     size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_collect_polygon_pair_candidates_bounded(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlPolygonPairCandidate* candidates_out,
+    size_t candidate_capacity,
+    size_t* emitted_count_out,
+    uint32_t* overflowed_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_run_point_nearest_segment(

@@ -1298,6 +1298,75 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_anyhit_rows(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_collect_polygon_pair_candidates_bounded(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlPolygonPairCandidate* candidates_out,
+    size_t candidate_capacity,
+    size_t* emitted_count_out,
+    uint32_t* overflowed_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (emitted_count_out == nullptr || overflowed_out == nullptr) {
+      throw std::runtime_error("emitted_count_out and overflowed_out must not be null");
+    }
+    *emitted_count_out = 0;
+    *overflowed_out = 0;
+    if (candidates_out == nullptr && candidate_capacity != 0) {
+      throw std::runtime_error("candidates_out must not be null when candidate_capacity is nonzero");
+    }
+
+    std::vector<Polygon2D> left_values = decode_polygons(left_polygons, left_count, left_vertices_xy, left_vertex_xy_count);
+    std::vector<Polygon2D> right_values = decode_polygons(right_polygons, right_count, right_vertices_xy, right_vertex_xy_count);
+
+    std::vector<RtdlPolygonPairCandidate> candidates;
+    for (const Polygon2D& left_polygon : left_values) {
+      for (const Polygon2D& right_polygon : right_values) {
+        bool requires_lsi = false;
+        bool requires_pip = false;
+        if (polygon_pair_flags(left_polygon, right_polygon, &requires_lsi, &requires_pip)) {
+          candidates.push_back({left_polygon.id, right_polygon.id});
+        }
+      }
+    }
+
+    std::sort(
+        candidates.begin(),
+        candidates.end(),
+        [](const RtdlPolygonPairCandidate& a, const RtdlPolygonPairCandidate& b) {
+          if (a.left_polygon_id != b.left_polygon_id) {
+            return a.left_polygon_id < b.left_polygon_id;
+          }
+          return a.right_polygon_id < b.right_polygon_id;
+        });
+    candidates.erase(
+        std::unique(
+            candidates.begin(),
+            candidates.end(),
+            [](const RtdlPolygonPairCandidate& a, const RtdlPolygonPairCandidate& b) {
+              return a.left_polygon_id == b.left_polygon_id &&
+                     a.right_polygon_id == b.right_polygon_id;
+            }),
+        candidates.end());
+
+    *emitted_count_out = candidates.size();
+    if (candidates.size() > candidate_capacity) {
+      *overflowed_out = 1u;
+      return;
+    }
+    if (!candidates.empty()) {
+      std::memcpy(candidates_out, candidates.data(), sizeof(RtdlPolygonPairCandidate) * candidates.size());
+    }
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT int rtdl_embree_run_point_nearest_segment(
     const RtdlPoint* points,
     size_t point_count,
