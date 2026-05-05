@@ -195,6 +195,7 @@ def _run_visibility_edges(
         blocker_count = int(packed_case["blocker_count"])
         ray_pack_mode = str(packed_case["ray_pack_mode"])
         blocker_pack_mode = str(packed_case["blocker_pack_mode"])
+        prepared_summary = True
     else:
         input_start = time.perf_counter()
         case = make_visibility_edge_case(copies)
@@ -224,7 +225,8 @@ def _run_visibility_edges(
         ray_pack_mode = "not_applicable"
         blocker_pack_mode = "not_applicable"
         visibility_query_repeats = 1
-    return {
+        prepared_summary = False
+    section = {
         "app": "graph_visibility_edges",
         "backend": backend,
         "copies": copies,
@@ -252,6 +254,12 @@ def _run_visibility_edges(
             "triangle-count, shortest path, or general graph database acceleration."
         ),
     }
+    return rt.attach_visibility_edges_primitive_contract(
+        section,
+        backend=backend,
+        output_mode=output_mode,
+        prepared_summary=prepared_summary,
+    )
 
 
 def run_app(

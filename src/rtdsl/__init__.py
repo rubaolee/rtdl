@@ -411,6 +411,8 @@ from .reference import Triangle3D
 from .reference import visibility_ray_pairs
 from .reference import visibility_rows_cpu
 from .reference import visibility_rows_from_any_hit
+from .graph_visibility_primitives import attach_visibility_edges_primitive_contract
+from .graph_visibility_primitives import visibility_edges_primitive_contract
 from .visibility_runtime import visibility_pair_rows
 from .visibility_runtime import visibility_rows
 from .graph_reference import bfs_expand_cpu
@@ -677,6 +679,8 @@ __all__ = [
     "Triangles3D",
     "validate_csr_graph",
     "visibility_rows_cpu",
+    "attach_visibility_edges_primitive_contract",
+    "visibility_edges_primitive_contract",
     "visibility_pair_rows",
     "visibility_rows",
     "visibility_ray_pairs",
