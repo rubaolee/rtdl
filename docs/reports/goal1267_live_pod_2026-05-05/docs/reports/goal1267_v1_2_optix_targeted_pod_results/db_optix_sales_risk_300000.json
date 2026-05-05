@@ -82,28 +82,28 @@
             "native_db_phases": {
               "compact_summary_batch": {
                 "risky_order_count_by_region": {
-                  "bitset_copyback": 0.00022153500000000003,
+                  "bitset_copyback": 0.000159438,
                   "emitted_count": 18,
-                  "exact_filter": 0.070455977,
-                  "output_pack": 0.024313341000000002,
+                  "exact_filter": 0.065973897,
+                  "output_pack": 0.060090308999999995,
                   "raw_candidate_count": 1200000,
-                  "traversal": 0.410426757
+                  "traversal": 0.315454941
                 },
                 "risky_revenue_by_region": {
-                  "bitset_copyback": 0.000206242,
+                  "bitset_copyback": 0.000171029,
                   "emitted_count": 18,
-                  "exact_filter": 0.07653704,
-                  "output_pack": 0.026178509999999995,
+                  "exact_filter": 0.067014827,
+                  "output_pack": 0.038595109999999995,
                   "raw_candidate_count": 1200000,
-                  "traversal": 0.408290116
+                  "traversal": 0.314744273
                 },
                 "risky_scan_count": {
-                  "bitset_copyback": 0.000191507,
+                  "bitset_copyback": 0.000165494,
                   "emitted_count": 1200000,
-                  "exact_filter": 0.087191652,
-                  "output_pack": 1.49e-07,
+                  "exact_filter": 0.09486394699999999,
+                  "output_pack": 1.31e-07,
                   "raw_candidate_count": 1200000,
-                  "traversal": 0.45863751799999997
+                  "traversal": 0.36743835599999997
                 }
               }
             },
@@ -127,8 +127,8 @@
               "scan": 1200000
             },
             "run_phases": {
-              "python_summary_postprocess_sec": 3.0197203159332275e-05,
-              "query_compact_summary_batch_sec": 2.0482910815626383
+              "python_summary_postprocess_sec": 3.173947334289551e-05,
+              "query_compact_summary_batch_sec": 1.6796439588069916
             },
             "session": {
               "chunk_copies": [
@@ -141,8 +141,8 @@
               ],
               "chunk_count": 6,
               "chunked_compact_summary": true,
-              "input_construction_sec": 1.874007284641266e-05,
-              "prepare_sec": 8.054094441235065
+              "input_construction_sec": 1.3932585716247559e-05,
+              "prepare_sec": 11.411972351372242
             },
             "summary": {
               "highest_risk_region": "west",
@@ -161,7 +161,7 @@
           }
         }
       },
-      "one_shot_total_sec": 10.360678466036916,
+      "one_shot_total_sec": 13.39766862988472,
       "output_mode": "compact_summary",
       "phase_contract": {
         "db_review_observation": "machine-readable local readiness observation for DB compact-summary RTX review; not a public speedup claim",
@@ -175,7 +175,7 @@
         "reported_run_phase_totals": "summed query/postprocess phase time plus explicit row-materializing versus compact-summary operation counts",
         "reported_run_phases": "scenario-provided per-operation query timers embedded in app JSON; grouped compact-summary fast paths use query_*_summary_sec while row paths use query_*_and_materialize_sec"
       },
-      "prepared_session_close_sec": 0.025436393916606903,
+      "prepared_session_close_sec": 0.024638935923576355,
       "prepared_session_output": {
         "app": "database_analytics",
         "copies": 300000,
@@ -196,9 +196,9 @@
         "output_mode": "compact_summary",
         "prepared_session": {
           "per_section_run_sec": {
-            "sales_risk": 1.5128935892134905
+            "sales_risk": 1.2704342007637024
           },
-          "prepare_session_sec": 6.48312421515584,
+          "prepare_session_sec": 10.378417812287807,
           "scenario_count": 1
         },
         "requested_backend": "optix",
@@ -220,28 +220,28 @@
             "native_db_phases": {
               "compact_summary_batch": {
                 "risky_order_count_by_region": {
-                  "bitset_copyback": 0.000144608,
+                  "bitset_copyback": 0.00013493900000000002,
                   "emitted_count": 18,
-                  "exact_filter": 0.061756675000000004,
-                  "output_pack": 0.023893032999999998,
+                  "exact_filter": 0.062441487000000004,
+                  "output_pack": 0.058027488,
                   "raw_candidate_count": 1200000,
-                  "traversal": 0.40236060800000006
+                  "traversal": 0.30789741
                 },
                 "risky_revenue_by_region": {
-                  "bitset_copyback": 0.000145765,
+                  "bitset_copyback": 0.00014518299999999998,
                   "emitted_count": 18,
-                  "exact_filter": 0.060816981,
-                  "output_pack": 0.024728198,
+                  "exact_filter": 0.058737238000000004,
+                  "output_pack": 0.039393284,
                   "raw_candidate_count": 1200000,
-                  "traversal": 0.402446876
+                  "traversal": 0.307924619
                 },
                 "risky_scan_count": {
-                  "bitset_copyback": 0.000155377,
+                  "bitset_copyback": 0.000130555,
                   "emitted_count": 1200000,
-                  "exact_filter": 0.082687132,
-                  "output_pack": 1.28e-07,
+                  "exact_filter": 0.076414328,
+                  "output_pack": 5.51e-07,
                   "raw_candidate_count": 1200000,
-                  "traversal": 0.451152086
+                  "traversal": 0.356675224
                 }
               }
             },
@@ -265,8 +265,8 @@
               "scan": 1200000
             },
             "run_phases": {
-              "python_summary_postprocess_sec": 1.7201527953147888e-05,
-              "query_compact_summary_batch_sec": 1.5128289852291346
+              "python_summary_postprocess_sec": 2.1845102310180664e-05,
+              "query_compact_summary_batch_sec": 1.2703510895371437
             },
             "session": {
               "chunk_copies": [
@@ -279,8 +279,8 @@
               ],
               "chunk_count": 6,
               "chunked_compact_summary": true,
-              "input_construction_sec": 1.0885298252105713e-05,
-              "prepare_sec": 6.48308677598834
+              "input_construction_sec": 1.7173588275909424e-05,
+              "prepare_sec": 10.3783592954278
             },
             "summary": {
               "highest_risk_region": "west",
@@ -299,11 +299,11 @@
           }
         }
       },
-      "prepared_session_prepare_total_sec": 6.4831602945923805,
+      "prepared_session_prepare_total_sec": 10.37846227735281,
       "prepared_session_warm_query_sec": {
-        "max_sec": 1.5187546871602535,
-        "median_sec": 1.50223901681602,
-        "min_sec": 1.4881315268576145
+        "max_sec": 1.3007719069719315,
+        "median_sec": 1.2679265812039375,
+        "min_sec": 1.2522979825735092
       },
       "reported_native_db_phase_totals_sec": {
         "bitset_copyback_sec": 0.0,
@@ -330,28 +330,28 @@
         "sales_risk": {
           "compact_summary_batch": {
             "risky_order_count_by_region": {
-              "bitset_copyback": 0.000144608,
+              "bitset_copyback": 0.00013493900000000002,
               "emitted_count": 18,
-              "exact_filter": 0.061756675000000004,
-              "output_pack": 0.023893032999999998,
+              "exact_filter": 0.062441487000000004,
+              "output_pack": 0.058027488,
               "raw_candidate_count": 1200000,
-              "traversal": 0.40236060800000006
+              "traversal": 0.30789741
             },
             "risky_revenue_by_region": {
-              "bitset_copyback": 0.000145765,
+              "bitset_copyback": 0.00014518299999999998,
               "emitted_count": 18,
-              "exact_filter": 0.060816981,
-              "output_pack": 0.024728198,
+              "exact_filter": 0.058737238000000004,
+              "output_pack": 0.039393284,
               "raw_candidate_count": 1200000,
-              "traversal": 0.402446876
+              "traversal": 0.307924619
             },
             "risky_scan_count": {
-              "bitset_copyback": 0.000155377,
+              "bitset_copyback": 0.000130555,
               "emitted_count": 1200000,
-              "exact_filter": 0.082687132,
-              "output_pack": 1.28e-07,
+              "exact_filter": 0.076414328,
+              "output_pack": 5.51e-07,
               "raw_candidate_count": 1200000,
-              "traversal": 0.451152086
+              "traversal": 0.356675224
             }
           }
         }
@@ -368,11 +368,11 @@
           ],
           "chunk_count": 6,
           "chunked_compact_summary": true,
-          "input_construction_sec": 1.0885298252105713e-05,
-          "prepare_sec": 6.48308677598834
+          "input_construction_sec": 1.7173588275909424e-05,
+          "prepare_sec": 10.3783592954278
         },
         "unified_session": {
-          "prepare_session_sec": 6.48312421515584,
+          "prepare_session_sec": 10.378417812287807,
           "scenario_count": 1
         }
       },
@@ -384,32 +384,32 @@
         }
       },
       "reported_run_phase_totals_sec": {
-        "all_sections_python_summary_postprocess_sec": 1.7201527953147888e-05,
-        "all_sections_query_sec": 1.5128289852291346,
+        "all_sections_python_summary_postprocess_sec": 2.1845102310180664e-05,
+        "all_sections_query_sec": 1.2703510895371437,
         "compact_summary_operation_count": 3,
         "row_materializing_operation_count": 0,
         "sections": {
           "sales_risk": {
             "compact_summary_operation_count": 3,
-            "python_summary_postprocess_sec": 1.7201527953147888e-05,
-            "query_sec": 1.5128289852291346,
+            "python_summary_postprocess_sec": 2.1845102310180664e-05,
+            "query_sec": 1.2703510895371437,
             "row_materializing_operation_count": 0
           }
         }
       },
       "reported_run_phases_sec": {
         "sales_risk": {
-          "python_summary_postprocess_sec": 1.7201527953147888e-05,
-          "query_compact_summary_batch_sec": 1.5128289852291346
+          "python_summary_postprocess_sec": 2.1845102310180664e-05,
+          "query_compact_summary_batch_sec": 1.2703510895371437
         },
         "unified_session": {
           "per_section_run_sec": {
-            "sales_risk": 1.5128935892134905
+            "sales_risk": 1.2704342007637024
           }
         }
       },
       "schema_version": "goal921_db_phase_review_contract_v2",
-      "speedup_one_shot_over_warm_query_median": 6.896824240390365,
+      "speedup_one_shot_over_warm_query_median": 10.566596543124128,
       "status": "ok"
     }
   ],

@@ -5,9 +5,9 @@
   "database_analytics": [
     {
       "copies": 100000,
-      "embree_row_materializing_ops": null,
-      "embree_status": "failed",
-      "embree_warm_query_median_sec": null,
+      "embree_row_materializing_ops": 0,
+      "embree_status": "ok",
+      "embree_warm_query_median_sec": 0.6369180232286453,
       "optix_native_bitset_copyback_sec": 0.0,
       "optix_native_counter_status": "exported",
       "optix_native_emitted_count": 0,
@@ -17,14 +17,14 @@
       "optix_native_traversal_sec": 0.0,
       "optix_row_materializing_ops": 0,
       "optix_status": "ok",
-      "optix_warm_query_median_sec": 0.508756497874856,
-      "ratio_embree_over_optix": null
+      "optix_warm_query_median_sec": 0.42149537056684494,
+      "ratio_embree_over_optix": 1.511091384875926
     },
     {
       "copies": 300000,
-      "embree_row_materializing_ops": null,
-      "embree_status": "failed",
-      "embree_warm_query_median_sec": null,
+      "embree_row_materializing_ops": 0,
+      "embree_status": "ok",
+      "embree_warm_query_median_sec": 1.756287656724453,
       "optix_native_bitset_copyback_sec": 0.0,
       "optix_native_counter_status": "exported",
       "optix_native_emitted_count": 0,
@@ -34,112 +34,120 @@
       "optix_native_traversal_sec": 0.0,
       "optix_row_materializing_ops": 0,
       "optix_status": "ok",
-      "optix_warm_query_median_sec": 1.50223901681602,
-      "ratio_embree_over_optix": null
+      "optix_warm_query_median_sec": 1.2679265812039375,
+      "ratio_embree_over_optix": 1.3851651055826912
     }
   ],
   "date": "2026-05-05",
   "decisions": {
-    "database_analytics": "baseline_contract_incomplete",
-    "graph_analytics": "baseline_contract_incomplete",
-    "graph_prepared_repeat": "baseline_contract_incomplete",
-    "polygon_pair_overlap_area_rows": "baseline_contract_incomplete",
-    "polygon_set_jaccard": "baseline_contract_incomplete"
+    "database_analytics": "optix_improved",
+    "graph_analytics": "optix_improved",
+    "graph_prepared_repeat": "optix_improved",
+    "polygon_pair_overlap_area_rows": "optix_improved",
+    "polygon_set_jaccard": "optix_still_slower_with_reason"
   },
-  "environment": null,
-  "environment_status": "env_probe_missing",
+  "environment": {
+    "boundary": "Environment probe only; no benchmark or public speedup claim is authorized.",
+    "cuda_lib_dir": "/usr/local/cuda/lib64",
+    "cuda_prefix": "/usr/local/cuda",
+    "env_file": "docs/reports/goal1267_v1_2_optix_targeted_pod_results/rtdl_pod_env.sh",
+    "goal": "RTDL pod environment probe",
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "nvcc_exists": true,
+    "nvcc_version_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+    "nvidia_smi_tail": "Tue May  5 17:15:33 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 550.127.08             Driver Version: 550.127.08     CUDA Version: 12.4     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D1:00.0 Off |                  Off |\n| 30%   31C    P8             22W /  230W |       2MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+    "optix_header_exists": true,
+    "optix_prefix": "/root/vendor/optix-dev",
+    "os_id": "ubuntu",
+    "package_manager": "apt-get"
+  },
+  "environment_status": "env_probe_ok",
   "environment_summary": {
     "cuda_library_dir": null,
-    "cuda_prefix": null,
-    "nvcc": null,
-    "nvcc_exists": null,
-    "optix_header_exists": null,
-    "optix_prefix": null,
-    "os_id": null,
-    "package_manager": null
+    "cuda_prefix": "/usr/local/cuda",
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "nvcc_exists": true,
+    "optix_header_exists": true,
+    "optix_prefix": "/root/vendor/optix-dev",
+    "os_id": "ubuntu",
+    "package_manager": "apt-get"
   },
-  "execution_status": "environment_blocked",
+  "execution_status": "artifact_complete",
   "goal": "Goal1272 v1.2 targeted pod artifact intake",
   "graph_analytics": [
     {
-      "blocker_pack_mode": null,
+      "blocker_pack_mode": "numpy_packed_triangles",
       "copies": 30000,
-      "embree_query_sec": null,
-      "optix_gate_anyhit_sec": 0.00019475258886814117,
-      "optix_gate_total_sec": 1.6197912991046906,
-      "ratio_embree_over_optix_anyhit": null,
-      "ratio_embree_over_optix_total": null,
-      "ratio_embree_over_repeat_mean": null,
-      "ray_pack_mode": null,
-      "ray_prepare_sec": null,
-      "repeat_count": null,
-      "repeat_query_first_sec": null,
-      "repeat_query_mean_sec": null,
-      "repeat_query_min_sec": null,
-      "scene_prepare_sec": null
+      "embree_query_sec": 8.795772984623909,
+      "optix_gate_anyhit_sec": 0.0001729428768157959,
+      "optix_gate_total_sec": 1.2786616012454033,
+      "ratio_embree_over_optix_anyhit": 50859.411769774255,
+      "ratio_embree_over_optix_total": 6.8788903772952255,
+      "ratio_embree_over_repeat_mean": 121808.6435688616,
+      "ray_pack_mode": "numpy_packed_rays",
+      "ray_prepare_sec": 0.0018496513366699219,
+      "repeat_count": 100,
+      "repeat_query_first_sec": 0.0001834183931350708,
+      "repeat_query_mean_sec": 7.220976054668426e-05,
+      "repeat_query_min_sec": 6.928294897079468e-05,
+      "scene_prepare_sec": 0.5765650719404221
     },
     {
-      "blocker_pack_mode": null,
+      "blocker_pack_mode": "numpy_packed_triangles",
       "copies": 60000,
-      "embree_query_sec": null,
-      "optix_gate_anyhit_sec": 0.00023854151368141174,
-      "optix_gate_total_sec": 1.414442589506507,
-      "ratio_embree_over_optix_anyhit": null,
-      "ratio_embree_over_optix_total": null,
-      "ratio_embree_over_repeat_mean": null,
-      "ray_pack_mode": null,
-      "ray_prepare_sec": null,
-      "repeat_count": null,
-      "repeat_query_first_sec": null,
-      "repeat_query_mean_sec": null,
-      "repeat_query_min_sec": null,
-      "scene_prepare_sec": null
+      "embree_query_sec": 2.7987708300352097,
+      "optix_gate_anyhit_sec": 0.0002127140760421753,
+      "optix_gate_total_sec": 0.9931010007858276,
+      "ratio_embree_over_optix_anyhit": 13157.431243432575,
+      "ratio_embree_over_optix_total": 2.8182136840266794,
+      "ratio_embree_over_repeat_mean": 27783.17660928747,
+      "ray_pack_mode": "numpy_packed_rays",
+      "ray_prepare_sec": 0.0034396350383758545,
+      "repeat_count": 100,
+      "repeat_query_first_sec": 0.00020213425159454346,
+      "repeat_query_mean_sec": 0.00010073617100715637,
+      "repeat_query_min_sec": 9.823590517044067e-05,
+      "scene_prepare_sec": 0.5522959157824516
     }
   ],
   "input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1267_live_pod_2026-05-05/docs/reports/goal1267_v1_2_optix_targeted_pod_results",
-  "missing_artifacts": [
-    "rtdl_pod_env.json",
-    "graph_optix_visibility_repeats_30000.json",
-    "graph_optix_visibility_repeats_60000.json",
-    "db_embree_sales_risk_100000.json",
-    "db_embree_sales_risk_300000.json"
-  ],
+  "missing_artifacts": [],
   "polygon_pair_overlap_area_rows": [
     {
-      "candidate_count_delta_vs_expected": null,
+      "candidate_count_delta_vs_expected": -40000,
       "candidate_count_matches_expected": false,
       "copies": 40000,
-      "embree_candidate_sec": null,
-      "expected_positive_pair_count": null,
-      "optix_candidate_sec": 4.9768791776150465,
-      "optix_positive_pair_count": null,
+      "embree_candidate_sec": 10.127181015908718,
+      "expected_positive_pair_count": 80000,
+      "optix_candidate_sec": 4.58618600666523,
+      "optix_positive_pair_count": 80000,
       "parity_vs_cpu": true,
-      "positive_pair_count_matches_expected": null,
-      "ratio_embree_over_optix": null
+      "positive_pair_count_matches_expected": true,
+      "ratio_embree_over_optix": 2.208192384955736
     },
     {
-      "candidate_count_delta_vs_expected": null,
+      "candidate_count_delta_vs_expected": -80000,
       "candidate_count_matches_expected": false,
       "copies": 80000,
-      "embree_candidate_sec": null,
-      "expected_positive_pair_count": null,
-      "optix_candidate_sec": 8.92491670884192,
-      "optix_positive_pair_count": null,
+      "embree_candidate_sec": 21.314604245126247,
+      "expected_positive_pair_count": 160000,
+      "optix_candidate_sec": 10.791489198803902,
+      "optix_positive_pair_count": 160000,
       "parity_vs_cpu": true,
-      "positive_pair_count_matches_expected": null,
-      "ratio_embree_over_optix": null
+      "positive_pair_count_matches_expected": true,
+      "ratio_embree_over_optix": 1.9751309436966955
     },
     {
-      "candidate_count_delta_vs_expected": null,
+      "candidate_count_delta_vs_expected": -160000,
       "candidate_count_matches_expected": false,
       "copies": 160000,
-      "embree_candidate_sec": null,
-      "expected_positive_pair_count": null,
-      "optix_candidate_sec": 17.258245324715972,
-      "optix_positive_pair_count": null,
+      "embree_candidate_sec": 41.8981284275651,
+      "expected_positive_pair_count": 320000,
+      "optix_candidate_sec": 19.732908569276333,
+      "optix_positive_pair_count": 320000,
       "parity_vs_cpu": true,
-      "positive_pair_count_matches_expected": null,
-      "ratio_embree_over_optix": null
+      "positive_pair_count_matches_expected": true,
+      "ratio_embree_over_optix": 2.123261671257094
     }
   ],
   "polygon_set_jaccard": [
@@ -148,39 +156,29 @@
       "chunk_policy": "public_safe",
       "chunk_public_safe": true,
       "copies": 4096,
-      "embree_candidate_sec": null,
-      "optix_candidate_sec": 2.107985367998481,
+      "embree_candidate_sec": 1.0728004574775696,
+      "optix_candidate_sec": 1.4480642080307007,
       "parity_vs_cpu": true,
-      "positive_pair_count_matches_expected": null,
-      "ratio_embree_over_optix": null
+      "positive_pair_count_matches_expected": true,
+      "ratio_embree_over_optix": 0.7408514425866017
     },
     {
       "chunk_copies": 1024,
       "chunk_policy": "public_safe",
       "chunk_public_safe": true,
       "copies": 8192,
-      "embree_candidate_sec": null,
-      "optix_candidate_sec": 2.865697717294097,
+      "embree_candidate_sec": 1.7317231819033623,
+      "optix_candidate_sec": 2.110992580652237,
       "parity_vs_cpu": true,
-      "positive_pair_count_matches_expected": null,
-      "ratio_embree_over_optix": null
+      "positive_pair_count_matches_expected": true,
+      "ratio_embree_over_optix": 0.820335986859939
     }
   ],
   "public_wording_authorized": false,
   "status_summary": {
-    "failed_count": 9,
-    "failed_labels": [
-      "db_embree_sales_risk_100000",
-      "db_embree_sales_risk_300000",
-      "graph_embree_visibility_30000",
-      "graph_embree_visibility_60000",
-      "polygon_jaccard_embree_4096",
-      "polygon_jaccard_embree_8192",
-      "polygon_pair_embree_160000",
-      "polygon_pair_embree_40000",
-      "polygon_pair_embree_80000"
-    ],
-    "status_count": 19
+    "failed_count": 0,
+    "failed_labels": [],
+    "status_count": 21
   },
-  "valid": false
+  "valid": true
 }

@@ -71,6 +71,10 @@ class Goal1267V12OptixTargetedPodPacketTest(unittest.TestCase):
         text = EXECUTOR.read_text(encoding="utf-8")
         self.assertIn("scripts/rtdl_pod_env_probe.sh", text)
         self.assertIn("rtdl_pod_env.json", text)
+        self.assertLess(
+            text.index('mkdir -p "${RESULT_DIR}"'),
+            text.index("scripts/rtdl_pod_env_probe.sh"),
+        )
         self.assertIn("run_step()", text)
         self.assertIn(".status.json", text)
         self.assertIn("goal1267_status_summary.json", text)

@@ -1,0 +1,7 @@
+export RTDL_POD_OS_ID="ubuntu"
+export CUDA_PREFIX="/usr/local/cuda"
+export NVCC="/usr/local/cuda/bin/nvcc"
+export RTDL_NVCC="/usr/local/cuda/bin/nvcc"
+export OPTIX_PREFIX="/root/vendor/optix-dev"
+export RTDL_OPTIX_PTX_COMPILER="${RTDL_OPTIX_PTX_COMPILER:-nvcc}"
+export LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"

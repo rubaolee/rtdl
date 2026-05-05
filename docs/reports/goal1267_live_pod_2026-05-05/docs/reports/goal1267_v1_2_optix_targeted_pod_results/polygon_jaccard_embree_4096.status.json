@@ -1,7 +1,7 @@
 {
   "command": "python3 examples/rtdl_polygon_set_jaccard.py --backend embree --copies 4096 --output-mode summary > docs/reports/goal1267_v1_2_optix_targeted_pod_results/polygon_jaccard_embree_4096.json",
-  "exit_code": 1,
+  "exit_code": 0,
   "label": "polygon_jaccard_embree_4096",
   "log": "docs/reports/goal1267_v1_2_optix_targeted_pod_results/polygon_jaccard_embree_4096.log",
-  "status": "failed"
+  "status": "ok"
 }

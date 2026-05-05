@@ -36,6 +36,7 @@ mkdir -p "${WORKDIR}"
 tar -xzf "${ARCHIVE}" -C "${WORKDIR}"
 cd "${SOURCE_DIR}"
 
+mkdir -p "${RESULT_DIR}"
 export DEBIAN_FRONTEND=noninteractive
 OUTPUT_ENV="${RESULT_DIR}/rtdl_pod_env.sh" \
 OUTPUT_JSON="${RESULT_DIR}/rtdl_pod_env.json" \
@@ -65,18 +66,17 @@ git commit -m "Goal1267 staged source archive"
 export RTDL_SOURCE_COMMIT="goal1267-archive-${EXPECTED_SHA256}"
 export PYTHONPATH="${PYTHONPATH:-src:.}"
 
-mkdir -p "${RESULT_DIR}"
 {
   echo "Goal1267 environment"
   date -u
   uname -a
   nvidia-smi || true
   python3 --version || true
-  which nvcc || true
-  nvcc --version || true
   echo "RTDL_POD_OS_ID=${RTDL_POD_OS_ID:-unknown}"
   echo "CUDA_PREFIX=${CUDA_PREFIX}"
   echo "NVCC=${NVCC}"
+  command -v nvcc || true
+  "${NVCC}" --version || true
   echo "OPTIX_PREFIX=${OPTIX_PREFIX}"
   cat "${RESULT_DIR}/rtdl_pod_env.json" || true
   sha256sum "${ARCHIVE}"

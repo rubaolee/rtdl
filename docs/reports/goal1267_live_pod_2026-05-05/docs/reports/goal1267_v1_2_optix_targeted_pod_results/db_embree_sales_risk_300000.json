@@ -16,12 +16,12 @@
       "db_review_observation"
     ]
   },
-  "copies": 100000,
+  "copies": 300000,
   "iterations": 5,
   "output_mode": "compact_summary",
   "results": [
     {
-      "backend": "optix",
+      "backend": "embree",
       "cloud_claim_contract": {
         "claim_scope": "prepared DB compact-summary sessions only",
         "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
@@ -39,15 +39,15 @@
         ]
       },
       "db_review_observation": {
-        "blocker": "None for local shape; compare RTX artifact against baselines before promotion.",
+        "blocker": "Compact-summary shape is clean, but this artifact lacks exported OptiX native DB counters.",
         "compact_summary_operation_count": 3,
-        "native_counter_status": "exported",
+        "native_counter_status": "empty",
         "row_materializing_operation_count": 0,
-        "status": "phase_clean_candidate_for_rtx_review"
+        "status": "needs_native_counter_artifact"
       },
       "one_shot_output": {
         "app": "database_analytics",
-        "copies": 100000,
+        "copies": 300000,
         "data_flow": [
           "application-owned denormalized rows",
           "bounded RTDL DB kernels",
@@ -57,103 +57,84 @@
         "execution_mode": "one_shot",
         "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
         "native_continuation_active": true,
-        "native_continuation_backend": "optix_db_compact_summary",
+        "native_continuation_backend": "embree_db_compact_summary",
         "optix_performance": {
           "class": "python_interface_dominated",
           "note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization."
         },
         "output_mode": "compact_summary",
-        "requested_backend": "optix",
+        "requested_backend": "embree",
         "retired_compatibility_helpers": [
           "examples/rtdl_v0_7_db_app_demo.py",
           "examples/rtdl_sales_risk_screening.py"
         ],
-        "rt_core_accelerated": true,
+        "rt_core_accelerated": false,
         "rt_core_claim_scope": "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim",
         "scenario": "sales_risk",
         "sections": {
           "sales_risk": {
             "app": "sales_risk_screening",
-            "backend": "optix",
-            "copies": 100000,
+            "backend": "embree",
+            "copies": 300000,
             "execution_mode": "prepared_session",
             "native_continuation_active": true,
-            "native_continuation_backend": "optix_db_compact_summary",
-            "native_db_phases": {
-              "compact_summary_batch": {
-                "risky_order_count_by_region": {
-                  "bitset_copyback": 4.9117e-05,
-                  "emitted_count": 6,
-                  "exact_filter": 0.019262817,
-                  "output_pack": 0.018613802,
-                  "raw_candidate_count": 400000,
-                  "traversal": 0.110112762
-                },
-                "risky_revenue_by_region": {
-                  "bitset_copyback": 4.7673e-05,
-                  "emitted_count": 6,
-                  "exact_filter": 0.022449933,
-                  "output_pack": 0.012149356,
-                  "raw_candidate_count": 400000,
-                  "traversal": 0.102651681
-                },
-                "risky_scan_count": {
-                  "bitset_copyback": 5.3596e-05,
-                  "emitted_count": 400000,
-                  "exact_filter": 0.023640914,
-                  "output_pack": 2.5599999999999996e-07,
-                  "raw_candidate_count": 400000,
-                  "traversal": 0.12351714999999999
-                }
-              }
-            },
+            "native_continuation_backend": "embree_db_compact_summary",
+            "native_db_phases": {},
             "output_mode": "compact_summary",
             "prepared_dataset": {
               "chunk_copies": [
                 50000,
+                50000,
+                50000,
+                50000,
+                50000,
                 50000
               ],
-              "chunk_count": 2,
-              "row_count": 600000,
+              "chunk_count": 6,
+              "row_count": 1800000,
               "transfer": "chunked_columnar"
             },
             "row_counts": {
               "grouped_count": 3,
               "grouped_sum": 3,
-              "scan": 400000
+              "scan": 1200000
             },
             "run_phases": {
-              "python_summary_postprocess_sec": 1.8030405044555664e-05,
-              "query_compact_summary_batch_sec": 0.7960726022720337
+              "python_summary_postprocess_sec": 3.892183303833008e-05,
+              "query_compact_summary_batch_sec": 2.1038989573717117
             },
             "session": {
               "chunk_copies": [
                 50000,
+                50000,
+                50000,
+                50000,
+                50000,
                 50000
               ],
-              "chunk_count": 2,
+              "chunk_count": 6,
               "chunked_compact_summary": true,
-              "input_construction_sec": 4.842877388000488e-06,
-              "prepare_sec": 4.145530715584755
+              "input_construction_sec": 1.6458332538604736e-05,
+              "prepare_sec": 21.82770985364914
             },
             "summary": {
               "highest_risk_region": "west",
-              "risky_order_count": 400000,
+              "risky_order_count": 1200000,
               "risky_order_count_by_region": {
-                "central": 100000,
-                "east": 100000,
-                "west": 200000
+                "central": 300000,
+                "east": 300000,
+                "west": 600000
               },
               "risky_revenue_by_region": {
-                "central": 26000000,
-                "east": 31000000,
-                "west": 43000000
+                "central": 78000000,
+                "east": 93000000,
+                "west": 129000000
               }
             }
           }
         }
       },
-      "one_shot_total_sec": 5.023786693811417,
+      "one_shot_total_sec": 24.247070252895355,
       "output_mode": "compact_summary",
       "phase_contract": {
         "db_review_observation": "machine-readable local readiness observation for DB compact-summary RTX review; not a public speedup claim",
@@ -167,10 +148,10 @@
         "reported_run_phase_totals": "summed query/postprocess phase time plus explicit row-materializing versus compact-summary operation counts",
         "reported_run_phases": "scenario-provided per-operation query timers embedded in app JSON; grouped compact-summary fast paths use query_*_summary_sec while row paths use query_*_and_materialize_sec"
       },
-      "prepared_session_close_sec": 0.006727539002895355,
+      "prepared_session_close_sec": 0.015394777059555054,
       "prepared_session_output": {
         "app": "database_analytics",
-        "copies": 100000,
+        "copies": 300000,
         "data_flow": [
           "application-owned denormalized rows",
           "reused bounded RTDL DB prepared sessions",
@@ -180,7 +161,7 @@
         "execution_mode": "prepared_session",
         "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
         "native_continuation_active": true,
-        "native_continuation_backend": "optix_db_compact_summary",
+        "native_continuation_backend": "embree_db_compact_summary",
         "optix_performance": {
           "class": "python_interface_dominated",
           "note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization."
@@ -188,171 +169,119 @@
         "output_mode": "compact_summary",
         "prepared_session": {
           "per_section_run_sec": {
-            "sales_risk": 0.4151279479265213
+            "sales_risk": 1.6791673675179482
           },
-          "prepare_session_sec": 3.6123650074005127,
+          "prepare_session_sec": 21.179341465234756,
           "scenario_count": 1
         },
-        "requested_backend": "optix",
+        "requested_backend": "embree",
         "retired_compatibility_helpers": [
           "examples/rtdl_v0_7_db_app_demo.py",
           "examples/rtdl_sales_risk_screening.py"
         ],
-        "rt_core_accelerated": true,
+        "rt_core_accelerated": false,
         "rt_core_claim_scope": "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim",
         "scenario": "sales_risk",
         "sections": {
           "sales_risk": {
             "app": "sales_risk_screening",
-            "backend": "optix",
-            "copies": 100000,
+            "backend": "embree",
+            "copies": 300000,
             "execution_mode": "prepared_session",
             "native_continuation_active": true,
-            "native_continuation_backend": "optix_db_compact_summary",
-            "native_db_phases": {
-              "compact_summary_batch": {
-                "risky_order_count_by_region": {
-                  "bitset_copyback": 4.3276e-05,
-                  "emitted_count": 6,
-                  "exact_filter": 0.019548079000000003,
-                  "output_pack": 0.018968699,
-                  "raw_candidate_count": 400000,
-                  "traversal": 0.102638783
-                },
-                "risky_revenue_by_region": {
-                  "bitset_copyback": 4.9109e-05,
-                  "emitted_count": 6,
-                  "exact_filter": 0.020076194,
-                  "output_pack": 0.012390165,
-                  "raw_candidate_count": 400000,
-                  "traversal": 0.10263776599999999
-                },
-                "risky_scan_count": {
-                  "bitset_copyback": 4.6981e-05,
-                  "emitted_count": 400000,
-                  "exact_filter": 0.019146164,
-                  "output_pack": 3.7e-08,
-                  "raw_candidate_count": 400000,
-                  "traversal": 0.118752351
-                }
-              }
-            },
+            "native_continuation_backend": "embree_db_compact_summary",
+            "native_db_phases": {},
             "output_mode": "compact_summary",
             "prepared_dataset": {
               "chunk_copies": [
                 50000,
+                50000,
+                50000,
+                50000,
+                50000,
                 50000
               ],
-              "chunk_count": 2,
-              "row_count": 600000,
+              "chunk_count": 6,
+              "row_count": 1800000,
               "transfer": "chunked_columnar"
             },
             "row_counts": {
               "grouped_count": 3,
               "grouped_sum": 3,
-              "scan": 400000
+              "scan": 1200000
             },
             "run_phases": {
-              "python_summary_postprocess_sec": 1.1712312698364258e-05,
-              "query_compact_summary_batch_sec": 0.4150858446955681
+              "python_summary_postprocess_sec": 2.310425043106079e-05,
+              "query_compact_summary_batch_sec": 1.679113194346428
             },
             "session": {
               "chunk_copies": [
                 50000,
+                50000,
+                50000,
+                50000,
+                50000,
                 50000
               ],
-              "chunk_count": 2,
+              "chunk_count": 6,
               "chunked_compact_summary": true,
-              "input_construction_sec": 8.64267349243164e-06,
-              "prepare_sec": 3.6123352721333504
+              "input_construction_sec": 1.16005539894104e-05,
+              "prepare_sec": 21.17929731309414
             },
             "summary": {
               "highest_risk_region": "west",
-              "risky_order_count": 400000,
+              "risky_order_count": 1200000,
               "risky_order_count_by_region": {
-                "central": 100000,
-                "east": 100000,
-                "west": 200000
+                "central": 300000,
+                "east": 300000,
+                "west": 600000
               },
               "risky_revenue_by_region": {
-                "central": 26000000,
-                "east": 31000000,
-                "west": 43000000
+                "central": 78000000,
+                "east": 93000000,
+                "west": 129000000
               }
             }
           }
         }
       },
-      "prepared_session_prepare_total_sec": 3.6123966202139854,
+      "prepared_session_prepare_total_sec": 21.17940777540207,
       "prepared_session_warm_query_sec": {
-        "max_sec": 0.435924768447876,
-        "median_sec": 0.42149537056684494,
-        "min_sec": 0.4129128083586693
+        "max_sec": 1.8436787500977516,
+        "median_sec": 1.756287656724453,
+        "min_sec": 1.6791895106434822
       },
       "reported_native_db_phase_totals_sec": {
         "bitset_copyback_sec": 0.0,
-        "counter_status": "exported",
+        "counter_status": "empty",
         "emitted_count": 0,
         "exact_filter_sec": 0.0,
-        "operation_count": 1,
+        "operation_count": 0,
         "output_pack_sec": 0.0,
         "raw_candidate_count": 0,
-        "sections": {
-          "sales_risk": {
-            "bitset_copyback_sec": 0.0,
-            "emitted_count": 0,
-            "exact_filter_sec": 0.0,
-            "operation_count": 1,
-            "output_pack_sec": 0.0,
-            "raw_candidate_count": 0,
-            "traversal_sec": 0.0
-          }
-        },
+        "sections": {},
         "traversal_sec": 0.0
       },
       "reported_native_db_phases_sec": {
-        "sales_risk": {
-          "compact_summary_batch": {
-            "risky_order_count_by_region": {
-              "bitset_copyback": 4.3276e-05,
-              "emitted_count": 6,
-              "exact_filter": 0.019548079000000003,
-              "output_pack": 0.018968699,
-              "raw_candidate_count": 400000,
-              "traversal": 0.102638783
-            },
-            "risky_revenue_by_region": {
-              "bitset_copyback": 4.9109e-05,
-              "emitted_count": 6,
-              "exact_filter": 0.020076194,
-              "output_pack": 0.012390165,
-              "raw_candidate_count": 400000,
-              "traversal": 0.10263776599999999
-            },
-            "risky_scan_count": {
-              "bitset_copyback": 4.6981e-05,
-              "emitted_count": 400000,
-              "exact_filter": 0.019146164,
-              "output_pack": 3.7e-08,
-              "raw_candidate_count": 400000,
-              "traversal": 0.118752351
-            }
-          }
-        }
+        "sales_risk": {}
       },
       "reported_prepare_phases_sec": {
         "sales_risk": {
           "chunk_copies": [
             50000,
+            50000,
+            50000,
+            50000,
+            50000,
             50000
           ],
-          "chunk_count": 2,
+          "chunk_count": 6,
           "chunked_compact_summary": true,
-          "input_construction_sec": 8.64267349243164e-06,
-          "prepare_sec": 3.6123352721333504
+          "input_construction_sec": 1.16005539894104e-05,
+          "prepare_sec": 21.17929731309414
         },
         "unified_session": {
-          "prepare_session_sec": 3.6123650074005127,
+          "prepare_session_sec": 21.179341465234756,
           "scenario_count": 1
         }
       },
@@ -364,32 +293,32 @@
         }
       },
       "reported_run_phase_totals_sec": {
-        "all_sections_python_summary_postprocess_sec": 1.1712312698364258e-05,
-        "all_sections_query_sec": 0.4150858446955681,
+        "all_sections_python_summary_postprocess_sec": 2.310425043106079e-05,
+        "all_sections_query_sec": 1.679113194346428,
         "compact_summary_operation_count": 3,
         "row_materializing_operation_count": 0,
         "sections": {
           "sales_risk": {
             "compact_summary_operation_count": 3,
-            "python_summary_postprocess_sec": 1.1712312698364258e-05,
-            "query_sec": 0.4150858446955681,
+            "python_summary_postprocess_sec": 2.310425043106079e-05,
+            "query_sec": 1.679113194346428,
             "row_materializing_operation_count": 0
           }
         }
       },
       "reported_run_phases_sec": {
         "sales_risk": {
-          "python_summary_postprocess_sec": 1.1712312698364258e-05,
-          "query_compact_summary_batch_sec": 0.4150858446955681
+          "python_summary_postprocess_sec": 2.310425043106079e-05,
+          "query_compact_summary_batch_sec": 1.679113194346428
         },
         "unified_session": {
           "per_section_run_sec": {
-            "sales_risk": 0.4151279479265213
+            "sales_risk": 1.6791673675179482
           }
         }
       },
       "schema_version": "goal921_db_phase_review_contract_v2",
-      "speedup_one_shot_over_warm_query_median": 11.918960550041662,
+      "speedup_one_shot_over_warm_query_median": 13.805864978927834,
       "status": "ok"
     }
   ],

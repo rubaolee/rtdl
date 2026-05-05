@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --copies 60000 --output-mode summary --require-rt-core --visibility-query-repeats 100 > docs/reports/goal1267_v1_2_optix_targeted_pod_results/graph_optix_visibility_repeats_60000.json",
+  "exit_code": 0,
+  "label": "graph_optix_visibility_repeats_60000",
+  "log": "docs/reports/goal1267_v1_2_optix_targeted_pod_results/graph_optix_visibility_repeats_60000.log",
+  "status": "ok"
+}

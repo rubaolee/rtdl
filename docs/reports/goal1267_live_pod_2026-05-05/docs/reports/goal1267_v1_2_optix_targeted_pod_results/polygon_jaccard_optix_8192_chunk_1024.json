@@ -2,9 +2,14 @@
   "app": "jaccard",
   "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from native C++ exact area/Jaccard continuation. It does not authorize full polygon-overlap RTX speedup claims.",
   "candidate_diagnostics": {
+    "candidate_count_delta_vs_expected": -8192,
     "candidate_count_matches_expected": false,
+    "comparison_note": "candidate_count_matches_expected compares against a conservative candidate upper-bound/counting model; positive_pair_count_matches_expected compares final positive overlap rows.",
     "expected_or_cpu_candidate_row_count": 24576,
-    "optix_candidate_row_count": 16384
+    "expected_positive_pair_count": 1,
+    "optix_candidate_row_count": 16384,
+    "optix_positive_pair_count": 1,
+    "positive_pair_count_matches_expected": true
   },
   "chunk_copies": 1024,
   "chunk_count": 8,
@@ -48,12 +53,12 @@
   },
   "date": "2026-04-24",
   "error": null,
-  "generated_at": "2026-05-05T16:13:49",
+  "generated_at": "2026-05-05T17:22:34",
   "goal": "Goal877 polygon overlap OptiX phase profiler",
   "host": {
-    "hostname": "d1e48a0bb41e",
+    "hostname": "bc6980f71d89",
     "machine": "x86_64",
-    "platform": "Linux-6.8.0-52-generic-x86_64-with-glibc2.35",
+    "platform": "Linux-5.15.0-94-generic-x86_64-with-glibc2.35",
     "python": "3.11.10"
   },
   "mode": "optix",
@@ -80,14 +85,14 @@
   "output_mode": "summary",
   "parity_vs_cpu": true,
   "phases": {
-    "cpu_exact_refinement_sec": 1.682133063673973,
+    "cpu_exact_refinement_sec": 2.4526206105947495,
     "cpu_reference_sec": null,
     "input_build_sec": 0.0,
-    "native_exact_continuation_sec": 1.682133063673973,
-    "optix_candidate_discovery_sec": 2.865697717294097
+    "native_exact_continuation_sec": 2.4526206105947495,
+    "optix_candidate_discovery_sec": 2.110992580652237
   },
   "schema_version": "goal877_polygon_overlap_optix_phase_contract_v2",
-  "source_commit": "goal1267-archive-6527e311da2ee161dadf549ee524de736d9c28508f8701f6b5e5f4f21fd1e52a",
+  "source_commit": "goal1267-archive-b2e9810823153a2746f49c87bd60a0eff06856dbde9e89fbe51cdfc4a1f30106",
   "status": "pass",
   "validation_mode": "analytic_summary"
 }

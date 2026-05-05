@@ -1,7 +1,7 @@
 {
   "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 100000 --iterations 5 --output-mode compact_summary --strict --output-json docs/reports/goal1267_v1_2_optix_targeted_pod_results/db_embree_sales_risk_100000.json",
-  "exit_code": 1,
+  "exit_code": 0,
   "label": "db_embree_sales_risk_100000",
   "log": "docs/reports/goal1267_v1_2_optix_targeted_pod_results/db_embree_sales_risk_100000.log",
-  "status": "failed"
+  "status": "ok"
 }
