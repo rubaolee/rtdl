@@ -44,12 +44,12 @@ v1_5_generic_migration_blockers()
 | Goal1303 | `robot_collision_screening` | `prepared_count` | `ANY_HIT` | `COUNT_HITS` |
 | Goal1306 | `robot_collision_screening` | `prepared_pose_flags` | `ANY_HIT` | `REDUCE_INT(COUNT)` |
 | Goal1307 | `database_analytics` | `sales_risk_compact_summary` | `DB_COMPACT_SUMMARY` | `REDUCE_INT(COUNT)`, `REDUCE_INT(SUM)` |
+| Goal1309 | `polygon_pair_overlap_area_rows` | `candidate_discovery_and_exact_area` | `POLYGON_PAIR_EXACT_AREA_SUMMARY` | `REDUCE_FLOAT(SUM)` |
 
 ## Deferred Rows
 
 | App | Subpath | Status | What unblocks it |
 | --- | --- | --- | --- |
-| `polygon_pair_overlap_area_rows` | `candidate_discovery_and_exact_area` | `deferred_app_specific` | Define reviewed `REDUCE_FLOAT(SUM)` tolerance/result-shape contract for exact area aggregation. |
 | `polygon_set_jaccard` | `chunked_candidate_scoring` | `diagnostic_blocked` | Define `COLLECT_K_BOUNDED` overflow behavior and scoring reduction, then prove correctness/performance; current status remains slower/diagnostic. |
 
 ## Guardrails

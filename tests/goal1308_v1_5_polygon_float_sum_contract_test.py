@@ -39,7 +39,7 @@ class Goal1308V15PolygonFloatSumContractTest(unittest.TestCase):
         jaccard = inventory[("polygon_set_jaccard", "chunked_candidate_scoring")]
 
         self.assertEqual(polygon["summary_primitive"], "REDUCE_FLOAT(SUM)")
-        self.assertEqual(polygon["status"], "deferred_app_specific")
+        self.assertEqual(polygon["status"], "pod_verified_generic")
         self.assertEqual(jaccard["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(jaccard["status"], "diagnostic_blocked")
 

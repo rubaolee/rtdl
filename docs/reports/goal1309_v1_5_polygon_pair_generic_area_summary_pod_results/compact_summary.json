@@ -1,0 +1,75 @@
+{
+  "app": "polygon_pair_overlap_area_rows",
+  "backend": "optix",
+  "backend_mode": "optix_native_assisted",
+  "candidate_row_count": 512,
+  "copies": 256,
+  "generic_area_summary": {
+    "abs_tol": 1e-09,
+    "backend": "optix",
+    "candidate_pair_count": 512,
+    "claim_boundary": "Generic v1.5 polygon-pair exact-area summary over already discovered candidate pairs; current integer-grid oracle requires exact integer parity before float tolerance applies; not generic polygon overlay, broad GIS, whole-app speedup, or public speedup wording.",
+    "dtype": "float64",
+    "integer_parity_values": {
+      "overlap_pair_count": 512,
+      "total_intersection_area": 1280,
+      "total_union_area": 4864
+    },
+    "overlap_pair_count": 512,
+    "primitive": "POLYGON_PAIR_EXACT_AREA_SUMMARY",
+    "rel_tol": 1e-09,
+    "result_layout": "summary_float64_sums",
+    "run_phases": {
+      "query_polygon_exact_area_reduce_float_sum_sec": 0.025926465168595314
+    },
+    "summary_primitive": "REDUCE_FLOAT(SUM)",
+    "total_intersection_area": 1280.0,
+    "total_union_area": 4864.0
+  },
+  "native_continuation_backend": "oracle_cpp",
+  "output_mode": "summary",
+  "primitive_contract": {
+    "active_v1_4_backend": true,
+    "app_row": "polygon_pair_overlap_area_rows",
+    "backend": "optix",
+    "backend_contract_role": "nvidia_rt_target",
+    "backend_scope": [
+      "embree",
+      "optix"
+    ],
+    "build_layout": "polygon2d_build_buffer",
+    "candidate_primitive": "ANY_HIT",
+    "candidate_row_count": 512,
+    "claim_boundary": "polygon_pair_overlap_area_rows candidate discovery only: native RT traversal identifies positive polygon-pair candidates before an app-specific exact grid-cell area continuation. This is not a generic polygon overlay engine, not a generic area-reduction primitive, and not public whole-app speedup wording.",
+    "exact_area_continuation": "app_specific_native_cpp",
+    "future_area_primitive": "REDUCE_FLOAT(SUM)",
+    "future_area_primitive_status": "deferred_until_generic_float_reduction_contract",
+    "goal1270_diagnostic_split_preserved": true,
+    "migration_status": "compatibility_wrapper_metadata_only",
+    "mode": "native_candidate_plus_app_specific_exact_area",
+    "output_mode": "summary",
+    "phase_counters": [
+      "rt_candidate_discovery_sec",
+      "native_exact_continuation_sec",
+      "query_and_materialize_sec",
+      "summary_postprocess_sec"
+    ],
+    "primitive": "ANY_HIT",
+    "probe_layout": "polygon2d_probe_buffer",
+    "result_layout": "positive_pair_rows_or_summary",
+    "same_contract_baseline_required": true
+  },
+  "rt_core_accelerated": false,
+  "rt_core_candidate_discovery_active": true,
+  "run_phases": {
+    "input_construction_sec": 0.00657813623547554,
+    "native_exact_continuation_sec": 0.025926465168595314,
+    "query_polygon_exact_area_reduce_float_sum_sec": 0.025926465168595314,
+    "rt_candidate_discovery_sec": 1.4152072574943304
+  },
+  "summary": {
+    "overlap_pair_count": 512,
+    "total_intersection_area": 1280,
+    "total_union_area": 4864
+  }
+}

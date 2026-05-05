@@ -22,6 +22,8 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             ("hausdorff_distance", "directed_threshold_prepared"),
             ("robot_collision_screening", "prepared_count"),
             ("robot_collision_screening", "prepared_pose_flags"),
+            ("database_analytics", "sales_risk_compact_summary"),
+            ("polygon_pair_overlap_area_rows", "candidate_discovery_and_exact_area"),
         }
         self.assertLessEqual(expected_completed, set(by_row))
         for key in expected_completed:
@@ -51,6 +53,16 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
         self.assertEqual(
             by_row[("database_analytics", "sales_risk_compact_summary")]["summary_primitive"],
             "REDUCE_INT(COUNT), REDUCE_INT(SUM)",
+        )
+        self.assertEqual(
+            by_row[("polygon_pair_overlap_area_rows", "candidate_discovery_and_exact_area")]["status"],
+            "pod_verified_generic",
+        )
+        self.assertEqual(
+            by_row[("polygon_pair_overlap_area_rows", "candidate_discovery_and_exact_area")][
+                "remaining_app_specific_work"
+            ],
+            (),
         )
         self.assertEqual(
             by_row[("polygon_pair_overlap_area_rows", "candidate_discovery_and_exact_area")]["summary_primitive"],

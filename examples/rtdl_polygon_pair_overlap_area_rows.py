@@ -297,6 +297,7 @@ def run_case(
     case = make_authored_polygon_pair_overlap_case(copies=copies)
     run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
     rows: tuple[dict[str, int], ...] = ()
+    generic_area_summary = None
     if backend == "cpu_python_reference":
         query_start = time.perf_counter()
         rows = rt.run_cpu_python_reference(polygon_pair_overlap_area_rows_reference, **case)
@@ -317,25 +318,47 @@ def run_case(
         candidate_start = time.perf_counter()
         candidate_pairs = _positive_candidate_pairs_embree(case["left"], case["right"])
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
-        exact_start = time.perf_counter()
         if output_mode == "summary":
-            summary = _exact_overlap_summary_for_candidates(case["left"], case["right"], candidate_pairs)
+            generic_area_summary = rt.run_generic_polygon_pair_exact_area_summary(
+                left=case["left"],
+                right=case["right"],
+                candidate_pairs=candidate_pairs,
+                backend=backend,
+                exact_summary_fn=_exact_overlap_summary_for_candidates,
+            )
+            summary = generic_area_summary["integer_parity_values"]
+            run_phases.update(generic_area_summary["run_phases"])
+            run_phases["native_exact_continuation_sec"] = generic_area_summary["run_phases"][
+                "query_polygon_exact_area_reduce_float_sum_sec"
+            ]
         else:
+            exact_start = time.perf_counter()
             rows = _native_overlap_rows_for_candidates(case["left"], case["right"], candidate_pairs)
             summary = _summarize_rows(tuple(rows))
-        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
+            run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
         candidate_row_count = len(candidate_pairs)
     elif backend == "optix":
         candidate_start = time.perf_counter()
         candidate_pairs = _positive_candidate_pairs_optix(case["left"], case["right"])
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
-        exact_start = time.perf_counter()
         if output_mode == "summary":
-            summary = _exact_overlap_summary_for_candidates(case["left"], case["right"], candidate_pairs)
+            generic_area_summary = rt.run_generic_polygon_pair_exact_area_summary(
+                left=case["left"],
+                right=case["right"],
+                candidate_pairs=candidate_pairs,
+                backend=backend,
+                exact_summary_fn=_exact_overlap_summary_for_candidates,
+            )
+            summary = generic_area_summary["integer_parity_values"]
+            run_phases.update(generic_area_summary["run_phases"])
+            run_phases["native_exact_continuation_sec"] = generic_area_summary["run_phases"][
+                "query_polygon_exact_area_reduce_float_sum_sec"
+            ]
         else:
+            exact_start = time.perf_counter()
             rows = _native_overlap_rows_for_candidates(case["left"], case["right"], candidate_pairs)
             summary = _summarize_rows(tuple(rows))
-        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
+            run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
         candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
@@ -355,6 +378,7 @@ def run_case(
         "row_count": summary["overlap_pair_count"],
         "candidate_row_count": candidate_row_count,
         "summary": summary,
+        "generic_area_summary": generic_area_summary,
         "run_phases": run_phases,
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
