@@ -688,7 +688,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep visibility_edges prepared any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping, prepare/pack overhead, and neighbor-set intersection outside the RT-core claim.",
-        "Goal1264 confirms graph visibility correctness and a very fast OptiX any-hit kernel, but total OptiX time remains slower than Embree because host-side input construction, scene/ray prepare, and ray packing dominate. This is v1.2/v1.5 engineering input, not public speedup wording.",
+        "Goal1267 confirms graph visibility correctness and direct packed-ray OptiX traversal is extremely fast, but total graph timing is scene-preparation dominated and mixed versus Embree. This is v1.2/v1.5 engineering input, not public speedup wording.",
     ),
     "apple_rt_demo": _maturity(
         "apple_rt_demo",
