@@ -21,7 +21,8 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
             "IR and lowering",
             "Performance",
             "v1.0 is a foundation release line",
-            "v1.5 should replace app-specific native continuations",
+            "Current `main` has internally pod-verified v1.5 generic",
+            "not public v1.5 release authorization",
             "v2.0 is the real broader performance target",
             "`--backend optix` is not by itself an NVIDIA RT-core speedup claim",
         ):
@@ -57,6 +58,8 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
             "optix_still_slower_with_reason",
             "slower OptiX result is acceptable engineering evidence",
             "cannot authorize\npositive public RTX speedup wording",
+            "Current `main` has internally pod-verified v1.5 generic subpaths",
+            "not a public v1.5 release yet",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, perf_text)

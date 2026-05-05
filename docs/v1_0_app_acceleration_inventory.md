@@ -9,9 +9,10 @@ whole-app speedup table.
 The v1.0 architecture intentionally contains app-specific native continuations.
 That is acceptable for v1.0 because the goal is to prove the RTDL model against
 real app-shaped workloads. These continuations are v1.0 proof machinery, not the
-final architecture. They are also technical debt: v1.5 should replace these
-app-specific continuations with reviewed generic traversal-plus-reduction
-primitives.
+final architecture. Current `main` has internally pod-verified v1.5 generic
+traversal-plus-reduction subpaths for the supported migration inventory, but
+this inventory remains a v1.0 public documentation aid rather than public v1.5
+release authorization.
 
 ## Reading The Table
 
@@ -47,11 +48,11 @@ primitives.
 | `barnes_hut_force_app` | Prepared fixed-radius Barnes-Hut node-coverage decision. | Native candidate summaries for compact modes. | Opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup. | Reviewed bounded sub-path. |
 | `hiprt_ray_triangle_hitcount` | HIPRT-specific ray/triangle hit-count validation. | HIPRT prepared hit-count path where available. | NVIDIA RTX wording, AMD GPU claims unless separately validated, and broad HIPRT speedup claims. | Not a NVIDIA public wording target. |
 
-## v1.5 Replacement Target
+## v1.5 Internal Generic Subpath Target
 
 The v1.5 target is not to remove Python orchestration. Python should remain the
-control plane. The target is to replace app-specific native continuations with a
-small reviewed primitive set such as:
+control plane. Current `main` has internally verified a small reviewed primitive
+set for supported subpaths:
 
 - `ANY_HIT`
 - `COUNT_HITS`
@@ -60,5 +61,6 @@ small reviewed primitive set such as:
 - experimental bounded collection where a reviewed output-capacity contract
   exists
 
-That replacement should preserve the v1.0 app boundaries while reducing engine
-custom code.
+Those generic subpaths preserve the v1.0 app boundaries while reducing engine
+custom code. They do not authorize whole-app speedup wording or public v1.5
+release wording by themselves.

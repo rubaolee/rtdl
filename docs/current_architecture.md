@@ -22,8 +22,9 @@ Read the current architecture through this v1.0 lens:
 - Those continuations are intentionally documented in
   [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md); they
   are not the final engine architecture.
-- v1.5 should replace app-specific continuation code with reviewed generic
-  traversal-plus-reduction primitives.
+- Current `main` has internally pod-verified v1.5 generic
+  traversal-plus-reduction subpaths for the migration inventory. This is still
+  not public v1.5 release authorization and not a whole-app speedup claim.
 - v2.0 is the broader end-to-end performance target, especially for non-RT
   phases that should not stay in Python hot loops.
 

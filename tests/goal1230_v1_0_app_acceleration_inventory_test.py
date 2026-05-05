@@ -33,7 +33,8 @@ class Goal1230V10AppAccelerationInventoryTest(unittest.TestCase):
             with self.subTest(app=app):
                 self.assertIn(f"`{app}`", text)
         self.assertIn("v1.0 proof", text)
-        self.assertIn("v1.5 should replace", text)
+        self.assertIn("Current `main` has internally pod-verified v1.5 generic", text)
+        self.assertIn("rather than public v1.5\nrelease authorization", text)
         self.assertIn("Goal1262/Goal1264 show execution-unblocked but mixed evidence", text)
         self.assertIn("warm-query median still favors Embree", text)
         self.assertIn("Goal1267 verifies direct packed-ray OptiX traversal is extremely fast", text)
@@ -44,6 +45,7 @@ class Goal1230V10AppAccelerationInventoryTest(unittest.TestCase):
         self.assertIn("Goal1262 confirms correctness at chunk `1024`", text)
         self.assertIn("no positive public speedup wording is authorized", text)
         self.assertIn("Reviewed normalized per-pose sub-path wording only", text)
+        self.assertIn("They do not authorize whole-app speedup wording", text)
 
     def test_feature_guide_current_release_and_links_are_current(self) -> None:
         text = (ROOT / "docs/rtdl_feature_guide.md").read_text(encoding="utf-8")

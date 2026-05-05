@@ -41,9 +41,9 @@ installation metadata.
 | --- | --- |
 | Release | current released version: `v1.0` |
 | v1.0 | released app-shaped RTDL proof, documentation, and bounded evidence |
-| Current main | v1.1-v1.4 are internal milestones toward v1.5 |
+| Current main | v1.5 internal generic primitive migration is pod-verified; public v1.5 release wording is not authorized yet |
 | v1.1 OptiX evidence | `polygon_pair_overlap_area_rows` has bounded 3-AI-reviewed positive wording |
-| Still not speedup-ready | `database_analytics`, `graph_analytics`, and `polygon_set_jaccard` |
+| Still not public speedup-ready | whole-app graph/DB/polygon claims, Jaccard speedup wording, and non-RT continuations such as ranking, clustering, graph analytics, SQL-style materialization, and force reduction |
 
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
@@ -59,9 +59,10 @@ release packages or tags. They harden Embree/OptiX evidence, push NVIDIA RT
 performance, define the primitive ABI/parity contracts, and migrate the first
 compatibility wrappers.
 
-v1.5 is planned to replace app-specific engine customization with reviewed
-generic traversal-plus-reduction primitives. v2.0 targets broader end-to-end performance through explicit zero-copy partnership with GPU compute tools for
-the non-RT phases.
+On current `main`, the v1.5 internal primitive migration is pod-verified for
+the supported subpaths. That is not a public release yet and not a whole-app
+speedup claim. v2.0 targets broader end-to-end performance through explicit
+zero-copy partnership with GPU compute tools for the non-RT phases.
 
 The practical v1.0 rule: RT traversal can be fast while the full app is still
 limited by Python continuation, exact refinement, ranking, clustering,
@@ -97,7 +98,7 @@ Detailed evidence and review trail:
 | --- | --- |
 | Geometry rows | `knn_rows`, `bounded_knn_rows`, `fixed_radius_neighbors`, closest-hit paths |
 | Any-hit traversal | `ray_triangle_any_hit`, `visibility_rows`, prepared repeated-query visibility/count helpers |
-| Reductions | `reduce_rows` in Python; native reductions are a v1.5 design target |
+| Reductions | `reduce_rows` in Python; current `main` has v1.5 internal generic summary/reduction subpaths where documented |
 | IR and lowering | `CompiledKernel` lowers to `RTExecutionPlan` |
 | Backends | CPU reference, Embree, OptiX, HIPRT, Vulkan, Apple RT/MPS RT where documented |
 | Apps | Hausdorff, ANN candidate search, outlier detection, DBSCAN, robot screening, Barnes-Hut, graph visibility, DB summaries, road hazard, segment/polygon summaries |

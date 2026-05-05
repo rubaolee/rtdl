@@ -43,7 +43,8 @@ class Goal1244PublicDocSpineTest(unittest.TestCase):
             "## v1.0 Lens",
             "Some app paths use app-specific native continuations",
             "not the final engine architecture",
-            "v1.5 should replace app-specific continuation code",
+            "Current `main` has internally pod-verified v1.5 generic",
+            "not public v1.5 release authorization",
             "v2.0 is the broader end-to-end performance target",
         ):
             with self.subTest(phrase=phrase):

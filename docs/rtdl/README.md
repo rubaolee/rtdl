@@ -29,7 +29,8 @@ The documents here have different roles and should not overlap heavily.
 
 5. [IR And Lowering](ir_and_lowering.md)
    - how `CompiledKernel` lowers to `RTExecutionPlan`
-   - what is stable today and what v1.5 must generalize
+   - what is stable today and what current `main` has internally generalized
+     for v1.5 subpaths
 
 6. [Feature Homes](../features/README.md)
    - workload-by-workload usage homes

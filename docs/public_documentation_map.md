@@ -43,8 +43,12 @@ The honest public message is:
 - Whole-app performance depends on whether non-RT continuation work is native
   or still Python-owned.
 - `--backend optix` is not by itself an NVIDIA RT-core speedup claim.
-- v1.5 should replace app-specific native continuations with generic reviewed
-  traversal-plus-reduction primitives.
+- Current `main` has internally pod-verified v1.5 generic
+  traversal-plus-reduction subpaths for the supported inventory rows. This is
+  not public v1.5 release authorization, not whole-app speedup wording, and not
+  a claim that app-level continuations such as ranking, clustering, graph
+  analytics, SQL-style materialization, or force reduction have been fully
+  generalized.
 - v2.0 is the real broader performance target, where RTDL should interoperate
   cleanly with GPU compute tools for non-RT phases.
 
@@ -78,8 +82,9 @@ wording is allowed.
 Use [Current Architecture](current_architecture.md) for system shape,
 [ITRE App Programming Model](rtdl/itre_app_model.md) for the app model, and
 [IR And Lowering](rtdl/ir_and_lowering.md) for the compiler/runtime plan model.
-These pages should make clear that current v1.0 lowerings are still partly
-workload-specific and that v1.5 must generalize them.
+These pages should make clear that v1.0 lowerings were partly workload-specific
+and that current `main` has internally verified v1.5 generic subpaths without
+turning that into a public release or whole-app performance claim.
 
 ### 5. Performance And Claims
 

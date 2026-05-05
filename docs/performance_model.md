@@ -115,10 +115,11 @@ Use slower-than-Embree results to decide the next architecture step:
   materialization outside traversal, that is v1.5/v2.0 design input rather than
   a failed OptiX proof.
 
-## What v1.5 Should Fix
+## What Current Main Fixed Internally For v1.5
 
-v1.5 should replace app-specific native continuations with reviewed generic
-backend primitives:
+Current `main` has internally pod-verified v1.5 generic subpaths for the
+supported migration inventory. Those subpaths express more app continuations
+through reviewed backend primitives instead of hardcoded app logic:
 
 - `ANY_HIT`
 - `COUNT_HITS`
@@ -126,9 +127,11 @@ backend primitives:
 - `REDUCE_INT(COUNT|SUM)`
 - limited `COLLECT_K_BOUNDED`
 
-The goal is not to claim every app is automatically fast. The goal is to make
-more app continuations expressible through a generic backend ABI instead of
-hardcoded app logic.
+This is not a public v1.5 release yet and not a claim that every app is
+automatically fast. App-level continuations such as ranking, clustering, graph
+analytics, SQL-style materialization, exact-distance rows, and force-vector
+reduction remain outside the verified v1.5 subpath boundary unless a later
+report explicitly moves them.
 
 ## What v2.0 Should Fix
 
