@@ -76,6 +76,17 @@ def _zero_any_hit_rows(rays: tuple[Ray2D | Ray3D, ...]) -> tuple[dict[str, int],
     return tuple({"ray_id": int(ray.id), "any_hit": 0} for ray in rays)
 
 
+def _validate_prepared_anyhit_count_backend(backend: str) -> str:
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS:
+        raise ValueError(
+            f"{normalized_backend} is frozen before v2.1; v1.5 prepared generic primitives are OptiX-focused"
+        )
+    if normalized_backend != "optix":
+        raise ValueError("prepared generic ray_triangle_any_hit_count currently supports backend='optix'")
+    return normalized_backend
+
+
 def run_generic_ray_triangle_any_hit(
     rays: tuple[Ray2D | Ray3D, ...],
     triangles: tuple[Triangle | Triangle3D, ...],
@@ -142,6 +153,121 @@ def run_generic_ray_triangle_any_hit_count(
     return result
 
 
+class GenericPreparedRayTriangleAnyHitScene:
+    """App-name-free prepared scene for amortized `ANY_HIT` plus `COUNT_HITS` queries."""
+
+    def __init__(
+        self,
+        *,
+        triangles: Any,
+        backend: str = "optix",
+        prepare_scene=None,
+        prepare_rays=None,
+    ) -> None:
+        self.backend = _validate_prepared_anyhit_count_backend(backend)
+        if prepare_scene is None:
+            from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d as prepare_scene
+        if prepare_rays is None:
+            from .optix_runtime import prepare_optix_rays_2d as prepare_rays
+
+        self._prepare_rays = prepare_rays
+        self._scene_cm = None
+        self._prepared_scene = None
+        self._closed = False
+        self.query_batch_count = 0
+
+        scene_prepare_start = time.perf_counter()
+        self._scene_cm = prepare_scene(triangles)
+        self._prepared_scene = self._scene_cm.__enter__()
+        self.scene_prepare_sec = time.perf_counter() - scene_prepare_start
+
+    def count(
+        self,
+        rays: Any,
+        *,
+        query_repeats: int = 1,
+        prepare_rays=None,
+    ) -> dict[str, Any]:
+        """Count ray any-hit results against the already prepared scene."""
+        if self._closed:
+            raise RuntimeError("generic prepared ray/triangle scene is closed")
+        if query_repeats <= 0:
+            raise ValueError("query_repeats must be positive")
+        if prepare_rays is None:
+            prepare_rays = self._prepare_rays
+
+        ray_prepare_start = time.perf_counter()
+        with prepare_rays(rays) as prepared_rays:
+            ray_prepare_sec = time.perf_counter() - ray_prepare_start
+            query_times = []
+            hit_count = 0
+            for _ in range(query_repeats):
+                query_start = time.perf_counter()
+                hit_count = int(self._prepared_scene.count(prepared_rays))
+                query_times.append(time.perf_counter() - query_start)
+            query_sec = sum(query_times)
+
+        self.query_batch_count += 1
+        return {
+            "primitive": "ANY_HIT",
+            "summary_primitive": "COUNT_HITS",
+            "backend": self.backend,
+            "prepared": True,
+            "scene_reusable": True,
+            "query_batch_index": self.query_batch_count,
+            "query_repeats": query_repeats,
+            "hit_count": hit_count,
+            "run_phases": {
+                "scene_prepare_sec": self.scene_prepare_sec,
+                "scene_prepare_sec_this_batch": 0.0,
+                "ray_prepare_sec": ray_prepare_sec,
+                "query_anyhit_count_sec": query_sec,
+                "query_anyhit_count_first_sec": float(query_times[0]) if query_times else 0.0,
+                "query_anyhit_count_mean_sec": float(query_sec / len(query_times)) if query_times else 0.0,
+                "query_anyhit_count_min_sec": float(min(query_times)) if query_times else 0.0,
+            },
+            "claim_boundary": (
+                "Generic v1.5 reusable prepared raw ray/triangle ANY_HIT plus COUNT_HITS only; "
+                "currently OptiX-focused and not public speedup wording."
+            ),
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        if self._scene_cm is not None:
+            self._scene_cm.__exit__(None, None, None)
+
+    def __enter__(self) -> "GenericPreparedRayTriangleAnyHitScene":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_generic_ray_triangle_any_hit_scene(
+    *,
+    triangles: Any,
+    backend: str = "optix",
+    prepare_scene=None,
+    prepare_rays=None,
+) -> GenericPreparedRayTriangleAnyHitScene:
+    """Prepare an app-name-free reusable ray/triangle `ANY_HIT` scene."""
+    return GenericPreparedRayTriangleAnyHitScene(
+        triangles=triangles,
+        backend=backend,
+        prepare_scene=prepare_scene,
+        prepare_rays=prepare_rays,
+    )
+
+
 def run_generic_prepared_ray_triangle_any_hit_count(
     *,
     triangles: Any,
@@ -152,52 +278,16 @@ def run_generic_prepared_ray_triangle_any_hit_count(
     prepare_rays=None,
 ) -> dict[str, Any]:
     """Run prepared app-name-free `ANY_HIT` plus `COUNT_HITS` for repeated probes."""
-    normalized_backend = _normalize_backend(backend)
-    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS:
-        raise ValueError(
-            f"{normalized_backend} is frozen before v2.1; v1.5 prepared generic primitives are OptiX-focused"
-        )
-    if normalized_backend != "optix":
-        raise ValueError("prepared generic ray_triangle_any_hit_count currently supports backend='optix'")
     if query_repeats <= 0:
         raise ValueError("query_repeats must be positive")
-
-    if prepare_scene is None:
-        from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d as prepare_scene
-    if prepare_rays is None:
-        from .optix_runtime import prepare_optix_rays_2d as prepare_rays
-
-    scene_prepare_start = time.perf_counter()
-    with prepare_scene(triangles) as prepared_scene:
-        scene_prepare_sec = time.perf_counter() - scene_prepare_start
-        ray_prepare_start = time.perf_counter()
-        with prepare_rays(rays) as prepared_rays:
-            ray_prepare_sec = time.perf_counter() - ray_prepare_start
-            query_times = []
-            hit_count = 0
-            for _ in range(query_repeats):
-                query_start = time.perf_counter()
-                hit_count = int(prepared_scene.count(prepared_rays))
-                query_times.append(time.perf_counter() - query_start)
-            query_sec = sum(query_times)
-
-    return {
-        "primitive": "ANY_HIT",
-        "summary_primitive": "COUNT_HITS",
-        "backend": normalized_backend,
-        "prepared": True,
-        "query_repeats": query_repeats,
-        "hit_count": hit_count,
-        "run_phases": {
-            "scene_prepare_sec": scene_prepare_sec,
-            "ray_prepare_sec": ray_prepare_sec,
-            "query_anyhit_count_sec": query_sec,
-            "query_anyhit_count_first_sec": float(query_times[0]) if query_times else 0.0,
-            "query_anyhit_count_mean_sec": float(query_sec / len(query_times)) if query_times else 0.0,
-            "query_anyhit_count_min_sec": float(min(query_times)) if query_times else 0.0,
-        },
-        "claim_boundary": (
-            "Generic v1.5 prepared raw ray/triangle ANY_HIT plus COUNT_HITS only; "
-            "currently OptiX-focused and not public speedup wording."
-        ),
-    }
+    with prepare_generic_ray_triangle_any_hit_scene(
+        triangles=triangles,
+        backend=backend,
+        prepare_scene=prepare_scene,
+        prepare_rays=prepare_rays,
+    ) as prepared_scene:
+        return prepared_scene.count(
+            rays,
+            query_repeats=query_repeats,
+            prepare_rays=prepare_rays,
+        )
