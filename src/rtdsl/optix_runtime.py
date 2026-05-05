@@ -158,6 +158,13 @@ class _RtdlSegmentPolygonAnyHitRow(ctypes.Structure):
     ]
 
 
+class _RtdlPolygonPairCandidate(ctypes.Structure):
+    _fields_ = [
+        ("left_polygon_id", ctypes.c_uint32),
+        ("right_polygon_id", ctypes.c_uint32),
+    ]
+
+
 class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
     _fields_ = [
         ("query_id", ctypes.c_uint32),
@@ -3000,6 +3007,91 @@ def segment_polygon_anyhit_rows_native_bounded_optix(
     )
 
 
+def collect_polygon_pair_candidates_bounded_optix(
+    left_polygons,
+    right_polygons,
+    *,
+    candidate_capacity: int,
+) -> dict[str, object]:
+    """Collect bounded polygon-pair candidates through the native OptiX ABI.
+
+    The ABI is intentionally app-name-free: it returns normalized candidate
+    pair ids plus fail-closed overflow metadata. Score reduction remains a
+    separate primitive and must only run when complete coverage is true.
+    """
+    if candidate_capacity <= 0:
+        raise ValueError("candidate_capacity must be positive")
+    packed_left = pack_polygons(records=left_polygons)
+    packed_right = pack_polygons(records=right_polygons)
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_polygon_pair_candidates_bounded",
+    )
+    if symbol is None:
+        raise ValueError(
+            "loaded OptiX backend does not export "
+            "rtdl_optix_collect_polygon_pair_candidates_bounded; "
+            "rebuild the OptiX backend from current main"
+        )
+
+    candidate_array = (_RtdlPolygonPairCandidate * candidate_capacity)()
+    emitted_count = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        packed_left.refs,
+        packed_left.polygon_count,
+        packed_left.vertices_xy,
+        packed_left.vertex_xy_count,
+        packed_right.refs,
+        packed_right.polygon_count,
+        packed_right.vertices_xy,
+        packed_right.vertex_xy_count,
+        candidate_array,
+        candidate_capacity,
+        ctypes.byref(emitted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+
+    emitted = int(emitted_count.value)
+    if int(overflowed.value) != 0:
+        raise RuntimeError(
+            "native bounded OptiX polygon-pair candidate collection overflowed "
+            f"capacity {candidate_capacity}; emitted at least {emitted}; "
+            "failure_mode=fail_closed_overflow"
+        )
+
+    candidate_pairs = tuple(
+        sorted(
+            (
+                int(candidate_array[index].left_polygon_id),
+                int(candidate_array[index].right_polygon_id),
+            )
+            for index in range(emitted)
+        )
+    )
+    return {
+        "primitive": "COLLECT_K_BOUNDED",
+        "backend": "optix",
+        "candidate_pairs": candidate_pairs,
+        "capacity": int(candidate_capacity),
+        "emitted_count": emitted,
+        "overflowed": False,
+        "complete_candidate_coverage": True,
+        "failure_mode": "fail_closed_overflow",
+        "overflow_policy": "no_silent_truncation",
+        "result_layout": "bounded_candidate_pair_ids",
+        "claim_boundary": (
+            "native OptiX bounded polygon-pair candidate collection only; "
+            "Jaccard score reduction and whole-app speedup require separate evidence"
+        ),
+    }
+
+
 def _call_point_nearest_segment_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     points   = packed[compiled.candidates.left.name]
     segments = packed[compiled.candidates.right.name]
@@ -3501,6 +3593,24 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_segment_polygon_anyhit_rows_native_bounded.restype = ctypes.c_int
+
+    optional_polygon_pair_candidates_bounded = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_polygon_pair_candidates_bounded",
+    )
+    if optional_polygon_pair_candidates_bounded is not None:
+        optional_polygon_pair_candidates_bounded.argtypes = [
+            ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPolygonPairCandidate),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_polygon_pair_candidates_bounded.restype = ctypes.c_int
 
     optional_prepare_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
         lib,

@@ -185,6 +185,7 @@ from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
 from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
+from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
 from .optix_runtime import run_optix
 from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
 from .reduction_runtime import reduce_rows
@@ -861,6 +862,7 @@ __all__ = [
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixSegmentPolygonAnyHitRows2D",
     "PreparedOptixSegmentPolygonHitcount2D",
+    "collect_polygon_pair_candidates_bounded_optix",
     "run_optix",
     "segment_polygon_anyhit_rows_native_bounded_optix",
     "triangle_match_apple_rt",
