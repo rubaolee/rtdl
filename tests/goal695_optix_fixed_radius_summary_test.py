@@ -20,7 +20,15 @@ class Goal695OptixFixedRadiusSummaryTest(unittest.TestCase):
                 for row in outlier.brute_force_outlier_rows(query_points)
             )
 
-        with mock.patch.object(outlier.rt, "fixed_radius_count_threshold_2d_optix", side_effect=fake_count_rows):
+        def fake_generic(query_points, search_points, *, radius, threshold, backend):
+            self.assertEqual(backend, "optix")
+            return {
+                "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+                "summary_primitive": "REDUCE_INT(COUNT)",
+                "rows": fake_count_rows(query_points, search_points, radius=radius, threshold=threshold),
+            }
+
+        with mock.patch.object(outlier.rt, "run_generic_fixed_radius_count_threshold_2d", side_effect=fake_generic):
             result = outlier.run_app("optix", optix_summary_mode="rt_count_threshold")
 
         self.assertTrue(result["matches_oracle"])
@@ -43,7 +51,15 @@ class Goal695OptixFixedRadiusSummaryTest(unittest.TestCase):
                 for row in dbscan.brute_force_core_flag_rows(query_points)
             )
 
-        with mock.patch.object(dbscan.rt, "fixed_radius_count_threshold_2d_optix", side_effect=fake_count_rows):
+        def fake_generic(query_points, search_points, *, radius, threshold, backend):
+            self.assertEqual(backend, "optix")
+            return {
+                "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+                "summary_primitive": "REDUCE_INT(COUNT)",
+                "rows": fake_count_rows(query_points, search_points, radius=radius, threshold=threshold),
+            }
+
+        with mock.patch.object(dbscan.rt, "run_generic_fixed_radius_count_threshold_2d", side_effect=fake_generic):
             result = dbscan.run_app("optix", optix_summary_mode="rt_core_flags")
 
         self.assertTrue(result["matches_oracle"])

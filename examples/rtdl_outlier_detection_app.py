@@ -164,60 +164,77 @@ def _density_rows_from_count_rows(
 
 
 def _run_optix_density_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    count_rows = rt.fixed_radius_count_threshold_2d_optix(
+    result = rt.run_generic_fixed_radius_count_threshold_2d(
         case["points"],
         case["points"],
         radius=RADIUS,
         threshold=MIN_NEIGHBORS_INCLUDING_SELF,
+        backend="optix",
     )
-    return _density_rows_from_count_rows(case["points"], count_rows)
+    return _density_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_optix_prepared_density_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=RADIUS) as prepared:
-        count_rows = prepared.run(
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=case["points"],
+        backend="optix",
+        max_radius=RADIUS,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    ) as prepared:
+        result = prepared.run(
             case["points"],
             radius=RADIUS,
             threshold=MIN_NEIGHBORS_INCLUDING_SELF,
         )
-    return _density_rows_from_count_rows(case["points"], count_rows)
+    return _density_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_optix_prepared_density_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | str | None]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=RADIUS) as prepared:
-        threshold_reached_count = prepared.count_threshold_reached(
-            case["points"],
-            radius=RADIUS,
-            threshold=MIN_NEIGHBORS_INCLUDING_SELF,
-        )
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=case["points"],
+        query_points=case["points"],
+        radius=RADIUS,
+        threshold=MIN_NEIGHBORS_INCLUDING_SELF,
+        backend="optix",
+        max_radius=RADIUS,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    threshold_reached_count = int(result["threshold_reached_count"])
     point_count = len(case["points"])
     return {
         "point_count": point_count,
-        "threshold_reached_count": int(threshold_reached_count),
-        "outlier_count": point_count - int(threshold_reached_count),
+        "threshold_reached_count": threshold_reached_count,
+        "outlier_count": point_count - threshold_reached_count,
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
     }
 
 
 def _run_embree_density_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    count_rows = rt.fixed_radius_count_threshold_2d_embree(
+    result = rt.run_generic_fixed_radius_count_threshold_2d(
         case["points"],
         case["points"],
         radius=RADIUS,
         threshold=MIN_NEIGHBORS_INCLUDING_SELF,
+        backend="embree",
     )
-    return _density_rows_from_count_rows(case["points"], count_rows)
+    return _density_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_embree_prepared_density_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    with rt.prepare_embree_fixed_radius_count_threshold_2d(case["points"]) as prepared:
-        count_rows = prepared.run(
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=case["points"],
+        backend="embree",
+        prepare_scene=rt.prepare_embree_fixed_radius_count_threshold_2d,
+    ) as prepared:
+        result = prepared.run(
             case["points"],
             radius=RADIUS,
             threshold=MIN_NEIGHBORS_INCLUDING_SELF,
         )
-    return _density_rows_from_count_rows(case["points"], count_rows)
+    return _density_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_scipy_density_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | str | None]:
@@ -264,7 +281,12 @@ class PreparedOutlierDetectionSession:
             raise ValueError("PreparedOutlierDetectionSession currently supports backend='optix'")
         self.backend = backend
         self.case = make_outlier_case(copies=copies)
-        self._prepared = rt.prepare_optix_fixed_radius_count_threshold_2d(self.case["points"], max_radius=RADIUS)
+        self._prepared = rt.prepare_generic_fixed_radius_count_threshold_2d(
+            search_points=self.case["points"],
+            backend="optix",
+            max_radius=RADIUS,
+            prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+        )
         self._closed = False
 
     def run(self, *, output_mode: str = "density_summary") -> dict[str, object]:
@@ -273,11 +295,12 @@ class PreparedOutlierDetectionSession:
         if output_mode not in {"density_summary", "density_count"}:
             raise ValueError("prepared outlier detection session currently supports output_mode='density_summary' or 'density_count'")
         if output_mode == "density_count":
-            threshold_reached_count = self._prepared.count_threshold_reached(
+            result = self._prepared.count_threshold_reached(
                 self.case["points"],
                 radius=RADIUS,
                 threshold=MIN_NEIGHBORS_INCLUDING_SELF,
             )
+            threshold_reached_count = int(result["threshold_reached_count"])
             point_count = len(self.case["points"])
             oracle_rows = expected_tiled_density_rows(copies=point_count // 8)
             oracle_outlier_count = sum(1 for row in oracle_rows if bool(row["is_outlier"]))
@@ -294,7 +317,7 @@ class PreparedOutlierDetectionSession:
                 "min_neighbors_including_self": MIN_NEIGHBORS_INCLUDING_SELF,
                 "copies": point_count // 8,
                 "point_count": point_count,
-                "threshold_reached_count": int(threshold_reached_count),
+                "threshold_reached_count": threshold_reached_count,
                 "outlier_count": outlier_count,
                 "oracle_outlier_count": oracle_outlier_count,
                 "neighbor_row_count": 0,
@@ -306,15 +329,17 @@ class PreparedOutlierDetectionSession:
                 "oracle_density_rows": (),
                 "matches_oracle": outlier_count == oracle_outlier_count,
                 "summary_mode": "scalar_threshold_count",
+                "generic_primitive": result["primitive"],
+                "summary_primitive": result["summary_primitive"],
                 "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits only scalar density-threshold counts; point identities remain outside this scalar mode.",
                 "boundary": "Prepared OptiX density_count returns only scalar threshold/outlier counts. Use density_summary when per-point outlier labels are required.",
             }
-        count_rows = self._prepared.run(
+        result = self._prepared.run(
             self.case["points"],
             radius=RADIUS,
             threshold=MIN_NEIGHBORS_INCLUDING_SELF,
         )
-        density_rows = _density_rows_from_count_rows(self.case["points"], count_rows)
+        density_rows = _density_rows_from_count_rows(self.case["points"], result["rows"])
         oracle_rows = expected_tiled_density_rows(copies=len(self.case["points"]) // 8)
         outlier_ids = [int(row["point_id"]) for row in density_rows if bool(row["is_outlier"])]
         oracle_outlier_ids = [int(row["point_id"]) for row in oracle_rows if bool(row["is_outlier"])]
@@ -338,6 +363,8 @@ class PreparedOutlierDetectionSession:
             "outlier_point_ids": outlier_ids,
             "oracle_density_rows": oracle_rows,
             "matches_oracle": outlier_ids == oracle_outlier_ids,
+            "generic_primitive": result["primitive"],
+            "summary_primitive": result["summary_primitive"],
             "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits compact density rows without materializing neighbor rows; Python only consumes the emitted outlier labels.",
             "boundary": "Prepared OptiX density summary reuses the search-point BVH. GTX 1070 validation is backend behavior evidence only, not RTX RT-core speedup evidence.",
         }

@@ -241,59 +241,76 @@ def _core_flag_rows_from_count_rows(
 
 
 def _run_optix_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    count_rows = rt.fixed_radius_count_threshold_2d_optix(
+    result = rt.run_generic_fixed_radius_count_threshold_2d(
         case["points"],
         case["points"],
         radius=EPSILON,
         threshold=MIN_POINTS,
+        backend="optix",
     )
-    return _core_flag_rows_from_count_rows(case["points"], count_rows)
+    return _core_flag_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_optix_prepared_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=EPSILON) as prepared:
-        count_rows = prepared.run(
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=case["points"],
+        backend="optix",
+        max_radius=EPSILON,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    ) as prepared:
+        result = prepared.run(
             case["points"],
             radius=EPSILON,
             threshold=MIN_POINTS,
         )
-    return _core_flag_rows_from_count_rows(case["points"], count_rows)
+    return _core_flag_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_optix_prepared_core_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | str | None]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=EPSILON) as prepared:
-        core_count = prepared.count_threshold_reached(
-            case["points"],
-            radius=EPSILON,
-            threshold=MIN_POINTS,
-        )
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=case["points"],
+        query_points=case["points"],
+        radius=EPSILON,
+        threshold=MIN_POINTS,
+        backend="optix",
+        max_radius=EPSILON,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    core_count = int(result["threshold_reached_count"])
     return {
         "point_count": len(case["points"]),
-        "threshold_reached_count": int(core_count),
-        "core_count": int(core_count),
+        "threshold_reached_count": core_count,
+        "core_count": core_count,
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
     }
 
 
 def _run_embree_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    count_rows = rt.fixed_radius_count_threshold_2d_embree(
+    result = rt.run_generic_fixed_radius_count_threshold_2d(
         case["points"],
         case["points"],
         radius=EPSILON,
         threshold=MIN_POINTS,
+        backend="embree",
     )
-    return _core_flag_rows_from_count_rows(case["points"], count_rows)
+    return _core_flag_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_embree_prepared_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
-    with rt.prepare_embree_fixed_radius_count_threshold_2d(case["points"]) as prepared:
-        count_rows = prepared.run(
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=case["points"],
+        backend="embree",
+        prepare_scene=rt.prepare_embree_fixed_radius_count_threshold_2d,
+    ) as prepared:
+        result = prepared.run(
             case["points"],
             radius=EPSILON,
             threshold=MIN_POINTS,
         )
-    return _core_flag_rows_from_count_rows(case["points"], count_rows)
+    return _core_flag_rows_from_count_rows(case["points"], result["rows"])
 
 
 def _run_scipy_core_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | str | None]:
@@ -350,7 +367,12 @@ class PreparedDbscanCoreFlagSession:
         self.backend = backend
         self.copies = copies
         self.case = make_dbscan_case(copies=copies)
-        self._prepared = rt.prepare_optix_fixed_radius_count_threshold_2d(self.case["points"], max_radius=EPSILON)
+        self._prepared = rt.prepare_generic_fixed_radius_count_threshold_2d(
+            search_points=self.case["points"],
+            backend="optix",
+            max_radius=EPSILON,
+            prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+        )
         self._closed = False
 
     def run(self, *, output_mode: str = "core_flags") -> dict[str, object]:
@@ -359,11 +381,12 @@ class PreparedDbscanCoreFlagSession:
         if output_mode not in {"core_flags", "core_count"}:
             raise ValueError("prepared DBSCAN core-flag session currently supports output_mode='core_flags' or 'core_count'")
         if output_mode == "core_count":
-            core_count = self._prepared.count_threshold_reached(
+            result = self._prepared.count_threshold_reached(
                 self.case["points"],
                 radius=EPSILON,
                 threshold=MIN_POINTS,
             )
+            core_count = int(result["threshold_reached_count"])
             oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=self.copies)
             oracle_core_count = sum(1 for row in oracle_core_flag_rows if bool(row["is_core"]))
             return {
@@ -378,8 +401,8 @@ class PreparedDbscanCoreFlagSession:
                 "k_max": K_MAX,
                 "copies": self.copies,
                 "point_count": len(self.case["points"]),
-                "threshold_reached_count": int(core_count),
-                "core_count": int(core_count),
+                "threshold_reached_count": core_count,
+                "core_count": core_count,
                 "oracle_core_count": oracle_core_count,
                 "neighbor_row_count": 0,
                 "cluster_rows": (),
@@ -392,15 +415,17 @@ class PreparedDbscanCoreFlagSession:
                 "oracle_core_flag_rows": (),
                 "matches_oracle": int(core_count) == oracle_core_count,
                 "summary_mode": "scalar_threshold_count",
+                "generic_primitive": result["primitive"],
+                "summary_primitive": result["summary_primitive"],
                 "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits only scalar DBSCAN core counts; point identities and cluster expansion remain outside this scalar mode.",
                 "boundary": "Prepared OptiX core_count covers the RT-heavy fixed-radius core predicate count only. Use core_flags when per-point core labels are required; full DBSCAN cluster expansion remains Python-side.",
             }
-        count_rows = self._prepared.run(
+        result = self._prepared.run(
             self.case["points"],
             radius=EPSILON,
             threshold=MIN_POINTS,
         )
-        core_flag_rows = _core_flag_rows_from_count_rows(self.case["points"], count_rows)
+        core_flag_rows = _core_flag_rows_from_count_rows(self.case["points"], result["rows"])
         oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=self.copies)
         core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in core_flag_rows]
         oracle_core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in oracle_core_flag_rows]
@@ -426,6 +451,8 @@ class PreparedDbscanCoreFlagSession:
             "oracle_cluster_rows": (),
             "oracle_core_flag_rows": oracle_core_flag_rows,
             "matches_oracle": core_flags == oracle_core_flags,
+            "generic_primitive": result["primitive"],
+            "summary_primitive": result["summary_primitive"],
             "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits compact DBSCAN core flags without materializing neighbor rows; Python clustering expansion remains outside this prepared summary path.",
             "boundary": "Prepared OptiX core flags cover the RT-heavy fixed-radius density predicate only. Full DBSCAN cluster expansion remains Python-side and is not claimed as a backend primitive.",
         }
