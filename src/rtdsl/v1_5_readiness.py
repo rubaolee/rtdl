@@ -6,6 +6,7 @@ from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contra
 from .float_reduction_contracts import validate_v1_5_float_sum_reduction_contracts
 from .generic_db_primitives import validate_v1_5_db_compact_summary_contracts
 from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
+from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
 from .v1_5_migration_inventory import (
     validate_v1_5_generic_migration_inventory,
     v1_5_generic_migration_blockers,
@@ -16,6 +17,14 @@ V1_5_INTERNAL_READINESS_STATUS = "internal_v1_5_contract_gate_passing_non_public
 V1_5_INTERNAL_READINESS_CLAIM_BOUNDARY = (
     "internal v1.5 contract readiness only; not public v1.5 release wording; "
     "not public speedup wording; v1.0 tag remains unchanged; public claims require 3-AI consensus"
+)
+V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES = (
+    "COUNT_HITS",
+    "REDUCE_FLOAT(MIN)",
+    "REDUCE_FLOAT(MAX)",
+    "REDUCE_FLOAT(SUM)",
+    "REDUCE_INT(COUNT)",
+    "REDUCE_INT(SUM)",
 )
 
 
@@ -41,6 +50,7 @@ def v1_5_internal_readiness_gate() -> dict[str, Any]:
         "db_contracts": len(db_contracts),
         "float_sum_contracts": len(float_sum_contracts),
         "bounded_collection_contracts": len(bounded_collection_contracts),
+        "stable_summary_primitives": V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES,
         "validators": (
             "validate_v1_5_generic_migration_inventory",
             "validate_v1_5_grouped_reduction_contracts",
@@ -71,6 +81,8 @@ def validate_v1_5_internal_readiness_gate() -> dict[str, Any]:
             raise ValueError(f"v1.5 internal readiness gate must not authorize {flag}")
     if gate["requires_external_consensus_for_public_claims"] != "3-AI":
         raise ValueError("public v1.5 claims must remain behind 3-AI consensus")
+    if tuple(gate["stable_summary_primitives"]) != V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES:
+        raise ValueError("v1.5 internal readiness gate must preserve stable summary primitives")
     blockers = tuple(gate["blockers"])
     if not blockers:
         raise ValueError("v1.5 internal readiness gate must expose blockers")

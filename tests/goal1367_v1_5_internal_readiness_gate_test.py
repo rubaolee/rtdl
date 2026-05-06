@@ -42,6 +42,23 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         )
         self.assertIn("COLLECT_K_BOUNDED", gate["experimental_primitives"])
 
+    def test_gate_preserves_stable_summary_primitive_target(self):
+        gate = rt.validate_v1_5_internal_readiness_gate()
+
+        self.assertEqual(
+            gate["stable_summary_primitives"],
+            (
+                "COUNT_HITS",
+                "REDUCE_FLOAT(MIN)",
+                "REDUCE_FLOAT(MAX)",
+                "REDUCE_FLOAT(SUM)",
+                "REDUCE_INT(COUNT)",
+                "REDUCE_INT(SUM)",
+            ),
+        )
+        self.assertEqual(gate["stable_summary_primitives"], rt.V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES)
+        self.assertNotIn("COLLECT_K_BOUNDED", gate["stable_summary_primitives"])
+
     def test_gate_exposes_remaining_blockers_and_consensus_requirement(self):
         gate = rt.validate_v1_5_internal_readiness_gate()
 
