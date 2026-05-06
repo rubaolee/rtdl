@@ -165,6 +165,7 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             "native C++ candidate-generation summaries",
             "graph summary mode uses native C++",
             "oracle_cpp_raw_row_view",
+            "oracle_cpp_exact_rows",
             "oracle_cpp+oracle_cpp",
         ):
             with self.subTest(phrase=phrase):

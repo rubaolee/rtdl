@@ -370,7 +370,9 @@ def run_case(
     native_continuation_backend = None
     if backend in {"embree", "optix"}:
         native_continuation_backend = (
-            "native_polygon_pair_area_summary" if output_mode == "summary" else "oracle_cpp_exact_rows"
+            "native_polygon_pair_area_summary"
+            if output_mode == "summary"
+            else "native_polygon_pair_exact_rows"
         )
     boundary = (
         "Embree and OptiX modes use native LSI/PIP positive candidate discovery. "

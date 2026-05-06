@@ -79,6 +79,9 @@ def _canonical(value: Any) -> Any:
                 "native_continuation_backend",
                 "optix_performance",
                 "boundary",
+                "generic_area_summary",
+                "generic_jaccard_summary",
+                "primitive_contract",
                 "run_phases",
             }
         }
@@ -331,7 +334,7 @@ def run_profile(
                     "rt_core_accelerated": False,
                     "rt_core_candidate_discovery_active": True,
                     "native_continuation_active": True,
-                    "native_continuation_backend": "oracle_cpp",
+                    "native_continuation_backend": "native_polygon_pair_exact_rows",
                 }
             else:
                 refined = _jaccard_refine_from_pairs(case, candidate_pairs)
@@ -351,7 +354,7 @@ def run_profile(
                     "rt_core_accelerated": False,
                     "rt_core_candidate_discovery_active": True,
                     "native_continuation_active": True,
-                    "native_continuation_backend": "oracle_cpp",
+                    "native_continuation_backend": "native_polygon_set_jaccard_exact_rows",
                 }
             if output_mode != "summary":
                 phases["cpu_exact_refinement_sec"] = time.perf_counter() - start

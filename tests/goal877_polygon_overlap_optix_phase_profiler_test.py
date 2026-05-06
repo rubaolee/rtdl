@@ -35,6 +35,7 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
         self.assertIsNotNone(payload["phases"]["optix_candidate_discovery_sec"])
         self.assertFalse(payload["optix_metadata"]["rt_core_accelerated"])
         self.assertTrue(payload["optix_metadata"]["rt_core_candidate_discovery_active"])
+        self.assertEqual(payload["optix_metadata"]["native_continuation_backend"], "native_polygon_pair_exact_rows")
 
     def test_jaccard_mocked_optix_phase_parity(self) -> None:
         with mock.patch.object(goal877.jaccard_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
@@ -42,6 +43,10 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
         self.assertEqual(payload["status"], "pass")
         self.assertTrue(payload["parity_vs_cpu"])
         self.assertIsNotNone(payload["phases"]["cpu_exact_refinement_sec"])
+        self.assertEqual(
+            payload["optix_metadata"]["native_continuation_backend"],
+            "native_polygon_set_jaccard_exact_rows",
+        )
 
     def test_pair_overlap_summary_analytic_chunks_without_cpu_reference(self) -> None:
         with mock.patch.object(goal877.pair_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
