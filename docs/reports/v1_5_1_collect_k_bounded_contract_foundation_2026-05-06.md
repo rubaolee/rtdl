@@ -252,6 +252,22 @@ Ran 40 tests in 0.020s
 OK
 ```
 
+Post-push Linux validation at commit
+`dc02c8a8e77577d60a468be08b4b3e346c01da6c`:
+
+```text
+Ran 40 tests in 0.008s
+OK
+```
+
+Post-push NVIDIA pod focused validation at the same commit, using
+`RTDL_OPTIX_LIB=/root/work/rtdl_v1_5_1_pod/build/librtdl_optix.so`:
+
+```text
+Ran 15 tests in 0.004s
+OK
+```
+
 ## Next Work
 
 The native Embree and OptiX collection wrappers now validate completed
