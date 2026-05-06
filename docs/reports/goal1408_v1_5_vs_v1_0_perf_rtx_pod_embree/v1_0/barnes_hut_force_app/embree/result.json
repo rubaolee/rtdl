@@ -1,0 +1,44 @@
+{
+  "app": "barnes_hut_force_app",
+  "boundary": "candidate_summary measures the RTDL candidate-generation slice only. force_summary includes Python Barnes-Hut opening-rule and force reduction. This is not a fully native Barnes-Hut force engine.",
+  "cases": [
+    {
+      "body_count": 512,
+      "cpu_candidate_summary": {
+        "backend": "cpu_python_reference",
+        "body_count": 512,
+        "json_bytes_median": 1257,
+        "max_seconds": 0.010109570110216737,
+        "median_seconds": 0.0048800010699778795,
+        "min_seconds": 0.004850751953199506,
+        "output_mode": "candidate_summary",
+        "repeats": 3
+      },
+      "embree_candidate_summary": {
+        "backend": "embree",
+        "body_count": 512,
+        "json_bytes_median": 1243,
+        "max_seconds": 0.015062449965626001,
+        "median_seconds": 0.01209786906838417,
+        "min_seconds": 0.010821942938491702,
+        "output_mode": "candidate_summary",
+        "repeats": 3,
+        "speedup_vs_cpu_python_reference": 0.4033769122804424
+      },
+      "embree_force_summary": {
+        "backend": "embree",
+        "body_count": 512,
+        "json_bytes_median": 1319,
+        "max_seconds": 0.09539242112077773,
+        "median_seconds": 0.09161528898403049,
+        "min_seconds": 0.09112984407693148,
+        "output_mode": "force_summary",
+        "repeats": 3,
+        "slowdown_vs_candidate_summary": 7.572845140426612
+      }
+    }
+  ],
+  "goal": 734,
+  "measurement": "run_app plus json.dumps wall-clock seconds",
+  "repeats": 3
+}

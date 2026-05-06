@@ -1,0 +1,55 @@
+{
+  "app": "facility_knn_assignment",
+  "backend": "embree",
+  "boundary": "Rows mode keeps K=3 fallback choices. Compact modes run the K=1 primary-assignment RTDL kernel and omit fallback-choice rows from the app JSON payload.",
+  "cases": [
+    {
+      "copies": 512,
+      "modes": {
+        "primary_assignments": {
+          "backend": "embree",
+          "copies": 512,
+          "customer_count": 2048,
+          "depot_count": 2048,
+          "json_bytes_median": 50545,
+          "json_reduction_vs_rows": 21.140627163913344,
+          "max_seconds": 0.019358518067747355,
+          "median_seconds": 0.016383327078074217,
+          "min_seconds": 0.016279718140140176,
+          "output_mode": "primary_assignments",
+          "repeats": 3,
+          "speedup_vs_rows": 2.7221251659931536
+        },
+        "rows": {
+          "backend": "embree",
+          "copies": 512,
+          "customer_count": 2048,
+          "depot_count": 2048,
+          "json_bytes_median": 1068553,
+          "max_seconds": 0.051353809889405966,
+          "median_seconds": 0.0445974669419229,
+          "min_seconds": 0.039262939943000674,
+          "output_mode": "rows",
+          "repeats": 3
+        },
+        "summary": {
+          "backend": "embree",
+          "copies": 512,
+          "customer_count": 2048,
+          "depot_count": 2048,
+          "json_bytes_median": 18626,
+          "json_reduction_vs_rows": 57.368892945345216,
+          "max_seconds": 0.01594789093360305,
+          "median_seconds": 0.015603445004671812,
+          "min_seconds": 0.015587024856358767,
+          "output_mode": "summary",
+          "repeats": 3,
+          "speedup_vs_rows": 2.8581808010070864
+        }
+      }
+    }
+  ],
+  "goal": 730,
+  "measurement": "run_case plus json.dumps wall-clock seconds",
+  "repeats": 3
+}

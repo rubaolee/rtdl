@@ -1,0 +1,36 @@
+{
+  "backend": "embree",
+  "boundary": "Measures app payload generation plus JSON serialization. Compact road-hazard modes do not change backend traversal; they avoid returning full per-road rows when only priority road ids/counts are needed. When backend=optix, optix_mode selects default behavior, forced host-indexed fallback, or experimental native segment/polygon hit-count mode. This script does not authorize any RT-core claim by itself.",
+  "cases": [
+    {
+      "backend": "embree",
+      "copies": 512,
+      "json_size_reduction": 13.662414965986395,
+      "optix_mode": "not_applicable",
+      "priority_segment_count": 512,
+      "priority_segments_all_sec": [
+        0.010114868870005012,
+        0.010070289950817823,
+        0.005616223905235529
+      ],
+      "priority_segments_best_sec": 0.005616223905235529,
+      "priority_segments_json_bytes": 4704,
+      "row_count": 1536,
+      "rows_all_sec": [
+        0.010998390847817063,
+        0.010864882031455636,
+        0.01490507205016911
+      ],
+      "rows_best_sec": 0.010864882031455636,
+      "rows_json_bytes": 64268,
+      "speedup_vs_rows": 1.9345528623471062
+    }
+  ],
+  "geomean_json_size_reduction": 13.662414965986395,
+  "geomean_speedup_vs_rows": 1.9345528623471062,
+  "optix_mode": "not_applicable",
+  "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "repeats": 3,
+  "suite": "goal729_road_hazard_compact_output_perf"
+}
