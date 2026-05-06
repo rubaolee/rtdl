@@ -99,6 +99,29 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
         self.assertNotIn("larger chunk sizes are diagnostic failures until root-caused", combined)
         self.assertNotIn("larger diagnostic chunk failures", combined)
 
+    def test_polygon_matrix_uses_backend_neutral_v1_5_boundary_wording(self) -> None:
+        combined = "\n".join(
+            (ROOT / relative).read_text(encoding="utf-8")
+            for relative in (
+                "docs/app_engine_support_matrix.md",
+                "docs/rtdl_feature_guide.md",
+                "docs/application_catalog.md",
+                "docs/release_facing_examples.md",
+                "docs/tutorials/segment_polygon_workloads.md",
+            )
+        )
+        for phrase in (
+            "backend-neutral native exact-area summary",
+            "backend-neutral native set-area/Jaccard summary",
+            "native C++ exact area continuation",
+            "native C++ exact set-area/Jaccard continuation",
+        ):
+            with self.subTest(phrase=phrase):
+                if phrase.startswith("native C++"):
+                    self.assertNotIn(phrase, combined)
+                else:
+                    self.assertIn(phrase, combined)
+
     def test_current_public_docs_name_goal1264_db_graph_boundary(self) -> None:
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")
