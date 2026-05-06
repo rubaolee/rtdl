@@ -83,6 +83,22 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         self.assertEqual(gate["inventory_status_counts"], {"pod_verified_generic": 14})
         self.assertEqual(sum(gate["inventory_status_counts"].values()), gate["inventory_rows"])
 
+    def test_gate_keeps_bounded_collection_experimental(self):
+        gate = rt.validate_v1_5_internal_readiness_gate()
+
+        self.assertEqual(
+            gate["allowed_experimental_contract_statuses"],
+            ("experimental_diagnostic_only",),
+        )
+        self.assertEqual(
+            gate["experimental_contract_status_counts"],
+            {"experimental_diagnostic_only": 1},
+        )
+        self.assertEqual(
+            sum(gate["experimental_contract_status_counts"].values()),
+            gate["bounded_collection_contracts"],
+        )
+
     def test_gate_exposes_remaining_blockers_and_consensus_requirement(self):
         gate = rt.validate_v1_5_internal_readiness_gate()
 

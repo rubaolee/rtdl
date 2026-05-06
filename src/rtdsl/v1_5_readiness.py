@@ -29,6 +29,9 @@ V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES = (
     "REDUCE_INT(SUM)",
 )
 V1_5_INTERNAL_READINESS_ALLOWED_INVENTORY_STATUSES = ("pod_verified_generic",)
+V1_5_INTERNAL_READINESS_ALLOWED_EXPERIMENTAL_CONTRACT_STATUSES = (
+    "experimental_diagnostic_only",
+)
 V1_5_INTERNAL_READINESS_REQUIRED_BLOCKER_PHRASES = (
     "app-level continuations remain outside v1.5 generic subpath scope",
     "whole-app speedup wording remains blocked",
@@ -41,6 +44,14 @@ def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str
     counts: dict[str, int] = {}
     for row in inventory:
         status = str(row["status"])
+        counts[status] = counts.get(status, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _count_contract_statuses(contracts: tuple[dict[str, Any], ...]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for contract in contracts:
+        status = str(contract["status"])
         counts[status] = counts.get(status, 0) + 1
     return dict(sorted(counts.items()))
 
@@ -94,6 +105,12 @@ def v1_5_internal_readiness_gate() -> dict[str, Any]:
         "frozen_before_v2_1_backends": FROZEN_BEFORE_V2_1_BACKENDS,
         "inventory_status_counts": _count_inventory_statuses(inventory),
         "allowed_inventory_statuses": V1_5_INTERNAL_READINESS_ALLOWED_INVENTORY_STATUSES,
+        "experimental_contract_status_counts": _count_contract_statuses(
+            bounded_collection_contracts
+        ),
+        "allowed_experimental_contract_statuses": (
+            V1_5_INTERNAL_READINESS_ALLOWED_EXPERIMENTAL_CONTRACT_STATUSES
+        ),
         "validators": (
             "validate_v1_5_generic_migration_inventory",
             "validate_v1_5_grouped_reduction_contracts",
@@ -145,6 +162,21 @@ def validate_v1_5_internal_readiness_gate() -> dict[str, Any]:
         gate["inventory_rows"]
     ):
         raise ValueError("v1.5 internal readiness inventory status counts must match row count")
+    invalid_experimental_statuses = sorted(
+        set(gate["experimental_contract_status_counts"])
+        - set(gate["allowed_experimental_contract_statuses"])
+    )
+    if invalid_experimental_statuses:
+        raise ValueError(
+            "v1.5 internal readiness gate cannot pass with promoted experimental statuses: "
+            f"{', '.join(invalid_experimental_statuses)}"
+        )
+    if sum(int(count) for count in gate["experimental_contract_status_counts"].values()) != int(
+        gate["bounded_collection_contracts"]
+    ):
+        raise ValueError(
+            "v1.5 internal readiness experimental status counts must match bounded collection count"
+        )
     blockers = tuple(gate["blockers"])
     if not blockers:
         raise ValueError("v1.5 internal readiness gate must expose blockers")
