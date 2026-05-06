@@ -18,6 +18,7 @@ from .reference import Triangle
 from .reference import Triangle3D
 from .reference import _triangle_dimension
 from .reference import ray_triangle_any_hit_cpu
+from .reduction_runtime import run_generic_scalar_reduction
 
 
 ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS = ("cpu", "embree", "optix")
@@ -192,15 +193,20 @@ def run_generic_ray_triangle_any_hit_count(
     """Run app-name-free `ANY_HIT` and reduce the result with `COUNT_HITS`."""
     normalized_backend = _normalize_backend(backend)
     rows = run_generic_ray_triangle_any_hit(rays, triangles, backend=normalized_backend)
-    hit_count = sum(int(row["any_hit"]) for row in rows)
+    scalar_summary = run_generic_scalar_reduction(rows, summary_primitive="COUNT_HITS")
     result: dict[str, Any] = {
         "primitive": "ANY_HIT",
         "summary_primitive": "COUNT_HITS",
         "backend": normalized_backend,
         "active_v1_5_backend": normalized_backend in {"embree", "optix"},
         "row_count": len(rows),
-        "hit_count": hit_count,
+        "hit_count": scalar_summary["result"],
         "result_layout": "aggregate_any_hit_count",
+        "scalar_reduction": {
+            key: value
+            for key, value in scalar_summary.items()
+            if key not in {"result", "row_count"}
+        },
         "claim_boundary": (
             "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; "
             "no app-specific visibility, graph, DB, polygon, or public speedup claim."

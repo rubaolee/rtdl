@@ -40,7 +40,27 @@ class Goal1288V15GenericAnyHitCountTest(unittest.TestCase):
         self.assertFalse(summary["active_v1_5_backend"])
         self.assertEqual(summary["row_count"], 2)
         self.assertEqual(summary["hit_count"], 1)
+        self.assertEqual(summary["scalar_reduction"]["summary_primitive"], "COUNT_HITS")
+        self.assertEqual(summary["scalar_reduction"]["result_layout"], "scalar_int64_hit_count")
+        self.assertEqual(summary["scalar_reduction"]["dtype"], "int64")
+        self.assertEqual(summary["scalar_reduction"]["input_field"], "any_hit")
+        self.assertIn("not native backend acceleration", summary["scalar_reduction"]["claim_boundary"])
         self.assertEqual(summary["rows"], ({"ray_id": 0, "any_hit": 1}, {"ray_id": 1, "any_hit": 0}))
+
+    def test_generic_count_hits_summary_uses_scalar_reduction_surface(self) -> None:
+        rays, triangles = self._case()
+
+        with mock.patch(
+            "rtdsl.generic_primitives.run_generic_scalar_reduction",
+            wraps=rt.run_generic_scalar_reduction,
+        ) as scalar_reduction:
+            summary = rt.run_generic_ray_triangle_any_hit_count(rays, triangles, backend="cpu")
+
+        scalar_reduction.assert_called_once_with(
+            ({"ray_id": 0, "any_hit": 1}, {"ray_id": 1, "any_hit": 0}),
+            summary_primitive="COUNT_HITS",
+        )
+        self.assertEqual(summary["hit_count"], 1)
 
     def test_empty_build_returns_zero_rows_without_backend_dispatch(self) -> None:
         rays, _triangles = self._case()
