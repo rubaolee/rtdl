@@ -259,9 +259,9 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
         return {
             **common,
             "comparable_metric_scope": (
-                "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact area continuation"
+                "native-assisted OptiX LSI/PIP candidate-discovery phase plus backend-neutral native exact-area summary"
                 if is_pair
-                else "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact Jaccard continuation"
+                else "native-assisted OptiX bounded candidate-discovery phase plus backend-neutral native set-area/Jaccard summary"
             ),
             "required_baselines": [
                 "cpu_python_reference",

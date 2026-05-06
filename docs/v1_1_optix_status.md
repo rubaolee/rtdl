@@ -75,7 +75,7 @@ Do not describe this as:
 
 ## Next Work
 
-v1.2 should focus on internal NVIDIA OptiX performance work. v1.5 should replace
-app-specific native paths with reviewed generic traversal-plus-reduction
+v1.2 focuses on internal NVIDIA OptiX performance work. The v1.5 target is to
+replace app-specific native paths with reviewed generic traversal-plus-reduction
 primitives. Vulkan, HIPRT, and Apple RT remain existing proof surfaces and are
 not active implementation targets before v2.1.

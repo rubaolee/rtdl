@@ -201,7 +201,7 @@ claims.
 | `public_wording_not_reviewed` | The app or bounded sub-path is RT-core ready, but no exact public speedup wording has been reviewed. |
 | `not_nvidia_public_wording_target` | Engine-specific app; keep it out of NVIDIA RTX public wording. |
 
-Current reviewed public wording rows after Goal1224: `12`. Goal1146 re-promoted
+Current reviewed public wording rows after Goal1263: `13`. Goal1146 re-promoted
 `facility_knn_assignment / coverage_threshold_prepared_recentered` and
 `barnes_hut_force_app / node_coverage_prepared_rich` using current-source
 Goal1142 evidence and 2-AI promotion review. Goal1126 reviewed

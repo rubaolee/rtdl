@@ -94,9 +94,9 @@ def build_audit() -> dict[str, Any]:
     current_main_positioning_ok = all(
         phrase in readme
         for phrase in (
-            "## v1.0 Direction",
+            "## Roadmap Boundary",
             "v1.0 proof machinery, not the final architecture",
-            "v1.5 is planned to replace",
+            "v1.5 internal primitive migration is pod-verified",
             "v2.0 targets broader end-to-end performance",
         )
     )
