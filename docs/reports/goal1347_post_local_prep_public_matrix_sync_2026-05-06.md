@@ -26,5 +26,13 @@ implementation.
 
 ## Pod Validation
 
-Pending. Validate from Git after push using the current pod, then record commit
-identity and focused test result here.
+Pod SSH command:
+
+`ssh root@213.173.108.215 -p 14800 -i ~/.ssh/id_ed25519_rtdl_codex`
+
+Validated from Git with `git fetch origin main` and `git reset --hard
+origin/main`.
+
+- Pod commit: `8210ef52346b199dd8f275843383ff675dbcf8dc`.
+- Pod command: `PYTHONPATH=src:. python3 -m unittest tests.goal848_v1_rt_core_goal_series_test tests.goal1025_pre_cloud_rtx_app_batch_readiness_test tests.goal1051_post_goal1048_followup_plan_test tests.goal1063_pre_pod_local_completion_audit_test tests.goal1125_unresolved_rtx_public_wording_prioritization_test tests.goal1133_post_local_prep_audit_test tests.goal1178_goal1177_public_status_sync_audit_test tests.goal1210_v0_9_8_release_readiness_audit_test tests.goal1216_v0_9_8_release_candidate_audit_test tests.goal1218_v0_9_8_release_authorization_gate_test tests.goal1011_rtx_public_wording_matrix_test tests.goal1010_public_rtx_readme_wording_test tests.goal938_public_rtx_wording_sync_test`
+- Pod result: `OK`, 57 tests.
