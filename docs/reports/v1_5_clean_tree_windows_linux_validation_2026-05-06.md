@@ -1,0 +1,72 @@
+# v1.5 Clean-Tree Windows/Linux Validation - 2026-05-06
+
+## Verdict
+
+The v1.5 release cleanup branch was committed, pushed, and revalidated from clean Windows and Linux checkouts at commit `74e4c911ef2dfa467939a3516d3ca32b643feb0e`.
+
+The validated state closes the v1.5 release-readiness follow-up identified by the cross-platform audit: the Embree LSI Linux boundary fix and the v1.0-to-v1.5 audit artifacts are now present on `origin/main`, and the supported Windows/Linux validation slices pass from clean trees.
+
+No release tags were moved or republished during this validation.
+
+## Scope
+
+- Windows checkout: `C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review`
+- Linux checkout: `/home/lestat/work/rtdl_v1_5_linux_check`
+- Remote branch: `origin/main`
+- Commit: `74e4c911ef2dfa467939a3516d3ca32b643feb0e`
+- Validation mode: source-tree tests with `PYTHONPATH=src:.` or Windows equivalent `PYTHONPATH=src;.`
+- Active release boundary: v1.5 supported Embree and OptiX surfaces. Vulkan, HIPRT, and Apple RT remain frozen/proof surfaces, not expanded release claims.
+
+## Passing
+
+### Windows v1.5/public slice
+
+Command:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1010_public_rtx_readme_wording_test tests.goal1231_front_page_simplification_test tests.goal1232_public_doc_map_test tests.goal1244_public_doc_spine_test tests.goal654_current_main_support_matrix_test tests.goal1217_version_marker_current_release_sync_test tests.goal1020_public_docs_rtx_boundary_audit_test tests.goal512_public_doc_smoke_audit_test tests.goal646_public_front_page_doc_consistency_test tests.goal655_tutorial_example_current_main_consistency_test tests.goal1287_v1_4_exit_readiness_and_v1_5_blockers_test tests.goal1288_v1_5_generic_anyhit_count_test tests.goal1289_v1_5_graph_visibility_generic_dispatch_test tests.goal1290_v1_5_generic_prepared_anyhit_count_test tests.goal1291_v1_5_embree_prepared_parity_status_test tests.goal1292_v1_5_generic_optix_evidence_packet_test tests.goal1295_v1_5_generic_prepared_scene_session_test tests.goal1296_v1_5_prepared_scene_session_evidence_test tests.goal1297_v1_5_graph_visibility_reusable_scene_batches_test tests.goal1298_v1_5_generic_fixed_radius_threshold_count_test tests.goal1298_v1_5_generic_fixed_radius_threshold_evidence_test tests.goal1299_v1_5_fixed_radius_app_migration_test tests.goal1300_v1_5_ann_facility_generic_migration_test tests.goal1301_v1_5_outlier_dbscan_generic_migration_test tests.goal1304_v1_5_generic_migration_inventory_test tests.goal1305_v1_5_grouped_reduction_contract_test tests.goal1306_v1_5_robot_pose_flags_generic_migration_test tests.goal1307_v1_5_db_compact_summary_generic_migration_test tests.goal1308_v1_5_polygon_float_sum_contract_test tests.goal1309_v1_5_polygon_pair_generic_area_summary_test tests.goal1310_v1_5_jaccard_collect_k_bounded_contract_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test tests.goal1312_v1_5_jaccard_optix_slower_reason_test tests.goal1314_v1_5_native_polygon_candidate_collection_surface_test tests.goal1315_v1_5_optix_native_candidate_collection_abi_test tests.goal1316_v1_5_embree_candidate_collection_surface_test tests.goal1317_v1_5_embree_native_candidate_collection_abi_test tests.goal1318_v1_5_jaccard_native_collection_routing_test tests.goal1320_v1_5_jaccard_generic_score_reduction_test tests.goal1321_v1_5_native_polygon_pair_area_summary_abi_test tests.goal1350_v1_5_generic_scalar_reduction_test tests.goal1359_v1_5_float_min_max_empty_guard_test tests.goal1367_v1_5_internal_readiness_gate_test tests.goal1398_v1_5_standalone_release_gate_test tests.goal1400_v1_5_standalone_app_classification_test tests.goal1401_v1_5_standalone_correctness_matrix_test tests.goal1402_v1_5_pending_app_correctness_closure_test tests.goal1405_v1_5_support_maturity_matrix_test tests.goal1406_v1_5_benchmark_evidence_matrix_test tests.goal1407_v1_5_release_public_wording_gate_test tests.goal1408_v1_5_vs_v1_0_perf_runner_test
+```
+
+Result: `Ran 218 tests in 14.397s` / `OK`
+
+### Linux v1.5/public slice
+
+Command:
+
+```bash
+PYTHONPATH=src:. python3 -m unittest tests.goal1010_public_rtx_readme_wording_test tests.goal1231_front_page_simplification_test tests.goal1232_public_doc_map_test tests.goal1244_public_doc_spine_test tests.goal654_current_main_support_matrix_test tests.goal1217_version_marker_current_release_sync_test tests.goal1020_public_docs_rtx_boundary_audit_test tests.goal512_public_doc_smoke_audit_test tests.goal646_public_front_page_doc_consistency_test tests.goal655_tutorial_example_current_main_consistency_test tests.goal1287_v1_4_exit_readiness_and_v1_5_blockers_test tests.goal1288_v1_5_generic_anyhit_count_test tests.goal1289_v1_5_graph_visibility_generic_dispatch_test tests.goal1290_v1_5_generic_prepared_anyhit_count_test tests.goal1291_v1_5_embree_prepared_parity_status_test tests.goal1292_v1_5_generic_optix_evidence_packet_test tests.goal1295_v1_5_generic_prepared_scene_session_test tests.goal1296_v1_5_prepared_scene_session_evidence_test tests.goal1297_v1_5_graph_visibility_reusable_scene_batches_test tests.goal1298_v1_5_generic_fixed_radius_threshold_count_test tests.goal1298_v1_5_generic_fixed_radius_threshold_evidence_test tests.goal1299_v1_5_fixed_radius_app_migration_test tests.goal1300_v1_5_ann_facility_generic_migration_test tests.goal1301_v1_5_outlier_dbscan_generic_migration_test tests.goal1304_v1_5_generic_migration_inventory_test tests.goal1305_v1_5_grouped_reduction_contract_test tests.goal1306_v1_5_robot_pose_flags_generic_migration_test tests.goal1307_v1_5_db_compact_summary_generic_migration_test tests.goal1308_v1_5_polygon_float_sum_contract_test tests.goal1309_v1_5_polygon_pair_generic_area_summary_test tests.goal1310_v1_5_jaccard_collect_k_bounded_contract_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test tests.goal1312_v1_5_jaccard_optix_slower_reason_test tests.goal1314_v1_5_native_polygon_candidate_collection_surface_test tests.goal1315_v1_5_optix_native_candidate_collection_abi_test tests.goal1316_v1_5_embree_candidate_collection_surface_test tests.goal1317_v1_5_embree_native_candidate_collection_abi_test tests.goal1318_v1_5_jaccard_native_collection_routing_test tests.goal1320_v1_5_jaccard_generic_score_reduction_test tests.goal1321_v1_5_native_polygon_pair_area_summary_abi_test tests.goal1350_v1_5_generic_scalar_reduction_test tests.goal1359_v1_5_float_min_max_empty_guard_test tests.goal1367_v1_5_internal_readiness_gate_test tests.goal1398_v1_5_standalone_release_gate_test tests.goal1400_v1_5_standalone_app_classification_test tests.goal1401_v1_5_standalone_correctness_matrix_test tests.goal1402_v1_5_pending_app_correctness_closure_test tests.goal1405_v1_5_support_maturity_matrix_test tests.goal1406_v1_5_benchmark_evidence_matrix_test tests.goal1407_v1_5_release_public_wording_gate_test tests.goal1408_v1_5_vs_v1_0_perf_runner_test
+```
+
+Result: `Ran 218 tests in 14.533s` / `OK`
+
+### Windows baseline/evaluation slice
+
+Command:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.baseline_integration_test tests.evaluation_test
+```
+
+Result: `Ran 7 tests in 24.535s` / `OK`
+
+### Linux baseline/evaluation slice
+
+Command:
+
+```bash
+PYTHONPATH=src:. python3 -m unittest tests.baseline_integration_test tests.evaluation_test
+```
+
+Result: `Ran 7 tests in 8.570s` / `OK`
+
+## Notes
+
+Native compiler warnings and the Windows Python startup warning `Could not find platform independent libraries <prefix>` were observed during the validation runs, but they did not fail the tested release slices.
+
+This note records targeted v1.5 cleanup validation only. It does not claim that full unittest discovery is green, and it does not expand the public v1.5 support boundary beyond the audited Embree and OptiX release surfaces.
+
+## Conclusion
+
+The old v1.5 release cleanup item is complete at the source-tree validation level: the audit artifacts and Embree LSI Linux boundary fix are pushed, both clean checkouts are synchronized to the same commit, and the agreed Windows/Linux release slices pass.
