@@ -45,4 +45,16 @@ active audit explicitly checks them as released v1.0 records.
 
 ## Pod Validation
 
-Pending after push.
+Pod source state:
+
+- reset `/root/rtdl_python_only` from GitHub `origin/main`
+- commit: `62ac20705a8bf7f9ea5c8a9ea7d19f3bf0da54f0`
+
+Pod validation:
+
+- active audit/status focused gate:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal1250_v1_0_release_surface_doc_audit_test tests.goal1229_current_main_v1_0_readiness_audit_test tests.goal759_rtx_cloud_benchmark_manifest_test tests.goal687_app_engine_support_matrix_test tests.goal938_public_rtx_wording_sync_test tests.goal1010_public_rtx_readme_wording_test`
+  - 38 tests OK.
+- `goal13*` sweep:
+  `PYTHONPATH=src:. python3 -m unittest $(find tests -maxdepth 1 -name 'goal13*_test.py' -exec basename {} .py \; | sed 's/^/tests./')`
+  - 76 tests OK.
