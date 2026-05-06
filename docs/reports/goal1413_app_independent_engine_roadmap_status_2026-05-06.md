@@ -2,7 +2,7 @@
 
 Date: 2026-05-06
 
-Status: `codex-authored_external-review-pending`.
+Status: `2-ai-accepted_gemini-pending`.
 
 ## Scope
 
@@ -27,18 +27,27 @@ preserves the current release boundary:
 
 ## External Review Status
 
-External review was attempted but not obtained:
+Claude review is accepted:
+
+- Claude retry review:
+  `docs/reports/goal1413_claude_app_independent_engine_roadmap_review_retry_2026-05-06.md`
+
+Claude returned `VERDICT: ACCEPT` and found no overreach, no premature claims,
+and no internal contradictions.
+
+Earlier external review attempts were not usable:
 
 - Claude attempt:
   `docs/reports/goal1413_claude_app_independent_engine_roadmap_review_2026-05-06.md`
 - Gemini attempt:
   `docs/reports/goal1413_gemini_app_independent_engine_roadmap_review_2026-05-06.md`
 
-Both files are failed-attempt records only and must not be counted as accepted
-external reviews.
+Those earlier attempt files are failed-attempt records only and must not be
+counted as accepted external reviews.
 
 ## Interpretation
 
-This roadmap may be included as planning context in the v1.5 release-candidate
-package. It should not be presented as externally reviewed architecture
-consensus until an accepted independent review is added.
+This roadmap may be included as reviewed planning context in the v1.5
+release-candidate package with 2-AI acceptance: Codex plus Claude. It should
+not be presented as completed 3-AI architecture consensus until an accepted
+Gemini or equivalent independent second external review is added.
