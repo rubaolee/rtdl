@@ -58,6 +58,8 @@ V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS = (
 )
 V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS = ("claude", "gemini")
 V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS = ("claude",)
+V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE = "source_tree_pythonpath"
+V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND = "PYTHONPATH=src:. python ..."
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -265,6 +267,10 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
             if partner not in V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS
         ),
         "external_3_ai_consensus_ready": False,
+        "source_usage_mode": V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE,
+        "source_usage_command": V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND,
+        "editable_install_claim_authorized": False,
+        "package_release_artifact_authorized": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -322,9 +328,15 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must not imply 3-AI consensus is complete")
     if decision["external_3_ai_consensus_ready"] is not False:
         raise ValueError("v1.5 internal readiness decision must not mark 3-AI consensus ready")
+    if decision["source_usage_mode"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE:
+        raise ValueError("v1.5 internal readiness decision must preserve source-tree usage mode")
+    if decision["source_usage_command"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND:
+        raise ValueError("v1.5 internal readiness decision must preserve source-tree usage command")
     for flag in (
         "public_claims_ready",
         "external_3_ai_consensus_ready",
+        "editable_install_claim_authorized",
+        "package_release_artifact_authorized",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",

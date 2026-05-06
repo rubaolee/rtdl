@@ -166,6 +166,15 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         )
         self.assertEqual(decision["missing_external_review_partners"], ("gemini",))
         self.assertFalse(decision["external_3_ai_consensus_ready"])
+        self.assertEqual(decision["source_usage_mode"], "source_tree_pythonpath")
+        self.assertEqual(decision["source_usage_mode"], rt.V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE)
+        self.assertEqual(decision["source_usage_command"], "PYTHONPATH=src:. python ...")
+        self.assertEqual(
+            decision["source_usage_command"],
+            rt.V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND,
+        )
+        self.assertFalse(decision["editable_install_claim_authorized"])
+        self.assertFalse(decision["package_release_artifact_authorized"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])
