@@ -140,8 +140,10 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
                 "examples/README.md",
                 "docs/application_catalog.md",
                 "docs/app_engine_support_matrix.md",
+                "docs/v1_0_rtx_app_status.md",
                 "docs/tutorials/graph_workloads.md",
                 "src/rtdsl/app_support_matrix.py",
+                "scripts/goal947_v1_rtx_app_status_page.py",
             )
         )
         for phrase in (

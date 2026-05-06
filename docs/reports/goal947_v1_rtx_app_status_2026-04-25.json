@@ -316,7 +316,7 @@
       "app": "polygon_pair_overlap_area_rows",
       "app_path": "examples/rtdl_polygon_pair_overlap_area_rows.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core",
-      "cloud_action": "Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation at 40k, 80k, and 160k copies on RTX A5000; Goal1270 clarifies the candidate-count mismatch as a conservative candidate-upper-bound diagnostic while positive-pair parity is reported separately. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the wording.",
+      "cloud_action": "Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive candidate discovery plus exact area continuation at 40k, 80k, and 160k copies on RTX A5000; current main also has internal v1.5 backend-neutral native exact-area summary plumbing in compact summary mode. Goal1270 clarifies the candidate-count mismatch as a conservative candidate-upper-bound diagnostic while positive-pair parity is reported separately. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -326,7 +326,7 @@
         "vulkan": "not_exposed_by_app_cli"
       },
       "evidence_or_goal": "Goal877/Goal929/Goal1263",
-      "native_continuation_contract": "native C++ exact area continuation follows RT-assisted LSI/PIP candidate discovery",
+      "native_continuation_contract": "backend-neutral native exact-area summary follows RT-assisted LSI/PIP candidate discovery in compact summary mode",
       "non_claim_boundary": "monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside the claim; Goal1270 clarifies the candidate-count mismatch as a conservative candidate-upper-bound diagnostic with separate positive-pair parity fields",
       "performance_class": "python_interface_dominated",
       "public_wording": "RTDL v1.1 shows bounded OptiX acceleration for the polygon-pair RTX sub-path at 40k, 80k, and 160k copies on an RTX A5000; at 160k copies the reviewed same-contract benchmark measured about 1.4x faster candidate discovery and about 1.2x faster observed pipeline versus Embree.",
@@ -352,7 +352,7 @@
         "vulkan": "not_exposed_by_app_cli"
       },
       "evidence_or_goal": "Goal877/Goal929/Goal1262",
-      "native_continuation_contract": "native C++ exact set-area continuation follows RT-assisted LSI/PIP candidate discovery",
+      "native_continuation_contract": "backend-neutral native set-area/Jaccard summary follows bounded candidate discovery in compact summary mode",
       "non_claim_boundary": "chunk 1024 is the current safe default; arbitrary chunk sizes, exact Jaccard whole-app speedup, row materialization, Python setup, and positive public speedup wording remain outside the claim",
       "performance_class": "python_interface_dominated",
       "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
@@ -404,7 +404,7 @@
         "vulkan": "direct_cli_native"
       },
       "evidence_or_goal": "Goal887/Goal941",
-      "native_continuation_contract": "native C++ rerank summaries follow candidate KNN rows; OptiX prepared threshold path covers candidate-coverage decision only",
+      "native_continuation_contract": "native KNN rerank summaries follow candidate KNN rows; OptiX prepared threshold path covers candidate-coverage decision only",
       "non_claim_boundary": "full ANN indexing, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ behavior, recall optimization, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording": "RTDL's prepared ANN candidate-coverage RTX query/native sub-path measured 0.105215 s and 4.86x versus the reviewed same-semantics baseline.",
@@ -508,7 +508,7 @@
         "vulkan": "direct_cli_native"
       },
       "evidence_or_goal": "Goal887/Goal941",
-      "native_continuation_contract": "native C++ candidate summaries follow candidate rows; OptiX prepared threshold path covers node-coverage decision only",
+      "native_continuation_contract": "native fixed-radius candidate summaries follow candidate rows; OptiX prepared threshold path covers node-coverage decision only",
       "non_claim_boundary": "Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
       "public_wording": "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.222256 s and 240.56x versus the reviewed same-contract Embree node-coverage baseline.",

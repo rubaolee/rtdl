@@ -92,11 +92,11 @@ NATIVE_CONTINUATION_CONTRACTS = {
     "polygon_pair_overlap_area_rows": "backend-neutral native exact-area summary follows RT-assisted LSI/PIP candidate discovery in compact summary mode",
     "polygon_set_jaccard": "backend-neutral native set-area/Jaccard summary follows bounded candidate discovery in compact summary mode",
     "hausdorff_distance": "native continuation only for Embree directed_summary or OptiX directed_threshold_prepared decision paths",
-    "ann_candidate_search": "native C++ rerank summaries follow candidate KNN rows; OptiX prepared threshold path covers candidate-coverage decision only",
+    "ann_candidate_search": "native KNN rerank summaries follow candidate KNN rows; OptiX prepared threshold path covers candidate-coverage decision only",
     "outlier_detection": "native continuation only for OptiX density_count scalar path or Embree/OptiX per-point threshold summary paths",
     "dbscan_clustering": "native continuation only for OptiX core_count scalar path or Embree/OptiX per-point core-flag summary paths, not full cluster expansion",
     "robot_collision_screening": "native continuation only for prepared OptiX count or pose-flag summaries",
-    "barnes_hut_force_app": "native C++ candidate summaries follow candidate rows; OptiX prepared threshold path covers node-coverage decision only",
+    "barnes_hut_force_app": "native fixed-radius candidate summaries follow candidate rows; OptiX prepared threshold path covers node-coverage decision only",
     "apple_rt_demo": "outside NVIDIA RTX app table",
     "hiprt_ray_triangle_hitcount": "outside NVIDIA RTX app table",
 }
@@ -412,7 +412,7 @@ def main(argv: list[str] | None = None) -> int:
     output_json = ROOT / args.output_json
     output_md = ROOT / args.output_md
     output_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    output_md.write_text(to_markdown(payload) + "\n", encoding="utf-8")
+    output_md.write_text(to_markdown(payload).rstrip() + "\n", encoding="utf-8")
     print(json.dumps({"json": str(output_json), "md": str(output_md)}, sort_keys=True))
     return 0
 
