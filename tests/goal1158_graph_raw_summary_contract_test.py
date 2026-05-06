@@ -38,7 +38,7 @@ class Goal1158GraphRawSummaryContractTest(unittest.TestCase):
         self.assertEqual(payload["rows"], [])
         self.assertEqual(payload["row_count"], 7)
         self.assertEqual(payload["run_phases"]["row_materialization_sec"], 0.0)
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp_raw_row_view")
+        self.assertEqual(payload["native_continuation_backend"], "native_graph_bfs_raw_summary")
 
     def test_triangle_embree_summary_uses_raw_row_view_without_dict_materialization(self) -> None:
         raw_rows = _FakeRawRows(3)
@@ -58,7 +58,7 @@ class Goal1158GraphRawSummaryContractTest(unittest.TestCase):
         self.assertEqual(payload["rows"], [])
         self.assertEqual(payload["row_count"], 3)
         self.assertEqual(payload["run_phases"]["row_materialization_sec"], 0.0)
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp_raw_row_view")
+        self.assertEqual(payload["native_continuation_backend"], "native_graph_triangle_raw_summary")
 
     def test_bfs_optix_summary_uses_raw_row_view_contract(self) -> None:
         raw_rows = _FakeRawRows(11)
@@ -80,7 +80,7 @@ class Goal1158GraphRawSummaryContractTest(unittest.TestCase):
         self.assertEqual(run_optix.call_args.kwargs["result_mode"], "raw")
         self.assertEqual(payload["row_count"], 11)
         self.assertEqual(payload["run_phases"]["row_materialization_sec"], 0.0)
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp_raw_row_view")
+        self.assertEqual(payload["native_continuation_backend"], "native_graph_bfs_raw_summary")
 
     def test_triangle_optix_summary_uses_raw_row_view_contract(self) -> None:
         raw_rows = _FakeRawRows(13)
@@ -102,7 +102,7 @@ class Goal1158GraphRawSummaryContractTest(unittest.TestCase):
         self.assertEqual(run_optix.call_args.kwargs["result_mode"], "raw")
         self.assertEqual(payload["row_count"], 13)
         self.assertEqual(payload["run_phases"]["row_materialization_sec"], 0.0)
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp_raw_row_view")
+        self.assertEqual(payload["native_continuation_backend"], "native_graph_triangle_raw_summary")
 
 
 if __name__ == "__main__":

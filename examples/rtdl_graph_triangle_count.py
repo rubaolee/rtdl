@@ -86,7 +86,7 @@ def run_backend(
         try:
             raw_row_count = len(raw_rows)
             raw_summary = rt.summarize_triangle_row_view(raw_rows)
-            raw_summary_backend = "oracle_cpp_raw_row_view"
+            raw_summary_backend = "native_graph_triangle_raw_summary"
         finally:
             raw_rows.close()
         rows = ()
@@ -102,7 +102,7 @@ def run_backend(
                 try:
                     raw_row_count = len(raw_rows)
                     raw_summary = rt.summarize_triangle_row_view(raw_rows)
-                    raw_summary_backend = "oracle_cpp_raw_row_view"
+                    raw_summary_backend = "native_graph_triangle_raw_summary"
                 finally:
                     raw_rows.close()
                 rows = ()

@@ -149,6 +149,8 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             "native_fixed_radius_candidate_summary",
             "native_graph_bfs_summary",
             "native_graph_triangle_summary",
+            "native_graph_bfs_raw_summary",
+            "native_graph_triangle_raw_summary",
             "native graph BFS/triangle summary continuations",
         ):
             with self.subTest(phrase=phrase):
@@ -160,6 +162,8 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             "native C++ candidate-rerank summaries",
             "native C++ candidate-generation summaries",
             "graph summary mode uses native C++",
+            "oracle_cpp_raw_row_view",
+            "oracle_cpp+oracle_cpp",
         ):
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, combined)

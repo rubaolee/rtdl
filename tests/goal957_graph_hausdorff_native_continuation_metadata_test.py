@@ -59,7 +59,10 @@ class Goal957GraphHausdorffNativeContinuationMetadataTest(unittest.TestCase):
         )
 
         self.assertTrue(payload["native_continuation_active"])
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp+oracle_cpp")
+        self.assertEqual(
+            payload["native_continuation_backend"],
+            "native_graph_bfs_summary+native_graph_triangle_summary",
+        )
         self.assertFalse(payload["rt_core_accelerated"])
 
     def test_visibility_edges_optix_reports_visibility_pair_native_continuation(self) -> None:
