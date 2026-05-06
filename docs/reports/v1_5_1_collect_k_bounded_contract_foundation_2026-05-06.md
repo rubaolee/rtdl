@@ -48,6 +48,13 @@ native Embree and OptiX paths should satisfy next.
   the native ABI, which is valid when no rows are emitted and fail-closed when
   candidates exist.
 - Added `tests/goal1415_v1_5_1_native_collect_k_zero_capacity_test.py`.
+- Routed the final native Embree and OptiX bounded-collection wrapper results
+  through `validate_collect_k_bounded_result(...)`, so backend, coverage,
+  count, emitted-count, row-width, and canonical row-buffer metadata are checked
+  before the wrappers return.
+- Extended `tests/goal1415_v1_5_1_native_collect_k_zero_capacity_test.py` with
+  mocked inconsistent native duplicate-output metadata to prove both wrappers
+  fail closed on result-buffer metadata divergence.
 
 ## Contract Shape
 
@@ -230,9 +237,25 @@ with `candidate_capacity=0` raised fail-closed overflow with:
 native bounded OptiX polygon-pair candidate collection overflowed capacity 0; emitted at least 1; failure_mode=fail_closed_overflow
 ```
 
+Additional Windows command after routing final native wrapper results through
+the shared app-generic validator:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1409_v1_5_1_collect_k_bounded_contract_test tests.goal1410_v1_5_1_native_collect_k_row_buffer_surface_test tests.goal1411_v1_5_1_polygon_collect_k_helper_bridge_test tests.goal1412_v1_5_1_jaccard_consumes_generic_collect_rows_test tests.goal1413_v1_5_1_collect_k_result_validator_test tests.goal1414_v1_5_1_legacy_candidate_pairs_contract_bridge_test tests.goal1415_v1_5_1_native_collect_k_zero_capacity_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test
+```
+
+Result:
+
+```text
+Ran 40 tests in 0.020s
+OK
+```
+
 ## Next Work
 
-The next v1.5.1 slices should make native Embree and OptiX collection paths
-return or validate against this app-generic result-buffer contract. Native
-promotion, benchmark evidence, public wording, and release decisions still need
-the required parity, bounds, and external-review gates.
+The native Embree and OptiX collection wrappers now validate completed
+app-generic result-buffer metadata before returning. The next v1.5.1 slices
+should add same-contract native parity evidence and bounded collection
+benchmarks. Native promotion, public wording, and release decisions still need
+the required parity, benchmark, and external-review gates.

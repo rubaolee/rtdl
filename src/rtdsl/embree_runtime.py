@@ -40,6 +40,7 @@ from .db_reference import normalize_denorm_table
 from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
+from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Point3D as _CanonicalPoint3D
@@ -885,7 +886,7 @@ def collect_polygon_pair_candidates_bounded_embree(
         )
     )
     row_buffer = collect_k_bounded_rows(candidate_pairs, k=int(candidate_capacity), row_width=2)
-    return {
+    result = {
         "primitive": "COLLECT_K_BOUNDED",
         "backend": "embree",
         "app_generic": row_buffer["app_generic"],
@@ -913,6 +914,7 @@ def collect_polygon_pair_candidates_bounded_embree(
             "Jaccard score reduction and whole-app speedup require separate evidence"
         ),
     }
+    return validate_collect_k_bounded_result(result, row_width=2, backend="embree")
 
 
 def pack_triangles(

@@ -78,6 +78,7 @@ from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 from .runtime import _identity_cache_token
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
+from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Point3D as _CanonicalPoint3D
@@ -3080,7 +3081,7 @@ def collect_polygon_pair_candidates_bounded_optix(
         )
     )
     row_buffer = collect_k_bounded_rows(candidate_pairs, k=int(candidate_capacity), row_width=2)
-    return {
+    result = {
         "primitive": "COLLECT_K_BOUNDED",
         "backend": "optix",
         "app_generic": row_buffer["app_generic"],
@@ -3108,6 +3109,7 @@ def collect_polygon_pair_candidates_bounded_optix(
             "Jaccard score reduction and whole-app speedup require separate evidence"
         ),
     }
+    return validate_collect_k_bounded_result(result, row_width=2, backend="optix")
 
 
 def _call_point_nearest_segment_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:

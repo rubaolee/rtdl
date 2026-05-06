@@ -12,7 +12,9 @@ class Goal1410V151NativeCollectKRowBufferSurfaceTest(unittest.TestCase):
         runtime = (ROOT / "src/rtdsl/embree_runtime.py").read_text(encoding="utf-8")
 
         self.assertIn("from .v1_5_1_collect_k_bounded import collect_k_bounded_rows", runtime)
+        self.assertIn("from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result", runtime)
         self.assertIn("row_buffer = collect_k_bounded_rows(candidate_pairs", runtime)
+        self.assertIn('validate_collect_k_bounded_result(result, row_width=2, backend="embree")', runtime)
         self.assertIn('"app_generic": row_buffer["app_generic"]', runtime)
         self.assertIn('"candidate_id_rows": row_buffer["candidate_id_rows"]', runtime)
         self.assertIn('"valid_count": row_buffer["valid_count"]', runtime)
@@ -24,7 +26,9 @@ class Goal1410V151NativeCollectKRowBufferSurfaceTest(unittest.TestCase):
         runtime = (ROOT / "src/rtdsl/optix_runtime.py").read_text(encoding="utf-8")
 
         self.assertIn("from .v1_5_1_collect_k_bounded import collect_k_bounded_rows", runtime)
+        self.assertIn("from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result", runtime)
         self.assertIn("row_buffer = collect_k_bounded_rows(candidate_pairs", runtime)
+        self.assertIn('validate_collect_k_bounded_result(result, row_width=2, backend="optix")', runtime)
         self.assertIn('"app_generic": row_buffer["app_generic"]', runtime)
         self.assertIn('"candidate_id_rows": row_buffer["candidate_id_rows"]', runtime)
         self.assertIn('"valid_count": row_buffer["valid_count"]', runtime)
