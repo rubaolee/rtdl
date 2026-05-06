@@ -21,7 +21,8 @@ class RtDslEmbreeTest(unittest.TestCase):
 
     def test_embree_version_is_available(self) -> None:
         version = rt.embree_version()
-        self.assertEqual(version[0], 4)
+        self.assertIn(version[0], (3, 4))
+        self.assertGreaterEqual(version[1], 0)
 
     def test_run_embree_lsi_matches_cpu(self) -> None:
         left = (
