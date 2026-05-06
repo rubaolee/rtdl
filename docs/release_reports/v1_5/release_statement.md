@@ -1,11 +1,11 @@
 # RTDL v1.5 Release Statement
 
-Status: release candidate ready; not tagged until an explicit release/tag action.
+Status: released. The `v1.5` annotated tag was published after explicit release
+authorization.
 
-The current released version remains `v1.0` until that explicit release action
-is performed.
+The previous public release remains `v1.0`; it was not moved or retagged.
 
-Proposed release statement:
+Release statement:
 
 > RTDL v1.5 is the standalone Embree+OptiX language/runtime completion release
 > for the supported v1.5 surface. It stabilizes the generic
@@ -22,8 +22,7 @@ Proposed release statement:
   v1.5 contracts.
 - The stable v1.5 primitive set is `ANY_HIT`, `COUNT_HITS`,
   `REDUCE_FLOAT(MIN|MAX|SUM)`, and `REDUCE_INT(COUNT|SUM)`.
-- The v1.5 release candidate includes 14 included app contracts and 4 excluded
-  app rows.
+- The v1.5 release includes 14 included app contracts and 4 excluded app rows.
 - The included apps have same-contract correctness, benchmark evidence, and
   support-maturity gates recorded in the v1.5 reports.
 - `COLLECT_K_BOUNDED` remains experimental in v1.5 and moves to the v1.5.1
@@ -36,7 +35,6 @@ Proposed release statement:
 
 ## What This Release Must Not Claim
 
-- a v1.5 tag exists before an explicit release/tag action;
 - a move or retag of `v1.0`;
 - package-install support beyond source-tree execution;
 - no whole-app speedup restriction;

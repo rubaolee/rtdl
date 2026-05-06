@@ -1,11 +1,11 @@
-# RTDL v1.5 Release-Candidate Package
+# RTDL v1.5 Release Package
 
-Status: release candidate ready; not tagged until an explicit release/tag action.
+Status: released. The `v1.5` annotated tag was published after explicit release
+authorization.
 
-The current released version remains `v1.0` until that explicit release action
-is performed.
+The previous public release remains `v1.0`; it was not moved or retagged.
 
-RTDL v1.5 is the standalone Embree+OptiX language/runtime completion candidate
+RTDL v1.5 is the standalone Embree+OptiX language/runtime completion release
 for the supported v1.5 surface. It packages the stable generic
 traversal-plus-reduction primitive layer, classifies the public app set, and
 records same-contract correctness, benchmark evidence, and support maturity for
@@ -38,7 +38,7 @@ This package records the v1.5 boundary:
 
 ## Allowed Conclusion
 
-RTDL v1.5 is the standalone Embree+OptiX language/runtime completion candidate
+RTDL v1.5 is the standalone Embree+OptiX language/runtime completion release
 for the supported v1.5 surface: generic traversal-plus-reduction primitives, 14
 included app contracts, explicit exclusion of row-returning `COLLECT_K_BOUNDED`
 apps, no new whole-app speedup claim, and no claim that the native engine has
@@ -46,7 +46,7 @@ app-free internals.
 
 ## Disallowed Conclusions
 
-- that a v1.5 tag exists before an explicit release/tag action;
+- that the v1.5 release moves or retags `v1.0`;
 - that `v1.0` has been moved or retagged;
 - package-install support beyond source-tree execution;
 - no whole-app speedup boundary being removed;
@@ -75,7 +75,7 @@ app-free internals.
 
 All implementation-facing standalone gates are complete: classification,
 `COLLECT_K_BOUNDED` exclusion, same-contract correctness, benchmark evidence,
-and support maturity. This package closes the release-docs/public-wording gate
-as a release candidate. Goal1411 records 3-AI acceptance of the native-engine
-app-agnostic boundary and RTX pod backend interpretation, but tag creation still
-requires an explicit release/tag action.
+support maturity, release-docs/public-wording, boundary/backend consensus, and
+the app-independent engine roadmap. The `v1.5` tag has been published; no
+package-install, whole-app speedup, or zero-app-knowledge native-engine claim is
+added by this release.

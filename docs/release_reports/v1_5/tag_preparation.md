@@ -1,9 +1,9 @@
 # RTDL v1.5 Tag Preparation
 
-Status: prepared, but no tag action is authorized by this file.
+Status: completed. The `v1.5` annotated tag has been published after explicit
+release/tag authorization.
 
-The current released version remains `v1.0` until an explicit release/tag action
-is performed.
+The previous public release remains `v1.0`; it was not moved or retagged.
 
 ## Candidate Tag
 
@@ -43,8 +43,8 @@ PYTHONPATH=src:. python3 -m unittest \
 Latest recorded verification:
 `docs/reports/goal1412_v1_5_final_pre_tag_verification_2026-05-06.md`
 
-## Non-Action
+## Tag Result
 
-This document does not create `v1.5`, move `v1.0`, or authorize release/tag
-action by itself. It records the final checklist for the explicit release/tag
-action.
+The tag action was performed after explicit user approval. This document does
+not authorize moving `v1.5`, moving `v1.0`, or broadening the public claims
+listed above.

@@ -1,7 +1,7 @@
 # RTDL v1.5 Release-Candidate Audit Report
 
-Status: all v1.5 release-candidate gates pass; explicit release/tag action still
-required.
+Status: all v1.5 release gates passed, and the `v1.5` annotated tag has been
+published after explicit release authorization.
 
 ## Gate Summary
 
@@ -47,8 +47,7 @@ Not allowed:
 
 ## Result
 
-The v1.5 release candidate is complete from the gate perspective. The next step
-is an explicit release decision and tag operation if the user approves. Goal1411
-records 3-AI acceptance of the native-engine app-agnostic boundary and RTX pod
-Embree-vs-OptiX interpretation; it does not itself create a tag or authorize
-unbounded public speedup claims.
+The v1.5 release is complete from the gate perspective and the `v1.5` tag has
+been published. Goal1411 records 3-AI acceptance of the native-engine
+app-agnostic boundary and RTX pod Embree-vs-OptiX interpretation; it does not
+authorize unbounded public speedup claims.
