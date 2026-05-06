@@ -37,4 +37,13 @@ intentionally unchanged.
 
 ## Pod Validation
 
-Pending after push.
+Pod source state:
+
+- reset `/root/rtdl_python_only` from GitHub `origin/main`
+- commit: `74452cb3812d9a0d3e151277f9b9cde232410039`
+
+Pod validation:
+
+- active examples/public-doc focused gate:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal938_public_rtx_wording_sync_test tests.goal646_public_front_page_doc_consistency_test tests.goal655_tutorial_example_current_main_consistency_test tests.goal687_app_engine_support_matrix_test`
+  - 20 tests OK.
