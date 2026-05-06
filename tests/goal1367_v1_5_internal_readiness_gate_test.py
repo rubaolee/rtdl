@@ -154,6 +154,18 @@ class V15InternalReadinessGateTest(unittest.TestCase):
             rt.V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS,
         )
         self.assertFalse(decision["public_claims_ready"])
+        self.assertEqual(decision["required_external_review_partners"], ("claude", "gemini"))
+        self.assertEqual(
+            decision["required_external_review_partners"],
+            rt.V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS,
+        )
+        self.assertEqual(decision["accepted_external_review_partners"], ("claude",))
+        self.assertEqual(
+            decision["accepted_external_review_partners"],
+            rt.V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS,
+        )
+        self.assertEqual(decision["missing_external_review_partners"], ("gemini",))
+        self.assertFalse(decision["external_3_ai_consensus_ready"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])

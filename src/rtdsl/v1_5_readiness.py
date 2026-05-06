@@ -56,6 +56,8 @@ V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS = (
     "external_3_ai_consensus",
     "public_wording_review",
 )
+V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS = ("claude", "gemini")
+V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS = ("claude",)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -251,6 +253,18 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "blocked_next_actions": V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS,
         "public_claim_preconditions": V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS,
         "public_claims_ready": False,
+        "required_external_review_partners": (
+            V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS
+        ),
+        "accepted_external_review_partners": (
+            V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS
+        ),
+        "missing_external_review_partners": tuple(
+            partner
+            for partner in V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS
+            if partner not in V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS
+        ),
+        "external_3_ai_consensus_ready": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -287,8 +301,30 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
             raise ValueError(f"missing public claim precondition: {precondition}")
     if decision["public_claims_ready"] is not False:
         raise ValueError("v1.5 internal readiness decision must not mark public claims ready")
+    if (
+        tuple(decision["required_external_review_partners"])
+        != V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS
+    ):
+        raise ValueError("v1.5 internal readiness decision must preserve required external reviewers")
+    if (
+        tuple(decision["accepted_external_review_partners"])
+        != V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS
+    ):
+        raise ValueError("v1.5 internal readiness decision must preserve accepted external reviewers")
+    missing_external_review_partners = tuple(
+        partner
+        for partner in decision["required_external_review_partners"]
+        if partner not in decision["accepted_external_review_partners"]
+    )
+    if tuple(decision["missing_external_review_partners"]) != missing_external_review_partners:
+        raise ValueError("v1.5 internal readiness decision must report missing external reviewers")
+    if not decision["missing_external_review_partners"]:
+        raise ValueError("v1.5 internal readiness decision must not imply 3-AI consensus is complete")
+    if decision["external_3_ai_consensus_ready"] is not False:
+        raise ValueError("v1.5 internal readiness decision must not mark 3-AI consensus ready")
     for flag in (
         "public_claims_ready",
+        "external_3_ai_consensus_ready",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",
