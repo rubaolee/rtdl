@@ -35,6 +35,20 @@ V1_5_1_COLLECT_K_BOUNDED_READINESS_ALLOWED_NEXT_ACTIONS = (
     "request_explicit_release_gate_review",
     "continue_python_rtdl_track_hardening",
 )
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSAL_STATUS = (
+    "proposal_ready_for_external_release_surface_review"
+)
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION = (
+    "documented_experimental_public_candidate"
+)
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_REQUIRED_REVIEW = "3-AI release-surface review"
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_FORBIDDEN_WORDING = (
+    "stable primitive",
+    "public speedup",
+    "zero-copy",
+    "whole-app speedup",
+    "release tag action",
+)
 
 
 def v1_5_1_collect_k_bounded_contract() -> dict[str, Any]:
@@ -290,6 +304,104 @@ def validate_v1_5_1_collect_k_bounded_readiness_gate() -> dict[str, Any]:
         if phrase not in boundary:
             raise ValueError("v1.5.1 collect-k readiness claim boundary is incomplete")
     return gate
+
+
+def v1_5_1_collect_k_bounded_release_surface_proposal() -> dict[str, Any]:
+    """Return the proposed v1.5.1 release surface for bounded collection.
+
+    The proposal is intentionally not an authorization. It recommends a cautious
+    documented experimental surface after the readiness gate, while keeping
+    stable promotion and public claims closed until release-surface review.
+    """
+    readiness = validate_v1_5_1_collect_k_bounded_readiness_gate()
+    return {
+        "status": V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSAL_STATUS,
+        "primitive": readiness["primitive"],
+        "track": readiness["track"],
+        "proposed_classification": V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION,
+        "proposed_public_surface": (
+            "document COLLECT_K_BOUNDED as a v1.5.1 experimental Python+RTDL candidate "
+            "for bounded candidate-id row collection over Embree and OptiX"
+        ),
+        "not_proposed": (
+            "stable primitive promotion",
+            "whole-app speedup wording",
+            "public speedup wording",
+            "zero-copy wording",
+            "release tag action",
+            "new backend expansion",
+        ),
+        "evidence_ready": readiness["failed_gates"] == (),
+        "readiness_status": readiness["status"],
+        "readiness_consensus": (
+            "docs/reports/three_ai_goal1418_v1_5_1_collect_k_readiness_gate_consensus_2026-05-06.md"
+        ),
+        "parity_consensus": readiness["parity_consensus_evidence"],
+        "benchmark_consensus": readiness["benchmark_consensus_evidence"],
+        "required_review": V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_REQUIRED_REVIEW,
+        "required_review_partners": ("claude", "gemini"),
+        "public_docs_change_authorized_by_this_proposal": False,
+        "stable_promotion_authorized_by_this_proposal": False,
+        "public_speedup_wording_authorized_by_this_proposal": False,
+        "zero_copy_wording_authorized_by_this_proposal": False,
+        "release_tag_action_authorized_by_this_proposal": False,
+        "allowed_next_actions": (
+            "request_external_release_surface_review",
+            "draft_user_docs_after_release_surface_review_accepts",
+            "keep_v1_5_public_docs_unchanged_until_authorized",
+        ),
+        "forbidden_wording": V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_FORBIDDEN_WORDING,
+        "claim_boundary": (
+            "This is a v1.5.1 release-surface proposal only: evidence-ready "
+            "COLLECT_K_BOUNDED may be considered for documented experimental public-candidate "
+            "status after 3-AI release-surface review, but this proposal itself does not "
+            "authorize public docs changes, stable promotion, speedup wording, zero-copy wording, "
+            "release tag action, or whole-app claims."
+        ),
+    }
+
+
+def validate_v1_5_1_collect_k_bounded_release_surface_proposal() -> dict[str, Any]:
+    proposal = v1_5_1_collect_k_bounded_release_surface_proposal()
+    if proposal["status"] != V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSAL_STATUS:
+        raise ValueError("invalid v1.5.1 collect-k release-surface proposal status")
+    if proposal["primitive"] != V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE:
+        raise ValueError("release-surface proposal must target COLLECT_K_BOUNDED")
+    if proposal["proposed_classification"] != V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION:
+        raise ValueError("release-surface proposal classification mismatch")
+    if proposal["evidence_ready"] is not True:
+        raise ValueError("release-surface proposal requires readiness evidence")
+    if proposal["required_review"] != V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_REQUIRED_REVIEW:
+        raise ValueError("release-surface proposal must require 3-AI review")
+    if proposal["required_review_partners"] != ("claude", "gemini"):
+        raise ValueError("release-surface proposal must require Claude and Gemini")
+    false_flags = (
+        "public_docs_change_authorized_by_this_proposal",
+        "stable_promotion_authorized_by_this_proposal",
+        "public_speedup_wording_authorized_by_this_proposal",
+        "zero_copy_wording_authorized_by_this_proposal",
+        "release_tag_action_authorized_by_this_proposal",
+    )
+    for flag in false_flags:
+        if proposal[flag] is not False:
+            raise ValueError(f"release-surface proposal must keep {flag}=False")
+    for forbidden in V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_FORBIDDEN_WORDING:
+        if forbidden not in proposal["forbidden_wording"]:
+            raise ValueError(f"missing forbidden wording: {forbidden}")
+    boundary = str(proposal["claim_boundary"])
+    for phrase in (
+        "proposal only",
+        "documented experimental public-candidate",
+        "does not authorize public docs changes",
+        "stable promotion",
+        "speedup wording",
+        "zero-copy wording",
+        "release tag action",
+        "whole-app claims",
+    ):
+        if phrase not in boundary:
+            raise ValueError("release-surface proposal claim boundary is incomplete")
+    return proposal
 
 
 def _normalize_candidate_rows(
