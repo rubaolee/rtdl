@@ -41,5 +41,18 @@ Historical reports and copied pod artifacts are intentionally unchanged.
 - `git diff --check`
   - clean.
 
-Pod validation is pending for the pushed commit.
+## Pod Validation
 
+Pod source state:
+
+- reset `/root/rtdl_python_only` from GitHub `origin/main`
+- commit: `73c19b3fd48ca1fa54b4a6d88f38b7be11993d33`
+
+Pod validation:
+
+- focused status-doc gate:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal938_public_rtx_wording_sync_test tests.goal947_v1_rtx_app_status_page_test tests.goal1010_public_rtx_readme_wording_test tests.goal1228_v1_0_positioning_docs_test`
+  - 22 tests OK.
+- `goal13*` sweep:
+  `PYTHONPATH=src:. python3 -m unittest $(find tests -maxdepth 1 -name 'goal13*_test.py' -exec basename {} .py \; | sed 's/^/tests./')`
+  - 76 tests OK.
