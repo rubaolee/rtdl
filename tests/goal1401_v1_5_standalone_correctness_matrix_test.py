@@ -15,19 +15,14 @@ class Goal1401StandaloneCorrectnessMatrixTest(unittest.TestCase):
             "excluded_from_standalone_v1_5",
         })
 
-    def test_correctness_summary_keeps_release_gate_blocked(self):
+    def test_correctness_summary_closes_local_correctness_gate(self):
         summary = rt.validate_v1_5_standalone_correctness_summary()
 
-        self.assertEqual(summary["covered_app_count"], 10)
-        self.assertEqual(summary["pending_app_count"], 4)
+        self.assertEqual(summary["covered_app_count"], 14)
+        self.assertEqual(summary["pending_app_count"], 0)
         self.assertEqual(summary["excluded_app_count"], 4)
-        self.assertFalse(summary["release_gate_complete"])
-        self.assertEqual(summary["pending_apps"], (
-            "barnes_hut_force_app",
-            "hausdorff_distance",
-            "road_hazard_screening",
-            "segment_polygon_hitcount",
-        ))
+        self.assertTrue(summary["release_gate_complete"])
+        self.assertEqual(summary["pending_apps"], ())
 
     def test_covered_apps_reference_existing_local_tests(self):
         matrix = rt.validate_v1_5_standalone_correctness_matrix()
@@ -38,14 +33,18 @@ class Goal1401StandaloneCorrectnessMatrixTest(unittest.TestCase):
         }
         self.assertEqual(covered_apps, {
             "ann_candidate_search",
+            "barnes_hut_force_app",
             "database_analytics",
             "dbscan_clustering",
             "event_hotspot_screening",
             "facility_knn_assignment",
             "graph_analytics",
+            "hausdorff_distance",
             "outlier_detection",
             "polygon_pair_overlap_area_rows",
+            "road_hazard_screening",
             "robot_collision_screening",
+            "segment_polygon_hitcount",
             "service_coverage_gaps",
         })
         for app in covered_apps:
@@ -58,6 +57,7 @@ class Goal1401StandaloneCorrectnessMatrixTest(unittest.TestCase):
     def test_pending_apps_define_missing_same_contract_evidence(self):
         matrix = rt.validate_v1_5_standalone_correctness_matrix()
 
+        self.assertEqual(rt.V1_5_STANDALONE_CORRECTNESS_PENDING_APPS, ())
         for app in rt.V1_5_STANDALONE_CORRECTNESS_PENDING_APPS:
             with self.subTest(app=app):
                 row = matrix[app]
@@ -85,20 +85,15 @@ class Goal1401StandaloneCorrectnessMatrixTest(unittest.TestCase):
                 self.assertFalse(matrix[app]["standalone_included"])
                 self.assertFalse(matrix[app]["required_backends"])
 
-    def test_release_gate_embeds_correctness_summary_but_does_not_pass_it(self):
+    def test_release_gate_embeds_completed_correctness_summary(self):
         gate = rt.validate_v1_5_standalone_release_gate()
 
-        self.assertFalse(gate["gate_results"]["same_contract_per_app_correctness"])
-        self.assertEqual(gate["same_contract_correctness_covered_app_count"], 10)
-        self.assertEqual(gate["same_contract_correctness_pending_app_count"], 4)
+        self.assertTrue(gate["gate_results"]["same_contract_per_app_correctness"])
+        self.assertEqual(gate["same_contract_correctness_covered_app_count"], 14)
+        self.assertEqual(gate["same_contract_correctness_pending_app_count"], 0)
         self.assertEqual(gate["same_contract_correctness_excluded_app_count"], 4)
-        self.assertEqual(gate["same_contract_correctness_pending_apps"], (
-            "barnes_hut_force_app",
-            "hausdorff_distance",
-            "road_hazard_screening",
-            "segment_polygon_hitcount",
-        ))
-        self.assertIn("same_contract_per_app_correctness", gate["failed_gates"])
+        self.assertEqual(gate["same_contract_correctness_pending_apps"], ())
+        self.assertIn("same_contract_per_app_correctness", gate["passed_gates"])
         self.assertFalse(gate["public_release_authorized"])
 
 

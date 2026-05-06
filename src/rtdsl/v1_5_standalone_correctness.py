@@ -24,14 +24,10 @@ V1_5_STANDALONE_CORRECTNESS_COMMAND = (
     "tests.goal1301_v1_5_outlier_dbscan_generic_migration_test "
     "tests.goal1306_v1_5_robot_pose_flags_generic_migration_test "
     "tests.goal1307_v1_5_db_compact_summary_generic_migration_test "
-    "tests.goal1309_v1_5_polygon_pair_generic_area_summary_test"
+    "tests.goal1309_v1_5_polygon_pair_generic_area_summary_test "
+    "tests.goal1402_v1_5_pending_app_correctness_closure_test"
 )
-V1_5_STANDALONE_CORRECTNESS_PENDING_APPS = (
-    "road_hazard_screening",
-    "segment_polygon_hitcount",
-    "hausdorff_distance",
-    "barnes_hut_force_app",
-)
+V1_5_STANDALONE_CORRECTNESS_PENDING_APPS: tuple[str, ...] = ()
 
 
 def _repo_root() -> Path:
@@ -148,24 +144,24 @@ def v1_5_standalone_correctness_matrix() -> dict[str, dict[str, Any]]:
             test_modules=("tests.goal1309_v1_5_polygon_pair_generic_area_summary_test",),
             boundary="candidate discovery plus exact-area summary only; broad overlay remains outside",
         ),
-        "road_hazard_screening": _pending(
+        "road_hazard_screening": _covered(
             surface="segment/polygon compact count summary wrapper",
-            required_evidence="same fixture, same threshold, Embree/OptiX compact hazard summary parity",
+            test_modules=("tests.goal1402_v1_5_pending_app_correctness_closure_test",),
             boundary="compact hazard summary only; full GIS/routing remains outside",
         ),
-        "segment_polygon_hitcount": _pending(
+        "segment_polygon_hitcount": _covered(
             surface="segment/polygon hit-count summary wrapper",
-            required_evidence="same fixture, same threshold, Embree/OptiX compact hit-count summary parity",
+            test_modules=("tests.goal1402_v1_5_pending_app_correctness_closure_test",),
             boundary="compact hit-count summary only; pair-row output remains outside",
         ),
-        "hausdorff_distance": _pending(
+        "hausdorff_distance": _covered(
             surface="threshold decision fixed-radius count summary",
-            required_evidence="Embree/OptiX threshold-decision parity against the same CPU oracle",
+            test_modules=("tests.goal1402_v1_5_pending_app_correctness_closure_test",),
             boundary="threshold decision only; exact Hausdorff rows remain outside",
         ),
-        "barnes_hut_force_app": _pending(
+        "barnes_hut_force_app": _covered(
             surface="node-coverage fixed-radius count summary",
-            required_evidence="Embree/OptiX node-coverage decision parity against the same CPU oracle",
+            test_modules=("tests.goal1402_v1_5_pending_app_correctness_closure_test",),
             boundary="node-coverage decision only; force-vector reduction remains outside",
         ),
         "segment_polygon_anyhit_rows": _excluded(
@@ -302,6 +298,6 @@ def validate_v1_5_standalone_correctness_summary() -> dict[str, Any]:
         raise ValueError("v1.5 standalone correctness included counts mismatch")
     if tuple(summary["pending_apps"]) != tuple(sorted(V1_5_STANDALONE_CORRECTNESS_PENDING_APPS)):
         raise ValueError("v1.5 standalone correctness pending app list mismatch")
-    if summary["release_gate_complete"] is not False:
-        raise ValueError("v1.5 standalone correctness gate must remain incomplete")
+    if summary["release_gate_complete"] is not True:
+        raise ValueError("v1.5 standalone correctness gate must be complete")
     return summary

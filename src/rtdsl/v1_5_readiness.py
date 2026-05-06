@@ -734,8 +734,11 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         "primitive_packet_prerequisite",
         "roadmap_consensus",
         "app_migration_classification",
+        "same_contract_per_app_correctness",
     ):
-        raise ValueError("only prerequisite, roadmap consensus, and classification gates should pass now")
+        raise ValueError(
+            "only prerequisite, roadmap consensus, classification, and correctness gates should pass now"
+        )
     expected_failed = tuple(
         required
         for required in V1_5_STANDALONE_RELEASE_REQUIRED_GATES
@@ -774,20 +777,15 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("standalone app classification must include at least one app")
     if int(gate["standalone_excluded_app_count"]) <= 0:
         raise ValueError("standalone app classification must exclude frozen/collection-dependent apps")
-    if gate["gate_results"]["same_contract_per_app_correctness"] is not False:
-        raise ValueError("same-contract correctness must remain blocked until pending apps pass")
-    if int(gate["same_contract_correctness_covered_app_count"]) != 10:
+    if gate["gate_results"]["same_contract_per_app_correctness"] is not True:
+        raise ValueError("same-contract correctness must pass after Goal1402 closure tests")
+    if int(gate["same_contract_correctness_covered_app_count"]) != 14:
         raise ValueError("same-contract correctness covered app count mismatch")
-    if int(gate["same_contract_correctness_pending_app_count"]) != 4:
+    if int(gate["same_contract_correctness_pending_app_count"]) != 0:
         raise ValueError("same-contract correctness pending app count mismatch")
     if int(gate["same_contract_correctness_excluded_app_count"]) != 4:
         raise ValueError("same-contract correctness excluded app count mismatch")
-    if tuple(gate["same_contract_correctness_pending_apps"]) != (
-        "barnes_hut_force_app",
-        "hausdorff_distance",
-        "road_hazard_screening",
-        "segment_polygon_hitcount",
-    ):
+    if tuple(gate["same_contract_correctness_pending_apps"]) != ():
         raise ValueError("same-contract correctness pending apps mismatch")
     for required_classification in (
         "fully_generic",

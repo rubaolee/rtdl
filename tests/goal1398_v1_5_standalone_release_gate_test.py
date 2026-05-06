@@ -30,13 +30,13 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
                 "primitive_packet_prerequisite",
                 "roadmap_consensus",
                 "app_migration_classification",
+                "same_contract_per_app_correctness",
             ),
         )
         self.assertEqual(
             gate["failed_gates"],
             (
                 "collect_k_bounded_resolution",
-                "same_contract_per_app_correctness",
                 "same_contract_per_app_benchmarks",
                 "test_backed_support_maturity_matrix",
                 "release_docs_and_public_wording",
@@ -45,6 +45,7 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         for failed_gate in gate["failed_gates"]:
             with self.subTest(failed_gate=failed_gate):
                 self.assertFalse(gate["gate_results"][failed_gate])
+        self.assertTrue(gate["gate_results"]["same_contract_per_app_correctness"])
 
     def test_gate_keeps_collect_k_bounded_unresolved(self):
         gate = rt.validate_v1_5_standalone_release_gate()
@@ -104,6 +105,15 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         for classification in rt.V1_5_STANDALONE_APP_CLASSIFICATIONS:
             with self.subTest(classification=classification):
                 self.assertIn(classification, gate["app_classification_counts"])
+
+    def test_gate_embeds_completed_same_contract_correctness_summary(self):
+        gate = rt.validate_v1_5_standalone_release_gate()
+
+        self.assertTrue(gate["gate_results"]["same_contract_per_app_correctness"])
+        self.assertEqual(gate["same_contract_correctness_covered_app_count"], 14)
+        self.assertEqual(gate["same_contract_correctness_pending_app_count"], 0)
+        self.assertEqual(gate["same_contract_correctness_excluded_app_count"], 4)
+        self.assertEqual(gate["same_contract_correctness_pending_apps"], ())
 
 
 if __name__ == "__main__":
