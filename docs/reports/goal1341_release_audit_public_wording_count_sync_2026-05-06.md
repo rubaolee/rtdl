@@ -33,9 +33,13 @@ does not add Vulkan, HIPRT, or Apple RT implementation work.
 
 ## Pod Validation
 
-Pending. Planned command shape:
+Pod SSH command:
 
 `ssh root@213.173.108.215 -p 14800 -i ~/.ssh/id_ed25519_rtdl_codex`
 
-The pod should validate from Git with `git fetch origin main`, `git reset --hard
-origin/main`, record `git rev-parse HEAD`, and run the focused audit test suite.
+Validated from Git with `git fetch origin main` and `git reset --hard
+origin/main`.
+
+- Pod commit: `8a483afc06df464c0192915629fcde1d698bb675`.
+- Pod command: `PYTHONPATH=src:. python3 -m unittest tests.goal1179_public_docs_goal1177_boundary_audit_test tests.goal1180_current_release_readiness_window_audit_test tests.goal1185_goal1184_public_status_sync_audit_test tests.goal1186_current_release_readiness_after_goal1185_audit_test tests.goal1210_v0_9_8_release_readiness_audit_test`
+- Pod result: `OK`, 18 tests.
