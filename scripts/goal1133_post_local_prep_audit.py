@@ -81,7 +81,7 @@ EXPECTED_PUBLIC_WORDING = {
     "database_analytics": "public_wording_not_reviewed",
     "graph_analytics": "public_wording_blocked",
     "hausdorff_distance": "public_wording_reviewed",
-    "polygon_pair_overlap_area_rows": "public_wording_blocked",
+    "polygon_pair_overlap_area_rows": "public_wording_reviewed",
     "polygon_set_jaccard": "public_wording_not_reviewed",
     "road_hazard_screening": "public_wording_reviewed",
 }
