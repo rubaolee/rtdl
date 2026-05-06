@@ -44,3 +44,27 @@ PYTHONPATH=src:. python3 -m unittest <v1.5 slice>
 Ran 102 tests in 0.030s
 OK
 ```
+
+## Pod Validation
+
+Pod SSH:
+
+```text
+ssh root@213.173.108.215 -p 14800 -i ~/.ssh/id_ed25519_rtdl_codex
+```
+
+Fresh Git clone validation:
+
+```text
+commit: aa8a881d9b1af2f36e39d80ad7efe280f8fbe904
+python: Python 3.12.3
+git: git version 2.43.0
+
+PYTHONPATH=src:. python3 -m unittest tests.goal1367_v1_5_internal_readiness_gate_test
+Ran 9 tests in 0.002s
+OK
+
+PYTHONPATH=src:. python3 -m unittest <v1.5 slice>
+Ran 102 tests in 5.910s
+OK
+```
