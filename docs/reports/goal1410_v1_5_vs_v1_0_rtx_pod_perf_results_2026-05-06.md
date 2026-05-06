@@ -81,6 +81,34 @@ OptiX interpretation: v1.5 shows positive RTX pod movement for
 and `robot_collision_screening` under the measured compact/prepared subpaths.
 The remaining measured OptiX rows are roughly equal.
 
+## v1.5 Embree vs OptiX On RTX Pod
+
+The Embree run used `RTDL_EMBREE_THREADS=auto`, which recorded 112 effective
+CPU threads in the raw artifact. The table below compares v1.5 Embree against
+v1.5 OptiX on the same pod for rows where both backends have measured profiles.
+
+| App | Embree sec | OptiX sec | Faster backend |
+| --- | ---: | ---: | --- |
+| `database_analytics` | 0.001149 | 0.001843 | Embree 1.6x |
+| `facility_knn_assignment` | 0.044597 | 0.000078 | OptiX 571.8x |
+| `road_hazard_screening` | 0.010865 | 0.006612 | OptiX 1.6x |
+| `segment_polygon_hitcount` | 0.018843 | 0.027528 | Embree 1.5x |
+| `polygon_pair_overlap_area_rows` | 0.085677 | 0.735516 | Embree 8.6x |
+| `hausdorff_distance` | 0.025492 | 0.000139 | OptiX 183.4x |
+| `ann_candidate_search` | 0.949120 | 0.000078 | OptiX 12168.2x |
+| `robot_collision_screening` | 0.323507 | 0.000092 | OptiX 3516.4x |
+| `barnes_hut_force_app` | 0.091168 | 0.000074 | OptiX 1232.0x |
+
+Interpretation: both backends use ray-tracing-style execution, but Embree runs
+directly in CPU memory while OptiX crosses the CPU/GPU boundary. The Embree
+wins are therefore consistent with small, compact, or CPU-refinement-heavy
+profiles where avoiding GPU upload/download, CUDA launch latency,
+synchronization, and marshaling outweighs GPU RT traversal throughput. This is
+especially visible for `polygon_pair_overlap_area_rows`, whose measured profile
+includes candidate discovery plus CPU/Python exact-area refinement. Conversely,
+the prepared decision-style OptiX profiles show that GPU RT dominates once the
+work is compact enough and large enough to amortize fixed GPU overhead.
+
 ## Excluded Apps
 
 These apps are intentionally excluded from v1.5 same-contract comparison:
