@@ -60,6 +60,7 @@ V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS = ("claude", "gemini")
 V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS = ("claude",)
 V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE = "source_tree_pythonpath"
 V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND = "PYTHONPATH=src:. python ..."
+V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG = "v1.0"
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -279,6 +280,9 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "experimental_primitives": gate["experimental_primitives"],
         "experimental_contract_status_counts": gate["experimental_contract_status_counts"],
         "stable_collect_k_bounded_promotion_authorized": False,
+        "current_public_release_tag": V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG,
+        "current_public_release_tag_move_authorized": False,
+        "new_public_release_tag_authorized": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -354,6 +358,8 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must not mark COLLECT_K_BOUNDED stable")
     if decision["experimental_contract_status_counts"] != {"experimental_diagnostic_only": 1}:
         raise ValueError("v1.5 internal readiness decision must preserve experimental status counts")
+    if decision["current_public_release_tag"] != V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG:
+        raise ValueError("v1.5 internal readiness decision must preserve the current public release tag")
     for flag in (
         "public_claims_ready",
         "external_3_ai_consensus_ready",
@@ -362,6 +368,8 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         "new_backend_implementation_authorized",
         "pre_v2_1_frozen_backend_work_authorized",
         "stable_collect_k_bounded_promotion_authorized",
+        "current_public_release_tag_move_authorized",
+        "new_public_release_tag_authorized",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",

@@ -188,6 +188,13 @@ class V15InternalReadinessGateTest(unittest.TestCase):
             {"experimental_diagnostic_only": 1},
         )
         self.assertFalse(decision["stable_collect_k_bounded_promotion_authorized"])
+        self.assertEqual(decision["current_public_release_tag"], "v1.0")
+        self.assertEqual(
+            decision["current_public_release_tag"],
+            rt.V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG,
+        )
+        self.assertFalse(decision["current_public_release_tag_move_authorized"])
+        self.assertFalse(decision["new_public_release_tag_authorized"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])
