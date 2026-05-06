@@ -515,10 +515,18 @@ from .v1_5_readiness import V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_STATUS
+from .v1_5_readiness import V1_5_STANDALONE_PARTNER_TRACK
+from .v1_5_readiness import V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS
+from .v1_5_readiness import V1_5_STANDALONE_RELEASE_BLOCKERS
+from .v1_5_readiness import V1_5_STANDALONE_RELEASE_REQUIRED_GATES
+from .v1_5_readiness import V1_5_STANDALONE_RELEASE_SCOPE_KIND
+from .v1_5_readiness import V1_5_STANDALONE_RELEASE_STATUS
 from .v1_5_readiness import v1_5_internal_readiness_decision
 from .v1_5_readiness import v1_5_internal_readiness_gate
+from .v1_5_readiness import v1_5_standalone_release_gate
 from .v1_5_readiness import validate_v1_5_internal_readiness_decision
 from .v1_5_readiness import validate_v1_5_internal_readiness_gate
+from .v1_5_readiness import validate_v1_5_standalone_release_gate
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -829,10 +837,18 @@ __all__ = [
     "V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM",
     "V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS",
     "V1_5_INTERNAL_READINESS_STATUS",
+    "V1_5_STANDALONE_PARTNER_TRACK",
+    "V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS",
+    "V1_5_STANDALONE_RELEASE_BLOCKERS",
+    "V1_5_STANDALONE_RELEASE_REQUIRED_GATES",
+    "V1_5_STANDALONE_RELEASE_SCOPE_KIND",
+    "V1_5_STANDALONE_RELEASE_STATUS",
     "v1_5_internal_readiness_decision",
     "v1_5_internal_readiness_gate",
+    "v1_5_standalone_release_gate",
     "validate_v1_5_internal_readiness_decision",
     "validate_v1_5_internal_readiness_gate",
+    "validate_v1_5_standalone_release_gate",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",

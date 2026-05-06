@@ -123,6 +123,40 @@ V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS = (
     "broad_local_suite_tests",
     "broad_local_suite_skipped",
 )
+V1_5_STANDALONE_RELEASE_STATUS = "blocked_pending_standalone_language_completion"
+V1_5_STANDALONE_RELEASE_SCOPE_KIND = "standalone_embree_optix_language_runtime"
+V1_5_STANDALONE_RELEASE_REQUIRED_GATES = (
+    "primitive_packet_prerequisite",
+    "roadmap_consensus",
+    "collect_k_bounded_resolution",
+    "app_migration_classification",
+    "same_contract_per_app_correctness",
+    "same_contract_per_app_benchmarks",
+    "test_backed_support_maturity_matrix",
+    "release_docs_and_public_wording",
+)
+V1_5_STANDALONE_RELEASE_BLOCKERS = (
+    "COLLECT_K_BOUNDED is still experimental and has not been promoted or excluded",
+    "app migration/classification is not yet complete for standalone v1.5 scope",
+    "same-contract per-app Embree/OptiX correctness evidence is not yet complete",
+    "same-contract per-app Embree/OptiX benchmark evidence is not yet complete",
+    "test-backed support/maturity matrix is not yet complete",
+    "v1.5 release docs and public wording must be refreshed after standalone gates pass",
+)
+V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS = (
+    "define_collect_k_bounded_resolution",
+    "complete_app_migration_classification",
+    "run_same_contract_per_app_correctness",
+    "run_same_contract_per_app_benchmarks",
+    "build_test_backed_support_maturity_matrix",
+)
+V1_5_STANDALONE_PARTNER_TRACK = (
+    ("v1.6", "partner_api_design"),
+    ("v1.7", "first_partner_prototype"),
+    ("v1.8", "partner_conformance_suite"),
+    ("v1.9", "partner_ecosystem_hardening"),
+    ("v2.0", "public_partner_ready_rtdl"),
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -584,3 +618,122 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
     _validate_decision_fingerprint_state(decision)
     _validate_decision_claim_boundary(decision)
     return decision
+
+
+def v1_5_standalone_release_gate() -> dict[str, Any]:
+    """Return the expanded v1.5 release gate after Goal1397 consensus.
+
+    This is intentionally separate from the internal primitive readiness gate:
+    the primitive packet is prerequisite evidence, while standalone v1.5
+    release requires collection, app migration, benchmark, and support-maturity
+    gates that are not complete yet.
+    """
+    internal_decision = validate_v1_5_internal_readiness_decision()
+    bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
+    collect_k_statuses = tuple(
+        sorted({str(contract["status"]) for contract in bounded_collection_contracts})
+    )
+    gate_results = {
+        "primitive_packet_prerequisite": True,
+        "roadmap_consensus": True,
+        "collect_k_bounded_resolution": False,
+        "app_migration_classification": False,
+        "same_contract_per_app_correctness": False,
+        "same_contract_per_app_benchmarks": False,
+        "test_backed_support_maturity_matrix": False,
+        "release_docs_and_public_wording": False,
+    }
+    return {
+        "status": V1_5_STANDALONE_RELEASE_STATUS,
+        "scope_kind": V1_5_STANDALONE_RELEASE_SCOPE_KIND,
+        "current_public_release_tag": V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG,
+        "current_public_release_tag_move_authorized": False,
+        "new_public_release_tag_authorized": False,
+        "public_release_authorized": False,
+        "release_tag_action_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "primitive_packet_status": internal_decision["gate_status"],
+        "primitive_packet_is_prerequisite_only": True,
+        "primitive_packet_sufficient_for_release": False,
+        "required_gates": V1_5_STANDALONE_RELEASE_REQUIRED_GATES,
+        "gate_results": gate_results,
+        "passed_gates": tuple(gate for gate, passed in gate_results.items() if passed),
+        "failed_gates": tuple(gate for gate, passed in gate_results.items() if not passed),
+        "blockers": V1_5_STANDALONE_RELEASE_BLOCKERS,
+        "allowed_next_actions": V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS,
+        "active_backend_scope": internal_decision["active_backend_scope"],
+        "frozen_before_v2_1_backends": internal_decision["frozen_before_v2_1_backends"],
+        "source_usage_mode": internal_decision["source_usage_mode"],
+        "source_usage_command": internal_decision["source_usage_command"],
+        "collect_k_bounded_statuses": collect_k_statuses,
+        "collect_k_bounded_resolution": "unresolved_experimental_or_explicit_exclusion_required",
+        "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
+        "claim_boundary": (
+            "standalone v1.5 release is blocked until all standalone gates pass; "
+            "do not tag v1.5 from primitive-only readiness; v1.6-v2.0 are partner-track milestones"
+        ),
+    }
+
+
+def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
+    gate = v1_5_standalone_release_gate()
+    if gate["status"] != V1_5_STANDALONE_RELEASE_STATUS:
+        raise ValueError("invalid v1.5 standalone release gate status")
+    if gate["scope_kind"] != V1_5_STANDALONE_RELEASE_SCOPE_KIND:
+        raise ValueError("v1.5 standalone release gate must use standalone scope")
+    if tuple(gate["required_gates"]) != V1_5_STANDALONE_RELEASE_REQUIRED_GATES:
+        raise ValueError("v1.5 standalone release gate must preserve required gates")
+    gate_results = dict(gate["gate_results"])
+    if tuple(gate_results) != V1_5_STANDALONE_RELEASE_REQUIRED_GATES:
+        raise ValueError("v1.5 standalone release gate results must match required gates")
+    if not gate_results["primitive_packet_prerequisite"]:
+        raise ValueError("primitive packet must remain a prerequisite for standalone v1.5")
+    if not gate_results["roadmap_consensus"]:
+        raise ValueError("Goal1397 roadmap consensus must be represented")
+    if gate["primitive_packet_sufficient_for_release"] is not False:
+        raise ValueError("primitive-only readiness must not be sufficient for standalone release")
+    if tuple(gate["passed_gates"]) != (
+        "primitive_packet_prerequisite",
+        "roadmap_consensus",
+    ):
+        raise ValueError("only prerequisite and roadmap consensus gates should pass now")
+    expected_failed = tuple(
+        required
+        for required in V1_5_STANDALONE_RELEASE_REQUIRED_GATES
+        if required not in gate["passed_gates"]
+    )
+    if tuple(gate["failed_gates"]) != expected_failed:
+        raise ValueError("v1.5 standalone failed gate list mismatch")
+    for flag in (
+        "current_public_release_tag_move_authorized",
+        "new_public_release_tag_authorized",
+        "public_release_authorized",
+        "release_tag_action_authorized",
+        "public_speedup_wording_authorized",
+    ):
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5 standalone release gate must not authorize {flag}")
+    if tuple(gate["active_backend_scope"]) != ("embree", "optix"):
+        raise ValueError("v1.5 standalone release gate must stay scoped to Embree and OptiX")
+    if tuple(gate["frozen_before_v2_1_backends"]) != ("vulkan", "hiprt", "apple_rt"):
+        raise ValueError("v1.5 standalone release gate must preserve frozen backends")
+    if gate["source_usage_command"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND:
+        raise ValueError("v1.5 standalone release gate must preserve source-tree usage")
+    if gate["collect_k_bounded_statuses"] != ("experimental_diagnostic_only",):
+        raise ValueError("COLLECT_K_BOUNDED must still be represented as unresolved")
+    if "unresolved" not in gate["collect_k_bounded_resolution"]:
+        raise ValueError("COLLECT_K_BOUNDED resolution must remain blocked")
+    if tuple(gate["partner_track"]) != V1_5_STANDALONE_PARTNER_TRACK:
+        raise ValueError("v1.6-v2.0 partner track must be preserved")
+    boundary = str(gate["claim_boundary"])
+    for required_boundary in (
+        "standalone v1.5 release is blocked",
+        "do not tag v1.5 from primitive-only readiness",
+        "v1.6-v2.0 are partner-track milestones",
+    ):
+        if required_boundary not in boundary:
+            raise ValueError("v1.5 standalone release gate boundary is too broad")
+    for blocker in V1_5_STANDALONE_RELEASE_BLOCKERS:
+        if blocker not in tuple(gate["blockers"]):
+            raise ValueError(f"missing v1.5 standalone blocker: {blocker}")
+    return gate
