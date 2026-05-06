@@ -536,6 +536,14 @@ from .v1_5_readiness import validate_v1_5_standalone_release_gate
 from .v1_5_standalone_app_classification import V1_5_STANDALONE_APP_CLASSIFICATIONS
 from .v1_5_standalone_app_classification import v1_5_standalone_app_classification_matrix
 from .v1_5_standalone_app_classification import validate_v1_5_standalone_app_classification_matrix
+from .v1_5_standalone_correctness import V1_5_STANDALONE_CORRECTNESS_COMMAND
+from .v1_5_standalone_correctness import V1_5_STANDALONE_CORRECTNESS_PENDING_APPS
+from .v1_5_standalone_correctness import V1_5_STANDALONE_CORRECTNESS_REQUIRED_BACKENDS
+from .v1_5_standalone_correctness import V1_5_STANDALONE_CORRECTNESS_STATUSES
+from .v1_5_standalone_correctness import v1_5_standalone_correctness_matrix
+from .v1_5_standalone_correctness import v1_5_standalone_correctness_summary
+from .v1_5_standalone_correctness import validate_v1_5_standalone_correctness_matrix
+from .v1_5_standalone_correctness import validate_v1_5_standalone_correctness_summary
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -861,6 +869,14 @@ __all__ = [
     "V1_5_STANDALONE_APP_CLASSIFICATIONS",
     "v1_5_standalone_app_classification_matrix",
     "validate_v1_5_standalone_app_classification_matrix",
+    "V1_5_STANDALONE_CORRECTNESS_COMMAND",
+    "V1_5_STANDALONE_CORRECTNESS_PENDING_APPS",
+    "V1_5_STANDALONE_CORRECTNESS_REQUIRED_BACKENDS",
+    "V1_5_STANDALONE_CORRECTNESS_STATUSES",
+    "v1_5_standalone_correctness_matrix",
+    "v1_5_standalone_correctness_summary",
+    "validate_v1_5_standalone_correctness_matrix",
+    "validate_v1_5_standalone_correctness_summary",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",

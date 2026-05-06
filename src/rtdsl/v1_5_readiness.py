@@ -19,6 +19,9 @@ from .v1_5_migration_inventory import (
 from .v1_5_standalone_app_classification import (
     validate_v1_5_standalone_app_classification_matrix,
 )
+from .v1_5_standalone_correctness import (
+    validate_v1_5_standalone_correctness_summary,
+)
 
 
 V1_5_INTERNAL_READINESS_STATUS = "internal_v1_5_contract_gate_passing_non_public"
@@ -636,6 +639,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
     bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
     bounded_collection_resolution = validate_v1_5_collect_k_bounded_resolution()
     app_classification = validate_v1_5_standalone_app_classification_matrix()
+    correctness_summary = validate_v1_5_standalone_correctness_summary()
     collect_k_statuses = tuple(
         sorted({str(contract["status"]) for contract in bounded_collection_contracts})
     )
@@ -644,7 +648,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "roadmap_consensus": True,
         "collect_k_bounded_resolution": False,
         "app_migration_classification": True,
-        "same_contract_per_app_correctness": False,
+        "same_contract_per_app_correctness": correctness_summary["release_gate_complete"],
         "same_contract_per_app_benchmarks": False,
         "test_backed_support_maturity_matrix": False,
         "release_docs_and_public_wording": False,
@@ -694,6 +698,12 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "standalone_excluded_app_count": sum(
             1 for row in app_classification.values() if not row["standalone_included"]
         ),
+        "same_contract_correctness_status_counts": correctness_summary["status_counts"],
+        "same_contract_correctness_covered_app_count": correctness_summary["covered_app_count"],
+        "same_contract_correctness_pending_app_count": correctness_summary["pending_app_count"],
+        "same_contract_correctness_excluded_app_count": correctness_summary["excluded_app_count"],
+        "same_contract_correctness_pending_apps": correctness_summary["pending_apps"],
+        "same_contract_correctness_command": correctness_summary["command"],
         "collect_k_bounded_resolution": "unresolved_experimental_or_explicit_exclusion_required",
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
         "claim_boundary": (
@@ -764,6 +774,21 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("standalone app classification must include at least one app")
     if int(gate["standalone_excluded_app_count"]) <= 0:
         raise ValueError("standalone app classification must exclude frozen/collection-dependent apps")
+    if gate["gate_results"]["same_contract_per_app_correctness"] is not False:
+        raise ValueError("same-contract correctness must remain blocked until pending apps pass")
+    if int(gate["same_contract_correctness_covered_app_count"]) != 10:
+        raise ValueError("same-contract correctness covered app count mismatch")
+    if int(gate["same_contract_correctness_pending_app_count"]) != 4:
+        raise ValueError("same-contract correctness pending app count mismatch")
+    if int(gate["same_contract_correctness_excluded_app_count"]) != 4:
+        raise ValueError("same-contract correctness excluded app count mismatch")
+    if tuple(gate["same_contract_correctness_pending_apps"]) != (
+        "barnes_hut_force_app",
+        "hausdorff_distance",
+        "road_hazard_screening",
+        "segment_polygon_hitcount",
+    ):
+        raise ValueError("same-contract correctness pending apps mismatch")
     for required_classification in (
         "fully_generic",
         "wrapper_backed",
