@@ -195,6 +195,20 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         )
         self.assertFalse(decision["current_public_release_tag_move_authorized"])
         self.assertFalse(decision["new_public_release_tag_authorized"])
+        self.assertEqual(decision["scope_kind"], "generic_traversal_plus_reduction_subpaths")
+        self.assertEqual(decision["scope_kind"], rt.V1_5_INTERNAL_READINESS_SCOPE_KIND)
+        self.assertEqual(
+            decision["excluded_app_scope"],
+            (
+                "app_level_continuations",
+                "whole_app_speedup",
+                "public_nvidia_speedup",
+            ),
+        )
+        self.assertEqual(decision["excluded_app_scope"], rt.V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE)
+        self.assertFalse(decision["app_level_continuations_authorized_as_generic"])
+        self.assertFalse(decision["whole_app_speedup_claim_authorized"])
+        self.assertFalse(decision["public_nvidia_speedup_claim_authorized"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])

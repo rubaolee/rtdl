@@ -61,6 +61,12 @@ V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS = ("claude",)
 V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE = "source_tree_pythonpath"
 V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND = "PYTHONPATH=src:. python ..."
 V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG = "v1.0"
+V1_5_INTERNAL_READINESS_SCOPE_KIND = "generic_traversal_plus_reduction_subpaths"
+V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE = (
+    "app_level_continuations",
+    "whole_app_speedup",
+    "public_nvidia_speedup",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -283,6 +289,11 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "current_public_release_tag": V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG,
         "current_public_release_tag_move_authorized": False,
         "new_public_release_tag_authorized": False,
+        "scope_kind": V1_5_INTERNAL_READINESS_SCOPE_KIND,
+        "excluded_app_scope": V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE,
+        "app_level_continuations_authorized_as_generic": False,
+        "whole_app_speedup_claim_authorized": False,
+        "public_nvidia_speedup_claim_authorized": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -360,6 +371,10 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must preserve experimental status counts")
     if decision["current_public_release_tag"] != V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG:
         raise ValueError("v1.5 internal readiness decision must preserve the current public release tag")
+    if decision["scope_kind"] != V1_5_INTERNAL_READINESS_SCOPE_KIND:
+        raise ValueError("v1.5 internal readiness decision must preserve generic subpath scope")
+    if tuple(decision["excluded_app_scope"]) != V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE:
+        raise ValueError("v1.5 internal readiness decision must preserve excluded app scope")
     for flag in (
         "public_claims_ready",
         "external_3_ai_consensus_ready",
@@ -370,6 +385,9 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         "stable_collect_k_bounded_promotion_authorized",
         "current_public_release_tag_move_authorized",
         "new_public_release_tag_authorized",
+        "app_level_continuations_authorized_as_generic",
+        "whole_app_speedup_claim_authorized",
+        "public_nvidia_speedup_claim_authorized",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",

@@ -504,6 +504,8 @@ from .v1_5_readiness import V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PAR
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG
+from .v1_5_readiness import V1_5_INTERNAL_READINESS_SCOPE_KIND
+from .v1_5_readiness import V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_STATUS
 from .v1_5_readiness import v1_5_internal_readiness_decision
 from .v1_5_readiness import v1_5_internal_readiness_gate
@@ -808,6 +810,8 @@ __all__ = [
     "V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE",
     "V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND",
     "V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG",
+    "V1_5_INTERNAL_READINESS_SCOPE_KIND",
+    "V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE",
     "V1_5_INTERNAL_READINESS_STATUS",
     "v1_5_internal_readiness_decision",
     "v1_5_internal_readiness_gate",
