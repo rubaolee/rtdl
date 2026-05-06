@@ -396,7 +396,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "polygon_pair_overlap_area_rows": OptixAppPerformanceSupport(
         app="polygon_pair_overlap_area_rows",
         performance_class=PYTHON_INTERFACE_DOMINATED,
-        note="Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell area continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU polygon-area kernel.",
+        note="Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then backend-neutral native exact-area summary in compact summary mode. This is real traversal-assisted filtering plus native summary reduction, not a monolithic GPU polygon-area kernel.",
     ),
     "polygon_set_jaccard": OptixAppPerformanceSupport(
         app="polygon_set_jaccard",

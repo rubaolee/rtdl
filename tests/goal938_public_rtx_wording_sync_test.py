@@ -103,6 +103,7 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")
             for relative in (
+                "src/rtdsl/app_support_matrix.py",
                 "docs/app_engine_support_matrix.md",
                 "docs/v1_0_rtx_app_status.md",
                 "docs/v1_1_optix_status.md",
@@ -117,6 +118,8 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             "backend-neutral native set-area/Jaccard summary",
             "native C++ exact area continuation",
             "native C++ exact set-area/Jaccard continuation",
+            "native C++ exact grid-cell area continuation",
+            "native C++ exact grid-cell set-area/Jaccard continuation",
         ):
             with self.subTest(phrase=phrase):
                 if phrase.startswith("native C++"):
