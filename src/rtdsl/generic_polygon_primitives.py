@@ -117,6 +117,7 @@ def collect_k_bounded_candidate_pairs(
         "complete_candidate_coverage": not overflowed,
         "ordering_policy": contract["ordering_policy"],
         "public_wording_allowed": contract["public_wording_allowed"],
+        "claim_boundary": contract["claim_boundary"],
         "candidate_pairs": normalized_pairs if not overflowed else (),
     }
     if overflowed:

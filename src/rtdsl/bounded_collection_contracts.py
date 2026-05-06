@@ -93,4 +93,13 @@ def validate_v1_5_collect_k_bounded_contracts() -> tuple[dict[str, Any], ...]:
             raise ValueError("bounded collection public wording must remain blocked")
         if not tuple(contract["promotion_requirements"]):
             raise ValueError("promotion_requirements must not be empty")
+        boundary = str(contract["claim_boundary"])
+        for required_boundary in (
+            "diagnostic bounded collection only",
+            "no public Jaccard speedup wording",
+            "no silent candidate truncation",
+            "no score output after overflow",
+        ):
+            if required_boundary not in boundary:
+                raise ValueError("bounded collection claim boundary must block broad Jaccard claims")
     return contracts

@@ -41,6 +41,8 @@ class Goal1311V15JaccardGenericFailClosedCollectionTest(unittest.TestCase):
         self.assertEqual(result["emitted_count"], 2)
         self.assertFalse(result["overflowed"])
         self.assertTrue(result["complete_candidate_coverage"])
+        self.assertIn("no public Jaccard speedup wording", result["claim_boundary"])
+        self.assertIn("no silent candidate truncation", result["claim_boundary"])
 
     def test_collect_k_bounded_fails_closed_before_truncation(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "COLLECT_K_BOUNDED overflowed capacity 1"):
@@ -60,6 +62,7 @@ class Goal1311V15JaccardGenericFailClosedCollectionTest(unittest.TestCase):
         self.assertEqual(result["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(result["candidate_pair_count"], 2)
         self.assertFalse(result["collection"]["overflowed"])
+        self.assertIn("no score output after overflow", result["collection"]["claim_boundary"])
         self.assertEqual(result["summary"]["intersection_area"], 2)
         self.assertIn("query_polygon_collect_k_bounded_sec", result["run_phases"])
 

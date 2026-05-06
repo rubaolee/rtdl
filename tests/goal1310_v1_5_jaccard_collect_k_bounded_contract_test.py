@@ -19,6 +19,10 @@ class Goal1310V15JaccardCollectKBoundedContractTest(unittest.TestCase):
         self.assertTrue(contract["complete_candidate_coverage_required"])
         self.assertFalse(contract["score_reduction_allowed_on_overflow"])
         self.assertFalse(contract["public_wording_allowed"])
+        self.assertIn("diagnostic bounded collection only", contract["claim_boundary"])
+        self.assertIn("no public Jaccard speedup wording", contract["claim_boundary"])
+        self.assertIn("no silent candidate truncation", contract["claim_boundary"])
+        self.assertIn("no score output after overflow", contract["claim_boundary"])
 
     def test_jaccard_primitive_contract_embeds_bounded_collection_policy(self) -> None:
         contract = rt.polygon_jaccard_diagnostic_contract(
