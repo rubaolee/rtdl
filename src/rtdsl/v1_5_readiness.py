@@ -43,6 +43,13 @@ V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
     "collect_pod_validation_from_git",
     "request_external_review_before_public_claims",
 )
+V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS = (
+    "public_v1_5_release_wording",
+    "public_speedup_wording",
+    "release_tag_action",
+    "stable_collect_k_bounded_promotion",
+    "new_pre_v2_1_backend_implementation",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -235,13 +242,7 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "gate_status": gate["status"],
         "total_contract_surfaces": gate["total_contract_surfaces"],
         "allowed_next_actions": V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS,
-        "blocked_next_actions": (
-            "public_v1_5_release_wording",
-            "public_speedup_wording",
-            "release_tag_action",
-            "stable_collect_k_bounded_promotion",
-            "new_pre_v2_1_backend_implementation",
-        ),
+        "blocked_next_actions": V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -256,13 +257,9 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
     for required_action in V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS:
         if required_action not in tuple(decision["allowed_next_actions"]):
             raise ValueError(f"missing allowed internal next action: {required_action}")
-    for blocked_action in (
-        "public_v1_5_release_wording",
-        "public_speedup_wording",
-        "release_tag_action",
-        "stable_collect_k_bounded_promotion",
-        "new_pre_v2_1_backend_implementation",
-    ):
+    if tuple(decision["blocked_next_actions"]) != V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS:
+        raise ValueError("v1.5 internal readiness decision must preserve blocked next actions")
+    for blocked_action in V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS:
         if blocked_action not in tuple(decision["blocked_next_actions"]):
             raise ValueError(f"missing blocked public/broad next action: {blocked_action}")
     for flag in (
