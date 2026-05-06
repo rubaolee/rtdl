@@ -1,0 +1,253 @@
+{
+  "accepted": true,
+  "artifact": "goal1416_v1_5_1_collect_k_native_parity_2026-05-06",
+  "backend_summary": {
+    "embree": {
+      "fail": 0,
+      "pass": 4,
+      "skipped": 0
+    },
+    "optix": {
+      "fail": 0,
+      "pass": 0,
+      "skipped": 4
+    }
+  },
+  "case_results": [
+    {
+      "backends": {
+        "embree": {
+          "capacity": 0,
+          "elapsed_sec": 0.03631220001261681,
+          "expect_overflow": false,
+          "expected_rows": [],
+          "mismatches": [],
+          "observed_rows": [],
+          "status": "pass",
+          "valid_count": 0
+        },
+        "optix": {
+          "capacity": 0,
+          "elapsed_sec": 0.0034426000202074647,
+          "expect_overflow": false,
+          "expected_rows": [],
+          "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+          "status": "skipped"
+        }
+      },
+      "case": "empty_zero_capacity",
+      "reference": {
+        "capacity": 0,
+        "elapsed_sec": 0.00031319999834522605,
+        "expect_overflow": false,
+        "expected_rows": [],
+        "status": "pass",
+        "valid_count": 0
+      }
+    },
+    {
+      "backends": {
+        "embree": {
+          "capacity": 2,
+          "elapsed_sec": 0.0003598000039346516,
+          "expect_overflow": false,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "status": "pass",
+          "valid_count": 2
+        },
+        "optix": {
+          "capacity": 2,
+          "elapsed_sec": 0.003259300021454692,
+          "expect_overflow": false,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+          "status": "skipped"
+        }
+      },
+      "case": "exact_fit_two_rows",
+      "reference": {
+        "capacity": 2,
+        "elapsed_sec": 0.0007598999654874206,
+        "expect_overflow": false,
+        "expected_rows": [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            11
+          ]
+        ],
+        "status": "pass",
+        "valid_count": 2
+      }
+    },
+    {
+      "backends": {
+        "embree": {
+          "capacity": 1,
+          "elapsed_sec": 0.0001330999657511711,
+          "expect_overflow": true,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "observed_overflow": true,
+          "status": "pass"
+        },
+        "optix": {
+          "capacity": 1,
+          "elapsed_sec": 0.003550100023858249,
+          "expect_overflow": true,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+          "status": "skipped"
+        }
+      },
+      "case": "one_short_fail_closed_overflow",
+      "reference": {
+        "capacity": 1,
+        "elapsed_sec": 0.0005990999634377658,
+        "expect_overflow": true,
+        "expected_rows": [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            11
+          ]
+        ],
+        "observed_overflow": true,
+        "status": "pass"
+      }
+    },
+    {
+      "backends": {
+        "embree": {
+          "capacity": 0,
+          "elapsed_sec": 0.00011229998199269176,
+          "expect_overflow": true,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "observed_overflow": true,
+          "status": "pass"
+        },
+        "optix": {
+          "capacity": 0,
+          "elapsed_sec": 0.003212000010535121,
+          "expect_overflow": true,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+          "status": "skipped"
+        }
+      },
+      "case": "zero_capacity_positive_fail_closed_overflow",
+      "reference": {
+        "capacity": 0,
+        "elapsed_sec": 0.000811500009149313,
+        "expect_overflow": true,
+        "expected_rows": [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            11
+          ]
+        ],
+        "observed_overflow": true,
+        "status": "pass"
+      }
+    }
+  ],
+  "claim_boundary": "Same-contract COLLECT_K_BOUNDED native candidate-row parity only; not a public primitive promotion, not a performance claim, and not a zero-copy claim.",
+  "elapsed_sec": 0.12535460002254695,
+  "environment": {
+    "git_head": "9813a0b7eea2d7ce1bffcb82159ea81f882f2d3c",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.9"
+  },
+  "failures": [],
+  "run_scope": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "capacity_policy": "exact fit plus fail-closed overflow probes",
+    "cases": [
+      "empty_zero_capacity",
+      "exact_fit_two_rows",
+      "one_short_fail_closed_overflow",
+      "zero_capacity_positive_fail_closed_overflow"
+    ],
+    "required_backends": [],
+    "row_width": 2
+  },
+  "skipped_required": [],
+  "status": "accepted"
+}

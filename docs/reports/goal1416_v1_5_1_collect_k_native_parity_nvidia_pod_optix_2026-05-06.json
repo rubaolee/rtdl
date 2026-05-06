@@ -1,0 +1,190 @@
+{
+  "accepted": true,
+  "artifact": "goal1416_v1_5_1_collect_k_native_parity_2026-05-06",
+  "backend_summary": {
+    "optix": {
+      "fail": 0,
+      "pass": 4,
+      "skipped": 0
+    }
+  },
+  "case_results": [
+    {
+      "backends": {
+        "optix": {
+          "capacity": 0,
+          "elapsed_sec": 0.6960327178239822,
+          "expect_overflow": false,
+          "expected_rows": [],
+          "mismatches": [],
+          "observed_rows": [],
+          "status": "pass",
+          "valid_count": 0
+        }
+      },
+      "case": "empty_zero_capacity",
+      "reference": {
+        "capacity": 0,
+        "elapsed_sec": 0.00011299550533294678,
+        "expect_overflow": false,
+        "expected_rows": [],
+        "status": "pass",
+        "valid_count": 0
+      }
+    },
+    {
+      "backends": {
+        "optix": {
+          "capacity": 2,
+          "elapsed_sec": 0.0010030418634414673,
+          "expect_overflow": false,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "status": "pass",
+          "valid_count": 2
+        }
+      },
+      "case": "exact_fit_two_rows",
+      "reference": {
+        "capacity": 2,
+        "elapsed_sec": 0.00033208727836608887,
+        "expect_overflow": false,
+        "expected_rows": [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            11
+          ]
+        ],
+        "status": "pass",
+        "valid_count": 2
+      }
+    },
+    {
+      "backends": {
+        "optix": {
+          "capacity": 1,
+          "elapsed_sec": 0.0007469132542610168,
+          "expect_overflow": true,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "observed_overflow": true,
+          "status": "pass"
+        }
+      },
+      "case": "one_short_fail_closed_overflow",
+      "reference": {
+        "capacity": 1,
+        "elapsed_sec": 0.00020456314086914062,
+        "expect_overflow": true,
+        "expected_rows": [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            11
+          ]
+        ],
+        "observed_overflow": true,
+        "status": "pass"
+      }
+    },
+    {
+      "backends": {
+        "optix": {
+          "capacity": 0,
+          "elapsed_sec": 0.0007041022181510925,
+          "expect_overflow": true,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              11
+            ]
+          ],
+          "observed_overflow": true,
+          "status": "pass"
+        }
+      },
+      "case": "zero_capacity_positive_fail_closed_overflow",
+      "reference": {
+        "capacity": 0,
+        "elapsed_sec": 0.0002008005976676941,
+        "expect_overflow": true,
+        "expected_rows": [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            11
+          ]
+        ],
+        "observed_overflow": true,
+        "status": "pass"
+      }
+    }
+  ],
+  "claim_boundary": "Same-contract COLLECT_K_BOUNDED native candidate-row parity only; not a public primitive promotion, not a performance claim, and not a zero-copy claim.",
+  "elapsed_sec": 0.7067559659481049,
+  "environment": {
+    "git_head": "9813a0b7eea2d7ce1bffcb82159ea81f882f2d3c",
+    "platform": "Linux-6.5.0-41-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "failures": [],
+  "run_scope": {
+    "backends": [
+      "optix"
+    ],
+    "capacity_policy": "exact fit plus fail-closed overflow probes",
+    "cases": [
+      "empty_zero_capacity",
+      "exact_fit_two_rows",
+      "one_short_fail_closed_overflow",
+      "zero_capacity_positive_fail_closed_overflow"
+    ],
+    "required_backends": [
+      "optix"
+    ],
+    "row_width": 2
+  },
+  "skipped_required": [],
+  "status": "accepted"
+}
