@@ -31,5 +31,13 @@ Vulkan/HIPRT/Apple RT implementation work.
 
 ## Pod Validation
 
-Pending. Validate from Git after push using the current pod, then record commit
-identity and focused test result here.
+Pod SSH command:
+
+`ssh root@213.173.108.215 -p 14800 -i ~/.ssh/id_ed25519_rtdl_codex`
+
+Validated from Git with `git fetch origin main` and `git reset --hard
+origin/main`.
+
+- Pod commit: `fbda2778960c638b3763d7a8ea53f525075e09df`.
+- Pod command: `PYTHONPATH=src:. python3 -m unittest tests.goal1178_goal1177_public_status_sync_audit_test tests.goal1216_v0_9_8_release_candidate_audit_test tests.goal1218_v0_9_8_release_authorization_gate_test`
+- Pod result: `OK`, 11 tests.
