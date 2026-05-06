@@ -2,7 +2,7 @@
 
 Date: 2026-05-06
 
-Status: `2-ai-accepted_gemini-pending`.
+Status: `3-ai-accepted`.
 
 ## Scope
 
@@ -35,6 +35,13 @@ Claude review is accepted:
 Claude returned `VERDICT: ACCEPT` and found no overreach, no premature claims,
 and no internal contradictions.
 
+Gemini review is accepted:
+
+- Gemini 2.5 Pro review:
+  `docs/reports/goal1413_gemini_2_5_pro_app_independent_engine_roadmap_review_2026-05-06.md`
+
+Gemini returned `VERDICT: ACCEPT`.
+
 Earlier external review attempts were not usable:
 
 - Claude attempt:
@@ -48,6 +55,6 @@ counted as accepted external reviews.
 ## Interpretation
 
 This roadmap may be included as reviewed planning context in the v1.5
-release-candidate package with 2-AI acceptance: Codex plus Claude. It should
-not be presented as completed 3-AI architecture consensus until an accepted
-Gemini or equivalent independent second external review is added.
+release-candidate package with 3-AI acceptance: Codex, Claude, and Gemini.
+This consensus covers the roadmap boundary only; it does not create a `v1.5`
+tag or claim that partner integrations already exist.
