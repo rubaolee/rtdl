@@ -14,7 +14,7 @@ published after explicit release authorization.
 | Same-contract correctness | pass | v1.5 correctness matrix closure |
 | Same-contract benchmarks | pass | v1.5 benchmark evidence matrix |
 | Support/maturity matrix | pass | v1.5 support maturity matrix |
-| Release docs and public wording | pass | this v1.5 release-candidate package plus Goal1411 boundary/backend 3-AI consensus |
+| Release docs and public wording | pass | this v1.5 release package plus Goal1411 boundary/backend 3-AI consensus |
 
 ## Release Boundary
 

@@ -17,7 +17,8 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("bounded public", text)
         self.assertIn("not a whole-app, default-mode, Python-postprocess", text)
         self.assertIn("broad RT-core acceleration claim", text)
-        self.assertIn("support matrix and v1.0 inventory as the authority", compact)
+        self.assertIn("v1.5 release package/support matrix as the current release authority", compact)
+        self.assertIn("v1.0 inventory preserved for app-boundary history", compact)
         self.assertIn("Detailed evidence and review trail", text)
 
     def test_reviewed_rtx_wording_detail_lives_in_status_page(self) -> None:
