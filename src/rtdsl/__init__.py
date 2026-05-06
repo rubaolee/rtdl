@@ -480,6 +480,9 @@ from .grouped_reduction_contracts import v1_5_grouped_reduction_contracts
 from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
 from .v1_5_migration_inventory import v1_5_generic_migration_blockers
 from .v1_5_migration_inventory import v1_5_generic_migration_inventory
+from .v1_5_migration_inventory import V1_5_EXPERIMENTAL_GENERIC_PRIMITIVES
+from .v1_5_migration_inventory import V1_5_STABLE_GENERIC_PRIMITIVES
+from .v1_5_migration_inventory import V1_5_STABLE_SUMMARY_PRIMITIVES
 from .v1_5_migration_inventory import validate_v1_5_generic_migration_inventory
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
@@ -756,6 +759,9 @@ __all__ = [
     "validate_v1_5_grouped_reduction_contracts",
     "v1_5_generic_migration_blockers",
     "v1_5_generic_migration_inventory",
+    "V1_5_EXPERIMENTAL_GENERIC_PRIMITIVES",
+    "V1_5_STABLE_GENERIC_PRIMITIVES",
+    "V1_5_STABLE_SUMMARY_PRIMITIVES",
     "validate_v1_5_generic_migration_inventory",
     "PredicateSet",
     "PredicateSetLayout",

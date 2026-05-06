@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 import rtdsl as rt
+import rtdsl.v1_5_migration_inventory as inventory_module
 
 
 class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
@@ -84,6 +85,31 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             with self.subTest(app=row["app"], subpath=row["subpath"]):
                 self.assertFalse(set(row["backend_scope"]) & frozen)
                 self.assertFalse(row["public_wording_authorized"])
+
+    def test_inventory_uses_only_declared_v1_5_primitive_sets(self) -> None:
+        generic_primitives = set(rt.V1_5_STABLE_GENERIC_PRIMITIVES) | set(
+            rt.V1_5_EXPERIMENTAL_GENERIC_PRIMITIVES
+        )
+        summary_primitives = set(rt.V1_5_STABLE_SUMMARY_PRIMITIVES)
+
+        for row in rt.validate_v1_5_generic_migration_inventory():
+            with self.subTest(app=row["app"], subpath=row["subpath"]):
+                self.assertIn(row["generic_primitive"], generic_primitives)
+                for primitive in row["summary_primitive"].split(","):
+                    self.assertIn(primitive.strip(), summary_primitives)
+
+    def test_inventory_rejects_unknown_generic_or_summary_primitives(self) -> None:
+        good_row = dict(rt.validate_v1_5_generic_migration_inventory()[0])
+
+        bad_generic = dict(good_row)
+        bad_generic["generic_primitive"] = "UNBOUNDED_MAGIC_TRAVERSAL"
+        with self.assertRaisesRegex(ValueError, "invalid v1.5 generic primitive"):
+            inventory_module._validate_v1_5_generic_migration_inventory_rows((bad_generic,))
+
+        bad_summary = dict(good_row)
+        bad_summary["summary_primitive"] = "GROUPED_BOOL_FLAGS"
+        with self.assertRaisesRegex(ValueError, "invalid v1.5 summary primitive"):
+            inventory_module._validate_v1_5_generic_migration_inventory_rows((bad_summary,))
 
     def test_blockers_name_only_remaining_scope_and_public_wording_gates(self) -> None:
         blockers = "\n".join(rt.v1_5_generic_migration_blockers())

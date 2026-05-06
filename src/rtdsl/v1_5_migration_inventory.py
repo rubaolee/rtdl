@@ -5,6 +5,21 @@ from typing import Any
 
 ACTIVE_V1_5_BACKENDS = ("embree", "optix")
 FROZEN_BEFORE_V2_1_BACKENDS = ("vulkan", "hiprt", "apple_rt")
+V1_5_STABLE_GENERIC_PRIMITIVES = (
+    "ANY_HIT",
+    "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "DB_COMPACT_SUMMARY",
+    "POLYGON_PAIR_EXACT_AREA_SUMMARY",
+)
+V1_5_EXPERIMENTAL_GENERIC_PRIMITIVES = ("COLLECT_K_BOUNDED",)
+V1_5_STABLE_SUMMARY_PRIMITIVES = (
+    "COUNT_HITS",
+    "REDUCE_FLOAT(MIN)",
+    "REDUCE_FLOAT(MAX)",
+    "REDUCE_FLOAT(SUM)",
+    "REDUCE_INT(COUNT)",
+    "REDUCE_INT(SUM)",
+)
 
 
 def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
@@ -191,6 +206,15 @@ def v1_5_generic_migration_blockers() -> tuple[str, ...]:
 
 def validate_v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
     inventory = v1_5_generic_migration_inventory()
+    _validate_v1_5_generic_migration_inventory_rows(inventory)
+    return inventory
+
+
+def _split_summary_primitives(value: Any) -> tuple[str, ...]:
+    return tuple(part.strip() for part in str(value).split(",") if part.strip())
+
+
+def _validate_v1_5_generic_migration_inventory_rows(inventory: tuple[dict[str, Any], ...]) -> None:
     valid_statuses = {
         "pod_verified_generic",
         "local_generic_pending_pod",
@@ -198,6 +222,10 @@ def validate_v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
         "diagnostic_blocked",
     }
     valid_backend_scope = set(ACTIVE_V1_5_BACKENDS)
+    valid_generic_primitives = set(V1_5_STABLE_GENERIC_PRIMITIVES) | set(
+        V1_5_EXPERIMENTAL_GENERIC_PRIMITIVES
+    )
+    valid_summary_primitives = set(V1_5_STABLE_SUMMARY_PRIMITIVES)
     for row in inventory:
         for field in (
             "goal",
@@ -215,6 +243,18 @@ def validate_v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
                 raise ValueError(f"missing v1.5 migration inventory field: {field}")
         if row["status"] not in valid_statuses:
             raise ValueError(f"invalid v1.5 migration status: {row['status']}")
+        if row["generic_primitive"] not in valid_generic_primitives:
+            raise ValueError(f"invalid v1.5 generic primitive: {row['generic_primitive']}")
+        summary_primitives = _split_summary_primitives(row["summary_primitive"])
+        if not summary_primitives:
+            raise ValueError("summary_primitive must not be empty")
+        invalid_summaries = [
+            primitive for primitive in summary_primitives if primitive not in valid_summary_primitives
+        ]
+        if invalid_summaries:
+            raise ValueError(
+                f"invalid v1.5 summary primitive: {', '.join(invalid_summaries)}"
+            )
         backend_scope = tuple(row["backend_scope"])
         if not backend_scope:
             raise ValueError("backend_scope must not be empty")
@@ -222,4 +262,3 @@ def validate_v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             raise ValueError(f"invalid active v1.5 backend scope: {backend_scope}")
         if row["public_wording_authorized"]:
             raise ValueError("v1.5 migration inventory must not authorize public wording")
-    return inventory
