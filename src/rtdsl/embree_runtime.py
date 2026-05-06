@@ -828,8 +828,8 @@ def collect_polygon_pair_candidates_bounded_embree(
     candidate_capacity: int,
 ) -> dict[str, object]:
     """Collect bounded polygon-pair candidates through the native Embree ABI."""
-    if candidate_capacity <= 0:
-        raise ValueError("candidate_capacity must be positive")
+    if candidate_capacity < 0:
+        raise ValueError("candidate_capacity must be non-negative")
     packed_left = pack_polygons(records=left_polygons)
     packed_right = pack_polygons(records=right_polygons)
     library = _load_embree_library()
@@ -841,7 +841,11 @@ def collect_polygon_pair_candidates_bounded_embree(
             "rebuild the Embree backend from current main"
         )
 
-    candidate_array = (_RtdlPolygonPairCandidate * candidate_capacity)()
+    candidate_array = (
+        (_RtdlPolygonPairCandidate * candidate_capacity)()
+        if candidate_capacity
+        else None
+    )
     emitted_count = ctypes.c_size_t()
     overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)

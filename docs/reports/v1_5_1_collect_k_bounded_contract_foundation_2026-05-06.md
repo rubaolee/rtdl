@@ -42,6 +42,12 @@ native Embree and OptiX paths should satisfy next.
   semantics.
 - Added
   `tests/goal1414_v1_5_1_legacy_candidate_pairs_contract_bridge_test.py`.
+- Updated native Embree and OptiX Python collection wrappers to accept
+  `candidate_capacity=0`, matching the v1.5.1 `k=0` contract. Negative
+  capacity is still rejected. Zero-capacity calls pass a null output buffer to
+  the native ABI, which is valid when no rows are emitted and fail-closed when
+  candidates exist.
+- Added `tests/goal1415_v1_5_1_native_collect_k_zero_capacity_test.py`.
 
 ## Contract Shape
 
@@ -191,6 +197,38 @@ Then a small internal OptiX sanity run over generic raw ray/triangle
 `ANY_HIT` plus `COUNT_HITS` reported CPU/OptiX row parity, direct hit-count
 parity, and prepared OptiX hit-count parity. This sanity run remains internal
 evidence only and does not authorize public speedup wording.
+
+Additional Windows command after aligning native wrapper zero-capacity behavior
+with the v1.5.1 `k=0` contract:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1415_v1_5_1_native_collect_k_zero_capacity_test tests.goal1410_v1_5_1_native_collect_k_row_buffer_surface_test tests.goal1413_v1_5_1_collect_k_result_validator_test tests.goal1414_v1_5_1_legacy_candidate_pairs_contract_bridge_test tests.goal1315_v1_5_optix_native_candidate_collection_abi_test tests.goal1317_v1_5_embree_native_candidate_collection_abi_test
+```
+
+Result:
+
+```text
+Ran 22 tests in 0.020s
+OK
+```
+
+The NVIDIA pod ran the matching focused Python/ABI tests:
+
+```text
+Ran 19 tests in 0.006s
+OK
+```
+
+The same pod also ran a direct native OptiX zero-capacity probe against the
+built `build/librtdl_optix.so`. Empty input with `candidate_capacity=0`
+returned `capacity=0`, `valid_count=0`, empty `candidate_id_rows`, and
+`complete_candidate_coverage=true`. A deliberately overlapping polygon pair
+with `candidate_capacity=0` raised fail-closed overflow with:
+
+```text
+native bounded OptiX polygon-pair candidate collection overflowed capacity 0; emitted at least 1; failure_mode=fail_closed_overflow
+```
 
 ## Next Work
 
