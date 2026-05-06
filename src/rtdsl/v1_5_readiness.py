@@ -271,6 +271,10 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "source_usage_command": V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND,
         "editable_install_claim_authorized": False,
         "package_release_artifact_authorized": False,
+        "active_backend_scope": gate["active_backend_scope"],
+        "frozen_before_v2_1_backends": gate["frozen_before_v2_1_backends"],
+        "new_backend_implementation_authorized": False,
+        "pre_v2_1_frozen_backend_work_authorized": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -332,11 +336,19 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must preserve source-tree usage mode")
     if decision["source_usage_command"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND:
         raise ValueError("v1.5 internal readiness decision must preserve source-tree usage command")
+    if tuple(decision["active_backend_scope"]) != ("embree", "optix"):
+        raise ValueError("v1.5 internal readiness decision must stay scoped to Embree and OptiX")
+    if tuple(decision["frozen_before_v2_1_backends"]) != ("vulkan", "hiprt", "apple_rt"):
+        raise ValueError("v1.5 internal readiness decision must preserve frozen-before-v2.1 backends")
+    if set(decision["active_backend_scope"]) & set(decision["frozen_before_v2_1_backends"]):
+        raise ValueError("v1.5 internal readiness decision backend scopes must not overlap")
     for flag in (
         "public_claims_ready",
         "external_3_ai_consensus_ready",
         "editable_install_claim_authorized",
         "package_release_artifact_authorized",
+        "new_backend_implementation_authorized",
+        "pre_v2_1_frozen_backend_work_authorized",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",
