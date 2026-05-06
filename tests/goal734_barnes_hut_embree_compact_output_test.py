@@ -21,7 +21,7 @@ class Goal734BarnesHutEmbreeCompactOutputTest(unittest.TestCase):
         self.assertEqual(payload["body_count"], 64)
         self.assertGreater(payload["candidate_row_count"], 0)
         self.assertTrue(payload["native_continuation_active"])
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp")
+        self.assertEqual(payload["native_continuation_backend"], "native_fixed_radius_candidate_summary")
         self.assertNotIn("candidate_rows", payload)
         self.assertNotIn("force_rows", payload)
         self.assertNotIn("exact_force_rows", payload)

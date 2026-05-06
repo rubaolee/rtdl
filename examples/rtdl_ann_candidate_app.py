@@ -339,7 +339,7 @@ def run_app(
         "candidate_count": len(case["candidate_points"]),
         **_approximate_summary(approximate_rows),
         "native_continuation_active": True,
-        "native_continuation_backend": "oracle_cpp",
+        "native_continuation_backend": "native_knn_rerank_summary",
         "rtdl_role": "RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.",
         "optix_performance": _optix_performance(),
         "rt_core_accelerated": False,

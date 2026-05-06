@@ -40,7 +40,7 @@ class Goal949GraphNativeSummaryContinuationTest(unittest.TestCase):
         self.assertEqual(summary_payload["summary"], rt.summarize_bfs_rows(rows_payload["rows"]))
         self.assertEqual(summary_payload["rows"], [])
         self.assertTrue(summary_payload["native_continuation_active"])
-        self.assertEqual(summary_payload["native_continuation_backend"], "oracle_cpp")
+        self.assertEqual(summary_payload["native_continuation_backend"], "native_graph_bfs_summary")
 
     def test_graph_triangle_summary_mode_uses_native_continuation(self) -> None:
         rows_payload = rtdl_graph_triangle_count.run_backend("cpu_python_reference", copies=3, output_mode="rows")
@@ -48,7 +48,7 @@ class Goal949GraphNativeSummaryContinuationTest(unittest.TestCase):
         self.assertEqual(summary_payload["summary"], rt.summarize_triangle_rows(rows_payload["rows"]))
         self.assertEqual(summary_payload["rows"], [])
         self.assertTrue(summary_payload["native_continuation_active"])
-        self.assertEqual(summary_payload["native_continuation_backend"], "oracle_cpp")
+        self.assertEqual(summary_payload["native_continuation_backend"], "native_graph_triangle_summary")
 
     def test_unified_graph_summary_reports_native_continuation_boundary(self) -> None:
         payload = rtdl_graph_analytics_app.run_app(
@@ -60,10 +60,10 @@ class Goal949GraphNativeSummaryContinuationTest(unittest.TestCase):
         self.assertTrue(payload["sections"]["bfs"]["native_continuation_active"])
         self.assertTrue(payload["sections"]["triangle_count"]["native_continuation_active"])
         self.assertIn(
-            "native C++ summary continuation for BFS and triangle_count summary mode",
+            "native graph BFS and triangle summary continuations for summary mode",
             payload["data_flow"],
         )
-        self.assertIn("summary mode uses native C++ continuation", payload["honesty_boundary"])
+        self.assertIn("summary mode uses native graph summary continuations", payload["honesty_boundary"])
 
 
 if __name__ == "__main__":

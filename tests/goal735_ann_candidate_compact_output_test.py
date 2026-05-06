@@ -21,7 +21,7 @@ class Goal735AnnCandidateCompactOutputTest(unittest.TestCase):
         self.assertEqual(payload["query_count"], 48)
         self.assertEqual(payload["approximate_row_count"], 48)
         self.assertTrue(payload["native_continuation_active"])
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp")
+        self.assertEqual(payload["native_continuation_backend"], "native_knn_rerank_summary")
         self.assertNotIn("approximate_rows", payload)
         self.assertNotIn("exact_rows", payload)
         self.assertNotIn("comparison_rows", payload)

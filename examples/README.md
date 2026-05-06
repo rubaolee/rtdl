@@ -41,17 +41,17 @@ path.
 | one recipe for every feature | `rtdl_feature_quickstart_cookbook.py` | each feature input becomes its expected output rows |
 | nearest-neighbor search | `rtdl_fixed_radius_neighbors.py` | points/queries become neighbor rows |
 | app-level Hausdorff distance | `rtdl_hausdorff_distance_app.py` | two point sets become directed nearest-neighbor rows and one distance |
-| app-level ANN candidate search | `rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become approximate nearest rows and native C++ rerank summaries |
+| app-level ANN candidate search | `rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become approximate nearest rows and native KNN rerank summaries |
 | app-level outlier detection | `rtdl_outlier_detection_app.py` | points become fixed-radius neighbor rows, reduced density counts, and outlier labels |
 | app-level DBSCAN clustering | `rtdl_dbscan_clustering_app.py` | points become fixed-radius neighbor rows, reduced core counts, and density-cluster labels |
 | app-level robot collision screening | `rtdl_robot_collision_screening_app.py` | link edge rays become any-hit rows and reduced pose collision flags |
 | bounded any-hit ray queries | `rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `any_hit` rows |
 | visibility / line-of-sight rows | `rtdl_visibility_rows.py` | observers, targets, and blockers become visibility rows |
 | emitted-row reductions | `rtdl_reduce_rows.py` | emitted rows become grouped app summary rows |
-| app-level Barnes-Hut force approximation | `rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become force-candidate rows and native C++ candidate summaries |
-| graph traversal | `rtdl_graph_bfs.py` | frontier vertices become discovered vertices; summary mode uses native C++ continuation |
-| graph intersection | `rtdl_graph_triangle_count.py` | graph edges become triangle rows; summary mode uses native C++ continuation |
-| unified graph app | `rtdl_graph_analytics_app.py` | graph inputs become BFS discovery rows and triangle rows; summary mode uses native C++ continuation |
+| app-level Barnes-Hut force approximation | `rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become force-candidate rows and native fixed-radius candidate summaries |
+| graph traversal | `rtdl_graph_bfs.py` | frontier vertices become discovered vertices; summary mode uses native graph BFS summary continuation |
+| graph intersection | `rtdl_graph_triangle_count.py` | graph edges become triangle rows; summary mode uses native graph triangle summary continuation |
+| unified graph app | `rtdl_graph_analytics_app.py` | graph inputs become BFS discovery rows and triangle rows; summary mode uses native graph summary continuations |
 | DB-style filtering | `rtdl_db_conjunctive_scan.py` | rows plus predicates become matching row IDs |
 | DB-style aggregation | `rtdl_db_grouped_count.py` / `rtdl_db_grouped_sum.py` | rows plus predicates become grouped aggregates |
 | unified database app | `rtdl_database_analytics_app.py` | order rows become regional dashboard rows and sales-risk summaries |

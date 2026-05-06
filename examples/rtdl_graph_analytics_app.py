@@ -485,7 +485,7 @@ def run_app(
             "bounded RTDL graph kernels",
             "BFS discovery rows and triangle rows",
             "visibility edge rows for the RT-core sub-path",
-            "native C++ summary continuation for BFS and triangle_count summary mode",
+            "native graph BFS and triangle summary continuations for summary mode",
             "Python-owned unified app JSON assembly",
         ],
         "unifies": [
@@ -518,7 +518,7 @@ def run_app(
             "uses ray/triangle any-hit. For OptiX, BFS and triangle_count have "
             "an explicit native graph-ray mode behind --optix-graph-mode native, "
             "visibility_edges summary mode uses prepared any-hit count to avoid "
-            "row materialization, and graph summary mode uses native C++ "
+            "row materialization, and graph summary mode uses native graph "
             "continuation after rows are produced. Only visibility_edges is a "
             "current RT-core claim until cloud validation promotes the graph-ray path."
         ),
@@ -529,7 +529,7 @@ def run_app(
             "visibility_edges is an OptiX ray/triangle any-hit RT-core candidate; "
             "OptiX BFS and triangle_count remain host-indexed by default, and "
             "native graph-ray mode remains gated. BFS and triangle_count summary "
-            "mode uses native C++ continuation, but this is not a full graph "
+            "mode uses native graph summary continuations, but this is not a full graph "
             "database or distributed graph analytics system."
         ),
     }

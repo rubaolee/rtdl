@@ -85,7 +85,7 @@ Important boundary:
 
 - this public example runs one bounded BFS expansion step
 - host-side multi-level BFS control still lives in Python
-- `--output-mode summary` uses native C++ continuation for discovery counts,
+- `--output-mode summary` uses native graph BFS summary continuation for discovery counts,
   not a full native BFS engine
 
 ---
@@ -139,7 +139,7 @@ Important boundary:
 
 - this public example runs one bounded triangle probe step
 - whole-graph accumulation still lives in Python or a larger host workflow
-- `--output-mode summary` uses native C++ continuation for triangle/touched
+- `--output-mode summary` uses native graph triangle summary continuation for triangle/touched
   vertex counts, not a full native triangle-analytics engine
 
 ---
@@ -200,7 +200,7 @@ PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --s
 ```
 
 The claim remains bounded to graph-edge visibility and candidate generation,
-plus native C++ summary continuation where `--output-mode summary` is selected;
+plus native graph summary continuations where `--output-mode summary` is selected;
 it is not a shortest-path, graph database, distributed graph analytics, or
 whole-app graph-system speedup claim.
 

@@ -128,6 +128,42 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
                 else:
                     self.assertIn(phrase, combined)
 
+    def test_active_summary_continuation_labels_are_specific(self) -> None:
+        combined = "\n".join(
+            (ROOT / relative).read_text(encoding="utf-8")
+            for relative in (
+                "examples/rtdl_ann_candidate_app.py",
+                "examples/rtdl_barnes_hut_force_app.py",
+                "examples/rtdl_graph_bfs.py",
+                "examples/rtdl_graph_triangle_count.py",
+                "examples/rtdl_graph_analytics_app.py",
+                "examples/README.md",
+                "docs/application_catalog.md",
+                "docs/app_engine_support_matrix.md",
+                "docs/tutorials/graph_workloads.md",
+                "src/rtdsl/app_support_matrix.py",
+            )
+        )
+        for phrase in (
+            "native_knn_rerank_summary",
+            "native_fixed_radius_candidate_summary",
+            "native_graph_bfs_summary",
+            "native_graph_triangle_summary",
+            "native graph BFS/triangle summary continuations",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, combined)
+        for phrase in (
+            "native C++ continuation",
+            "native C++ rerank summaries",
+            "native C++ candidate summaries",
+            "native C++ candidate-rerank summaries",
+            "native C++ candidate-generation summaries",
+            "graph summary mode uses native C++",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase, combined)
+
     def test_current_public_docs_name_goal1264_db_graph_boundary(self) -> None:
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")

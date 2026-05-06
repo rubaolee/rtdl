@@ -484,9 +484,11 @@ def run_app(
         "output_mode": output_mode,
         "native_continuation_active": output_mode in {"candidate_summary", "force_summary"},
         "native_continuation_backend": (
-            "oracle_cpp" if output_mode in {"candidate_summary", "force_summary"} else None
+            "native_fixed_radius_candidate_summary"
+            if output_mode in {"candidate_summary", "force_summary"}
+            else None
         ),
-        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native C++ continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
         "optix_performance": _optix_performance(),
         "rt_core_accelerated": False,
         "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",

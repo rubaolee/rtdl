@@ -157,7 +157,7 @@ def run_backend(
         "native_continuation_backend": (
             raw_summary_backend
             if raw_summary_backend is not None
-            else ("oracle_cpp" if output_mode == "summary" else None)
+            else ("native_graph_bfs_summary" if output_mode == "summary" else None)
         ),
         "ray_tracing_accelerated": backend == "embree",
         "ray_tracing_note": (

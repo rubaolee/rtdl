@@ -356,7 +356,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "graph_analytics": OptixAppPerformanceSupport(
         app="graph_analytics",
         performance_class=OPTIX_TRAVERSAL,
-        note="Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal; summary mode uses prepared any-hit count to avoid row materialization. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, and graph summary mode uses native C++ continuation after rows are produced. The default remains host-indexed until RTX validation.",
+        note="Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal; summary mode uses prepared any-hit count to avoid row materialization. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, and graph summary mode uses native graph BFS/triangle summary continuations after rows are produced. The default remains host-indexed until RTX validation.",
     ),
     "apple_rt_demo": OptixAppPerformanceSupport(
         app="apple_rt_demo",
@@ -431,7 +431,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "barnes_hut_force_app": OptixAppPerformanceSupport(
         app="barnes_hut_force_app",
         performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
-        note="Default candidate rows use fixed-radius candidate generation and native C++ continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.",
+        note="Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.",
     ),
     "hiprt_ray_triangle_hitcount": OptixAppPerformanceSupport(
         app="hiprt_ray_triangle_hitcount",
@@ -764,7 +764,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "ann_candidate_search",
         RT_CORE_READY,
         RT_CORE_READY,
-        "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim. Goal1165 replaced the tiled validation path with the single-tile analytic expectation so large prepared timing runs do not accidentally validate an O(copies^2) fixture.",
+        "Use candidate_threshold_prepared as the only RT-core ANN claim path. Native KNN rerank-summary continuation is allowed as an app postprocess improvement, but KNN ranking, candidate construction, quality policy, uncovered-query witnesses, and full ANN indexing remain outside the RT-core claim. Goal1165 replaced the tiled validation path with the single-tile analytic expectation so large prepared timing runs do not accidentally validate an O(copies^2) fixture.",
         _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "outlier_detection": _maturity(
@@ -792,7 +792,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "barnes_hut_force_app",
         RT_CORE_READY,
         RT_CORE_READY,
-        "Use node_coverage_prepared as the only RT-core Barnes-Hut claim path. Native C++ candidate-summary continuation is allowed as an app postprocess improvement, but opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim.",
+        "Use node_coverage_prepared as the only RT-core Barnes-Hut claim path. Native fixed-radius candidate-summary continuation is allowed as an app postprocess improvement, but opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim.",
         _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "hiprt_ray_triangle_hitcount": _maturity(
