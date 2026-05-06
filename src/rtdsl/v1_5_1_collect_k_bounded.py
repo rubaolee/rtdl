@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Iterable
 
 
@@ -48,6 +49,34 @@ V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_FORBIDDEN_WORDING = (
     "zero-copy",
     "whole-app speedup",
     "release tag action",
+)
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STATUS = "candidate_docs_ready_pending_explicit_release_action"
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS = (
+    "docs/release_reports/v1_5_1/README.md",
+    "docs/release_reports/v1_5_1/collect_k_bounded.md",
+    "docs/release_reports/v1_5_1/release_surface_gate.md",
+)
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_PHRASES = (
+    "documented experimental public-candidate",
+    "COLLECT_K_BOUNDED",
+    "Python+RTDL",
+    "Embree and OptiX",
+    "fail-closed",
+    "candidate-id rows",
+    "not stable primitive promotion",
+    "no public speedup wording",
+    "no zero-copy wording",
+    "no release tag action",
+    "PYTHONPATH=src:. python",
+)
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_FORBIDDEN_PHRASES = (
+    "COLLECT_K_BOUNDED is stable",
+    "stable COLLECT_K_BOUNDED primitive",
+    "public speedup is authorized",
+    "zero-copy is authorized",
+    "whole-app speedup is authorized",
+    "pip install -e .",
+    "release tag action is authorized",
 )
 
 
@@ -402,6 +431,119 @@ def validate_v1_5_1_collect_k_bounded_release_surface_proposal() -> dict[str, An
         if phrase not in boundary:
             raise ValueError("release-surface proposal claim boundary is incomplete")
     return proposal
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
+def _read_release_gate_doc(relative_path: str) -> str:
+    path = _repo_root() / relative_path
+    if not path.exists():
+        raise ValueError(f"missing v1.5.1 collect-k release-surface doc: {relative_path}")
+    return path.read_text(encoding="utf-8")
+
+
+def v1_5_1_collect_k_bounded_release_surface_gate() -> dict[str, Any]:
+    """Return the v1.5.1 release-surface doc gate for bounded collection."""
+    proposal = validate_v1_5_1_collect_k_bounded_release_surface_proposal()
+    docs = {
+        relative_path: _read_release_gate_doc(relative_path)
+        for relative_path in V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS
+    }
+    combined = "\n".join(docs.values())
+    missing_required_phrases = tuple(
+        phrase
+        for phrase in V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_PHRASES
+        if phrase not in combined
+    )
+    present_forbidden_phrases = tuple(
+        phrase
+        for phrase in V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_FORBIDDEN_PHRASES
+        if phrase in combined
+    )
+    return {
+        "status": V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STATUS,
+        "primitive": proposal["primitive"],
+        "classification": proposal["proposed_classification"],
+        "required_docs": V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS,
+        "required_phrases": V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_PHRASES,
+        "forbidden_phrases": V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_FORBIDDEN_PHRASES,
+        "missing_required_phrases": missing_required_phrases,
+        "present_forbidden_phrases": present_forbidden_phrases,
+        "release_surface_docs_ready": not missing_required_phrases and not present_forbidden_phrases,
+        "proposal_consensus": (
+            "docs/reports/three_ai_goal1419_v1_5_1_collect_k_release_surface_proposal_consensus_2026-05-06.md"
+        ),
+        "readiness_consensus": proposal["readiness_consensus"],
+        "public_docs_change_authorized_by_this_gate": False,
+        "stable_promotion_authorized_by_this_gate": False,
+        "public_speedup_wording_authorized_by_this_gate": False,
+        "zero_copy_wording_authorized_by_this_gate": False,
+        "whole_app_speedup_claim_authorized_by_this_gate": False,
+        "release_tag_action_authorized_by_this_gate": False,
+        "explicit_release_approval_required": True,
+        "allowed_next_actions": (
+            "request_external_release_surface_gate_review",
+            "after_review_accepts_prepare_public_doc_link_patch",
+            "request_explicit_v1_5_1_release_action_if_user_wants_release",
+        ),
+        "claim_boundary": (
+            "The v1.5.1 COLLECT_K_BOUNDED candidate docs are ready for external "
+            "release-surface gate review as documented experimental public-candidate "
+            "material only. This gate does not authorize public docs changes, stable "
+            "promotion, speedup wording, zero-copy wording, whole-app claims, or release tag action."
+        ),
+    }
+
+
+def validate_v1_5_1_collect_k_bounded_release_surface_gate() -> dict[str, Any]:
+    gate = v1_5_1_collect_k_bounded_release_surface_gate()
+    if gate["status"] != V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STATUS:
+        raise ValueError("invalid v1.5.1 collect-k release-surface gate status")
+    if gate["classification"] != V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION:
+        raise ValueError("v1.5.1 collect-k release-surface gate classification mismatch")
+    if tuple(gate["required_docs"]) != V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS:
+        raise ValueError("v1.5.1 collect-k release-surface required docs mismatch")
+    if tuple(gate["missing_required_phrases"]) != ():
+        raise ValueError(
+            "v1.5.1 collect-k release-surface docs are missing required phrases: "
+            + ", ".join(gate["missing_required_phrases"])
+        )
+    if tuple(gate["present_forbidden_phrases"]) != ():
+        raise ValueError(
+            "v1.5.1 collect-k release-surface docs contain forbidden phrases: "
+            + ", ".join(gate["present_forbidden_phrases"])
+        )
+    if gate["release_surface_docs_ready"] is not True:
+        raise ValueError("v1.5.1 collect-k release-surface docs must be ready")
+    false_flags = (
+        "public_docs_change_authorized_by_this_gate",
+        "stable_promotion_authorized_by_this_gate",
+        "public_speedup_wording_authorized_by_this_gate",
+        "zero_copy_wording_authorized_by_this_gate",
+        "whole_app_speedup_claim_authorized_by_this_gate",
+        "release_tag_action_authorized_by_this_gate",
+    )
+    for flag in false_flags:
+        if gate[flag] is not False:
+            raise ValueError(f"release-surface gate must keep {flag}=False")
+    if gate["explicit_release_approval_required"] is not True:
+        raise ValueError("v1.5.1 collect-k release-surface gate requires explicit release approval")
+    boundary = str(gate["claim_boundary"])
+    for phrase in (
+        "candidate docs are ready",
+        "documented experimental public-candidate",
+        "does not authorize public docs changes",
+        "stable promotion",
+        "speedup wording",
+        "zero-copy wording",
+        "whole-app claims",
+        "release tag action",
+    ):
+        if phrase not in boundary:
+            raise ValueError("v1.5.1 collect-k release-surface gate claim boundary is incomplete")
+    return gate
 
 
 def _normalize_candidate_rows(

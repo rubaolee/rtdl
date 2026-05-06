@@ -135,15 +135,21 @@ from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENC
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_STATUS
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_FORBIDDEN_WORDING
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_FORBIDDEN_PHRASES
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_PHRASES
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STATUS
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSAL_STATUS
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_REQUIRED_REVIEW
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_contract
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_readiness_gate
+from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_release_surface_gate
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_release_surface_proposal
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_contract
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_readiness_gate
+from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_gate
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_proposal
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
@@ -1233,6 +1239,10 @@ __all__ = [
     "V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES",
     "V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT",
     "V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_FORBIDDEN_WORDING",
+    "V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_FORBIDDEN_PHRASES",
+    "V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS",
+    "V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_PHRASES",
+    "V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STATUS",
     "V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSAL_STATUS",
     "V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION",
     "V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_REQUIRED_REVIEW",
@@ -1241,12 +1251,14 @@ __all__ = [
     "v1_5_collect_k_bounded_contracts",
     "v1_5_1_collect_k_bounded_contract",
     "v1_5_1_collect_k_bounded_readiness_gate",
+    "v1_5_1_collect_k_bounded_release_surface_gate",
     "v1_5_1_collect_k_bounded_release_surface_proposal",
     "validate_collect_k_bounded_result",
     "validate_v1_5_collect_k_bounded_resolution",
     "validate_v1_5_collect_k_bounded_contracts",
     "validate_v1_5_1_collect_k_bounded_contract",
     "validate_v1_5_1_collect_k_bounded_readiness_gate",
+    "validate_v1_5_1_collect_k_bounded_release_surface_gate",
     "validate_v1_5_1_collect_k_bounded_release_surface_proposal",
     "engine_feature_support",
     "engine_feature_support_matrix",
