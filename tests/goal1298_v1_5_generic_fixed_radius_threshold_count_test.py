@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from unittest import mock
 
 import rtdsl as rt
 
@@ -78,6 +79,11 @@ class Goal1298V15GenericFixedRadiusThresholdCountTest(unittest.TestCase):
         self.assertEqual(result["backend"], "cpu")
         self.assertEqual(result["row_count"], 2)
         self.assertEqual(result["threshold_reached_count"], 1)
+        self.assertEqual(result["scalar_reduction"]["summary_primitive"], "REDUCE_INT(COUNT)")
+        self.assertEqual(result["scalar_reduction"]["result_layout"], "scalar_int64_count")
+        self.assertEqual(result["scalar_reduction"]["dtype"], "int64")
+        self.assertIsNone(result["scalar_reduction"]["input_field"])
+        self.assertIn("not native backend acceleration", result["scalar_reduction"]["claim_boundary"])
         self.assertEqual(
             result["rows"],
             (
@@ -86,6 +92,35 @@ class Goal1298V15GenericFixedRadiusThresholdCountTest(unittest.TestCase):
             ),
         )
         self.assertIn("query_fixed_radius_count_threshold_sec", result["run_phases"])
+
+    def test_direct_fixed_radius_threshold_count_uses_scalar_reduction_surface(self) -> None:
+        query_points = (
+            rt.Point(id=10, x=0.0, y=0.0),
+            rt.Point(id=11, x=10.0, y=10.0),
+        )
+        search_points = (
+            rt.Point(id=20, x=0.0, y=0.0),
+            rt.Point(id=21, x=0.5, y=0.0),
+            rt.Point(id=22, x=10.0, y=10.0),
+        )
+
+        with mock.patch(
+            "rtdsl.generic_primitives.run_generic_scalar_reduction",
+            wraps=rt.run_generic_scalar_reduction,
+        ) as scalar_reduction:
+            result = rt.run_generic_fixed_radius_count_threshold_2d(
+                query_points,
+                search_points,
+                radius=1.0,
+                threshold=2,
+                backend="cpu",
+            )
+
+        scalar_reduction.assert_called_once_with(
+            ({"query_id": 10, "neighbor_count": 2, "threshold_reached": 1},),
+            summary_primitive="REDUCE_INT(COUNT)",
+        )
+        self.assertEqual(result["threshold_reached_count"], 1)
 
     def test_prepared_optix_scalar_count_uses_generic_session(self) -> None:
         prepared = _PreparedFixedRadius(scalar_count=3)
@@ -129,6 +164,7 @@ class Goal1298V15GenericFixedRadiusThresholdCountTest(unittest.TestCase):
         self.assertEqual(rows_result["backend"], "embree")
         self.assertEqual(rows_result["row_count"], 2)
         self.assertEqual(rows_result["threshold_reached_count"], 1)
+        self.assertEqual(rows_result["scalar_reduction"]["summary_primitive"], "REDUCE_INT(COUNT)")
         self.assertEqual(scalar_result["threshold_reached_count"], 1)
         self.assertEqual(scalar_result["query_batch_index"], 2)
         self.assertEqual(prepared.run_calls, 2)

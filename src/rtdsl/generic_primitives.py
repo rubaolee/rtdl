@@ -146,6 +146,11 @@ def _cpu_fixed_radius_count_threshold_rows(
     return tuple(rows)
 
 
+def _threshold_reached_scalar_summary(rows: Any) -> dict[str, Any]:
+    threshold_rows = tuple(row for row in rows if bool(int(row["threshold_reached"])))
+    return run_generic_scalar_reduction(threshold_rows, summary_primitive="REDUCE_INT(COUNT)")
+
+
 def run_generic_ray_triangle_any_hit(
     rays: tuple[Ray2D | Ray3D, ...],
     triangles: tuple[Triangle | Triangle3D, ...],
@@ -261,7 +266,7 @@ def run_generic_fixed_radius_count_threshold_2d(
             threshold=threshold,
         )
     query_sec = time.perf_counter() - query_start
-    threshold_reached_count = sum(int(row["threshold_reached"]) for row in rows)
+    scalar_summary = _threshold_reached_scalar_summary(rows)
     return {
         "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
         "summary_primitive": "REDUCE_INT(COUNT)",
@@ -270,8 +275,13 @@ def run_generic_fixed_radius_count_threshold_2d(
         "radius": float(radius),
         "threshold": int(threshold),
         "row_count": len(rows),
-        "threshold_reached_count": threshold_reached_count,
+        "threshold_reached_count": scalar_summary["result"],
         "rows": rows,
+        "scalar_reduction": {
+            key: value
+            for key, value in scalar_summary.items()
+            if key not in {"result", "row_count"}
+        },
         "run_phases": {
             "query_fixed_radius_count_threshold_sec": query_sec,
         },
@@ -533,7 +543,7 @@ class GenericPreparedFixedRadiusCountThreshold2D:
         rows = self._prepared_scene.run(query_points, radius=radius, threshold=threshold)
         query_sec = time.perf_counter() - query_start
         self.query_batch_count += 1
-        threshold_reached_count = sum(int(row["threshold_reached"]) for row in rows)
+        scalar_summary = _threshold_reached_scalar_summary(rows)
         return {
             "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
             "summary_primitive": "REDUCE_INT(COUNT)",
@@ -544,8 +554,13 @@ class GenericPreparedFixedRadiusCountThreshold2D:
             "radius": float(radius),
             "threshold": int(threshold),
             "row_count": len(rows),
-            "threshold_reached_count": threshold_reached_count,
+            "threshold_reached_count": scalar_summary["result"],
             "rows": rows,
+            "scalar_reduction": {
+                key: value
+                for key, value in scalar_summary.items()
+                if key not in {"result", "row_count"}
+            },
             "run_phases": {
                 "scene_prepare_sec": self.scene_prepare_sec,
                 "scene_prepare_sec_this_batch": 0.0,
