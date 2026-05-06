@@ -8,6 +8,7 @@ from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL
 from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL
 from .float_reduction_contracts import V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
+from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 
 
 ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS = ("embree", "optix")
@@ -148,10 +149,10 @@ def _validate_complete_collection(collection: dict[str, Any], *, backend: str) -
     if not collection.get("complete_candidate_coverage"):
         raise RuntimeError("COLLECT_K_BOUNDED native collection did not report complete candidate coverage")
     if "candidate_id_rows" in collection:
-        row_buffer = collect_k_bounded_rows(
-            collection["candidate_id_rows"],
-            k=int(collection.get("capacity", collection.get("valid_count", 0))),
+        row_buffer = validate_collect_k_bounded_result(
+            collection,
             row_width=2,
+            backend=backend,
         )
         return tuple(
             (int(left_id), int(right_id))

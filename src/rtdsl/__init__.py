@@ -131,6 +131,7 @@ from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_STATUS
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_contract
+from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_contract
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
@@ -1219,6 +1220,7 @@ __all__ = [
     "v1_5_collect_k_bounded_resolution",
     "v1_5_collect_k_bounded_contracts",
     "v1_5_1_collect_k_bounded_contract",
+    "validate_collect_k_bounded_result",
     "validate_v1_5_collect_k_bounded_resolution",
     "validate_v1_5_collect_k_bounded_contracts",
     "validate_v1_5_1_collect_k_bounded_contract",

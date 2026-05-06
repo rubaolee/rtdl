@@ -31,6 +31,11 @@ native Embree and OptiX paths should satisfy next.
   `candidate_id_rows` directly, with `candidate_pairs` retained only as a
   transition fallback.
 - Added `tests/goal1412_v1_5_1_jaccard_consumes_generic_collect_rows_test.py`.
+- Added `validate_collect_k_bounded_result(...)`, a reusable v1.5.1 validator
+  for completed app-generic bounded collection buffers.
+- Updated the Jaccard continuation bridge to validate `candidate_id_rows`
+  through that shared result validator.
+- Added `tests/goal1413_v1_5_1_collect_k_result_validator_test.py`.
 
 ## Contract Shape
 
@@ -119,6 +124,20 @@ Result:
 
 ```text
 Ran 26 tests in 0.012s
+OK
+```
+
+Additional Windows command after adding the shared completed-result validator:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1409_v1_5_1_collect_k_bounded_contract_test tests.goal1411_v1_5_1_polygon_collect_k_helper_bridge_test tests.goal1412_v1_5_1_jaccard_consumes_generic_collect_rows_test tests.goal1413_v1_5_1_collect_k_result_validator_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test
+```
+
+Result:
+
+```text
+Ran 29 tests in 0.010s
 OK
 ```
 

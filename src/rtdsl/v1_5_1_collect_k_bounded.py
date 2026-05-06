@@ -201,3 +201,58 @@ def collect_k_bounded_rows(
         "candidate_id_rows": rows,
         "claim_boundary": contract["claim_boundary"],
     }
+
+
+def validate_collect_k_bounded_result(
+    result: dict[str, Any],
+    *,
+    row_width: int,
+    backend: str | None = None,
+) -> dict[str, Any]:
+    """Validate and normalize a completed app-generic bounded collection result."""
+    if result.get("primitive") != V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE:
+        raise ValueError("bounded collection result must use primitive COLLECT_K_BOUNDED")
+    if backend is not None and result.get("backend") != backend:
+        raise ValueError("bounded collection backend does not match requested backend")
+    if result.get("overflowed"):
+        raise RuntimeError(
+            "COLLECT_K_BOUNDED result reported overflow; "
+            f"failure_mode={result.get('failure_mode', 'fail_closed_overflow')}"
+        )
+    if result.get("complete_candidate_coverage") is not True:
+        raise RuntimeError("COLLECT_K_BOUNDED result must report complete candidate coverage")
+    if "candidate_id_rows" not in result:
+        raise ValueError("bounded collection result must include candidate_id_rows")
+    capacity = int(result.get("capacity", result.get("valid_count", 0)))
+    normalized = collect_k_bounded_rows(
+        result["candidate_id_rows"],
+        k=capacity,
+        row_width=int(row_width),
+    )
+    if int(result.get("row_width", row_width)) != int(row_width):
+        raise ValueError("COLLECT_K_BOUNDED row_width metadata mismatch")
+    if int(result.get("valid_count", normalized["valid_count"])) != normalized["valid_count"]:
+        raise ValueError("COLLECT_K_BOUNDED valid_count metadata mismatch")
+    if int(result.get("emitted_count", normalized["emitted_count"])) != normalized["emitted_count"]:
+        raise ValueError("COLLECT_K_BOUNDED emitted_count metadata mismatch")
+    if tuple(result.get("candidate_id_rows", ())) != normalized["candidate_id_rows"]:
+        raise ValueError("COLLECT_K_BOUNDED candidate_id_rows must be canonicalized")
+    return {
+        **result,
+        "app_generic": True,
+        "result_layout": result.get("result_layout", normalized["result_layout"]),
+        "generic_result_layout": result.get(
+            "generic_result_layout",
+            normalized["result_layout"],
+        ),
+        "row_dtype": result.get("row_dtype", normalized["row_dtype"]),
+        "row_width": int(row_width),
+        "capacity": capacity,
+        "valid_count": normalized["valid_count"],
+        "emitted_count": normalized["emitted_count"],
+        "overflowed": False,
+        "complete_candidate_coverage": True,
+        "ordering_policy": normalized["ordering_policy"],
+        "duplicate_policy": normalized["duplicate_policy"],
+        "candidate_id_rows": normalized["candidate_id_rows"],
+    }
