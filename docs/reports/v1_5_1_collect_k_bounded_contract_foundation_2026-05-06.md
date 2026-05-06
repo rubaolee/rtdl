@@ -36,6 +36,12 @@ native Embree and OptiX paths should satisfy next.
 - Updated the Jaccard continuation bridge to validate `candidate_id_rows`
   through that shared result validator.
 - Added `tests/goal1413_v1_5_1_collect_k_result_validator_test.py`.
+- Updated the legacy `candidate_pairs` transition fallback so it is
+  normalized through the same `collect_k_bounded_rows(..., row_width=2)`
+  contract before Jaccard scoring, instead of bypassing canonical row-buffer
+  semantics.
+- Added
+  `tests/goal1414_v1_5_1_legacy_candidate_pairs_contract_bridge_test.py`.
 
 ## Contract Shape
 
@@ -143,6 +149,48 @@ OK
 
 The Windows Python startup warning `Could not find platform independent
 libraries <prefix>` was observed and was non-fatal.
+
+Additional Windows command after hardening the legacy `candidate_pairs`
+transition fallback:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1409_v1_5_1_collect_k_bounded_contract_test tests.goal1410_v1_5_1_native_collect_k_row_buffer_surface_test tests.goal1411_v1_5_1_polygon_collect_k_helper_bridge_test tests.goal1412_v1_5_1_jaccard_consumes_generic_collect_rows_test tests.goal1413_v1_5_1_collect_k_result_validator_test tests.goal1414_v1_5_1_legacy_candidate_pairs_contract_bridge_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test
+```
+
+Result:
+
+```text
+Ran 35 tests in 0.015s
+OK
+```
+
+NVIDIA pod validation, using
+`root@213.173.102.217 -p 25443` on Ubuntu Linux with NVIDIA RTX A4500,
+driver 550.127.05, CUDA 12.4, and OptiX headers vendored at
+`/root/vendor/optix-dev`:
+
+```bash
+PYTHONPATH=src:. python3 -m unittest tests.goal1409_v1_5_1_collect_k_bounded_contract_test tests.goal1410_v1_5_1_native_collect_k_row_buffer_surface_test tests.goal1411_v1_5_1_polygon_collect_k_helper_bridge_test tests.goal1412_v1_5_1_jaccard_consumes_generic_collect_rows_test tests.goal1413_v1_5_1_collect_k_result_validator_test tests.goal1414_v1_5_1_legacy_candidate_pairs_contract_bridge_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test
+```
+
+Result:
+
+```text
+Ran 35 tests in 0.005s
+OK
+```
+
+The same pod also built the native OptiX runtime with:
+
+```bash
+make build-optix OPTIX_PREFIX=/root/vendor/optix-dev CUDA_PREFIX=/usr/local/cuda NVCC=/usr/local/cuda/bin/nvcc
+```
+
+Then a small internal OptiX sanity run over generic raw ray/triangle
+`ANY_HIT` plus `COUNT_HITS` reported CPU/OptiX row parity, direct hit-count
+parity, and prepared OptiX hit-count parity. This sanity run remains internal
+evidence only and does not authorize public speedup wording.
 
 ## Next Work
 

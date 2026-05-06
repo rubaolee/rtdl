@@ -159,7 +159,16 @@ def _validate_complete_collection(collection: dict[str, Any], *, backend: str) -
             for left_id, right_id in row_buffer["candidate_id_rows"]
         )
     if "candidate_pairs" in collection:
-        return tuple((int(left_id), int(right_id)) for left_id, right_id in collection["candidate_pairs"])
+        candidate_pair_rows = tuple(collection["candidate_pairs"])
+        row_buffer = collect_k_bounded_rows(
+            candidate_pair_rows,
+            k=int(collection.get("capacity", len(candidate_pair_rows))),
+            row_width=2,
+        )
+        return tuple(
+            (int(left_id), int(right_id))
+            for left_id, right_id in row_buffer["candidate_id_rows"]
+        )
     raise ValueError("native collection must include candidate_id_rows or candidate_pairs")
 
 
