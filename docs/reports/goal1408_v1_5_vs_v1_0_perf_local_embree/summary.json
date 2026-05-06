@@ -1,0 +1,1003 @@
+{
+  "boundary": "Same command and same scale are run against v1.0 and current v1.5 candidate. Cells with backend errors are unavailable, not zero-speedup results. This runner does not authorize public speedup wording by itself.",
+  "copies": 512,
+  "current_commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+  "excluded_apps": {
+    "apple_rt_demo": "excluded from v1.5 active Embree+OptiX scope; Apple RT frozen before v2.1",
+    "hiprt_ray_triangle_hitcount": "excluded from v1.5 active Embree+OptiX scope; HIPRT frozen before v2.1",
+    "polygon_set_jaccard": "excluded from v1.5 because COLLECT_K_BOUNDED is deferred to v1.5.1",
+    "segment_polygon_anyhit_rows": "excluded from v1.5 because COLLECT_K_BOUNDED is deferred to v1.5.1"
+  },
+  "host": {
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "iterations": 3,
+  "profiles_requested": 13,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "backend": "embree",
+      "boundary": "DB compact-summary only; no SQL/DBMS or row-materialization speedup claim.",
+      "comparison": {
+        "classification": "v1_5_slower",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.695798712333704,
+        "v1_0_sec": 0.0013862920459359884,
+        "v1_5_sec": 0.001992375124245882
+      },
+      "v1_0": {
+        "app": "database_analytics",
+        "backend": "embree",
+        "boundary": "DB compact-summary only; no SQL/DBMS or row-materialization speedup claim.",
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "embree",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--output-mode",
+          "compact_summary",
+          "--output-json",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/database_analytics/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "results[0].prepared_session_warm_query_sec.median_sec",
+          "score": 56,
+          "seconds": 0.0013862920459359884
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/database_analytics/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.6525179999880493,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": " 0.0\n      },\n      \"reported_native_db_phases_sec\": {\n        \"sales_risk\": {\n          \"compact_summary_batch\": {\n            \"risky_order_count_by_region\": null,\n            \"risky_revenue_by_region\": null,\n            \"risky_scan_count\": null\n          }\n        }\n      },\n      \"reported_prepare_phases_sec\": {\n        \"sales_risk\": {\n          \"input_construction_sec\": 0.007200208026915789,\n          \"prepare_sec\": 0.014761250000447035\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 0.021982582984492183,\n          \"scenario_count\": 1\n        }\n      },\n      \"reported_run_phase_modes\": {\n        \"sales_risk\": {\n          \"grouped_count\": \"batch_summary\",\n          \"grouped_sum\": \"batch_summary\",\n          \"scan\": \"batch_summary\"\n        }\n      },\n      \"reported_run_phase_totals_sec\": {\n        \"all_sections_python_summary_postprocess_sec\": 5.708076059818268e-06,\n        \"all_sections_query_sec\": 0.0013538331259042025,\n        \"compact_summary_operation_count\": 3,\n        \"row_materializing_operation_count\": 0,\n        \"sections\": {\n          \"sales_risk\": {\n            \"compact_summary_operation_count\": 3,\n            \"python_summary_postprocess_sec\": 5.708076059818268e-06,\n            \"query_sec\": 0.0013538331259042025,\n            \"row_materializing_operation_count\": 0\n          }\n        }\n      },\n      \"reported_run_phases_sec\": {\n        \"sales_risk\": {\n          \"python_summary_postprocess_sec\": 5.708076059818268e-06,\n          \"query_compact_summary_batch_sec\": 0.0013538331259042025\n        },\n        \"unified_session\": {\n          \"per_section_run_sec\": {\n            \"sales_risk\": 0.0013747920747846365\n          }\n        }\n      },\n      \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n      \"speedup_one_shot_over_warm_query_median\": 60.70224681264726,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"sales_risk\",\n  \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "database_analytics",
+        "backend": "embree",
+        "boundary": "DB compact-summary only; no SQL/DBMS or row-materialization speedup claim.",
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "embree",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--output-mode",
+          "compact_summary",
+          "--output-json",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/database_analytics/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "results[0].prepared_session_warm_query_sec.median_sec",
+          "score": 56,
+          "seconds": 0.001992375124245882
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/database_analytics/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.8506310840602964,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "         \"compact_summary_batch\": {\n            \"risky_order_count_by_region\": null,\n            \"risky_revenue_by_region\": null,\n            \"risky_scan_count\": null\n          }\n        }\n      },\n      \"reported_prepare_phases_sec\": {\n        \"sales_risk\": {\n          \"input_construction_sec\": 0.0010389161761850119,\n          \"prepare_sec\": 0.016816999996080995\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 0.01788020902313292,\n          \"scenario_count\": 1\n        }\n      },\n      \"reported_run_phase_modes\": {\n        \"sales_risk\": {\n          \"grouped_count\": \"batch_summary\",\n          \"grouped_sum\": \"batch_summary\",\n          \"scan\": \"batch_summary\"\n        }\n      },\n      \"reported_run_phase_totals_sec\": {\n        \"all_sections_python_summary_postprocess_sec\": 6.834045052528381e-06,\n        \"all_sections_query_sec\": 0.0034095002338290215,\n        \"compact_summary_operation_count\": 3,\n        \"row_materializing_operation_count\": 0,\n        \"sections\": {\n          \"sales_risk\": {\n            \"compact_summary_operation_count\": 3,\n            \"python_summary_postprocess_sec\": 6.834045052528381e-06,\n            \"query_sec\": 0.0034095002338290215,\n            \"row_materializing_operation_count\": 0\n          }\n        }\n      },\n      \"reported_run_phases_sec\": {\n        \"sales_risk\": {\n          \"python_summary_postprocess_sec\": 6.834045052528381e-06,\n          \"query_compact_summary_batch_sec\": 0.0017047501169145107,\n          \"query_generic_db_compact_summary_batch_sec\": 0.0017047501169145107\n        },\n        \"unified_session\": {\n          \"per_section_run_sec\": {\n            \"sales_risk\": 0.0018200420308858156\n          }\n        }\n      },\n      \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n      \"speedup_one_shot_over_warm_query_median\": 37.350374994770476,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"sales_risk\",\n  \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+        }
+      }
+    },
+    {
+      "app": "service_coverage_gaps",
+      "backend": "embree",
+      "boundary": "Service coverage gap summary only; no whole service-optimization claim.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.5943946145663894,
+        "v1_0_sec": 0.01649979199282825,
+        "v1_5_sec": 0.010348625015467405
+      },
+      "v1_0": {
+        "app": "service_coverage_gaps",
+        "backend": "embree",
+        "boundary": "Service coverage gap summary only; no whole service-optimization claim.",
+        "command": [
+          "python3",
+          "scripts/goal724_service_coverage_summary_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/service_coverage_gaps/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "results[0].gap_summary_sec",
+          "score": 27,
+          "seconds": 0.01649979199282825
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/service_coverage_gaps/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.6471877091098577,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"app\": \"service_coverage_gaps\", \"clinic_count\": 1536, \"copies\": 512, \"gap_summary_sec\": 0.01649979199282825, \"household_count\": 2048, \"row_count\": 2558, \"row_mode_sec\": 0.017185542033985257, \"summary_row_count\": 2048, \"summary_speedup_vs_rows\": 1.04156113249519, \"uncovered_count\": 512}\n"
+        }
+      },
+      "v1_5": {
+        "app": "service_coverage_gaps",
+        "backend": "embree",
+        "boundary": "Service coverage gap summary only; no whole service-optimization claim.",
+        "command": [
+          "python3",
+          "scripts/goal724_service_coverage_summary_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/service_coverage_gaps/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "results[0].gap_summary_sec",
+          "score": 27,
+          "seconds": 0.010348625015467405
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/service_coverage_gaps/embree/result.json",
+        "run": {
+          "elapsed_sec": 1.2298021658789366,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"app\": \"service_coverage_gaps\", \"clinic_count\": 1536, \"copies\": 512, \"gap_summary_sec\": 0.010348625015467405, \"household_count\": 2048, \"row_count\": 2558, \"row_mode_sec\": 0.01456762501038611, \"summary_row_count\": 2048, \"summary_speedup_vs_rows\": 1.4076870104591521, \"uncovered_count\": 512}\n"
+        }
+      }
+    },
+    {
+      "app": "event_hotspot_screening",
+      "backend": "embree",
+      "boundary": "Hotspot count summary only; no whole hotspot-analytics claim.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.4005281033714316,
+        "v1_0_sec": 0.041415541898459196,
+        "v1_5_sec": 0.02957137511111796
+      },
+      "v1_0": {
+        "app": "event_hotspot_screening",
+        "backend": "embree",
+        "boundary": "Hotspot count summary only; no whole hotspot-analytics claim.",
+        "command": [
+          "python3",
+          "scripts/goal723_event_hotspot_summary_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/event_hotspot_screening/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "results[0].count_summary_sec",
+          "score": 27,
+          "seconds": 0.041415541898459196
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/event_hotspot_screening/embree/result.json",
+        "run": {
+          "elapsed_sec": 1.1908927909098566,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"app\": \"event_hotspot_screening\", \"copies\": 512, \"count_summary_sec\": 0.041415541898459196, \"event_count\": 3072, \"row_count\": 9210, \"row_mode_sec\": 0.04197408398613334, \"summary_row_count\": 3072, \"summary_speedup_vs_rows\": 1.0134862919104994}\n"
+        }
+      },
+      "v1_5": {
+        "app": "event_hotspot_screening",
+        "backend": "embree",
+        "boundary": "Hotspot count summary only; no whole hotspot-analytics claim.",
+        "command": [
+          "python3",
+          "scripts/goal723_event_hotspot_summary_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/event_hotspot_screening/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "results[0].count_summary_sec",
+          "score": 27,
+          "seconds": 0.02957137511111796
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/event_hotspot_screening/embree/result.json",
+        "run": {
+          "elapsed_sec": 1.4494660419877619,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"app\": \"event_hotspot_screening\", \"copies\": 512, \"count_summary_sec\": 0.02957137511111796, \"event_count\": 3072, \"row_count\": 9210, \"row_mode_sec\": 0.09044687496498227, \"summary_row_count\": 3072, \"summary_speedup_vs_rows\": 3.058595504102105}\n"
+        }
+      }
+    },
+    {
+      "app": "facility_knn_assignment",
+      "backend": "embree",
+      "boundary": "Coverage-threshold/compact output only; ranked KNN remains outside.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.4513119719601075,
+        "v1_0_sec": 0.1184796669986099,
+        "v1_5_sec": 0.08163625001907349
+      },
+      "v1_0": {
+        "app": "facility_knn_assignment",
+        "backend": "embree",
+        "boundary": "Coverage-threshold/compact output only; ranked KNN remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal730_facility_knn_compact_output_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/facility_knn_assignment/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].modes.rows.median_seconds",
+          "score": 29,
+          "seconds": 0.1184796669986099
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/facility_knn_assignment/embree/result.json",
+        "run": {
+          "elapsed_sec": 1.5323267080821097,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"facility_knn_assignment\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Rows mode keeps K=3 fallback choices. Compact modes run the K=1 primary-assignment RTDL kernel and omit fallback-choice rows from the app JSON payload.\",\n  \"cases\": [\n    {\n      \"copies\": 512,\n      \"modes\": {\n        \"primary_assignments\": {\n          \"backend\": \"embree\",\n          \"copies\": 512,\n          \"customer_count\": 2048,\n          \"depot_count\": 2048,\n          \"json_bytes_median\": 50545,\n          \"json_reduction_vs_rows\": 21.127173805519835,\n          \"max_seconds\": 0.053402042016386986,\n          \"median_seconds\": 0.04272116697393358,\n          \"min_seconds\": 0.04213491710834205,\n          \"output_mode\": \"primary_assignments\",\n          \"repeats\": 3,\n          \"speedup_vs_rows\": 2.773324686352799\n        },\n        \"rows\": {\n          \"backend\": \"embree\",\n          \"copies\": 512,\n          \"customer_count\": 2048,\n          \"depot_count\": 2048,\n          \"json_bytes_median\": 1067873,\n          \"max_seconds\": 0.1591701249126345,\n          \"median_seconds\": 0.1184796669986099,\n          \"min_seconds\": 0.11372187500819564,\n          \"output_mode\": \"rows\",\n          \"repeats\": 3\n        },\n        \"summary\": {\n          \"backend\": \"embree\",\n          \"copies\": 512,\n          \"customer_count\": 2048,\n          \"depot_count\": 2048,\n          \"json_bytes_median\": 18626,\n          \"json_reduction_vs_rows\": 57.332384838397935,\n          \"max_seconds\": 0.05975954211317003,\n          \"median_seconds\": 0.05493337498046458,\n          \"min_seconds\": 0.04241354111582041,\n          \"output_mode\": \"summary\",\n          \"repeats\": 3,\n          \"speedup_vs_rows\": 2.1567884194397973\n        }\n      }\n    }\n  ],\n  \"goal\": 730,\n  \"measurement\": \"run_case plus json.dumps wall-clock seconds\",\n  \"repeats\": 3\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "facility_knn_assignment",
+        "backend": "embree",
+        "boundary": "Coverage-threshold/compact output only; ranked KNN remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal730_facility_knn_compact_output_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/facility_knn_assignment/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].modes.rows.median_seconds",
+          "score": 29,
+          "seconds": 0.08163625001907349
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/facility_knn_assignment/embree/result.json",
+        "run": {
+          "elapsed_sec": 1.8407702080439776,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"facility_knn_assignment\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Rows mode keeps K=3 fallback choices. Compact modes run the K=1 primary-assignment RTDL kernel and omit fallback-choice rows from the app JSON payload.\",\n  \"cases\": [\n    {\n      \"copies\": 512,\n      \"modes\": {\n        \"primary_assignments\": {\n          \"backend\": \"embree\",\n          \"copies\": 512,\n          \"customer_count\": 2048,\n          \"depot_count\": 2048,\n          \"json_bytes_median\": 50545,\n          \"json_reduction_vs_rows\": 21.127173805519835,\n          \"max_seconds\": 0.08171162498183548,\n          \"median_seconds\": 0.060954333981499076,\n          \"min_seconds\": 0.05278745898976922,\n          \"output_mode\": \"primary_assignments\",\n          \"repeats\": 3,\n          \"speedup_vs_rows\": 1.3393018131221286\n        },\n        \"rows\": {\n          \"backend\": \"embree\",\n          \"copies\": 512,\n          \"customer_count\": 2048,\n          \"depot_count\": 2048,\n          \"json_bytes_median\": 1067873,\n          \"max_seconds\": 0.21629312518052757,\n          \"median_seconds\": 0.08163625001907349,\n          \"min_seconds\": 0.07074437499977648,\n          \"output_mode\": \"rows\",\n          \"repeats\": 3\n        },\n        \"summary\": {\n          \"backend\": \"embree\",\n          \"copies\": 512,\n          \"customer_count\": 2048,\n          \"depot_count\": 2048,\n          \"json_bytes_median\": 18626,\n          \"json_reduction_vs_rows\": 57.332384838397935,\n          \"max_seconds\": 0.41075054090470076,\n          \"median_seconds\": 0.1742134999949485,\n          \"min_seconds\": 0.08752229204401374,\n          \"output_mode\": \"summary\",\n          \"repeats\": 3,\n          \"speedup_vs_rows\": 0.468598874492738\n        }\n      }\n    }\n  ],\n  \"goal\": 730,\n  \"measurement\": \"run_case plus json.dumps wall-clock seconds\",\n  \"repeats\": 3\n}\n"
+        }
+      }
+    },
+    {
+      "app": "road_hazard_screening",
+      "backend": "embree",
+      "boundary": "Compact hazard summary only; GIS/routing and default-app behavior remain outside.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.1625996897797342,
+        "v1_0_sec": 0.013401624979451299,
+        "v1_5_sec": 0.011527291033416986
+      },
+      "v1_0": {
+        "app": "road_hazard_screening",
+        "backend": "embree",
+        "boundary": "Compact hazard summary only; GIS/routing and default-app behavior remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal729_road_hazard_compact_output_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/road_hazard_screening/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.013401624979451299
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/road_hazard_screening/embree/result.json",
+        "run": {
+          "elapsed_sec": 1.547175332903862,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"embree\", \"cases\": 1, \"geomean_json_size_reduction\": 13.66510737826919, \"geomean_speedup_vs_rows\": 1.7033529479915381, \"optix_mode\": \"not_applicable\", \"output\": \"/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/road_hazard_screening/embree/result.json\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "road_hazard_screening",
+        "backend": "embree",
+        "boundary": "Compact hazard summary only; GIS/routing and default-app behavior remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal729_road_hazard_compact_output_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/road_hazard_screening/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.011527291033416986
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/road_hazard_screening/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.48069691681303084,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"embree\", \"cases\": 1, \"geomean_json_size_reduction\": 13.661564625850344, \"geomean_speedup_vs_rows\": 1.578513324730836, \"optix_mode\": \"not_applicable\", \"output\": \"/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/road_hazard_screening/embree/result.json\"}\n"
+        }
+      }
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "backend": "embree",
+      "boundary": "Compact hit-count summary only; pair-row output remains outside.",
+      "comparison": {
+        "classification": "v1_5_slower",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.8647296611939893,
+        "v1_0_sec": 0.023693917086347938,
+        "v1_5_sec": 0.027400375111028552
+      },
+      "v1_0": {
+        "app": "segment_polygon_hitcount",
+        "backend": "embree",
+        "boundary": "Compact hit-count summary only; pair-row output remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal726_segment_polygon_compact_summary_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/segment_polygon_hitcount/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.023693917086347938
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/segment_polygon_hitcount/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.6398968750145286,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"embree\", \"cases\": 1, \"geomean_speedup_vs_rows\": 1.4206193014378417, \"optix_mode\": \"not_applicable\", \"output\": \"/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/segment_polygon_hitcount/embree/result.json\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "segment_polygon_hitcount",
+        "backend": "embree",
+        "boundary": "Compact hit-count summary only; pair-row output remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal726_segment_polygon_compact_summary_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/segment_polygon_hitcount/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.027400375111028552
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/segment_polygon_hitcount/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.9125280410517007,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"embree\", \"cases\": 1, \"geomean_speedup_vs_rows\": 0.9451352114266902, \"optix_mode\": \"not_applicable\", \"output\": \"/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/segment_polygon_hitcount/embree/result.json\"}\n"
+        }
+      }
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "backend": "embree",
+      "boundary": "Candidate discovery plus exact-area summary only; broad polygon overlay remains outside.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.0307759136645807,
+        "v1_0_sec": 0.08172137499786913,
+        "v1_5_sec": 0.07928141695447266
+      },
+      "v1_0": {
+        "app": "polygon_pair_overlap_area_rows",
+        "backend": "embree",
+        "boundary": "Candidate discovery plus exact-area summary only; broad polygon overlay remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal732_polygon_pair_summary_output_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/polygon_pair_overlap_area_rows/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].rows.median_seconds",
+          "score": 29,
+          "seconds": 0.08172137499786913
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/polygon_pair_overlap_area_rows/embree/result.json",
+        "run": {
+          "elapsed_sec": 8.762356457998976,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"polygon_pair_overlap_area_rows\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Summary mode omits full overlap rows from the JSON payload. Embree uses native LSI/PIP positive candidate discovery, then CPU/Python exact grid-cell area refinement.\",\n  \"cases\": [\n    {\n      \"copies\": 512,\n      \"rows\": {\n        \"backend\": \"embree\",\n        \"copies\": 512,\n        \"json_bytes_median\": 133501,\n        \"left_polygon_count\": 1024,\n        \"max_seconds\": 7.943834250094369,\n        \"median_seconds\": 0.08172137499786913,\n        \"min_seconds\": 0.06668816693127155,\n        \"output_mode\": \"rows\",\n        \"repeats\": 3,\n        \"right_polygon_count\": 1536\n      },\n      \"summary\": {\n        \"backend\": \"embree\",\n        \"copies\": 512,\n        \"json_bytes_median\": 1332,\n        \"json_reduction_vs_rows\": 100.22597597597597,\n        \"left_polygon_count\": 1024,\n        \"max_seconds\": 0.10859645903110504,\n        \"median_seconds\": 0.09704637504182756,\n        \"min_seconds\": 0.0909887501038611,\n        \"output_mode\": \"summary\",\n        \"repeats\": 3,\n        \"right_polygon_count\": 1536,\n        \"speedup_vs_rows\": 0.8420858065295767\n      }\n    }\n  ],\n  \"goal\": 732,\n  \"measurement\": \"run_case plus json.dumps wall-clock seconds\",\n  \"repeats\": 3\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "polygon_pair_overlap_area_rows",
+        "backend": "embree",
+        "boundary": "Candidate discovery plus exact-area summary only; broad polygon overlay remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal732_polygon_pair_summary_output_perf.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/polygon_pair_overlap_area_rows/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].rows.median_seconds",
+          "score": 29,
+          "seconds": 0.07928141695447266
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/polygon_pair_overlap_area_rows/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.8029904998838902,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"polygon_pair_overlap_area_rows\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Summary mode omits full overlap rows from the JSON payload. Embree uses native LSI/PIP positive candidate discovery, then CPU/Python exact grid-cell area refinement.\",\n  \"cases\": [\n    {\n      \"copies\": 512,\n      \"rows\": {\n        \"backend\": \"embree\",\n        \"copies\": 512,\n        \"json_bytes_median\": 134798,\n        \"left_polygon_count\": 1024,\n        \"max_seconds\": 0.12005312507972121,\n        \"median_seconds\": 0.07928141695447266,\n        \"min_seconds\": 0.06390445888973773,\n        \"output_mode\": \"rows\",\n        \"repeats\": 3,\n        \"right_polygon_count\": 1536\n      },\n      \"summary\": {\n        \"backend\": \"embree\",\n        \"copies\": 512,\n        \"json_bytes_median\": 3921,\n        \"json_reduction_vs_rows\": 34.37847487885743,\n        \"left_polygon_count\": 1024,\n        \"max_seconds\": 0.10044162510894239,\n        \"median_seconds\": 0.0892189999576658,\n        \"min_seconds\": 0.08348925015889108,\n        \"output_mode\": \"summary\",\n        \"repeats\": 3,\n        \"right_polygon_count\": 1536,\n        \"speedup_vs_rows\": 0.888615844070114\n      }\n    }\n  ],\n  \"goal\": 732,\n  \"measurement\": \"run_case plus json.dumps wall-clock seconds\",\n  \"repeats\": 3\n}\n"
+        }
+      }
+    },
+    {
+      "app": "hausdorff_distance",
+      "backend": "embree",
+      "boundary": "Threshold decision/directed summary only; exact Hausdorff rows remain outside.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.0870364116885107,
+        "v1_0_sec": 0.07268595811910927,
+        "v1_5_sec": 0.06686616688966751
+      },
+      "v1_0": {
+        "app": "hausdorff_distance",
+        "backend": "embree",
+        "boundary": "Threshold decision/directed summary only; exact Hausdorff rows remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal722_embree_hausdorff_summary_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/hausdorff_distance/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "results[0].row_mode_sec",
+          "score": 2,
+          "seconds": 0.07268595811910927
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/hausdorff_distance/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.6930419998243451,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"app\": \"hausdorff_distance\", \"copies\": 512, \"directed_summary_sec\": 0.056594250025227666, \"hausdorff_distance\": 0.30000000000000004, \"point_count_a\": 2048, \"point_count_b\": 2048, \"row_mode_sec\": 0.07268595811910927, \"summary_speedup_vs_rows\": 1.2843346821754595}\n"
+        }
+      },
+      "v1_5": {
+        "app": "hausdorff_distance",
+        "backend": "embree",
+        "boundary": "Threshold decision/directed summary only; exact Hausdorff rows remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal722_embree_hausdorff_summary_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/hausdorff_distance/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "results[0].row_mode_sec",
+          "score": 2,
+          "seconds": 0.06686616688966751
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/hausdorff_distance/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.677785333013162,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"app\": \"hausdorff_distance\", \"copies\": 512, \"directed_summary_sec\": 0.057965666987001896, \"hausdorff_distance\": 0.30000000000000004, \"point_count_a\": 2048, \"point_count_b\": 2048, \"row_mode_sec\": 0.06686616688966751, \"summary_speedup_vs_rows\": 1.1535477872558846}\n"
+        }
+      }
+    },
+    {
+      "app": "ann_candidate_search",
+      "backend": "embree",
+      "boundary": "Candidate-coverage/compact output only; full ANN ranking/indexing remains outside.",
+      "comparison": {
+        "classification": "v1_5_slower",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.7346799319356274,
+        "v1_0_sec": 1.0893088330049068,
+        "v1_5_sec": 1.482698499923572
+      },
+      "v1_0": {
+        "app": "ann_candidate_search",
+        "backend": "embree",
+        "boundary": "Candidate-coverage/compact output only; full ANN ranking/indexing remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal735_ann_candidate_compact_output_perf.py",
+          "--copies",
+          "512",
+          "--quality-copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/ann_candidate_search/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].cpu_rerank_summary.median_seconds",
+          "score": 29,
+          "seconds": 1.0893088330049068
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/ann_candidate_search/embree/result.json",
+        "run": {
+          "elapsed_sec": 8.294522457988933,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"ann_candidate_search\",\n  \"boundary\": \"rerank_summary measures only RTDL candidate-subset KNN reranking. quality_summary includes Python exact full-set comparison for recall and distance metrics. This is not a full ANN index or recall/latency optimizer.\",\n  \"cases\": [\n    {\n      \"copies\": 512,\n      \"cpu_rerank_summary\": {\n        \"backend\": \"cpu_python_reference\",\n        \"candidate_count\": 1536,\n        \"copies\": 512,\n        \"json_bytes_median\": 1205,\n        \"max_seconds\": 1.1098182499408722,\n        \"median_seconds\": 1.0893088330049068,\n        \"min_seconds\": 1.0352506251074374,\n        \"output_mode\": \"rerank_summary\",\n        \"query_count\": 1536,\n        \"repeats\": 3,\n        \"search_count\": 3072\n      },\n      \"embree_quality_summary\": {\n        \"backend\": \"embree\",\n        \"candidate_count\": 1536,\n        \"copies\": 512,\n        \"json_bytes_median\": 1296,\n        \"max_seconds\": 1.766852583969012,\n        \"median_seconds\": 1.4600631669163704,\n        \"min_seconds\": 1.3795585001353174,\n        \"output_mode\": \"quality_summary\",\n        \"query_count\": 1536,\n        \"repeats\": 3,\n        \"search_count\": 3072,\n        \"slowdown_vs_rerank_summary\": 44.54966148984196\n      },\n      \"embree_rerank_summary\": {\n        \"backend\": \"embree\",\n        \"candidate_count\": 1536,\n        \"copies\": 512,\n        \"json_bytes_median\": 1191,\n        \"max_seconds\": 0.06419341685250401,\n        \"median_seconds\": 0.03277383302338421,\n        \"min_seconds\": 0.026445375056937337,\n        \"output_mode\": \"rerank_summary\",\n        \"query_count\": 1536,\n        \"repeats\": 3,\n        \"search_count\": 3072,\n        \"speedup_vs_cpu_python_reference\": 33.237150876666824\n      }\n    }\n  ],\n  \"goal\": 735,\n  \"measurement\": \"run_app plus json.dumps wall-clock seconds\",\n  \"quality_copies\": [\n    512\n  ],\n  \"repeats\": 3\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "ann_candidate_search",
+        "backend": "embree",
+        "boundary": "Candidate-coverage/compact output only; full ANN ranking/indexing remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal735_ann_candidate_compact_output_perf.py",
+          "--copies",
+          "512",
+          "--quality-copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/ann_candidate_search/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].cpu_rerank_summary.median_seconds",
+          "score": 29,
+          "seconds": 1.482698499923572
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/ann_candidate_search/embree/result.json",
+        "run": {
+          "elapsed_sec": 9.655799750005826,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"ann_candidate_search\",\n  \"boundary\": \"rerank_summary measures only RTDL candidate-subset KNN reranking. quality_summary includes Python exact full-set comparison for recall and distance metrics. This is not a full ANN index or recall/latency optimizer.\",\n  \"cases\": [\n    {\n      \"copies\": 512,\n      \"cpu_rerank_summary\": {\n        \"backend\": \"cpu_python_reference\",\n        \"candidate_count\": 1536,\n        \"copies\": 512,\n        \"json_bytes_median\": 1220,\n        \"max_seconds\": 1.5870041251182556,\n        \"median_seconds\": 1.482698499923572,\n        \"min_seconds\": 1.391511249821633,\n        \"output_mode\": \"rerank_summary\",\n        \"query_count\": 1536,\n        \"repeats\": 3,\n        \"search_count\": 3072\n      },\n      \"embree_quality_summary\": {\n        \"backend\": \"embree\",\n        \"candidate_count\": 1536,\n        \"copies\": 512,\n        \"json_bytes_median\": 1311,\n        \"max_seconds\": 1.7155429169069976,\n        \"median_seconds\": 1.6761499580461532,\n        \"min_seconds\": 1.319944792194292,\n        \"output_mode\": \"quality_summary\",\n        \"query_count\": 1536,\n        \"repeats\": 3,\n        \"search_count\": 3072,\n        \"slowdown_vs_rerank_summary\": 50.54950522813151\n      },\n      \"embree_rerank_summary\": {\n        \"backend\": \"embree\",\n        \"candidate_count\": 1536,\n        \"copies\": 512,\n        \"json_bytes_median\": 1206,\n        \"max_seconds\": 0.06790799996815622,\n        \"median_seconds\": 0.03315858286805451,\n        \"min_seconds\": 0.032732625026255846,\n        \"output_mode\": \"rerank_summary\",\n        \"query_count\": 1536,\n        \"repeats\": 3,\n        \"search_count\": 3072,\n        \"speedup_vs_cpu_python_reference\": 44.71537598043813\n      }\n    }\n  ],\n  \"goal\": 735,\n  \"measurement\": \"run_app plus json.dumps wall-clock seconds\",\n  \"quality_copies\": [\n    512\n  ],\n  \"repeats\": 3\n}\n"
+        }
+      }
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "embree",
+      "boundary": "Density count summary only; per-point labels remain outside.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.1754310820918366,
+        "v1_0_sec": 0.014219874981790781,
+        "v1_5_sec": 0.01209758291952312
+      },
+      "v1_0": {
+        "app": "outlier_detection",
+        "backend": "embree",
+        "boundary": "Density count summary only; per-point labels remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal718_embree_prepared_app_batch_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--warmups",
+          "1",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/outlier_detection/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].outlier.prepared_run_only.median_sec",
+          "score": 31,
+          "seconds": 0.014219874981790781
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/outlier_detection/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.8310068331193179,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "         0.026497500017285347\n          ]\n        },\n        \"prepare_sec\": 0.006694375071674585,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_core_flags\",\n          \"max_sec\": 0.019918000092729926,\n          \"median_sec\": 0.015932958107441664,\n          \"min_sec\": 0.015297249890863895,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.015932958107441664,\n            0.019918000092729926,\n            0.015297249890863895\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 1.948508227215833\n      },\n      \"dbscan_point_count\": 4096,\n      \"outlier\": {\n        \"one_shot\": {\n          \"label\": \"one_shot_summary_plus_density\",\n          \"max_sec\": 0.03064499981701374,\n          \"median_sec\": 0.02720733406022191,\n          \"min_sec\": 0.02658304199576378,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.03064499981701374,\n            0.02658304199576378,\n            0.02720733406022191\n          ]\n        },\n        \"prepare_sec\": 0.00809991592541337,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_density\",\n          \"max_sec\": 0.014976333128288388,\n          \"median_sec\": 0.014219874981790781,\n          \"min_sec\": 0.013129499973729253,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.014976333128288388,\n            0.014219874981790781,\n            0.013129499973729253\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 1.9133314529883125\n      },\n      \"outlier_point_count\": 4096\n    }\n  ],\n  \"copies\": [\n    512\n  ],\n  \"embree_threads\": {\n    \"auto\": true,\n    \"effective_threads\": 10,\n    \"requested\": \"auto\",\n    \"source\": \"api\"\n  },\n  \"embree_version\": [\n    4,\n    4,\n    0\n  ],\n  \"goal\": 718,\n  \"host\": \"Rs-MacBook-Air.local\",\n  \"platform\": \"macOS-26.3-arm64-arm-64bit-Mach-O\",\n  \"python\": \"3.14.0\",\n  \"repeats\": 3,\n  \"valid\": true,\n  \"warmups\": 1\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "outlier_detection",
+        "backend": "embree",
+        "boundary": "Density count summary only; per-point labels remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal718_embree_prepared_app_batch_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--warmups",
+          "1",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/outlier_detection/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].outlier.prepared_run_only.median_sec",
+          "score": 31,
+          "seconds": 0.01209758291952312
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/outlier_detection/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.8055279580876231,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "       0.03461133292876184\n          ]\n        },\n        \"prepare_sec\": 0.006137375021353364,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_core_flags\",\n          \"max_sec\": 0.018398666055873036,\n          \"median_sec\": 0.013109165942296386,\n          \"min_sec\": 0.012440165970474482,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.012440165970474482,\n            0.013109165942296386,\n            0.018398666055873036\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 2.4175450987993825\n      },\n      \"dbscan_point_count\": 4096,\n      \"outlier\": {\n        \"one_shot\": {\n          \"label\": \"one_shot_summary_plus_density\",\n          \"max_sec\": 0.023607542039826512,\n          \"median_sec\": 0.02232500002719462,\n          \"min_sec\": 0.019552916986867785,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.023607542039826512,\n            0.019552916986867785,\n            0.02232500002719462\n          ]\n        },\n        \"prepare_sec\": 0.00875304196961224,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_density\",\n          \"max_sec\": 0.013185749994590878,\n          \"median_sec\": 0.01209758291952312,\n          \"min_sec\": 0.011411249870434403,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.01209758291952312,\n            0.013185749994590878,\n            0.011411249870434403\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 1.8454099612879247\n      },\n      \"outlier_point_count\": 4096\n    }\n  ],\n  \"copies\": [\n    512\n  ],\n  \"embree_threads\": {\n    \"auto\": true,\n    \"effective_threads\": 10,\n    \"requested\": \"auto\",\n    \"source\": \"api\"\n  },\n  \"embree_version\": [\n    4,\n    4,\n    0\n  ],\n  \"goal\": 718,\n  \"host\": \"Rs-MacBook-Air.local\",\n  \"platform\": \"macOS-26.3-arm64-arm-64bit-Mach-O\",\n  \"python\": \"3.14.0\",\n  \"repeats\": 3,\n  \"valid\": true,\n  \"warmups\": 1\n}\n"
+        }
+      }
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "embree",
+      "boundary": "Core-count summary only; cluster expansion remains outside.",
+      "comparison": {
+        "classification": "v1_5_slower",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.776973690298101,
+        "v1_0_sec": 0.011671666987240314,
+        "v1_5_sec": 0.015021959086880088
+      },
+      "v1_0": {
+        "app": "dbscan_clustering",
+        "backend": "embree",
+        "boundary": "Core-count summary only; cluster expansion remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal718_embree_prepared_app_batch_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--warmups",
+          "1",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/dbscan_clustering/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].dbscan.prepared_run_only.median_sec",
+          "score": 31,
+          "seconds": 0.011671666987240314
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/dbscan_clustering/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.7566441250964999,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "        0.016693165991455317\n          ]\n        },\n        \"prepare_sec\": 0.005562999984249473,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_core_flags\",\n          \"max_sec\": 0.011874082963913679,\n          \"median_sec\": 0.011671666987240314,\n          \"min_sec\": 0.011267708847299218,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.011671666987240314,\n            0.011267708847299218,\n            0.011874082963913679\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 1.506707836363104\n      },\n      \"dbscan_point_count\": 4096,\n      \"outlier\": {\n        \"one_shot\": {\n          \"label\": \"one_shot_summary_plus_density\",\n          \"max_sec\": 0.01537891710177064,\n          \"median_sec\": 0.014387625036761165,\n          \"min_sec\": 0.014027291908860207,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.014387625036761165,\n            0.014027291908860207,\n            0.01537891710177064\n          ]\n        },\n        \"prepare_sec\": 0.004839958157390356,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_density\",\n          \"max_sec\": 0.013428332982584834,\n          \"median_sec\": 0.01278524985536933,\n          \"min_sec\": 0.01271874993108213,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.01271874993108213,\n            0.01278524985536933,\n            0.013428332982584834\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 1.1253299856880699\n      },\n      \"outlier_point_count\": 4096\n    }\n  ],\n  \"copies\": [\n    512\n  ],\n  \"embree_threads\": {\n    \"auto\": true,\n    \"effective_threads\": 10,\n    \"requested\": \"auto\",\n    \"source\": \"api\"\n  },\n  \"embree_version\": [\n    4,\n    4,\n    0\n  ],\n  \"goal\": 718,\n  \"host\": \"Rs-MacBook-Air.local\",\n  \"platform\": \"macOS-26.3-arm64-arm-64bit-Mach-O\",\n  \"python\": \"3.14.0\",\n  \"repeats\": 3,\n  \"valid\": true,\n  \"warmups\": 1\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "dbscan_clustering",
+        "backend": "embree",
+        "boundary": "Core-count summary only; cluster expansion remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal718_embree_prepared_app_batch_perf.py",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--warmups",
+          "1",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/dbscan_clustering/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].dbscan.prepared_run_only.median_sec",
+          "score": 31,
+          "seconds": 0.015021959086880088
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/dbscan_clustering/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.6493162498809397,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "       0.015436167130246758\n          ]\n        },\n        \"prepare_sec\": 0.005782540887594223,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_core_flags\",\n          \"max_sec\": 0.01859062514267862,\n          \"median_sec\": 0.015021959086880088,\n          \"min_sec\": 0.014950624899938703,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.01859062514267862,\n            0.015021959086880088,\n            0.014950624899938703\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 1.3305022318835544\n      },\n      \"dbscan_point_count\": 4096,\n      \"outlier\": {\n        \"one_shot\": {\n          \"label\": \"one_shot_summary_plus_density\",\n          \"max_sec\": 0.02090645907446742,\n          \"median_sec\": 0.01985433418303728,\n          \"min_sec\": 0.018210707930848002,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.018210707930848002,\n            0.02090645907446742,\n            0.01985433418303728\n          ]\n        },\n        \"prepare_sec\": 0.0066842499654740095,\n        \"prepared_run_only\": {\n          \"label\": \"prepared_summary_plus_density\",\n          \"max_sec\": 0.015120083000510931,\n          \"median_sec\": 0.014096125029027462,\n          \"min_sec\": 0.012607458047568798,\n          \"repeat_count\": 3,\n          \"row_count\": 4096,\n          \"samples_sec\": [\n            0.014096125029027462,\n            0.015120083000510931,\n            0.012607458047568798\n          ]\n        },\n        \"prepared_speedup_vs_one_shot\": 1.408495891044682\n      },\n      \"outlier_point_count\": 4096\n    }\n  ],\n  \"copies\": [\n    512\n  ],\n  \"embree_threads\": {\n    \"auto\": true,\n    \"effective_threads\": 10,\n    \"requested\": \"auto\",\n    \"source\": \"api\"\n  },\n  \"embree_version\": [\n    4,\n    4,\n    0\n  ],\n  \"goal\": 718,\n  \"host\": \"Rs-MacBook-Air.local\",\n  \"platform\": \"macOS-26.3-arm64-arm-64bit-Mach-O\",\n  \"python\": \"3.14.0\",\n  \"repeats\": 3,\n  \"valid\": true,\n  \"warmups\": 1\n}\n"
+        }
+      }
+    },
+    {
+      "app": "robot_collision_screening",
+      "backend": "embree",
+      "boundary": "Robot any-hit/pose summary only; full robot planning remains outside.",
+      "comparison": {
+        "classification": "v1_5_slower",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.9011011760089844,
+        "v1_0_sec": 0.3073905420023948,
+        "v1_5_sec": 0.3411276671104133
+      },
+      "v1_0": {
+        "app": "robot_collision_screening",
+        "backend": "embree",
+        "boundary": "Robot any-hit/pose summary only; full robot planning remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal736_robot_collision_scaled_perf.py",
+          "--pose-counts",
+          "512",
+          "--obstacle-count",
+          "16",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/robot_collision_screening/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].embree_full.median_seconds",
+          "score": 29,
+          "seconds": 0.3073905420023948
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/robot_collision_screening/embree/result.json",
+        "run": {
+          "elapsed_sec": 4.354155750013888,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"robot_collision_screening\",\n  \"boundary\": \"Embree hit_count uses the native any-hit row path plus compact app output. It does not yet use a prepared Embree scalar-count ABI; full output reports witness rows and JSON materialization separately.\",\n  \"cases\": [\n    {\n      \"cpu_hit_count\": {\n        \"backend\": \"cpu_python_reference\",\n        \"edge_ray_count\": 2048,\n        \"json_bytes_median\": 802,\n        \"max_seconds\": 0.7367690829560161,\n        \"median_seconds\": 0.703968666959554,\n        \"min_seconds\": 0.6428305001463741,\n        \"obstacle_count\": 16,\n        \"obstacle_triangle_count\": 32,\n        \"output_mode\": \"hit_count\",\n        \"pose_count\": 512,\n        \"repeats\": 3\n      },\n      \"embree_full\": {\n        \"backend\": \"embree\",\n        \"edge_ray_count\": 2048,\n        \"json_bytes_median\": 542728,\n        \"json_expansion_vs_hit_count\": 688.741116751269,\n        \"max_seconds\": 0.3428039997816086,\n        \"median_seconds\": 0.3073905420023948,\n        \"min_seconds\": 0.2993105831556022,\n        \"obstacle_count\": 16,\n        \"obstacle_triangle_count\": 32,\n        \"output_mode\": \"full\",\n        \"pose_count\": 512,\n        \"repeats\": 3,\n        \"slowdown_vs_hit_count\": 0.9128726473735662\n      },\n      \"embree_hit_count\": {\n        \"backend\": \"embree\",\n        \"edge_ray_count\": 2048,\n        \"json_bytes_median\": 788,\n        \"max_seconds\": 0.3470674999989569,\n        \"median_seconds\": 0.3367288338486105,\n        \"min_seconds\": 0.31359499995596707,\n        \"obstacle_count\": 16,\n        \"obstacle_triangle_count\": 32,\n        \"output_mode\": \"hit_count\",\n        \"pose_count\": 512,\n        \"repeats\": 3,\n        \"speedup_vs_cpu_python_reference\": 2.090609998893205\n      },\n      \"pose_count\": 512\n    }\n  ],\n  \"goal\": 736,\n  \"measurement\": \"run_app plus json.dumps wall-clock seconds\",\n  \"obstacle_count\": 16,\n  \"repeats\": 3\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "robot_collision_screening",
+        "backend": "embree",
+        "boundary": "Robot any-hit/pose summary only; full robot planning remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal736_robot_collision_scaled_perf.py",
+          "--pose-counts",
+          "512",
+          "--obstacle-count",
+          "16",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/robot_collision_screening/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].embree_full.median_seconds",
+          "score": 29,
+          "seconds": 0.3411276671104133
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/robot_collision_screening/embree/result.json",
+        "run": {
+          "elapsed_sec": 4.1307554161176085,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"robot_collision_screening\",\n  \"boundary\": \"Embree hit_count uses the native any-hit row path plus compact app output. It does not yet use a prepared Embree scalar-count ABI; full output reports witness rows and JSON materialization separately.\",\n  \"cases\": [\n    {\n      \"cpu_hit_count\": {\n        \"backend\": \"cpu_python_reference\",\n        \"edge_ray_count\": 2048,\n        \"json_bytes_median\": 802,\n        \"max_seconds\": 0.6287737500388175,\n        \"median_seconds\": 0.6174202500842512,\n        \"min_seconds\": 0.5848830831237137,\n        \"obstacle_count\": 16,\n        \"obstacle_triangle_count\": 32,\n        \"output_mode\": \"hit_count\",\n        \"pose_count\": 512,\n        \"repeats\": 3\n      },\n      \"embree_full\": {\n        \"backend\": \"embree\",\n        \"edge_ray_count\": 2048,\n        \"json_bytes_median\": 542728,\n        \"json_expansion_vs_hit_count\": 688.741116751269,\n        \"max_seconds\": 0.3431290409062058,\n        \"median_seconds\": 0.3411276671104133,\n        \"min_seconds\": 0.3184045839589089,\n        \"obstacle_count\": 16,\n        \"obstacle_triangle_count\": 32,\n        \"output_mode\": \"full\",\n        \"pose_count\": 512,\n        \"repeats\": 3,\n        \"slowdown_vs_hit_count\": 0.9462328504527437\n      },\n      \"embree_hit_count\": {\n        \"backend\": \"embree\",\n        \"edge_ray_count\": 2048,\n        \"json_bytes_median\": 788,\n        \"max_seconds\": 0.3665541249793023,\n        \"median_seconds\": 0.36051133391447365,\n        \"min_seconds\": 0.3149138339795172,\n        \"obstacle_count\": 16,\n        \"obstacle_triangle_count\": 32,\n        \"output_mode\": \"hit_count\",\n        \"pose_count\": 512,\n        \"repeats\": 3,\n        \"speedup_vs_cpu_python_reference\": 1.7126236875280199\n      },\n      \"pose_count\": 512\n    }\n  ],\n  \"goal\": 736,\n  \"measurement\": \"run_app plus json.dumps wall-clock seconds\",\n  \"obstacle_count\": 16,\n  \"repeats\": 3\n}\n"
+        }
+      }
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "backend": "embree",
+      "boundary": "Node-coverage/candidate summary only; force-vector reduction remains outside.",
+      "comparison": {
+        "classification": "v1_5_slower",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.914405150516088,
+        "v1_0_sec": 0.09266520803794265,
+        "v1_5_sec": 0.10133933299221098
+      },
+      "v1_0": {
+        "app": "barnes_hut_force_app",
+        "backend": "embree",
+        "boundary": "Node-coverage/candidate summary only; force-vector reduction remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal734_barnes_hut_compact_output_perf.py",
+          "--body-counts",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/barnes_hut_force_app/embree/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].embree_force_summary.median_seconds",
+          "score": 29,
+          "seconds": 0.09266520803794265
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_0/barnes_hut_force_app/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.5947040000464767,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"boundary\": \"candidate_summary measures the RTDL candidate-generation slice only. force_summary includes Python Barnes-Hut opening-rule and force reduction. This is not a fully native Barnes-Hut force engine.\",\n  \"cases\": [\n    {\n      \"body_count\": 512,\n      \"cpu_candidate_summary\": {\n        \"backend\": \"cpu_python_reference\",\n        \"body_count\": 512,\n        \"json_bytes_median\": 1257,\n        \"max_seconds\": 0.023651791969314218,\n        \"median_seconds\": 0.005243249936029315,\n        \"min_seconds\": 0.00505124987103045,\n        \"output_mode\": \"candidate_summary\",\n        \"repeats\": 3\n      },\n      \"embree_candidate_summary\": {\n        \"backend\": \"embree\",\n        \"body_count\": 512,\n        \"json_bytes_median\": 1243,\n        \"max_seconds\": 0.021528000012040138,\n        \"median_seconds\": 0.009479583008214831,\n        \"min_seconds\": 0.0051576669793576,\n        \"output_mode\": \"candidate_summary\",\n        \"repeats\": 3,\n        \"speedup_vs_cpu_python_reference\": 0.5531097656390171\n      },\n      \"embree_force_summary\": {\n        \"backend\": \"embree\",\n        \"body_count\": 512,\n        \"json_bytes_median\": 1319,\n        \"max_seconds\": 0.09613229078240693,\n        \"median_seconds\": 0.09266520803794265,\n        \"min_seconds\": 0.0914333330001682,\n        \"output_mode\": \"force_summary\",\n        \"repeats\": 3,\n        \"slowdown_vs_candidate_summary\": 9.775240952860552\n      }\n    }\n  ],\n  \"goal\": 734,\n  \"measurement\": \"run_app plus json.dumps wall-clock seconds\",\n  \"repeats\": 3\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "barnes_hut_force_app",
+        "backend": "embree",
+        "boundary": "Node-coverage/candidate summary only; force-vector reduction remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal734_barnes_hut_compact_output_perf.py",
+          "--body-counts",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/barnes_hut_force_app/embree/result.json"
+        ],
+        "commit": "7f3551549c53ae80f6f14565e20620a886d100dd",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].embree_force_summary.median_seconds",
+          "score": 29,
+          "seconds": 0.10133933299221098
+        },
+        "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1408_v1_5_vs_v1_0_perf_local_embree/v1_5/barnes_hut_force_app/embree/result.json",
+        "run": {
+          "elapsed_sec": 0.6234555412083864,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"boundary\": \"candidate_summary measures the RTDL candidate-generation slice only. force_summary includes Python Barnes-Hut opening-rule and force reduction. This is not a fully native Barnes-Hut force engine.\",\n  \"cases\": [\n    {\n      \"body_count\": 512,\n      \"cpu_candidate_summary\": {\n        \"backend\": \"cpu_python_reference\",\n        \"body_count\": 512,\n        \"json_bytes_median\": 1338,\n        \"max_seconds\": 0.021682457998394966,\n        \"median_seconds\": 0.00845420896075666,\n        \"min_seconds\": 0.0049489159137010574,\n        \"output_mode\": \"candidate_summary\",\n        \"repeats\": 3\n      },\n      \"embree_candidate_summary\": {\n        \"backend\": \"embree\",\n        \"body_count\": 512,\n        \"json_bytes_median\": 1324,\n        \"max_seconds\": 0.021380332997068763,\n        \"median_seconds\": 0.0060584580060094595,\n        \"min_seconds\": 0.005331292049959302,\n        \"output_mode\": \"candidate_summary\",\n        \"repeats\": 3,\n        \"speedup_vs_cpu_python_reference\": 1.3954390626081463\n      },\n      \"embree_force_summary\": {\n        \"backend\": \"embree\",\n        \"body_count\": 512,\n        \"json_bytes_median\": 1400,\n        \"max_seconds\": 0.11247512511909008,\n        \"median_seconds\": 0.10133933299221098,\n        \"min_seconds\": 0.09516524989157915,\n        \"output_mode\": \"force_summary\",\n        \"repeats\": 3,\n        \"slowdown_vs_candidate_summary\": 16.726918448834876\n      }\n    }\n  ],\n  \"goal\": 734,\n  \"measurement\": \"run_app plus json.dumps wall-clock seconds\",\n  \"repeats\": 3\n}\n"
+        }
+      }
+    }
+  ],
+  "schema": "goal1408_v1_5_vs_v1_0_perf_v1",
+  "timeout_sec": 240,
+  "v1_0_commit": "b9c9620af78a2fab92083d43af312bb6310e452a"
+}

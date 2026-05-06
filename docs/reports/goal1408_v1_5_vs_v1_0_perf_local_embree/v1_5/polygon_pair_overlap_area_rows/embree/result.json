@@ -1,0 +1,39 @@
+{
+  "app": "polygon_pair_overlap_area_rows",
+  "backend": "embree",
+  "boundary": "Summary mode omits full overlap rows from the JSON payload. Embree uses native LSI/PIP positive candidate discovery, then CPU/Python exact grid-cell area refinement.",
+  "cases": [
+    {
+      "copies": 512,
+      "rows": {
+        "backend": "embree",
+        "copies": 512,
+        "json_bytes_median": 134798,
+        "left_polygon_count": 1024,
+        "max_seconds": 0.12005312507972121,
+        "median_seconds": 0.07928141695447266,
+        "min_seconds": 0.06390445888973773,
+        "output_mode": "rows",
+        "repeats": 3,
+        "right_polygon_count": 1536
+      },
+      "summary": {
+        "backend": "embree",
+        "copies": 512,
+        "json_bytes_median": 3921,
+        "json_reduction_vs_rows": 34.37847487885743,
+        "left_polygon_count": 1024,
+        "max_seconds": 0.10044162510894239,
+        "median_seconds": 0.0892189999576658,
+        "min_seconds": 0.08348925015889108,
+        "output_mode": "summary",
+        "repeats": 3,
+        "right_polygon_count": 1536,
+        "speedup_vs_rows": 0.888615844070114
+      }
+    }
+  ],
+  "goal": 732,
+  "measurement": "run_case plus json.dumps wall-clock seconds",
+  "repeats": 3
+}

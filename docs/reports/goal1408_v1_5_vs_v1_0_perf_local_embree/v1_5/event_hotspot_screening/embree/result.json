@@ -1,0 +1,17 @@
+{
+  "description": "Embree fixed-radius count summary for event hotspot screening.",
+  "goal": 723,
+  "repeats": 3,
+  "results": [
+    {
+      "app": "event_hotspot_screening",
+      "copies": 512,
+      "count_summary_sec": 0.02957137511111796,
+      "event_count": 3072,
+      "row_count": 9210,
+      "row_mode_sec": 0.09044687496498227,
+      "summary_row_count": 3072,
+      "summary_speedup_vs_rows": 3.058595504102105
+    }
+  ]
+}

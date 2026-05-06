@@ -1,0 +1,56 @@
+{
+  "app": "ann_candidate_search",
+  "boundary": "rerank_summary measures only RTDL candidate-subset KNN reranking. quality_summary includes Python exact full-set comparison for recall and distance metrics. This is not a full ANN index or recall/latency optimizer.",
+  "cases": [
+    {
+      "copies": 512,
+      "cpu_rerank_summary": {
+        "backend": "cpu_python_reference",
+        "candidate_count": 1536,
+        "copies": 512,
+        "json_bytes_median": 1205,
+        "max_seconds": 1.1098182499408722,
+        "median_seconds": 1.0893088330049068,
+        "min_seconds": 1.0352506251074374,
+        "output_mode": "rerank_summary",
+        "query_count": 1536,
+        "repeats": 3,
+        "search_count": 3072
+      },
+      "embree_quality_summary": {
+        "backend": "embree",
+        "candidate_count": 1536,
+        "copies": 512,
+        "json_bytes_median": 1296,
+        "max_seconds": 1.766852583969012,
+        "median_seconds": 1.4600631669163704,
+        "min_seconds": 1.3795585001353174,
+        "output_mode": "quality_summary",
+        "query_count": 1536,
+        "repeats": 3,
+        "search_count": 3072,
+        "slowdown_vs_rerank_summary": 44.54966148984196
+      },
+      "embree_rerank_summary": {
+        "backend": "embree",
+        "candidate_count": 1536,
+        "copies": 512,
+        "json_bytes_median": 1191,
+        "max_seconds": 0.06419341685250401,
+        "median_seconds": 0.03277383302338421,
+        "min_seconds": 0.026445375056937337,
+        "output_mode": "rerank_summary",
+        "query_count": 1536,
+        "repeats": 3,
+        "search_count": 3072,
+        "speedup_vs_cpu_python_reference": 33.237150876666824
+      }
+    }
+  ],
+  "goal": 735,
+  "measurement": "run_app plus json.dumps wall-clock seconds",
+  "quality_copies": [
+    512
+  ],
+  "repeats": 3
+}
