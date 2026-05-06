@@ -32,13 +32,13 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
                 "collect_k_bounded_resolution",
                 "app_migration_classification",
                 "same_contract_per_app_correctness",
+                "same_contract_per_app_benchmarks",
                 "test_backed_support_maturity_matrix",
             ),
         )
         self.assertEqual(
             gate["failed_gates"],
             (
-                "same_contract_per_app_benchmarks",
                 "release_docs_and_public_wording",
             ),
         )
@@ -46,6 +46,7 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
             with self.subTest(failed_gate=failed_gate):
                 self.assertFalse(gate["gate_results"][failed_gate])
         self.assertTrue(gate["gate_results"]["same_contract_per_app_correctness"])
+        self.assertTrue(gate["gate_results"]["same_contract_per_app_benchmarks"])
         self.assertTrue(gate["gate_results"]["collect_k_bounded_resolution"])
         self.assertTrue(gate["gate_results"]["test_backed_support_maturity_matrix"])
 
@@ -98,7 +99,6 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(
             gate["allowed_next_actions"],
             (
-                "run_same_contract_per_app_benchmarks",
                 "refresh_release_docs_and_public_wording",
             ),
         )
@@ -134,6 +134,15 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(gate["support_maturity_excluded_app_count"], 4)
         self.assertEqual(gate["support_maturity_failed_apps"], ())
         self.assertTrue(gate["support_maturity_test_backed"])
+
+    def test_gate_embeds_completed_benchmark_evidence_summary(self):
+        gate = rt.validate_v1_5_standalone_release_gate()
+
+        self.assertTrue(gate["gate_results"]["same_contract_per_app_benchmarks"])
+        self.assertEqual(gate["benchmark_evidence_included_app_count"], 14)
+        self.assertEqual(gate["benchmark_evidence_excluded_app_count"], 4)
+        self.assertEqual(gate["benchmark_evidence_failed_apps"], ())
+        self.assertFalse(gate["benchmark_evidence_public_wording_authorized"])
 
 
 if __name__ == "__main__":

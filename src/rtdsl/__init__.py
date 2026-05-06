@@ -522,6 +522,11 @@ from .v1_5_readiness import V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_STATUS
+from .v1_5_benchmark_evidence import V1_5_BENCHMARK_EVIDENCE_STATUSES
+from .v1_5_benchmark_evidence import v1_5_benchmark_evidence_matrix
+from .v1_5_benchmark_evidence import v1_5_benchmark_evidence_summary
+from .v1_5_benchmark_evidence import validate_v1_5_benchmark_evidence_matrix
+from .v1_5_benchmark_evidence import validate_v1_5_benchmark_evidence_summary
 from .v1_5_readiness import V1_5_STANDALONE_PARTNER_TRACK
 from .v1_5_readiness import V1_5_1_COLLECT_K_BOUNDED_TRACK
 from .v1_5_readiness import V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS
@@ -862,6 +867,11 @@ __all__ = [
     "V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM",
     "V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS",
     "V1_5_INTERNAL_READINESS_STATUS",
+    "V1_5_BENCHMARK_EVIDENCE_STATUSES",
+    "v1_5_benchmark_evidence_matrix",
+    "v1_5_benchmark_evidence_summary",
+    "validate_v1_5_benchmark_evidence_matrix",
+    "validate_v1_5_benchmark_evidence_summary",
     "V1_5_STANDALONE_PARTNER_TRACK",
     "V1_5_1_COLLECT_K_BOUNDED_TRACK",
     "V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS",

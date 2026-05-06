@@ -10,6 +10,7 @@ from .float_reduction_contracts import validate_v1_5_float_sum_reduction_contrac
 from .generic_db_primitives import validate_v1_5_db_compact_summary_contracts
 from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
 from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
+from .v1_5_benchmark_evidence import validate_v1_5_benchmark_evidence_summary
 from .v1_5_migration_inventory import (
     ACTIVE_V1_5_BACKENDS,
     FROZEN_BEFORE_V2_1_BACKENDS,
@@ -144,11 +145,9 @@ V1_5_STANDALONE_RELEASE_REQUIRED_GATES = (
     "release_docs_and_public_wording",
 )
 V1_5_STANDALONE_RELEASE_BLOCKERS = (
-    "same-contract per-app Embree/OptiX benchmark evidence is not yet complete",
     "v1.5 release docs and public wording must be refreshed after standalone gates pass",
 )
 V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS = (
-    "run_same_contract_per_app_benchmarks",
     "refresh_release_docs_and_public_wording",
 )
 V1_5_1_COLLECT_K_BOUNDED_TRACK = (
@@ -641,6 +640,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
     app_classification = validate_v1_5_standalone_app_classification_matrix()
     correctness_summary = validate_v1_5_standalone_correctness_summary()
     support_maturity_summary = validate_v1_5_support_maturity_summary()
+    benchmark_summary = validate_v1_5_benchmark_evidence_summary()
     collect_k_statuses = tuple(
         sorted({str(contract["status"]) for contract in bounded_collection_contracts})
     )
@@ -652,7 +652,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         ],
         "app_migration_classification": True,
         "same_contract_per_app_correctness": correctness_summary["release_gate_complete"],
-        "same_contract_per_app_benchmarks": False,
+        "same_contract_per_app_benchmarks": benchmark_summary["release_gate_complete"],
         "test_backed_support_maturity_matrix": support_maturity_summary[
             "release_gate_complete"
         ],
@@ -723,6 +723,13 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "support_maturity_excluded_app_count": support_maturity_summary["excluded_app_count"],
         "support_maturity_failed_apps": support_maturity_summary["failed_apps"],
         "support_maturity_test_backed": support_maturity_summary["test_backed"],
+        "benchmark_evidence_status_counts": benchmark_summary["status_counts"],
+        "benchmark_evidence_included_app_count": benchmark_summary["included_app_count"],
+        "benchmark_evidence_excluded_app_count": benchmark_summary["excluded_app_count"],
+        "benchmark_evidence_failed_apps": benchmark_summary["failed_apps"],
+        "benchmark_evidence_public_wording_authorized": benchmark_summary[
+            "public_wording_authorized_by_this_gate"
+        ],
         "collect_k_bounded_resolution": "resolved_by_explicit_row_returning_app_exclusion",
         "collect_k_bounded_followup_track": V1_5_1_COLLECT_K_BOUNDED_TRACK,
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
@@ -757,10 +764,11 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         "collect_k_bounded_resolution",
         "app_migration_classification",
         "same_contract_per_app_correctness",
+        "same_contract_per_app_benchmarks",
         "test_backed_support_maturity_matrix",
     ):
         raise ValueError(
-            "only prerequisite, roadmap consensus, collect-k, classification, correctness, and support gates should pass now"
+            "only release docs and public wording should remain blocked now"
         )
     expected_failed = tuple(
         required
@@ -833,6 +841,16 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("support/maturity failed app list mismatch")
     if gate["support_maturity_test_backed"] is not True:
         raise ValueError("support/maturity matrix must be test-backed")
+    if gate["gate_results"]["same_contract_per_app_benchmarks"] is not True:
+        raise ValueError("same-contract benchmark evidence must pass")
+    if int(gate["benchmark_evidence_included_app_count"]) != 14:
+        raise ValueError("benchmark evidence included app count mismatch")
+    if int(gate["benchmark_evidence_excluded_app_count"]) != 4:
+        raise ValueError("benchmark evidence excluded app count mismatch")
+    if tuple(gate["benchmark_evidence_failed_apps"]) != ():
+        raise ValueError("benchmark evidence failed app list mismatch")
+    if gate["benchmark_evidence_public_wording_authorized"] is not False:
+        raise ValueError("benchmark evidence must not authorize public wording")
     for required_classification in (
         "fully_generic",
         "wrapper_backed",
