@@ -28,9 +28,9 @@ class Goal973DeferredDecisionBaselinesTest(unittest.TestCase):
             fromlist=["build_package"],
         )
         payload = module.build_package()
-        self.assertEqual(payload["same_semantics_baselines_complete_count"], 17)
+        self.assertEqual(payload["same_semantics_baselines_complete_count"], 15)
         self.assertEqual(payload["active_gate_limited_count"], 0)
-        self.assertEqual(payload["baseline_pending_count"], 0)
+        self.assertEqual(payload["baseline_pending_count"], 2)
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
 
 

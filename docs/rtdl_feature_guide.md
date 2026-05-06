@@ -25,7 +25,7 @@ performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is `v0.9.8`: the bounded `v0.7.0` DB package, the
+The current released state is `v1.0`: the bounded `v0.7.0` DB package, the
 released `v0.8.0` app-building layer that uses existing RTDL features with
 Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
 the released `v0.9.1` Apple RT closest-hit slice, the released `v0.9.4`
@@ -173,8 +173,8 @@ Current release layers:
   MPS-prism any-hit, and prepared/prepacked repeated-query visibility/count
   paths for Apple RT, OptiX, HIPRT, and Vulkan under scalar/compact-output
   contracts
-- `v0.9.8`: bounded RTX app evidence and public-claim cleanup package, with
-  current-main v1.0 docs carrying post-Goal1224/Goal1228 current-state updates
+- `v1.0`: released app-shaped RTDL proof, documentation, and bounded evidence,
+  with post-Goal1224/Goal1228 current-state updates preserved on `main`
 
 Plus:
 

@@ -15,7 +15,7 @@ class Goal723EventHotspotEmbreeSummaryTest(unittest.TestCase):
         text = (ROOT / "examples/rtdl_event_hotspot_screening.py").read_text(encoding="utf-8")
         self.assertIn("embree_summary_mode", text)
         self.assertIn("count_summary", text)
-        self.assertIn("fixed_radius_count_threshold_2d_embree", text)
+        self.assertIn("run_generic_fixed_radius_count_threshold_2d", text)
 
     def test_count_summary_matches_row_mode(self):
         try:

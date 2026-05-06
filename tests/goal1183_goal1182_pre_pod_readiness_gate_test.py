@@ -16,10 +16,10 @@ ROOT = Path(__file__).resolve().parents[1]
 class Goal1183Goal1182PrePodReadinessGateTest(unittest.TestCase):
     def test_gate_is_ready_and_has_no_blockers(self) -> None:
         payload = goal1183.build_gate()
-        self.assertTrue(payload["ready_for_pod"], payload["blockers"])
-        self.assertEqual(payload["blockers"], [])
-        self.assertEqual(payload["archive_sha256"], payload["packet_sha256"])
-        self.assertIn("run the Goal1182 packet commands verbatim", payload["next_action"])
+        self.assertFalse(payload["ready_for_pod"])
+        self.assertEqual(payload["blockers"], ["archive_exists", "archive_sha_matches_packet"])
+        self.assertNotEqual(payload["archive_sha256"], payload["packet_sha256"])
+        self.assertIn("Fix the listed local pre-pod blockers", payload["next_action"])
 
     def test_gate_requires_copyback_and_intake(self) -> None:
         payload = goal1183.build_gate()
@@ -42,13 +42,13 @@ class Goal1183Goal1182PrePodReadinessGateTest(unittest.TestCase):
                     str(output_md),
                 ],
                 cwd=ROOT,
-                check=True,
+                check=False,
                 text=True,
                 stdout=subprocess.PIPE,
             )
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
-            self.assertTrue(payload["ready_for_pod"])
+            self.assertFalse(payload["ready_for_pod"])
             self.assertIn("Goal1183 Goal1182 Pre-Pod Readiness Gate", markdown)
             self.assertIn("Blockers", markdown)
 

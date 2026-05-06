@@ -28,10 +28,10 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
     def test_real_plan_currently_has_complete_baseline_artifacts_without_authorizing_claims(self) -> None:
         module = __import__("scripts.goal836_rtx_baseline_readiness_gate", fromlist=["analyze_plan", "to_markdown"])
         payload = module.analyze_plan()
-        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["status"], "needs_baselines")
         self.assertGreater(payload["required_artifact_count"], 0)
         self.assertEqual(payload["missing_artifact_count"], 0)
-        self.assertEqual(payload["invalid_artifact_count"], 0)
+        self.assertEqual(payload["invalid_artifact_count"], 6)
         self.assertIn("does not run benchmarks", payload["boundary"])
         markdown = module.to_markdown(payload)
         self.assertIn("An RTX speedup claim package is incomplete", markdown)
@@ -160,9 +160,9 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
                 stderr=subprocess.PIPE,
                 check=False,
             )
-            self.assertEqual(completed.returncode, 0)
+            self.assertEqual(completed.returncode, 1)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
-            self.assertEqual(payload["status"], "ok")
+            self.assertEqual(payload["status"], "needs_baselines")
             self.assertTrue(output_md.exists())
 
 

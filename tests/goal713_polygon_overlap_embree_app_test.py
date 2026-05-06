@@ -17,6 +17,7 @@ def _canonical(value):
                 "backend",
                 "backend_mode",
                 "candidate_row_count",
+                "generic_jaccard_summary",
                 "native_continuation_active",
                 "native_continuation_backend",
                 "primitive_contract",

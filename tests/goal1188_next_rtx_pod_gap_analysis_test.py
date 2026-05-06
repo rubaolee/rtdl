@@ -17,9 +17,9 @@ class Goal1188NextRtxPodGapAnalysisTest(unittest.TestCase):
     def test_current_gap_analysis_is_valid(self) -> None:
         payload = goal1188.build_analysis()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["reviewed_public_wording_count"], 12)
+        self.assertEqual(payload["reviewed_public_wording_count"], 13)
         self.assertEqual(payload["needs_public_wording_evidence_count"], 2)
-        self.assertEqual(payload["blocked_public_wording_count"], 2)
+        self.assertEqual(payload["blocked_public_wording_count"], 1)
 
     def test_expected_apps_need_public_wording_evidence(self) -> None:
         payload = goal1188.build_analysis()

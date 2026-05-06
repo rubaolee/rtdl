@@ -80,14 +80,8 @@ class Goal1278V14SalesRiskPrimitiveContractTest(unittest.TestCase):
     def test_vulkan_existing_path_is_marked_inactive_for_v1_4(self) -> None:
         with mock.patch.object(sales, "_prepare_dataset", return_value=_FakeDbDataset()):
             with sales.prepare_session("vulkan", copies=2) as session:
-                payload = session.run(output_mode="compact_summary")
-
-        contract = payload["primitive_contract"]
-        self.assertEqual(payload["native_continuation_backend"], "vulkan_db_compact_summary")
-        self.assertEqual(contract["backend"], "vulkan")
-        self.assertFalse(contract["active_v1_4_backend"])
-        self.assertEqual(contract["backend_contract_role"], "compatibility_or_inactive")
-        self.assertFalse(contract["same_contract_baseline_required"])
+                with self.assertRaisesRegex(ValueError, "frozen before v2.1"):
+                    session.run(output_mode="compact_summary")
 
     def test_materializing_output_is_not_marked_as_compact_primitive(self) -> None:
         payload = sales.run_case("cpu_python_reference", copies=1, output_mode="summary")

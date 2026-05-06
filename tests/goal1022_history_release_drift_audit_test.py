@@ -19,7 +19,7 @@ class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
         )
         payload = module.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["current_public_release"], "v0.9.8")
+        self.assertEqual(payload["current_public_release"], "v1.0")
         self.assertFalse(payload["history_drift_detected"])
         self.assertEqual(payload["history_status"], "drift_resolved")
         self.assertTrue(payload["release_report_claims_history_catchup"])
@@ -27,8 +27,8 @@ class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
         self.assertTrue(payload["dashboard_mentions_goal684"])
         self.assertTrue(payload["refresh_context_current"])
         self.assertEqual(payload["full_suite_evidence"]["result"], "OK")
-        self.assertEqual(payload["full_suite_evidence"]["tests"], 1969)
-        self.assertEqual(payload["full_suite_evidence"]["skipped"], 196)
+        self.assertEqual(payload["full_suite_evidence"]["tests"], 2627)
+        self.assertEqual(payload["full_suite_evidence"]["skipped"], 197)
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -54,7 +54,7 @@ class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("history status: `drift_resolved`", markdown)
-            self.assertIn("1969", markdown)
+            self.assertIn("2627", markdown)
             self.assertIn("does not tag, release, or authorize public speedup claims", markdown)
 
 

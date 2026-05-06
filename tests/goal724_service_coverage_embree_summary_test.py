@@ -15,7 +15,7 @@ class Goal724ServiceCoverageEmbreeSummaryTest(unittest.TestCase):
         text = (ROOT / "examples/rtdl_service_coverage_gaps.py").read_text(encoding="utf-8")
         self.assertIn("embree_summary_mode", text)
         self.assertIn("gap_summary", text)
-        self.assertIn("fixed_radius_count_threshold_2d_embree", text)
+        self.assertIn("run_generic_fixed_radius_count_threshold_2d", text)
 
     def test_gap_summary_matches_row_mode_for_uncovered_households(self):
         try:

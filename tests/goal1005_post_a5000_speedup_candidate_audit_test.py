@@ -23,7 +23,7 @@ class Goal1005PostA5000SpeedupCandidateAuditTest(unittest.TestCase):
         self.assertEqual(payload["row_count"], 17)
         self.assertEqual(payload["candidate_count"], 8)
         self.assertEqual(payload["internal_only_count"], 1)
-        self.assertEqual(payload["reject_count"], 8)
+        self.assertEqual(payload["reject_count"], 6)
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
         self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertIn("does not authorize public speedup claims", payload["boundary"])

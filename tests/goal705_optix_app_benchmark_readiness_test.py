@@ -66,8 +66,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
                 "Goal889/Goal905/Goal929",
             ),
             "polygon_pair_overlap_area_rows": (
-                "native-assisted candidate-discovery path",
-                "Goal877/Goal929",
+                "Goal1263 bounded polygon-pair sub-path",
+                "Goal877/Goal929/Goal1263",
             ),
             "polygon_set_jaccard": (
                 "native-assisted candidate-discovery path",

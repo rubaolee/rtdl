@@ -62,7 +62,7 @@ class Goal978RtxSpeedupClaimCandidateAuditTest(unittest.TestCase):
         )
         self.assertEqual(
             rows[("polygon_pair_overlap_area_rows", "polygon_pair_overlap_optix_native_assisted_phase_gate")]["recommendation"],
-            "reject_current_public_speedup_claim",
+            "not_ready",
         )
         self.assertEqual(
             rows[("hausdorff_distance", "directed_threshold_prepared")]["recommendation"],

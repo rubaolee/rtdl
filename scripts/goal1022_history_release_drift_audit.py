@@ -9,7 +9,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATE = "2026-04-26"
+DATE = "2026-05-06"
 GOAL = "Goal1022 history release drift audit"
 
 PUBLIC_RELEASE_DOCS = (
@@ -77,9 +77,9 @@ def build_audit() -> dict[str, Any]:
     full_suite_evidence = {
         "command": "PYTHONPATH=src:. python3 -m unittest discover -s tests -p '*_test.py' -v",
         "result": "OK",
-        "tests": 1969,
-        "skipped": 196,
-        "seconds": 218.674,
+        "tests": 2627,
+        "skipped": 197,
+        "seconds": 179.498,
         "date": DATE,
     }
     return {
@@ -105,7 +105,7 @@ def build_audit() -> dict[str, Any]:
             else "The public-history drift is resolved for the current public release; keep future release history catch-ups append-only."
         ),
         "valid": (
-            current_public_release == "v0.9.8"
+            current_public_release == "v1.0"
             and release_report_claims_history_catchup
             and all(history_presence.values())
             and refresh_current
