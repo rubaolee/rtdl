@@ -492,6 +492,10 @@ from .v1_5_migration_inventory import V1_5_EXPERIMENTAL_GENERIC_PRIMITIVES
 from .v1_5_migration_inventory import V1_5_STABLE_GENERIC_PRIMITIVES
 from .v1_5_migration_inventory import V1_5_STABLE_SUMMARY_PRIMITIVES
 from .v1_5_migration_inventory import validate_v1_5_generic_migration_inventory
+from .v1_5_readiness import V1_5_INTERNAL_READINESS_CLAIM_BOUNDARY
+from .v1_5_readiness import V1_5_INTERNAL_READINESS_STATUS
+from .v1_5_readiness import v1_5_internal_readiness_gate
+from .v1_5_readiness import validate_v1_5_internal_readiness_gate
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -779,6 +783,10 @@ __all__ = [
     "V1_5_STABLE_GENERIC_PRIMITIVES",
     "V1_5_STABLE_SUMMARY_PRIMITIVES",
     "validate_v1_5_generic_migration_inventory",
+    "V1_5_INTERNAL_READINESS_CLAIM_BOUNDARY",
+    "V1_5_INTERNAL_READINESS_STATUS",
+    "v1_5_internal_readiness_gate",
+    "validate_v1_5_internal_readiness_gate",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",
