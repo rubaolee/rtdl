@@ -11,6 +11,25 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
+    _STATUS_PAGE_SUPERSEDED_POLICY = {
+        "graph_analytics": ("Goal1267", "not public speedup wording"),
+        "polygon_pair_overlap_area_rows": ("Goal1263", "whole-app polygon-overlap speedup remain outside"),
+    }
+
+    _MATURITY_SUPERSEDED_POLICY = {
+        "database_analytics": ("Goal1262", "Goal1264", "no positive public DB speedup wording"),
+        "graph_analytics": ("Goal1267", "not public speedup wording"),
+        "polygon_pair_overlap_area_rows": ("Goal1263", "whole-app polygon-overlap speedup remain outside"),
+        "polygon_set_jaccard": ("Goal1262", "positive Jaccard speedup wording"),
+    }
+
+    def _assert_legacy_batch_policy(self, text: str) -> None:
+        self.assertIn("Goal1048", text)
+        self.assertIn("Goal1058", text)
+        self.assertIn("Goal1135", text)
+        self.assertIn("Goal1136", text)
+        self.assertIn("Goal1177", text)
+
     def test_status_page_records_current_rerun_policy(self) -> None:
         payload = goal947.build_status_page()
         ready_rows = [
@@ -21,12 +40,13 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
         self.assertTrue(ready_rows)
         for row in ready_rows:
             with self.subTest(app=row["app"]):
-                self.assertIn("Goal1048", row["cloud_action"])
-                self.assertIn("Goal1058", row["cloud_action"])
-                self.assertIn("Goal1135", row["cloud_action"])
-                self.assertIn("Goal1136", row["cloud_action"])
-                self.assertIn("Goal1177", row["cloud_action"])
-                self.assertIn("bounded sub-path", row["cloud_action"])
+                expected = self._STATUS_PAGE_SUPERSEDED_POLICY.get(row["app"])
+                if expected is None:
+                    self._assert_legacy_batch_policy(row["cloud_action"])
+                    self.assertIn("bounded sub-path", row["cloud_action"])
+                else:
+                    for phrase in expected:
+                        self.assertIn(phrase, row["cloud_action"])
                 self.assertNotIn("no readiness pod needed", row["cloud_action"].lower())
 
     def test_public_docs_do_not_use_stale_no_readiness_pod_policy(self) -> None:
@@ -52,11 +72,13 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
                 continue
             with self.subTest(app=app):
                 self.assertNotIn("restart per app", row.cloud_policy.lower())
-                self.assertIn("Goal1048", row.cloud_policy)
-                self.assertIn("Goal1058", row.cloud_policy)
-                self.assertIn("Goal1135", row.cloud_policy)
-                self.assertIn("Goal1136", row.cloud_policy)
-                self.assertIn("Goal1177", row.cloud_policy)
+                expected = self._MATURITY_SUPERSEDED_POLICY.get(app)
+                if expected is None:
+                    self._assert_legacy_batch_policy(row.cloud_policy)
+                else:
+                    for phrase in expected:
+                        self.assertIn(phrase, row.cloud_policy)
+                    continue
                 if app == "facility_knn_assignment":
                     self.assertIn("Goal1146", row.cloud_policy)
                 elif app == "robot_collision_screening":
