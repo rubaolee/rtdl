@@ -1,0 +1,182 @@
+{
+  "boundary": "This gate validates bounded graph RT sub-paths only. Visibility uses ray/triangle any-hit and uses one launch by default; optional chunking remains available for memory diagnostics. BFS and triangle-count use explicit native OptiX graph-ray mode for candidate generation, while higher-level graph state management remains app/Python-owned.",
+  "chunk_copies": 0,
+  "cloud_claim_contract": {
+    "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering, plus explicit native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+    "non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+    "required_phase_groups": [
+      "analytic_expected_visibility_edges",
+      "analytic_expected_bfs",
+      "analytic_expected_triangle_count",
+      "optix_visibility_anyhit",
+      "optix_native_graph_ray_bfs",
+      "optix_native_graph_ray_triangle_count",
+      "strict_pass",
+      "strict_failures"
+    ]
+  },
+  "copies": 512,
+  "date": "2026-04-24",
+  "generated_at": "2026-05-06T10:35:19",
+  "goal": "Goal889/905 graph OptiX native traversal gate",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "output_mode": "summary",
+  "records": [
+    {
+      "blocker_pack_mode": "numpy_packed_triangles",
+      "chunk_copies": 512,
+      "chunk_count": 1,
+      "chunking": "single_launch",
+      "digest": {
+        "row_count": 2048,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "blocked_edge_count": 1536,
+          "visible_edge_count": 512
+        }
+      },
+      "label": "optix_visibility_anyhit",
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_prepared_visibility_anyhit_count",
+      "optix_graph_mode": "not_applicable",
+      "parity_vs_analytic_expected": true,
+      "query_raw_view_sec": 0.0,
+      "ray_pack_mode": "numpy_packed_rays",
+      "row_count": 2048,
+      "row_materialization_sec": 0.0,
+      "scenario": "visibility_edges",
+      "sec": 0.40111305799996444,
+      "section_run_phases": {
+        "blocker_pack_sec": 0.1163675279999552,
+        "input_construction_sec": 0.00011358599999766739,
+        "query_anyhit_count_first_sec": 0.0001043660000732416,
+        "query_anyhit_count_mean_sec": 0.0001043660000732416,
+        "query_anyhit_count_min_sec": 0.0001043660000732416,
+        "query_anyhit_count_sec": 0.0001043660000732416,
+        "ray_pack_sec": 0.0010079160000486809,
+        "ray_prepare_sec": 5.5262000046241155e-05,
+        "scene_prepare_sec": 0.2826846760000308,
+        "scene_prepare_sec_this_batch": 0.0,
+        "summary_postprocess_sec": 3.469999683147762e-07
+      },
+      "status": "ok"
+    },
+    {
+      "blocker_pack_mode": "not_reported",
+      "digest": {
+        "row_count": 1024,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "discovered_edge_count": 1024,
+          "discovered_vertex_count": 1024,
+          "max_level": 1
+        }
+      },
+      "label": "optix_native_graph_ray_bfs",
+      "native_continuation_active": true,
+      "native_continuation_backend": "native_graph_bfs_raw_summary",
+      "optix_graph_mode": "native",
+      "parity_vs_analytic_expected": true,
+      "query_raw_view_sec": 0.41131614400001126,
+      "ray_pack_mode": "not_reported",
+      "row_count": 1024,
+      "row_materialization_sec": 0.0,
+      "scenario": "bfs",
+      "sec": 0.41371659699996144,
+      "section_run_phases": {
+        "input_construction_sec": 0.002258781000023191,
+        "native_summary_postprocess_sec": 1.850000899139559e-07,
+        "query_and_materialize_sec": 0.41131614400001126,
+        "query_raw_view_sec": 0.41131614400001126,
+        "row_materialization_sec": 0.0
+      },
+      "status": "ok"
+    },
+    {
+      "blocker_pack_mode": "not_reported",
+      "digest": {
+        "row_count": 512,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "touched_vertex_count": 1536,
+          "triangle_count": 512
+        }
+      },
+      "label": "optix_native_graph_ray_triangle_count",
+      "native_continuation_active": true,
+      "native_continuation_backend": "native_graph_triangle_raw_summary",
+      "optix_graph_mode": "native",
+      "parity_vs_analytic_expected": true,
+      "query_raw_view_sec": 0.39524329699997907,
+      "ray_pack_mode": "not_reported",
+      "row_count": 512,
+      "row_materialization_sec": 0.0,
+      "scenario": "triangle_count",
+      "sec": 0.3966485380000222,
+      "section_run_phases": {
+        "input_construction_sec": 0.0011833959999876242,
+        "native_summary_postprocess_sec": 1.7500008198112482e-07,
+        "query_and_materialize_sec": 0.39524329699997907,
+        "query_raw_view_sec": 0.39524329699997907,
+        "row_materialization_sec": 0.0
+      },
+      "status": "ok"
+    },
+    {
+      "digest": {
+        "row_count": 2048,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "blocked_edge_count": 1536,
+          "visible_edge_count": 512
+        }
+      },
+      "label": "analytic_expected_visibility_edges",
+      "scenario": "visibility_edges",
+      "sec": 0.0,
+      "status": "ok",
+      "validation_mode": "analytic_summary"
+    },
+    {
+      "digest": {
+        "row_count": 1024,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "discovered_edge_count": 1024,
+          "discovered_vertex_count": 1024,
+          "max_level": 1
+        }
+      },
+      "label": "analytic_expected_bfs",
+      "scenario": "bfs",
+      "sec": 0.0,
+      "status": "ok",
+      "validation_mode": "analytic_summary"
+    },
+    {
+      "digest": {
+        "row_count": 512,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "touched_vertex_count": 1536,
+          "triangle_count": 512
+        }
+      },
+      "label": "analytic_expected_triangle_count",
+      "scenario": "triangle_count",
+      "sec": 0.0,
+      "status": "ok",
+      "validation_mode": "analytic_summary"
+    }
+  ],
+  "status": "pass",
+  "strict": true,
+  "strict_failures": [],
+  "strict_pass": true,
+  "validation_mode": "analytic_summary"
+}

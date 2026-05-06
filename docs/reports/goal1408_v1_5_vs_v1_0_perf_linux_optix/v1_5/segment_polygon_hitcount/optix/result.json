@@ -1,0 +1,35 @@
+{
+  "backend": "optix",
+  "boundary": "Compares segment_polygon_anyhit_rows rows mode against compact segment_counts mode. Compact mode now uses the RTDL segment_polygon_hitcount primitive and does not emit pair rows. When backend=optix, optix_mode selects default behavior, forced host-indexed fallback, or experimental native custom-AABB mode. This script does not authorize any RT-core claim by itself.",
+  "cases": [
+    {
+      "backend": "optix",
+      "copies": 512,
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x512",
+      "optix_mode": "native",
+      "rows_all_sec": [
+        0.03822772800003804,
+        0.040786424999964765,
+        0.034314474999973754
+      ],
+      "rows_best_sec": 0.034314474999973754,
+      "rows_row_count": 5632,
+      "rows_summary_source": "segment_polygon_anyhit_rows_native_bounded_optix",
+      "segment_counts_all_sec": [
+        0.019882391000010102,
+        0.03819066999994902,
+        0.029011159999981828
+      ],
+      "segment_counts_best_sec": 0.019882391000010102,
+      "segment_counts_row_count": 5120,
+      "segment_counts_summary_source": "segment_polygon_hitcount",
+      "speedup_vs_rows": 1.7258726578687804
+    }
+  ],
+  "geomean_speedup_vs_rows": 1.7258726578687804,
+  "optix_mode": "native",
+  "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "repeats": 3,
+  "suite": "goal726_segment_polygon_compact_summary_perf"
+}

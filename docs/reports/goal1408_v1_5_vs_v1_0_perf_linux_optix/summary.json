@@ -1,0 +1,879 @@
+{
+  "boundary": "Same command and same scale are run against v1.0 and current v1.5 candidate. Cells with backend errors are unavailable, not zero-speedup results. This runner does not authorize public speedup wording by itself.",
+  "copies": 512,
+  "current_commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+  "excluded_apps": {
+    "apple_rt_demo": "excluded from v1.5 active Embree+OptiX scope; Apple RT frozen before v2.1",
+    "hiprt_ray_triangle_hitcount": "excluded from v1.5 active Embree+OptiX scope; HIPRT frozen before v2.1",
+    "polygon_set_jaccard": "excluded from v1.5 because COLLECT_K_BOUNDED is deferred to v1.5.1",
+    "segment_polygon_anyhit_rows": "excluded from v1.5 because COLLECT_K_BOUNDED is deferred to v1.5.1"
+  },
+  "host": {
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "iterations": 3,
+  "profiles_requested": 10,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "backend": "optix",
+      "boundary": "DB compact-summary only; no SQL/DBMS or row-materialization speedup claim.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.9804656778010388,
+        "v1_0_sec": 0.0041712519999919095,
+        "v1_5_sec": 0.004254357999911917
+      },
+      "v1_0": {
+        "app": "database_analytics",
+        "backend": "optix",
+        "boundary": "DB compact-summary only; no SQL/DBMS or row-materialization speedup claim.",
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--output-mode",
+          "compact_summary",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/database_analytics/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "results[0].prepared_session_warm_query_sec.median_sec",
+          "score": 56,
+          "seconds": 0.0041712519999919095
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/database_analytics/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.6960119809999696,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "          \"bitset_copyback\": 6.942e-06,\n              \"emitted_count\": 2048,\n              \"exact_filter\": 0.00013973,\n              \"output_pack\": 2e-08,\n              \"raw_candidate_count\": 2048,\n              \"traversal\": 0.001166444\n            }\n          }\n        }\n      },\n      \"reported_prepare_phases_sec\": {\n        \"sales_risk\": {\n          \"input_construction_sec\": 0.0009542779999947015,\n          \"prepare_sec\": 0.013312964999954602\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 0.0142791490000036,\n          \"scenario_count\": 1\n        }\n      },\n      \"reported_run_phase_modes\": {\n        \"sales_risk\": {\n          \"grouped_count\": \"batch_summary\",\n          \"grouped_sum\": \"batch_summary\",\n          \"scan\": \"batch_summary\"\n        }\n      },\n      \"reported_run_phase_totals_sec\": {\n        \"all_sections_python_summary_postprocess_sec\": 4.607000050782517e-06,\n        \"all_sections_query_sec\": 0.004150102000039624,\n        \"compact_summary_operation_count\": 3,\n        \"row_materializing_operation_count\": 0,\n        \"sections\": {\n          \"sales_risk\": {\n            \"compact_summary_operation_count\": 3,\n            \"python_summary_postprocess_sec\": 4.607000050782517e-06,\n            \"query_sec\": 0.004150102000039624,\n            \"row_materializing_operation_count\": 0\n          }\n        }\n      },\n      \"reported_run_phases_sec\": {\n        \"sales_risk\": {\n          \"python_summary_postprocess_sec\": 4.607000050782517e-06,\n          \"query_compact_summary_batch_sec\": 0.004150102000039624\n        },\n        \"unified_session\": {\n          \"per_section_run_sec\": {\n            \"sales_risk\": 0.0041642190000175106\n          }\n        }\n      },\n      \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n      \"speedup_one_shot_over_warm_query_median\": 340.2096058935592,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"sales_risk\",\n  \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "database_analytics",
+        "backend": "optix",
+        "boundary": "DB compact-summary only; no SQL/DBMS or row-materialization speedup claim.",
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--output-mode",
+          "compact_summary",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/database_analytics/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "results[0].prepared_session_warm_query_sec.median_sec",
+          "score": 56,
+          "seconds": 0.004254357999911917
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/database_analytics/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.8396546820000594,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "         \"exact_filter\": 0.000133578,\n              \"output_pack\": 1.8e-08,\n              \"raw_candidate_count\": 2048,\n              \"traversal\": 0.001166417\n            }\n          }\n        }\n      },\n      \"reported_prepare_phases_sec\": {\n        \"sales_risk\": {\n          \"input_construction_sec\": 0.001045783999984451,\n          \"prepare_sec\": 0.01378042600003937\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 0.01484036500005459,\n          \"scenario_count\": 1\n        }\n      },\n      \"reported_run_phase_modes\": {\n        \"sales_risk\": {\n          \"grouped_count\": \"batch_summary\",\n          \"grouped_sum\": \"batch_summary\",\n          \"scan\": \"batch_summary\"\n        }\n      },\n      \"reported_run_phase_totals_sec\": {\n        \"all_sections_python_summary_postprocess_sec\": 4.819999958272092e-06,\n        \"all_sections_query_sec\": 0.008247786000083579,\n        \"compact_summary_operation_count\": 3,\n        \"row_materializing_operation_count\": 0,\n        \"sections\": {\n          \"sales_risk\": {\n            \"compact_summary_operation_count\": 3,\n            \"python_summary_postprocess_sec\": 4.819999958272092e-06,\n            \"query_sec\": 0.008247786000083579,\n            \"row_materializing_operation_count\": 0\n          }\n        }\n      },\n      \"reported_run_phases_sec\": {\n        \"sales_risk\": {\n          \"python_summary_postprocess_sec\": 4.819999958272092e-06,\n          \"query_compact_summary_batch_sec\": 0.0041238930000417895,\n          \"query_generic_db_compact_summary_batch_sec\": 0.0041238930000417895\n        },\n        \"unified_session\": {\n          \"per_section_run_sec\": {\n            \"sales_risk\": 0.004213452000044526\n          }\n        }\n      },\n      \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n      \"speedup_one_shot_over_warm_query_median\": 133.79527957254632,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"sales_risk\",\n  \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+        }
+      }
+    },
+    {
+      "app": "graph_analytics",
+      "backend": "optix",
+      "boundary": "Graph visibility/count subpath only; graph-system analytics remain outside.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.2915149982541057,
+        "v1_0_sec": 0.53122096900006,
+        "v1_5_sec": 0.41131614400001126
+      },
+      "v1_0": {
+        "app": "graph_analytics",
+        "backend": "optix",
+        "boundary": "Graph visibility/count subpath only; graph-system analytics remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal889_graph_visibility_optix_gate.py",
+          "--copies",
+          "512",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "0",
+          "--strict",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/graph_analytics/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "records[1].query_raw_view_sec",
+          "score": 27,
+          "seconds": 0.53122096900006
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/graph_analytics/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.6522130829999924,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/graph_analytics/optix/result.json\", \"status\": \"pass\", \"strict_pass\": true}\n"
+        }
+      },
+      "v1_5": {
+        "app": "graph_analytics",
+        "backend": "optix",
+        "boundary": "Graph visibility/count subpath only; graph-system analytics remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal889_graph_visibility_optix_gate.py",
+          "--copies",
+          "512",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "0",
+          "--strict",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/graph_analytics/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "records[1].query_raw_view_sec",
+          "score": 27,
+          "seconds": 0.41131614400001126
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/graph_analytics/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.4959695140000804,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/graph_analytics/optix/result.json\", \"status\": \"pass\", \"strict_pass\": true}\n"
+        }
+      }
+    },
+    {
+      "app": "facility_knn_assignment",
+      "backend": "optix",
+      "boundary": "Prepared facility coverage-threshold query only; ranked KNN remains outside.",
+      "comparison": {
+        "classification": "v1_5_slower",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.8746265719818606,
+        "v1_0_sec": 9.749200000896963e-05,
+        "v1_5_sec": 0.00011146699989694753
+      },
+      "v1_0": {
+        "app": "facility_knn_assignment",
+        "backend": "optix",
+        "boundary": "Prepared facility coverage-threshold query only; ranked KNN remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "facility_service_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "1.0",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/facility_knn_assignment/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 9.749200000896963e-05
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/facility_knn_assignment/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.8549028650000992,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/facility_knn_assignment/optix/result.json\", \"scenario\": \"facility_service_coverage\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "facility_knn_assignment",
+        "backend": "optix",
+        "boundary": "Prepared facility coverage-threshold query only; ranked KNN remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "facility_service_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "1.0",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/facility_knn_assignment/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 0.00011146699989694753
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/facility_knn_assignment/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.7989909610000723,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/facility_knn_assignment/optix/result.json\", \"scenario\": \"facility_service_coverage\"}\n"
+        }
+      }
+    },
+    {
+      "app": "road_hazard_screening",
+      "backend": "optix",
+      "boundary": "Compact hazard summary only; GIS/routing and default-app behavior remain outside.",
+      "comparison": {
+        "classification": "v1_5_faster",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.0681853165943216,
+        "v1_0_sec": 0.007959522000078323,
+        "v1_5_sec": 0.007451443000036306
+      },
+      "v1_0": {
+        "app": "road_hazard_screening",
+        "backend": "optix",
+        "boundary": "Compact hazard summary only; GIS/routing and default-app behavior remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal729_road_hazard_compact_output_perf.py",
+          "--backend",
+          "optix",
+          "--optix-mode",
+          "native",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/road_hazard_screening/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.007959522000078323
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/road_hazard_screening/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.0765070479999395,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"optix\", \"cases\": 1, \"geomean_json_size_reduction\": 13.632873806998937, \"geomean_speedup_vs_rows\": 0.6950212186368407, \"optix_mode\": \"native\", \"output\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/road_hazard_screening/optix/result.json\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "road_hazard_screening",
+        "backend": "optix",
+        "boundary": "Compact hazard summary only; GIS/routing and default-app behavior remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal729_road_hazard_compact_output_perf.py",
+          "--backend",
+          "optix",
+          "--optix-mode",
+          "native",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/road_hazard_screening/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.007451443000036306
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/road_hazard_screening/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.91841181399991,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"optix\", \"cases\": 1, \"geomean_json_size_reduction\": 13.632873806998937, \"geomean_speedup_vs_rows\": 0.6422641763122661, \"optix_mode\": \"native\", \"output\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/road_hazard_screening/optix/result.json\"}\n"
+        }
+      }
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "backend": "optix",
+      "boundary": "Compact hit-count summary only; pair-row output remains outside.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.98120137347407,
+        "v1_0_sec": 0.03366941000001589,
+        "v1_5_sec": 0.034314474999973754
+      },
+      "v1_0": {
+        "app": "segment_polygon_hitcount",
+        "backend": "optix",
+        "boundary": "Compact hit-count summary only; pair-row output remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal726_segment_polygon_compact_summary_perf.py",
+          "--backend",
+          "optix",
+          "--optix-mode",
+          "native",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/segment_polygon_hitcount/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.03366941000001589
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/segment_polygon_hitcount/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.6752681910001002,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"optix\", \"cases\": 1, \"geomean_speedup_vs_rows\": 1.7636493504021753, \"optix_mode\": \"native\", \"output\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/segment_polygon_hitcount/optix/result.json\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "segment_polygon_hitcount",
+        "backend": "optix",
+        "boundary": "Compact hit-count summary only; pair-row output remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal726_segment_polygon_compact_summary_perf.py",
+          "--backend",
+          "optix",
+          "--optix-mode",
+          "native",
+          "--copies",
+          "512",
+          "--repeats",
+          "3",
+          "--output",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/segment_polygon_hitcount/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "cases[0].rows_best_sec",
+          "score": 2,
+          "seconds": 0.034314474999973754
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/segment_polygon_hitcount/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.539487591000011,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"backend\": \"optix\", \"cases\": 1, \"geomean_speedup_vs_rows\": 1.7258726578687804, \"optix_mode\": \"native\", \"output\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/segment_polygon_hitcount/optix/result.json\"}\n"
+        }
+      }
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "backend": "optix",
+      "boundary": "Candidate discovery plus exact-area summary only; broad polygon overlay remains outside.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.0161207738218256,
+        "v1_0_sec": 0.7484008149998544,
+        "v1_5_sec": 0.7365274230000978
+      },
+      "v1_0": {
+        "app": "polygon_pair_overlap_area_rows",
+        "backend": "optix",
+        "boundary": "Candidate discovery plus exact-area summary only; broad polygon overlay remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+          "--app",
+          "pair_overlap",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "100",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/polygon_pair_overlap_area_rows/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "phases.optix_candidate_discovery_sec",
+          "score": 52,
+          "seconds": 0.7484008149998544
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/polygon_pair_overlap_area_rows/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.056483400999923,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/polygon_pair_overlap_area_rows/optix/result.json\", \"status\": \"pass\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "polygon_pair_overlap_area_rows",
+        "backend": "optix",
+        "boundary": "Candidate discovery plus exact-area summary only; broad polygon overlay remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+          "--app",
+          "pair_overlap",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "100",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/polygon_pair_overlap_area_rows/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "phases.optix_candidate_discovery_sec",
+          "score": 52,
+          "seconds": 0.7365274230000978
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/polygon_pair_overlap_area_rows/optix/result.json",
+        "run": {
+          "elapsed_sec": 1.052412196999967,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/polygon_pair_overlap_area_rows/optix/result.json\", \"status\": \"pass\"}\n"
+        }
+      }
+    },
+    {
+      "app": "hausdorff_distance",
+      "backend": "optix",
+      "boundary": "Threshold decision only; exact Hausdorff rows remain outside.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.9693803119496598,
+        "v1_0_sec": 0.00015547600003174011,
+        "v1_5_sec": 0.00016038699993714545
+      },
+      "v1_0": {
+        "app": "hausdorff_distance",
+        "backend": "optix",
+        "boundary": "Threshold decision only; exact Hausdorff rows remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "hausdorff_threshold",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "0.4",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/hausdorff_distance/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 0.00015547600003174011
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/hausdorff_distance/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.7894745199999988,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/hausdorff_distance/optix/result.json\", \"scenario\": \"hausdorff_threshold\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "hausdorff_distance",
+        "backend": "optix",
+        "boundary": "Threshold decision only; exact Hausdorff rows remain outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "hausdorff_threshold",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "0.4",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/hausdorff_distance/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 0.00016038699993714545
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/hausdorff_distance/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.7993739820000201,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/hausdorff_distance/optix/result.json\", \"scenario\": \"hausdorff_threshold\"}\n"
+        }
+      }
+    },
+    {
+      "app": "ann_candidate_search",
+      "backend": "optix",
+      "boundary": "Candidate-coverage decision only; full ANN ranking/indexing remains outside.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 0.997664778504994,
+        "v1_0_sec": 8.544499996787636e-05,
+        "v1_5_sec": 8.564500001284614e-05
+      },
+      "v1_0": {
+        "app": "ann_candidate_search",
+        "backend": "optix",
+        "boundary": "Candidate-coverage decision only; full ANN ranking/indexing remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "ann_candidate_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "0.2",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/ann_candidate_search/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 8.544499996787636e-05
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/ann_candidate_search/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.7863196099999641,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/ann_candidate_search/optix/result.json\", \"scenario\": \"ann_candidate_coverage\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "ann_candidate_search",
+        "backend": "optix",
+        "boundary": "Candidate-coverage decision only; full ANN ranking/indexing remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "ann_candidate_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "0.2",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/ann_candidate_search/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 8.564500001284614e-05
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/ann_candidate_search/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.7934171360000164,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/ann_candidate_search/optix/result.json\", \"scenario\": \"ann_candidate_coverage\"}\n"
+        }
+      }
+    },
+    {
+      "app": "robot_collision_screening",
+      "backend": "optix",
+      "boundary": "Prepared pose-count query only; full robot planning remains outside.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.0280234273860671,
+        "v1_0_sec": 0.00010601799999676587,
+        "v1_5_sec": 0.00010312799997791444
+      },
+      "v1_0": {
+        "app": "robot_collision_screening",
+        "backend": "optix",
+        "boundary": "Prepared pose-count query only; full robot planning remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+          "--mode",
+          "optix",
+          "--pose-count",
+          "512",
+          "--obstacle-count",
+          "16",
+          "--iterations",
+          "3",
+          "--input-mode",
+          "packed_arrays",
+          "--result-mode",
+          "pose_count",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/robot_collision_screening/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "phases.prepared_pose_flags_warm_query_sec.median_sec",
+          "score": 31,
+          "seconds": 0.00010601799999676587
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/robot_collision_screening/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.8311810989999913,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": " {\n    \"claim_scope\": \"prepared OptiX ray/triangle any-hit compact pose summary\",\n    \"cloud_policy\": \"include in the single active RTX batch only after local pre-cloud readiness passes\",\n    \"non_claim\": \"not continuous collision detection, full robot planning, full kinematics, witness-row speedup, or mesh-engine replacement\",\n    \"required_phase_groups\": [\n      \"python_input_construction_sec\",\n      \"optix_prepare_scene_sec\",\n      \"optix_prepare_rays_sec\",\n      \"optix_prepare_pose_indices_sec\",\n      \"prepared_pose_flags_warm_query_sec\",\n      \"oracle_validate_sec\",\n      \"close_sec\",\n      \"total_sec\"\n    ],\n    \"result_mode\": \"pose_count\"\n  },\n  \"date\": \"2026-04-22\",\n  \"edge_ray_count\": 2048,\n  \"generated_at\": \"2026-05-06T10:35:32\",\n  \"host\": {\n    \"hostname\": \"lx1\",\n    \"machine\": \"x86_64\",\n    \"platform\": \"Linux-6.17.0-20-generic-x86_64-with-glibc2.39\",\n    \"python\": \"3.12.3\"\n  },\n  \"input_mode\": \"packed_arrays\",\n  \"iterations\": 3,\n  \"matches_oracle\": null,\n  \"mode\": \"optix\",\n  \"obstacle_count\": 16,\n  \"obstacle_triangle_count\": 32,\n  \"phases\": {\n    \"close_sec\": 2.4180000082196784e-05,\n    \"optix_prepare_pose_indices_sec\": 6.552100001044892e-05,\n    \"optix_prepare_rays_sec\": 5.901500003346882e-05,\n    \"optix_prepare_scene_sec\": 0.2905289340000081,\n    \"oracle_validate_sec\": 0.0,\n    \"prepared_pose_flags_warm_query_sec\": {\n      \"max_sec\": 0.22201078900002358,\n      \"median_sec\": 0.00010601799999676587,\n      \"min_sec\": 7.815799995114503e-05\n    },\n    \"python_input_construction_sec\": 0.0716390400000364,\n    \"total_sec\": 0.5848696389999759\n  },\n  \"pose_count\": 512,\n  \"result\": {\n    \"colliding_pose_count\": 384,\n    \"colliding_pose_ids_sample\": [],\n    \"oracle_colliding_pose_count\": null,\n    \"pose_collision_flags_sample\": []\n  },\n  \"result_mode\": \"pose_count\",\n  \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n  \"source_commit\": \"b9c9620af78a2fab92083d43af312bb6310e452a\",\n  \"suite\": \"Goal760 OptiX robot pose-flags phase profiler\",\n  \"validated\": false\n}\n"
+        }
+      },
+      "v1_5": {
+        "app": "robot_collision_screening",
+        "backend": "optix",
+        "boundary": "Prepared pose-count query only; full robot planning remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+          "--mode",
+          "optix",
+          "--pose-count",
+          "512",
+          "--obstacle-count",
+          "16",
+          "--iterations",
+          "3",
+          "--input-mode",
+          "packed_arrays",
+          "--result-mode",
+          "pose_count",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/robot_collision_screening/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "phases.prepared_pose_flags_warm_query_sec.median_sec",
+          "score": 31,
+          "seconds": 0.00010312799997791444
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/robot_collision_screening/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.7534468009999955,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\n    \"claim_scope\": \"prepared OptiX ray/triangle any-hit compact pose summary\",\n    \"cloud_policy\": \"include in the single active RTX batch only after local pre-cloud readiness passes\",\n    \"non_claim\": \"not continuous collision detection, full robot planning, full kinematics, witness-row speedup, or mesh-engine replacement\",\n    \"required_phase_groups\": [\n      \"python_input_construction_sec\",\n      \"optix_prepare_scene_sec\",\n      \"optix_prepare_rays_sec\",\n      \"optix_prepare_pose_indices_sec\",\n      \"prepared_pose_flags_warm_query_sec\",\n      \"oracle_validate_sec\",\n      \"close_sec\",\n      \"total_sec\"\n    ],\n    \"result_mode\": \"pose_count\"\n  },\n  \"date\": \"2026-04-22\",\n  \"edge_ray_count\": 2048,\n  \"generated_at\": \"2026-05-06T10:35:33\",\n  \"host\": {\n    \"hostname\": \"lx1\",\n    \"machine\": \"x86_64\",\n    \"platform\": \"Linux-6.17.0-20-generic-x86_64-with-glibc2.39\",\n    \"python\": \"3.12.3\"\n  },\n  \"input_mode\": \"packed_arrays\",\n  \"iterations\": 3,\n  \"matches_oracle\": null,\n  \"mode\": \"optix\",\n  \"obstacle_count\": 16,\n  \"obstacle_triangle_count\": 32,\n  \"phases\": {\n    \"close_sec\": 2.3768000005475187e-05,\n    \"optix_prepare_pose_indices_sec\": 5.886799999643699e-05,\n    \"optix_prepare_rays_sec\": 6.116400004430034e-05,\n    \"optix_prepare_scene_sec\": 0.3047755860000052,\n    \"oracle_validate_sec\": 0.0,\n    \"prepared_pose_flags_warm_query_sec\": {\n      \"max_sec\": 0.13113154600000598,\n      \"median_sec\": 0.00010312799997791444,\n      \"min_sec\": 7.764199995108356e-05\n    },\n    \"python_input_construction_sec\": 0.06443081099996562,\n    \"total_sec\": 0.5010383300000285\n  },\n  \"pose_count\": 512,\n  \"result\": {\n    \"colliding_pose_count\": 384,\n    \"colliding_pose_ids_sample\": [],\n    \"oracle_colliding_pose_count\": null,\n    \"pose_collision_flags_sample\": []\n  },\n  \"result_mode\": \"pose_count\",\n  \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n  \"source_commit\": \"e76adc4c1bc4d05ede46bf4d6cde1d315769e01f\",\n  \"suite\": \"Goal760 OptiX robot pose-flags phase profiler\",\n  \"validated\": false\n}\n"
+        }
+      }
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "backend": "optix",
+      "boundary": "Node-coverage decision only; force-vector reduction remains outside.",
+      "comparison": {
+        "classification": "roughly_equal",
+        "status": "compared",
+        "v1_0_over_v1_5_ratio": 1.0216121200278525,
+        "v1_0_sec": 8.253399994373467e-05,
+        "v1_5_sec": 8.078799999111652e-05
+      },
+      "v1_0": {
+        "app": "barnes_hut_force_app",
+        "backend": "optix",
+        "boundary": "Node-coverage decision only; force-vector reduction remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "barnes_hut_node_coverage",
+          "--mode",
+          "optix",
+          "--body-count",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "0.1",
+          "--barnes-tree-depth",
+          "4",
+          "--hit-threshold",
+          "4",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/barnes_hut_force_app/optix/result.json"
+        ],
+        "commit": "b9c9620af78a2fab92083d43af312bb6310e452a",
+        "label": "v1_0",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 8.253399994373467e-05
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/barnes_hut_force_app/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.784055389999935,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_0/barnes_hut_force_app/optix/result.json\", \"scenario\": \"barnes_hut_node_coverage\"}\n"
+        }
+      },
+      "v1_5": {
+        "app": "barnes_hut_force_app",
+        "backend": "optix",
+        "boundary": "Node-coverage decision only; force-vector reduction remains outside.",
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "barnes_hut_node_coverage",
+          "--mode",
+          "optix",
+          "--body-count",
+          "512",
+          "--iterations",
+          "3",
+          "--radius",
+          "0.1",
+          "--barnes-tree-depth",
+          "4",
+          "--hit-threshold",
+          "4",
+          "--skip-validation",
+          "--output-json",
+          "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/barnes_hut_force_app/optix/result.json"
+        ],
+        "commit": "e76adc4c1bc4d05ede46bf4d6cde1d315769e01f",
+        "label": "v1_5",
+        "metric": {
+          "metric_path": "scenario.timings_sec.optix_query_sec.median_sec",
+          "score": 31,
+          "seconds": 8.078799999111652e-05
+        },
+        "output_json": "/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/barnes_hut_force_app/optix/result.json",
+        "run": {
+          "elapsed_sec": 0.8006513279999581,
+          "returncode": 0,
+          "status": "ok",
+          "stderr_tail": "",
+          "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"/home/lestat/rtdl_goal1408_perf/docs/reports/goal1408_v1_5_vs_v1_0_perf_linux_optix/v1_5/barnes_hut_force_app/optix/result.json\", \"scenario\": \"barnes_hut_node_coverage\"}\n"
+        }
+      }
+    }
+  ],
+  "schema": "goal1408_v1_5_vs_v1_0_perf_v1",
+  "timeout_sec": 300,
+  "v1_0_commit": "b9c9620af78a2fab92083d43af312bb6310e452a"
+}

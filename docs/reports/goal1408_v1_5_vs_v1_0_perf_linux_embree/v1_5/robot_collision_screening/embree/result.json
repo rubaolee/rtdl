@@ -1,0 +1,55 @@
+{
+  "app": "robot_collision_screening",
+  "boundary": "Embree hit_count uses the native any-hit row path plus compact app output. It does not yet use a prepared Embree scalar-count ABI; full output reports witness rows and JSON materialization separately.",
+  "cases": [
+    {
+      "cpu_hit_count": {
+        "backend": "cpu_python_reference",
+        "edge_ray_count": 2048,
+        "json_bytes_median": 802,
+        "max_seconds": 0.6618969009999773,
+        "median_seconds": 0.6597014220000119,
+        "min_seconds": 0.6589295999999649,
+        "obstacle_count": 16,
+        "obstacle_triangle_count": 32,
+        "output_mode": "hit_count",
+        "pose_count": 512,
+        "repeats": 3
+      },
+      "embree_full": {
+        "backend": "embree",
+        "edge_ray_count": 2048,
+        "json_bytes_median": 542728,
+        "json_expansion_vs_hit_count": 688.741116751269,
+        "max_seconds": 0.3481451569999763,
+        "median_seconds": 0.3438377339999761,
+        "min_seconds": 0.3433066200000212,
+        "obstacle_count": 16,
+        "obstacle_triangle_count": 32,
+        "output_mode": "full",
+        "pose_count": 512,
+        "repeats": 3,
+        "slowdown_vs_hit_count": 1.0172905021464527
+      },
+      "embree_hit_count": {
+        "backend": "embree",
+        "edge_ray_count": 2048,
+        "json_bytes_median": 788,
+        "max_seconds": 0.34844733900001756,
+        "median_seconds": 0.3379936540000017,
+        "min_seconds": 0.33657766199996786,
+        "obstacle_count": 16,
+        "obstacle_triangle_count": 32,
+        "output_mode": "hit_count",
+        "pose_count": 512,
+        "repeats": 3,
+        "speedup_vs_cpu_python_reference": 1.951816000663754
+      },
+      "pose_count": 512
+    }
+  ],
+  "goal": 736,
+  "measurement": "run_app plus json.dumps wall-clock seconds",
+  "obstacle_count": 16,
+  "repeats": 3
+}
