@@ -122,6 +122,16 @@ from .bounded_collection_contracts import v1_5_collect_k_bounded_resolution
 from .bounded_collection_contracts import v1_5_collect_k_bounded_contracts
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_resolution
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contracts
+from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_BACKENDS
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_STATUS
+from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_contract
+from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_contract
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -835,6 +845,7 @@ __all__ = [
     "v1_5_float_sum_reduction_contracts",
     "validate_v1_5_float_sum_reduction_contracts",
     "ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS",
+    "collect_k_bounded_rows",
     "collect_k_bounded_candidate_pairs",
     "FROZEN_BEFORE_V2_1_POLYGON_BACKENDS",
     "run_generic_polygon_pair_exact_area_summary",
@@ -1198,10 +1209,19 @@ __all__ = [
     "V1_5_COLLECT_K_BOUNDED_PROMOTION_GATES",
     "V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS",
     "V1_5_COLLECT_K_BOUNDED_RESOLUTION_STRATEGY",
+    "V1_5_1_COLLECT_K_BOUNDED_BACKENDS",
+    "V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY",
+    "V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY",
+    "V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY",
+    "V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE",
+    "V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT",
+    "V1_5_1_COLLECT_K_BOUNDED_STATUS",
     "v1_5_collect_k_bounded_resolution",
     "v1_5_collect_k_bounded_contracts",
+    "v1_5_1_collect_k_bounded_contract",
     "validate_v1_5_collect_k_bounded_resolution",
     "validate_v1_5_collect_k_bounded_contracts",
+    "validate_v1_5_1_collect_k_bounded_contract",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",
