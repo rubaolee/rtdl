@@ -21,13 +21,12 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
         by_app = {row["app"]: row for row in payload["rows"]}
 
         self.assertTrue(payload["valid"])
-        self.assertEqual(payload["summary"]["unresolved_nvidia_public_wording_apps"], 4)
-        self.assertEqual(payload["summary"]["public_wording_blocked"], 2)
+        self.assertEqual(payload["summary"]["unresolved_nvidia_public_wording_apps"], 3)
+        self.assertEqual(payload["summary"]["public_wording_blocked"], 1)
         self.assertEqual(payload["summary"]["public_wording_not_reviewed"], 2)
         self.assertEqual(set(by_app), {
             "database_analytics",
             "graph_analytics",
-            "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
         })
 
@@ -41,7 +40,6 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
         for app in (
             "database_analytics",
             "graph_analytics",
-            "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
         ):
             self.assertEqual(by_app[app]["action_bucket"], "local_optimization_first")

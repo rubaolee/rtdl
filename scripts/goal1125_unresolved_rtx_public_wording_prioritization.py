@@ -53,19 +53,6 @@ APP_PLANS: dict[str, dict[str, str]] = {
         ),
         "pod_policy": "no_pod_until_phase_split_or_code_changes",
     },
-    "polygon_pair_overlap_area_rows": {
-        "action_bucket": LOCAL_OPTIMIZATION_FIRST,
-        "priority": "p2",
-        "why": (
-            "The native-assisted RTX candidate-discovery phase loses badly to the PostGIS "
-            "same-unit-cell contract in Goal1060."
-        ),
-        "next_local_action": (
-            "Fix candidate discovery/chunking and exact-area handoff. Public wording can only cover "
-            "candidate discovery unless exact-area refinement becomes native."
-        ),
-        "pod_policy": "no_pod_until_candidate_chunking_changes",
-    },
     "polygon_set_jaccard": {
         "action_bucket": LOCAL_OPTIMIZATION_FIRST,
         "priority": "p2",
@@ -181,13 +168,12 @@ def build_audit() -> dict[str, Any]:
         "recommended_order": [
             "database_analytics",
             "graph_analytics",
-            "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
         ],
         "valid": (
-            len(rows) == 4
+            len(rows) == 3
             and {row["app"] for row in rows} == set(APP_PLANS)
-            and bucket_counts.get(LOCAL_OPTIMIZATION_FIRST, 0) == 4
+            and bucket_counts.get(LOCAL_OPTIMIZATION_FIRST, 0) == 3
             and bucket_counts.get(NEEDS_BASELINE_REVIEW, 0) == 0
             and bucket_counts.get(NEEDS_SCALE_CONTRACT, 0) == 0
             and all(row["rt_core_status"] == "rt_core_ready" for row in rows)
