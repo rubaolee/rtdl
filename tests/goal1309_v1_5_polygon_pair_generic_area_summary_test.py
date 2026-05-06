@@ -24,6 +24,9 @@ class Goal1309V15PolygonPairGenericAreaSummaryTest(unittest.TestCase):
         self.assertEqual(result["primitive"], "POLYGON_PAIR_EXACT_AREA_SUMMARY")
         self.assertEqual(result["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(result["result_layout"], "summary_float64_sums")
+        self.assertEqual(result["summary_contract"]["result_layout"], result["result_layout"])
+        self.assertTrue(result["summary_contract"]["integer_parity_required"])
+        self.assertFalse(result["summary_contract"]["scalar_helper_direct_use"])
         self.assertEqual(result["dtype"], "float64")
         self.assertEqual(result["total_intersection_area"], 5.0)
         self.assertEqual(result["integer_parity_values"]["total_union_area"], 17)
@@ -39,6 +42,7 @@ class Goal1309V15PolygonPairGenericAreaSummaryTest(unittest.TestCase):
         generic = payload["generic_area_summary"]
         self.assertEqual(generic["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(generic["result_layout"], "summary_float64_sums")
+        self.assertEqual(generic["summary_contract"]["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(payload["summary"], generic["integer_parity_values"])
         self.assertIn("query_polygon_exact_area_reduce_float_sum_sec", payload["run_phases"])
 

@@ -18,6 +18,17 @@ class Goal1308V15PolygonFloatSumContractTest(unittest.TestCase):
         contracts = rt.validate_v1_5_float_sum_reduction_contracts()
         self.assertEqual(len(contracts), 2)
 
+    def test_float_sum_contract_layouts_are_registered(self) -> None:
+        contracts = rt.validate_v1_5_float_sum_reduction_contracts()
+        valid_layouts = set(rt.V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS)
+        self.assertEqual(
+            valid_layouts,
+            {"summary_float64_sums", "summary_float64_sums_plus_ratio"},
+        )
+        for contract in contracts:
+            with self.subTest(contract=contract["subpath"]):
+                self.assertIn(contract["result_layout"], valid_layouts)
+
     def test_polygon_pair_exact_area_contract_is_verified_non_public(self) -> None:
         contracts = rt.validate_v1_5_float_sum_reduction_contracts()
         by_row = {(row["app"], row["subpath"]): row for row in contracts}

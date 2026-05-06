@@ -5,6 +5,10 @@ from typing import Any
 
 V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL = 1e-9
 V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL = 1e-9
+V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS = (
+    "summary_float64_sums",
+    "summary_float64_sums_plus_ratio",
+)
 
 
 def v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
@@ -64,6 +68,7 @@ def validate_v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
         "claim_boundary",
     )
     valid_statuses = {"design_required", "blocked_by_collect_k_bounded", "pod_verified_generic_non_public"}
+    valid_result_layouts = set(V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS)
     for contract in contracts:
         for field in required_fields:
             if field not in contract:
@@ -74,6 +79,8 @@ def validate_v1_5_float_sum_reduction_contracts() -> tuple[dict[str, Any], ...]:
             raise ValueError("v1.5 float-sum contract must use REDUCE_FLOAT(SUM)")
         if contract["dtype"] != "float64":
             raise ValueError("v1.5 polygon float-sum contract must default to float64")
+        if contract["result_layout"] not in valid_result_layouts:
+            raise ValueError(f"invalid polygon float-sum result layout: {contract['result_layout']}")
         if float(contract["abs_tol"]) < 0.0 or float(contract["rel_tol"]) < 0.0:
             raise ValueError("float reduction tolerances must be non-negative")
         value_fields = tuple(contract["value_fields"])

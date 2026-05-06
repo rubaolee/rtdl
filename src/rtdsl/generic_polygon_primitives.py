@@ -6,14 +6,11 @@ from typing import Any
 from .bounded_collection_contracts import v1_5_collect_k_bounded_contracts
 from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL
 from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL
+from .float_reduction_contracts import V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS
 
 
 ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS = ("embree", "optix")
 FROZEN_BEFORE_V2_1_POLYGON_BACKENDS = ("vulkan", "hiprt", "apple_rt")
-V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS = (
-    "summary_float64_sums",
-    "summary_float64_sums_plus_ratio",
-)
 
 
 def _polygon_float_sum_contract(*, result_layout: str, value_fields: tuple[str, ...]) -> dict[str, Any]:
