@@ -27,6 +27,19 @@ def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _resolve_report_artifact(path: str) -> Path:
+    raw = Path(path)
+    if raw.exists():
+        return raw
+    parts = raw.parts
+    for index in range(len(parts) - 1):
+        if parts[index] == "docs" and parts[index + 1] == "reports":
+            relocated = ROOT.joinpath(*parts[index:])
+            if relocated.exists():
+                return relocated
+    return raw
+
+
 def _row_by(intake: dict[str, Any], app: str, phase: str) -> dict[str, Any]:
     for row in intake["rows"]:
         if row["app"] == app and row["phase"] == phase:
@@ -35,7 +48,7 @@ def _row_by(intake: dict[str, Any], app: str, phase: str) -> dict[str, Any]:
 
 
 def _artifact(path: str) -> dict[str, Any]:
-    return _load(Path(path))
+    return _load(_resolve_report_artifact(path))
 
 
 def _facility_row(goal1073: dict[str, Any]) -> dict[str, Any]:
