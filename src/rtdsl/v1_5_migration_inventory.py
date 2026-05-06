@@ -71,7 +71,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("ann_indexing", "nearest_neighbor_ranking"),
             "public_wording_authorized": False,
-            "boundary": "candidate threshold-decision path only; no public speedup wording",
+            "boundary": "candidate threshold-decision path only; remaining app-specific work: ann_indexing, nearest_neighbor_ranking; no public speedup wording",
         },
         {
             "goal": "Goal1300",
@@ -83,7 +83,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("ranked_knn_assignment",),
             "public_wording_authorized": False,
-            "boundary": "facility service-coverage threshold-decision path only; no public speedup wording",
+            "boundary": "facility service-coverage threshold-decision path only; remaining app-specific work: ranked_knn_assignment; no public speedup wording",
         },
         {
             "goal": "Goal1301",
@@ -95,7 +95,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": ("neighbor_row_materialization", "broad_outlier_analytics"),
             "public_wording_authorized": False,
-            "boundary": "fixed-radius density threshold count only; no public speedup wording",
+            "boundary": "fixed-radius density threshold count only; remaining app-specific work: neighbor_row_materialization, broad_outlier_analytics; no public speedup wording",
         },
         {
             "goal": "Goal1301",
@@ -107,7 +107,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": ("cluster_expansion", "connected_components"),
             "public_wording_authorized": False,
-            "boundary": "fixed-radius DBSCAN core predicate count only; no public speedup wording",
+            "boundary": "fixed-radius DBSCAN core predicate count only; remaining app-specific work: cluster_expansion, connected_components; no public speedup wording",
         },
         {
             "goal": "Goal1302",
@@ -119,7 +119,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("opening_rule", "force_vector_reduction"),
             "public_wording_authorized": False,
-            "boundary": "node-coverage threshold-decision path only; no public speedup wording",
+            "boundary": "node-coverage threshold-decision path only; remaining app-specific work: opening_rule, force_vector_reduction; no public speedup wording",
         },
         {
             "goal": "Goal1302",
@@ -131,7 +131,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("exact_distance", "nearest_neighbor_rows"),
             "public_wording_authorized": False,
-            "boundary": "Hausdorff threshold-decision path only; no public speedup wording",
+            "boundary": "Hausdorff threshold-decision path only; remaining app-specific work: exact_distance, nearest_neighbor_rows; no public speedup wording",
         },
         {
             "goal": "Goal1303",
@@ -143,7 +143,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("prepared_pose_flags", "grouped_pose_flag_reduction"),
             "public_wording_authorized": False,
-            "boundary": "scalar hit-edge count only; no public speedup wording",
+            "boundary": "scalar hit-edge count only; remaining app-specific work: prepared_pose_flags, grouped_pose_flag_reduction; no public speedup wording",
         },
         {
             "goal": "Goal1306",
@@ -265,3 +265,13 @@ def _validate_v1_5_generic_migration_inventory_rows(inventory: tuple[dict[str, A
         boundary = str(row["boundary"])
         if "public speedup wording" not in boundary and "public wording" not in boundary:
             raise ValueError("v1.5 migration inventory boundary must block public wording")
+        remaining_work = tuple(row["remaining_app_specific_work"])
+        if remaining_work:
+            if "remaining app-specific work" not in boundary:
+                raise ValueError("v1.5 migration inventory boundary must name remaining app-specific work")
+            missing_work = [work for work in remaining_work if work not in boundary]
+            if missing_work:
+                raise ValueError(
+                    "v1.5 migration inventory boundary is missing remaining work: "
+                    f"{', '.join(missing_work)}"
+                )

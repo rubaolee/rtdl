@@ -52,6 +52,14 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             by_row[("database_analytics", "sales_risk_compact_summary")]["remaining_app_specific_work"],
             (),
         )
+        self.assertIn(
+            "ann_indexing",
+            by_row[("ann_candidate_search", "candidate_threshold_prepared")]["boundary"],
+        )
+        self.assertIn(
+            "neighbor_row_materialization",
+            by_row[("outlier_detection", "density_count")]["boundary"],
+        )
         self.assertEqual(
             by_row[("database_analytics", "sales_risk_compact_summary")]["summary_primitive"],
             "REDUCE_INT(COUNT), REDUCE_INT(SUM)",
@@ -119,6 +127,21 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
         bad_boundary["boundary"] = "visibility any-hit count only"
         with self.assertRaisesRegex(ValueError, "boundary must block public wording"):
             inventory_module._validate_v1_5_generic_migration_inventory_rows((bad_boundary,))
+
+        bad_remaining_boundary = dict(good_row)
+        bad_remaining_boundary["remaining_app_specific_work"] = ("hidden_work",)
+        bad_remaining_boundary["boundary"] = "visibility any-hit count only; no public speedup wording"
+        with self.assertRaisesRegex(ValueError, "boundary must name remaining app-specific work"):
+            inventory_module._validate_v1_5_generic_migration_inventory_rows((bad_remaining_boundary,))
+
+        bad_missing_work = dict(good_row)
+        bad_missing_work["remaining_app_specific_work"] = ("hidden_work",)
+        bad_missing_work["boundary"] = (
+            "visibility any-hit count only; remaining app-specific work: other_work; "
+            "no public speedup wording"
+        )
+        with self.assertRaisesRegex(ValueError, "boundary is missing remaining work"):
+            inventory_module._validate_v1_5_generic_migration_inventory_rows((bad_missing_work,))
 
     def test_blockers_name_only_remaining_scope_and_public_wording_gates(self) -> None:
         blockers = "\n".join(rt.v1_5_generic_migration_blockers())
