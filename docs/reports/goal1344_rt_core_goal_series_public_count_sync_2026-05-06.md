@@ -26,5 +26,13 @@ public wording, release state, cloud policy, or backend implementation.
 
 ## Pod Validation
 
-Pending. Validate from Git after push using the current pod, then record commit
-identity and focused test result here.
+Pod SSH command:
+
+`ssh root@213.173.108.215 -p 14800 -i ~/.ssh/id_ed25519_rtdl_codex`
+
+Validated from Git with `git fetch origin main` and `git reset --hard
+origin/main`.
+
+- Pod commit: `659c1521acfa3672ca6781b1e30a9d239fea3ca7`.
+- Pod command: `PYTHONPATH=src:. python3 -m unittest tests.goal848_v1_rt_core_goal_series_test tests.goal1025_pre_cloud_rtx_app_batch_readiness_test tests.goal1063_pre_pod_local_completion_audit_test tests.goal1011_rtx_public_wording_matrix_test tests.goal1010_public_rtx_readme_wording_test`
+- Pod result: `OK`, 25 tests.
