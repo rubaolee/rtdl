@@ -111,6 +111,7 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
                 "docs/application_catalog.md",
                 "docs/release_facing_examples.md",
                 "docs/tutorials/segment_polygon_workloads.md",
+                "examples/README.md",
             )
         )
         for phrase in (

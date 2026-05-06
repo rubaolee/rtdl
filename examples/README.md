@@ -254,12 +254,13 @@ Current v0.8 app example boundary:
   `--output-mode rows`. Its compact `summary` mode returns aggregate
   overlap-pair and area totals and omits full per-pair rows from the app JSON
   payload; Embree and OptiX use positive-only LSI/PIP candidate discovery,
-  followed by native C++ exact grid-cell area continuation
+  followed by backend-neutral native exact-area summary plumbing in compact
+  summary mode
 - `rtdl_polygon_set_jaccard.py` supports `--copies` for scalable Jaccard
   characterization. Embree and OptiX use positive-only LSI/PIP candidate
-  discovery and native C++ exact set-area continuation; this is native-assisted
-  candidate discovery plus native continuation, not a monolithic GPU Jaccard
-  kernel
+  discovery and backend-neutral native set-area/Jaccard summary plumbing in
+  compact summary mode; this is native-assisted candidate discovery plus native
+  summary reduction, not a monolithic GPU Jaccard kernel
 
 Current HIPRT boundary:
 
