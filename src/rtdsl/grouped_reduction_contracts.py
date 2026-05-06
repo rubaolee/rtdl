@@ -44,6 +44,10 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "determinism_policy": "integer count is deterministic for fixed ray order",
             "correctness_contract": "per-pose flag must match app-specific prepared_pose_flags oracle",
             "unblocks": "replaces app-specific pose grouping for the verified prepared_pose_flags subpath",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not whole-app robot collision planning, and not public speedup wording"
+            ),
         },
         {
             "app": "database_analytics",
@@ -57,6 +61,10 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "determinism_policy": "integer count is deterministic after predicate lowering",
             "correctness_contract": "group counts must match Python compact-summary oracle exactly",
             "unblocks": "generic DB compact count wrapper for Embree and OptiX",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not SQL or DBMS behavior, and not public speedup wording"
+            ),
         },
         {
             "app": "database_analytics",
@@ -70,6 +78,10 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "determinism_policy": "integer sum is deterministic after predicate lowering",
             "correctness_contract": "group sums must match Python compact-summary oracle exactly",
             "unblocks": "generic DB compact revenue/risk sum wrapper for Embree and OptiX",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not SQL or DBMS behavior, and not public speedup wording"
+            ),
         },
         {
             "app": "polygon_pair_overlap_area_rows",
@@ -83,6 +95,10 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "determinism_policy": "backend must publish reduction order or tolerance schema",
             "correctness_contract": "area sums must satisfy documented abs/rel tolerance versus Python oracle",
             "unblocks": "moves exact polygon area summary out of app-specific continuation for verified summary mode",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not generic polygon overlay or GIS behavior, and not public speedup wording"
+            ),
         },
         {
             "app": "polygon_set_jaccard",
@@ -96,6 +112,10 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "determinism_policy": "collection order, overflow, and score tolerance must be explicit",
             "correctness_contract": "bounded candidate scoring must prove no silent truncation before score reduction",
             "unblocks": "diagnostic generic Jaccard score reduction after complete bounded collection",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not stable COLLECT_K_BOUNDED promotion, and not public speedup wording"
+            ),
         },
     )
 
@@ -114,6 +134,7 @@ def validate_v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
         "determinism_policy",
         "correctness_contract",
         "unblocks",
+        "claim_boundary",
     )
     valid_statuses = {
         "design_required",
@@ -147,4 +168,12 @@ def validate_v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
                 raise ValueError("experimental grouped input must stay blocked or verified non-public")
         if contract["reduction_primitive"].startswith("GROUPED_"):
             raise ValueError("grouping is a result layout, not a new primitive name")
+        boundary = str(contract["claim_boundary"])
+        for required_boundary in (
+            "grouped reduction metadata only",
+            "not a new GROUPED_* primitive",
+            "not public speedup wording",
+        ):
+            if required_boundary not in boundary:
+                raise ValueError("grouped reduction claim boundary must block broad grouped claims")
     return contracts

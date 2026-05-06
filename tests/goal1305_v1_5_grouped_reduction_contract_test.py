@@ -30,6 +30,13 @@ class Goal1305V15GroupedReductionContractTest(unittest.TestCase):
             with self.subTest(contract=contract["subpath"]):
                 self.assertIn(contract["result_layout"], valid_layouts)
 
+    def test_grouped_contracts_block_broad_claims(self) -> None:
+        for contract in rt.validate_v1_5_grouped_reduction_contracts():
+            with self.subTest(contract=contract["subpath"]):
+                self.assertIn("grouped reduction metadata only", contract["claim_boundary"])
+                self.assertIn("not a new GROUPED_* primitive", contract["claim_boundary"])
+                self.assertIn("not public speedup wording", contract["claim_boundary"])
+
     def test_db_rows_are_verified_and_split_count_and_sum_primitives(self) -> None:
         contracts = rt.validate_v1_5_grouped_reduction_contracts()
         db_rows = {
