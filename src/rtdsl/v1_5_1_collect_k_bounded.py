@@ -10,6 +10,31 @@ V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY = "fail_closed_before_result_materializ
 V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY = "stable_lexicographic_by_candidate_id_row"
 V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY = "deduplicate_before_capacity_check"
 V1_5_1_COLLECT_K_BOUNDED_BACKENDS = ("embree", "optix")
+V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES = (
+    "contract_foundation",
+    "bounds_tests",
+    "native_embree_optix_parity",
+    "same_contract_benchmarks",
+    "external_3_ai_parity_consensus",
+    "external_3_ai_benchmark_consensus",
+)
+V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENCE = (
+    ("contract_foundation", "docs/reports/v1_5_1_collect_k_bounded_contract_foundation_2026-05-06.md"),
+    ("native_embree_optix_parity", "docs/reports/three_ai_goal1416_v1_5_1_collect_k_native_parity_consensus_2026-05-06.md"),
+    ("same_contract_benchmarks", "docs/reports/three_ai_goal1417_v1_5_1_collect_k_benchmark_consensus_2026-05-06.md"),
+)
+V1_5_1_COLLECT_K_BOUNDED_READINESS_BLOCKED_ACTIONS = (
+    "public_collect_k_bounded_promotion",
+    "public_speedup_wording",
+    "zero_copy_wording",
+    "release_tag_action",
+    "whole_app_speedup_claim",
+)
+V1_5_1_COLLECT_K_BOUNDED_READINESS_ALLOWED_NEXT_ACTIONS = (
+    "prepare_v1_5_1_release_surface_proposal",
+    "request_explicit_release_gate_review",
+    "continue_python_rtdl_track_hardening",
+)
 
 
 def v1_5_1_collect_k_bounded_contract() -> dict[str, Any]:
@@ -128,6 +153,143 @@ def validate_v1_5_1_collect_k_bounded_contract() -> dict[str, Any]:
         if phrase not in boundary:
             raise ValueError("v1.5.1 collect-k claim boundary is too broad")
     return contract
+
+
+def v1_5_1_collect_k_bounded_readiness_gate() -> dict[str, Any]:
+    """Return the current v1.5.1 readiness gate for bounded collection.
+
+    This gate records that parity and benchmark evidence is now accepted for the
+    measured package, while intentionally keeping all public promotion and claim
+    flags closed until a separate release-surface decision authorizes them.
+    """
+    contract = validate_v1_5_1_collect_k_bounded_contract()
+    gate_results = {
+        "contract_foundation": True,
+        "bounds_tests": True,
+        "native_embree_optix_parity": True,
+        "same_contract_benchmarks": True,
+        "external_3_ai_parity_consensus": True,
+        "external_3_ai_benchmark_consensus": True,
+    }
+    passed_gates = tuple(
+        gate for gate in V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES if gate_results[gate]
+    )
+    failed_gates = tuple(
+        gate for gate in V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES if not gate_results[gate]
+    )
+    evidence_files = dict(V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENCE)
+    return {
+        "status": "promotion_track_evidence_ready_pending_release_surface_decision",
+        "primitive": contract["primitive"],
+        "track": contract["track"],
+        "app_generic": contract["app_generic"],
+        "backend_scope": contract["active_backend_scope"],
+        "required_gates": V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES,
+        "gate_results": gate_results,
+        "passed_gates": passed_gates,
+        "failed_gates": failed_gates,
+        "evidence_files": V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENCE,
+        "contract_foundation_evidence": evidence_files["contract_foundation"],
+        "parity_consensus_evidence": evidence_files["native_embree_optix_parity"],
+        "benchmark_consensus_evidence": evidence_files["same_contract_benchmarks"],
+        "external_review_partners": ("claude", "gemini"),
+        "external_3_ai_consensus_ready": True,
+        "parity_scope": (
+            "Windows Embree optional run",
+            "Linux Embree required-backend run",
+            "NVIDIA pod OptiX required-backend run",
+        ),
+        "benchmark_scope": (
+            "Windows Embree plus Python reference",
+            "Linux Embree required-backend timing",
+            "NVIDIA pod OptiX required-backend timing",
+        ),
+        "stable_promotion_authorized": False,
+        "public_wording_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "zero_copy_wording_authorized": False,
+        "release_tag_action_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "blocked_actions": V1_5_1_COLLECT_K_BOUNDED_READINESS_BLOCKED_ACTIONS,
+        "allowed_next_actions": V1_5_1_COLLECT_K_BOUNDED_READINESS_ALLOWED_NEXT_ACTIONS,
+        "remaining_release_surface_decisions": (
+            "decide whether v1.5.1 exposes COLLECT_K_BOUNDED as public stable or documented experimental",
+            "write user-facing docs only after explicit release-gate approval",
+            "keep speedup and zero-copy wording blocked unless separately reviewed",
+        ),
+        "claim_boundary": (
+            "v1.5.1 COLLECT_K_BOUNDED evidence gates are satisfied for the measured "
+            "Python+RTDL Embree/OptiX package; this does not authorize public primitive "
+            "promotion, speedup wording, zero-copy wording, release tag action, or whole-app claims."
+        ),
+    }
+
+
+def validate_v1_5_1_collect_k_bounded_readiness_gate() -> dict[str, Any]:
+    gate = v1_5_1_collect_k_bounded_readiness_gate()
+    required_fields = (
+        "status",
+        "primitive",
+        "track",
+        "app_generic",
+        "backend_scope",
+        "required_gates",
+        "gate_results",
+        "passed_gates",
+        "failed_gates",
+        "evidence_files",
+        "external_review_partners",
+        "external_3_ai_consensus_ready",
+        "stable_promotion_authorized",
+        "public_wording_authorized",
+        "public_speedup_wording_authorized",
+        "zero_copy_wording_authorized",
+        "release_tag_action_authorized",
+        "whole_app_speedup_claim_authorized",
+        "blocked_actions",
+        "allowed_next_actions",
+        "remaining_release_surface_decisions",
+        "claim_boundary",
+    )
+    for field in required_fields:
+        if field not in gate:
+            raise ValueError(f"missing v1.5.1 collect-k readiness field: {field}")
+    if gate["primitive"] != V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE:
+        raise ValueError("readiness gate must target COLLECT_K_BOUNDED")
+    if tuple(gate["backend_scope"]) != V1_5_1_COLLECT_K_BOUNDED_BACKENDS:
+        raise ValueError("readiness backend scope must remain Embree+OptiX")
+    if tuple(gate["required_gates"]) != V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES:
+        raise ValueError("readiness required gate set mismatch")
+    if tuple(gate["passed_gates"]) != V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES:
+        raise ValueError("all measured v1.5.1 collect-k evidence gates must pass")
+    if tuple(gate["failed_gates"]) != ():
+        raise ValueError("v1.5.1 collect-k readiness gate must have no failed evidence gates")
+    if gate["external_review_partners"] != ("claude", "gemini"):
+        raise ValueError("v1.5.1 collect-k readiness requires Claude and Gemini reviews")
+    if gate["external_3_ai_consensus_ready"] is not True:
+        raise ValueError("v1.5.1 collect-k readiness requires 3-AI consensus")
+    false_flags = (
+        "stable_promotion_authorized",
+        "public_wording_authorized",
+        "public_speedup_wording_authorized",
+        "zero_copy_wording_authorized",
+        "release_tag_action_authorized",
+        "whole_app_speedup_claim_authorized",
+    )
+    for flag in false_flags:
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5.1 collect-k readiness must keep {flag}=False")
+    boundary = str(gate["claim_boundary"])
+    for phrase in (
+        "evidence gates are satisfied",
+        "does not authorize public primitive promotion",
+        "speedup wording",
+        "zero-copy wording",
+        "whole-app claims",
+    ):
+        if phrase not in boundary:
+            raise ValueError("v1.5.1 collect-k readiness claim boundary is incomplete")
+    return gate
 
 
 def _normalize_candidate_rows(

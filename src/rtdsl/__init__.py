@@ -129,10 +129,16 @@ from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_READINESS_ALLOWED_NEXT_ACTIONS
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_READINESS_BLOCKED_ACTIONS
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENCE
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_STATUS
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_contract
+from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_readiness_gate
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_contract
+from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_readiness_gate
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1215,15 +1221,21 @@ __all__ = [
     "V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY",
     "V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY",
     "V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE",
+    "V1_5_1_COLLECT_K_BOUNDED_READINESS_ALLOWED_NEXT_ACTIONS",
+    "V1_5_1_COLLECT_K_BOUNDED_READINESS_BLOCKED_ACTIONS",
+    "V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENCE",
+    "V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES",
     "V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT",
     "V1_5_1_COLLECT_K_BOUNDED_STATUS",
     "v1_5_collect_k_bounded_resolution",
     "v1_5_collect_k_bounded_contracts",
     "v1_5_1_collect_k_bounded_contract",
+    "v1_5_1_collect_k_bounded_readiness_gate",
     "validate_collect_k_bounded_result",
     "validate_v1_5_collect_k_bounded_resolution",
     "validate_v1_5_collect_k_bounded_contracts",
     "validate_v1_5_1_collect_k_bounded_contract",
+    "validate_v1_5_1_collect_k_bounded_readiness_gate",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",
