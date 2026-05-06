@@ -66,6 +66,13 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         self.assertEqual(gate["frozen_before_v2_1_backends"], ("vulkan", "hiprt", "apple_rt"))
         self.assertFalse(set(gate["active_backend_scope"]) & set(gate["frozen_before_v2_1_backends"]))
 
+    def test_gate_requires_inventory_rows_to_be_pod_verified(self):
+        gate = rt.validate_v1_5_internal_readiness_gate()
+
+        self.assertEqual(gate["allowed_inventory_statuses"], ("pod_verified_generic",))
+        self.assertEqual(gate["inventory_status_counts"], {"pod_verified_generic": 14})
+        self.assertEqual(sum(gate["inventory_status_counts"].values()), gate["inventory_rows"])
+
     def test_gate_exposes_remaining_blockers_and_consensus_requirement(self):
         gate = rt.validate_v1_5_internal_readiness_gate()
 
