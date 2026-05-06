@@ -140,6 +140,20 @@ class V15InternalReadinessGateTest(unittest.TestCase):
             with self.subTest(blocked_action=blocked_action):
                 self.assertIn(blocked_action, decision["blocked_next_actions"])
         self.assertEqual(decision["blocked_next_actions"], rt.V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS)
+        self.assertEqual(
+            decision["public_claim_preconditions"],
+            (
+                "exact_subpath_evidence",
+                "fresh_git_pod_validation",
+                "external_3_ai_consensus",
+                "public_wording_review",
+            ),
+        )
+        self.assertEqual(
+            decision["public_claim_preconditions"],
+            rt.V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS,
+        )
+        self.assertFalse(decision["public_claims_ready"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])

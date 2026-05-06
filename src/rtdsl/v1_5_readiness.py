@@ -50,6 +50,12 @@ V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS = (
     "stable_collect_k_bounded_promotion",
     "new_pre_v2_1_backend_implementation",
 )
+V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS = (
+    "exact_subpath_evidence",
+    "fresh_git_pod_validation",
+    "external_3_ai_consensus",
+    "public_wording_review",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -243,6 +249,8 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "total_contract_surfaces": gate["total_contract_surfaces"],
         "allowed_next_actions": V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS,
         "blocked_next_actions": V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS,
+        "public_claim_preconditions": V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS,
+        "public_claims_ready": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -264,7 +272,23 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
     for blocked_action in V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS:
         if blocked_action not in tuple(decision["blocked_next_actions"]):
             raise ValueError(f"missing blocked public/broad next action: {blocked_action}")
+    if (
+        tuple(decision["public_claim_preconditions"])
+        != V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS
+    ):
+        raise ValueError("v1.5 internal readiness decision must preserve public claim preconditions")
+    for precondition in (
+        "exact_subpath_evidence",
+        "fresh_git_pod_validation",
+        "external_3_ai_consensus",
+        "public_wording_review",
+    ):
+        if precondition not in tuple(decision["public_claim_preconditions"]):
+            raise ValueError(f"missing public claim precondition: {precondition}")
+    if decision["public_claims_ready"] is not False:
+        raise ValueError("v1.5 internal readiness decision must not mark public claims ready")
     for flag in (
+        "public_claims_ready",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",
