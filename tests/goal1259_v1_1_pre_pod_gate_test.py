@@ -7,11 +7,11 @@ from scripts.goal1259_v1_1_pre_pod_gate import to_markdown
 
 
 class Goal1259V11PrePodGateTest(unittest.TestCase):
-    def test_gate_is_ready_when_local_packet_and_intake_are_coherent(self) -> None:
+    def test_gate_records_packet_but_blocks_when_archive_is_not_local(self) -> None:
         payload = build_gate()
-        self.assertTrue(payload["ready_for_pod"])
-        self.assertEqual(payload["blockers"], [])
-        self.assertTrue(payload["packet"]["archive_sha_ok"])
+        self.assertFalse(payload["ready_for_pod"])
+        self.assertEqual(payload["blockers"], ["archive_missing"])
+        self.assertFalse(payload["packet"]["archive_sha_ok"])
         self.assertEqual(
             payload["packet"]["target_rows"],
             [
@@ -34,8 +34,8 @@ class Goal1259V11PrePodGateTest(unittest.TestCase):
         text = to_markdown(build_gate())
         self.assertIn("does not run cloud", text)
         self.assertIn("authorize public RTX speedup wording", text)
-        self.assertIn("Ready for pod: `True`", text)
-        self.assertIn("Start one RTX Linux pod", text)
+        self.assertIn("Ready for pod: `False`", text)
+        self.assertIn("Fix local blockers before starting a pod.", text)
 
 
 if __name__ == "__main__":

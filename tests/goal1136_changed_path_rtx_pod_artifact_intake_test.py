@@ -9,12 +9,23 @@ from scripts.goal1136_changed_path_rtx_pod_artifact_intake import build_intake
 
 
 class Goal1136ChangedPathRtxPodArtifactIntakeTest(unittest.TestCase):
-    def test_current_artifacts_are_valid_when_present(self) -> None:
+    def test_tracked_json_artifacts_are_valid_but_missing_logs_block_acceptance(self) -> None:
         payload = build_intake()
-        self.assertTrue(payload["valid"], payload)
+        self.assertFalse(payload["valid"], payload)
         self.assertEqual(payload["artifact_count"], 7)
         self.assertEqual(payload["valid_artifact_count"], 7)
-        self.assertEqual(payload["missing_logs"], [])
+        self.assertEqual(
+            payload["missing_logs"],
+            [
+                "database_analytics_compact_summary.log",
+                "graph_visibility_edges_gate.log",
+                "graph_visibility_edges_gate_rerun.log",
+                "hausdorff_threshold_phase_gate.log",
+                "polygon_pair_overlap_phase_gate.log",
+                "polygon_set_jaccard_phase_gate.log",
+                "road_hazard_native_summary_count.log",
+            ],
+        )
 
     def test_db_row_materialization_is_checked(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

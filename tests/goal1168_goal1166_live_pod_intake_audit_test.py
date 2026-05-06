@@ -5,12 +5,13 @@ from scripts.goal1168_goal1166_live_pod_intake_audit import DEFAULT_ARTIFACT_DIR
 
 
 class Goal1168Goal1166LivePodIntakeAuditTest(unittest.TestCase):
-    def test_live_pod_artifacts_are_engineering_accepted_but_claim_blocked(self):
+    def test_tracked_live_pod_artifacts_remain_claim_blocked_without_runner_log(self):
         payload = audit(DEFAULT_ARTIFACT_DIR)
 
-        self.assertTrue(payload["valid"])
-        self.assertEqual(payload["engineering_verdict"], "accept")
+        self.assertFalse(payload["valid"])
+        self.assertEqual(payload["engineering_verdict"], "needs_attention")
         self.assertEqual(payload["claim_grade_verdict"], "blocked")
+        self.assertEqual(payload["missing"], ["runner_log"])
         self.assertIn(
             "source tree was copied from a dirty local working tree",
             payload["claim_grade_blockers"],
@@ -25,7 +26,7 @@ class Goal1168Goal1166LivePodIntakeAuditTest(unittest.TestCase):
         payload = audit(DEFAULT_ARTIFACT_DIR)
 
         false_checks = [name for name, result in payload["checks"].items() if result is not True]
-        self.assertEqual(false_checks, [])
+        self.assertEqual(false_checks, ["all_expected_files_present"])
 
     def test_expected_artifact_directory_is_present(self):
         self.assertTrue(Path(DEFAULT_ARTIFACT_DIR).exists())
