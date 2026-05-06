@@ -20,12 +20,12 @@ class Goal1063PrePodLocalCompletionAuditTest(unittest.TestCase):
         payload = module.build_audit()
         self.assertTrue(payload["valid"])
         self.assertFalse(payload["pod_ready_now"])
-        self.assertEqual(payload["summary"]["reviewed_public_wording_apps"], 12)
-        self.assertEqual(payload["blocked_apps"], ["graph_analytics", "polygon_pair_overlap_area_rows"])
+        self.assertEqual(payload["summary"]["reviewed_public_wording_apps"], 13)
+        self.assertEqual(payload["blocked_apps"], ["graph_analytics"])
         self.assertEqual(payload["not_reviewed_apps"], ["database_analytics", "polygon_set_jaccard"])
         self.assertEqual(payload["summary"]["blocked_rows_ready_for_one_pod"], 0)
-        self.assertEqual(payload["summary"]["rejected_current_speedup_rows"], 5)
-        self.assertEqual(payload["summary"]["local_only_blockers_before_broader_pod"], 5)
+        self.assertEqual(payload["summary"]["rejected_current_speedup_rows"], 4)
+        self.assertEqual(payload["summary"]["local_only_blockers_before_broader_pod"], 4)
         self.assertIn("stale Goal1062 pod manifest", payload["pod_ready_scope"])
 
     def test_rejected_rows_are_not_marked_pod_ready_without_local_changes(self) -> None:

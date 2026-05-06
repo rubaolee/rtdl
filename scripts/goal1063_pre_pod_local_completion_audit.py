@@ -150,10 +150,10 @@ def build_audit() -> dict[str, Any]:
         "rejected_rows_requiring_local_work": rejected_rows,
         "unreviewed_candidate_rows_requiring_goal1062_pod": stale_candidates,
         "valid": (
-            len(reviewed) == 12
-            and blocked == ["graph_analytics", "polygon_pair_overlap_area_rows"]
+            len(reviewed) == 13
+            and blocked == ["graph_analytics"]
             and len(not_reviewed) == 2
-            and len(rejected_rows) == 5
+            and len(rejected_rows) == 4
             and len(blocked_rows) == 0
             and not pod_ready_now
             and all(row["pod_policy"].startswith("no_pod_until") for row in rejected_rows)

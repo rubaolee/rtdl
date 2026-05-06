@@ -26,8 +26,8 @@ class Goal1025PreCloudRtxAppBatchReadinessTest(unittest.TestCase):
         self.assertEqual(payload["maturity_counts"]["not_nvidia_rt_core_target"], 2)
         self.assertEqual(payload["missing_nvidia_targets"], [])
         self.assertEqual(payload["unexpected_non_nvidia_targets"], [])
-        self.assertEqual(payload["public_wording_blocked_apps"], ["graph_analytics", "polygon_pair_overlap_area_rows"])
-        self.assertEqual(len(payload["public_wording_reviewed_apps"]), 12)
+        self.assertEqual(payload["public_wording_blocked_apps"], ["graph_analytics"])
+        self.assertEqual(len(payload["public_wording_reviewed_apps"]), 13)
         self.assertTrue(payload["has_rtx_hardware_precondition"])
         self.assertTrue(payload["manifest_blocks_speedup_claims"])
 
