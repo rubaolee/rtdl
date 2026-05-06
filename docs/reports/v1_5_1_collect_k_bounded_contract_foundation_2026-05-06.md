@@ -18,6 +18,11 @@ native Embree and OptiX paths should satisfy next.
   `validate_v1_5_1_collect_k_bounded_contract()`.
 - Exported the v1.5.1 contract symbols through `rtdsl`.
 - Added `tests/goal1409_v1_5_1_collect_k_bounded_contract_test.py`.
+- Updated the existing Embree and OptiX polygon-pair collection Python wrappers
+  to expose v1.5.1 app-generic row-buffer metadata while preserving the older
+  `candidate_pairs` and `bounded_candidate_pair_ids` fields for transition
+  compatibility.
+- Added `tests/goal1410_v1_5_1_native_collect_k_row_buffer_surface_test.py`.
 
 ## Contract Shape
 
@@ -62,6 +67,20 @@ Result:
 
 ```text
 Ran 23 tests in 0.030s
+OK
+```
+
+Additional Windows command after wrapper metadata integration:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1409_v1_5_1_collect_k_bounded_contract_test tests.goal1410_v1_5_1_native_collect_k_row_buffer_surface_test tests.goal1315_v1_5_optix_native_candidate_collection_abi_test tests.goal1317_v1_5_embree_native_candidate_collection_abi_test tests.goal1318_v1_5_jaccard_native_collection_routing_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test
+```
+
+Result:
+
+```text
+Ran 28 tests in 0.020s
 OK
 ```
 

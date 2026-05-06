@@ -39,6 +39,7 @@ from .db_reference import PredicateClause
 from .db_reference import normalize_denorm_table
 from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
+from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Point3D as _CanonicalPoint3D
@@ -879,17 +880,30 @@ def collect_polygon_pair_candidates_bounded_embree(
             for index in range(emitted)
         )
     )
+    row_buffer = collect_k_bounded_rows(candidate_pairs, k=int(candidate_capacity), row_width=2)
     return {
         "primitive": "COLLECT_K_BOUNDED",
         "backend": "embree",
+        "app_generic": row_buffer["app_generic"],
         "candidate_pairs": candidate_pairs,
+        "candidate_id_rows": row_buffer["candidate_id_rows"],
         "capacity": int(candidate_capacity),
+        "valid_count": row_buffer["valid_count"],
         "emitted_count": emitted,
         "overflowed": False,
         "complete_candidate_coverage": True,
         "failure_mode": "fail_closed_overflow",
         "overflow_policy": "no_silent_truncation",
         "result_layout": "bounded_candidate_pair_ids",
+        "generic_result_layout": row_buffer["result_layout"],
+        "ordering_policy": row_buffer["ordering_policy"],
+        "duplicate_policy": row_buffer["duplicate_policy"],
+        "partial_result_on_overflow_allowed": row_buffer[
+            "partial_result_on_overflow_allowed"
+        ],
+        "score_or_reduction_after_overflow_allowed": row_buffer[
+            "score_or_reduction_after_overflow_allowed"
+        ],
         "claim_boundary": (
             "native Embree bounded polygon-pair candidate collection only; "
             "Jaccard score reduction and whole-app speedup require separate evidence"
