@@ -8,7 +8,6 @@ The core idea: write app-shaped Python code, lower the traversal-heavy part to
 an RT-capable backend, and keep the remaining app logic explicit.
 
 The current released version is `v1.0`.
-- current released version: `v1.0`
 
 ## Start Fast
 
