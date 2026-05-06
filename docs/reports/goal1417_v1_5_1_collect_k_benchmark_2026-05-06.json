@@ -1,0 +1,208 @@
+{
+  "accepted": true,
+  "artifact": "goal1417_v1_5_1_collect_k_benchmark_2026-05-06",
+  "backend_summary": {
+    "embree": {
+      "fail": 0,
+      "pass": 3,
+      "skipped": 0
+    },
+    "optix": {
+      "fail": 0,
+      "pass": 0,
+      "skipped": 3
+    },
+    "python_reference": {
+      "fail": 0,
+      "pass": 3,
+      "skipped": 0
+    }
+  },
+  "claim_boundary": "Same-contract COLLECT_K_BOUNDED benchmark evidence only; not a public primitive promotion, not a speedup claim, and not a zero-copy claim.",
+  "elapsed_sec": 0.6287954000290483,
+  "environment": {
+    "git_head": "8b8332dd1c8638ef9f539c5ec0fe4ec62d27a4b2",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.9"
+  },
+  "failures": [],
+  "run_scope": {
+    "backends": [
+      "python_reference",
+      "embree",
+      "optix"
+    ],
+    "capacity_policy": "exact capacity equals expected candidate-row count",
+    "copies": [
+      1,
+      16,
+      64
+    ],
+    "repeats": 5,
+    "required_backends": [],
+    "warmups": 1
+  },
+  "scale_results": [
+    {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "candidate_count": 2,
+          "capacity": 2,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.0002449000021442771,
+            "median_sec": 0.00015030003851279616,
+            "min_sec": 0.00013840000610798597,
+            "samples_sec": [
+              0.00018799997633323073,
+              0.0002449000021442771,
+              0.00015030003851279616,
+              0.0001480000209994614,
+              0.00013840000610798597
+            ]
+          }
+        },
+        "optix": {
+          "backend": "optix",
+          "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+          "status": "skipped"
+        },
+        "python_reference": {
+          "backend": "python_reference",
+          "candidate_count": 2,
+          "capacity": 2,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.0005641999887302518,
+            "median_sec": 0.0005573999951593578,
+            "min_sec": 0.000553599966224283,
+            "samples_sec": [
+              0.0005573999951593578,
+              0.0005641999887302518,
+              0.0005579999997280538,
+              0.0005542000290006399,
+              0.000553599966224283
+            ]
+          }
+        }
+      },
+      "candidate_count": 2,
+      "capacity": 2,
+      "copies": 1,
+      "input_and_expected_rows_sec": 0.05152580002322793,
+      "left_polygons": 2,
+      "right_polygons": 3
+    },
+    {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "candidate_count": 32,
+          "capacity": 32,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.0025836999993771315,
+            "median_sec": 0.002452600048854947,
+            "min_sec": 0.0024299999931827188,
+            "samples_sec": [
+              0.00245349999750033,
+              0.002452600048854947,
+              0.0024340000236406922,
+              0.0025836999993771315,
+              0.0024299999931827188
+            ]
+          }
+        },
+        "optix": {
+          "backend": "optix",
+          "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+          "status": "skipped"
+        },
+        "python_reference": {
+          "backend": "python_reference",
+          "candidate_count": 32,
+          "capacity": 32,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.008124899992253631,
+            "median_sec": 0.008106100023724139,
+            "min_sec": 0.008084399974904954,
+            "samples_sec": [
+              0.008084399974904954,
+              0.008124899992253631,
+              0.008111399947665632,
+              0.008106100023724139,
+              0.008104000007733703
+            ]
+          }
+        }
+      },
+      "candidate_count": 32,
+      "capacity": 32,
+      "copies": 16,
+      "input_and_expected_rows_sec": 0.07627479999791831,
+      "left_polygons": 32,
+      "right_polygons": 48
+    },
+    {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "candidate_count": 128,
+          "capacity": 128,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.03132990002632141,
+            "median_sec": 0.031193100032396615,
+            "min_sec": 0.031104499998036772,
+            "samples_sec": [
+              0.031104499998036772,
+              0.03132990002632141,
+              0.031175300013273954,
+              0.031193100032396615,
+              0.031217099982313812
+            ]
+          }
+        },
+        "optix": {
+          "backend": "optix",
+          "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+          "status": "skipped"
+        },
+        "python_reference": {
+          "backend": "python_reference",
+          "candidate_count": 128,
+          "capacity": 128,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.03270169999450445,
+            "median_sec": 0.032613700022920966,
+            "min_sec": 0.03260380000574514,
+            "samples_sec": [
+              0.032613700022920966,
+              0.03268730000127107,
+              0.03270169999450445,
+              0.03260380000574514,
+              0.03260729997418821
+            ]
+          }
+        }
+      },
+      "candidate_count": 128,
+      "capacity": 128,
+      "copies": 64,
+      "input_and_expected_rows_sec": 0.42266370001016185,
+      "left_polygons": 128,
+      "right_polygons": 192
+    }
+  ],
+  "skipped_required": [],
+  "status": "accepted"
+}

@@ -1,0 +1,189 @@
+{
+  "accepted": true,
+  "artifact": "goal1417_v1_5_1_collect_k_benchmark_2026-05-06",
+  "backend_summary": {
+    "embree": {
+      "fail": 0,
+      "pass": 3,
+      "skipped": 0
+    },
+    "python_reference": {
+      "fail": 0,
+      "pass": 3,
+      "skipped": 0
+    }
+  },
+  "claim_boundary": "Same-contract COLLECT_K_BOUNDED benchmark evidence only; not a public primitive promotion, not a speedup claim, and not a zero-copy claim.",
+  "elapsed_sec": 0.164171657001134,
+  "environment": {
+    "git_head": "8b8332dd1c8638ef9f539c5ec0fe4ec62d27a4b2",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "failures": [],
+  "run_scope": {
+    "backends": [
+      "python_reference",
+      "embree"
+    ],
+    "capacity_policy": "exact capacity equals expected candidate-row count",
+    "copies": [
+      1,
+      16,
+      64
+    ],
+    "repeats": 5,
+    "required_backends": [
+      "embree"
+    ],
+    "warmups": 1
+  },
+  "scale_results": [
+    {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "candidate_count": 2,
+          "capacity": 2,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.00010622500121826306,
+            "median_sec": 5.176999911782332e-05,
+            "min_sec": 4.9198999477084726e-05,
+            "samples_sec": [
+              0.00010622500121826306,
+              8.529000115231611e-05,
+              5.176999911782332e-05,
+              5.059400064055808e-05,
+              4.9198999477084726e-05
+            ]
+          }
+        },
+        "python_reference": {
+          "backend": "python_reference",
+          "candidate_count": 2,
+          "capacity": 2,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.0002358150013606064,
+            "median_sec": 0.0001713640012894757,
+            "min_sec": 0.00016944399976637214,
+            "samples_sec": [
+              0.0002358150013606064,
+              0.0001759650003805291,
+              0.0001713640012894757,
+              0.00017038000078173354,
+              0.00016944399976637214
+            ]
+          }
+        }
+      },
+      "candidate_count": 2,
+      "capacity": 2,
+      "copies": 1,
+      "input_and_expected_rows_sec": 0.01180616000056034,
+      "left_polygons": 2,
+      "right_polygons": 3
+    },
+    {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "candidate_count": 32,
+          "capacity": 32,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.0008592769991082605,
+            "median_sec": 0.0008238249974965584,
+            "min_sec": 0.0008218229995691217,
+            "samples_sec": [
+              0.0008303039976453874,
+              0.0008592769991082605,
+              0.0008238249974965584,
+              0.0008218229995691217,
+              0.0008220890013035387
+            ]
+          }
+        },
+        "python_reference": {
+          "backend": "python_reference",
+          "candidate_count": 32,
+          "capacity": 32,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.002595271998870885,
+            "median_sec": 0.0024827710003592074,
+            "min_sec": 0.002451639997161692,
+            "samples_sec": [
+              0.002595271998870885,
+              0.002540292996854987,
+              0.002479058999597328,
+              0.002451639997161692,
+              0.0024827710003592074
+            ]
+          }
+        }
+      },
+      "candidate_count": 32,
+      "capacity": 32,
+      "copies": 16,
+      "input_and_expected_rows_sec": 0.02302287000202341,
+      "left_polygons": 32,
+      "right_polygons": 48
+    },
+    {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "candidate_count": 128,
+          "capacity": 128,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.009835146000114037,
+            "median_sec": 0.0096348780025437,
+            "min_sec": 0.00957491099688923,
+            "samples_sec": [
+              0.0096348780025437,
+              0.009835146000114037,
+              0.009796039998036576,
+              0.00957491099688923,
+              0.00960450799902901
+            ]
+          }
+        },
+        "python_reference": {
+          "backend": "python_reference",
+          "candidate_count": 128,
+          "capacity": 128,
+          "mismatches": [],
+          "status": "pass",
+          "timing": {
+            "max_sec": 0.00974222200238728,
+            "median_sec": 0.009666137000749586,
+            "min_sec": 0.009653739998611854,
+            "samples_sec": [
+              0.009664391000114847,
+              0.009666137000749586,
+              0.009653739998611854,
+              0.009677519999968354,
+              0.00974222200238728
+            ]
+          }
+        }
+      },
+      "candidate_count": 128,
+      "capacity": 128,
+      "copies": 64,
+      "input_and_expected_rows_sec": 0.12697097400086932,
+      "left_polygons": 128,
+      "right_polygons": 192
+    }
+  ],
+  "skipped_required": [],
+  "status": "accepted"
+}
