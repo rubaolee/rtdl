@@ -61,6 +61,12 @@ class Goal1307V15DbCompactSummaryGenericMigrationTest(unittest.TestCase):
         )
         self.assertTrue(all(contract["dtype"] == "int64" for contract in contracts))
         self.assertTrue(all(contract["materialization_free"] for contract in contracts))
+        for contract in contracts:
+            with self.subTest(operation=contract["operation"]):
+                self.assertIn("not SQL", contract["claim_boundary"])
+                self.assertIn("DBMS behavior", contract["claim_boundary"])
+                self.assertIn("row output", contract["claim_boundary"])
+                self.assertIn("public speedup", contract["claim_boundary"])
 
     def test_generic_db_compact_summary_batch_metadata(self) -> None:
         dataset = _FakePreparedDbDataset()
@@ -101,6 +107,9 @@ class Goal1307V15DbCompactSummaryGenericMigrationTest(unittest.TestCase):
             )
         )
         self.assertTrue(all(contract["materialization_free"] for contract in result["summary_contracts"]))
+        self.assertTrue(
+            all("public speedup" in contract["claim_boundary"] for contract in result["summary_contracts"])
+        )
         self.assertEqual(result["result_layout"], "aggregate_scan_count_and_grouped_integer_maps")
         self.assertTrue(result["materialization_free"])
         self.assertEqual(dataset.compact_summary_batch_calls, 1)

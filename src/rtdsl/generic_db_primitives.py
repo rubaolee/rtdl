@@ -19,18 +19,32 @@ _DB_SUMMARY_CONTRACT_BY_OPERATION = {
         "result_layout": "scalar_int64_hit_count",
         "dtype": "int64",
         "materialization_free": True,
+        "claim_boundary": (
+            "DB_COMPACT_SUMMARY conjunctive scan count only over an application-owned "
+            "denormalized table; not SQL, DBMS behavior, row output, or public speedup wording."
+        ),
     },
     "grouped_count_summary": {
         "summary_primitive": "REDUCE_INT(COUNT)",
         "result_layout": "grouped_int64_count_map",
         "dtype": "int64",
         "materialization_free": True,
+        "claim_boundary": (
+            "DB_COMPACT_SUMMARY grouped integer count only over an application-owned "
+            "denormalized table; not SQL GROUP BY semantics, DBMS behavior, row output, "
+            "or public speedup wording."
+        ),
     },
     "grouped_sum_summary": {
         "summary_primitive": "REDUCE_INT(SUM)",
         "result_layout": "grouped_int64_sum_map",
         "dtype": "int64",
         "materialization_free": True,
+        "claim_boundary": (
+            "DB_COMPACT_SUMMARY grouped integer sum only over an application-owned "
+            "denormalized table; not SQL aggregation semantics, DBMS behavior, row output, "
+            "or public speedup wording."
+        ),
     },
 }
 
@@ -54,6 +68,7 @@ def validate_v1_5_db_compact_summary_contracts() -> tuple[dict[str, Any], ...]:
         "result_layout",
         "dtype",
         "materialization_free",
+        "claim_boundary",
     )
     valid_operations = {
         "conjunctive_scan_count",
@@ -85,6 +100,10 @@ def validate_v1_5_db_compact_summary_contracts() -> tuple[dict[str, Any], ...]:
             raise ValueError("DB compact-summary contracts must use int64 result dtype")
         if contract["materialization_free"] is not True:
             raise ValueError("DB compact-summary contracts must be materialization-free")
+        boundary = str(contract["claim_boundary"])
+        for required_boundary in ("not SQL", "DBMS behavior", "row output", "public speedup"):
+            if required_boundary not in boundary:
+                raise ValueError("DB compact-summary claim boundary must block broad DB/public claims")
     if seen_operations != valid_operations:
         missing = ", ".join(sorted(valid_operations - seen_operations))
         raise ValueError(f"missing DB compact-summary operation contract: {missing}")
