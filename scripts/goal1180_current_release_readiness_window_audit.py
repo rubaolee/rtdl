@@ -47,13 +47,13 @@ CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "docs/v1_0_rtx_app_status.md": (
         "Goal1177",
         "Goal1177 does not add a new reviewed public wording row",
-        "reviewed public RTX sub-path wording rows: `12`",
+        "reviewed public RTX sub-path wording rows: `13`",
         "Goal1208 adds exactly one reviewed public wording row",
     ),
     "docs/app_engine_support_matrix.md": (
         "Goal1177",
         "Goal1177 and Goal1184 do not add any new reviewed public",
-        "Current reviewed public wording rows after Goal1224: `12`",
+        "Current reviewed public wording rows after Goal1263: `13`",
     ),
     "src/rtdsl/app_support_matrix.py": (
         "Goal1177",

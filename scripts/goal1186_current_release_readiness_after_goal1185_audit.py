@@ -54,7 +54,7 @@ CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "Goal1184",
         "newer Goal1182 RTX A4500 batch accepted for external-review input (Goal1184): `True`",
         "Goal1184 does not add a new reviewed public wording row",
-        "reviewed public RTX sub-path wording rows: `12`",
+        "reviewed public RTX sub-path wording rows: `13`",
         "Goal1208 adds exactly one reviewed public wording row",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
@@ -62,7 +62,7 @@ CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "Goal1184",
         "Goal1182 RTX A4500",
         "Goal1177 and Goal1184 do not add any new reviewed public",
-        "Current reviewed public wording rows after Goal1224: `12`",
+        "Current reviewed public wording rows after Goal1263: `13`",
     ),
     "src/rtdsl/app_support_matrix.py": (
         "Goal1184",
@@ -84,7 +84,7 @@ GUARDRAIL_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     ),
     "tests/goal1185_goal1184_public_status_sync_audit_test.py": (
         "Goal1184 public speedup",
-        "reviewed public RTX sub-path wording rows: `12`",
+        "reviewed public RTX sub-path wording rows: `13`",
         "public_wording_row_count_expected",
     ),
 }

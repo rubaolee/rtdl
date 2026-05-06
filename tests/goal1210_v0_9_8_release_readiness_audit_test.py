@@ -19,12 +19,12 @@ class Goal1210V098ReleaseReadinessAuditTest(unittest.TestCase):
         self.assertTrue(payload["valid"], payload)
         self.assertEqual(payload["failing_goal_count"], 0)
         self.assertEqual(payload["failing_surface_doc_count"], 0)
-        self.assertEqual(payload["public_wording_row_count_expected"], 12)
+        self.assertEqual(payload["public_wording_row_count_expected"], 13)
         self.assertEqual(
             payload["new_public_wording_rows"],
             ["road_hazard_screening / prepared_native_compact_summary_40k"],
         )
-        self.assertEqual(payload["blocked_public_speedup_wording"], ["graph_analytics", "polygon_pair_overlap_area_rows"])
+        self.assertEqual(payload["blocked_public_speedup_wording"], ["graph_analytics"])
 
     def test_goal1204_to_goal1209_have_consensus_rows(self) -> None:
         payload = goal1210.build_audit()
@@ -43,7 +43,7 @@ class Goal1210V098ReleaseReadinessAuditTest(unittest.TestCase):
             for row in payload["surface_rows"]
             if (ROOT / row["path"]).exists()
         )
-        self.assertIn("reviewed public RTX sub-path wording rows: `12`", checked_text)
+        self.assertIn("reviewed public RTX sub-path wording rows: `13`", checked_text)
         self.assertIn("Goal1208 adds exactly one reviewed public wording row", checked_text)
         self.assertIn("road_hazard_screening / prepared_native_compact_summary_40k", checked_text)
         self.assertNotIn("reviewed public RTX sub-path wording rows: `10`", checked_text)
@@ -74,8 +74,8 @@ class Goal1210V098ReleaseReadinessAuditTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertTrue(payload["valid"])
-            self.assertIn("expected reviewed public wording rows: `12`", markdown)
-            self.assertIn("graph/polygon-pair public speedup wording: `blocked`", markdown)
+            self.assertIn("expected reviewed public wording rows: `13`", markdown)
+            self.assertIn("graph public speedup wording: `blocked`", markdown)
 
 
 if __name__ == "__main__":

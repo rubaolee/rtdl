@@ -52,7 +52,7 @@ CURRENT_PUBLIC_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "v1.0 RTX App Status",
     ),
     "docs/app_engine_support_matrix.md": (
-        "Current reviewed public wording rows after Goal1224: `12`",
+        "Current reviewed public wording rows after Goal1263: `13`",
         "Goal1208 adds exactly one reviewed public wording row",
         "Default app behavior, full GIS/routing, row output, Python orchestration",
     ),
@@ -77,10 +77,11 @@ CURRENT_PUBLIC_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "outside the claim",
     ),
     "docs/v1_0_rtx_app_status.md": (
-        "reviewed public RTX sub-path wording rows: `12`",
+        "reviewed public RTX sub-path wording rows: `13`",
         "road_hazard_screening / prepared_native_compact_summary_40k",
         "Goal1208 adds exactly one reviewed public wording row",
-        "Goal1224 resolves the remaining graph, polygon-pair, and Hausdorff rows",
+        "Goal1224 resolves graph and Hausdorff; Goal1263 promotes bounded polygon-pair wording",
+        "Graph remains blocked",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
     "src/rtdsl/app_support_matrix.py": (
@@ -182,15 +183,15 @@ def build_audit() -> dict[str, Any]:
         "goal_rows": goal_rows,
         "surface_rows": surface_rows,
         "recorded_checks": list(RECORDED_CHECKS),
-        "public_wording_row_count_expected": 12,
+        "public_wording_row_count_expected": 13,
         "new_public_wording_rows": ["road_hazard_screening / prepared_native_compact_summary_40k"],
-        "blocked_public_speedup_wording": ["graph_analytics", "polygon_pair_overlap_area_rows"],
+        "blocked_public_speedup_wording": ["graph_analytics"],
         "boundary": (
             "Goal1210 is a historical release-readiness evidence audit after Goal1209, "
-            "now run against the current post-Goal1224 public surface. It confirms "
+            "now run against the current post-Goal1263 public surface. It confirms "
             "Goal1204-Goal1209 have external-AI consensus trails, road-hazard wording "
-            "remains bounded, and the current docs use the 12-row Goal1224 wording "
-            "state without tagging or releasing v0.9.8."
+            "remains bounded, and the current docs use the 13-row Goal1263 wording "
+            "state with graph still blocked and without tagging or releasing v0.9.8."
         ),
     }
 
@@ -212,7 +213,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- public surface failures: `{payload['failing_surface_doc_count']}`",
         f"- expected reviewed public wording rows: `{payload['public_wording_row_count_expected']}`",
         f"- new public wording row: `{payload['new_public_wording_rows'][0]}`",
-        "- graph/polygon-pair public speedup wording: `blocked`",
+        "- graph public speedup wording: `blocked`",
         "",
         "## Goal Closure Rows",
         "",

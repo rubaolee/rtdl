@@ -43,14 +43,14 @@ DOC_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "Goal1177",
         "external-review input",
         "Goal1177 does not add a new reviewed public wording row",
-        "reviewed public RTX sub-path wording rows: `12`",
+        "reviewed public RTX sub-path wording rows: `13`",
         "Goal1208 adds exactly one reviewed public wording row",
     ),
     "docs/app_engine_support_matrix.md": (
         "Goal1177",
         "external-review input only",
         "Goal1177 and Goal1184 do not add any new reviewed public",
-        "Current reviewed public wording rows after Goal1224: `12`",
+        "Current reviewed public wording rows after Goal1263: `13`",
     ),
 }
 
@@ -59,7 +59,7 @@ FORBIDDEN_PHRASES: tuple[str, ...] = (
     "Goal1177 authorized public",
     "Goal1177 public speedup",
     "Goal1177 adds public speedup",
-    "Goal1177 reviewed public RTX sub-path wording rows: `12`",
+    "Goal1177 reviewed public RTX sub-path wording rows: `13`",
 )
 
 
@@ -90,7 +90,7 @@ def build_audit() -> dict[str, Any]:
         "passing_doc_count": len(rows) - len(failing),
         "failing_doc_count": len(failing),
         "rows": rows,
-        "public_wording_row_count_expected": 12,
+        "public_wording_row_count_expected": 13,
         "boundary": (
             "This audit checks public-facing docs after Goal1177. Goal1177 may be "
             "described only as recovered clean-source RTX evidence for external-review "

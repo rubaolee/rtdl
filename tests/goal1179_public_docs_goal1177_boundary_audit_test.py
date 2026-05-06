@@ -18,7 +18,7 @@ class Goal1179PublicDocsGoal1177BoundaryAuditTest(unittest.TestCase):
         payload = goal1179.build_audit()
         self.assertTrue(payload["valid"], payload["rows"])
         self.assertEqual(payload["failing_doc_count"], 0)
-        self.assertEqual(payload["public_wording_row_count_expected"], 12)
+        self.assertEqual(payload["public_wording_row_count_expected"], 13)
         by_path = {row["path"]: row for row in payload["rows"]}
         self.assertNotIn("README.md", by_path)
         self.assertEqual(by_path["docs/quick_tutorial.md"]["status"], "ok")
@@ -36,7 +36,7 @@ class Goal1179PublicDocsGoal1177BoundaryAuditTest(unittest.TestCase):
         self.assertIn("does not add a new reviewed public wording row", combined)
         self.assertNotIn("Goal1177 authorizes public", combined)
         self.assertNotIn("Goal1177 public speedup", combined)
-        self.assertIn("reviewed public RTX sub-path wording rows: `12`", combined)
+        self.assertIn("reviewed public RTX sub-path wording rows: `13`", combined)
         self.assertIn("Goal1208 adds exactly one reviewed public wording row", combined)
 
     def test_cli_writes_outputs(self) -> None:
@@ -61,7 +61,7 @@ class Goal1179PublicDocsGoal1177BoundaryAuditTest(unittest.TestCase):
             markdown = output_md.read_text(encoding="utf-8")
             self.assertTrue(payload["valid"])
             self.assertIn("Goal1179 Public Docs Goal1177 Boundary Audit", markdown)
-            self.assertIn("expected reviewed public wording rows: `12`", markdown)
+            self.assertIn("expected reviewed public wording rows: `13`", markdown)
 
 
 if __name__ == "__main__":

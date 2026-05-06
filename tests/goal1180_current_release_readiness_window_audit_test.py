@@ -29,7 +29,7 @@ class Goal1180CurrentReleaseReadinessWindowAuditTest(unittest.TestCase):
             for row in payload["surface_rows"]
             if (ROOT / row["path"]).exists()
         )
-        self.assertIn("reviewed public RTX sub-path wording rows: `12`", checked_text)
+        self.assertIn("reviewed public RTX sub-path wording rows: `13`", checked_text)
         self.assertIn("Goal1208 adds exactly one reviewed public wording row", checked_text)
         self.assertIn("Goal1177", checked_text)
         self.assertNotIn("Goal1177 authorizes public", checked_text)
