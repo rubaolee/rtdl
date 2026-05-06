@@ -51,4 +51,28 @@ Result:
 
 ## Pod Validation
 
-Pending after the source commit is pushed and the pod resets from `origin/main`.
+Pod SSH:
+
+```bash
+ssh root@213.173.108.215 -p 14800 -i ~/.ssh/id_ed25519_rtdl_codex
+```
+
+Validation command after resetting from Git:
+
+```bash
+cd /root/rtdl_python_only
+git fetch origin main
+git reset --hard origin/main
+git rev-parse HEAD
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal877_polygon_overlap_optix_phase_profiler_test \
+  tests.goal948_polygon_native_continuation_test \
+  tests.goal938_public_rtx_wording_sync_test \
+  tests.goal1044_public_rtx_cloud_policy_sync_test \
+  tests.goal947_v1_rtx_app_status_page_test
+```
+
+Result:
+
+- Commit: `c22f86e1bd526690a60a0e2902ca67a842f4d869`.
+- Targeted pod tests: 31 tests OK in 0.786s.
