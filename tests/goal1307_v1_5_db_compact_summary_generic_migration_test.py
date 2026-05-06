@@ -60,6 +60,24 @@ class Goal1307V15DbCompactSummaryGenericMigrationTest(unittest.TestCase):
             result["summary_primitives"],
             ("COUNT_HITS", "REDUCE_INT(COUNT)", "REDUCE_INT(SUM)"),
         )
+        self.assertEqual(
+            tuple(contract["summary_primitive"] for contract in result["summary_contracts"]),
+            result["summary_primitives"],
+        )
+        self.assertEqual(
+            tuple(contract["result_layout"] for contract in result["summary_contracts"]),
+            (
+                "scalar_int64_hit_count",
+                "grouped_int64_count_map",
+                "grouped_int64_sum_map",
+            ),
+        )
+        self.assertTrue(
+            set(contract["result_layout"] for contract in result["summary_contracts"]).issubset(
+                set(rt.V1_5_DB_COMPACT_SUMMARY_RESULT_LAYOUTS)
+            )
+        )
+        self.assertTrue(all(contract["materialization_free"] for contract in result["summary_contracts"]))
         self.assertEqual(result["result_layout"], "aggregate_scan_count_and_grouped_integer_maps")
         self.assertTrue(result["materialization_free"])
         self.assertEqual(dataset.compact_summary_batch_calls, 1)

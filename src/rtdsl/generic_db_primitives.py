@@ -6,6 +6,33 @@ from typing import Any
 
 ACTIVE_V1_5_GENERIC_DB_BACKENDS = ("embree", "optix")
 FROZEN_BEFORE_V2_1_DB_BACKENDS = ("vulkan", "hiprt", "apple_rt")
+V1_5_DB_COMPACT_SUMMARY_RESULT_LAYOUTS = (
+    "scalar_int64_hit_count",
+    "grouped_int64_count_map",
+    "grouped_int64_sum_map",
+)
+
+
+_DB_SUMMARY_CONTRACT_BY_OPERATION = {
+    "conjunctive_scan_count": {
+        "summary_primitive": "COUNT_HITS",
+        "result_layout": "scalar_int64_hit_count",
+        "dtype": "int64",
+        "materialization_free": True,
+    },
+    "grouped_count_summary": {
+        "summary_primitive": "REDUCE_INT(COUNT)",
+        "result_layout": "grouped_int64_count_map",
+        "dtype": "int64",
+        "materialization_free": True,
+    },
+    "grouped_sum_summary": {
+        "summary_primitive": "REDUCE_INT(SUM)",
+        "result_layout": "grouped_int64_sum_map",
+        "dtype": "int64",
+        "materialization_free": True,
+    },
+}
 
 
 def _validate_backend(backend: str) -> str:
@@ -59,6 +86,21 @@ def _summary_primitives(requests: tuple[dict[str, Any], ...]) -> tuple[str, ...]
     return tuple(primitives)
 
 
+def _summary_contracts(requests: tuple[dict[str, Any], ...]) -> tuple[dict[str, Any], ...]:
+    contracts = []
+    for request in requests:
+        operation = str(request["operation"])
+        contract = _DB_SUMMARY_CONTRACT_BY_OPERATION[operation]
+        contracts.append(
+            {
+                "name": str(request["name"]),
+                "operation": operation,
+                **contract,
+            }
+        )
+    return tuple(contracts)
+
+
 def run_generic_db_compact_summary_batch(
     *,
     prepared_dataset: Any,
@@ -80,9 +122,11 @@ def run_generic_db_compact_summary_batch(
         else {}
     )
     summary_primitives = _summary_primitives(normalized_requests)
+    summary_contracts = _summary_contracts(normalized_requests)
     return {
         "primitive": "DB_COMPACT_SUMMARY",
         "summary_primitives": summary_primitives,
+        "summary_contracts": summary_contracts,
         "backend": normalized_backend,
         "prepared": True,
         "materialization_free": True,

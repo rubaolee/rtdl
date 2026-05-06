@@ -464,6 +464,7 @@ from .generic_primitives import run_generic_ray_triangle_any_hit_count
 from .generic_db_primitives import ACTIVE_V1_5_GENERIC_DB_BACKENDS
 from .generic_db_primitives import FROZEN_BEFORE_V2_1_DB_BACKENDS
 from .generic_db_primitives import run_generic_db_compact_summary_batch
+from .generic_db_primitives import V1_5_DB_COMPACT_SUMMARY_RESULT_LAYOUTS
 from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL
 from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL
 from .float_reduction_contracts import v1_5_float_sum_reduction_contracts
@@ -747,6 +748,7 @@ __all__ = [
     "ACTIVE_V1_5_GENERIC_DB_BACKENDS",
     "FROZEN_BEFORE_V2_1_DB_BACKENDS",
     "run_generic_db_compact_summary_batch",
+    "V1_5_DB_COMPACT_SUMMARY_RESULT_LAYOUTS",
     "V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL",
     "V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL",
     "v1_5_float_sum_reduction_contracts",
