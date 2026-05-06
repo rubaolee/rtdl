@@ -33,4 +33,29 @@ pair and polygon-set Jaccard wording no longer hard-codes the stale
 - `git diff --check`
   - clean.
 
-Pod validation is pending for the current commit after push.
+## Pod Validation
+
+Pod command supplied by user:
+`ssh root@213.173.108.215 -p 14800 -i ~/.ssh/id_rdtl_ed25519`.
+
+Local key note: `/Users/rl2025/.ssh/id_rdtl_ed25519` was not present, so the
+pod was accessed with the existing RTDL Codex key
+`/Users/rl2025/.ssh/id_ed25519_rtdl_codex`.
+
+Pod source state:
+
+- cloned from GitHub `https://github.com/rubaolee/rtdl.git`
+- commit: `e533c4e1a4bce0e7df6d2c6a30b116cae98ca202`
+
+Pod validation:
+
+- focused doc/matrix gate:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal687_app_engine_support_matrix_test tests.goal938_public_rtx_wording_sync_test tests.goal958_public_app_native_continuation_schema_test tests.goal821_public_docs_require_rt_core_test tests.goal1265_polygon_feature_doc_contract_test`
+  - 23 tests OK.
+- first `goal13*` sweep failed because the fresh pod lacked `libgeos_c`
+  (`/usr/bin/ld: cannot find -lgeos_c`), which is required by the native
+  polygon oracle.
+- installed pod dependencies with `apt-get install -y libgeos-dev pkg-config`.
+- reran `goal13*` sweep:
+  `PYTHONPATH=src:. python3 -m unittest $(find tests -maxdepth 1 -name 'goal13*_test.py' -exec basename {} .py \; | sed 's/^/tests./')`
+  - 76 tests OK.
