@@ -129,6 +129,7 @@ class V15InternalReadinessGateTest(unittest.TestCase):
                 "request_external_review_before_public_claims",
             ),
         )
+        self.assertEqual(decision["allowed_next_actions"], rt.V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS)
         for blocked_action in (
             "public_v1_5_release_wording",
             "public_speedup_wording",

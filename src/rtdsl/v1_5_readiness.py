@@ -254,6 +254,8 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
     decision = v1_5_internal_readiness_decision()
     if decision["decision"] != "continue_internal_non_public_v1_5_hardening":
         raise ValueError("invalid v1.5 internal readiness decision")
+    if tuple(decision["allowed_next_actions"]) != V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS:
+        raise ValueError("v1.5 internal readiness decision must preserve allowed next actions")
     for required_action in V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS:
         if required_action not in tuple(decision["allowed_next_actions"]):
             raise ValueError(f"missing allowed internal next action: {required_action}")
