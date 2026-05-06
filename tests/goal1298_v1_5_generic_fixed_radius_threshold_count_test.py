@@ -166,6 +166,7 @@ class Goal1298V15GenericFixedRadiusThresholdCountTest(unittest.TestCase):
         self.assertEqual(rows_result["threshold_reached_count"], 1)
         self.assertEqual(rows_result["scalar_reduction"]["summary_primitive"], "REDUCE_INT(COUNT)")
         self.assertEqual(scalar_result["threshold_reached_count"], 1)
+        self.assertEqual(scalar_result["scalar_reduction"]["summary_primitive"], "REDUCE_INT(COUNT)")
         self.assertEqual(scalar_result["query_batch_index"], 2)
         self.assertEqual(prepared.run_calls, 2)
 

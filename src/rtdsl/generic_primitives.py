@@ -151,6 +151,14 @@ def _threshold_reached_scalar_summary(rows: Any) -> dict[str, Any]:
     return run_generic_scalar_reduction(threshold_rows, summary_primitive="REDUCE_INT(COUNT)")
 
 
+def _scalar_reduction_metadata(scalar_summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: value
+        for key, value in scalar_summary.items()
+        if key not in {"result", "row_count"}
+    }
+
+
 def run_generic_ray_triangle_any_hit(
     rays: tuple[Ray2D | Ray3D, ...],
     triangles: tuple[Triangle | Triangle3D, ...],
@@ -207,11 +215,7 @@ def run_generic_ray_triangle_any_hit_count(
         "row_count": len(rows),
         "hit_count": scalar_summary["result"],
         "result_layout": "aggregate_any_hit_count",
-        "scalar_reduction": {
-            key: value
-            for key, value in scalar_summary.items()
-            if key not in {"result", "row_count"}
-        },
+        "scalar_reduction": _scalar_reduction_metadata(scalar_summary),
         "claim_boundary": (
             "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; "
             "no app-specific visibility, graph, DB, polygon, or public speedup claim."
@@ -277,11 +281,7 @@ def run_generic_fixed_radius_count_threshold_2d(
         "row_count": len(rows),
         "threshold_reached_count": scalar_summary["result"],
         "rows": rows,
-        "scalar_reduction": {
-            key: value
-            for key, value in scalar_summary.items()
-            if key not in {"result", "row_count"}
-        },
+        "scalar_reduction": _scalar_reduction_metadata(scalar_summary),
         "run_phases": {
             "query_fixed_radius_count_threshold_sec": query_sec,
         },
@@ -436,7 +436,10 @@ class GenericPreparedRayTriangleAnyHitScene:
                     query_times.append(time.perf_counter() - query_start)
 
         query_sec = sum(query_times)
-        threshold_reached_count = sum(1 for flag in group_flags if flag)
+        scalar_summary = run_generic_scalar_reduction(
+            tuple({"threshold_reached": int(flag)} for flag in group_flags if flag),
+            summary_primitive="REDUCE_INT(COUNT)",
+        )
         self.query_batch_count += 1
         return {
             "primitive": "ANY_HIT",
@@ -450,7 +453,8 @@ class GenericPreparedRayTriangleAnyHitScene:
             "group_count": int(group_count),
             "threshold": int(threshold),
             "group_flags": group_flags,
-            "threshold_reached_count": threshold_reached_count,
+            "threshold_reached_count": scalar_summary["result"],
+            "scalar_reduction": _scalar_reduction_metadata(scalar_summary),
             "run_phases": {
                 "scene_prepare_sec": self.scene_prepare_sec,
                 "scene_prepare_sec_this_batch": 0.0,
@@ -556,11 +560,7 @@ class GenericPreparedFixedRadiusCountThreshold2D:
             "row_count": len(rows),
             "threshold_reached_count": scalar_summary["result"],
             "rows": rows,
-            "scalar_reduction": {
-                key: value
-                for key, value in scalar_summary.items()
-                if key not in {"result", "row_count"}
-            },
+            "scalar_reduction": _scalar_reduction_metadata(scalar_summary),
             "run_phases": {
                 "scene_prepare_sec": self.scene_prepare_sec,
                 "scene_prepare_sec_this_batch": 0.0,
@@ -591,12 +591,14 @@ class GenericPreparedFixedRadiusCountThreshold2D:
             threshold_reached_count = int(
                 self._prepared_scene.count_threshold_reached(query_points, radius=radius, threshold=threshold)
             )
+            scalar_summary = None
         else:
             rows = self._prepared_scene.run(query_points, radius=radius, threshold=threshold)
-            threshold_reached_count = sum(int(row["threshold_reached"]) for row in rows)
+            scalar_summary = _threshold_reached_scalar_summary(rows)
+            threshold_reached_count = scalar_summary["result"]
         query_sec = time.perf_counter() - query_start
         self.query_batch_count += 1
-        return {
+        result = {
             "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
             "summary_primitive": "REDUCE_INT(COUNT)",
             "backend": self.backend,
@@ -617,6 +619,9 @@ class GenericPreparedFixedRadiusCountThreshold2D:
                 "not app-specific ANN, DBSCAN, coverage, Hausdorff, Barnes-Hut, or public speedup wording."
             ),
         }
+        if scalar_summary is not None:
+            result["scalar_reduction"] = _scalar_reduction_metadata(scalar_summary)
+        return result
 
     def close(self) -> None:
         if self._closed:

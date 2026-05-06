@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from unittest import mock
 
 import rtdsl as rt
 from examples import rtdl_robot_collision_screening_app as robot
@@ -51,7 +52,35 @@ class Goal1306V15RobotPoseFlagsGenericMigrationTest(unittest.TestCase):
         self.assertEqual(result["result_layout"], "grouped_threshold_bool")
         self.assertEqual(result["group_flags"], (True, False, True))
         self.assertEqual(result["threshold_reached_count"], 2)
+        self.assertEqual(result["scalar_reduction"]["summary_primitive"], "REDUCE_INT(COUNT)")
+        self.assertEqual(result["scalar_reduction"]["result_layout"], "scalar_int64_count")
+        self.assertEqual(result["scalar_reduction"]["dtype"], "int64")
+        self.assertIsNone(result["scalar_reduction"]["input_field"])
         self.assertEqual(prepared_scene.query_count, 2)
+
+    def test_grouped_count_threshold_bool_uses_scalar_reduction_surface(self) -> None:
+        prepared_scene = _PreparedScene((True, False, True))
+
+        with mock.patch(
+            "rtdsl.generic_primitives.run_generic_scalar_reduction",
+            wraps=rt.run_generic_scalar_reduction,
+        ) as scalar_reduction:
+            result = rt.run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool(
+                triangles=("triangles",),
+                rays=("rays",),
+                group_indices=(0, 0, 1, 2),
+                group_count=3,
+                backend="optix",
+                prepare_scene=lambda _triangles: prepared_scene,
+                prepare_rays=lambda _rays: _PreparedRays(),
+                prepare_group_indices=None,
+            )
+
+        scalar_reduction.assert_called_once_with(
+            ({"threshold_reached": 1}, {"threshold_reached": 1}),
+            summary_primitive="REDUCE_INT(COUNT)",
+        )
+        self.assertEqual(result["threshold_reached_count"], 2)
 
     def test_robot_prepared_pose_flags_uses_generic_metadata(self) -> None:
         original = robot.rt.run_generic_prepared_ray_triangle_any_hit_grouped_count_threshold_bool
