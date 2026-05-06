@@ -39,4 +39,13 @@ intentionally unchanged.
 
 ## Pod Validation
 
-Pending after push.
+Pod source state:
+
+- reset `/root/rtdl_python_only` from GitHub `origin/main`
+- commit: `1b92375e7d5be27aa4cfae254360857f6b8f12f6`
+
+Pod validation:
+
+- polygon runtime metadata focused gate:
+  `PYTHONPATH=src:. python3 -m unittest tests.goal948_polygon_native_continuation_test tests.goal1309_v1_5_polygon_pair_generic_area_summary_test tests.goal1321_v1_5_native_polygon_pair_area_summary_abi_test tests.goal938_public_rtx_wording_sync_test`
+  - 18 tests OK.
