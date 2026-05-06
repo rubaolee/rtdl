@@ -527,6 +527,13 @@ from .v1_5_benchmark_evidence import v1_5_benchmark_evidence_matrix
 from .v1_5_benchmark_evidence import v1_5_benchmark_evidence_summary
 from .v1_5_benchmark_evidence import validate_v1_5_benchmark_evidence_matrix
 from .v1_5_benchmark_evidence import validate_v1_5_benchmark_evidence_summary
+from .v1_5_release_public_wording import V1_5_RELEASE_PUBLIC_WORDING_ALLOWED_STATEMENT
+from .v1_5_release_public_wording import V1_5_RELEASE_PUBLIC_WORDING_FORBIDDEN_PHRASES
+from .v1_5_release_public_wording import V1_5_RELEASE_PUBLIC_WORDING_REQUIRED_DOCS
+from .v1_5_release_public_wording import V1_5_RELEASE_PUBLIC_WORDING_REQUIRED_PHRASES
+from .v1_5_release_public_wording import V1_5_RELEASE_PUBLIC_WORDING_STATUS
+from .v1_5_release_public_wording import v1_5_release_public_wording_gate
+from .v1_5_release_public_wording import validate_v1_5_release_public_wording_gate
 from .v1_5_readiness import V1_5_STANDALONE_PARTNER_TRACK
 from .v1_5_readiness import V1_5_1_COLLECT_K_BOUNDED_TRACK
 from .v1_5_readiness import V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS
@@ -872,6 +879,13 @@ __all__ = [
     "v1_5_benchmark_evidence_summary",
     "validate_v1_5_benchmark_evidence_matrix",
     "validate_v1_5_benchmark_evidence_summary",
+    "V1_5_RELEASE_PUBLIC_WORDING_ALLOWED_STATEMENT",
+    "V1_5_RELEASE_PUBLIC_WORDING_FORBIDDEN_PHRASES",
+    "V1_5_RELEASE_PUBLIC_WORDING_REQUIRED_DOCS",
+    "V1_5_RELEASE_PUBLIC_WORDING_REQUIRED_PHRASES",
+    "V1_5_RELEASE_PUBLIC_WORDING_STATUS",
+    "v1_5_release_public_wording_gate",
+    "validate_v1_5_release_public_wording_gate",
     "V1_5_STANDALONE_PARTNER_TRACK",
     "V1_5_1_COLLECT_K_BOUNDED_TRACK",
     "V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS",

@@ -28,6 +28,7 @@ installation metadata.
 - [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Application Catalog](docs/application_catalog.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
+- [v1.5 Release-Candidate Package](docs/release_reports/v1_5/README.md)
 - [v1.1 OptiX/Embree Status](docs/v1_1_optix_status.md)
 - [Current Main Support Matrix](docs/current_main_support_matrix.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
@@ -40,7 +41,7 @@ installation metadata.
 | --- | --- |
 | Release | current released version: `v1.0` |
 | v1.0 | released app-shaped RTDL proof, documentation, and bounded evidence |
-| Current main | v1.5 internal generic primitive migration is pod-verified; public v1.5 release wording is not authorized yet |
+| Current main | v1.5 release-candidate gates are complete for standalone Embree+OptiX; tag action still requires explicit release/tag action |
 | v1.1 OptiX evidence | `polygon_pair_overlap_area_rows` has bounded 3-AI-reviewed positive wording |
 | Still not public speedup-ready | whole-app graph/DB/polygon claims, Jaccard speedup wording, and non-RT continuations such as ranking, clustering, graph analytics, SQL-style materialization, and force reduction |
 
@@ -58,10 +59,13 @@ release packages or tags. They harden Embree/OptiX evidence, push NVIDIA RT
 performance, define the primitive ABI/parity contracts, and migrate the first
 compatibility wrappers.
 
-On current `main`, the v1.5 internal primitive migration is pod-verified for
-the supported subpaths. That is not a public release yet and not a whole-app
-speedup claim. v2.0 targets broader end-to-end performance through explicit
-zero-copy partnership with GPU compute tools for the non-RT phases.
+On current `main`, the v1.5 release candidate is complete for standalone
+Embree+OptiX language/runtime scope. It covers 14 included app contracts, 4
+excluded rows, and stable generic traversal-plus-reduction primitives. It is
+not a public tag until an explicit release/tag action is performed, and it is
+not a whole-app speedup claim. v1.5.1 is the `COLLECT_K_BOUNDED` promotion
+track; v2.0 targets broader end-to-end performance through explicit zero-copy
+partnership with GPU compute tools for the non-RT phases.
 
 The practical v1.0 rule: RT traversal can be fast while the full app is still
 limited by Python continuation, exact refinement, ranking, clustering,

@@ -7,7 +7,7 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
     def test_gate_blocks_release_from_primitive_only_readiness(self):
         gate = rt.validate_v1_5_standalone_release_gate()
 
-        self.assertEqual(gate["status"], "blocked_pending_standalone_language_completion")
+        self.assertEqual(gate["status"], "release_candidate_ready_pending_explicit_release_action")
         self.assertEqual(gate["scope_kind"], "standalone_embree_optix_language_runtime")
         self.assertFalse(gate["primitive_packet_sufficient_for_release"])
         self.assertTrue(gate["primitive_packet_is_prerequisite_only"])
@@ -17,8 +17,9 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertFalse(gate["current_public_release_tag_move_authorized"])
 
         boundary = gate["claim_boundary"]
-        self.assertIn("standalone v1.5 release is blocked", boundary)
-        self.assertIn("do not tag v1.5 from primitive-only readiness", boundary)
+        self.assertIn("standalone v1.5 release-candidate gates pass", boundary)
+        self.assertIn("do not tag v1.5 without explicit release approval", boundary)
+        self.assertIn("no whole-app speedup claim", boundary)
 
     def test_gate_requires_expanded_standalone_completion_work(self):
         gate = rt.validate_v1_5_standalone_release_gate()
@@ -34,21 +35,15 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
                 "same_contract_per_app_correctness",
                 "same_contract_per_app_benchmarks",
                 "test_backed_support_maturity_matrix",
-            ),
-        )
-        self.assertEqual(
-            gate["failed_gates"],
-            (
                 "release_docs_and_public_wording",
             ),
         )
-        for failed_gate in gate["failed_gates"]:
-            with self.subTest(failed_gate=failed_gate):
-                self.assertFalse(gate["gate_results"][failed_gate])
+        self.assertEqual(gate["failed_gates"], ())
         self.assertTrue(gate["gate_results"]["same_contract_per_app_correctness"])
         self.assertTrue(gate["gate_results"]["same_contract_per_app_benchmarks"])
         self.assertTrue(gate["gate_results"]["collect_k_bounded_resolution"])
         self.assertTrue(gate["gate_results"]["test_backed_support_maturity_matrix"])
+        self.assertTrue(gate["gate_results"]["release_docs_and_public_wording"])
 
     def test_gate_resolves_collect_k_bounded_by_excluding_row_returning_apps(self):
         gate = rt.validate_v1_5_standalone_release_gate()
@@ -99,7 +94,7 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(
             gate["allowed_next_actions"],
             (
-                "refresh_release_docs_and_public_wording",
+                "request_explicit_v1_5_release_approval",
             ),
         )
         self.assertEqual(
@@ -143,6 +138,18 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(gate["benchmark_evidence_excluded_app_count"], 4)
         self.assertEqual(gate["benchmark_evidence_failed_apps"], ())
         self.assertFalse(gate["benchmark_evidence_public_wording_authorized"])
+
+    def test_gate_embeds_release_public_wording_summary_without_tag_authorization(self):
+        gate = rt.validate_v1_5_standalone_release_gate()
+
+        self.assertTrue(gate["gate_results"]["release_docs_and_public_wording"])
+        self.assertEqual(gate["release_public_wording_status"], "release_candidate_docs_ready")
+        self.assertEqual(gate["release_public_wording_missing_required_phrases"], ())
+        self.assertEqual(gate["release_public_wording_present_forbidden_phrases"], ())
+        self.assertTrue(gate["release_public_wording_explicit_release_approval_required"])
+        self.assertIn("standalone Embree+OptiX", gate["release_public_wording_allowed_statement"])
+        self.assertFalse(gate["public_release_authorized"])
+        self.assertFalse(gate["release_tag_action_authorized"])
 
 
 if __name__ == "__main__":

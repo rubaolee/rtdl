@@ -22,11 +22,11 @@ the current public story:
 8. [App And Example Quickstart](app_example_quickstart.md)
 9. [Application Catalog](application_catalog.md)
 10. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
-11. [IR And Lowering](rtdl/ir_and_lowering.md)
-12. [Performance Model](performance_model.md)
-13. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
-14. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
-15. [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
+11. [v1.5 Release-Candidate Package](release_reports/v1_5/README.md)
+12. [IR And Lowering](rtdl/ir_and_lowering.md)
+13. [Performance Model](performance_model.md)
+14. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
+15. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -88,10 +88,11 @@ Important public-claim rules:
   OptiX correctness issue; use post-fix Goal748 or later robot evidence.
 - Whole-app outputs may include Python continuation work such as ranking,
   clustering, force reduction, SQL-style output assembly, or graph reductions.
-- Current `main` has internally pod-verified v1.5 generic primitive subpaths,
-  but this is not public release authorization and not public speedup wording.
-  Several apps still keep app-level continuations outside the verified subpath
-  boundary.
+- Current `main` has complete v1.5 release-candidate gates for standalone
+  Embree+OptiX. The candidate has 14 included app contracts and 4 excluded rows;
+  `COLLECT_K_BOUNDED` remains experimental and moves to v1.5.1. This still
+  requires an explicit release/tag action before a public v1.5 tag exists, and
+  it is no whole-app speedup claim.
 - v2.0 is the broader end-to-end performance target.
 
 Current released feature terms you will see in the docs include
@@ -114,6 +115,7 @@ specific backend path says so.
 Use these for audit trails and exact release boundaries:
 
 - [v1.0 Release Package](release_reports/v1_0/README.md)
+- [v1.5 Release-Candidate Package](release_reports/v1_5/README.md)
 - [v1.0 Release Statement](release_reports/v1_0/release_statement.md)
 - [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
 - [v1.0 Audit Report](release_reports/v1_0/audit_report.md)

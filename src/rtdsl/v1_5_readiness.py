@@ -11,6 +11,7 @@ from .generic_db_primitives import validate_v1_5_db_compact_summary_contracts
 from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
 from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
 from .v1_5_benchmark_evidence import validate_v1_5_benchmark_evidence_summary
+from .v1_5_release_public_wording import validate_v1_5_release_public_wording_gate
 from .v1_5_migration_inventory import (
     ACTIVE_V1_5_BACKENDS,
     FROZEN_BEFORE_V2_1_BACKENDS,
@@ -132,7 +133,7 @@ V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS = (
     "broad_local_suite_tests",
     "broad_local_suite_skipped",
 )
-V1_5_STANDALONE_RELEASE_STATUS = "blocked_pending_standalone_language_completion"
+V1_5_STANDALONE_RELEASE_STATUS = "release_candidate_ready_pending_explicit_release_action"
 V1_5_STANDALONE_RELEASE_SCOPE_KIND = "standalone_embree_optix_language_runtime"
 V1_5_STANDALONE_RELEASE_REQUIRED_GATES = (
     "primitive_packet_prerequisite",
@@ -144,11 +145,9 @@ V1_5_STANDALONE_RELEASE_REQUIRED_GATES = (
     "test_backed_support_maturity_matrix",
     "release_docs_and_public_wording",
 )
-V1_5_STANDALONE_RELEASE_BLOCKERS = (
-    "v1.5 release docs and public wording must be refreshed after standalone gates pass",
-)
+V1_5_STANDALONE_RELEASE_BLOCKERS = ()
 V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS = (
-    "refresh_release_docs_and_public_wording",
+    "request_explicit_v1_5_release_approval",
 )
 V1_5_1_COLLECT_K_BOUNDED_TRACK = (
     ("v1.5.1", "collect_k_bounded_fail_closed_semantics"),
@@ -631,8 +630,9 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
 
     This is intentionally separate from the internal primitive readiness gate:
     the primitive packet is prerequisite evidence, while standalone v1.5
-    release requires collection, app migration, benchmark, and support-maturity
-    gates that are not complete yet.
+    release requires collection, app migration, benchmark, support-maturity,
+    and public wording gates. Passing this gate still does not create a tag;
+    release/tag action requires explicit user approval.
     """
     internal_decision = validate_v1_5_internal_readiness_decision()
     bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
@@ -641,6 +641,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
     correctness_summary = validate_v1_5_standalone_correctness_summary()
     support_maturity_summary = validate_v1_5_support_maturity_summary()
     benchmark_summary = validate_v1_5_benchmark_evidence_summary()
+    public_wording_gate = validate_v1_5_release_public_wording_gate()
     collect_k_statuses = tuple(
         sorted({str(contract["status"]) for contract in bounded_collection_contracts})
     )
@@ -656,7 +657,9 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "test_backed_support_maturity_matrix": support_maturity_summary[
             "release_gate_complete"
         ],
-        "release_docs_and_public_wording": False,
+        "release_docs_and_public_wording": public_wording_gate[
+            "release_docs_and_public_wording_complete"
+        ],
     }
     return {
         "status": V1_5_STANDALONE_RELEASE_STATUS,
@@ -730,13 +733,27 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "benchmark_evidence_public_wording_authorized": benchmark_summary[
             "public_wording_authorized_by_this_gate"
         ],
+        "release_public_wording_status": public_wording_gate["status"],
+        "release_public_wording_required_docs": public_wording_gate["required_docs"],
+        "release_public_wording_allowed_statement": public_wording_gate[
+            "allowed_public_statement"
+        ],
+        "release_public_wording_missing_required_phrases": public_wording_gate[
+            "missing_required_phrases"
+        ],
+        "release_public_wording_present_forbidden_phrases": public_wording_gate[
+            "present_forbidden_phrases"
+        ],
+        "release_public_wording_explicit_release_approval_required": public_wording_gate[
+            "explicit_release_approval_required"
+        ],
         "collect_k_bounded_resolution": "resolved_by_explicit_row_returning_app_exclusion",
         "collect_k_bounded_followup_track": V1_5_1_COLLECT_K_BOUNDED_TRACK,
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
         "claim_boundary": (
-            "standalone v1.5 release is blocked until all standalone gates pass; "
-            "do not tag v1.5 from primitive-only readiness; v1.5.1 is the collect-k track; "
-            "v1.6-v2.0 are partner-track milestones"
+            "standalone v1.5 release-candidate gates pass; do not tag v1.5 without "
+            "explicit release approval; v1.5.1 is the collect-k track; "
+            "v1.6-v2.0 are partner-track milestones; no whole-app speedup claim"
         ),
     }
 
@@ -758,18 +775,8 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("Goal1397 roadmap consensus must be represented")
     if gate["primitive_packet_sufficient_for_release"] is not False:
         raise ValueError("primitive-only readiness must not be sufficient for standalone release")
-    if tuple(gate["passed_gates"]) != (
-        "primitive_packet_prerequisite",
-        "roadmap_consensus",
-        "collect_k_bounded_resolution",
-        "app_migration_classification",
-        "same_contract_per_app_correctness",
-        "same_contract_per_app_benchmarks",
-        "test_backed_support_maturity_matrix",
-    ):
-        raise ValueError(
-            "only release docs and public wording should remain blocked now"
-        )
+    if tuple(gate["passed_gates"]) != V1_5_STANDALONE_RELEASE_REQUIRED_GATES:
+        raise ValueError("all v1.5 standalone release-candidate gates should pass now")
     expected_failed = tuple(
         required
         for required in V1_5_STANDALONE_RELEASE_REQUIRED_GATES
@@ -777,6 +784,22 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
     )
     if tuple(gate["failed_gates"]) != expected_failed:
         raise ValueError("v1.5 standalone failed gate list mismatch")
+    if tuple(gate["failed_gates"]) != ():
+        raise ValueError("v1.5 standalone release-candidate gate must have no failed gates")
+    if tuple(gate["blockers"]) != ():
+        raise ValueError("v1.5 standalone release-candidate blockers must be empty")
+    if tuple(gate["allowed_next_actions"]) != V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS:
+        raise ValueError("v1.5 standalone allowed next actions mismatch")
+    if tuple(gate["allowed_next_actions"]) != ("request_explicit_v1_5_release_approval",):
+        raise ValueError("v1.5 standalone next action must be explicit release approval")
+    if gate["release_public_wording_explicit_release_approval_required"] is not True:
+        raise ValueError("v1.5 release candidate must require explicit release approval")
+    if tuple(gate["release_public_wording_missing_required_phrases"]) != ():
+        raise ValueError("v1.5 release public wording must have no missing required phrases")
+    if tuple(gate["release_public_wording_present_forbidden_phrases"]) != ():
+        raise ValueError("v1.5 release public wording must have no forbidden phrases")
+    if "standalone Embree+OptiX" not in gate["release_public_wording_allowed_statement"]:
+        raise ValueError("v1.5 release public wording must preserve standalone Embree+OptiX scope")
     for flag in (
         "current_public_release_tag_move_authorized",
         "new_public_release_tag_authorized",
@@ -869,10 +892,11 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("v1.6-v2.0 partner track must be preserved")
     boundary = str(gate["claim_boundary"])
     for required_boundary in (
-        "standalone v1.5 release is blocked",
-        "do not tag v1.5 from primitive-only readiness",
+        "standalone v1.5 release-candidate gates pass",
+        "do not tag v1.5 without explicit release approval",
         "v1.5.1 is the collect-k track",
         "v1.6-v2.0 are partner-track milestones",
+        "no whole-app speedup claim",
     ):
         if required_boundary not in boundary:
             raise ValueError("v1.5 standalone release gate boundary is too broad")
