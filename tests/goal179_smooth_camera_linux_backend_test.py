@@ -8,10 +8,40 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_optix_frames
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_frames
 from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_vulkan_frames
 
 
 class Goal179SmoothCameraLinuxBackendTest(unittest.TestCase):
+    def test_cached_frame_requires_matching_compare_backend(self) -> None:
+        output_dir = Path("build/goal179_smooth_camera_linux_backend_test/cache_key_compare_backend")
+        render_smooth_camera_orbit_frames(
+            backend="cpu_python_reference",
+            compare_backend=None,
+            output_dir=output_dir,
+            width=16,
+            height=16,
+            latitude_bands=4,
+            longitude_bands=8,
+            frame_count=1,
+        )
+
+        summary = render_smooth_camera_orbit_frames(
+            backend="cpu_python_reference",
+            compare_backend="cpu_python_reference",
+            output_dir=output_dir,
+            width=16,
+            height=16,
+            latitude_bands=4,
+            longitude_bands=8,
+            frame_count=1,
+        )
+
+        compare_summary = summary["frames"][0]["compare_backend"]
+        self.assertIsNotNone(compare_summary)
+        self.assertEqual(compare_summary["backend"], "cpu_python_reference")
+        self.assertTrue(compare_summary["matches"])
+
     def test_optix_wrapper_reports_optix_backend(self) -> None:
         output_dir = Path("build/goal179_smooth_camera_linux_backend_test/optix_backend_name")
         try:

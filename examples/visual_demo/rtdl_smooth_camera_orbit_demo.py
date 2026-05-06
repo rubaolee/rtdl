@@ -145,6 +145,19 @@ def _restore_smooth_frame(task: tuple[int, float], state: dict[str, object]) -> 
         return None
     if abs(float(row.get("phase", -999.0)) - phase) > 1.0e-12:
         return None
+    expected_cache_fields = {
+        "backend": str(state["backend"]),
+        "compare_backend_name": state["compare_backend"],
+        "image_width": int(state["width"]),  # type: ignore[arg-type]
+        "image_height": int(state["height"]),  # type: ignore[arg-type]
+        "triangle_count": len(state["triangles"]),  # type: ignore[arg-type]
+        "latitude_bands": int(state["latitude_bands"]),  # type: ignore[arg-type]
+        "longitude_bands": int(state["longitude_bands"]),  # type: ignore[arg-type]
+        "theme": str(state["theme"]),
+    }
+    for key, expected in expected_cache_fields.items():
+        if row.get(key) != expected:
+            return None
     row["frame_path"] = str(final_path)
     row["raw_frame_path"] = str(raw_path)
     return row
@@ -312,6 +325,14 @@ def _render_smooth_frame(task: tuple[int, float]) -> dict[str, object]:
     row = {
         "frame_index": frame_index,
         "phase": phase,
+        "backend": backend,
+        "compare_backend_name": compare_backend,
+        "image_width": width,
+        "image_height": height,
+        "triangle_count": len(triangles),  # type: ignore[arg-type]
+        "latitude_bands": int(state["latitude_bands"]),  # type: ignore[arg-type]
+        "longitude_bands": int(state["longitude_bands"]),  # type: ignore[arg-type]
+        "theme": str(state["theme"]),
         "frame_path": str(frame_path),
         "raw_frame_path": str(raw_frame_path),
         "eye": [float(eye[0]), float(eye[1]), float(eye[2])],
@@ -370,6 +391,8 @@ def render_smooth_camera_orbit_frames(
         "fov_y": fov_y,
         "width": width,
         "height": height,
+        "latitude_bands": latitude_bands,
+        "longitude_bands": longitude_bands,
         "triangles": triangles,
         "lights": lights,
         "light_count": len(lights),
@@ -378,6 +401,7 @@ def render_smooth_camera_orbit_frames(
         "ground_shadow_alpha": theme_spec["ground_shadow_alpha"],
         "show_light_source": show_light_source,
         "output_dir": output_dir,
+        "theme": theme,
     }
     tasks = list(enumerate(phases))
     if jobs <= 1:
