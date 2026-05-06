@@ -85,6 +85,10 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
             with self.subTest(app=row["app"], subpath=row["subpath"]):
                 self.assertFalse(set(row["backend_scope"]) & frozen)
                 self.assertFalse(row["public_wording_authorized"])
+                self.assertTrue(
+                    "public speedup wording" in row["boundary"]
+                    or "public wording" in row["boundary"]
+                )
 
     def test_inventory_uses_only_declared_v1_5_primitive_sets(self) -> None:
         generic_primitives = set(rt.V1_5_STABLE_GENERIC_PRIMITIVES) | set(
@@ -110,6 +114,11 @@ class Goal1304V15GenericMigrationInventoryTest(unittest.TestCase):
         bad_summary["summary_primitive"] = "GROUPED_BOOL_FLAGS"
         with self.assertRaisesRegex(ValueError, "invalid v1.5 summary primitive"):
             inventory_module._validate_v1_5_generic_migration_inventory_rows((bad_summary,))
+
+        bad_boundary = dict(good_row)
+        bad_boundary["boundary"] = "visibility any-hit count only"
+        with self.assertRaisesRegex(ValueError, "boundary must block public wording"):
+            inventory_module._validate_v1_5_generic_migration_inventory_rows((bad_boundary,))
 
     def test_blockers_name_only_remaining_scope_and_public_wording_gates(self) -> None:
         blockers = "\n".join(rt.v1_5_generic_migration_blockers())

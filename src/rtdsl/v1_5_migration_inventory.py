@@ -35,7 +35,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": (),
             "public_wording_authorized": False,
-            "boundary": "visibility any-hit count only; graph BFS, triangle counting, and graph-system analytics remain outside scope",
+            "boundary": "visibility any-hit count only; graph BFS, triangle counting, and graph-system analytics remain outside scope; no public speedup wording",
         },
         {
             "goal": "Goal1299",
@@ -47,7 +47,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": (),
             "public_wording_authorized": False,
-            "boundary": "coverage gap threshold-decision path only",
+            "boundary": "coverage gap threshold-decision path only; no public speedup wording",
         },
         {
             "goal": "Goal1299",
@@ -59,7 +59,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": (),
             "public_wording_authorized": False,
-            "boundary": "fixed-radius hotspot threshold-count path only",
+            "boundary": "fixed-radius hotspot threshold-count path only; no public speedup wording",
         },
         {
             "goal": "Goal1300",
@@ -71,7 +71,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("ann_indexing", "nearest_neighbor_ranking"),
             "public_wording_authorized": False,
-            "boundary": "candidate threshold-decision path only",
+            "boundary": "candidate threshold-decision path only; no public speedup wording",
         },
         {
             "goal": "Goal1300",
@@ -83,7 +83,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("ranked_knn_assignment",),
             "public_wording_authorized": False,
-            "boundary": "facility service-coverage threshold-decision path only",
+            "boundary": "facility service-coverage threshold-decision path only; no public speedup wording",
         },
         {
             "goal": "Goal1301",
@@ -95,7 +95,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": ("neighbor_row_materialization", "broad_outlier_analytics"),
             "public_wording_authorized": False,
-            "boundary": "fixed-radius density threshold count only",
+            "boundary": "fixed-radius density threshold count only; no public speedup wording",
         },
         {
             "goal": "Goal1301",
@@ -107,7 +107,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": ("cluster_expansion", "connected_components"),
             "public_wording_authorized": False,
-            "boundary": "fixed-radius DBSCAN core predicate count only",
+            "boundary": "fixed-radius DBSCAN core predicate count only; no public speedup wording",
         },
         {
             "goal": "Goal1302",
@@ -119,7 +119,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("opening_rule", "force_vector_reduction"),
             "public_wording_authorized": False,
-            "boundary": "node-coverage threshold-decision path only",
+            "boundary": "node-coverage threshold-decision path only; no public speedup wording",
         },
         {
             "goal": "Goal1302",
@@ -131,7 +131,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("exact_distance", "nearest_neighbor_rows"),
             "public_wording_authorized": False,
-            "boundary": "Hausdorff threshold-decision path only",
+            "boundary": "Hausdorff threshold-decision path only; no public speedup wording",
         },
         {
             "goal": "Goal1303",
@@ -143,7 +143,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": ("prepared_pose_flags", "grouped_pose_flag_reduction"),
             "public_wording_authorized": False,
-            "boundary": "scalar hit-edge count only",
+            "boundary": "scalar hit-edge count only; no public speedup wording",
         },
         {
             "goal": "Goal1306",
@@ -155,7 +155,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ("optix",),
             "remaining_app_specific_work": (),
             "public_wording_authorized": False,
-            "boundary": "pose-level grouped count-to-boolean output only; no whole-app collision planning claim",
+            "boundary": "pose-level grouped count-to-boolean output only; no whole-app collision planning claim; no public speedup wording",
         },
         {
             "goal": "Goal1307",
@@ -167,7 +167,7 @@ def v1_5_generic_migration_inventory() -> tuple[dict[str, Any], ...]:
             "backend_scope": ACTIVE_V1_5_BACKENDS,
             "remaining_app_specific_work": (),
             "public_wording_authorized": False,
-            "boundary": "sales-risk compact summary only; no SQL, DBMS, query planner, index, join, transaction, or row-output claim",
+            "boundary": "sales-risk compact summary only; no SQL, DBMS, query planner, index, join, transaction, or row-output claim; no public speedup wording",
         },
         {
             "goal": "Goal1309",
@@ -262,3 +262,6 @@ def _validate_v1_5_generic_migration_inventory_rows(inventory: tuple[dict[str, A
             raise ValueError(f"invalid active v1.5 backend scope: {backend_scope}")
         if row["public_wording_authorized"]:
             raise ValueError("v1.5 migration inventory must not authorize public wording")
+        boundary = str(row["boundary"])
+        if "public speedup wording" not in boundary and "public wording" not in boundary:
+            raise ValueError("v1.5 migration inventory boundary must block public wording")
