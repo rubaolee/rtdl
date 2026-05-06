@@ -38,6 +38,11 @@ V1_5_INTERNAL_READINESS_REQUIRED_BLOCKER_PHRASES = (
     "public NVIDIA wording remains blocked",
     "3-AI consensus",
 )
+V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS = (
+    "continue_internal_contract_hardening",
+    "collect_pod_validation_from_git",
+    "request_external_review_before_public_claims",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -220,3 +225,53 @@ def validate_v1_5_internal_readiness_gate() -> dict[str, Any]:
                 f"v1.5 internal readiness surface count mismatch for {count_field}"
             )
     return gate
+
+
+def v1_5_internal_readiness_decision() -> dict[str, Any]:
+    """Return a compact non-public decision summary for the v1.5 gate."""
+    gate = validate_v1_5_internal_readiness_gate()
+    return {
+        "decision": "continue_internal_non_public_v1_5_hardening",
+        "gate_status": gate["status"],
+        "total_contract_surfaces": gate["total_contract_surfaces"],
+        "allowed_next_actions": V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS,
+        "blocked_next_actions": (
+            "public_v1_5_release_wording",
+            "public_speedup_wording",
+            "release_tag_action",
+            "stable_collect_k_bounded_promotion",
+            "new_pre_v2_1_backend_implementation",
+        ),
+        "public_release_authorized": gate["public_release_authorized"],
+        "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
+        "release_tag_action_authorized": gate["release_tag_action_authorized"],
+        "claim_boundary": gate["claim_boundary"],
+    }
+
+
+def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
+    decision = v1_5_internal_readiness_decision()
+    if decision["decision"] != "continue_internal_non_public_v1_5_hardening":
+        raise ValueError("invalid v1.5 internal readiness decision")
+    for required_action in V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS:
+        if required_action not in tuple(decision["allowed_next_actions"]):
+            raise ValueError(f"missing allowed internal next action: {required_action}")
+    for blocked_action in (
+        "public_v1_5_release_wording",
+        "public_speedup_wording",
+        "release_tag_action",
+        "stable_collect_k_bounded_promotion",
+        "new_pre_v2_1_backend_implementation",
+    ):
+        if blocked_action not in tuple(decision["blocked_next_actions"]):
+            raise ValueError(f"missing blocked public/broad next action: {blocked_action}")
+    for flag in (
+        "public_release_authorized",
+        "public_speedup_wording_authorized",
+        "release_tag_action_authorized",
+    ):
+        if decision[flag] is not False:
+            raise ValueError(f"v1.5 internal readiness decision must not authorize {flag}")
+    if "not public v1.5 release wording" not in decision["claim_boundary"]:
+        raise ValueError("v1.5 internal readiness decision must preserve non-public boundary")
+    return decision

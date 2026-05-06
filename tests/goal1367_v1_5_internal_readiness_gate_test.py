@@ -116,6 +116,32 @@ class V15InternalReadinessGateTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertTrue(any(phrase in blocker for blocker in gate["blockers"]))
 
+    def test_decision_allows_only_internal_next_actions(self):
+        decision = rt.validate_v1_5_internal_readiness_decision()
+
+        self.assertEqual(decision["decision"], "continue_internal_non_public_v1_5_hardening")
+        self.assertEqual(decision["total_contract_surfaces"], 25)
+        self.assertEqual(
+            decision["allowed_next_actions"],
+            (
+                "continue_internal_contract_hardening",
+                "collect_pod_validation_from_git",
+                "request_external_review_before_public_claims",
+            ),
+        )
+        for blocked_action in (
+            "public_v1_5_release_wording",
+            "public_speedup_wording",
+            "release_tag_action",
+            "stable_collect_k_bounded_promotion",
+            "new_pre_v2_1_backend_implementation",
+        ):
+            with self.subTest(blocked_action=blocked_action):
+                self.assertIn(blocked_action, decision["blocked_next_actions"])
+        self.assertFalse(decision["public_release_authorized"])
+        self.assertFalse(decision["public_speedup_wording_authorized"])
+        self.assertFalse(decision["release_tag_action_authorized"])
+
 
 if __name__ == "__main__":
     unittest.main()
