@@ -38,6 +38,9 @@ PYTHONPATH=src:. python3 -m unittest \
   tests.goal1399_collect_k_bounded_resolution_test
 ```
 
+Latest recorded verification:
+`docs/reports/goal1412_v1_5_final_pre_tag_verification_2026-05-06.md`
+
 ## Non-Action
 
 This document does not create `v1.5`, move `v1.0`, or authorize release/tag
