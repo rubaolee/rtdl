@@ -93,6 +93,9 @@ V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS = (
     "public_speedup_wording_authorized",
     "release_tag_action_authorized",
 )
+V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_STATE = "passed_internal_regression"
+V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_TESTS = 2656
+V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED = 197
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -326,6 +329,10 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "same_contract_baseline_ready": False,
         "reviewed_public_wording_packet_ready": False,
         "false_authorization_flags": V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS,
+        "broad_local_suite_state": V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_STATE,
+        "broad_local_suite_tests": V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_TESTS,
+        "broad_local_suite_skipped": V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED,
+        "broad_local_suite_claim_grade_evidence": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -413,9 +420,17 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must preserve required public evidence")
     if tuple(decision["false_authorization_flags"]) != V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
         raise ValueError("v1.5 internal readiness decision must preserve false authorization flags")
+    if decision["broad_local_suite_state"] != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_STATE:
+        raise ValueError("v1.5 internal readiness decision must preserve broad local suite state")
+    if int(decision["broad_local_suite_tests"]) != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_TESTS:
+        raise ValueError("v1.5 internal readiness decision must preserve broad local test count")
+    if int(decision["broad_local_suite_skipped"]) != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED:
+        raise ValueError("v1.5 internal readiness decision must preserve broad local skipped count")
     for flag in V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
         if decision[flag] is not False:
             raise ValueError(f"v1.5 internal readiness decision must not authorize {flag}")
+    if decision["broad_local_suite_claim_grade_evidence"] is not False:
+        raise ValueError("v1.5 internal readiness decision must not treat broad suite as claim-grade")
     if "not public v1.5 release wording" not in decision["claim_boundary"]:
         raise ValueError("v1.5 internal readiness decision must preserve non-public boundary")
     return decision

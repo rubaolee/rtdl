@@ -233,6 +233,22 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         for flag in decision["false_authorization_flags"]:
             with self.subTest(false_authorization_flag=flag):
                 self.assertIs(decision[flag], False)
+        self.assertEqual(decision["broad_local_suite_state"], "passed_internal_regression")
+        self.assertEqual(
+            decision["broad_local_suite_state"],
+            rt.V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_STATE,
+        )
+        self.assertEqual(decision["broad_local_suite_tests"], 2656)
+        self.assertEqual(
+            decision["broad_local_suite_tests"],
+            rt.V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_TESTS,
+        )
+        self.assertEqual(decision["broad_local_suite_skipped"], 197)
+        self.assertEqual(
+            decision["broad_local_suite_skipped"],
+            rt.V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED,
+        )
+        self.assertFalse(decision["broad_local_suite_claim_grade_evidence"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])
