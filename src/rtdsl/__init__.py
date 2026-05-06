@@ -190,6 +190,8 @@ from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
 from .optix_runtime import run_optix
 from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
 from .reduction_runtime import reduce_rows
+from .reduction_runtime import run_generic_scalar_reduction
+from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
 from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
 from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
 from .hiprt_runtime import bfs_expand_hiprt
@@ -738,6 +740,8 @@ __all__ = [
     "run_generic_prepared_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",
+    "run_generic_scalar_reduction",
+    "V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES",
     "ACTIVE_V1_5_GENERIC_DB_BACKENDS",
     "FROZEN_BEFORE_V2_1_DB_BACKENDS",
     "run_generic_db_compact_summary_batch",
