@@ -77,8 +77,18 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         gate = rt.validate_v1_5_internal_readiness_gate()
 
         self.assertGreater(len(gate["blockers"]), 0)
-        self.assertTrue(any("3-AI" in blocker for blocker in gate["blockers"]))
-        self.assertTrue(any("whole-app speedup wording" in blocker for blocker in gate["blockers"]))
+        self.assertEqual(
+            gate["required_blocker_phrases"],
+            (
+                "app-level continuations remain outside v1.5 generic subpath scope",
+                "whole-app speedup wording remains blocked",
+                "public NVIDIA wording remains blocked",
+                "3-AI consensus",
+            ),
+        )
+        for phrase in gate["required_blocker_phrases"]:
+            with self.subTest(phrase=phrase):
+                self.assertTrue(any(phrase in blocker for blocker in gate["blockers"]))
 
 
 if __name__ == "__main__":

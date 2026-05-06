@@ -494,6 +494,7 @@ from .v1_5_migration_inventory import V1_5_STABLE_SUMMARY_PRIMITIVES
 from .v1_5_migration_inventory import validate_v1_5_generic_migration_inventory
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_CLAIM_BOUNDARY
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES
+from .v1_5_readiness import V1_5_INTERNAL_READINESS_REQUIRED_BLOCKER_PHRASES
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_STATUS
 from .v1_5_readiness import v1_5_internal_readiness_gate
 from .v1_5_readiness import validate_v1_5_internal_readiness_gate
@@ -786,6 +787,7 @@ __all__ = [
     "validate_v1_5_generic_migration_inventory",
     "V1_5_INTERNAL_READINESS_CLAIM_BOUNDARY",
     "V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES",
+    "V1_5_INTERNAL_READINESS_REQUIRED_BLOCKER_PHRASES",
     "V1_5_INTERNAL_READINESS_STATUS",
     "v1_5_internal_readiness_gate",
     "validate_v1_5_internal_readiness_gate",

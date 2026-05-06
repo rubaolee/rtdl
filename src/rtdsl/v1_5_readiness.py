@@ -29,6 +29,12 @@ V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES = (
     "REDUCE_INT(SUM)",
 )
 V1_5_INTERNAL_READINESS_ALLOWED_INVENTORY_STATUSES = ("pod_verified_generic",)
+V1_5_INTERNAL_READINESS_REQUIRED_BLOCKER_PHRASES = (
+    "app-level continuations remain outside v1.5 generic subpath scope",
+    "whole-app speedup wording remains blocked",
+    "public NVIDIA wording remains blocked",
+    "3-AI consensus",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -74,6 +80,7 @@ def v1_5_internal_readiness_gate() -> dict[str, Any]:
             "validate_v1_5_collect_k_bounded_contracts",
         ),
         "blockers": blockers,
+        "required_blocker_phrases": V1_5_INTERNAL_READINESS_REQUIRED_BLOCKER_PHRASES,
         "public_release_authorized": False,
         "public_speedup_wording_authorized": False,
         "release_tag_action_authorized": False,
@@ -119,8 +126,16 @@ def validate_v1_5_internal_readiness_gate() -> dict[str, Any]:
     blockers = tuple(gate["blockers"])
     if not blockers:
         raise ValueError("v1.5 internal readiness gate must expose blockers")
-    if not any("3-AI" in blocker for blocker in blockers):
-        raise ValueError("v1.5 internal readiness blockers must name 3-AI consensus")
+    missing_blockers = [
+        phrase
+        for phrase in gate["required_blocker_phrases"]
+        if not any(phrase in blocker for blocker in blockers)
+    ]
+    if missing_blockers:
+        raise ValueError(
+            "v1.5 internal readiness blockers are missing required phrases: "
+            f"{', '.join(missing_blockers)}"
+        )
     boundary = str(gate["claim_boundary"])
     for required_boundary in (
         "internal v1.5 contract readiness only",
