@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any
 
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contracts
@@ -96,6 +98,31 @@ V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS = (
 V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_STATE = "passed_internal_regression"
 V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_TESTS = 2656
 V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED = 197
+V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM = "sha256"
+V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS = (
+    "decision",
+    "gate_status",
+    "allowed_next_actions",
+    "blocked_next_actions",
+    "public_claim_preconditions",
+    "required_external_review_partners",
+    "accepted_external_review_partners",
+    "missing_external_review_partners",
+    "source_usage_mode",
+    "active_backend_scope",
+    "frozen_before_v2_1_backends",
+    "stable_summary_primitives",
+    "experimental_primitives",
+    "current_public_release_tag",
+    "scope_kind",
+    "excluded_app_scope",
+    "evidence_state",
+    "required_public_evidence",
+    "false_authorization_flags",
+    "broad_local_suite_state",
+    "broad_local_suite_tests",
+    "broad_local_suite_skipped",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -129,6 +156,15 @@ def _contract_surface_counts(
         "float_sum_contracts": float_sum_contracts,
         "bounded_collection_contracts": bounded_collection_contracts,
     }
+
+
+def _decision_fingerprint(decision: dict[str, Any]) -> str:
+    payload = {
+        field: decision[field]
+        for field in V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def v1_5_internal_readiness_gate() -> dict[str, Any]:
@@ -283,7 +319,7 @@ def validate_v1_5_internal_readiness_gate() -> dict[str, Any]:
 def v1_5_internal_readiness_decision() -> dict[str, Any]:
     """Return a compact non-public decision summary for the v1.5 gate."""
     gate = validate_v1_5_internal_readiness_gate()
-    return {
+    decision = {
         "decision": "continue_internal_non_public_v1_5_hardening",
         "gate_status": gate["status"],
         "total_contract_surfaces": gate["total_contract_surfaces"],
@@ -338,6 +374,12 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
         "claim_boundary": gate["claim_boundary"],
     }
+    decision["decision_fingerprint_algorithm"] = (
+        V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM
+    )
+    decision["decision_fingerprint_fields"] = V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS
+    decision["decision_fingerprint"] = _decision_fingerprint(decision)
+    return decision
 
 
 def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
@@ -426,6 +468,18 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must preserve broad local test count")
     if int(decision["broad_local_suite_skipped"]) != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED:
         raise ValueError("v1.5 internal readiness decision must preserve broad local skipped count")
+    if (
+        decision["decision_fingerprint_algorithm"]
+        != V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM
+    ):
+        raise ValueError("v1.5 internal readiness decision must preserve fingerprint algorithm")
+    if (
+        tuple(decision["decision_fingerprint_fields"])
+        != V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS
+    ):
+        raise ValueError("v1.5 internal readiness decision must preserve fingerprint fields")
+    if decision["decision_fingerprint"] != _decision_fingerprint(decision):
+        raise ValueError("v1.5 internal readiness decision fingerprint mismatch")
     for flag in V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
         if decision[flag] is not False:
             raise ValueError(f"v1.5 internal readiness decision must not authorize {flag}")

@@ -249,6 +249,19 @@ class V15InternalReadinessGateTest(unittest.TestCase):
             rt.V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED,
         )
         self.assertFalse(decision["broad_local_suite_claim_grade_evidence"])
+        self.assertEqual(decision["decision_fingerprint_algorithm"], "sha256")
+        self.assertEqual(
+            decision["decision_fingerprint_algorithm"],
+            rt.V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM,
+        )
+        self.assertEqual(
+            decision["decision_fingerprint_fields"],
+            rt.V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS,
+        )
+        self.assertEqual(len(decision["decision_fingerprint"]), 64)
+        self.assertTrue(
+            all(character in "0123456789abcdef" for character in decision["decision_fingerprint"])
+        )
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])
