@@ -275,6 +275,10 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "frozen_before_v2_1_backends": gate["frozen_before_v2_1_backends"],
         "new_backend_implementation_authorized": False,
         "pre_v2_1_frozen_backend_work_authorized": False,
+        "stable_summary_primitives": gate["stable_summary_primitives"],
+        "experimental_primitives": gate["experimental_primitives"],
+        "experimental_contract_status_counts": gate["experimental_contract_status_counts"],
+        "stable_collect_k_bounded_promotion_authorized": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -342,6 +346,14 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must preserve frozen-before-v2.1 backends")
     if set(decision["active_backend_scope"]) & set(decision["frozen_before_v2_1_backends"]):
         raise ValueError("v1.5 internal readiness decision backend scopes must not overlap")
+    if tuple(decision["stable_summary_primitives"]) != V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES:
+        raise ValueError("v1.5 internal readiness decision must preserve stable summary primitives")
+    if "COLLECT_K_BOUNDED" not in tuple(decision["experimental_primitives"]):
+        raise ValueError("v1.5 internal readiness decision must keep COLLECT_K_BOUNDED experimental")
+    if "COLLECT_K_BOUNDED" in tuple(decision["stable_summary_primitives"]):
+        raise ValueError("v1.5 internal readiness decision must not mark COLLECT_K_BOUNDED stable")
+    if decision["experimental_contract_status_counts"] != {"experimental_diagnostic_only": 1}:
+        raise ValueError("v1.5 internal readiness decision must preserve experimental status counts")
     for flag in (
         "public_claims_ready",
         "external_3_ai_consensus_ready",
@@ -349,6 +361,7 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         "package_release_artifact_authorized",
         "new_backend_implementation_authorized",
         "pre_v2_1_frozen_backend_work_authorized",
+        "stable_collect_k_bounded_promotion_authorized",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",

@@ -180,6 +180,14 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         self.assertFalse(set(decision["active_backend_scope"]) & set(decision["frozen_before_v2_1_backends"]))
         self.assertFalse(decision["new_backend_implementation_authorized"])
         self.assertFalse(decision["pre_v2_1_frozen_backend_work_authorized"])
+        self.assertEqual(decision["stable_summary_primitives"], rt.V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES)
+        self.assertIn("COLLECT_K_BOUNDED", decision["experimental_primitives"])
+        self.assertNotIn("COLLECT_K_BOUNDED", decision["stable_summary_primitives"])
+        self.assertEqual(
+            decision["experimental_contract_status_counts"],
+            {"experimental_diagnostic_only": 1},
+        )
+        self.assertFalse(decision["stable_collect_k_bounded_promotion_authorized"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])
