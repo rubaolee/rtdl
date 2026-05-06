@@ -14,7 +14,7 @@ required.
 | Same-contract correctness | pass | v1.5 correctness matrix closure |
 | Same-contract benchmarks | pass | v1.5 benchmark evidence matrix |
 | Support/maturity matrix | pass | v1.5 support maturity matrix |
-| Release docs and public wording | pass | this v1.5 release-candidate package |
+| Release docs and public wording | pass | this v1.5 release-candidate package plus Goal1411 boundary/backend 3-AI consensus |
 
 ## Release Boundary
 
@@ -48,4 +48,7 @@ Not allowed:
 ## Result
 
 The v1.5 release candidate is complete from the gate perspective. The next step
-is an explicit release decision and tag operation if the user approves.
+is an explicit release decision and tag operation if the user approves. Goal1411
+records 3-AI acceptance of the native-engine app-agnostic boundary and RTX pod
+Embree-vs-OptiX interpretation; it does not itself create a tag or authorize
+unbounded public speedup claims.

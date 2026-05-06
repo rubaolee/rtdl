@@ -55,3 +55,5 @@ Proposed release statement:
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal1402_v1_5_pending_app_correctness_closure_2026-05-06.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal1405_v1_5_support_maturity_matrix_2026-05-06.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal1406_v1_5_benchmark_evidence_matrix_2026-05-06.md`
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal1410_v1_5_vs_v1_0_rtx_pod_perf_results_2026-05-06.md`
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal1411_v1_5_boundary_backend_consensus_status_2026-05-06.md`

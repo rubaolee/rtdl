@@ -23,6 +23,7 @@ v1.5
 - `COLLECT_K_BOUNDED` remains experimental and deferred to v1.5.1.
 - The native engine is not yet app-agnostic internally; this tag package must
   not be described as a zero-app-knowledge engine release.
+- Goal1411 boundary/backend 3-AI consensus is present and accepted.
 - Vulkan, HIPRT, and Apple RT remain frozen before v2.1.
 - User gives explicit release/tag approval.
 

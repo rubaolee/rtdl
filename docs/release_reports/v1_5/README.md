@@ -67,11 +67,14 @@ app-free internals.
 - [v1.5 Correctness Closure](../../reports/goal1402_v1_5_pending_app_correctness_closure_2026-05-06.md)
 - [v1.5 App Classification](../../reports/goal1400_v1_5_standalone_app_classification_2026-05-06.md)
 - [v1.5 Public Wording 3-AI Consensus](../../reports/goal1394_three_ai_v1_5_public_wording_consensus_2026-05-06.md)
+- [v1.5 Boundary/Backend 3-AI Consensus](../../reports/goal1411_v1_5_boundary_backend_consensus_status_2026-05-06.md)
+- [RTX Pod v1.5 vs v1.0 Performance Results](../../reports/goal1410_v1_5_vs_v1_0_rtx_pod_perf_results_2026-05-06.md)
 
 ## Release Gate State
 
 All implementation-facing standalone gates are complete: classification,
 `COLLECT_K_BOUNDED` exclusion, same-contract correctness, benchmark evidence,
 and support maturity. This package closes the release-docs/public-wording gate
-as a release candidate, but tag creation still requires an explicit release/tag
-action.
+as a release candidate. Goal1411 records 3-AI acceptance of the native-engine
+app-agnostic boundary and RTX pod backend interpretation, but tag creation still
+requires an explicit release/tag action.
