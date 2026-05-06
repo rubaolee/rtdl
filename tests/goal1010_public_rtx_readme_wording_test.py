@@ -71,7 +71,7 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
     def test_secondary_public_status_docs_match_robot_boundary(self) -> None:
         v1 = V1_STATUS.read_text(encoding="utf-8")
         matrix = APP_MATRIX.read_text(encoding="utf-8")
-        self.assertIn("reviewed public RTX sub-path wording rows: `12`", v1)
+        self.assertIn("reviewed public RTX sub-path wording rows: `13`", v1)
         self.assertIn("robot_collision_screening", v1)
         self.assertIn("Goal1146", v1)
         self.assertIn("Goal1126", v1)

@@ -12,10 +12,10 @@ changed.
 
 | App row | v1.1 status | Public boundary |
 | --- | --- | --- |
-| `polygon_pair_overlap_area_rows` | accepted bounded positive OptiX candidate | RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area continuation only |
+| `polygon_pair_overlap_area_rows` | accepted bounded positive OptiX candidate | RT-assisted LSI/PIP positive candidate discovery plus exact area continuation only; current main also has internal backend-neutral native exact-area summary plumbing in compact summary mode |
 | `database_analytics` | execution-unblocked, still mixed | compact-summary DB path only; no SQL, DBMS, full dashboard, row materialization, or broad DB speedup claim |
 | `graph_analytics` | correctness-ready; Goal1267 confirms packed-ray OptiX traversal is extremely fast, but total path is scene-preparation dominated and mixed versus Embree | bounded visibility any-hit path only; no graph database, BFS system, triangle analytics, or whole graph speedup claim |
-| `polygon_set_jaccard` | correctness-ready at chunk `1024`, still slower | chunked native-assisted candidate discovery plus native exact continuation only |
+| `polygon_set_jaccard` | correctness-ready at chunk `1024`, still slower | chunked native-assisted candidate discovery plus backend-neutral native set-area/Jaccard summary in compact summary mode only; no positive public speedup wording |
 
 ## How To Read Slower OptiX Rows
 
@@ -44,7 +44,7 @@ prepared-query cost separately from one-time scene and ray-buffer preparation.
 RTDL v1.1 shows bounded OptiX acceleration for
 `polygon_pair_overlap_area_rows` on an RTX A5000 at 40k, 80k, and 160k copies.
 The measured path is RT-assisted LSI/PIP positive candidate discovery plus
-native C++ exact area continuation. At 160k copies, OptiX measured about `1.4x`
+exact area continuation. At 160k copies, OptiX measured about `1.4x`
 faster candidate discovery and about `1.2x` faster observed pipeline than
 Embree under the reviewed same-contract benchmark.
 

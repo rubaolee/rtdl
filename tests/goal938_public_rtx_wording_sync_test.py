@@ -104,6 +104,8 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             (ROOT / relative).read_text(encoding="utf-8")
             for relative in (
                 "docs/app_engine_support_matrix.md",
+                "docs/v1_0_rtx_app_status.md",
+                "docs/v1_1_optix_status.md",
                 "docs/rtdl_feature_guide.md",
                 "docs/application_catalog.md",
                 "docs/release_facing_examples.md",
