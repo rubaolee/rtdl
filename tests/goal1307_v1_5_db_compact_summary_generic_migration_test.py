@@ -39,6 +39,29 @@ class _FakePreparedDbDataset:
 
 
 class Goal1307V15DbCompactSummaryGenericMigrationTest(unittest.TestCase):
+    def test_db_compact_summary_contracts_are_registered_and_validated(self) -> None:
+        contracts = rt.validate_v1_5_db_compact_summary_contracts()
+
+        self.assertEqual(
+            tuple(contract["operation"] for contract in contracts),
+            (
+                "conjunctive_scan_count",
+                "grouped_count_summary",
+                "grouped_sum_summary",
+            ),
+        )
+        self.assertEqual(
+            tuple(contract["summary_primitive"] for contract in contracts),
+            ("COUNT_HITS", "REDUCE_INT(COUNT)", "REDUCE_INT(SUM)"),
+        )
+        self.assertTrue(
+            set(contract["result_layout"] for contract in contracts).issubset(
+                set(rt.V1_5_DB_COMPACT_SUMMARY_RESULT_LAYOUTS)
+            )
+        )
+        self.assertTrue(all(contract["dtype"] == "int64" for contract in contracts))
+        self.assertTrue(all(contract["materialization_free"] for contract in contracts))
+
     def test_generic_db_compact_summary_batch_metadata(self) -> None:
         dataset = _FakePreparedDbDataset()
         result = rt.run_generic_db_compact_summary_batch(

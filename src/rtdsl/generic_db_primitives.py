@@ -35,6 +35,62 @@ _DB_SUMMARY_CONTRACT_BY_OPERATION = {
 }
 
 
+def v1_5_db_compact_summary_contracts() -> tuple[dict[str, Any], ...]:
+    """Return v1.5 DB compact-summary contracts by supported request operation."""
+    return tuple(
+        {
+            "operation": operation,
+            **contract,
+        }
+        for operation, contract in _DB_SUMMARY_CONTRACT_BY_OPERATION.items()
+    )
+
+
+def validate_v1_5_db_compact_summary_contracts() -> tuple[dict[str, Any], ...]:
+    contracts = v1_5_db_compact_summary_contracts()
+    required_fields = (
+        "operation",
+        "summary_primitive",
+        "result_layout",
+        "dtype",
+        "materialization_free",
+    )
+    valid_operations = {
+        "conjunctive_scan_count",
+        "grouped_count_summary",
+        "grouped_sum_summary",
+    }
+    valid_summary_primitives = {
+        "COUNT_HITS",
+        "REDUCE_INT(COUNT)",
+        "REDUCE_INT(SUM)",
+    }
+    valid_result_layouts = set(V1_5_DB_COMPACT_SUMMARY_RESULT_LAYOUTS)
+    seen_operations: set[str] = set()
+    for contract in contracts:
+        for field in required_fields:
+            if field not in contract:
+                raise ValueError(f"missing DB compact-summary contract field: {field}")
+        operation = str(contract["operation"])
+        if operation in seen_operations:
+            raise ValueError(f"duplicate DB compact-summary operation: {operation}")
+        seen_operations.add(operation)
+        if operation not in valid_operations:
+            raise ValueError(f"invalid DB compact-summary operation: {operation}")
+        if contract["summary_primitive"] not in valid_summary_primitives:
+            raise ValueError(f"invalid DB compact-summary primitive: {contract['summary_primitive']}")
+        if contract["result_layout"] not in valid_result_layouts:
+            raise ValueError(f"invalid DB compact-summary result layout: {contract['result_layout']}")
+        if contract["dtype"] != "int64":
+            raise ValueError("DB compact-summary contracts must use int64 result dtype")
+        if contract["materialization_free"] is not True:
+            raise ValueError("DB compact-summary contracts must be materialization-free")
+    if seen_operations != valid_operations:
+        missing = ", ".join(sorted(valid_operations - seen_operations))
+        raise ValueError(f"missing DB compact-summary operation contract: {missing}")
+    return contracts
+
+
 def _validate_backend(backend: str) -> str:
     normalized = backend.lower().replace("-", "_")
     if normalized in FROZEN_BEFORE_V2_1_DB_BACKENDS:
