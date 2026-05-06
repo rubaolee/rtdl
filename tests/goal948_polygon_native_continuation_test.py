@@ -52,11 +52,12 @@ class Goal948PolygonNativeContinuationTest(unittest.TestCase):
 
     def test_pair_app_marks_native_continuation_after_optix_candidate_discovery(self) -> None:
         with mock.patch.object(rt, "run_optix", side_effect=self._fake_optix_rows):
-            payload = pair_app.run_case("optix")
+            payload = pair_app.run_case("optix", output_mode="summary")
         self.assertTrue(payload["rt_core_candidate_discovery_active"])
         self.assertTrue(payload["native_continuation_active"])
-        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp")
-        self.assertIn("native C++ exact grid-cell area continuation", payload["boundary"])
+        self.assertEqual(payload["native_continuation_backend"], "native_polygon_pair_area_summary")
+        self.assertIn("backend-neutral native exact-area summary", payload["boundary"])
+        self.assertIn("rows mode uses native exact row refinement", payload["boundary"])
 
     def test_jaccard_app_marks_native_continuation_after_optix_candidate_discovery(self) -> None:
         with mock.patch.object(rt, "run_optix", side_effect=self._fake_optix_rows):

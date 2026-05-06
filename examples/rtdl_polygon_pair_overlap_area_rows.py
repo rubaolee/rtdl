@@ -367,6 +367,17 @@ def run_case(
         else "optix_native_assisted" if backend == "optix"
         else "cpu_exact"
     )
+    native_continuation_backend = None
+    if backend in {"embree", "optix"}:
+        native_continuation_backend = (
+            "native_polygon_pair_area_summary" if output_mode == "summary" else "oracle_cpp_exact_rows"
+        )
+    boundary = (
+        "Embree and OptiX modes use native LSI/PIP positive candidate discovery. "
+        "Summary mode then uses a backend-neutral native exact-area summary; rows mode "
+        "uses native exact row refinement. These modes are RT-candidate plus native "
+        "summary/row pipelines, not monolithic GPU area-overlay kernels."
+    )
     payload: dict[str, object] = {
         "app": "polygon_pair_overlap_area_rows",
         "backend": backend,
@@ -383,17 +394,12 @@ def run_case(
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
         "native_continuation_active": backend in {"embree", "optix"},
-        "native_continuation_backend": "oracle_cpp" if backend in {"embree", "optix"} else None,
+        "native_continuation_backend": native_continuation_backend,
         "optix_performance": {
             "class": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").performance_class,
             "note": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").note,
         },
-        "boundary": (
-            "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact "
-            "grid-cell area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery "
-            "and the same native C++ continuation. These modes are RT-candidate plus native-continuation "
-            "pipelines, not monolithic GPU area-overlay kernels."
-        ),
+        "boundary": boundary,
     }
     if output_mode == "rows":
         payload["rows"] = rows
