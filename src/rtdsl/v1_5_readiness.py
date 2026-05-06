@@ -16,6 +16,9 @@ from .v1_5_migration_inventory import (
     validate_v1_5_generic_migration_inventory,
     v1_5_generic_migration_blockers,
 )
+from .v1_5_standalone_app_classification import (
+    validate_v1_5_standalone_app_classification_matrix,
+)
 
 
 V1_5_INTERNAL_READINESS_STATUS = "internal_v1_5_contract_gate_passing_non_public"
@@ -401,7 +404,6 @@ def v1_5_internal_readiness_gate() -> dict[str, Any]:
     db_contracts = validate_v1_5_db_compact_summary_contracts()
     float_sum_contracts = validate_v1_5_float_sum_reduction_contracts()
     bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
-    bounded_collection_resolution = validate_v1_5_collect_k_bounded_resolution()
     blockers = v1_5_generic_migration_blockers()
     contract_surface_counts = _contract_surface_counts(
         inventory_rows=len(inventory),
@@ -633,6 +635,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
     internal_decision = validate_v1_5_internal_readiness_decision()
     bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
     bounded_collection_resolution = validate_v1_5_collect_k_bounded_resolution()
+    app_classification = validate_v1_5_standalone_app_classification_matrix()
     collect_k_statuses = tuple(
         sorted({str(contract["status"]) for contract in bounded_collection_contracts})
     )
@@ -640,7 +643,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "primitive_packet_prerequisite": True,
         "roadmap_consensus": True,
         "collect_k_bounded_resolution": False,
-        "app_migration_classification": False,
+        "app_migration_classification": True,
         "same_contract_per_app_correctness": False,
         "same_contract_per_app_benchmarks": False,
         "test_backed_support_maturity_matrix": False,
@@ -679,6 +682,18 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "collect_k_bounded_resolution_failed_gates": bounded_collection_resolution[
             "failed_gates"
         ],
+        "app_classification_counts": _count_inventory_statuses(
+            tuple(
+                {"status": row["classification"]}
+                for row in app_classification.values()
+            )
+        ),
+        "standalone_included_app_count": sum(
+            1 for row in app_classification.values() if row["standalone_included"]
+        ),
+        "standalone_excluded_app_count": sum(
+            1 for row in app_classification.values() if not row["standalone_included"]
+        ),
         "collect_k_bounded_resolution": "unresolved_experimental_or_explicit_exclusion_required",
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
         "claim_boundary": (
@@ -708,8 +723,9 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
     if tuple(gate["passed_gates"]) != (
         "primitive_packet_prerequisite",
         "roadmap_consensus",
+        "app_migration_classification",
     ):
-        raise ValueError("only prerequisite and roadmap consensus gates should pass now")
+        raise ValueError("only prerequisite, roadmap consensus, and classification gates should pass now")
     expected_failed = tuple(
         required
         for required in V1_5_STANDALONE_RELEASE_REQUIRED_GATES
@@ -742,6 +758,22 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("COLLECT_K_BOUNDED fallback must exclude row-returning apps")
     if not tuple(gate["collect_k_bounded_resolution_failed_gates"]):
         raise ValueError("COLLECT_K_BOUNDED resolution must still expose failed gates")
+    if gate["gate_results"]["app_migration_classification"] is not True:
+        raise ValueError("app migration/classification gate must pass after classification matrix")
+    if int(gate["standalone_included_app_count"]) <= 0:
+        raise ValueError("standalone app classification must include at least one app")
+    if int(gate["standalone_excluded_app_count"]) <= 0:
+        raise ValueError("standalone app classification must exclude frozen/collection-dependent apps")
+    for required_classification in (
+        "fully_generic",
+        "wrapper_backed",
+        "scalar_only",
+        "collection_dependent",
+        "frozen",
+        "demo_only",
+    ):
+        if required_classification not in gate["app_classification_counts"]:
+            raise ValueError(f"missing app classification: {required_classification}")
     if "unresolved" not in gate["collect_k_bounded_resolution"]:
         raise ValueError("COLLECT_K_BOUNDED resolution must remain blocked")
     if tuple(gate["partner_track"]) != V1_5_STANDALONE_PARTNER_TRACK:

@@ -26,13 +26,16 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(gate["required_gates"], rt.V1_5_STANDALONE_RELEASE_REQUIRED_GATES)
         self.assertEqual(
             gate["passed_gates"],
-            ("primitive_packet_prerequisite", "roadmap_consensus"),
+            (
+                "primitive_packet_prerequisite",
+                "roadmap_consensus",
+                "app_migration_classification",
+            ),
         )
         self.assertEqual(
             gate["failed_gates"],
             (
                 "collect_k_bounded_resolution",
-                "app_migration_classification",
                 "same_contract_per_app_correctness",
                 "same_contract_per_app_benchmarks",
                 "test_backed_support_maturity_matrix",
@@ -91,6 +94,16 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
             gate["allowed_next_actions"],
             rt.V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS,
         )
+
+    def test_gate_embeds_app_classification_summary(self):
+        gate = rt.validate_v1_5_standalone_release_gate()
+
+        self.assertTrue(gate["gate_results"]["app_migration_classification"])
+        self.assertEqual(gate["standalone_included_app_count"], 14)
+        self.assertEqual(gate["standalone_excluded_app_count"], 4)
+        for classification in rt.V1_5_STANDALONE_APP_CLASSIFICATIONS:
+            with self.subTest(classification=classification):
+                self.assertIn(classification, gate["app_classification_counts"])
 
 
 if __name__ == "__main__":

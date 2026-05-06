@@ -55,6 +55,7 @@ class Goal1399CollectKBoundedResolutionTest(unittest.TestCase):
         self.assertIn("promote_to_standalone", gate["collect_k_bounded_resolution_strategy"])
         self.assertIn("exclude_row_returning_apps", gate["collect_k_bounded_resolution_fallback"])
         self.assertIn("collect_k_bounded_resolution", gate["failed_gates"])
+        self.assertIn("app_migration_classification", gate["passed_gates"])
         self.assertFalse(gate["gate_results"]["collect_k_bounded_resolution"])
         self.assertFalse(gate["release_tag_action_authorized"])
 

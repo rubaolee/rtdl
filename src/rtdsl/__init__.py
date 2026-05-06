@@ -533,6 +533,9 @@ from .v1_5_readiness import v1_5_standalone_release_gate
 from .v1_5_readiness import validate_v1_5_internal_readiness_decision
 from .v1_5_readiness import validate_v1_5_internal_readiness_gate
 from .v1_5_readiness import validate_v1_5_standalone_release_gate
+from .v1_5_standalone_app_classification import V1_5_STANDALONE_APP_CLASSIFICATIONS
+from .v1_5_standalone_app_classification import v1_5_standalone_app_classification_matrix
+from .v1_5_standalone_app_classification import validate_v1_5_standalone_app_classification_matrix
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -855,6 +858,9 @@ __all__ = [
     "validate_v1_5_internal_readiness_decision",
     "validate_v1_5_internal_readiness_gate",
     "validate_v1_5_standalone_release_gate",
+    "V1_5_STANDALONE_APP_CLASSIFICATIONS",
+    "v1_5_standalone_app_classification_matrix",
+    "validate_v1_5_standalone_app_classification_matrix",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",
