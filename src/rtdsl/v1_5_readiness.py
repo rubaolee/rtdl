@@ -167,6 +167,192 @@ def _decision_fingerprint(decision: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _require_tuple_field(
+    decision: dict[str, Any],
+    field: str,
+    expected: tuple[Any, ...],
+    message: str,
+) -> None:
+    if tuple(decision[field]) != expected:
+        raise ValueError(message)
+
+
+def _require_false_field(decision: dict[str, Any], field: str, message: str) -> None:
+    if decision[field] is not False:
+        raise ValueError(message)
+
+
+def _missing_external_review_partners(decision: dict[str, Any]) -> tuple[str, ...]:
+    accepted = tuple(decision["accepted_external_review_partners"])
+    return tuple(
+        partner
+        for partner in decision["required_external_review_partners"]
+        if partner not in accepted
+    )
+
+
+def _validate_decision_next_actions(decision: dict[str, Any]) -> None:
+    _require_tuple_field(
+        decision,
+        "allowed_next_actions",
+        V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS,
+        "v1.5 internal readiness decision must preserve allowed next actions",
+    )
+    for required_action in V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS:
+        if required_action not in tuple(decision["allowed_next_actions"]):
+            raise ValueError(f"missing allowed internal next action: {required_action}")
+    _require_tuple_field(
+        decision,
+        "blocked_next_actions",
+        V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS,
+        "v1.5 internal readiness decision must preserve blocked next actions",
+    )
+    for blocked_action in V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS:
+        if blocked_action not in tuple(decision["blocked_next_actions"]):
+            raise ValueError(f"missing blocked public/broad next action: {blocked_action}")
+
+
+def _validate_decision_public_claim_preconditions(decision: dict[str, Any]) -> None:
+    _require_tuple_field(
+        decision,
+        "public_claim_preconditions",
+        V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS,
+        "v1.5 internal readiness decision must preserve public claim preconditions",
+    )
+    for precondition in V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS:
+        if precondition not in tuple(decision["public_claim_preconditions"]):
+            raise ValueError(f"missing public claim precondition: {precondition}")
+    _require_false_field(
+        decision,
+        "public_claims_ready",
+        "v1.5 internal readiness decision must not mark public claims ready",
+    )
+
+
+def _validate_decision_external_review_state(decision: dict[str, Any]) -> None:
+    _require_tuple_field(
+        decision,
+        "required_external_review_partners",
+        V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS,
+        "v1.5 internal readiness decision must preserve required external reviewers",
+    )
+    _require_tuple_field(
+        decision,
+        "accepted_external_review_partners",
+        V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS,
+        "v1.5 internal readiness decision must preserve accepted external reviewers",
+    )
+    missing_external_review_partners = _missing_external_review_partners(decision)
+    if tuple(decision["missing_external_review_partners"]) != missing_external_review_partners:
+        raise ValueError("v1.5 internal readiness decision must report missing external reviewers")
+    if not decision["missing_external_review_partners"]:
+        raise ValueError("v1.5 internal readiness decision must not imply 3-AI consensus is complete")
+    _require_false_field(
+        decision,
+        "external_3_ai_consensus_ready",
+        "v1.5 internal readiness decision must not mark 3-AI consensus ready",
+    )
+
+
+def _validate_decision_source_usage(decision: dict[str, Any]) -> None:
+    if decision["source_usage_mode"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE:
+        raise ValueError("v1.5 internal readiness decision must preserve source-tree usage mode")
+    if decision["source_usage_command"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND:
+        raise ValueError("v1.5 internal readiness decision must preserve source-tree usage command")
+
+
+def _validate_decision_backend_boundary(decision: dict[str, Any]) -> None:
+    if tuple(decision["active_backend_scope"]) != ("embree", "optix"):
+        raise ValueError("v1.5 internal readiness decision must stay scoped to Embree and OptiX")
+    if tuple(decision["frozen_before_v2_1_backends"]) != ("vulkan", "hiprt", "apple_rt"):
+        raise ValueError("v1.5 internal readiness decision must preserve frozen-before-v2.1 backends")
+    if set(decision["active_backend_scope"]) & set(decision["frozen_before_v2_1_backends"]):
+        raise ValueError("v1.5 internal readiness decision backend scopes must not overlap")
+
+
+def _validate_decision_primitive_boundary(decision: dict[str, Any]) -> None:
+    _require_tuple_field(
+        decision,
+        "stable_summary_primitives",
+        V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES,
+        "v1.5 internal readiness decision must preserve stable summary primitives",
+    )
+    if "COLLECT_K_BOUNDED" not in tuple(decision["experimental_primitives"]):
+        raise ValueError("v1.5 internal readiness decision must keep COLLECT_K_BOUNDED experimental")
+    if "COLLECT_K_BOUNDED" in tuple(decision["stable_summary_primitives"]):
+        raise ValueError("v1.5 internal readiness decision must not mark COLLECT_K_BOUNDED stable")
+    if decision["experimental_contract_status_counts"] != {"experimental_diagnostic_only": 1}:
+        raise ValueError("v1.5 internal readiness decision must preserve experimental status counts")
+
+
+def _validate_decision_release_and_scope_boundary(decision: dict[str, Any]) -> None:
+    if decision["current_public_release_tag"] != V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG:
+        raise ValueError("v1.5 internal readiness decision must preserve the current public release tag")
+    if decision["scope_kind"] != V1_5_INTERNAL_READINESS_SCOPE_KIND:
+        raise ValueError("v1.5 internal readiness decision must preserve generic subpath scope")
+    _require_tuple_field(
+        decision,
+        "excluded_app_scope",
+        V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE,
+        "v1.5 internal readiness decision must preserve excluded app scope",
+    )
+
+
+def _validate_decision_evidence_boundary(decision: dict[str, Any]) -> None:
+    if decision["evidence_state"] != V1_5_INTERNAL_READINESS_EVIDENCE_STATE:
+        raise ValueError("v1.5 internal readiness decision must preserve evidence state")
+    _require_tuple_field(
+        decision,
+        "required_public_evidence",
+        V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE,
+        "v1.5 internal readiness decision must preserve required public evidence",
+    )
+    _require_tuple_field(
+        decision,
+        "false_authorization_flags",
+        V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS,
+        "v1.5 internal readiness decision must preserve false authorization flags",
+    )
+    for flag in V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
+        if decision[flag] is not False:
+            raise ValueError(f"v1.5 internal readiness decision must not authorize {flag}")
+
+
+def _validate_decision_broad_suite_state(decision: dict[str, Any]) -> None:
+    if decision["broad_local_suite_state"] != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_STATE:
+        raise ValueError("v1.5 internal readiness decision must preserve broad local suite state")
+    if int(decision["broad_local_suite_tests"]) != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_TESTS:
+        raise ValueError("v1.5 internal readiness decision must preserve broad local test count")
+    if int(decision["broad_local_suite_skipped"]) != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED:
+        raise ValueError("v1.5 internal readiness decision must preserve broad local skipped count")
+    _require_false_field(
+        decision,
+        "broad_local_suite_claim_grade_evidence",
+        "v1.5 internal readiness decision must not treat broad suite as claim-grade",
+    )
+
+
+def _validate_decision_fingerprint_state(decision: dict[str, Any]) -> None:
+    if (
+        decision["decision_fingerprint_algorithm"]
+        != V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM
+    ):
+        raise ValueError("v1.5 internal readiness decision must preserve fingerprint algorithm")
+    _require_tuple_field(
+        decision,
+        "decision_fingerprint_fields",
+        V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS,
+        "v1.5 internal readiness decision must preserve fingerprint fields",
+    )
+    if decision["decision_fingerprint"] != _decision_fingerprint(decision):
+        raise ValueError("v1.5 internal readiness decision fingerprint mismatch")
+
+
+def _validate_decision_claim_boundary(decision: dict[str, Any]) -> None:
+    if "not public v1.5 release wording" not in decision["claim_boundary"]:
+        raise ValueError("v1.5 internal readiness decision must preserve non-public boundary")
+
+
 def v1_5_internal_readiness_gate() -> dict[str, Any]:
     """Return the aggregate internal v1.5 contract-readiness gate.
 
@@ -386,105 +572,15 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
     decision = v1_5_internal_readiness_decision()
     if decision["decision"] != "continue_internal_non_public_v1_5_hardening":
         raise ValueError("invalid v1.5 internal readiness decision")
-    if tuple(decision["allowed_next_actions"]) != V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS:
-        raise ValueError("v1.5 internal readiness decision must preserve allowed next actions")
-    for required_action in V1_5_INTERNAL_READINESS_ALLOWED_NEXT_ACTIONS:
-        if required_action not in tuple(decision["allowed_next_actions"]):
-            raise ValueError(f"missing allowed internal next action: {required_action}")
-    if tuple(decision["blocked_next_actions"]) != V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS:
-        raise ValueError("v1.5 internal readiness decision must preserve blocked next actions")
-    for blocked_action in V1_5_INTERNAL_READINESS_BLOCKED_NEXT_ACTIONS:
-        if blocked_action not in tuple(decision["blocked_next_actions"]):
-            raise ValueError(f"missing blocked public/broad next action: {blocked_action}")
-    if (
-        tuple(decision["public_claim_preconditions"])
-        != V1_5_INTERNAL_READINESS_PUBLIC_CLAIM_PRECONDITIONS
-    ):
-        raise ValueError("v1.5 internal readiness decision must preserve public claim preconditions")
-    for precondition in (
-        "exact_subpath_evidence",
-        "fresh_git_pod_validation",
-        "external_3_ai_consensus",
-        "public_wording_review",
-    ):
-        if precondition not in tuple(decision["public_claim_preconditions"]):
-            raise ValueError(f"missing public claim precondition: {precondition}")
-    if decision["public_claims_ready"] is not False:
-        raise ValueError("v1.5 internal readiness decision must not mark public claims ready")
-    if (
-        tuple(decision["required_external_review_partners"])
-        != V1_5_INTERNAL_READINESS_REQUIRED_EXTERNAL_REVIEW_PARTNERS
-    ):
-        raise ValueError("v1.5 internal readiness decision must preserve required external reviewers")
-    if (
-        tuple(decision["accepted_external_review_partners"])
-        != V1_5_INTERNAL_READINESS_ACCEPTED_EXTERNAL_REVIEW_PARTNERS
-    ):
-        raise ValueError("v1.5 internal readiness decision must preserve accepted external reviewers")
-    missing_external_review_partners = tuple(
-        partner
-        for partner in decision["required_external_review_partners"]
-        if partner not in decision["accepted_external_review_partners"]
-    )
-    if tuple(decision["missing_external_review_partners"]) != missing_external_review_partners:
-        raise ValueError("v1.5 internal readiness decision must report missing external reviewers")
-    if not decision["missing_external_review_partners"]:
-        raise ValueError("v1.5 internal readiness decision must not imply 3-AI consensus is complete")
-    if decision["external_3_ai_consensus_ready"] is not False:
-        raise ValueError("v1.5 internal readiness decision must not mark 3-AI consensus ready")
-    if decision["source_usage_mode"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_MODE:
-        raise ValueError("v1.5 internal readiness decision must preserve source-tree usage mode")
-    if decision["source_usage_command"] != V1_5_INTERNAL_READINESS_SOURCE_USAGE_COMMAND:
-        raise ValueError("v1.5 internal readiness decision must preserve source-tree usage command")
-    if tuple(decision["active_backend_scope"]) != ("embree", "optix"):
-        raise ValueError("v1.5 internal readiness decision must stay scoped to Embree and OptiX")
-    if tuple(decision["frozen_before_v2_1_backends"]) != ("vulkan", "hiprt", "apple_rt"):
-        raise ValueError("v1.5 internal readiness decision must preserve frozen-before-v2.1 backends")
-    if set(decision["active_backend_scope"]) & set(decision["frozen_before_v2_1_backends"]):
-        raise ValueError("v1.5 internal readiness decision backend scopes must not overlap")
-    if tuple(decision["stable_summary_primitives"]) != V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES:
-        raise ValueError("v1.5 internal readiness decision must preserve stable summary primitives")
-    if "COLLECT_K_BOUNDED" not in tuple(decision["experimental_primitives"]):
-        raise ValueError("v1.5 internal readiness decision must keep COLLECT_K_BOUNDED experimental")
-    if "COLLECT_K_BOUNDED" in tuple(decision["stable_summary_primitives"]):
-        raise ValueError("v1.5 internal readiness decision must not mark COLLECT_K_BOUNDED stable")
-    if decision["experimental_contract_status_counts"] != {"experimental_diagnostic_only": 1}:
-        raise ValueError("v1.5 internal readiness decision must preserve experimental status counts")
-    if decision["current_public_release_tag"] != V1_5_INTERNAL_READINESS_CURRENT_PUBLIC_RELEASE_TAG:
-        raise ValueError("v1.5 internal readiness decision must preserve the current public release tag")
-    if decision["scope_kind"] != V1_5_INTERNAL_READINESS_SCOPE_KIND:
-        raise ValueError("v1.5 internal readiness decision must preserve generic subpath scope")
-    if tuple(decision["excluded_app_scope"]) != V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE:
-        raise ValueError("v1.5 internal readiness decision must preserve excluded app scope")
-    if decision["evidence_state"] != V1_5_INTERNAL_READINESS_EVIDENCE_STATE:
-        raise ValueError("v1.5 internal readiness decision must preserve evidence state")
-    if tuple(decision["required_public_evidence"]) != V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE:
-        raise ValueError("v1.5 internal readiness decision must preserve required public evidence")
-    if tuple(decision["false_authorization_flags"]) != V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
-        raise ValueError("v1.5 internal readiness decision must preserve false authorization flags")
-    if decision["broad_local_suite_state"] != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_STATE:
-        raise ValueError("v1.5 internal readiness decision must preserve broad local suite state")
-    if int(decision["broad_local_suite_tests"]) != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_TESTS:
-        raise ValueError("v1.5 internal readiness decision must preserve broad local test count")
-    if int(decision["broad_local_suite_skipped"]) != V1_5_INTERNAL_READINESS_BROAD_LOCAL_SUITE_SKIPPED:
-        raise ValueError("v1.5 internal readiness decision must preserve broad local skipped count")
-    if (
-        decision["decision_fingerprint_algorithm"]
-        != V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_ALGORITHM
-    ):
-        raise ValueError("v1.5 internal readiness decision must preserve fingerprint algorithm")
-    if (
-        tuple(decision["decision_fingerprint_fields"])
-        != V1_5_INTERNAL_READINESS_DECISION_FINGERPRINT_FIELDS
-    ):
-        raise ValueError("v1.5 internal readiness decision must preserve fingerprint fields")
-    if decision["decision_fingerprint"] != _decision_fingerprint(decision):
-        raise ValueError("v1.5 internal readiness decision fingerprint mismatch")
-    for flag in V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
-        if decision[flag] is not False:
-            raise ValueError(f"v1.5 internal readiness decision must not authorize {flag}")
-    if decision["broad_local_suite_claim_grade_evidence"] is not False:
-        raise ValueError("v1.5 internal readiness decision must not treat broad suite as claim-grade")
-    if "not public v1.5 release wording" not in decision["claim_boundary"]:
-        raise ValueError("v1.5 internal readiness decision must preserve non-public boundary")
+    _validate_decision_next_actions(decision)
+    _validate_decision_public_claim_preconditions(decision)
+    _validate_decision_external_review_state(decision)
+    _validate_decision_source_usage(decision)
+    _validate_decision_backend_boundary(decision)
+    _validate_decision_primitive_boundary(decision)
+    _validate_decision_release_and_scope_boundary(decision)
+    _validate_decision_evidence_boundary(decision)
+    _validate_decision_broad_suite_state(decision)
+    _validate_decision_fingerprint_state(decision)
+    _validate_decision_claim_boundary(decision)
     return decision
