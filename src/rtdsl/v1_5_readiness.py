@@ -143,19 +143,14 @@ V1_5_STANDALONE_RELEASE_REQUIRED_GATES = (
     "release_docs_and_public_wording",
 )
 V1_5_STANDALONE_RELEASE_BLOCKERS = (
-    "COLLECT_K_BOUNDED is still experimental and has not been promoted or excluded",
-    "app migration/classification is not yet complete for standalone v1.5 scope",
-    "same-contract per-app Embree/OptiX correctness evidence is not yet complete",
     "same-contract per-app Embree/OptiX benchmark evidence is not yet complete",
     "test-backed support/maturity matrix is not yet complete",
     "v1.5 release docs and public wording must be refreshed after standalone gates pass",
 )
 V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS = (
-    "define_collect_k_bounded_resolution",
-    "complete_app_migration_classification",
-    "run_same_contract_per_app_correctness",
     "run_same_contract_per_app_benchmarks",
     "build_test_backed_support_maturity_matrix",
+    "refresh_release_docs_and_public_wording",
 )
 V1_5_STANDALONE_PARTNER_TRACK = (
     ("v1.6", "partner_api_design"),
@@ -646,7 +641,9 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
     gate_results = {
         "primitive_packet_prerequisite": True,
         "roadmap_consensus": True,
-        "collect_k_bounded_resolution": False,
+        "collect_k_bounded_resolution": bounded_collection_resolution[
+            "standalone_v1_5_resolution_complete"
+        ],
         "app_migration_classification": True,
         "same_contract_per_app_correctness": correctness_summary["release_gate_complete"],
         "same_contract_per_app_benchmarks": False,
@@ -686,6 +683,15 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "collect_k_bounded_resolution_failed_gates": bounded_collection_resolution[
             "failed_gates"
         ],
+        "collect_k_bounded_resolution_complete": bounded_collection_resolution[
+            "standalone_v1_5_resolution_complete"
+        ],
+        "collect_k_bounded_standalone_decision": bounded_collection_resolution[
+            "standalone_v1_5_decision"
+        ],
+        "collect_k_bounded_excluded_row_returning_apps": bounded_collection_resolution[
+            "excluded_row_returning_apps"
+        ],
         "app_classification_counts": _count_inventory_statuses(
             tuple(
                 {"status": row["classification"]}
@@ -704,7 +710,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "same_contract_correctness_excluded_app_count": correctness_summary["excluded_app_count"],
         "same_contract_correctness_pending_apps": correctness_summary["pending_apps"],
         "same_contract_correctness_command": correctness_summary["command"],
-        "collect_k_bounded_resolution": "unresolved_experimental_or_explicit_exclusion_required",
+        "collect_k_bounded_resolution": "resolved_by_explicit_row_returning_app_exclusion",
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
         "claim_boundary": (
             "standalone v1.5 release is blocked until all standalone gates pass; "
@@ -733,11 +739,12 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
     if tuple(gate["passed_gates"]) != (
         "primitive_packet_prerequisite",
         "roadmap_consensus",
+        "collect_k_bounded_resolution",
         "app_migration_classification",
         "same_contract_per_app_correctness",
     ):
         raise ValueError(
-            "only prerequisite, roadmap consensus, classification, and correctness gates should pass now"
+            "only prerequisite, roadmap consensus, collect-k, classification, and correctness gates should pass now"
         )
     expected_failed = tuple(
         required
@@ -763,14 +770,27 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("v1.5 standalone release gate must preserve source-tree usage")
     if gate["collect_k_bounded_statuses"] != ("experimental_diagnostic_only",):
         raise ValueError("COLLECT_K_BOUNDED must still be represented as unresolved")
-    if gate["collect_k_bounded_resolution_plan_status"] != "defined_pending_evidence":
-        raise ValueError("COLLECT_K_BOUNDED resolution plan must be defined")
-    if "promote_to_standalone" not in gate["collect_k_bounded_resolution_strategy"]:
-        raise ValueError("COLLECT_K_BOUNDED resolution strategy must target standalone promotion")
-    if "exclude_row_returning_apps" not in gate["collect_k_bounded_resolution_fallback"]:
-        raise ValueError("COLLECT_K_BOUNDED fallback must exclude row-returning apps")
+    if gate["collect_k_bounded_resolution_plan_status"] != "resolved_by_exclusion_for_standalone_v1_5":
+        raise ValueError("COLLECT_K_BOUNDED resolution must be explicit exclusion for v1.5")
+    if "exclude_row_returning_apps" not in gate["collect_k_bounded_resolution_strategy"]:
+        raise ValueError("COLLECT_K_BOUNDED strategy must exclude row-returning apps")
+    if "promote_later" not in gate["collect_k_bounded_resolution_fallback"]:
+        raise ValueError("COLLECT_K_BOUNDED fallback must preserve future promotion")
     if not tuple(gate["collect_k_bounded_resolution_failed_gates"]):
-        raise ValueError("COLLECT_K_BOUNDED resolution must still expose failed gates")
+        raise ValueError("COLLECT_K_BOUNDED future promotion must still expose failed gates")
+    if gate["gate_results"]["collect_k_bounded_resolution"] is not True:
+        raise ValueError("COLLECT_K_BOUNDED standalone resolution must pass by exclusion")
+    if gate["collect_k_bounded_resolution_complete"] is not True:
+        raise ValueError("COLLECT_K_BOUNDED standalone resolution complete flag mismatch")
+    if gate["collect_k_bounded_standalone_decision"] != (
+        "exclude_row_returning_apps_keep_primitive_experimental"
+    ):
+        raise ValueError("COLLECT_K_BOUNDED standalone decision mismatch")
+    if tuple(gate["collect_k_bounded_excluded_row_returning_apps"]) != (
+        "polygon_set_jaccard",
+        "segment_polygon_anyhit_rows",
+    ):
+        raise ValueError("COLLECT_K_BOUNDED excluded row app list mismatch")
     if gate["gate_results"]["app_migration_classification"] is not True:
         raise ValueError("app migration/classification gate must pass after classification matrix")
     if int(gate["standalone_included_app_count"]) <= 0:
@@ -797,8 +817,8 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
     ):
         if required_classification not in gate["app_classification_counts"]:
             raise ValueError(f"missing app classification: {required_classification}")
-    if "unresolved" not in gate["collect_k_bounded_resolution"]:
-        raise ValueError("COLLECT_K_BOUNDED resolution must remain blocked")
+    if "resolved_by_explicit" not in gate["collect_k_bounded_resolution"]:
+        raise ValueError("COLLECT_K_BOUNDED resolution must be explicit exclusion")
     if tuple(gate["partner_track"]) != V1_5_STANDALONE_PARTNER_TRACK:
         raise ValueError("v1.6-v2.0 partner track must be preserved")
     boundary = str(gate["claim_boundary"])

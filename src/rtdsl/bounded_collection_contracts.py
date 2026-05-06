@@ -2,16 +2,24 @@ from __future__ import annotations
 
 from typing import Any
 
+from .v1_5_standalone_app_classification import (
+    validate_v1_5_standalone_app_classification_matrix,
+)
+
 
 V1_5_BOUNDED_COLLECTION_PRIMITIVES = ("COLLECT_K_BOUNDED",)
 V1_5_BOUNDED_COLLECTION_FAILURE_MODES = ("fail_closed_overflow",)
 V1_5_BOUNDED_COLLECTION_PUBLIC_WORDING_ALLOWED = False
-V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS = "defined_pending_evidence"
+V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS = "resolved_by_exclusion_for_standalone_v1_5"
 V1_5_COLLECT_K_BOUNDED_RESOLUTION_STRATEGY = (
-    "promote_to_standalone_if_native_fail_closed_parity_and_benchmarks_pass"
+    "exclude_row_returning_apps_from_standalone_v1_5_keep_collect_k_experimental"
 )
 V1_5_COLLECT_K_BOUNDED_FALLBACK_STRATEGY = (
-    "exclude_row_returning_apps_from_standalone_v1_5_if_gates_do_not_pass"
+    "promote_later_only_if_native_fail_closed_parity_benchmarks_and_external_review_pass"
+)
+V1_5_COLLECT_K_BOUNDED_EXCLUDED_APPS = (
+    "polygon_set_jaccard",
+    "segment_polygon_anyhit_rows",
 )
 V1_5_COLLECT_K_BOUNDED_PROMOTION_GATES = (
     "published_capacity_ordering_overflow_contract",
@@ -127,6 +135,15 @@ def validate_v1_5_collect_k_bounded_contracts() -> tuple[dict[str, Any], ...]:
 def v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
     """Return the standalone-v1.5 resolution plan for COLLECT_K_BOUNDED."""
     (contract,) = validate_v1_5_collect_k_bounded_contracts()
+    app_classification = validate_v1_5_standalone_app_classification_matrix()
+    excluded_apps = tuple(
+        sorted(
+            app
+            for app, row in app_classification.items()
+            if row["classification"] == "collection_dependent"
+            and not row["standalone_included"]
+        )
+    )
     gate_results = {
         "published_capacity_ordering_overflow_contract": True,
         "python_fail_closed_reference_tests": True,
@@ -134,8 +151,8 @@ def v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
         "optix_native_fail_closed_collection": False,
         "cross_backend_complete_candidate_coverage_parity": False,
         "score_reduction_guarded_by_complete_collection": True,
-        "row_returning_app_scope_classified": False,
-        "same_contract_app_correctness_suite": False,
+        "row_returning_app_scope_classified": True,
+        "same_contract_app_correctness_suite": True,
         "same_contract_app_benchmark_suite": False,
         "external_review_before_public_promotion": False,
     }
@@ -144,6 +161,9 @@ def v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
         "status": V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS,
         "resolution_strategy": V1_5_COLLECT_K_BOUNDED_RESOLUTION_STRATEGY,
         "fallback_strategy": V1_5_COLLECT_K_BOUNDED_FALLBACK_STRATEGY,
+        "standalone_v1_5_resolution": "row_returning_apps_explicitly_excluded",
+        "standalone_v1_5_resolution_complete": True,
+        "excluded_row_returning_apps": excluded_apps,
         "stable_promotion_authorized": False,
         "public_wording_allowed": False,
         "release_tag_action_authorized": False,
@@ -162,12 +182,12 @@ def v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
         "gate_results": gate_results,
         "passed_gates": tuple(gate for gate, passed in gate_results.items() if passed),
         "failed_gates": tuple(gate for gate, passed in gate_results.items() if not passed),
-        "standalone_v1_5_decision": "pending_required_evidence",
+        "standalone_v1_5_decision": "exclude_row_returning_apps_keep_primitive_experimental",
         "claim_boundary": (
-            "COLLECT_K_BOUNDED resolution is defined but not complete; keep experimental "
-            "until native Embree/OptiX fail-closed collection, parity, app correctness, "
-            "benchmark, and external review gates pass; otherwise exclude row-returning "
-            "apps from standalone v1.5."
+            "COLLECT_K_BOUNDED is resolved for standalone v1.5 by explicit exclusion "
+            "of row-returning apps; keep experimental primitive status until native "
+            "Embree/OptiX fail-closed collection, parity, benchmark, and external "
+            "review gates pass for a future promotion."
         ),
     }
 
@@ -177,11 +197,11 @@ def validate_v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
     if resolution["primitive"] != "COLLECT_K_BOUNDED":
         raise ValueError("collect-k resolution must target COLLECT_K_BOUNDED")
     if resolution["status"] != V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS:
-        raise ValueError("collect-k resolution status must remain pending evidence")
+        raise ValueError("collect-k resolution status must remain explicit exclusion")
     if resolution["resolution_strategy"] != V1_5_COLLECT_K_BOUNDED_RESOLUTION_STRATEGY:
         raise ValueError("collect-k resolution strategy changed unexpectedly")
     if resolution["fallback_strategy"] != V1_5_COLLECT_K_BOUNDED_FALLBACK_STRATEGY:
-        raise ValueError("collect-k fallback strategy must exclude row-returning apps")
+        raise ValueError("collect-k fallback strategy must preserve future promotion gates")
     if tuple(resolution["promotion_gates"]) != V1_5_COLLECT_K_BOUNDED_PROMOTION_GATES:
         raise ValueError("collect-k promotion gates must be preserved")
     gate_results = dict(resolution["gate_results"])
@@ -189,6 +209,12 @@ def validate_v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
         raise ValueError("collect-k gate results must match promotion gates")
     if tuple(resolution["active_backend_scope"]) != ("embree", "optix"):
         raise ValueError("collect-k promotion must require Embree and OptiX")
+    if resolution["standalone_v1_5_resolution"] != "row_returning_apps_explicitly_excluded":
+        raise ValueError("collect-k standalone resolution must exclude row-returning apps")
+    if resolution["standalone_v1_5_resolution_complete"] is not True:
+        raise ValueError("collect-k standalone resolution must be complete by exclusion")
+    if tuple(resolution["excluded_row_returning_apps"]) != V1_5_COLLECT_K_BOUNDED_EXCLUDED_APPS:
+        raise ValueError("collect-k excluded row-returning app list mismatch")
     for flag in (
         "stable_promotion_authorized",
         "public_wording_allowed",
@@ -208,6 +234,8 @@ def validate_v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
         "published_capacity_ordering_overflow_contract",
         "python_fail_closed_reference_tests",
         "score_reduction_guarded_by_complete_collection",
+        "row_returning_app_scope_classified",
+        "same_contract_app_correctness_suite",
     )
     if tuple(resolution["passed_gates"]) != expected_passed:
         raise ValueError("collect-k passed gate set must remain evidence-bounded")
@@ -218,9 +246,9 @@ def validate_v1_5_collect_k_bounded_resolution() -> dict[str, Any]:
         raise ValueError("collect-k failed gate set mismatch")
     boundary = str(resolution["claim_boundary"])
     for required_boundary in (
-        "defined but not complete",
+        "resolved for standalone v1.5 by explicit exclusion",
         "keep experimental",
-        "otherwise exclude row-returning apps",
+        "future promotion",
     ):
         if required_boundary not in boundary:
             raise ValueError("collect-k resolution boundary is too broad")

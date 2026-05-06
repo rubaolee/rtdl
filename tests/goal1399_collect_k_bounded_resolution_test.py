@@ -4,14 +4,19 @@ import rtdsl as rt
 
 
 class Goal1399CollectKBoundedResolutionTest(unittest.TestCase):
-    def test_resolution_is_defined_but_not_promoted(self):
+    def test_resolution_excludes_row_returning_apps_without_promoting_primitive(self):
         resolution = rt.validate_v1_5_collect_k_bounded_resolution()
 
         self.assertEqual(resolution["primitive"], "COLLECT_K_BOUNDED")
-        self.assertEqual(resolution["status"], "defined_pending_evidence")
+        self.assertEqual(resolution["status"], "resolved_by_exclusion_for_standalone_v1_5")
         self.assertEqual(resolution["status"], rt.V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS)
-        self.assertIn("promote_to_standalone", resolution["resolution_strategy"])
-        self.assertIn("exclude_row_returning_apps", resolution["fallback_strategy"])
+        self.assertIn("exclude_row_returning_apps", resolution["resolution_strategy"])
+        self.assertIn("promote_later", resolution["fallback_strategy"])
+        self.assertTrue(resolution["standalone_v1_5_resolution_complete"])
+        self.assertEqual(
+            resolution["excluded_row_returning_apps"],
+            ("polygon_set_jaccard", "segment_polygon_anyhit_rows"),
+        )
         self.assertFalse(resolution["stable_promotion_authorized"])
         self.assertFalse(resolution["public_wording_allowed"])
         self.assertFalse(resolution["release_tag_action_authorized"])
@@ -41,6 +46,8 @@ class Goal1399CollectKBoundedResolutionTest(unittest.TestCase):
                 "published_capacity_ordering_overflow_contract",
                 "python_fail_closed_reference_tests",
                 "score_reduction_guarded_by_complete_collection",
+                "row_returning_app_scope_classified",
+                "same_contract_app_correctness_suite",
             ),
         )
         self.assertIn("embree_native_fail_closed_collection", resolution["failed_gates"])
@@ -51,12 +58,19 @@ class Goal1399CollectKBoundedResolutionTest(unittest.TestCase):
     def test_standalone_gate_embeds_resolution_plan_without_passing_release_gate(self):
         gate = rt.validate_v1_5_standalone_release_gate()
 
-        self.assertEqual(gate["collect_k_bounded_resolution_plan_status"], "defined_pending_evidence")
-        self.assertIn("promote_to_standalone", gate["collect_k_bounded_resolution_strategy"])
-        self.assertIn("exclude_row_returning_apps", gate["collect_k_bounded_resolution_fallback"])
-        self.assertIn("collect_k_bounded_resolution", gate["failed_gates"])
+        self.assertEqual(
+            gate["collect_k_bounded_resolution_plan_status"],
+            "resolved_by_exclusion_for_standalone_v1_5",
+        )
+        self.assertIn("exclude_row_returning_apps", gate["collect_k_bounded_resolution_strategy"])
+        self.assertIn("promote_later", gate["collect_k_bounded_resolution_fallback"])
+        self.assertIn("collect_k_bounded_resolution", gate["passed_gates"])
         self.assertIn("app_migration_classification", gate["passed_gates"])
-        self.assertFalse(gate["gate_results"]["collect_k_bounded_resolution"])
+        self.assertTrue(gate["gate_results"]["collect_k_bounded_resolution"])
+        self.assertEqual(
+            gate["collect_k_bounded_excluded_row_returning_apps"],
+            ("polygon_set_jaccard", "segment_polygon_anyhit_rows"),
+        )
         self.assertFalse(gate["release_tag_action_authorized"])
 
 

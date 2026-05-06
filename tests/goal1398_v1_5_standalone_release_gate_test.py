@@ -29,6 +29,7 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
             (
                 "primitive_packet_prerequisite",
                 "roadmap_consensus",
+                "collect_k_bounded_resolution",
                 "app_migration_classification",
                 "same_contract_per_app_correctness",
             ),
@@ -36,7 +37,6 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(
             gate["failed_gates"],
             (
-                "collect_k_bounded_resolution",
                 "same_contract_per_app_benchmarks",
                 "test_backed_support_maturity_matrix",
                 "release_docs_and_public_wording",
@@ -46,19 +46,22 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
             with self.subTest(failed_gate=failed_gate):
                 self.assertFalse(gate["gate_results"][failed_gate])
         self.assertTrue(gate["gate_results"]["same_contract_per_app_correctness"])
+        self.assertTrue(gate["gate_results"]["collect_k_bounded_resolution"])
 
-    def test_gate_keeps_collect_k_bounded_unresolved(self):
+    def test_gate_resolves_collect_k_bounded_by_excluding_row_returning_apps(self):
         gate = rt.validate_v1_5_standalone_release_gate()
 
         self.assertEqual(gate["collect_k_bounded_statuses"], ("experimental_diagnostic_only",))
         self.assertEqual(
             gate["collect_k_bounded_resolution"],
-            "unresolved_experimental_or_explicit_exclusion_required",
+            "resolved_by_explicit_row_returning_app_exclusion",
         )
-        self.assertIn(
-            "COLLECT_K_BOUNDED is still experimental and has not been promoted or excluded",
-            gate["blockers"],
+        self.assertTrue(gate["collect_k_bounded_resolution_complete"])
+        self.assertEqual(
+            gate["collect_k_bounded_excluded_row_returning_apps"],
+            ("polygon_set_jaccard", "segment_polygon_anyhit_rows"),
         )
+        self.assertNotIn("collect_k_bounded_resolution", gate["failed_gates"])
 
     def test_gate_preserves_backend_usage_and_partner_track_boundaries(self):
         gate = rt.validate_v1_5_standalone_release_gate()
@@ -84,11 +87,9 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(
             gate["allowed_next_actions"],
             (
-                "define_collect_k_bounded_resolution",
-                "complete_app_migration_classification",
-                "run_same_contract_per_app_correctness",
                 "run_same_contract_per_app_benchmarks",
                 "build_test_backed_support_maturity_matrix",
+                "refresh_release_docs_and_public_wording",
             ),
         )
         self.assertEqual(
