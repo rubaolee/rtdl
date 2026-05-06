@@ -45,6 +45,23 @@ def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str
     return dict(sorted(counts.items()))
 
 
+def _contract_surface_counts(
+    *,
+    inventory_rows: int,
+    grouped_contracts: int,
+    db_contracts: int,
+    float_sum_contracts: int,
+    bounded_collection_contracts: int,
+) -> dict[str, int]:
+    return {
+        "inventory_rows": inventory_rows,
+        "grouped_contracts": grouped_contracts,
+        "db_contracts": db_contracts,
+        "float_sum_contracts": float_sum_contracts,
+        "bounded_collection_contracts": bounded_collection_contracts,
+    }
+
+
 def v1_5_internal_readiness_gate() -> dict[str, Any]:
     """Return the aggregate internal v1.5 contract-readiness gate.
 
@@ -59,14 +76,19 @@ def v1_5_internal_readiness_gate() -> dict[str, Any]:
     float_sum_contracts = validate_v1_5_float_sum_reduction_contracts()
     bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
     blockers = v1_5_generic_migration_blockers()
+    contract_surface_counts = _contract_surface_counts(
+        inventory_rows=len(inventory),
+        grouped_contracts=len(grouped_contracts),
+        db_contracts=len(db_contracts),
+        float_sum_contracts=len(float_sum_contracts),
+        bounded_collection_contracts=len(bounded_collection_contracts),
+    )
 
     return {
         "status": V1_5_INTERNAL_READINESS_STATUS,
-        "inventory_rows": len(inventory),
-        "grouped_contracts": len(grouped_contracts),
-        "db_contracts": len(db_contracts),
-        "float_sum_contracts": len(float_sum_contracts),
-        "bounded_collection_contracts": len(bounded_collection_contracts),
+        **contract_surface_counts,
+        "contract_surface_counts": contract_surface_counts,
+        "total_contract_surfaces": sum(contract_surface_counts.values()),
         "stable_summary_primitives": V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES,
         "active_backend_scope": ACTIVE_V1_5_BACKENDS,
         "frozen_before_v2_1_backends": FROZEN_BEFORE_V2_1_BACKENDS,
@@ -157,4 +179,12 @@ def validate_v1_5_internal_readiness_gate() -> dict[str, Any]:
     ):
         if int(gate[count_field]) <= 0:
             raise ValueError(f"v1.5 internal readiness count must be positive: {count_field}")
+    expected_surface_total = sum(int(count) for count in gate["contract_surface_counts"].values())
+    if int(gate["total_contract_surfaces"]) != expected_surface_total:
+        raise ValueError("v1.5 internal readiness total contract surfaces must match component counts")
+    for count_field, count in gate["contract_surface_counts"].items():
+        if gate[count_field] != count:
+            raise ValueError(
+                f"v1.5 internal readiness surface count mismatch for {count_field}"
+            )
     return gate

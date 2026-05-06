@@ -8,11 +8,21 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         gate = rt.validate_v1_5_internal_readiness_gate()
 
         self.assertEqual(gate["status"], "internal_v1_5_contract_gate_passing_non_public")
-        self.assertEqual(gate["inventory_rows"], 14)
-        self.assertEqual(gate["grouped_contracts"], 5)
-        self.assertEqual(gate["db_contracts"], 3)
-        self.assertEqual(gate["float_sum_contracts"], 2)
-        self.assertEqual(gate["bounded_collection_contracts"], 1)
+        self.assertEqual(
+            gate["contract_surface_counts"],
+            {
+                "inventory_rows": 14,
+                "grouped_contracts": 5,
+                "db_contracts": 3,
+                "float_sum_contracts": 2,
+                "bounded_collection_contracts": 1,
+            },
+        )
+        for count_field, count in gate["contract_surface_counts"].items():
+            with self.subTest(count_field=count_field):
+                self.assertEqual(gate[count_field], count)
+        self.assertEqual(gate["total_contract_surfaces"], 25)
+        self.assertEqual(gate["total_contract_surfaces"], sum(gate["contract_surface_counts"].values()))
 
     def test_gate_keeps_public_release_and_speedup_blocked(self):
         gate = rt.validate_v1_5_internal_readiness_gate()
