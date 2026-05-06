@@ -475,6 +475,7 @@ from .generic_polygon_primitives import FROZEN_BEFORE_V2_1_POLYGON_BACKENDS
 from .generic_polygon_primitives import run_generic_polygon_pair_exact_area_summary
 from .generic_polygon_primitives import run_generic_polygon_set_jaccard_score_reduction
 from .generic_polygon_primitives import run_generic_polygon_set_jaccard_summary
+from .generic_polygon_primitives import V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS
 from .generic_prepared_status import generic_prepared_anyhit_count_backend_status
 from .generic_prepared_status import generic_prepared_anyhit_count_blockers
 from .grouped_reduction_contracts import V1_5_EXPERIMENTAL_PRIMITIVES
@@ -759,6 +760,7 @@ __all__ = [
     "run_generic_polygon_pair_exact_area_summary",
     "run_generic_polygon_set_jaccard_score_reduction",
     "run_generic_polygon_set_jaccard_summary",
+    "V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS",
     "generic_prepared_anyhit_count_backend_status",
     "generic_prepared_anyhit_count_blockers",
     "V1_5_EXPERIMENTAL_PRIMITIVES",

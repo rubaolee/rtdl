@@ -10,6 +10,27 @@ from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL
 
 ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS = ("embree", "optix")
 FROZEN_BEFORE_V2_1_POLYGON_BACKENDS = ("vulkan", "hiprt", "apple_rt")
+V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS = (
+    "summary_float64_sums",
+    "summary_float64_sums_plus_ratio",
+)
+
+
+def _polygon_float_sum_contract(*, result_layout: str, value_fields: tuple[str, ...]) -> dict[str, Any]:
+    if result_layout not in V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS:
+        raise ValueError(f"unsupported polygon REDUCE_FLOAT(SUM) result layout: {result_layout}")
+    return {
+        "summary_primitive": "REDUCE_FLOAT(SUM)",
+        "result_layout": result_layout,
+        "dtype": "float64",
+        "value_fields": value_fields,
+        "integer_parity_required": True,
+        "scalar_helper_direct_use": False,
+        "reason": (
+            "polygon summaries preserve exact integer oracle parity before exposing "
+            "float64 REDUCE_FLOAT(SUM) metadata"
+        ),
+    }
 
 
 def _validate_backend(backend: str) -> str:
@@ -39,14 +60,19 @@ def run_generic_polygon_pair_exact_area_summary(
     query_sec = time.perf_counter() - query_start
     total_intersection_area = int(summary["total_intersection_area"])
     total_union_area = int(summary["total_union_area"])
+    summary_contract = _polygon_float_sum_contract(
+        result_layout="summary_float64_sums",
+        value_fields=("total_intersection_area", "total_union_area"),
+    )
     return {
         "primitive": "POLYGON_PAIR_EXACT_AREA_SUMMARY",
-        "summary_primitive": "REDUCE_FLOAT(SUM)",
+        "summary_primitive": summary_contract["summary_primitive"],
+        "summary_contract": summary_contract,
         "backend": normalized_backend,
         "candidate_pair_count": len(normalized_candidate_pairs),
         "overlap_pair_count": int(summary["overlap_pair_count"]),
-        "result_layout": "summary_float64_sums",
-        "dtype": "float64",
+        "result_layout": summary_contract["result_layout"],
+        "dtype": summary_contract["dtype"],
         "total_intersection_area": float(total_intersection_area),
         "total_union_area": float(total_union_area),
         "integer_parity_values": {
@@ -157,13 +183,18 @@ def run_generic_polygon_set_jaccard_score_reduction(
         "right_area": int(summary["right_area"]),
         "union_area": int(summary["union_area"]),
     }
+    summary_contract = _polygon_float_sum_contract(
+        result_layout="summary_float64_sums_plus_ratio",
+        value_fields=("intersection_area", "left_area", "right_area", "union_area"),
+    )
     return {
         "primitive": "POLYGON_SET_JACCARD_SCORE_REDUCTION",
-        "summary_primitive": "REDUCE_FLOAT(SUM)",
+        "summary_primitive": summary_contract["summary_primitive"],
+        "summary_contract": summary_contract,
         "backend": normalized_backend,
         "candidate_pair_count": len(candidate_pairs),
-        "result_layout": "summary_float64_sums_plus_ratio",
-        "dtype": "float64",
+        "result_layout": summary_contract["result_layout"],
+        "dtype": summary_contract["dtype"],
         "summary": summary,
         "rows": rows,
         "integer_parity_values": integer_parity_values,

@@ -5,6 +5,14 @@ import unittest
 import rtdsl as rt
 
 
+def _summary(_left, _right, _candidate_pairs):
+    return {
+        "total_intersection_area": 7,
+        "total_union_area": 11,
+        "overlap_pair_count": 2,
+    }
+
+
 class Goal1308V15PolygonFloatSumContractTest(unittest.TestCase):
     def test_float_sum_contracts_validate(self) -> None:
         contracts = rt.validate_v1_5_float_sum_reduction_contracts()
@@ -43,6 +51,29 @@ class Goal1308V15PolygonFloatSumContractTest(unittest.TestCase):
         self.assertEqual(polygon["status"], "pod_verified_generic")
         self.assertEqual(jaccard["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(jaccard["status"], "pod_verified_generic")
+
+    def test_polygon_pair_runtime_exposes_float_sum_summary_contract(self) -> None:
+        result = rt.run_generic_polygon_pair_exact_area_summary(
+            left=(),
+            right=(),
+            candidate_pairs=((1, 2), (1, 2), (3, 4)),
+            backend="embree",
+            exact_summary_fn=_summary,
+        )
+
+        self.assertEqual(result["summary_primitive"], "REDUCE_FLOAT(SUM)")
+        self.assertEqual(result["result_layout"], "summary_float64_sums")
+        self.assertEqual(result["summary_contract"]["summary_primitive"], "REDUCE_FLOAT(SUM)")
+        self.assertEqual(result["summary_contract"]["result_layout"], "summary_float64_sums")
+        self.assertEqual(
+            result["summary_contract"]["value_fields"],
+            ("total_intersection_area", "total_union_area"),
+        )
+        self.assertTrue(result["summary_contract"]["integer_parity_required"])
+        self.assertFalse(result["summary_contract"]["scalar_helper_direct_use"])
+        self.assertIn(result["summary_contract"]["result_layout"], rt.V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS)
+        self.assertEqual(result["integer_parity_values"]["total_intersection_area"], 7)
+        self.assertEqual(result["candidate_pair_count"], 2)
 
 
 if __name__ == "__main__":

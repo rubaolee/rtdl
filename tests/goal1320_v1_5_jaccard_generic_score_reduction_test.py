@@ -49,6 +49,15 @@ class Goal1320V15JaccardGenericScoreReductionTest(unittest.TestCase):
         self.assertEqual(result["primitive"], "POLYGON_SET_JACCARD_SCORE_REDUCTION")
         self.assertEqual(result["summary_primitive"], "REDUCE_FLOAT(SUM)")
         self.assertEqual(result["result_layout"], "summary_float64_sums_plus_ratio")
+        self.assertEqual(result["summary_contract"]["summary_primitive"], "REDUCE_FLOAT(SUM)")
+        self.assertEqual(result["summary_contract"]["result_layout"], "summary_float64_sums_plus_ratio")
+        self.assertEqual(
+            result["summary_contract"]["value_fields"],
+            ("intersection_area", "left_area", "right_area", "union_area"),
+        )
+        self.assertTrue(result["summary_contract"]["integer_parity_required"])
+        self.assertFalse(result["summary_contract"]["scalar_helper_direct_use"])
+        self.assertIn(result["summary_contract"]["result_layout"], rt.V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS)
         self.assertEqual(result["candidate_pair_count"], 2)
         self.assertEqual(result["summary"]["intersection_area"], 2)
         self.assertEqual(result["integer_parity_values"]["union_area"], 18)
