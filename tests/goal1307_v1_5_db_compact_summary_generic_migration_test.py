@@ -112,6 +112,53 @@ class Goal1307V15DbCompactSummaryGenericMigrationTest(unittest.TestCase):
                         requests=({"name": "scan", "operation": "conjunctive_scan_count", "predicates": ()},),
                     )
 
+    def test_generic_db_compact_summary_rejects_bad_request_contracts(self) -> None:
+        dataset = _FakePreparedDbDataset()
+        cases = (
+            (
+                (),
+                "requires at least one request",
+            ),
+            (
+                ({"name": "", "operation": "conjunctive_scan_count", "predicates": ()},),
+                "request name must be non-empty",
+            ),
+            (
+                (
+                    {"name": "dup", "operation": "conjunctive_scan_count", "predicates": ()},
+                    {"name": "dup", "operation": "grouped_count_summary", "query": {"group_keys": ("region",)}},
+                ),
+                "duplicate generic DB compact summary request name",
+            ),
+            (
+                ({"name": "bad", "operation": "materialize_rows", "query": {}},),
+                "unsupported generic DB compact summary operation",
+            ),
+            (
+                ({"name": "scan", "operation": "conjunctive_scan_count"},),
+                "conjunctive_scan_count requires predicates",
+            ),
+            (
+                ({"name": "count", "operation": "grouped_count_summary"},),
+                "grouped_count_summary requires query",
+            ),
+            (
+                ({"name": "sum", "operation": "grouped_sum_summary"},),
+                "grouped_sum_summary requires query",
+            ),
+        )
+
+        for requests, message in cases:
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(ValueError, message):
+                    rt.run_generic_db_compact_summary_batch(
+                        prepared_dataset=dataset,
+                        backend="optix",
+                        requests=requests,
+                    )
+
+        self.assertEqual(dataset.compact_summary_batch_calls, 0)
+
 
 if __name__ == "__main__":
     unittest.main()
