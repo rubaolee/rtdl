@@ -105,12 +105,12 @@ class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
                     candidate_capacity=4,
                 )
 
-    def test_embree_collection_rejects_non_positive_capacity(self) -> None:
-        with self.assertRaisesRegex(ValueError, "candidate_capacity must be positive"):
+    def test_embree_collection_rejects_negative_capacity(self) -> None:
+        with self.assertRaisesRegex(ValueError, "candidate_capacity must be non-negative"):
             rt.collect_polygon_pair_candidates_bounded_embree(
                 _polygons(),
                 _polygons(),
-                candidate_capacity=0,
+                candidate_capacity=-1,
             )
 
 
