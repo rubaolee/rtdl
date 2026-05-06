@@ -18,8 +18,17 @@ class Goal1305V15GroupedReductionContractTest(unittest.TestCase):
         self.assertEqual(pose["input_primitive"], "ANY_HIT")
         self.assertEqual(pose["status"], "pod_verified_generic_non_public")
         self.assertEqual(pose["reduction_primitive"], "REDUCE_INT(COUNT)")
-        self.assertEqual(pose["result_layout"], "grouped_threshold_bool")
+        self.assertEqual(pose["result_layout"], rt.V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT)
         self.assertIn("count > 0", pose["dtype_policy"])
+
+    def test_grouped_result_layouts_are_registered(self) -> None:
+        contracts = rt.validate_v1_5_grouped_reduction_contracts()
+        valid_layouts = set(rt.V1_5_GROUPED_REDUCTION_RESULT_LAYOUTS)
+        self.assertIn(rt.V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT, valid_layouts)
+        self.assertTrue(valid_layouts)
+        for contract in contracts:
+            with self.subTest(contract=contract["subpath"]):
+                self.assertIn(contract["result_layout"], valid_layouts)
 
     def test_db_rows_are_verified_and_split_count_and_sum_primitives(self) -> None:
         contracts = rt.validate_v1_5_grouped_reduction_contracts()

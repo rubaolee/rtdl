@@ -477,6 +477,8 @@ from .generic_polygon_primitives import run_generic_polygon_set_jaccard_summary
 from .generic_prepared_status import generic_prepared_anyhit_count_backend_status
 from .generic_prepared_status import generic_prepared_anyhit_count_blockers
 from .grouped_reduction_contracts import V1_5_EXPERIMENTAL_PRIMITIVES
+from .grouped_reduction_contracts import V1_5_GROUPED_REDUCTION_RESULT_LAYOUTS
+from .grouped_reduction_contracts import V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT
 from .grouped_reduction_contracts import V1_5_STABLE_REDUCTION_PRIMITIVES
 from .grouped_reduction_contracts import v1_5_grouped_reduction_contracts
 from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
@@ -758,6 +760,8 @@ __all__ = [
     "generic_prepared_anyhit_count_backend_status",
     "generic_prepared_anyhit_count_blockers",
     "V1_5_EXPERIMENTAL_PRIMITIVES",
+    "V1_5_GROUPED_REDUCTION_RESULT_LAYOUTS",
+    "V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT",
     "V1_5_STABLE_REDUCTION_PRIMITIVES",
     "v1_5_grouped_reduction_contracts",
     "validate_v1_5_grouped_reduction_contracts",

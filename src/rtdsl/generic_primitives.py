@@ -12,6 +12,7 @@ from .layout_types import Triangle2DLayout
 from .layout_types import Triangle3DLayout
 from .layout_types import Triangles
 from .layout_types import Triangles3D
+from .grouped_reduction_contracts import V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT
 from .reference import Ray2D
 from .reference import Ray3D
 from .reference import Triangle
@@ -444,7 +445,7 @@ class GenericPreparedRayTriangleAnyHitScene:
         return {
             "primitive": "ANY_HIT",
             "summary_primitive": "REDUCE_INT(COUNT)",
-            "result_layout": "grouped_threshold_bool",
+            "result_layout": V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT,
             "backend": self.backend,
             "prepared": True,
             "scene_reusable": True,

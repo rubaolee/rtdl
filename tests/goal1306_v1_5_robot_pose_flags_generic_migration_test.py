@@ -49,7 +49,7 @@ class Goal1306V15RobotPoseFlagsGenericMigrationTest(unittest.TestCase):
 
         self.assertEqual(result["primitive"], "ANY_HIT")
         self.assertEqual(result["summary_primitive"], "REDUCE_INT(COUNT)")
-        self.assertEqual(result["result_layout"], "grouped_threshold_bool")
+        self.assertEqual(result["result_layout"], rt.V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT)
         self.assertEqual(result["group_flags"], (True, False, True))
         self.assertEqual(result["threshold_reached_count"], 2)
         self.assertEqual(result["scalar_reduction"]["summary_primitive"], "REDUCE_INT(COUNT)")

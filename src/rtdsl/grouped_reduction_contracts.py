@@ -13,6 +13,14 @@ V1_5_STABLE_REDUCTION_PRIMITIVES = (
 )
 
 V1_5_EXPERIMENTAL_PRIMITIVES = ("COLLECT_K_BOUNDED",)
+V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT = "grouped_threshold_bool"
+V1_5_GROUPED_REDUCTION_RESULT_LAYOUTS = (
+    V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT,
+    "grouped_int64_count",
+    "grouped_int64_sum",
+    "grouped_float64_sum",
+    "bounded_pairs_plus_grouped_float64_score",
+)
 
 
 def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
@@ -31,7 +39,7 @@ def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             "input_primitive": "ANY_HIT",
             "reduction_primitive": "REDUCE_INT(COUNT)",
             "group_key": "pose_id",
-            "result_layout": "grouped_threshold_bool",
+            "result_layout": V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT,
             "dtype_policy": "uint32 hit counts; boolean flag is count > 0",
             "determinism_policy": "integer count is deterministic for fixed ray order",
             "correctness_contract": "per-pose flag must match app-specific prepared_pose_flags oracle",
@@ -113,6 +121,7 @@ def validate_v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
         "pod_verified_generic_non_public",
     }
     valid_reductions = set(V1_5_STABLE_REDUCTION_PRIMITIVES)
+    valid_result_layouts = set(V1_5_GROUPED_REDUCTION_RESULT_LAYOUTS)
     valid_inputs = {"ANY_HIT", "numeric_predicate_rows", "candidate_overlap_rows"} | set(
         V1_5_EXPERIMENTAL_PRIMITIVES
     )
@@ -128,6 +137,8 @@ def validate_v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
             raise ValueError(f"invalid grouped reduction input primitive: {contract['input_primitive']}")
         if contract["reduction_primitive"] not in valid_reductions:
             raise ValueError(f"invalid grouped reduction primitive: {contract['reduction_primitive']}")
+        if contract["result_layout"] not in valid_result_layouts:
+            raise ValueError(f"invalid grouped reduction result layout: {contract['result_layout']}")
         if contract["input_primitive"] in V1_5_EXPERIMENTAL_PRIMITIVES:
             if contract["status"] not in {
                 "experimental_blocked",
