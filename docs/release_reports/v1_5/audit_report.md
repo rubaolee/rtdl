@@ -20,7 +20,9 @@ required.
 
 v1.5 is a standalone Embree+OptiX language/runtime completion candidate for the
 supported surface. It is not a universal compute engine, not a package-install
-release, and not a broad performance release.
+release, and not a broad performance release. It is also not yet app-agnostic
+inside the native engine implementation: app-name-free primitives exist, but
+some native entry points remain workload-shaped compatibility/proof surfaces.
 
 Allowed:
 
@@ -30,6 +32,7 @@ Allowed:
 - source-tree usage with `PYTHONPATH=src:. python ...`;
 - `COLLECT_K_BOUNDED` deferred to v1.5.1;
 - v1.6-v2.0 reserved for partner mechanisms.
+- app-agnostic native-engine cleanup as post-v1.5 work.
 
 Not allowed:
 
@@ -40,6 +43,7 @@ Not allowed:
   Barnes-Hut speedup wording;
 - claiming `COLLECT_K_BOUNDED` is stable;
 - treating Vulkan, HIPRT, or Apple RT as active v1.5 targets.
+- claiming the native engine has app-free internals.
 
 ## Result
 

@@ -162,6 +162,19 @@ V1_5_STANDALONE_PARTNER_TRACK = (
     ("v1.9", "partner_ecosystem_hardening"),
     ("v2.0", "public_partner_ready_rtdl"),
 )
+V1_5_ENGINE_APP_AGNOSTIC_INTERNAL_STATUS = "not_yet_app_agnostic"
+V1_5_ENGINE_APP_AGNOSTIC_TARGET_STATUS = "target_for_v1_5_1_to_v2_0"
+V1_5_ENGINE_APP_KNOWLEDGE_BOUNDARIES = (
+    "native_engine_still_contains_workload_shaped_entry_points",
+    "python_still_owns_app_specific_control_and_lowering",
+    "collect_k_bounded_not_stable_until_v1_5_1",
+    "partner_mechanism_not_available_until_v1_6_to_v2_0",
+)
+V1_5_ENGINE_APP_AGNOSTIC_NEXT_STEPS = (
+    ("v1.5.1", "promote_collect_k_bounded_to_remove_row_returning_app_emitters"),
+    ("v1.6", "define_app_agnostic_partner_api_boundary"),
+    ("v1.7-v2.0", "move_native_engines_toward_primitive_packet_execution_only"),
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -750,10 +763,15 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "collect_k_bounded_resolution": "resolved_by_explicit_row_returning_app_exclusion",
         "collect_k_bounded_followup_track": V1_5_1_COLLECT_K_BOUNDED_TRACK,
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
+        "engine_app_agnostic_internal_status": V1_5_ENGINE_APP_AGNOSTIC_INTERNAL_STATUS,
+        "engine_app_agnostic_target_status": V1_5_ENGINE_APP_AGNOSTIC_TARGET_STATUS,
+        "engine_app_knowledge_boundaries": V1_5_ENGINE_APP_KNOWLEDGE_BOUNDARIES,
+        "engine_app_agnostic_next_steps": V1_5_ENGINE_APP_AGNOSTIC_NEXT_STEPS,
         "claim_boundary": (
             "standalone v1.5 release-candidate gates pass; do not tag v1.5 without "
             "explicit release approval; v1.5.1 is the collect-k track; "
-            "v1.6-v2.0 are partner-track milestones; no whole-app speedup claim"
+            "v1.6-v2.0 are partner-track milestones; no whole-app speedup claim; "
+            "native engine is not yet app-agnostic internally"
         ),
     }
 
@@ -890,6 +908,14 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("v1.5.1 collect-k follow-up track must be preserved")
     if tuple(gate["partner_track"]) != V1_5_STANDALONE_PARTNER_TRACK:
         raise ValueError("v1.6-v2.0 partner track must be preserved")
+    if gate["engine_app_agnostic_internal_status"] != V1_5_ENGINE_APP_AGNOSTIC_INTERNAL_STATUS:
+        raise ValueError("v1.5 must not claim the native engine is app-agnostic internally")
+    if gate["engine_app_agnostic_target_status"] != V1_5_ENGINE_APP_AGNOSTIC_TARGET_STATUS:
+        raise ValueError("v1.5 app-agnostic engine target status mismatch")
+    if tuple(gate["engine_app_knowledge_boundaries"]) != V1_5_ENGINE_APP_KNOWLEDGE_BOUNDARIES:
+        raise ValueError("v1.5 app-knowledge boundaries must be explicit")
+    if tuple(gate["engine_app_agnostic_next_steps"]) != V1_5_ENGINE_APP_AGNOSTIC_NEXT_STEPS:
+        raise ValueError("v1.5 app-agnostic engine next steps must be preserved")
     boundary = str(gate["claim_boundary"])
     for required_boundary in (
         "standalone v1.5 release-candidate gates pass",
@@ -897,6 +923,7 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         "v1.5.1 is the collect-k track",
         "v1.6-v2.0 are partner-track milestones",
         "no whole-app speedup claim",
+        "native engine is not yet app-agnostic internally",
     ):
         if required_boundary not in boundary:
             raise ValueError("v1.5 standalone release gate boundary is too broad")

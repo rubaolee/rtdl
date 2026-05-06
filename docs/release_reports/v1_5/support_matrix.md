@@ -6,6 +6,12 @@ This matrix is narrower than the general current-main support matrix. It
 records only the v1.5 standalone language/runtime scope: 14 included app
 contracts and 4 excluded rows.
 
+The matrix is also an architecture boundary. The supported primitive layer is
+app-name-free where listed, but v1.5 does not claim that the native Embree/OptiX
+engine is app-agnostic internally. Rows classified as `wrapper-backed` or
+`scalar-only` may still rely on workload-shaped native entry points or Python
+continuations.
+
 ## Included Apps
 
 | App | Classification | v1.5 surface | Boundary |
@@ -44,3 +50,5 @@ gate. They do not create no whole-app speedup authorization.
 - Source-tree usage: `PYTHONPATH=src:. python ...`.
 - Any release/tag action must be explicit; this support matrix is not itself a
   tag operation.
+- Native app-agnostic cleanup is future work: v1.5.1 handles
+  `COLLECT_K_BOUNDED`, and v1.6-v2.0 formalize partner mechanisms.

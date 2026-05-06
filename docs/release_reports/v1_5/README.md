@@ -11,6 +11,12 @@ traversal-plus-reduction primitive layer, classifies the public app set, and
 records same-contract correctness, benchmark evidence, and support maturity for
 the included apps.
 
+v1.5 is not yet app-agnostic inside the native engine implementation. The
+stable primitive layer is app-name-free, but some native Embree/OptiX entry
+points remain workload-shaped compatibility/proof surfaces. Removing or
+formalizing that remaining app knowledge starts with `COLLECT_K_BOUNDED` in
+v1.5.1 and continues through the v1.6-v2.0 partner mechanism track.
+
 ## Scope
 
 This package records the v1.5 boundary:
@@ -27,14 +33,16 @@ This package records the v1.5 boundary:
 - row-returning `COLLECT_K_BOUNDED` apps are deferred to v1.5.1;
 - source-tree usage remains `PYTHONPATH=src:. python ...`;
 - Vulkan, HIPRT, and Apple RT are preserved proof surfaces, but they are not
-  active v1.5 implementation targets.
+  active v1.5 implementation targets;
+- the native engine is not yet app-agnostic internally.
 
 ## Allowed Conclusion
 
 RTDL v1.5 is the standalone Embree+OptiX language/runtime completion candidate
 for the supported v1.5 surface: generic traversal-plus-reduction primitives, 14
 included app contracts, explicit exclusion of row-returning `COLLECT_K_BOUNDED`
-apps, and no new whole-app speedup claim.
+apps, no new whole-app speedup claim, and no claim that the native engine has
+app-free internals.
 
 ## Disallowed Conclusions
 
@@ -46,6 +54,7 @@ apps, and no new whole-app speedup claim.
   speedup claims;
 - promotion of `COLLECT_K_BOUNDED` to stable status;
 - treating Vulkan, HIPRT, or Apple RT as active v1.5 backends.
+- claiming the native engine is app-agnostic internally.
 
 ## Start Here
 

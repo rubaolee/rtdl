@@ -20,6 +20,7 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertIn("standalone v1.5 release-candidate gates pass", boundary)
         self.assertIn("do not tag v1.5 without explicit release approval", boundary)
         self.assertIn("no whole-app speedup claim", boundary)
+        self.assertIn("native engine is not yet app-agnostic internally", boundary)
 
     def test_gate_requires_expanded_standalone_completion_work(self):
         gate = rt.validate_v1_5_standalone_release_gate()
@@ -87,6 +88,51 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
             ),
         )
         self.assertEqual(gate["partner_track"], rt.V1_5_STANDALONE_PARTNER_TRACK)
+
+    def test_gate_preserves_app_agnostic_engine_boundary(self):
+        gate = rt.validate_v1_5_standalone_release_gate()
+
+        self.assertEqual(
+            gate["engine_app_agnostic_internal_status"],
+            "not_yet_app_agnostic",
+        )
+        self.assertEqual(
+            gate["engine_app_agnostic_internal_status"],
+            rt.V1_5_ENGINE_APP_AGNOSTIC_INTERNAL_STATUS,
+        )
+        self.assertEqual(
+            gate["engine_app_agnostic_target_status"],
+            "target_for_v1_5_1_to_v2_0",
+        )
+        self.assertEqual(
+            gate["engine_app_agnostic_target_status"],
+            rt.V1_5_ENGINE_APP_AGNOSTIC_TARGET_STATUS,
+        )
+        self.assertEqual(
+            gate["engine_app_knowledge_boundaries"],
+            (
+                "native_engine_still_contains_workload_shaped_entry_points",
+                "python_still_owns_app_specific_control_and_lowering",
+                "collect_k_bounded_not_stable_until_v1_5_1",
+                "partner_mechanism_not_available_until_v1_6_to_v2_0",
+            ),
+        )
+        self.assertEqual(
+            gate["engine_app_knowledge_boundaries"],
+            rt.V1_5_ENGINE_APP_KNOWLEDGE_BOUNDARIES,
+        )
+        self.assertEqual(
+            gate["engine_app_agnostic_next_steps"],
+            (
+                ("v1.5.1", "promote_collect_k_bounded_to_remove_row_returning_app_emitters"),
+                ("v1.6", "define_app_agnostic_partner_api_boundary"),
+                ("v1.7-v2.0", "move_native_engines_toward_primitive_packet_execution_only"),
+            ),
+        )
+        self.assertEqual(
+            gate["engine_app_agnostic_next_steps"],
+            rt.V1_5_ENGINE_APP_AGNOSTIC_NEXT_STEPS,
+        )
 
     def test_gate_next_actions_are_standalone_completion_tasks(self):
         gate = rt.validate_v1_5_standalone_release_gate()

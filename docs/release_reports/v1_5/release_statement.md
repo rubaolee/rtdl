@@ -12,7 +12,9 @@ Proposed release statement:
 > traversal-plus-reduction primitive layer for `ANY_HIT`, `COUNT_HITS`,
 > `REDUCE_FLOAT(MIN|MAX|SUM)`, and `REDUCE_INT(COUNT|SUM)`, records 14 included
 > app contracts with same-contract correctness and benchmark evidence, and
-> explicitly excludes row-returning `COLLECT_K_BOUNDED` apps until v1.5.1.
+> explicitly excludes row-returning `COLLECT_K_BOUNDED` apps until v1.5.1. The
+> stable primitive layer is app-name-free, but the native engine implementation
+> is not yet app-agnostic internally.
 
 ## What This Release May Claim
 
@@ -28,6 +30,9 @@ Proposed release statement:
   promotion track.
 - Source-tree usage remains `PYTHONPATH=src:. python ...`.
 - v1.6 through v2.0 are the staged partner-mechanism track.
+- The app-agnostic engine target remains future work: v1.5.1 promotes
+  `COLLECT_K_BOUNDED`, and v1.6-v2.0 move native execution toward primitive
+  packets plus partner mechanisms.
 
 ## What This Release Must Not Claim
 
@@ -40,6 +45,7 @@ Proposed release statement:
 - that every `--backend optix` run is a NVIDIA RT-core speedup;
 - that `COLLECT_K_BOUNDED` is stable;
 - that Vulkan, HIPRT, or Apple RT are active v1.5 backends.
+- that the native engine is app-agnostic internally or has app-free internals.
 
 ## Evidence Pointers
 

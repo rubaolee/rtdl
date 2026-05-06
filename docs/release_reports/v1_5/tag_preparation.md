@@ -21,6 +21,8 @@ v1.5
 - No whole-app speedup, broad NVIDIA RTX, broad GPU, or broad backend speedup
   wording is added.
 - `COLLECT_K_BOUNDED` remains experimental and deferred to v1.5.1.
+- The native engine is not yet app-agnostic internally; this tag package must
+  not be described as a zero-app-knowledge engine release.
 - Vulkan, HIPRT, and Apple RT remain frozen before v2.1.
 - User gives explicit release/tag approval.
 

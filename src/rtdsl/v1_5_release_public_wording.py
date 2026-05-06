@@ -25,7 +25,8 @@ V1_5_RELEASE_PUBLIC_WORDING_ALLOWED_STATEMENT = (
     "RTDL v1.5 is the standalone Embree+OptiX language/runtime completion "
     "candidate for the supported v1.5 surface: generic traversal-plus-reduction "
     "primitives, 14 included app contracts, explicit exclusion of row-returning "
-    "COLLECT_K_BOUNDED apps, and no new whole-app speedup claim."
+    "COLLECT_K_BOUNDED apps, no new whole-app speedup claim, and no claim that "
+    "the native engine is app-agnostic internally yet."
 )
 V1_5_RELEASE_PUBLIC_WORDING_REQUIRED_PHRASES = (
     "standalone Embree+OptiX",
@@ -34,6 +35,7 @@ V1_5_RELEASE_PUBLIC_WORDING_REQUIRED_PHRASES = (
     "COLLECT_K_BOUNDED",
     "v1.5.1",
     "no whole-app speedup",
+    "not yet app-agnostic",
     "PYTHONPATH=src:. python",
     "explicit release/tag action",
 )
@@ -45,6 +47,9 @@ V1_5_RELEASE_PUBLIC_WORDING_FORBIDDEN_PHRASES = (
     "Vulkan is an active v1.5 backend",
     "HIPRT is an active v1.5 backend",
     "Apple RT is an active v1.5 backend",
+    "native engine is fully app-agnostic",
+    "native engine has zero app knowledge",
+    "engine has zero app knowledge",
 )
 
 

@@ -541,6 +541,10 @@ from .v1_5_readiness import V1_5_STANDALONE_RELEASE_BLOCKERS
 from .v1_5_readiness import V1_5_STANDALONE_RELEASE_REQUIRED_GATES
 from .v1_5_readiness import V1_5_STANDALONE_RELEASE_SCOPE_KIND
 from .v1_5_readiness import V1_5_STANDALONE_RELEASE_STATUS
+from .v1_5_readiness import V1_5_ENGINE_APP_AGNOSTIC_INTERNAL_STATUS
+from .v1_5_readiness import V1_5_ENGINE_APP_AGNOSTIC_TARGET_STATUS
+from .v1_5_readiness import V1_5_ENGINE_APP_KNOWLEDGE_BOUNDARIES
+from .v1_5_readiness import V1_5_ENGINE_APP_AGNOSTIC_NEXT_STEPS
 from .v1_5_readiness import v1_5_internal_readiness_decision
 from .v1_5_readiness import v1_5_internal_readiness_gate
 from .v1_5_readiness import v1_5_standalone_release_gate
@@ -893,6 +897,10 @@ __all__ = [
     "V1_5_STANDALONE_RELEASE_REQUIRED_GATES",
     "V1_5_STANDALONE_RELEASE_SCOPE_KIND",
     "V1_5_STANDALONE_RELEASE_STATUS",
+    "V1_5_ENGINE_APP_AGNOSTIC_INTERNAL_STATUS",
+    "V1_5_ENGINE_APP_AGNOSTIC_TARGET_STATUS",
+    "V1_5_ENGINE_APP_KNOWLEDGE_BOUNDARIES",
+    "V1_5_ENGINE_APP_AGNOSTIC_NEXT_STEPS",
     "v1_5_internal_readiness_decision",
     "v1_5_internal_readiness_gate",
     "v1_5_standalone_release_gate",
