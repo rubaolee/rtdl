@@ -152,6 +152,12 @@ V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS = (
     "build_test_backed_support_maturity_matrix",
     "refresh_release_docs_and_public_wording",
 )
+V1_5_1_COLLECT_K_BOUNDED_TRACK = (
+    ("v1.5.1", "collect_k_bounded_fail_closed_semantics"),
+    ("v1.5.1", "native_embree_optix_collection_parity"),
+    ("v1.5.1", "same_contract_collection_benchmarks"),
+    ("v1.5.1", "external_review_before_collect_k_promotion"),
+)
 V1_5_STANDALONE_PARTNER_TRACK = (
     ("v1.6", "partner_api_design"),
     ("v1.7", "first_partner_prototype"),
@@ -711,10 +717,12 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "same_contract_correctness_pending_apps": correctness_summary["pending_apps"],
         "same_contract_correctness_command": correctness_summary["command"],
         "collect_k_bounded_resolution": "resolved_by_explicit_row_returning_app_exclusion",
+        "collect_k_bounded_followup_track": V1_5_1_COLLECT_K_BOUNDED_TRACK,
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
         "claim_boundary": (
             "standalone v1.5 release is blocked until all standalone gates pass; "
-            "do not tag v1.5 from primitive-only readiness; v1.6-v2.0 are partner-track milestones"
+            "do not tag v1.5 from primitive-only readiness; v1.5.1 is the collect-k track; "
+            "v1.6-v2.0 are partner-track milestones"
         ),
     }
 
@@ -819,12 +827,15 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
             raise ValueError(f"missing app classification: {required_classification}")
     if "resolved_by_explicit" not in gate["collect_k_bounded_resolution"]:
         raise ValueError("COLLECT_K_BOUNDED resolution must be explicit exclusion")
+    if tuple(gate["collect_k_bounded_followup_track"]) != V1_5_1_COLLECT_K_BOUNDED_TRACK:
+        raise ValueError("v1.5.1 collect-k follow-up track must be preserved")
     if tuple(gate["partner_track"]) != V1_5_STANDALONE_PARTNER_TRACK:
         raise ValueError("v1.6-v2.0 partner track must be preserved")
     boundary = str(gate["claim_boundary"])
     for required_boundary in (
         "standalone v1.5 release is blocked",
         "do not tag v1.5 from primitive-only readiness",
+        "v1.5.1 is the collect-k track",
         "v1.6-v2.0 are partner-track milestones",
     ):
         if required_boundary not in boundary:

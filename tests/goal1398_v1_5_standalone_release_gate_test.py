@@ -70,6 +70,16 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(gate["frozen_before_v2_1_backends"], ("vulkan", "hiprt", "apple_rt"))
         self.assertEqual(gate["source_usage_command"], "PYTHONPATH=src:. python ...")
         self.assertEqual(
+            gate["collect_k_bounded_followup_track"],
+            (
+                ("v1.5.1", "collect_k_bounded_fail_closed_semantics"),
+                ("v1.5.1", "native_embree_optix_collection_parity"),
+                ("v1.5.1", "same_contract_collection_benchmarks"),
+                ("v1.5.1", "external_review_before_collect_k_promotion"),
+            ),
+        )
+        self.assertEqual(gate["collect_k_bounded_followup_track"], rt.V1_5_1_COLLECT_K_BOUNDED_TRACK)
+        self.assertEqual(
             gate["partner_track"],
             (
                 ("v1.6", "partner_api_design"),
