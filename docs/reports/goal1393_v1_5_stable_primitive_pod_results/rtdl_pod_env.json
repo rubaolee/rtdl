@@ -1,0 +1,15 @@
+{
+  "boundary": "Environment probe only; no benchmark or public speedup claim is authorized.",
+  "cuda_lib_dir": "/usr/local/cuda/lib64",
+  "cuda_prefix": "/usr/local/cuda",
+  "env_file": "docs/reports/goal1393_v1_5_stable_primitive_pod_results/rtdl_pod_env.sh",
+  "goal": "RTDL pod environment probe",
+  "nvcc": "/usr/local/cuda/bin/nvcc",
+  "nvcc_exists": true,
+  "nvcc_version_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+  "nvidia_smi_tail": "Wed May  6 12:17:23 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 550.127.08             Driver Version: 550.127.08     CUDA Version: 12.4     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A4500               On  |   00000000:82:00.0 Off |                  Off |\n| 30%   27C    P8             21W /  200W |       2MiB /  20470MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "optix_header_exists": true,
+  "optix_prefix": "/root/vendor/optix-dev",
+  "os_id": "ubuntu",
+  "package_manager": "apt-get"
+}

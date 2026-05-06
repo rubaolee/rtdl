@@ -1,0 +1,486 @@
+{
+  "active_backends": [
+    "embree",
+    "optix"
+  ],
+  "boundary": "Internal v1.5 exact-subpath evidence for stable generic primitives only; no public v1.5 release wording, whole-app speedup wording, broad NVIDIA claim, package/install claim, or COLLECT_K_BOUNDED stable promotion is authorized by this artifact.",
+  "direct_anyhit_count": {
+    "cpu": {
+      "backend": "cpu",
+      "claim_boundary": "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; no app-specific visibility, graph, DB, polygon, or public speedup claim.",
+      "hit_count": 256,
+      "primitive": "ANY_HIT",
+      "row_count": 512,
+      "rows": {
+        "json_length": 13715,
+        "row_count": 512,
+        "rows": [
+          {
+            "any_hit": 1,
+            "ray_id": 0
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 1
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 2
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 3
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 4
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 5
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 6
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 7
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 504
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 505
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 506
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 507
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 508
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 509
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 510
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 511
+          }
+        ]
+      },
+      "scalar_reduction": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "int64",
+        "input_field": "any_hit",
+        "result_layout": "scalar_int64_hit_count",
+        "summary_primitive": "COUNT_HITS"
+      },
+      "status": "ok",
+      "summary_primitive": "COUNT_HITS",
+      "timing": {
+        "first_sec": 0.8238300085067749,
+        "max_sec": 0.8742997348308563,
+        "median_sec": 0.8238300085067749,
+        "min_sec": 0.8162535354495049,
+        "repeats": 5,
+        "total_sec": 4.168102242052555
+      }
+    },
+    "embree": {
+      "backend": "embree",
+      "claim_boundary": "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; no app-specific visibility, graph, DB, polygon, or public speedup claim.",
+      "hit_count": 256,
+      "primitive": "ANY_HIT",
+      "row_count": 512,
+      "rows": {
+        "json_length": 13715,
+        "row_count": 512,
+        "rows": [
+          {
+            "any_hit": 1,
+            "ray_id": 0
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 1
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 2
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 3
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 4
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 5
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 6
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 7
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 504
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 505
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 506
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 507
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 508
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 509
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 510
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 511
+          }
+        ]
+      },
+      "scalar_reduction": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "int64",
+        "input_field": "any_hit",
+        "result_layout": "scalar_int64_hit_count",
+        "summary_primitive": "COUNT_HITS"
+      },
+      "status": "ok",
+      "summary_primitive": "COUNT_HITS",
+      "timing": {
+        "first_sec": 0.021285586059093475,
+        "max_sec": 0.021285586059093475,
+        "median_sec": 0.0014536753296852112,
+        "min_sec": 0.0010990723967552185,
+        "repeats": 5,
+        "total_sec": 0.026626400649547577
+      }
+    },
+    "optix": {
+      "backend": "optix",
+      "claim_boundary": "Generic v1.5 raw ray/triangle ANY_HIT plus COUNT_HITS only; no app-specific visibility, graph, DB, polygon, or public speedup claim.",
+      "hit_count": 256,
+      "primitive": "ANY_HIT",
+      "row_count": 512,
+      "rows": {
+        "json_length": 13715,
+        "row_count": 512,
+        "rows": [
+          {
+            "any_hit": 1,
+            "ray_id": 0
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 1
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 2
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 3
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 4
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 5
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 6
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 7
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 504
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 505
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 506
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 507
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 508
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 509
+          },
+          {
+            "any_hit": 1,
+            "ray_id": 510
+          },
+          {
+            "any_hit": 0,
+            "ray_id": 511
+          }
+        ]
+      },
+      "scalar_reduction": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "int64",
+        "input_field": "any_hit",
+        "result_layout": "scalar_int64_hit_count",
+        "summary_primitive": "COUNT_HITS"
+      },
+      "status": "ok",
+      "summary_primitive": "COUNT_HITS",
+      "timing": {
+        "first_sec": 1.0441016629338264,
+        "max_sec": 1.0441016629338264,
+        "median_sec": 0.001178443431854248,
+        "min_sec": 0.0010609328746795654,
+        "repeats": 5,
+        "total_sec": 1.04892910271883
+      }
+    }
+  },
+  "fixture": {
+    "copies": 256,
+    "expected_hit_count": 256,
+    "ray_count": 512,
+    "triangle_count": 256
+  },
+  "frozen_backends_before_v2_1": [
+    "vulkan",
+    "hiprt",
+    "apple_rt"
+  ],
+  "goal": "Goal1393 v1.5 stable primitive evidence runner",
+  "parity": {
+    "embree": {
+      "hit_count_matches": true,
+      "row_count_matches": true,
+      "status": "ok"
+    },
+    "optix": {
+      "hit_count_matches": true,
+      "row_count_matches": true,
+      "status": "ok"
+    },
+    "optix_prepared_count": {
+      "hit_count_matches": true,
+      "status": "ok"
+    }
+  },
+  "platform": {
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "release": "6.8.0-49-generic",
+    "system": "Linux"
+  },
+  "prepared_optix_anyhit_count": {
+    "backend": "optix",
+    "claim_boundary": "Generic v1.5 reusable prepared raw ray/triangle ANY_HIT plus COUNT_HITS only; currently OptiX-focused and not public speedup wording.",
+    "hit_count": 256,
+    "primitive": "ANY_HIT",
+    "query_repeats": 100,
+    "run_phases": {
+      "query_anyhit_count_first_sec": 0.00011931359767913818,
+      "query_anyhit_count_mean_sec": 6.428875029087067e-05,
+      "query_anyhit_count_min_sec": 6.146728992462158e-05,
+      "query_anyhit_count_sec": 0.006428875029087067,
+      "ray_prepare_sec": 0.0008688569068908691,
+      "scene_prepare_sec": 0.4802595153450966,
+      "scene_prepare_sec_this_batch": 0.0
+    },
+    "status": "ok",
+    "summary_primitive": "COUNT_HITS"
+  },
+  "public_wording_authorized": false,
+  "scalar_reductions": {
+    "COUNT_HITS": {
+      "expected": 3,
+      "result": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "int64",
+        "input_field": "any_hit",
+        "result": 3,
+        "result_layout": "scalar_int64_hit_count",
+        "row_count": 4,
+        "summary_primitive": "COUNT_HITS"
+      },
+      "status": "ok",
+      "timing": {
+        "first_sec": 4.3295323848724365e-05,
+        "max_sec": 4.3295323848724365e-05,
+        "median_sec": 3.1441450119018555e-06,
+        "min_sec": 3.0994415283203125e-06,
+        "repeats": 100,
+        "total_sec": 0.0003684237599372864
+      }
+    },
+    "REDUCE_FLOAT(MAX)": {
+      "expected": 8.25,
+      "result": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "float64",
+        "input_field": "score",
+        "result": 8.25,
+        "result_layout": "scalar_float64_max",
+        "row_count": 4,
+        "summary_primitive": "REDUCE_FLOAT(MAX)"
+      },
+      "status": "ok",
+      "timing": {
+        "first_sec": 7.741153240203857e-06,
+        "max_sec": 2.759695053100586e-05,
+        "median_sec": 6.452202796936035e-06,
+        "min_sec": 6.340444087982178e-06,
+        "repeats": 100,
+        "total_sec": 0.0006871446967124939
+      }
+    },
+    "REDUCE_FLOAT(MIN)": {
+      "expected": -0.75,
+      "result": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "float64",
+        "input_field": "score",
+        "result": -0.75,
+        "result_layout": "scalar_float64_min",
+        "row_count": 4,
+        "summary_primitive": "REDUCE_FLOAT(MIN)"
+      },
+      "status": "ok",
+      "timing": {
+        "first_sec": 2.263486385345459e-05,
+        "max_sec": 2.263486385345459e-05,
+        "median_sec": 6.549060344696045e-06,
+        "min_sec": 6.332993507385254e-06,
+        "repeats": 100,
+        "total_sec": 0.0006792545318603516
+      }
+    },
+    "REDUCE_FLOAT(SUM)": {
+      "expected": 14.0,
+      "result": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "float64",
+        "input_field": "score",
+        "result": 14.0,
+        "result_layout": "scalar_float64_sum",
+        "row_count": 4,
+        "summary_primitive": "REDUCE_FLOAT(SUM)"
+      },
+      "status": "ok",
+      "timing": {
+        "first_sec": 1.0050833225250244e-05,
+        "max_sec": 5.1744282245635986e-05,
+        "median_sec": 6.452202796936035e-06,
+        "min_sec": 6.362795829772949e-06,
+        "repeats": 100,
+        "total_sec": 0.0007010400295257568
+      }
+    },
+    "REDUCE_INT(COUNT)": {
+      "expected": 4,
+      "result": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "int64",
+        "input_field": null,
+        "result": 4,
+        "result_layout": "scalar_int64_count",
+        "row_count": 4,
+        "summary_primitive": "REDUCE_INT(COUNT)"
+      },
+      "status": "ok",
+      "timing": {
+        "first_sec": 6.116926670074463e-06,
+        "max_sec": 1.1689960956573486e-05,
+        "median_sec": 2.4959444999694824e-06,
+        "min_sec": 2.421438694000244e-06,
+        "repeats": 100,
+        "total_sec": 0.0002704337239265442
+      }
+    },
+    "REDUCE_INT(SUM)": {
+      "expected": 11,
+      "result": {
+        "claim_boundary": "Generic v1.5 scalar reduction primitive over already-emitted rows; backend-neutral Python helper only, not native backend acceleration or public speedup wording.",
+        "dtype": "int64",
+        "input_field": "payload",
+        "result": 11,
+        "result_layout": "scalar_int64_sum",
+        "row_count": 4,
+        "summary_primitive": "REDUCE_INT(SUM)"
+      },
+      "status": "ok",
+      "timing": {
+        "first_sec": 2.8558075428009033e-05,
+        "max_sec": 2.8558075428009033e-05,
+        "median_sec": 5.841255187988281e-06,
+        "min_sec": 5.7220458984375e-06,
+        "repeats": 100,
+        "total_sec": 0.0006106048822402954
+      }
+    }
+  },
+  "source_commit": "c0b57ae274129aa536e6ae0069f188a138bbefc1",
+  "stable_primitives": [
+    "ANY_HIT",
+    "COUNT_HITS",
+    "REDUCE_FLOAT(MIN)",
+    "REDUCE_FLOAT(MAX)",
+    "REDUCE_FLOAT(SUM)",
+    "REDUCE_INT(COUNT)",
+    "REDUCE_INT(SUM)"
+  ],
+  "tool_versions": {
+    "git": "git version 2.43.0",
+    "python": "Python 3.12.3"
+  }
+}
