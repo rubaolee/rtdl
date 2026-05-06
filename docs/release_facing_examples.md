@@ -90,7 +90,7 @@ default-app behavior, row output, and whole-app road-hazard speedup remain
 outside the claim. Goal1224 reviews Hausdorff threshold-decision wording and
 keeps graph public speedup wording blocked under current same-contract evidence.
 Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive
-candidate discovery plus native C++ exact area continuation; monolithic polygon
+candidate discovery plus exact area continuation; monolithic polygon
 overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app
 polygon-overlap speedup remain outside the claim.
 
@@ -702,11 +702,12 @@ PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backen
 ```
 
 For both polygon-overlap examples, `--backend embree` and `--backend optix` are
-native-assisted: the backend performs LSI/PIP candidate discovery and
-native C++ exact grid-cell area/Jaccard continuation computes the final compact
-result. This is not a monolithic GPU polygon-area/Jaccard kernel; only the
-Goal1263 polygon-pair sub-path has reviewed bounded positive wording, and
-Jaccard remains correctness-ready but not positive-speedup-ready.
+native-assisted: the backend performs LSI/PIP candidate discovery and current
+compact summary paths use backend-neutral native area-summary plumbing before
+returning the final area/Jaccard result. This is not a monolithic GPU
+polygon-area/Jaccard kernel; only the Goal1263 polygon-pair sub-path has
+reviewed bounded positive wording, and Jaccard remains correctness-ready but
+not positive-speedup-ready.
 
 ## App-style example
 

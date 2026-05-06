@@ -40,8 +40,8 @@ Current paths ready for RTX claim review:
 | Road hazard screening | `--backend optix --output-mode summary --optix-mode native --require-rt-core` | prepared road hazard compact summary only; no GIS/routing or default-app speedup claim |
 | Segment/polygon hit count | Goal933 prepared profiler | prepared native compact hit-count traversal only; no broad segment/polygon speedup claim |
 | Segment/polygon any-hit rows | Goal934 prepared profiler | prepared bounded pair-row traversal only; no unbounded row-volume speedup claim |
-| Polygon pair overlap rows | `--backend optix --require-rt-core` | native-assisted LSI/PIP candidate discovery plus native C++ exact area continuation; no monolithic GPU polygon-area speedup claim |
-| Polygon set Jaccard | `--backend optix --require-rt-core` | native-assisted LSI/PIP candidate discovery plus native C++ exact set-area/Jaccard continuation; no monolithic GPU Jaccard speedup claim |
+| Polygon pair overlap rows | `--backend optix --require-rt-core` | native-assisted LSI/PIP candidate discovery plus backend-neutral exact area summary in summary mode; no monolithic GPU polygon-area speedup claim |
+| Polygon set Jaccard | `--backend optix --require-rt-core` | native bounded candidate collection plus backend-neutral set-area summary in summary mode; no monolithic GPU Jaccard speedup claim |
 | Hausdorff distance | `--backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core` | prepared Hausdorff <= radius decision only; no exact-distance speedup claim |
 | ANN candidate search | `--backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core` | prepared scalar candidate-coverage decision only; no ANN index, ranking, or uncovered-query witness speedup claim |
 | Outlier detection | `--backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count` | prepared scalar fixed-radius density-threshold count; per-point outlier labels require `density_summary` |
@@ -78,8 +78,8 @@ GIS/routing, default-app behavior, row output, and whole-app road-hazard speedup
 remain outside the claim. Goal1224 reviews Hausdorff threshold-decision wording
 and keeps graph public speedup wording blocked because current same-contract
 evidence shows OptiX slower than Embree. Goal1263 promotes bounded polygon-pair
-wording for RT-assisted LSI/PIP positive candidate discovery plus native C++
-exact area continuation;
+wording for RT-assisted LSI/PIP positive candidate discovery plus exact area
+continuation;
 monolithic polygon overlay, broad GIS acceleration, arbitrary polygon geometry,
 and whole-app polygon-overlap speedup remain outside the claim.
 
@@ -107,13 +107,14 @@ direct spatial joins and app-level proximity joins.
 | Polygon-pair overlap rows | `examples/rtdl_polygon_pair_overlap_area_rows.py` | polygon pairs become overlap-area rows | bounded polygon/polygon overlap join |
 | Polygon-set Jaccard | `examples/rtdl_polygon_set_jaccard.py` | polygon sets become Jaccard-similarity rows | bounded polygon-set overlap join |
 
-The polygon-pair overlap and polygon-set Jaccard apps expose Embree
-native-assisted mode: Embree performs positive candidate discovery through
-segment-intersection and point-in-polygon kernels, then native C++ exact
-grid-cell continuation computes the released area/Jaccard rows. This avoids
-full overlay-matrix materialization and removes Python exact-refinement loops
-from the native-assisted app path, but it is not a monolithic GPU or Embree
-area-overlay kernel.
+The polygon-pair overlap and polygon-set Jaccard apps expose Embree/OptiX
+native-assisted modes. Current `main` uses positive candidate discovery through
+segment-intersection and point-in-polygon kernels, then backend-neutral native
+area-summary plumbing for compact summary paths. This avoids full
+overlay-matrix materialization and removes Python exact-refinement loops from
+the native-assisted summary path, but it is not a monolithic GPU or Embree
+area-overlay/Jaccard kernel and does not authorize public Jaccard speedup
+wording.
 
 External comparison scripts for indexed SQL/GIS baselines live under
 `docs/sql/`, including the v0.4 app comparisons and v0.2 PostGIS geometry

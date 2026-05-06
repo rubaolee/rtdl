@@ -29,7 +29,7 @@ class Goal1265PolygonFeatureDocContractTest(unittest.TestCase):
 
         self.assertIn("Goal1263 bounded", text)
         self.assertIn("RT-assisted LSI/PIP positive candidate discovery", text)
-        self.assertIn("native C++ exact area continuation", text)
+        self.assertIn("backend-neutral exact area summary", text)
         self.assertIn("whole-app polygon speedup remains outside", text)
 
     def test_jaccard_feature_doc_keeps_positive_speedup_blocked(self) -> None:
@@ -37,7 +37,7 @@ class Goal1265PolygonFeatureDocContractTest(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("native C++ exact grid-cell Jaccard continuation", text)
+        self.assertIn("backend-neutral set-area summary plumbing", text)
         self.assertIn("not a monolithic GPU Jaccard kernel or a public RTX speedup claim", text)
 
 

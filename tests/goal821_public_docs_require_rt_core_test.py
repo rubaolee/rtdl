@@ -55,8 +55,8 @@ class Goal821PublicDocsRequireRtCoreTest(unittest.TestCase):
                 "may enter bounded claim review",
             ),
             "docs/tutorials/segment_polygon_workloads.md": (
-                "native-assisted: Embree performs LSI/PIP candidate\ndiscovery",
-                "native\nC++ exact set-area/Jaccard continuation",
+                "native-assisted: the backend performs LSI/PIP candidate\ndiscovery",
+                "backend-neutral set-area summary plumbing",
                 "no positive public\nJaccard speedup wording is authorized",
             ),
         }

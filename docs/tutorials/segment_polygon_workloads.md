@@ -219,14 +219,14 @@ python examples\rtdl_polygon_pair_overlap_area_rows.py
 python examples\rtdl_polygon_pair_overlap_area_rows.py --backend embree
 ```
 
-The Embree mode is native-assisted: Embree performs LSI/PIP candidate
-discovery and native C++ exact grid-cell overlap-area continuation computes the
-compact result.
+Embree/OptiX modes are native-assisted: the backend performs LSI/PIP candidate
+discovery and current compact summary paths use backend-neutral exact
+grid-cell area summary plumbing.
 
 The OptiX path has reviewed Goal1263 bounded positive wording only for
-RT-assisted LSI/PIP positive candidate discovery plus native C++ exact area
-continuation. It is not a monolithic GPU polygon-area kernel or whole-app
-polygon speedup claim. For claim-sensitive runs:
+RT-assisted LSI/PIP positive candidate discovery plus exact area continuation.
+It is not a monolithic GPU polygon-area kernel or whole-app polygon speedup
+claim. For claim-sensitive runs:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core
@@ -275,8 +275,9 @@ python examples\rtdl_polygon_set_jaccard.py --backend embree
 
 This workload is packaged under a bounded pathology-style overlap contract. It
 is not framed as a generic polygon-similarity engine for every use case. Its
-Embree mode is native-assisted: Embree performs candidate discovery and native
-C++ exact set-area/Jaccard continuation computes the compact result.
+Embree/OptiX modes are native-assisted: the backend performs candidate
+discovery and current compact summary paths use native bounded collection plus
+backend-neutral set-area summary plumbing before computing the Jaccard ratio.
 
 The OptiX path is correctness-ready at chunk `1024`, but no positive public
 Jaccard speedup wording is authorized because current evidence still has OptiX

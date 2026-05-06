@@ -117,9 +117,10 @@ default-app behavior, row output, and whole-app road-hazard speedup remain
 outside the claim. Goal1224 reviews Hausdorff threshold-decision wording and
 keeps graph public speedup wording blocked under current same-contract evidence.
 Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive
-candidate discovery plus native C++ exact area continuation; monolithic polygon
-overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app
-polygon-overlap speedup remain outside the claim.
+candidate discovery plus exact area continuation. Current `main` routes compact
+polygon summaries through backend-neutral native area-summary plumbing, but
+monolithic polygon overlay, broad GIS acceleration, arbitrary polygon geometry,
+and whole-app polygon-overlap speedup remain outside the claim.
 Goal1262 confirms `polygon_set_jaccard` correctness at chunk `1024`, including
 8192 copies, but OptiX remains slower than Embree and no positive Jaccard
 speedup wording is authorized. Goal1262/Goal1264 show `database_analytics`
