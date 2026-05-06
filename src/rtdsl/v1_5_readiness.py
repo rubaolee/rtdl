@@ -8,6 +8,8 @@ from .generic_db_primitives import validate_v1_5_db_compact_summary_contracts
 from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
 from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
 from .v1_5_migration_inventory import (
+    ACTIVE_V1_5_BACKENDS,
+    FROZEN_BEFORE_V2_1_BACKENDS,
     validate_v1_5_generic_migration_inventory,
     v1_5_generic_migration_blockers,
 )
@@ -51,6 +53,8 @@ def v1_5_internal_readiness_gate() -> dict[str, Any]:
         "float_sum_contracts": len(float_sum_contracts),
         "bounded_collection_contracts": len(bounded_collection_contracts),
         "stable_summary_primitives": V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES,
+        "active_backend_scope": ACTIVE_V1_5_BACKENDS,
+        "frozen_before_v2_1_backends": FROZEN_BEFORE_V2_1_BACKENDS,
         "validators": (
             "validate_v1_5_generic_migration_inventory",
             "validate_v1_5_grouped_reduction_contracts",
@@ -83,6 +87,12 @@ def validate_v1_5_internal_readiness_gate() -> dict[str, Any]:
         raise ValueError("public v1.5 claims must remain behind 3-AI consensus")
     if tuple(gate["stable_summary_primitives"]) != V1_5_INTERNAL_READINESS_STABLE_SUMMARY_PRIMITIVES:
         raise ValueError("v1.5 internal readiness gate must preserve stable summary primitives")
+    if tuple(gate["active_backend_scope"]) != ("embree", "optix"):
+        raise ValueError("v1.5 internal readiness gate must stay scoped to Embree and OptiX")
+    if tuple(gate["frozen_before_v2_1_backends"]) != ("vulkan", "hiprt", "apple_rt"):
+        raise ValueError("v1.5 internal readiness gate must preserve frozen-before-v2.1 backends")
+    if set(gate["active_backend_scope"]) & set(gate["frozen_before_v2_1_backends"]):
+        raise ValueError("active and frozen v1.5 backend scopes must not overlap")
     blockers = tuple(gate["blockers"])
     if not blockers:
         raise ValueError("v1.5 internal readiness gate must expose blockers")

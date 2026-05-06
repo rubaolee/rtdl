@@ -59,6 +59,13 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         self.assertEqual(gate["stable_summary_primitives"], rt.V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES)
         self.assertNotIn("COLLECT_K_BOUNDED", gate["stable_summary_primitives"])
 
+    def test_gate_preserves_backend_scope_boundary(self):
+        gate = rt.validate_v1_5_internal_readiness_gate()
+
+        self.assertEqual(gate["active_backend_scope"], ("embree", "optix"))
+        self.assertEqual(gate["frozen_before_v2_1_backends"], ("vulkan", "hiprt", "apple_rt"))
+        self.assertFalse(set(gate["active_backend_scope"]) & set(gate["frozen_before_v2_1_backends"]))
+
     def test_gate_exposes_remaining_blockers_and_consensus_requirement(self):
         gate = rt.validate_v1_5_internal_readiness_gate()
 
