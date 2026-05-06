@@ -37,7 +37,7 @@ class Goal1216V098ReleaseCandidateAuditTest(unittest.TestCase):
     def test_public_state_stays_bounded(self) -> None:
         payload = goal1216.build_audit()
         public_state = payload["current_public_state"]
-        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 12)
+        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 13)
         self.assertEqual(
             public_state["new_reviewed_row_after_goal1208"],
             "road_hazard_screening / prepared_native_compact_summary_40k",

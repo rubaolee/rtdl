@@ -38,7 +38,7 @@ REQUIRED_READY_PHRASES: dict[str, tuple[str, ...]] = {
         "does not authorize, tag, publish, or claim `v0.9.8`",
     ),
     "docs/v1_0_rtx_app_status.md": (
-        "reviewed public RTX sub-path wording rows: `12`",
+        "reviewed public RTX sub-path wording rows: `13`",
         "road_hazard_screening / prepared_native_compact_summary_40k",
         "broad or whole-app public speedup claim authorized: `False`",
     ),
@@ -110,7 +110,7 @@ def build_gate() -> dict[str, Any]:
     missing_package_review = [row["path"] for row in package_review_files if not row["exists"]]
     missing_final_authorization = [row["path"] for row in final_authorization_files if not row["exists"]]
     version = _read("VERSION").strip()
-    release_evidence_ready = not missing_ready and not phrase_failures and version in {"v0.9.6", "v0.9.8"}
+    release_evidence_ready = not missing_ready and not phrase_failures and version in {"v0.9.6", "v0.9.8", "v1.0"}
     release_package_ready = not missing_package
     release_package_review_ready = not missing_package_review
     final_authorization_ready = not missing_final_authorization
@@ -157,7 +157,7 @@ def build_gate() -> dict[str, Any]:
         "release_package_review_files": package_review_files,
         "final_authorization_files": final_authorization_files,
         "current_public_state": {
-            "reviewed_public_rtx_wording_rows": 12,
+            "reviewed_public_rtx_wording_rows": 13,
             "road_hazard_new_public_row": "road_hazard_screening / prepared_native_compact_summary_40k",
             "database_analytics_public_speedup": "not_reviewed",
             "polygon_set_jaccard_public_speedup": "not_reviewed",
@@ -201,7 +201,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
             "",
             "## Public Claim State",
             "",
-            "- reviewed public RTX wording rows: `12`",
+            "- reviewed public RTX wording rows: `13`",
             "- new reviewed public row: `road_hazard_screening / prepared_native_compact_summary_40k`",
             "- `database_analytics` public speedup wording: `not_reviewed`",
             "- `polygon_set_jaccard` public speedup wording: `not_reviewed`",

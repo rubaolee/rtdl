@@ -19,7 +19,7 @@ class Goal1218V098ReleaseAuthorizationGateTest(unittest.TestCase):
         self.assertTrue(payload["valid_gate"], payload)
         self.assertTrue(payload["release_authorized"], payload)
         self.assertFalse(payload["pod_needed_before_authorization"])
-        self.assertEqual(payload["version_marker"], "v0.9.8")
+        self.assertEqual(payload["version_marker"], "v1.0")
         self.assertEqual(payload["blockers"], [])
         self.assertEqual(
             payload["recommended_next_action"],
@@ -29,7 +29,7 @@ class Goal1218V098ReleaseAuthorizationGateTest(unittest.TestCase):
     def test_current_public_claim_state_remains_bounded(self) -> None:
         payload = goal1218.build_gate()
         public_state = payload["current_public_state"]
-        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 12)
+        self.assertEqual(public_state["reviewed_public_rtx_wording_rows"], 13)
         self.assertEqual(
             public_state["road_hazard_new_public_row"],
             "road_hazard_screening / prepared_native_compact_summary_40k",
