@@ -79,10 +79,12 @@ class Goal1298V15GenericFixedRadiusThresholdCountTest(unittest.TestCase):
         self.assertEqual(result["backend"], "cpu")
         self.assertEqual(result["row_count"], 2)
         self.assertEqual(result["threshold_reached_count"], 1)
+        self.assertGreater(result["row_count"], result["threshold_reached_count"])
         self.assertEqual(result["scalar_reduction"]["summary_primitive"], "REDUCE_INT(COUNT)")
         self.assertEqual(result["scalar_reduction"]["result_layout"], "scalar_int64_count")
         self.assertEqual(result["scalar_reduction"]["dtype"], "int64")
         self.assertIsNone(result["scalar_reduction"]["input_field"])
+        self.assertNotIn("result", result["scalar_reduction"])
         self.assertIn("not native backend acceleration", result["scalar_reduction"]["claim_boundary"])
         self.assertEqual(
             result["rows"],
@@ -140,6 +142,7 @@ class Goal1298V15GenericFixedRadiusThresholdCountTest(unittest.TestCase):
         self.assertTrue(result["scene_reusable"])
         self.assertEqual(result["threshold_reached_count"], 3)
         self.assertEqual(result["query_batch_index"], 1)
+        self.assertNotIn("scalar_reduction", result)
         self.assertEqual(prepared.scalar_calls, 1)
         self.assertEqual(_PreparedFixedRadius.enter_count, 1)
         self.assertEqual(_PreparedFixedRadius.exit_count, 1)
