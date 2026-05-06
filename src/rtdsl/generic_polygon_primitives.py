@@ -7,6 +7,7 @@ from .bounded_collection_contracts import v1_5_collect_k_bounded_contracts
 from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_ABS_TOL
 from .float_reduction_contracts import V1_5_FLOAT_REDUCTION_DEFAULT_REL_TOL
 from .float_reduction_contracts import V1_5_POLYGON_FLOAT_SUM_RESULT_LAYOUTS
+from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 
 
 ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS = ("embree", "optix")
@@ -96,36 +97,42 @@ def collect_k_bounded_candidate_pairs(
     k: int | None,
 ) -> dict[str, Any]:
     """Collect candidate pair IDs with v1.5 fail-closed overflow behavior."""
-    if k is not None and int(k) < 0:
-        raise ValueError("COLLECT_K_BOUNDED capacity k must be non-negative")
     contract = v1_5_collect_k_bounded_contracts()[0]
-    normalized_pairs = tuple(
-        sorted({(int(left_id), int(right_id)) for left_id, right_id in candidate_pairs})
-    )
-    capacity = len(normalized_pairs) if k is None else int(k)
-    emitted = len(normalized_pairs)
-    overflowed = emitted > capacity
-    metadata = {
+    capacity = None
+    rows = tuple((int(left_id), int(right_id)) for left_id, right_id in candidate_pairs)
+    if k is None:
+        capacity = len(set(rows))
+    else:
+        capacity = int(k)
+    row_buffer = collect_k_bounded_rows(rows, k=capacity, row_width=2)
+    candidate_pair_rows = row_buffer["candidate_id_rows"]
+    return {
         "primitive": contract["collection_primitive"],
         "status": contract["status"],
-        "capacity": capacity,
-        "emitted_count": emitted,
-        "overflowed": overflowed,
+        "app_generic": row_buffer["app_generic"],
+        "capacity": row_buffer["capacity"],
+        "valid_count": row_buffer["valid_count"],
+        "emitted_count": row_buffer["emitted_count"],
+        "overflowed": row_buffer["overflowed"],
         "overflow_policy": contract["overflow_policy"],
         "failure_mode": contract["failure_mode"],
         "truncation_allowed": contract["truncation_allowed"],
-        "complete_candidate_coverage": not overflowed,
-        "ordering_policy": contract["ordering_policy"],
+        "partial_result_on_overflow_allowed": row_buffer[
+            "partial_result_on_overflow_allowed"
+        ],
+        "score_or_reduction_after_overflow_allowed": row_buffer[
+            "score_or_reduction_after_overflow_allowed"
+        ],
+        "complete_candidate_coverage": row_buffer["complete_candidate_coverage"],
+        "ordering_policy": row_buffer["ordering_policy"],
+        "duplicate_policy": row_buffer["duplicate_policy"],
+        "row_width": row_buffer["row_width"],
+        "candidate_id_rows": candidate_pair_rows,
+        "generic_result_layout": row_buffer["result_layout"],
         "public_wording_allowed": contract["public_wording_allowed"],
         "claim_boundary": contract["claim_boundary"],
-        "candidate_pairs": normalized_pairs if not overflowed else (),
+        "candidate_pairs": candidate_pair_rows,
     }
-    if overflowed:
-        raise RuntimeError(
-            "COLLECT_K_BOUNDED overflowed capacity "
-            f"{capacity}; emitted {emitted}; failure_mode={contract['failure_mode']}"
-        )
-    return metadata
 
 
 def _validate_complete_collection(collection: dict[str, Any], *, backend: str) -> tuple[tuple[int, int], ...]:

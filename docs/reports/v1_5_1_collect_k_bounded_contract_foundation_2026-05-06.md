@@ -23,6 +23,10 @@ native Embree and OptiX paths should satisfy next.
   `candidate_pairs` and `bounded_candidate_pair_ids` fields for transition
   compatibility.
 - Added `tests/goal1410_v1_5_1_native_collect_k_row_buffer_surface_test.py`.
+- Refactored `collect_k_bounded_candidate_pairs(...)` to delegate to the
+  v1.5.1 app-generic `collect_k_bounded_rows(..., row_width=2)` reference
+  contract while preserving the old `candidate_pairs` transition field.
+- Added `tests/goal1411_v1_5_1_polygon_collect_k_helper_bridge_test.py`.
 
 ## Contract Shape
 
@@ -81,6 +85,21 @@ Result:
 
 ```text
 Ran 28 tests in 0.020s
+OK
+```
+
+Additional Windows command after bridging the polygon-pair helper to the
+app-generic row-buffer contract:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1409_v1_5_1_collect_k_bounded_contract_test tests.goal1410_v1_5_1_native_collect_k_row_buffer_surface_test tests.goal1411_v1_5_1_polygon_collect_k_helper_bridge_test tests.goal1310_v1_5_jaccard_collect_k_bounded_contract_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test tests.goal1318_v1_5_jaccard_native_collection_routing_test tests.goal1399_collect_k_bounded_resolution_test
+```
+
+Result:
+
+```text
+Ran 34 tests in 0.044s
 OK
 ```
 
