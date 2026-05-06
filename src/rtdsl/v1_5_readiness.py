@@ -67,6 +67,12 @@ V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE = (
     "whole_app_speedup",
     "public_nvidia_speedup",
 )
+V1_5_INTERNAL_READINESS_EVIDENCE_STATE = "internal_pod_validated_non_claim_grade"
+V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE = (
+    "claim_grade_exact_subpath_evidence",
+    "same_contract_baseline",
+    "reviewed_public_wording_packet",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -294,6 +300,11 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "app_level_continuations_authorized_as_generic": False,
         "whole_app_speedup_claim_authorized": False,
         "public_nvidia_speedup_claim_authorized": False,
+        "evidence_state": V1_5_INTERNAL_READINESS_EVIDENCE_STATE,
+        "required_public_evidence": V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE,
+        "claim_grade_exact_subpath_evidence_ready": False,
+        "same_contract_baseline_ready": False,
+        "reviewed_public_wording_packet_ready": False,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -375,6 +386,10 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must preserve generic subpath scope")
     if tuple(decision["excluded_app_scope"]) != V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE:
         raise ValueError("v1.5 internal readiness decision must preserve excluded app scope")
+    if decision["evidence_state"] != V1_5_INTERNAL_READINESS_EVIDENCE_STATE:
+        raise ValueError("v1.5 internal readiness decision must preserve evidence state")
+    if tuple(decision["required_public_evidence"]) != V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE:
+        raise ValueError("v1.5 internal readiness decision must preserve required public evidence")
     for flag in (
         "public_claims_ready",
         "external_3_ai_consensus_ready",
@@ -388,6 +403,9 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         "app_level_continuations_authorized_as_generic",
         "whole_app_speedup_claim_authorized",
         "public_nvidia_speedup_claim_authorized",
+        "claim_grade_exact_subpath_evidence_ready",
+        "same_contract_baseline_ready",
+        "reviewed_public_wording_packet_ready",
         "public_release_authorized",
         "public_speedup_wording_authorized",
         "release_tag_action_authorized",

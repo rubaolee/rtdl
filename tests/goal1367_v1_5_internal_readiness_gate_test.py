@@ -209,6 +209,23 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         self.assertFalse(decision["app_level_continuations_authorized_as_generic"])
         self.assertFalse(decision["whole_app_speedup_claim_authorized"])
         self.assertFalse(decision["public_nvidia_speedup_claim_authorized"])
+        self.assertEqual(decision["evidence_state"], "internal_pod_validated_non_claim_grade")
+        self.assertEqual(decision["evidence_state"], rt.V1_5_INTERNAL_READINESS_EVIDENCE_STATE)
+        self.assertEqual(
+            decision["required_public_evidence"],
+            (
+                "claim_grade_exact_subpath_evidence",
+                "same_contract_baseline",
+                "reviewed_public_wording_packet",
+            ),
+        )
+        self.assertEqual(
+            decision["required_public_evidence"],
+            rt.V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE,
+        )
+        self.assertFalse(decision["claim_grade_exact_subpath_evidence_ready"])
+        self.assertFalse(decision["same_contract_baseline_ready"])
+        self.assertFalse(decision["reviewed_public_wording_packet_ready"])
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])
