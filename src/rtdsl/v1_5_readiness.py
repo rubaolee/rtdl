@@ -5,6 +5,7 @@ import json
 from typing import Any
 
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contracts
+from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_resolution
 from .float_reduction_contracts import validate_v1_5_float_sum_reduction_contracts
 from .generic_db_primitives import validate_v1_5_db_compact_summary_contracts
 from .grouped_reduction_contracts import validate_v1_5_grouped_reduction_contracts
@@ -400,6 +401,7 @@ def v1_5_internal_readiness_gate() -> dict[str, Any]:
     db_contracts = validate_v1_5_db_compact_summary_contracts()
     float_sum_contracts = validate_v1_5_float_sum_reduction_contracts()
     bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
+    bounded_collection_resolution = validate_v1_5_collect_k_bounded_resolution()
     blockers = v1_5_generic_migration_blockers()
     contract_surface_counts = _contract_surface_counts(
         inventory_rows=len(inventory),
@@ -630,6 +632,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
     """
     internal_decision = validate_v1_5_internal_readiness_decision()
     bounded_collection_contracts = validate_v1_5_collect_k_bounded_contracts()
+    bounded_collection_resolution = validate_v1_5_collect_k_bounded_resolution()
     collect_k_statuses = tuple(
         sorted({str(contract["status"]) for contract in bounded_collection_contracts})
     )
@@ -666,6 +669,16 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "source_usage_mode": internal_decision["source_usage_mode"],
         "source_usage_command": internal_decision["source_usage_command"],
         "collect_k_bounded_statuses": collect_k_statuses,
+        "collect_k_bounded_resolution_plan_status": bounded_collection_resolution["status"],
+        "collect_k_bounded_resolution_strategy": bounded_collection_resolution[
+            "resolution_strategy"
+        ],
+        "collect_k_bounded_resolution_fallback": bounded_collection_resolution[
+            "fallback_strategy"
+        ],
+        "collect_k_bounded_resolution_failed_gates": bounded_collection_resolution[
+            "failed_gates"
+        ],
         "collect_k_bounded_resolution": "unresolved_experimental_or_explicit_exclusion_required",
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
         "claim_boundary": (
@@ -721,6 +734,14 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("v1.5 standalone release gate must preserve source-tree usage")
     if gate["collect_k_bounded_statuses"] != ("experimental_diagnostic_only",):
         raise ValueError("COLLECT_K_BOUNDED must still be represented as unresolved")
+    if gate["collect_k_bounded_resolution_plan_status"] != "defined_pending_evidence":
+        raise ValueError("COLLECT_K_BOUNDED resolution plan must be defined")
+    if "promote_to_standalone" not in gate["collect_k_bounded_resolution_strategy"]:
+        raise ValueError("COLLECT_K_BOUNDED resolution strategy must target standalone promotion")
+    if "exclude_row_returning_apps" not in gate["collect_k_bounded_resolution_fallback"]:
+        raise ValueError("COLLECT_K_BOUNDED fallback must exclude row-returning apps")
+    if not tuple(gate["collect_k_bounded_resolution_failed_gates"]):
+        raise ValueError("COLLECT_K_BOUNDED resolution must still expose failed gates")
     if "unresolved" not in gate["collect_k_bounded_resolution"]:
         raise ValueError("COLLECT_K_BOUNDED resolution must remain blocked")
     if tuple(gate["partner_track"]) != V1_5_STANDALONE_PARTNER_TRACK:

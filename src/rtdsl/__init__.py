@@ -113,7 +113,13 @@ from .app_support_matrix import public_apps
 from .bounded_collection_contracts import V1_5_BOUNDED_COLLECTION_FAILURE_MODES
 from .bounded_collection_contracts import V1_5_BOUNDED_COLLECTION_PRIMITIVES
 from .bounded_collection_contracts import V1_5_BOUNDED_COLLECTION_PUBLIC_WORDING_ALLOWED
+from .bounded_collection_contracts import V1_5_COLLECT_K_BOUNDED_FALLBACK_STRATEGY
+from .bounded_collection_contracts import V1_5_COLLECT_K_BOUNDED_PROMOTION_GATES
+from .bounded_collection_contracts import V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS
+from .bounded_collection_contracts import V1_5_COLLECT_K_BOUNDED_RESOLUTION_STRATEGY
+from .bounded_collection_contracts import v1_5_collect_k_bounded_resolution
 from .bounded_collection_contracts import v1_5_collect_k_bounded_contracts
+from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_resolution
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contracts
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
@@ -1118,7 +1124,13 @@ __all__ = [
     "V1_5_BOUNDED_COLLECTION_FAILURE_MODES",
     "V1_5_BOUNDED_COLLECTION_PRIMITIVES",
     "V1_5_BOUNDED_COLLECTION_PUBLIC_WORDING_ALLOWED",
+    "V1_5_COLLECT_K_BOUNDED_FALLBACK_STRATEGY",
+    "V1_5_COLLECT_K_BOUNDED_PROMOTION_GATES",
+    "V1_5_COLLECT_K_BOUNDED_RESOLUTION_STATUS",
+    "V1_5_COLLECT_K_BOUNDED_RESOLUTION_STRATEGY",
+    "v1_5_collect_k_bounded_resolution",
     "v1_5_collect_k_bounded_contracts",
+    "validate_v1_5_collect_k_bounded_resolution",
     "validate_v1_5_collect_k_bounded_contracts",
     "engine_feature_support",
     "engine_feature_support_matrix",
