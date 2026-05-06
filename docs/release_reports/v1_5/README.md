@@ -69,6 +69,7 @@ app-free internals.
 - [v1.5 Public Wording 3-AI Consensus](../../reports/goal1394_three_ai_v1_5_public_wording_consensus_2026-05-06.md)
 - [v1.5 Boundary/Backend 3-AI Consensus](../../reports/goal1411_v1_5_boundary_backend_consensus_status_2026-05-06.md)
 - [RTX Pod v1.5 vs v1.0 Performance Results](../../reports/goal1410_v1_5_vs_v1_0_rtx_pod_perf_results_2026-05-06.md)
+- [App-Independent Engine Roadmap](../../reports/goal1413_app_independent_engine_roadmap_2026-05-06.md)
 
 ## Release Gate State
 

@@ -24,6 +24,8 @@ v1.5
 - The native engine is not yet app-agnostic internally; this tag package must
   not be described as a zero-app-knowledge engine release.
 - Goal1411 boundary/backend 3-AI consensus is present and accepted.
+- Goal1413 app-independent engine roadmap is present and linked from the v1.5
+  release package.
 - Vulkan, HIPRT, and Apple RT remain frozen before v2.1.
 - User gives explicit release/tag approval.
 
