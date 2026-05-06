@@ -147,9 +147,19 @@ def _validate_complete_collection(collection: dict[str, Any], *, backend: str) -
         )
     if not collection.get("complete_candidate_coverage"):
         raise RuntimeError("COLLECT_K_BOUNDED native collection did not report complete candidate coverage")
-    if "candidate_pairs" not in collection:
-        raise ValueError("native collection must include candidate_pairs")
-    return tuple((int(left_id), int(right_id)) for left_id, right_id in collection["candidate_pairs"])
+    if "candidate_id_rows" in collection:
+        row_buffer = collect_k_bounded_rows(
+            collection["candidate_id_rows"],
+            k=int(collection.get("capacity", collection.get("valid_count", 0))),
+            row_width=2,
+        )
+        return tuple(
+            (int(left_id), int(right_id))
+            for left_id, right_id in row_buffer["candidate_id_rows"]
+        )
+    if "candidate_pairs" in collection:
+        return tuple((int(left_id), int(right_id)) for left_id, right_id in collection["candidate_pairs"])
+    raise ValueError("native collection must include candidate_id_rows or candidate_pairs")
 
 
 def run_generic_polygon_set_jaccard_score_reduction(

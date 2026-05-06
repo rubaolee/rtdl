@@ -27,6 +27,10 @@ native Embree and OptiX paths should satisfy next.
   v1.5.1 app-generic `collect_k_bounded_rows(..., row_width=2)` reference
   contract while preserving the old `candidate_pairs` transition field.
 - Added `tests/goal1411_v1_5_1_polygon_collect_k_helper_bridge_test.py`.
+- Updated the generic Jaccard score-reduction bridge to consume
+  `candidate_id_rows` directly, with `candidate_pairs` retained only as a
+  transition fallback.
+- Added `tests/goal1412_v1_5_1_jaccard_consumes_generic_collect_rows_test.py`.
 
 ## Contract Shape
 
@@ -100,6 +104,21 @@ Result:
 
 ```text
 Ran 34 tests in 0.044s
+OK
+```
+
+Additional Windows command after making Jaccard continuation consume generic
+`candidate_id_rows` directly:
+
+```cmd
+set PYTHONPATH=src;.
+py -3 -m unittest tests.goal1409_v1_5_1_collect_k_bounded_contract_test tests.goal1411_v1_5_1_polygon_collect_k_helper_bridge_test tests.goal1412_v1_5_1_jaccard_consumes_generic_collect_rows_test tests.goal1311_v1_5_jaccard_generic_fail_closed_collection_test tests.goal1318_v1_5_jaccard_native_collection_routing_test
+```
+
+Result:
+
+```text
+Ran 26 tests in 0.012s
 OK
 ```
 
