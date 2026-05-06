@@ -1,10 +1,10 @@
 # RTDL Current Main Support Matrix
 
-Status: live support matrix for the released `v1.0` tag and current `main`.
+Status: live support matrix for the released `v1.5` tag and current `main`.
 
 This page is intentionally separate from the
-[v1.0 release support matrix](release_reports/v1_0/support_matrix.md).
-The released `v1.0` tag is the current public release boundary. Users who
+[v1.5 release support matrix](release_reports/v1_5/support_matrix.md).
+The released `v1.5` tag is the current public release boundary. Users who
 build from the latest source should read this page together with the release
 matrix because stale local backend libraries may not contain the newest native
 symbols until rebuilt.
@@ -17,14 +17,21 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
 
 ## Boundary
 
-- Current public release: `v1.0`.
-- Current `main`: released `v1.0` surface plus any later untagged local work.
+- Current public release: `v1.5`.
+- Current `main`: released `v1.5` surface plus any later untagged local work.
 - The `v0.9.6` release boundary includes the native/native-assisted any-hit work
   and prepared repeated-query visibility/count optimizations from Goals650-681.
 - The `v0.9.8` release boundary added bounded RTX app evidence and public wording
   state without widening whole-app or backend-flag-only speedup claims.
 - The `v1.0` release boundary packages the app-shaped RTDL proof release,
   public docs, tutorials, app inventory, and reviewed bounded RTX wording.
+- The `v1.5` release boundary packages standalone Embree+OptiX
+  language/runtime completion for the supported surface: app-name-free stable
+  traversal-plus-reduction primitive contracts, 14 included app contracts, 4
+  excluded rows, and explicit `COLLECT_K_BOUNDED` deferral to v1.5.1.
+- The `v1.5` release is not a whole-app speedup claim and not a
+  zero-app-knowledge native-engine release; some native Embree/OptiX entry
+  points remain workload-shaped compatibility/proof surfaces.
 - Backend libraries must be rebuilt from current source before current-main
   native paths are available.
 - Stale backend libraries may fall back to compatibility dispatch or reject a
@@ -138,6 +145,9 @@ Current-main any-hit backend evidence is recorded in:
 
 For the public release boundary, use:
 
+- [v1.5 Release Package](release_reports/v1_5/README.md)
+- [v1.5 Support Matrix](release_reports/v1_5/support_matrix.md)
+- [v1.5 Audit Report](release_reports/v1_5/audit_report.md)
 - [v1.0 Release Package](release_reports/v1_0/README.md)
 - [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
 - [v1.0 Audit Report](release_reports/v1_0/audit_report.md)

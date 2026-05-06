@@ -110,7 +110,7 @@ def build_gate() -> dict[str, Any]:
     missing_package_review = [row["path"] for row in package_review_files if not row["exists"]]
     missing_final_authorization = [row["path"] for row in final_authorization_files if not row["exists"]]
     version = _read("VERSION").strip()
-    release_evidence_ready = not missing_ready and not phrase_failures and version in {"v0.9.6", "v0.9.8", "v1.0"}
+    release_evidence_ready = not missing_ready and not phrase_failures and version in {"v0.9.6", "v0.9.8", "v1.0", "v1.5"}
     release_package_ready = not missing_package
     release_package_review_ready = not missing_package_review
     final_authorization_ready = not missing_final_authorization

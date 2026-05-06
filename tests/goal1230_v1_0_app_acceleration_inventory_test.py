@@ -49,9 +49,10 @@ class Goal1230V10AppAccelerationInventoryTest(unittest.TestCase):
 
     def test_feature_guide_current_release_and_links_are_current(self) -> None:
         text = (ROOT / "docs/rtdl_feature_guide.md").read_text(encoding="utf-8")
-        self.assertIn("The current released state is `v1.0`", text)
+        self.assertIn("The current released state is `v1.5`", text)
         self.assertIn("[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)", text)
         self.assertIn("`v1.0`: released app-shaped RTDL proof", text)
+        self.assertIn("`v1.5`: released standalone Embree+OptiX", text)
         self.assertNotIn("The current released state is `v0.9.6`", text)
 
     def test_indexes_link_inventory(self) -> None:

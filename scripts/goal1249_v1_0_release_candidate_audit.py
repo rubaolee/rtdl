@@ -134,7 +134,7 @@ def build_audit() -> dict[str, Any]:
         and support_state["not_reviewed_rows_present"]
         and support_state["non_nvidia_rows_present"]
     )
-    release_marker_ok = version == "v1.0" and "The current released version is `v1.0`." in readme
+    release_marker_ok = version == "v1.5" and "The current released version is `v1.5`." in readme
     docs_index_ok = all(
         phrase in readme
         for phrase in (
@@ -170,9 +170,9 @@ def build_audit() -> dict[str, Any]:
         "support_ok": support_ok,
         "support_state": support_state,
         "boundary": (
-            "This audit covers the released v1.0 package and live version "
-            "marker. It does not authorize new public speedup wording beyond "
-            "the reviewed bounded sub-path rows."
+            "This audit covers the released v1.0 package under the live v1.5 "
+            "version marker. It does not authorize new public speedup wording "
+            "beyond the reviewed bounded sub-path rows."
         ),
         "next_steps": [
             "Run the release-surface documentation test gate.",

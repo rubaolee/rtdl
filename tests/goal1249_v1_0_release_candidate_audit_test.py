@@ -19,7 +19,7 @@ class Goal1249V10ReleaseCandidateAuditTest(unittest.TestCase):
         self.assertTrue(payload["valid"], payload)
         self.assertEqual(payload["recommendation"], "v1_0_release_action_complete")
         self.assertFalse(payload["pod_needed_now"])
-        self.assertEqual(payload["release_marker"], "v1.0")
+        self.assertEqual(payload["release_marker"], "v1.5")
         self.assertTrue(payload["package_ok"])
         self.assertTrue(payload["support_ok"])
         self.assertTrue(payload["docs_index_ok"])
@@ -73,7 +73,7 @@ class Goal1249V10ReleaseCandidateAuditTest(unittest.TestCase):
             markdown = output_md.read_text(encoding="utf-8")
             self.assertTrue(payload["valid"])
             self.assertIn("support matrix reviewed rows: `12`", markdown)
-            self.assertIn("release marker: `v1.0`", markdown)
+            self.assertIn("release marker: `v1.5`", markdown)
 
 
 if __name__ == "__main__":

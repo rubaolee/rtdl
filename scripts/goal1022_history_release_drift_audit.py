@@ -105,7 +105,7 @@ def build_audit() -> dict[str, Any]:
             else "The public-history drift is resolved for the current public release; keep future release history catch-ups append-only."
         ),
         "valid": (
-            current_public_release == "v1.0"
+            current_public_release == "v1.5"
             and release_report_claims_history_catchup
             and all(history_presence.values())
             and refresh_current

@@ -1,4 +1,4 @@
-# RTDL v1.5 Release-Candidate Audit Report
+# RTDL v1.5 Release Audit Report
 
 Status: all v1.5 release gates passed, and the `v1.5` annotated tag has been
 published after explicit release authorization.
@@ -18,7 +18,7 @@ published after explicit release authorization.
 
 ## Release Boundary
 
-v1.5 is a standalone Embree+OptiX language/runtime completion candidate for the
+v1.5 is a standalone Embree+OptiX language/runtime completion release for the
 supported surface. It is not a universal compute engine, not a package-install
 release, and not a broad performance release. It is also not yet app-agnostic
 inside the native engine implementation: app-name-free primitives exist, but
@@ -36,7 +36,8 @@ Allowed:
 
 Not allowed:
 
-- claiming a tag exists before explicit release/tag action;
+- treating this audit document as authorization for any future release/tag action;
+- moving or retagging `v1.5` without explicit release authorization;
 - moving or retagging `v1.0`;
 - claiming no whole-app speedup restriction;
 - broad NVIDIA RTX, GPU, DB, graph, polygon, Jaccard, ANN, DBSCAN, robot, or

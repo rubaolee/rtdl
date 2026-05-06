@@ -65,11 +65,13 @@ Use these layers together:
 - `v0.9.6`
 - `v0.9.8`
 - `v1.0`
+- `v1.5`
 
 ## Current Top Revision Rounds
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v1.5` | 2026-05-06 | `released` | Goal1411-1413 v1.5 release, boundary consensus, and front-page cleanup | `released` | `docs/release_reports/v1_5/README.md` |
 | `v1.0` | 2026-05-06 | `released` | Goal1348 v1.0 history catch-up after current-release drift audit | `accepted` | `docs/release_reports/v1_0/README.md` |
 | `v0.9.8` | 2026-05-01 | `released` | Goal1221 v0.9.8 release action after Goal1220 final authorization | `released` | `docs/release_reports/v0_9_8/README.md` |
 | `v0.9.8` | 2026-05-01 | `accepted` | Goals1216-1220 v0.9.8 release-candidate audit, package, and final authorization | `accepted` | `docs/reports/goal1220_two_ai_consensus_2026-05-01.md` |
@@ -125,6 +127,9 @@ Use these layers together:
   authorization. Older release records remain historical.
 - Goal1348 appends the `v1.0` release-history catch-up after current public
   docs advanced to `v1.0`. Older release records remain historical.
+- The v1.5 entry records the standalone Embree+OptiX language/runtime
+  completion release and front-page cleanup. Older release records remain
+  historical.
 - This page does not claim that every chat message or terminal line is
   preserved.
 - It does claim that the repo-visible evidence is now discoverable through a

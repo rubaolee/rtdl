@@ -1,6 +1,6 @@
 # RTDL v1.5 Support Matrix
 
-Status: release candidate support matrix for standalone Embree+OptiX.
+Status: released support matrix for standalone Embree+OptiX.
 
 This matrix is narrower than the general current-main support matrix. It
 records only the v1.5 standalone language/runtime scope: 14 included app
@@ -48,7 +48,9 @@ gate. They do not create no whole-app speedup authorization.
 - Active v1.5 standalone backends: Embree and OptiX.
 - Frozen before v2.1: Vulkan, HIPRT, Apple RT.
 - Source-tree usage: `PYTHONPATH=src:. python ...`.
-- Any release/tag action must be explicit; this support matrix is not itself a
-  tag operation.
+- The `v1.5` annotated tag has been published after explicit release
+  authorization. Do not move or retag it without a new explicit release action.
+- Any future explicit release/tag action must be separate from this support
+  matrix.
 - Native app-agnostic cleanup is future work: v1.5.1 handles
   `COLLECT_K_BOUNDED`, and v1.6-v2.0 formalize partner mechanisms.

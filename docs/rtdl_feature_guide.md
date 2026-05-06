@@ -25,14 +25,16 @@ performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is `v1.0`: the bounded `v0.7.0` DB package, the
+The current released state is `v1.5`: the bounded `v0.7.0` DB package, the
 released `v0.8.0` app-building layer that uses existing RTDL features with
 Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
 the released `v0.9.1` Apple RT closest-hit slice, the released `v0.9.4`
 Apple RT consolidation, the released `v0.9.5` any-hit / visibility-row /
 emitted-row reduction layer, the released `v0.9.6` prepared/prepacked repeated
 visibility/count optimization line, and the released `v0.9.8` bounded RTX app
-evidence / public-claim cleanup package.
+evidence / public-claim cleanup package, the released `v1.0` app-shaped proof
+release, and the released `v1.5` standalone Embree+OptiX language/runtime
+completion for the supported surface.
 
 The released `v0.9.1` line adds an Apple RT slice:
 `run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
@@ -175,6 +177,11 @@ Current release layers:
   contracts
 - `v1.0`: released app-shaped RTDL proof, documentation, and bounded evidence,
   with post-Goal1224/Goal1228 current-state updates preserved on `main`
+- `v1.5`: released standalone Embree+OptiX language/runtime completion for the
+  supported surface, with app-name-free stable traversal-plus-reduction
+  primitive contracts, 14 included app contracts, 4 excluded rows,
+  `COLLECT_K_BOUNDED` deferred to v1.5.1, no whole-app speedup claim, and no
+  claim that native engine internals are fully app-free
 
 Plus:
 
@@ -210,6 +217,10 @@ Current user-programming note:
   refinement/aggregation/materialization where needed
 - RTDL provides the query core there, while Python handles application logic and
   output
+- the released `v1.5` line makes the supported Embree+OptiX standalone surface
+  the current public release boundary; users may still write arbitrary Python
+  around RTDL, but RTDL does not take responsibility for user Python
+  continuation performance
 - the released `v0.9.5` line adds reusable app-building pieces:
   `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`; `reduce_rows`
   improves app ergonomics but is not a backend-native reduction or speedup

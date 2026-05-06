@@ -35,9 +35,9 @@ class Goal1228V10PositioningDocsTest(unittest.TestCase):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIn("## Roadmap Boundary", readme)
         self.assertIn("v1.0 proof machinery, not the final architecture", readme)
-        self.assertIn("v1.5 internal primitive migration is pod-verified", readme)
-        self.assertIn("not a public release yet", readme)
-        self.assertIn("v2.0 targets broader end-to-end performance", readme)
+        self.assertIn("v1.5 is the released standalone Embree+OptiX", readme)
+        self.assertIn("not a zero-app-knowledge native-engine release", readme)
+        self.assertIn("v2.0 targets broader\nend-to-end performance", readme)
         self.assertIn("Reviewed rows are bounded public sub-path wording", readme)
 
     def test_goal1228_plan_records_custom_engine_inventory(self) -> None:

@@ -19,7 +19,7 @@ class Goal1218V098ReleaseAuthorizationGateTest(unittest.TestCase):
         self.assertTrue(payload["valid_gate"], payload)
         self.assertTrue(payload["release_authorized"], payload)
         self.assertFalse(payload["pod_needed_before_authorization"])
-        self.assertEqual(payload["version_marker"], "v1.0")
+        self.assertEqual(payload["version_marker"], "v1.5")
         self.assertEqual(payload["blockers"], [])
         self.assertEqual(
             payload["recommended_next_action"],

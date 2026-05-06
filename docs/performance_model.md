@@ -1,7 +1,7 @@
 # RTDL Performance Model
 
-This page explains how to read RTDL performance claims in the current v1.0
-foundation line. It is intentionally stricter than marketing language: a
+This page explains how to read RTDL performance claims in the current v1.5
+release line. It is intentionally stricter than marketing language: a
 backend flag, a native code path, and a public speedup claim are different
 things.
 
@@ -16,7 +16,10 @@ The current public performance model is:
 
 - Python is the authoring/control plane.
 - Backend/native code should own traversal and candidate discovery.
-- v1.0 still uses app-specific native continuations for some demos.
+- v1.5 keeps the v1.0 app-shaped proof history but publishes standalone
+  Embree+OptiX language/runtime completion for the supported surface.
+- Some native entry points remain workload-shaped compatibility/proof surfaces;
+  v1.5 is not a zero-app-knowledge native-engine release.
 - Python convenience row output is useful for development but can dominate
   runtime.
 - Raw/prepared/native summary paths are the serious performance path.
@@ -48,21 +51,25 @@ Only level 4 is a public speedup claim.
 Current public RTX wording is governed by:
 
 - [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
+- [v1.5 Release Package](release_reports/v1_5/README.md)
 - [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 - [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - `rtdsl.rtx_public_wording_matrix()`
 
-## v1.0 App Performance Reality
+## v1.5 App Performance Reality
 
-v1.0 intentionally proves app-shaped targets. That makes the demos meaningful,
-but it also means performance is mixed by design:
+v1.5 is the current standalone Embree+OptiX language/runtime release for the
+supported surface. It keeps the v1.0 app-shaped proof history, so performance
+is still mixed by design:
 
 - RT traversal-heavy sub-paths can be fast.
 - Full apps may still be slow when Python owns ranking, clustering, exact
   polygon refinement, graph reductions, or force computation.
-- Some app-specific native continuations exist to make v1.0 demos measurable.
-- Those continuations are v1.0 proof machinery, not the final architecture.
+- Some app-specific or workload-shaped native continuations exist to make the
+  proof apps measurable.
+- Those continuations are proof machinery, not the final app-independent native
+  engine architecture.
 
 Examples:
 
@@ -112,26 +119,26 @@ Use slower-than-Embree results to decide the next architecture step:
 - if parity or same-contract timing is incomplete, the result stays
   `baseline_contract_incomplete`;
 - if the app needs reductions, grouping, ranking, graph analytics, or SQL-style
-  materialization outside traversal, that is v1.5/v2.0 design input rather than
-  a failed OptiX proof.
+  materialization outside traversal, that is v1.5.1/v2.0 design input rather
+  than a failed OptiX proof.
 
-## What Current Main Fixed Internally For v1.5
+## What v1.5 Publishes
 
-Current `main` has internally pod-verified v1.5 generic subpaths for the
-supported migration inventory. Those subpaths express more app continuations
-through reviewed backend primitives instead of hardcoded app logic:
+The released v1.5 package has pod-verified standalone Embree+OptiX subpaths for
+the supported migration inventory. Those subpaths express more app
+continuations through reviewed backend primitives instead of hardcoded app
+logic:
 
 - `ANY_HIT`
 - `COUNT_HITS`
 - `REDUCE_FLOAT(MIN|MAX|SUM)`
 - `REDUCE_INT(COUNT|SUM)`
-- limited `COLLECT_K_BOUNDED`
 
-This is not a public v1.5 release yet and not a claim that every app is
-automatically fast. App-level continuations such as ranking, clustering, graph
-analytics, SQL-style materialization, exact-distance rows, and force-vector
-reduction remain outside the verified v1.5 subpath boundary unless a later
-report explicitly moves them.
+`COLLECT_K_BOUNDED` remains experimental and is deferred to v1.5.1. v1.5 is
+not a claim that every app is automatically fast. App-level continuations such
+as ranking, clustering, graph analytics, SQL-style materialization,
+exact-distance rows, and force-vector reduction remain outside the verified
+v1.5 subpath boundary unless a later report explicitly moves them.
 
 ## What v2.0 Should Fix
 
@@ -147,9 +154,9 @@ work:
 - explicit boundaries between RT traversal, compute reductions, and Python
   presentation
 
-Until that architecture exists, public docs should say v1.0 proves bounded
-RTDL app targets and selected sub-path acceleration, not universal whole-app
-speedup.
+Until that architecture exists, public docs should say v1.5 provides standalone
+Embree+OptiX support for the bounded release surface and selected sub-path
+evidence, not universal whole-app speedup.
 
 ## Public Wording Rule
 

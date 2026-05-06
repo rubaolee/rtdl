@@ -96,8 +96,8 @@ def build_audit() -> dict[str, Any]:
         for phrase in (
             "## Roadmap Boundary",
             "v1.0 proof machinery, not the final architecture",
-            "v1.5 internal primitive migration is pod-verified",
-            "v2.0 targets broader end-to-end performance",
+            "v1.5 is the released standalone Embree+OptiX",
+            "v2.0 targets broader\nend-to-end performance",
         )
     )
     public_docs_ok = all(not row["stale_current_main_phrases"] for row in surface_rows)
@@ -152,8 +152,8 @@ def build_audit() -> dict[str, Any]:
         "missing_reports": missing_reports,
         "next_v1_0_work": [
             "Keep v0.9.8 release package historical and separate from current-main v1.0 docs.",
-            "Finish current v1.0 front-page and app documentation around selected RT sub-paths and native continuations.",
-            "Do not start v1.5 implementation until the v1.0 public surface is stable and externally reviewed.",
+            "Keep current v1.5 front-page and app documentation aligned with selected RT sub-paths and native continuations.",
+            "Do not move or retag v1.0 or v1.5 without explicit release authorization.",
         ],
     }
 

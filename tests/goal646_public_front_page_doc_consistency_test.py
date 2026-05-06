@@ -28,7 +28,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
             (REPO_ROOT / path).read_text(encoding="utf-8") for path in PUBLIC_FRONT_PAGES
         )
 
-        self.assertIn("current released version: `v1.0`", combined)
+        self.assertIn("current released version: `v1.5`", combined)
         self.assertIn("ray_triangle_any_hit", combined)
         self.assertIn("visibility_rows", combined)
         self.assertIn("reduce_rows", combined)
@@ -58,7 +58,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
         text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
 
         self.assertNotIn("python3 -m pip install -e .", text)
-        self.assertIn("RTDL v1.0 is used directly from the source tree", text)
+        self.assertIn("RTDL v1.5 is used directly from the source tree", text)
         self.assertIn("PYTHONPATH=src:. python examples/rtdl_hello_world.py", text)
 
     def test_docs_new_user_path_is_concise(self) -> None:
@@ -69,7 +69,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
         self.assertGreaterEqual(len(numbered), 8)
         self.assertLessEqual(len(numbered), 15)
         self.assertIn("[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)", section)
-        self.assertIn("[v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)", section)
+        self.assertIn("[v1.5 Release Package](release_reports/v1_5/README.md)", section)
         self.assertIn("Older release packages remain linked below", section)
 
 

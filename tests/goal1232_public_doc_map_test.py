@@ -20,10 +20,10 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
             "Programming model",
             "IR and lowering",
             "Performance",
-            "v1.0 is a foundation release line",
-            "Current `main` has internally pod-verified v1.5 generic",
-            "not public v1.5 release authorization",
-            "v2.0 is the real broader performance target",
+            "v1.5 is the current public release",
+            "v1.0 remains the foundation proof line",
+            "v1.5 is not a whole-app speedup release",
+            "v2.0 is the broader performance target",
             "`--backend optix` is not by itself an NVIDIA RT-core speedup claim",
         ):
             with self.subTest(phrase=phrase):
@@ -51,15 +51,15 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
             "Python is the authoring/control plane",
             "Only level 4 is a public speedup claim",
             "Raw/prepared/native summary paths are the serious performance path",
-            "v1.0 still uses app-specific native continuations",
+            "v1.5 keeps the v1.0 app-shaped proof history",
             "v2.0 is the broader performance target",
             "RTDL accelerates <exact prepared/native sub-path>",
             "Embree is a ray-tracing/BVH backend",
             "optix_still_slower_with_reason",
             "slower OptiX result is acceptable engineering evidence",
             "cannot authorize\npositive public RTX speedup wording",
-            "Current `main` has internally pod-verified v1.5 generic subpaths",
-            "not a public v1.5 release yet",
+            "The released v1.5 package has pod-verified standalone Embree+OptiX subpaths",
+            "COLLECT_K_BOUNDED` remains experimental",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, perf_text)

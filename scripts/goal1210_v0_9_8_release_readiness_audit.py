@@ -46,7 +46,7 @@ REQUIRED_GOAL_FILES: dict[str, tuple[str, ...]] = {
 
 CURRENT_PUBLIC_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "The current released version is `v1.0`",
+        "The current released version is `v1.5`",
         "Reviewed rows are bounded public sub-path wording",
         "not automatic public speedup claims",
         "v1.0 RTX App Status",

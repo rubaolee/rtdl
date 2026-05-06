@@ -12,9 +12,11 @@ class Goal654CurrentMainSupportMatrixTest(unittest.TestCase):
     def test_current_main_matrix_exists_and_marks_release_boundary(self) -> None:
         text = MATRIX.read_text(encoding="utf-8")
 
-        self.assertIn("Current public release: `v1.0`.", text)
-        self.assertIn("Current `main`: released `v1.0` surface plus", text)
-        self.assertIn("released `v1.0` tag is the current public release boundary", text)
+        self.assertIn("Current public release: `v1.5`.", text)
+        self.assertIn("Current `main`: released `v1.5` surface plus", text)
+        self.assertIn("released `v1.5` tag is the current public release boundary", text)
+        self.assertIn("[v1.5 Release Package](release_reports/v1_5/README.md)", text)
+        self.assertIn("[v1.5 Support Matrix](release_reports/v1_5/support_matrix.md)", text)
         self.assertIn("[v1.0 Release Package](release_reports/v1_0/README.md)", text)
         self.assertIn("[v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)", text)
         self.assertIn("This page is not a speedup claim.", text)

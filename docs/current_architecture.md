@@ -4,29 +4,38 @@ This is the current public architecture page for users evaluating RTDL.
 Historical architecture reports are preserved elsewhere, but this page explains
 the released `v0.7.0` design, the released `v0.8.0` app-building layer, the
 released `v0.9.0` HIPRT / closest-hit expansion, the released `v0.9.1`
-Apple RT closest-hit slice, the released `v0.9.4` Apple RT consolidation, and
-the released `v0.9.5` any-hit / visibility-row / emitted-row reduction layer.
+Apple RT closest-hit slice, the released `v0.9.4` Apple RT consolidation, the
+released `v0.9.5` any-hit / visibility-row / emitted-row reduction layer, the
+released `v1.0` app-shaped proof release, and the released `v1.5` standalone
+Embree+OptiX language/runtime completion.
 
 For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
 [RTDL Capability Boundaries](capability_boundaries.md).
 
-## v1.0 Lens
+## v1.5 Lens
 
-Read the current architecture through this v1.0 lens:
+Read the current architecture through this v1.5 lens:
 
-- v1.0 is the proof line for a Python-hosted RT DSL on real app-shaped
+- v1.5 is the current release line for the supported standalone Embree+OptiX
+  language/runtime surface.
+- v1.0 remains the proof line for a Python-hosted RT DSL on real app-shaped
   workloads.
 - Some app paths use app-specific native continuations so the proof apps are
   useful and measurable.
 - Those continuations are intentionally documented in
   [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md); they
   are not the final engine architecture.
-- Current `main` has internally pod-verified v1.5 generic
-  traversal-plus-reduction subpaths for the migration inventory. This is still
-  not public v1.5 release authorization and not a whole-app speedup claim.
-- v2.0 is the broader end-to-end performance target, especially for non-RT
-  phases that should not stay in Python hot loops.
+- v1.5 stabilizes app-name-free traversal-plus-reduction primitive contracts
+  for the included surface, but it is not yet a zero-app-knowledge native
+  engine release; some Embree/OptiX entry points remain workload-shaped
+  compatibility/proof surfaces.
+- v1.5 is not a whole-app speedup claim.
+- v1.5.1 is the `COLLECT_K_BOUNDED` promotion track, and v1.6-v2.0 are the
+  staged partner-mechanism track for non-RT phases that should not stay in
+  Python hot loops.
+- v2.0 is the broader end-to-end performance target after v1.5.1 and the
+  partner-mechanism milestones.
 
 ## The User Contract
 

@@ -17,8 +17,11 @@ class Goal1250V10ReleaseSurfaceDocAuditTest(unittest.TestCase):
     def test_release_surface_doc_audit_is_valid(self) -> None:
         payload = goal1250.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["recommendation"], "v1_0_release_surface_released")
-        self.assertEqual(payload["version"], "v1.0")
+        self.assertEqual(
+            payload["recommendation"],
+            "v1_0_release_surface_preserved_under_v1_5_current_release",
+        )
+        self.assertEqual(payload["version"], "v1.5")
         self.assertTrue(payload["version_ok"])
         self.assertFalse(payload["pod_needed_now"])
         self.assertGreaterEqual(payload["surface_count"], 18)
@@ -48,7 +51,7 @@ class Goal1250V10ReleaseSurfaceDocAuditTest(unittest.TestCase):
         payload = goal1250.build_audit()
         self.assertIn("released v1.0", payload["boundary"])
         self.assertIn("No pod is required", payload["pod_decision"])
-        self.assertIn("Tag the release-action commit", " ".join(payload["next_steps"]))
+        self.assertIn("Do not move or retag", " ".join(payload["next_steps"]))
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -73,7 +76,7 @@ class Goal1250V10ReleaseSurfaceDocAuditTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertTrue(payload["valid"])
-            self.assertIn("version: `v1.0`", markdown)
+            self.assertIn("version: `v1.5`", markdown)
             self.assertIn("failure count: `0`", markdown)
 
 

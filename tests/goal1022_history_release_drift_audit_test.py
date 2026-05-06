@@ -19,7 +19,7 @@ class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
         )
         payload = module.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["current_public_release"], "v1.0")
+        self.assertEqual(payload["current_public_release"], "v1.5")
         self.assertFalse(payload["history_drift_detected"])
         self.assertEqual(payload["history_status"], "drift_resolved")
         self.assertTrue(payload["release_report_claims_history_catchup"])

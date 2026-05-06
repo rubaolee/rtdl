@@ -13,11 +13,11 @@ GOAL = "Goal1250 v1.0 release-surface documentation audit"
 
 SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "The current released version is `v1.0`.",
+        "The current released version is `v1.5`.",
         "## Roadmap Boundary",
         "v1.0 proof machinery, not the final architecture",
-        "v1.5 internal primitive migration is pod-verified",
-        "v2.0 targets broader end-to-end performance",
+        "v1.5 is the released standalone Embree+OptiX language/runtime completion",
+        "v2.0 targets broader\nend-to-end performance",
         "Reviewed rows are bounded public sub-path wording",
         "[Public Documentation Map](docs/public_documentation_map.md)",
         "[Quick Tutorial](docs/quick_tutorial.md)",
@@ -25,15 +25,16 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "[Performance Model](docs/performance_model.md)",
     ),
     "docs/README.md": (
-        "The current released version is `v1.0`.",
+        "The current released version is `v1.5`.",
         "Public Surfaces",
         "Front page",
         "Tutorials",
         "Apps and examples",
         "Architecture/model/IR/performance",
-        "v1.0 is a foundation release line",
-        "internally pod-verified v1.5 generic primitive subpaths",
+        "v1.5 is the current release line",
+        "app-name-free stable\ntraversal-plus-reduction primitives",
         "v2.0 is the broader end-to-end performance target",
+        "[v1.5 Release Package](release_reports/v1_5/README.md)",
         "[v1.0 Release Package](release_reports/v1_0/README.md)",
     ),
     "docs/public_documentation_map.md": (
@@ -46,9 +47,9 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "Programming model",
         "IR and lowering",
         "Performance",
-        "v1.0 is a foundation release line",
-        "internally pod-verified v1.5 generic",
-        "v2.0 is the real broader performance target",
+        "v1.5 is the current public release",
+        "v1.0 remains the foundation proof line",
+        "v2.0 is the broader performance target",
     ),
     "docs/quick_tutorial.md": (
         "NVIDIA RT-core claim note",
@@ -101,10 +102,10 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "REDUCE_INT",
     ),
     "docs/current_architecture.md": (
-        "## v1.0 Lens",
+        "## v1.5 Lens",
         "Some app paths use app-specific native continuations",
         "not the final engine architecture",
-        "internally pod-verified v1.5 generic",
+        "v1.5 stabilizes app-name-free traversal-plus-reduction",
         "v2.0 is the broader end-to-end performance target",
         "`ray_triangle_any_hit`",
         "`visibility_rows`",
@@ -132,7 +133,7 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "Python is the authoring/control plane",
         "Only level 4 is a public speedup claim",
         "Raw/prepared/native summary paths are the serious performance path",
-        "v1.0 still uses app-specific native continuations",
+        "v1.5 keeps the v1.0 app-shaped proof history",
         "v2.0 is the broader performance target",
         "RTDL accelerates <exact prepared/native sub-path>",
     ),
@@ -212,14 +213,14 @@ def build_audit() -> dict[str, Any]:
     rows = _surface_rows()
     failures = [row for row in rows if row["status"] != "ok"]
     version = _read("VERSION").strip()
-    version_ok = version == "v1.0"
+    version_ok = version == "v1.5"
     valid = not failures and version_ok
     return {
         "goal": GOAL,
         "date": DATE,
         "valid": valid,
         "recommendation": (
-            "v1_0_release_surface_released"
+            "v1_0_release_surface_preserved_under_v1_5_current_release"
             if valid
             else "blocked_pending_release_surface_doc_fixes"
         ),
@@ -235,14 +236,15 @@ def build_audit() -> dict[str, Any]:
             "blocked/not-reviewed RTX rows are promoted."
         ),
         "boundary": (
-            "This is a documentation release-surface audit for released v1.0. "
+            "This is a documentation release-surface audit for released v1.0 "
+            "after the v1.5 current-release update. "
             "It does not authorize new performance claims beyond the reviewed "
             "bounded sub-path wording."
         ),
         "next_steps": [
-            "Run focused release-action tests.",
-            "Commit the release action.",
-            "Tag the release-action commit.",
+            "Run focused public-doc tests.",
+            "Commit the current-release documentation update.",
+            "Do not move or retag existing releases without explicit approval.",
         ],
     }
 

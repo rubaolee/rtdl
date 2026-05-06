@@ -29,21 +29,21 @@ REQUIRED_FILES = (
 
 REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "current released version is `v1.0`",
+        "current released version is `v1.5`",
         "Reviewed rows are bounded public sub-path wording",
         "not automatic public speedup claims",
         "v1.0 App Acceleration Inventory",
         "v1.0 RTX App Status",
     ),
     "docs/README.md": (
-        "current released version is `v1.0`",
+        "current released version is `v1.5`",
+        "v1.5 Release Package",
         "v1.0 Release Package",
-        "v0.9.8 Release Package",
         "v1.0 RTX App Status",
     ),
     "docs/current_main_support_matrix.md": (
-        "Current public release: `v1.0`",
-        "released `v1.0` tag",
+        "Current public release: `v1.5`",
+        "released `v1.5` tag",
     ),
     "docs/application_catalog.md": (
         "is not by itself a NVIDIA RT-core claim",

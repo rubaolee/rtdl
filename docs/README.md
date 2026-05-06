@@ -5,7 +5,7 @@ history. If you are new to RTDL, do not browse everything here first. Start with
 the live path below, then branch into tutorials, apps, architecture, IR, or
 performance.
 
-The current released version is `v1.0`.
+The current released version is `v1.5`.
 
 ## New User Path
 
@@ -21,8 +21,8 @@ the current public story:
 7. [RTDL Tutorials](tutorials/README.md)
 8. [App And Example Quickstart](app_example_quickstart.md)
 9. [Application Catalog](application_catalog.md)
-10. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
-11. [v1.5 Release-Candidate Package](release_reports/v1_5/README.md)
+10. [v1.5 Release Package](release_reports/v1_5/README.md)
+11. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
 12. [IR And Lowering](rtdl/ir_and_lowering.md)
 13. [Performance Model](performance_model.md)
 14. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
@@ -50,9 +50,11 @@ write?", use this path:
 1. Read [Current Architecture](current_architecture.md) for the user contract.
 2. Run [Quick Tutorial](quick_tutorial.md).
 3. Choose one runnable app from [App And Example Quickstart](app_example_quickstart.md).
-4. Check [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
-   before interpreting app performance.
-5. Check [Performance Model](performance_model.md) before writing any speedup
+4. Check the [v1.5 Release Package](release_reports/v1_5/README.md) for the
+   current release boundary.
+5. Check [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+   before interpreting historical app performance boundaries.
+6. Check [Performance Model](performance_model.md) before writing any speedup
    wording.
 
 The public promise is authoring-burden reduction: RTDL hides backend-specific
@@ -74,10 +76,15 @@ audited release claims.
 
 ## Current Boundary
 
-v1.0 is a foundation release line. It proves that RTDL can express real
-app-shaped ray-tracing workloads from Python, connect them to multiple backend
-surfaces, and document where performance claims are valid. It is not the final
-engine architecture.
+v1.5 is the current release line. It packages standalone Embree+OptiX
+language/runtime completion for the supported surface: app-name-free stable
+traversal-plus-reduction primitives, 14 included app contracts, 4 excluded
+rows, and explicit release boundaries. It is not a whole-app speedup release
+and not a zero-app-knowledge native-engine release.
+
+v1.0 remains the foundation proof release for real app-shaped ray-tracing
+workloads from Python. It is preserved as evidence and history, but it is no
+longer the current release.
 
 Important public-claim rules:
 
@@ -88,11 +95,9 @@ Important public-claim rules:
   OptiX correctness issue; use post-fix Goal748 or later robot evidence.
 - Whole-app outputs may include Python continuation work such as ranking,
   clustering, force reduction, SQL-style output assembly, or graph reductions.
-- Current `main` has complete v1.5 release-candidate gates for standalone
-  Embree+OptiX. The candidate has 14 included app contracts and 4 excluded rows;
-  `COLLECT_K_BOUNDED` remains experimental and moves to v1.5.1. This still
-  requires an explicit release/tag action before a public v1.5 tag exists, and
-  it is no whole-app speedup claim.
+- The released v1.5 surface has 14 included app contracts and 4 excluded rows;
+  `COLLECT_K_BOUNDED` remains experimental and moves to v1.5.1.
+- v1.5 does not claim whole-app speedups or app-free native-engine internals.
 - v2.0 is the broader end-to-end performance target.
 
 Current released feature terms you will see in the docs include
@@ -114,8 +119,8 @@ specific backend path says so.
 
 Use these for audit trails and exact release boundaries:
 
+- [v1.5 Release Package](release_reports/v1_5/README.md)
 - [v1.0 Release Package](release_reports/v1_0/README.md)
-- [v1.5 Release-Candidate Package](release_reports/v1_5/README.md)
 - [v1.0 Release Statement](release_reports/v1_0/release_statement.md)
 - [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
 - [v1.0 Audit Report](release_reports/v1_0/audit_report.md)
