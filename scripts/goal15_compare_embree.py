@@ -62,11 +62,11 @@ def _run_windows_compile(command: list[str], *, vcvars: Path, cwd: Path) -> None
 
 
 def _default_embree_prefix(system: str) -> Path:
+    if "RTDL_EMBREE_PREFIX" in os.environ:
+        return Path(os.environ["RTDL_EMBREE_PREFIX"])
     if system == "Darwin":
         return Path("/opt/homebrew/opt/embree")
     if system == "Windows":
-        if "RTDL_EMBREE_PREFIX" in os.environ:
-            return Path(os.environ["RTDL_EMBREE_PREFIX"])
         home = Path.home()
         for candidate in (
             home / "vendor",
@@ -78,6 +78,29 @@ def _default_embree_prefix(system: str) -> Path:
                 return candidate
         return home / "vendor"
     return Path("/usr")
+
+
+def _embree_link_name(embree_prefix: Path, system: str) -> str:
+    if system == "Windows":
+        return "embree4"
+    include = embree_prefix / "include"
+    if (include / "embree4" / "rtcore.h").exists():
+        return "embree4"
+    if (include / "embree3" / "rtcore.h").exists():
+        return "embree3"
+    return "embree4"
+
+
+def _embree_library_dir(embree_prefix: Path) -> Path:
+    for candidate in (
+        embree_prefix / "lib",
+        embree_prefix / "lib64",
+        embree_prefix / "lib" / "x86_64-linux-gnu",
+        Path("/usr/lib/x86_64-linux-gnu"),
+    ):
+        if candidate.exists():
+            return candidate
+    return embree_prefix / "lib"
 
 
 def write_segments_csv(path: Path, segments: tuple[rt.Segment, ...]) -> None:
@@ -111,6 +134,8 @@ def compile_native(exe_name: str, source_name: str) -> Path:
     native_path = ROOT / "src" / "native" / "rtdl_embree.cpp"
     system = platform.system()
     embree_prefix = _default_embree_prefix(system)
+    embree_lib_dir = _embree_library_dir(embree_prefix)
+    embree_link_name = _embree_link_name(embree_prefix, system)
     output_name = exe_name + ".exe" if system == "Windows" else exe_name
     output_path = build_dir / output_name
     geos_cflags = [] if system == "Windows" else geos_pkg_config_flags("--cflags")
@@ -126,7 +151,7 @@ def compile_native(exe_name: str, source_name: str) -> Path:
             str(embree_prefix / "include"),
             str(source_path),
             str(native_path),
-            str(embree_prefix / "lib" / "embree4.lib"),
+            str(embree_lib_dir / f"{embree_link_name}.lib"),
             str(embree_prefix / "lib" / "tbb12.lib"),
             "-o",
             str(output_path),
@@ -153,9 +178,9 @@ def compile_native(exe_name: str, source_name: str) -> Path:
             str(source_path),
             str(native_path),
             "-L",
-            str(embree_prefix / "lib"),
-            "-Wl,-rpath," + str(embree_prefix / "lib"),
-            "-lembree4",
+            str(embree_lib_dir),
+            "-Wl,-rpath," + str(embree_lib_dir),
+            f"-l{embree_link_name}",
             *geos_libs,
             "-o",
             str(output_path),

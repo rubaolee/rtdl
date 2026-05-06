@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 import unittest
 
 import rtdsl as rt
@@ -104,6 +105,8 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
                 self.assertEqual(row["native_shapes"], ())
 
     def test_native_only_still_rejects_unsupported_compatibility_predicate(self) -> None:
+        if platform.system() != "Darwin":
+            self.skipTest("Apple RT native execution is only available on macOS")
         with self.assertRaises(NotImplementedError):
             rt.run_apple_rt(
                 ray_hitcount_kernel,

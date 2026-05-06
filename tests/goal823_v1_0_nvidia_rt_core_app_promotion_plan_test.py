@@ -30,7 +30,7 @@ class Goal823V10NvidiaRtCoreAppPromotionPlanTest(unittest.TestCase):
 
     def test_report_links_plan_and_preserves_no_claim_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
-        self.assertIn(str(PLAN), text)
+        self.assertIn("docs/goal_823_v1_0_nvidia_rt_core_app_promotion_plan.md", text)
         self.assertIn("will not equate `--backend optix` with NVIDIA RT-core acceleration", text)
         self.assertIn("No release or speedup claim", PLAN.read_text(encoding="utf-8"))
 

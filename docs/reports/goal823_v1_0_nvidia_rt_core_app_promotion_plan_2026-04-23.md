@@ -9,7 +9,7 @@ cloud-cost rule.
 
 ## Plan File
 
-`/Users/rl2025/rtdl_python_only/docs/goal_823_v1_0_nvidia_rt_core_app_promotion_plan.md`
+`docs/goal_823_v1_0_nvidia_rt_core_app_promotion_plan.md`
 
 ## Core Decision
 
