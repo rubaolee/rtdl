@@ -546,6 +546,12 @@ from .v1_5_standalone_correctness import v1_5_standalone_correctness_matrix
 from .v1_5_standalone_correctness import v1_5_standalone_correctness_summary
 from .v1_5_standalone_correctness import validate_v1_5_standalone_correctness_matrix
 from .v1_5_standalone_correctness import validate_v1_5_standalone_correctness_summary
+from .v1_5_support_maturity import V1_5_SUPPORT_MATURITY_REQUIRED_BACKENDS
+from .v1_5_support_maturity import V1_5_SUPPORT_MATURITY_STATUSES
+from .v1_5_support_maturity import v1_5_support_maturity_matrix
+from .v1_5_support_maturity import v1_5_support_maturity_summary
+from .v1_5_support_maturity import validate_v1_5_support_maturity_matrix
+from .v1_5_support_maturity import validate_v1_5_support_maturity_summary
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -880,6 +886,12 @@ __all__ = [
     "v1_5_standalone_correctness_summary",
     "validate_v1_5_standalone_correctness_matrix",
     "validate_v1_5_standalone_correctness_summary",
+    "V1_5_SUPPORT_MATURITY_REQUIRED_BACKENDS",
+    "V1_5_SUPPORT_MATURITY_STATUSES",
+    "v1_5_support_maturity_matrix",
+    "v1_5_support_maturity_summary",
+    "validate_v1_5_support_maturity_matrix",
+    "validate_v1_5_support_maturity_summary",
     "PredicateSet",
     "PredicateSetLayout",
     "Rays",

@@ -22,6 +22,7 @@ from .v1_5_standalone_app_classification import (
 from .v1_5_standalone_correctness import (
     validate_v1_5_standalone_correctness_summary,
 )
+from .v1_5_support_maturity import validate_v1_5_support_maturity_summary
 
 
 V1_5_INTERNAL_READINESS_STATUS = "internal_v1_5_contract_gate_passing_non_public"
@@ -144,12 +145,10 @@ V1_5_STANDALONE_RELEASE_REQUIRED_GATES = (
 )
 V1_5_STANDALONE_RELEASE_BLOCKERS = (
     "same-contract per-app Embree/OptiX benchmark evidence is not yet complete",
-    "test-backed support/maturity matrix is not yet complete",
     "v1.5 release docs and public wording must be refreshed after standalone gates pass",
 )
 V1_5_STANDALONE_RELEASE_ALLOWED_NEXT_ACTIONS = (
     "run_same_contract_per_app_benchmarks",
-    "build_test_backed_support_maturity_matrix",
     "refresh_release_docs_and_public_wording",
 )
 V1_5_1_COLLECT_K_BOUNDED_TRACK = (
@@ -641,6 +640,7 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
     bounded_collection_resolution = validate_v1_5_collect_k_bounded_resolution()
     app_classification = validate_v1_5_standalone_app_classification_matrix()
     correctness_summary = validate_v1_5_standalone_correctness_summary()
+    support_maturity_summary = validate_v1_5_support_maturity_summary()
     collect_k_statuses = tuple(
         sorted({str(contract["status"]) for contract in bounded_collection_contracts})
     )
@@ -653,7 +653,9 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "app_migration_classification": True,
         "same_contract_per_app_correctness": correctness_summary["release_gate_complete"],
         "same_contract_per_app_benchmarks": False,
-        "test_backed_support_maturity_matrix": False,
+        "test_backed_support_maturity_matrix": support_maturity_summary[
+            "release_gate_complete"
+        ],
         "release_docs_and_public_wording": False,
     }
     return {
@@ -716,6 +718,11 @@ def v1_5_standalone_release_gate() -> dict[str, Any]:
         "same_contract_correctness_excluded_app_count": correctness_summary["excluded_app_count"],
         "same_contract_correctness_pending_apps": correctness_summary["pending_apps"],
         "same_contract_correctness_command": correctness_summary["command"],
+        "support_maturity_status_counts": support_maturity_summary["status_counts"],
+        "support_maturity_included_app_count": support_maturity_summary["included_app_count"],
+        "support_maturity_excluded_app_count": support_maturity_summary["excluded_app_count"],
+        "support_maturity_failed_apps": support_maturity_summary["failed_apps"],
+        "support_maturity_test_backed": support_maturity_summary["test_backed"],
         "collect_k_bounded_resolution": "resolved_by_explicit_row_returning_app_exclusion",
         "collect_k_bounded_followup_track": V1_5_1_COLLECT_K_BOUNDED_TRACK,
         "partner_track": V1_5_STANDALONE_PARTNER_TRACK,
@@ -750,9 +757,10 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         "collect_k_bounded_resolution",
         "app_migration_classification",
         "same_contract_per_app_correctness",
+        "test_backed_support_maturity_matrix",
     ):
         raise ValueError(
-            "only prerequisite, roadmap consensus, collect-k, classification, and correctness gates should pass now"
+            "only prerequisite, roadmap consensus, collect-k, classification, correctness, and support gates should pass now"
         )
     expected_failed = tuple(
         required
@@ -815,6 +823,16 @@ def validate_v1_5_standalone_release_gate() -> dict[str, Any]:
         raise ValueError("same-contract correctness excluded app count mismatch")
     if tuple(gate["same_contract_correctness_pending_apps"]) != ():
         raise ValueError("same-contract correctness pending apps mismatch")
+    if gate["gate_results"]["test_backed_support_maturity_matrix"] is not True:
+        raise ValueError("test-backed support/maturity matrix must pass")
+    if int(gate["support_maturity_included_app_count"]) != 14:
+        raise ValueError("support/maturity included app count mismatch")
+    if int(gate["support_maturity_excluded_app_count"]) != 4:
+        raise ValueError("support/maturity excluded app count mismatch")
+    if tuple(gate["support_maturity_failed_apps"]) != ():
+        raise ValueError("support/maturity failed app list mismatch")
+    if gate["support_maturity_test_backed"] is not True:
+        raise ValueError("support/maturity matrix must be test-backed")
     for required_classification in (
         "fully_generic",
         "wrapper_backed",

@@ -32,13 +32,13 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
                 "collect_k_bounded_resolution",
                 "app_migration_classification",
                 "same_contract_per_app_correctness",
+                "test_backed_support_maturity_matrix",
             ),
         )
         self.assertEqual(
             gate["failed_gates"],
             (
                 "same_contract_per_app_benchmarks",
-                "test_backed_support_maturity_matrix",
                 "release_docs_and_public_wording",
             ),
         )
@@ -47,6 +47,7 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
                 self.assertFalse(gate["gate_results"][failed_gate])
         self.assertTrue(gate["gate_results"]["same_contract_per_app_correctness"])
         self.assertTrue(gate["gate_results"]["collect_k_bounded_resolution"])
+        self.assertTrue(gate["gate_results"]["test_backed_support_maturity_matrix"])
 
     def test_gate_resolves_collect_k_bounded_by_excluding_row_returning_apps(self):
         gate = rt.validate_v1_5_standalone_release_gate()
@@ -98,7 +99,6 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
             gate["allowed_next_actions"],
             (
                 "run_same_contract_per_app_benchmarks",
-                "build_test_backed_support_maturity_matrix",
                 "refresh_release_docs_and_public_wording",
             ),
         )
@@ -125,6 +125,15 @@ class V15StandaloneReleaseGateTest(unittest.TestCase):
         self.assertEqual(gate["same_contract_correctness_pending_app_count"], 0)
         self.assertEqual(gate["same_contract_correctness_excluded_app_count"], 4)
         self.assertEqual(gate["same_contract_correctness_pending_apps"], ())
+
+    def test_gate_embeds_completed_support_maturity_summary(self):
+        gate = rt.validate_v1_5_standalone_release_gate()
+
+        self.assertTrue(gate["gate_results"]["test_backed_support_maturity_matrix"])
+        self.assertEqual(gate["support_maturity_included_app_count"], 14)
+        self.assertEqual(gate["support_maturity_excluded_app_count"], 4)
+        self.assertEqual(gate["support_maturity_failed_apps"], ())
+        self.assertTrue(gate["support_maturity_test_backed"])
 
 
 if __name__ == "__main__":
