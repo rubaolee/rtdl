@@ -16,6 +16,8 @@ This status covers two post-report clarifications:
 - Codex implementation review: accepted.
 - Claude external review:
   `docs/reports/goal1411_claude_v1_5_boundary_backend_review_2026-05-06.md`
+- Antigravity/Gemini external review:
+  `docs/reports/goal1411_gemini_v1_5_rc_boundary_review_2026-05-06.md`
 - Gemini first attempt:
   `docs/reports/goal1411_gemini_v1_5_boundary_backend_review_2026-05-06.md`
 - Gemini retry attempt:
@@ -36,24 +38,35 @@ confirmed that:
 Codex agrees with the Claude review. The current repository state is acceptable
 for internal release-candidate documentation of this boundary.
 
+Antigravity/Gemini also returned `VERDICT: ACCEPT` and found no required
+fixes. The review confirmed that:
+
+- the v1.5 release boundary is consistently preserved across docs, code guards,
+  and tests;
+- the RTX pod Embree-vs-OptiX interpretation is honest and bounded;
+- no wording overclaims "general-purpose engine", "zero app knowledge",
+  whole-app speedup, or public RTX speedup;
+- v1.5 can be considered release-candidate complete internally while final
+  public/tag claims remain gated on explicit approval and required consensus.
+
 ## Gemini Status
 
-Gemini did not produce an accepted review. Both Gemini attempts failed because
-the service reported model capacity exhaustion:
+The local Gemini CLI did not produce an accepted review. Both local CLI attempts
+failed because the service reported model capacity exhaustion:
 
 - `gemini-3-flash-preview`: `MODEL_CAPACITY_EXHAUSTED`
 - `gemini-2.5-flash`: `MODEL_CAPACITY_EXHAUSTED`
 
-The Gemini files are failed-attempt records only and must not be counted as
-external accepted reviews.
+Those two local CLI files are failed-attempt records only and must not be
+counted as accepted reviews. The accepted Gemini-family review is the separate
+Antigravity/Gemini artifact listed above.
 
 ## Consensus Result
 
-Status: `2-ai-accepted_3-ai-pending`.
+Status: `3-ai-accepted`.
 
-This is enough to preserve the internal release-candidate documentation and
-current bounded engineering interpretation. It is not a completed 3-AI
-consensus package. If this boundary or backend comparison is used for public
-release claims, final tag authorization, or broader architecture claims, rerun
-Gemini or another independent external reviewer and update this status before
-claiming 3-AI consensus.
+Codex, Claude, and Antigravity/Gemini accept the v1.5 app-agnostic native-engine
+boundary and the RTX pod Embree-vs-OptiX backend interpretation. This consensus
+supports treating the boundary and interpretation as release-candidate complete.
+It does not itself create a `v1.5` tag or authorize unbounded public speedup
+claims; tag creation still requires an explicit release/tag action.
