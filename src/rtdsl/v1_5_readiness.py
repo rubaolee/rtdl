@@ -73,6 +73,26 @@ V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE = (
     "same_contract_baseline",
     "reviewed_public_wording_packet",
 )
+V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS = (
+    "public_claims_ready",
+    "external_3_ai_consensus_ready",
+    "editable_install_claim_authorized",
+    "package_release_artifact_authorized",
+    "new_backend_implementation_authorized",
+    "pre_v2_1_frozen_backend_work_authorized",
+    "stable_collect_k_bounded_promotion_authorized",
+    "current_public_release_tag_move_authorized",
+    "new_public_release_tag_authorized",
+    "app_level_continuations_authorized_as_generic",
+    "whole_app_speedup_claim_authorized",
+    "public_nvidia_speedup_claim_authorized",
+    "claim_grade_exact_subpath_evidence_ready",
+    "same_contract_baseline_ready",
+    "reviewed_public_wording_packet_ready",
+    "public_release_authorized",
+    "public_speedup_wording_authorized",
+    "release_tag_action_authorized",
+)
 
 
 def _count_inventory_statuses(inventory: tuple[dict[str, Any], ...]) -> dict[str, int]:
@@ -305,6 +325,7 @@ def v1_5_internal_readiness_decision() -> dict[str, Any]:
         "claim_grade_exact_subpath_evidence_ready": False,
         "same_contract_baseline_ready": False,
         "reviewed_public_wording_packet_ready": False,
+        "false_authorization_flags": V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS,
         "public_release_authorized": gate["public_release_authorized"],
         "public_speedup_wording_authorized": gate["public_speedup_wording_authorized"],
         "release_tag_action_authorized": gate["release_tag_action_authorized"],
@@ -390,26 +411,9 @@ def validate_v1_5_internal_readiness_decision() -> dict[str, Any]:
         raise ValueError("v1.5 internal readiness decision must preserve evidence state")
     if tuple(decision["required_public_evidence"]) != V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE:
         raise ValueError("v1.5 internal readiness decision must preserve required public evidence")
-    for flag in (
-        "public_claims_ready",
-        "external_3_ai_consensus_ready",
-        "editable_install_claim_authorized",
-        "package_release_artifact_authorized",
-        "new_backend_implementation_authorized",
-        "pre_v2_1_frozen_backend_work_authorized",
-        "stable_collect_k_bounded_promotion_authorized",
-        "current_public_release_tag_move_authorized",
-        "new_public_release_tag_authorized",
-        "app_level_continuations_authorized_as_generic",
-        "whole_app_speedup_claim_authorized",
-        "public_nvidia_speedup_claim_authorized",
-        "claim_grade_exact_subpath_evidence_ready",
-        "same_contract_baseline_ready",
-        "reviewed_public_wording_packet_ready",
-        "public_release_authorized",
-        "public_speedup_wording_authorized",
-        "release_tag_action_authorized",
-    ):
+    if tuple(decision["false_authorization_flags"]) != V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
+        raise ValueError("v1.5 internal readiness decision must preserve false authorization flags")
+    for flag in V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS:
         if decision[flag] is not False:
             raise ValueError(f"v1.5 internal readiness decision must not authorize {flag}")
     if "not public v1.5 release wording" not in decision["claim_boundary"]:

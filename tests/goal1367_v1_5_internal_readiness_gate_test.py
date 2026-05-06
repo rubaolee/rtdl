@@ -226,6 +226,13 @@ class V15InternalReadinessGateTest(unittest.TestCase):
         self.assertFalse(decision["claim_grade_exact_subpath_evidence_ready"])
         self.assertFalse(decision["same_contract_baseline_ready"])
         self.assertFalse(decision["reviewed_public_wording_packet_ready"])
+        self.assertEqual(
+            decision["false_authorization_flags"],
+            rt.V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS,
+        )
+        for flag in decision["false_authorization_flags"]:
+            with self.subTest(false_authorization_flag=flag):
+                self.assertIs(decision[flag], False)
         self.assertFalse(decision["public_release_authorized"])
         self.assertFalse(decision["public_speedup_wording_authorized"])
         self.assertFalse(decision["release_tag_action_authorized"])

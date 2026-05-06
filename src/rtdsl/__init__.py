@@ -508,6 +508,7 @@ from .v1_5_readiness import V1_5_INTERNAL_READINESS_SCOPE_KIND
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_EVIDENCE_STATE
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE
+from .v1_5_readiness import V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS
 from .v1_5_readiness import V1_5_INTERNAL_READINESS_STATUS
 from .v1_5_readiness import v1_5_internal_readiness_decision
 from .v1_5_readiness import v1_5_internal_readiness_gate
@@ -816,6 +817,7 @@ __all__ = [
     "V1_5_INTERNAL_READINESS_EXCLUDED_APP_SCOPE",
     "V1_5_INTERNAL_READINESS_EVIDENCE_STATE",
     "V1_5_INTERNAL_READINESS_REQUIRED_PUBLIC_EVIDENCE",
+    "V1_5_INTERNAL_READINESS_FALSE_AUTHORIZATION_FLAGS",
     "V1_5_INTERNAL_READINESS_STATUS",
     "v1_5_internal_readiness_decision",
     "v1_5_internal_readiness_gate",
