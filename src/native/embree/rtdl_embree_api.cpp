@@ -628,7 +628,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
             g_query_kind = QueryKind::kLsi;
             g_query_state = &state;
             RTCRayHit rayhit;
-            set_ray(&rayhit, probe.a, direction, 1.0f);
+            const double endpoint_pad = 1.0e-4;
+            Vec2 padded_origin {
+                probe.a.x - direction.x * endpoint_pad,
+                probe.a.y - direction.y * endpoint_pad,
+            };
+            set_ray(&rayhit, padded_origin, direction, static_cast<float>(1.0 + endpoint_pad * 2.0));
             RTCIntersectArguments args;
             rtcInitIntersectArguments(&args);
             rtdlRtcIntersect1(holder.scene, &rayhit, &args);
@@ -640,6 +645,17 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
                 [](const auto& left_pair, const auto& right_pair) {
                   return left_pair.first < right_pair.first;
                 });
+            if (query_rows.empty()) {
+              for (size_t right_index = 0; right_index < right_segments.size(); ++right_index) {
+                Vec2 point {};
+                if (segment_intersection(probe, right_segments[right_index], &point)) {
+                  query_rows.push_back({
+                      right_index,
+                      {probe.id, right_segments[right_index].id, point.x, point.y},
+                  });
+                }
+              }
+            }
             for (const auto& hit : query_rows) {
               local_rows.push_back(hit.second);
             }
