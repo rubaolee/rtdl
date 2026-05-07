@@ -9,7 +9,7 @@ from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepa
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
 
 
-V1_5_3_REDUCED_COPY_STATUS = "typed_host_input_buffer_path_and_copy_count_measurement_present"
+V1_5_3_REDUCED_COPY_STATUS = "reduced_copy_internal_evidence_reviewed_claims_blocked"
 V1_5_3_REDUCED_COPY_TRACK = "python_rtdl"
 V1_5_3_REDUCED_COPY_SCOPE = (
     "typed_contiguous_host_buffers",
@@ -30,6 +30,7 @@ V1_5_3_REDUCED_COPY_SATISFIED_EVIDENCE = (
     "typed_contiguous_host_buffer_path",
     "preallocated_result_buffer_reuse_path",
     "copy_count_or_transfer_count_measurement",
+    "external_ai_review_before_public_claims",
 )
 V1_5_3_REDUCED_COPY_MISSING_EVIDENCE = tuple(
     item
@@ -76,8 +77,8 @@ def v1_5_3_reduced_copy_contract() -> dict[str, Any]:
         "stable_public_primitive_authorized": False,
         "release_action_authorized": False,
         "next_implementation_lanes": (
-            "add typed contiguous host input/output adapters for collect rows",
             "measure copy count against python materialized row baselines",
+            "validate backend parity where public reduced-copy wording is claimed",
             "separate host reduced-copy wording from device zero-copy wording",
             "only add OptiX device/staging reuse claims after measured RTX evidence",
         ),
