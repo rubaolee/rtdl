@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
+from .v1_5_1_collect_k_bounded import collect_native_i64_rows_into_prepared_output_buffer
 from .v1_5_1_collect_k_bounded import collect_native_i64_rows_with_backend_symbol
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 
@@ -444,6 +445,77 @@ def run_native_collect_k_bounded_rows_with_prepared_result_buffer(
             "marshals rows through ctypes-managed buffers; this does not prove "
             "prepared-buffer reuse, authorize zero-copy wording, or authorize "
             "performance claims."
+        ),
+    }
+
+
+def run_native_collect_k_bounded_rows_with_prepared_host_output_buffer(
+    candidate_rows: Any,
+    prepared_descriptor: dict[str, Any],
+    *,
+    output_buffer: Any,
+    library: Any,
+    symbol_name: str,
+    candidate_source_symbol: str,
+    backend: str | None = None,
+) -> dict[str, Any]:
+    """Run the native generic collect-k symbol into caller-owned host storage."""
+    prepared = validate_collect_result_buffer_descriptor(prepared_descriptor)
+    if prepared["buffer_kind"] != "prepared_result":
+        raise ValueError("native prepared host output execution requires buffer_kind=prepared_result")
+    if prepared["device"] != "cpu":
+        raise ValueError("native prepared host output execution requires device=cpu")
+    if prepared["copy_boundary"] != "prepared_host_buffer_reuse":
+        raise ValueError(
+            "native prepared host output execution requires copy_boundary=prepared_host_buffer_reuse"
+        )
+    resolved_backend = backend if backend is not None else prepared.get("backend")
+    if not resolved_backend:
+        raise ValueError("native prepared host output execution requires an explicit backend")
+    if prepared.get("backend") is not None and prepared.get("backend") != resolved_backend:
+        raise ValueError("native prepared host output execution backend mismatch")
+    result = collect_native_i64_rows_into_prepared_output_buffer(
+        candidate_rows,
+        output_buffer=output_buffer,
+        capacity=prepared["capacity"],
+        row_width=prepared["row_width"],
+        backend=str(resolved_backend),
+        library=library,
+        symbol_name=str(symbol_name),
+        candidate_source_symbol=str(candidate_source_symbol),
+    )
+    completed_descriptor = complete_prepared_collect_k_result_buffer_descriptor(
+        prepared,
+        result,
+        backend=str(resolved_backend),
+    )
+    return {
+        "primitive": "COLLECT_K_BOUNDED",
+        "status": prepared["status"],
+        "track": prepared["track"],
+        "execution_mode": "native_generic_symbol_prepared_host_output_envelope",
+        "backend": str(resolved_backend),
+        "symbol_name": str(symbol_name),
+        "candidate_source_symbol": str(candidate_source_symbol),
+        "prepared_descriptor": prepared,
+        "result": result,
+        "result_buffer_descriptor": completed_descriptor,
+        "prepared_descriptor_compatible": completed_descriptor["prepared_descriptor_compatible"],
+        "prepared_output_buffer_supplied": result["prepared_output_buffer_supplied"],
+        "prepared_output_buffer_kind": result["prepared_output_buffer_kind"],
+        "prepared_output_buffer_reused_by_python_wrapper": result[
+            "prepared_output_buffer_reused_by_python_wrapper"
+        ],
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "Native generic symbol execution envelope over caller-owned "
+            "ctypes host output storage. This proves Python-wrapper host "
+            "pointer passing only; it does not prove measured reuse, "
+            "device-resident output, true zero-copy, or performance claims."
         ),
     }
 
