@@ -57,6 +57,14 @@ V1_5_3_REDUCED_COPY_FORBIDDEN_WORDING = (
     "public speedup",
     "release-ready",
 )
+V1_5_3_TYPED_HOST_PARITY_GATE_STATUS = "pending_required_embree_optix_pod_parity"
+V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS = ("embree", "optix")
+V1_5_3_TYPED_HOST_PARITY_REQUIRED_EVIDENCE = (
+    "scripts/goal1467_v1_5_3_typed_host_buffer_parity.py",
+    "scripts/goal1467_v1_5_3_typed_host_buffer_pod_executor.sh",
+    "docs/reports/goal1467_v1_5_3_typed_host_buffer_parity_runbook_2026-05-07.md",
+    "docs/reports/goal1467_linux_smoke_v1_5_3_typed_host_buffer_2026-05-07.md",
+)
 
 
 def v1_5_3_reduced_copy_contract() -> dict[str, Any]:
@@ -126,6 +134,84 @@ def validate_v1_5_3_reduced_copy_contract() -> dict[str, Any]:
         if phrase not in contract["claim_boundary"]:
             raise ValueError("v1.5.3 reduced-copy claim boundary is incomplete")
     return contract
+
+
+def v1_5_3_typed_host_buffer_parity_gate() -> dict[str, Any]:
+    """Return the current backend-parity gate for v1.5.3 typed host buffers."""
+    contract = validate_v1_5_3_reduced_copy_contract()
+    return {
+        "status": V1_5_3_TYPED_HOST_PARITY_GATE_STATUS,
+        "track": V1_5_3_REDUCED_COPY_TRACK,
+        "primitive": "COLLECT_K_BOUNDED",
+        "surface": "typed_host_input_plus_prepared_host_output",
+        "required_backends": V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS,
+        "required_evidence": V1_5_3_TYPED_HOST_PARITY_REQUIRED_EVIDENCE,
+        "reduced_copy_contract_status": contract["status"],
+        "contract_missing_evidence": contract["missing_evidence"],
+        "backend_parity_where_claimed_satisfied": False,
+        "required_pod_parity_accepted": False,
+        "linux_smoke_present": True,
+        "pod_run_required": True,
+        "accepted": False,
+        "blocked_claims": V1_5_3_REDUCED_COPY_BLOCKED_CLAIMS,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "allowed_next_actions": (
+            "run_goal1467_required_embree_optix_pod_executor",
+            "record_required_backend_parity_artifacts",
+            "keep_reduced_copy_wording_internal_until_parity_gate_accepts",
+        ),
+        "claim_boundary": (
+            "v1.5.3 typed host buffer backend parity is pending required "
+            "Embree+OptiX pod evidence. The Linux smoke validates tooling "
+            "only. This gate does not authorize true zero-copy, public "
+            "speedup wording, whole-app claims, stable primitive promotion, "
+            "partner tensor handoff, or release action."
+        ),
+    }
+
+
+def validate_v1_5_3_typed_host_buffer_parity_gate() -> dict[str, Any]:
+    gate = v1_5_3_typed_host_buffer_parity_gate()
+    if gate["status"] != V1_5_3_TYPED_HOST_PARITY_GATE_STATUS:
+        raise ValueError("invalid v1.5.3 typed host parity gate status")
+    if tuple(gate["required_backends"]) != V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS:
+        raise ValueError("v1.5.3 typed host parity required backends changed")
+    if tuple(gate["required_evidence"]) != V1_5_3_TYPED_HOST_PARITY_REQUIRED_EVIDENCE:
+        raise ValueError("v1.5.3 typed host parity required evidence changed")
+    if "embree_optix_same_contract_parity_where_claimed" not in gate["contract_missing_evidence"]:
+        raise ValueError("v1.5.3 typed host parity must remain missing until pod evidence exists")
+    if gate["backend_parity_where_claimed_satisfied"] is not False:
+        raise ValueError("v1.5.3 typed host parity must remain unsatisfied")
+    if gate["required_pod_parity_accepted"] is not False:
+        raise ValueError("v1.5.3 required pod parity must not be accepted yet")
+    if gate["pod_run_required"] is not True:
+        raise ValueError("v1.5.3 typed host parity gate must require pod run")
+    if gate["accepted"] is not False:
+        raise ValueError("v1.5.3 typed host parity gate must not be accepted yet")
+    for flag in (
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "release_action_authorized",
+    ):
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5.3 typed host parity gate must keep {flag}=False")
+    for phrase in (
+        "pending required Embree+OptiX pod evidence",
+        "Linux smoke validates tooling only",
+        "does not authorize true zero-copy",
+        "public speedup wording",
+        "partner tensor handoff",
+        "release action",
+    ):
+        if phrase not in gate["claim_boundary"]:
+            raise ValueError("v1.5.3 typed host parity claim boundary is incomplete")
+    return gate
 
 
 def prepare_collect_k_i64_host_input_buffer(

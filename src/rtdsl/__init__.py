@@ -200,10 +200,15 @@ from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS
 from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES
 from .v1_5_3_reduced_copy import validate_v1_5_3_reduced_copy_contract
 from .v1_5_3_reduced_copy import validate_collect_k_i64_host_input_buffer
+from .v1_5_3_reduced_copy import validate_v1_5_3_typed_host_buffer_parity_gate
 from .v1_5_3_reduced_copy import prepare_collect_k_i64_host_input_buffer
 from .v1_5_3_reduced_copy import measure_collect_k_typed_host_input_reuse
 from .v1_5_3_reduced_copy import run_native_collect_k_bounded_with_typed_host_buffers
+from .v1_5_3_reduced_copy import v1_5_3_typed_host_buffer_parity_gate
 from .v1_5_3_reduced_copy import v1_5_3_reduced_copy_contract
+from .v1_5_3_reduced_copy import V1_5_3_TYPED_HOST_PARITY_GATE_STATUS
+from .v1_5_3_reduced_copy import V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS
+from .v1_5_3_reduced_copy import V1_5_3_TYPED_HOST_PARITY_REQUIRED_EVIDENCE
 from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_ALLOWED_WORDING
 from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_BLOCKED_CLAIMS
 from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_FORBIDDEN_WORDING
@@ -1371,10 +1376,15 @@ __all__ = [
     "V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES",
     "validate_v1_5_3_reduced_copy_contract",
     "validate_collect_k_i64_host_input_buffer",
+    "validate_v1_5_3_typed_host_buffer_parity_gate",
     "prepare_collect_k_i64_host_input_buffer",
     "measure_collect_k_typed_host_input_reuse",
     "run_native_collect_k_bounded_with_typed_host_buffers",
+    "v1_5_3_typed_host_buffer_parity_gate",
     "v1_5_3_reduced_copy_contract",
+    "V1_5_3_TYPED_HOST_PARITY_GATE_STATUS",
+    "V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS",
+    "V1_5_3_TYPED_HOST_PARITY_REQUIRED_EVIDENCE",
     "V1_5_3_REDUCED_COPY_ALLOWED_WORDING",
     "V1_5_3_REDUCED_COPY_BLOCKED_CLAIMS",
     "V1_5_3_REDUCED_COPY_FORBIDDEN_WORDING",
