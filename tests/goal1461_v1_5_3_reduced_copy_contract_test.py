@@ -9,7 +9,7 @@ class Goal1461V153ReducedCopyContractTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "reduced_copy_internal_evidence_reviewed_claims_blocked",
+            "reduced_copy_internal_evidence_reviewed_parity_accepted_claims_blocked",
         )
         self.assertEqual(contract["track"], "python_rtdl")
         self.assertIn("typed_contiguous_host_buffers", contract["scope"])
@@ -21,7 +21,8 @@ class Goal1461V153ReducedCopyContractTest(unittest.TestCase):
         contract = rt.validate_v1_5_3_reduced_copy_contract()
 
         self.assertEqual(contract["required_evidence"], rt.V1_5_3_REDUCED_COPY_REQUIRED_EVIDENCE)
-        self.assertIn("embree_optix_same_contract_parity_where_claimed", contract["missing_evidence"])
+        self.assertEqual(contract["missing_evidence"], ())
+        self.assertIn("embree_optix_same_contract_parity_where_claimed", contract["satisfied_evidence"])
         self.assertIn("typed_contiguous_host_buffer_path", contract["satisfied_evidence"])
         self.assertIn("preallocated_result_buffer_reuse_path", contract["satisfied_evidence"])
         self.assertIn("copy_count_or_transfer_count_measurement", contract["satisfied_evidence"])

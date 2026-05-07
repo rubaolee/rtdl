@@ -8,19 +8,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1468V153TypedHostParityGateTest(unittest.TestCase):
-    def test_parity_gate_records_required_pod_parity_pending(self) -> None:
+    def test_parity_gate_records_required_pod_parity_accepted(self) -> None:
         gate = rt.validate_v1_5_3_typed_host_buffer_parity_gate()
 
-        self.assertEqual(gate["status"], "pending_required_embree_optix_pod_parity")
+        self.assertEqual(gate["status"], "accepted_required_embree_optix_pod_parity")
         self.assertEqual(gate["required_backends"], ("embree", "optix"))
-        self.assertFalse(gate["backend_parity_where_claimed_satisfied"])
-        self.assertFalse(gate["required_pod_parity_accepted"])
-        self.assertTrue(gate["pod_run_required"])
-        self.assertFalse(gate["accepted"])
-        self.assertIn(
-            "embree_optix_same_contract_parity_where_claimed",
-            gate["contract_missing_evidence"],
-        )
+        self.assertTrue(gate["backend_parity_where_claimed_satisfied"])
+        self.assertTrue(gate["required_pod_parity_accepted"])
+        self.assertFalse(gate["pod_run_required"])
+        self.assertTrue(gate["accepted"])
+        self.assertEqual(gate["contract_missing_evidence"], ())
 
     def test_parity_gate_required_evidence_exists(self) -> None:
         gate = rt.validate_v1_5_3_typed_host_buffer_parity_gate()
@@ -41,7 +38,8 @@ class Goal1468V153TypedHostParityGateTest(unittest.TestCase):
         ):
             with self.subTest(flag=flag):
                 self.assertIs(gate[flag], False)
-        self.assertIn("Linux smoke validates tooling only", gate["claim_boundary"])
+        self.assertIn("accepted required Embree+OptiX pod evidence", gate["claim_boundary"])
+        self.assertIn("does not authorize true zero-copy", gate["claim_boundary"])
 
 
 if __name__ == "__main__":

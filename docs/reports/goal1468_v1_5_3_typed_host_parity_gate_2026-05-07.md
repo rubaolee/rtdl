@@ -3,15 +3,15 @@
 ## Verdict
 
 Added a machine-readable parity gate for the v1.5.3 typed host input plus
-prepared host output surface. The gate is intentionally pending until required
-Embree+OptiX pod parity evidence exists.
+prepared host output surface. The gate is accepted after required Embree+OptiX
+pod parity evidence was collected and checked.
 
 ## Current Gate
 
-- Status: `pending_required_embree_optix_pod_parity`
+- Status: `accepted_required_embree_optix_pod_parity`
 - Required backends: Embree and OptiX
-- Accepted: `False`
-- Pod run required: `True`
+- Accepted: `True`
+- Pod run required: `False`
 - Linux smoke present: `True`
 
 ## Required Evidence
@@ -20,12 +20,18 @@ Embree+OptiX pod parity evidence exists.
 - `scripts/goal1467_v1_5_3_typed_host_buffer_pod_executor.sh`
 - `docs/reports/goal1467_v1_5_3_typed_host_buffer_parity_runbook_2026-05-07.md`
 - `docs/reports/goal1467_linux_smoke_v1_5_3_typed_host_buffer_2026-05-07.md`
+- `docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_pod_environment.log`
+- `docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_make_build_optix.log`
+- `docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.json`
+- `docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.md`
+- `docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_pod_summary.json`
 
 ## Boundary
 
-The Linux smoke validates tooling only. This gate does not authorize true
-zero-copy wording, public speedup wording, whole-app claims, stable primitive
-promotion, partner tensor handoff, or release action.
+The accepted pod result validates same-contract typed host input plus prepared
+host output backend parity only. This gate does not authorize true zero-copy
+wording, public speedup wording, whole-app claims, stable primitive promotion,
+partner tensor handoff, or release action.
 
 ## Validation
 

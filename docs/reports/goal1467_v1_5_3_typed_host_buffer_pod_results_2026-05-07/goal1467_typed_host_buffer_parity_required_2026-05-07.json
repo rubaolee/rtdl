@@ -1,0 +1,276 @@
+{
+  "accepted": true,
+  "backend_summary": {
+    "embree": {
+      "fail": 0,
+      "pass": 4,
+      "skipped": 0
+    },
+    "optix": {
+      "fail": 0,
+      "pass": 4,
+      "skipped": 0
+    }
+  },
+  "backends": [
+    "embree",
+    "optix"
+  ],
+  "cases": [
+    {
+      "candidate_rows": [],
+      "capacity": 0,
+      "expect_overflow": false,
+      "name": "empty_zero_capacity"
+    },
+    {
+      "candidate_rows": [
+        [
+          2,
+          11
+        ],
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "capacity": 2,
+      "expect_overflow": false,
+      "name": "exact_fit_two_rows_deduplicated_sorted"
+    },
+    {
+      "candidate_rows": [
+        [
+          2,
+          11
+        ],
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "capacity": 1,
+      "expect_overflow": true,
+      "name": "one_short_fail_closed_overflow"
+    },
+    {
+      "candidate_rows": [
+        [
+          2,
+          11
+        ],
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "capacity": 0,
+      "expect_overflow": true,
+      "name": "zero_capacity_positive_fail_closed_overflow"
+    }
+  ],
+  "claim_boundary": "This package validates typed host input plus prepared host output same-contract backend parity only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+  "failed": [],
+  "goal": "Goal1467",
+  "platform": "Linux-6.8.0-64-generic-x86_64-with-glibc2.35",
+  "primitive": "COLLECT_K_BOUNDED",
+  "public_speedup_wording_authorized": false,
+  "python": "3.11.10 (main, Sep  7 2024, 18:35:41) [GCC 11.4.0]",
+  "release_action_authorized": false,
+  "required_backends": [
+    "embree",
+    "optix"
+  ],
+  "results": [
+    {
+      "backend": "embree",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.00015570968389511108,
+      "expect_overflow": false,
+      "expected_rows": [],
+      "mismatches": [],
+      "observed_rows": [],
+      "prepared_output_buffer_reused_by_python_wrapper": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true,
+      "valid_count": 0
+    },
+    {
+      "backend": "embree",
+      "capacity": 2,
+      "case": "exact_fit_two_rows_deduplicated_sorted",
+      "elapsed_sec": 9.725987911224365e-05,
+      "expect_overflow": false,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "prepared_output_buffer_reused_by_python_wrapper": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true,
+      "valid_count": 2
+    },
+    {
+      "backend": "embree",
+      "capacity": 1,
+      "case": "one_short_fail_closed_overflow",
+      "elapsed_sec": 4.521012306213379e-05,
+      "expect_overflow": true,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "observed_overflow": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true
+    },
+    {
+      "backend": "embree",
+      "capacity": 0,
+      "case": "zero_capacity_positive_fail_closed_overflow",
+      "elapsed_sec": 2.9589980840682983e-05,
+      "expect_overflow": true,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "observed_overflow": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true
+    },
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.00010637938976287842,
+      "expect_overflow": false,
+      "expected_rows": [],
+      "mismatches": [],
+      "observed_rows": [],
+      "prepared_output_buffer_reused_by_python_wrapper": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true,
+      "valid_count": 0
+    },
+    {
+      "backend": "optix",
+      "capacity": 2,
+      "case": "exact_fit_two_rows_deduplicated_sorted",
+      "elapsed_sec": 8.461996912956238e-05,
+      "expect_overflow": false,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "prepared_output_buffer_reused_by_python_wrapper": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true,
+      "valid_count": 2
+    },
+    {
+      "backend": "optix",
+      "capacity": 1,
+      "case": "one_short_fail_closed_overflow",
+      "elapsed_sec": 3.826059401035309e-05,
+      "expect_overflow": true,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "observed_overflow": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true
+    },
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "zero_capacity_positive_fail_closed_overflow",
+      "elapsed_sec": 3.267265856266022e-05,
+      "expect_overflow": true,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "observed_overflow": true,
+      "status": "pass",
+      "typed_contiguous_host_buffer_path": true
+    }
+  ],
+  "scope": "v1.5.3 typed host input plus prepared host output backend parity",
+  "skipped_required": [],
+  "stable_public_primitive_authorized": false,
+  "status": "accepted",
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

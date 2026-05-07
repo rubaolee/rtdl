@@ -9,10 +9,11 @@ class Goal1466V153ReducedCopyPostReviewGateTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "reduced_copy_internal_evidence_reviewed_claims_blocked",
+            "reduced_copy_internal_evidence_reviewed_parity_accepted_claims_blocked",
         )
         self.assertIn("external_ai_review_before_public_claims", contract["satisfied_evidence"])
-        self.assertIn("embree_optix_same_contract_parity_where_claimed", contract["missing_evidence"])
+        self.assertIn("embree_optix_same_contract_parity_where_claimed", contract["satisfied_evidence"])
+        self.assertEqual(contract["missing_evidence"], ())
 
         for flag in (
             "true_zero_copy_authorized",
