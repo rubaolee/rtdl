@@ -142,12 +142,17 @@ from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STAT
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSAL_STATUS
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_REQUIRED_REVIEW
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_STATUS
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS
+from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_contract
+from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_native_app_generic_audit
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_readiness_gate
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_release_surface_gate
 from .v1_5_1_collect_k_bounded import v1_5_1_collect_k_bounded_release_surface_proposal
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_contract
+from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_native_app_generic_audit
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_readiness_gate
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_gate
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_proposal
@@ -1246,10 +1251,14 @@ __all__ = [
     "V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSAL_STATUS",
     "V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_PROPOSED_CLASSIFICATION",
     "V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_REQUIRED_REVIEW",
+    "V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_STATUS",
+    "V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS",
+    "V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS",
     "V1_5_1_COLLECT_K_BOUNDED_STATUS",
     "v1_5_collect_k_bounded_resolution",
     "v1_5_collect_k_bounded_contracts",
     "v1_5_1_collect_k_bounded_contract",
+    "v1_5_1_collect_k_bounded_native_app_generic_audit",
     "v1_5_1_collect_k_bounded_readiness_gate",
     "v1_5_1_collect_k_bounded_release_surface_gate",
     "v1_5_1_collect_k_bounded_release_surface_proposal",
@@ -1257,6 +1266,7 @@ __all__ = [
     "validate_v1_5_collect_k_bounded_resolution",
     "validate_v1_5_collect_k_bounded_contracts",
     "validate_v1_5_1_collect_k_bounded_contract",
+    "validate_v1_5_1_collect_k_bounded_native_app_generic_audit",
     "validate_v1_5_1_collect_k_bounded_readiness_gate",
     "validate_v1_5_1_collect_k_bounded_release_surface_gate",
     "validate_v1_5_1_collect_k_bounded_release_surface_proposal",

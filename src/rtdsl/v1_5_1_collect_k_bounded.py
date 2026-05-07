@@ -81,6 +81,27 @@ V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_FORBIDDEN_PHRASES = (
     "pip install -e .",
     "release tag action is authorized",
 )
+V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_STATUS = (
+    "blocked_for_stable_promotion_native_abi_still_polygon_pair_specific"
+)
+V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS = (
+    (
+        "embree",
+        "src/native/embree/rtdl_embree_api.cpp",
+        "rtdl_embree_collect_polygon_pair_candidates_bounded",
+    ),
+    (
+        "optix",
+        "src/native/optix/rtdl_optix_api.cpp",
+        "rtdl_optix_collect_polygon_pair_candidates_bounded",
+    ),
+)
+V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS = (
+    "define_app_name_free_native_collect_k_bounded_abi",
+    "route_polygon_pair_collection_through_generic_abi_adapter",
+    "add_embree_optix_generic_abi_parity_tests",
+    "rerun_3_ai_stable_promotion_review",
+)
 
 
 def v1_5_1_collect_k_bounded_contract() -> dict[str, Any]:
@@ -555,6 +576,76 @@ def validate_v1_5_1_collect_k_bounded_release_surface_gate() -> dict[str, Any]:
         if phrase not in boundary:
             raise ValueError("v1.5.1 collect-k release-surface gate claim boundary is incomplete")
     return gate
+
+
+def v1_5_1_collect_k_bounded_native_app_generic_audit() -> dict[str, Any]:
+    """Return the native app-genericity audit for stable-promotion readiness."""
+    observed_symbols = []
+    missing_symbols = []
+    for backend, relative_path, symbol in V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS:
+        path = _repo_root() / relative_path
+        text = path.read_text(encoding="utf-8") if path.exists() else ""
+        record = {
+            "backend": backend,
+            "path": relative_path,
+            "symbol": symbol,
+            "path_exists": path.exists(),
+            "symbol_present": symbol in text,
+            "app_specific_reason": "polygon_pair_specific_native_entrypoint",
+        }
+        observed_symbols.append(record)
+        if not record["path_exists"] or not record["symbol_present"]:
+            missing_symbols.append(record)
+
+    return {
+        "primitive": V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE,
+        "status": V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_STATUS,
+        "contract_layer_app_generic": True,
+        "python_reference_app_generic": True,
+        "result_validator_app_generic": True,
+        "native_engine_fully_app_agnostic": False,
+        "stable_promotion_blocked": True,
+        "public_docs_candidate_status_remains": "documented_experimental_public_candidate",
+        "observed_native_symbols": tuple(observed_symbols),
+        "missing_expected_symbols": tuple(missing_symbols),
+        "required_next_steps": V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS,
+        "claim_boundary": (
+            "COLLECT_K_BOUNDED is app-generic at the contract, Python reference, "
+            "and result-validation layers, but the current Embree/OptiX native "
+            "collection entrypoints are still polygon-pair-specific. Stable "
+            "primitive promotion is blocked until an app-name-free native "
+            "COLLECT_K_BOUNDED ABI and parity tests exist."
+        ),
+    }
+
+
+def validate_v1_5_1_collect_k_bounded_native_app_generic_audit() -> dict[str, Any]:
+    audit = v1_5_1_collect_k_bounded_native_app_generic_audit()
+    if audit["status"] != V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_STATUS:
+        raise ValueError("invalid v1.5.1 collect-k native app-generic audit status")
+    for flag in (
+        "contract_layer_app_generic",
+        "python_reference_app_generic",
+        "result_validator_app_generic",
+    ):
+        if audit[flag] is not True:
+            raise ValueError(f"collect-k audit expected {flag}=True")
+    if audit["native_engine_fully_app_agnostic"] is not False:
+        raise ValueError("collect-k native engine must not be marked fully app-agnostic yet")
+    if audit["stable_promotion_blocked"] is not True:
+        raise ValueError("collect-k stable promotion must remain blocked by native ABI audit")
+    if tuple(audit["missing_expected_symbols"]) != ():
+        raise ValueError("collect-k native app-generic audit lost expected native evidence")
+    boundary = str(audit["claim_boundary"])
+    for phrase in (
+        "app-generic at the contract",
+        "polygon-pair-specific",
+        "Stable primitive promotion is blocked",
+        "app-name-free native COLLECT_K_BOUNDED ABI",
+    ):
+        if phrase not in boundary:
+            raise ValueError("collect-k native app-generic audit claim boundary is incomplete")
+    return audit
 
 
 def _normalize_candidate_rows(
