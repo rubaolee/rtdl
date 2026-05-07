@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import ctypes
+import time
 from typing import Any
 
 from .v1_5_2_collect_buffers import complete_prepared_collect_k_result_buffer_descriptor
+from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepared_host_output_buffer
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
 
 
-V1_5_3_REDUCED_COPY_STATUS = "typed_host_input_buffer_path_present_measurement_pending"
+V1_5_3_REDUCED_COPY_STATUS = "typed_host_input_buffer_path_and_copy_count_measurement_present"
 V1_5_3_REDUCED_COPY_TRACK = "python_rtdl"
 V1_5_3_REDUCED_COPY_SCOPE = (
     "typed_contiguous_host_buffers",
@@ -27,6 +29,7 @@ V1_5_3_REDUCED_COPY_SATISFIED_EVIDENCE = (
     "python_materialized_rows_baseline",
     "typed_contiguous_host_buffer_path",
     "preallocated_result_buffer_reuse_path",
+    "copy_count_or_transfer_count_measurement",
 )
 V1_5_3_REDUCED_COPY_MISSING_EVIDENCE = tuple(
     item
@@ -348,5 +351,103 @@ def run_native_collect_k_bounded_with_typed_host_buffers(
             "host ctypes storage and does not authorize true zero-copy, public "
             "speedup wording, whole-app claims, stable primitive promotion, or "
             "release action."
+        ),
+    }
+
+
+def measure_collect_k_typed_host_input_reuse(
+    candidate_rows: Any,
+    prepared_output_descriptor: dict[str, Any],
+    *,
+    output_buffer: Any,
+    library: Any,
+    symbol_name: str,
+    backend: str,
+    row_width: int,
+    iterations: int = 3,
+) -> dict[str, Any]:
+    """Compare wrapper-internal input materialization with typed input reuse."""
+    iteration_count = int(iterations)
+    if iteration_count <= 0:
+        raise ValueError("typed host input reuse measurement requires iterations > 0")
+    prepared = validate_collect_result_buffer_descriptor(prepared_output_descriptor)
+    typed_input = prepare_collect_k_i64_host_input_buffer(candidate_rows, row_width=row_width)
+    baseline_runs = []
+    typed_runs = []
+    baseline_elapsed_total_s = 0.0
+    typed_elapsed_total_s = 0.0
+    for iteration in range(iteration_count):
+        start = time.perf_counter()
+        baseline = run_native_collect_k_bounded_rows_with_prepared_host_output_buffer(
+            candidate_rows,
+            prepared,
+            output_buffer=output_buffer,
+            library=library,
+            symbol_name=symbol_name,
+            candidate_source_symbol="python_materialized_rows_each_call",
+            backend=backend,
+        )
+        baseline_elapsed_s = time.perf_counter() - start
+        baseline_elapsed_total_s += baseline_elapsed_s
+        baseline_runs.append(
+            {
+                "iteration": iteration,
+                "elapsed_s": baseline_elapsed_s,
+                "valid_shape": baseline["result_buffer_descriptor"]["valid_shape"],
+                "input_materialization_count": 1,
+                "output_buffer_reused": baseline["prepared_output_buffer_reused_by_python_wrapper"],
+            }
+        )
+        start = time.perf_counter()
+        typed = run_native_collect_k_bounded_with_typed_host_buffers(
+            typed_input,
+            prepared,
+            output_buffer=output_buffer,
+            library=library,
+            symbol_name=symbol_name,
+            backend=backend,
+        )
+        typed_elapsed_s = time.perf_counter() - start
+        typed_elapsed_total_s += typed_elapsed_s
+        typed_runs.append(
+            {
+                "iteration": iteration,
+                "elapsed_s": typed_elapsed_s,
+                "valid_shape": typed["result_buffer_descriptor"]["valid_shape"],
+                "input_materialization_count": 0,
+                "input_buffer_address": typed["input_buffer_address"],
+                "output_buffer_reused": typed["prepared_output_buffer_reused_by_python_wrapper"],
+            }
+        )
+    return {
+        "primitive": "COLLECT_K_BOUNDED",
+        "status": "typed_host_input_copy_count_measurement_complete",
+        "track": V1_5_3_REDUCED_COPY_TRACK,
+        "backend": str(backend),
+        "iterations": iteration_count,
+        "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+        "typed_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+        "baseline_input_materialization_count": iteration_count,
+        "typed_input_materialization_count": 1,
+        "input_materialization_count_delta": iteration_count - 1,
+        "baseline_runs": tuple(baseline_runs),
+        "typed_runs": tuple(typed_runs),
+        "baseline_elapsed_total_s": baseline_elapsed_total_s,
+        "typed_elapsed_total_s": typed_elapsed_total_s,
+        "timing_recorded_for_diagnostics_only": True,
+        "copy_count_or_transfer_count_measurement": True,
+        "typed_input_buffer_address": typed_input["buffer_address"],
+        "prepared_output_buffer_address": ctypes.addressof(output_buffer) if output_buffer is not None else None,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This measurement compares wrapper-level input materialization "
+            "counts for a Python materialized baseline and a typed contiguous "
+            "host input buffer. Timing is diagnostic only. It does not "
+            "authorize true zero-copy, public speedup wording, whole-app "
+            "claims, stable primitive promotion, or release action."
         ),
     }

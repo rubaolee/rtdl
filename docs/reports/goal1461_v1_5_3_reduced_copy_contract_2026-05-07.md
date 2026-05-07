@@ -3,8 +3,9 @@
 ## Verdict
 
 Defined the first v1.5.3 reduced-copy contract for the Python+RTDL track. The
-typed contiguous host input-buffer path is now present, while measurement,
-external review, and public claims remain pending.
+typed contiguous host input-buffer path and wrapper-level copy-count measurement
+are now present, while backend parity where claimed, external review, and public
+claims remain pending.
 
 ## Scope
 
