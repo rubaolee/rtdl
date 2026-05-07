@@ -1,0 +1,7 @@
+{
+  "claim_boundary": "Build status only; does not authorize true zero-copy, public speedup, stable primitive, or release claim.",
+  "exit_code": 0,
+  "label": "goal1450_make_build_optix",
+  "log": "docs/reports/goal1450_rtx2000ada_pod_required_final_2026-05-07/goal1450_make_build_optix.log",
+  "status": "ok"
+}
