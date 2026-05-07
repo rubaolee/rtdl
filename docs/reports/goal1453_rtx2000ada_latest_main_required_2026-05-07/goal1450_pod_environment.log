@@ -1,0 +1,28 @@
+Goal1450 pod environment
+Thu May  7 17:46:20 UTC 2026
+Linux 0c275ea87680 6.8.0-64-generic #67~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jun 24 15:19:46 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+3a6dd3fbf2265b4ed83add1b1bb9bd2345dd25a8
+Thu May  7 17:46:20 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.195.03             Driver Version: 570.195.03     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA RTX 2000 Ada Gene...    On  |   00000000:21:00.0 Off |                  Off |
+| 30%   31C    P8              7W /   70W |       2MiB /  16380MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Python 3.11.10
+OPTIX_PREFIX=/root/vendor/optix-dev
+CUDA_PREFIX=/usr/local/cuda-12.4
+NVCC=/usr/local/cuda-12.4/bin/nvcc
