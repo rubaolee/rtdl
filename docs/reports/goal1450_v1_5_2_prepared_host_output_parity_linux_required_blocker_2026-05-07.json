@@ -1,0 +1,199 @@
+{
+  "accepted": false,
+  "backend_summary": {
+    "embree": {
+      "fail": 0,
+      "pass": 4,
+      "skipped": 0
+    },
+    "optix": {
+      "fail": 0,
+      "pass": 0,
+      "skipped": 4
+    }
+  },
+  "backends": [
+    "embree",
+    "optix"
+  ],
+  "case_count": 4,
+  "claim_boundary": "Prepared host-output parity covers app-generic row-major i64 COLLECT_K_BOUNDED execution through the existing generic native symbols only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive wording, or release action.",
+  "failed": [],
+  "goal": "Goal1450",
+  "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+  "primitive": "COLLECT_K_BOUNDED",
+  "public_speedup_wording_authorized": false,
+  "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+  "release_action_authorized": false,
+  "required_backends": [
+    "embree",
+    "optix"
+  ],
+  "results": [
+    {
+      "backend": "embree",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.00017562799621373415,
+      "expect_overflow": false,
+      "expected_rows": [],
+      "mismatches": [],
+      "observed_rows": [],
+      "prepared_output_buffer_reused_by_python_wrapper": true,
+      "status": "pass",
+      "valid_count": 0
+    },
+    {
+      "backend": "embree",
+      "capacity": 2,
+      "case": "exact_fit_two_rows_deduplicated_sorted",
+      "elapsed_sec": 0.00020987499738112092,
+      "expect_overflow": false,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "prepared_output_buffer_reused_by_python_wrapper": true,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "embree",
+      "capacity": 1,
+      "case": "one_short_fail_closed_overflow",
+      "elapsed_sec": 6.457499694079161e-05,
+      "evidence_status": "prepared_host_output_overflow_fail_closed_validated",
+      "expect_overflow": true,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "observed_overflow": true,
+      "partial_result_returned": false,
+      "status": "pass"
+    },
+    {
+      "backend": "embree",
+      "capacity": 0,
+      "case": "zero_capacity_positive_fail_closed_overflow",
+      "elapsed_sec": 3.434499376453459e-05,
+      "evidence_status": "prepared_host_output_overflow_fail_closed_validated",
+      "expect_overflow": true,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          11
+        ]
+      ],
+      "observed_overflow": true,
+      "partial_result_returned": false,
+      "status": "pass"
+    },
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.0,
+      "expect_overflow": false,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "capacity": 2,
+      "case": "exact_fit_two_rows_deduplicated_sorted",
+      "elapsed_sec": 0.0,
+      "expect_overflow": false,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "capacity": 1,
+      "case": "one_short_fail_closed_overflow",
+      "elapsed_sec": 0.0,
+      "expect_overflow": true,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "zero_capacity_positive_fail_closed_overflow",
+      "elapsed_sec": 0.0,
+      "expect_overflow": true,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    }
+  ],
+  "run_scope": "prepared_host_output_app_generic_i64_rows",
+  "skipped_required": [
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.0,
+      "expect_overflow": false,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "capacity": 2,
+      "case": "exact_fit_two_rows_deduplicated_sorted",
+      "elapsed_sec": 0.0,
+      "expect_overflow": false,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "capacity": 1,
+      "case": "one_short_fail_closed_overflow",
+      "elapsed_sec": 0.0,
+      "expect_overflow": true,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "zero_capacity_positive_fail_closed_overflow",
+      "elapsed_sec": 0.0,
+      "expect_overflow": true,
+      "reason": "FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "skipped"
+    }
+  ],
+  "stable_public_primitive_authorized": false,
+  "track": "python_rtdl",
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
