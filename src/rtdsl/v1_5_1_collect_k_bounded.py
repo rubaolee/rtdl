@@ -22,8 +22,11 @@ V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES = (
 )
 V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENCE = (
     ("contract_foundation", "docs/reports/v1_5_1_collect_k_bounded_contract_foundation_2026-05-06.md"),
+    ("bounds_tests", "docs/reports/v1_5_1_collect_k_bounded_contract_foundation_2026-05-06.md"),
     ("native_embree_optix_parity", "docs/reports/three_ai_goal1416_v1_5_1_collect_k_native_parity_consensus_2026-05-06.md"),
     ("same_contract_benchmarks", "docs/reports/three_ai_goal1417_v1_5_1_collect_k_benchmark_consensus_2026-05-06.md"),
+    ("external_3_ai_parity_consensus", "docs/reports/three_ai_goal1416_v1_5_1_collect_k_native_parity_consensus_2026-05-06.md"),
+    ("external_3_ai_benchmark_consensus", "docs/reports/three_ai_goal1417_v1_5_1_collect_k_benchmark_consensus_2026-05-06.md"),
 )
 V1_5_1_COLLECT_K_BOUNDED_READINESS_BLOCKED_ACTIONS = (
     "public_collect_k_bounded_promotion",
@@ -338,6 +341,9 @@ def validate_v1_5_1_collect_k_bounded_readiness_gate() -> dict[str, Any]:
         raise ValueError("readiness backend scope must remain Embree+OptiX")
     if tuple(gate["required_gates"]) != V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES:
         raise ValueError("readiness required gate set mismatch")
+    evidence_by_gate = dict(gate["evidence_files"])
+    if tuple(evidence_by_gate.keys()) != V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES:
+        raise ValueError("readiness evidence registry must name every required gate")
     if tuple(gate["passed_gates"]) != V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES:
         raise ValueError("all measured v1.5.1 collect-k evidence gates must pass")
     if tuple(gate["failed_gates"]) != ():

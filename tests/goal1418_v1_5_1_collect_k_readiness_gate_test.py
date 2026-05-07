@@ -48,9 +48,31 @@ class Goal1418V151CollectKReadinessGateTest(unittest.TestCase):
             gate["evidence_files"],
             rt.V1_5_1_COLLECT_K_BOUNDED_READINESS_EVIDENCE,
         )
+        self.assertEqual(
+            tuple(name for name, _relative_path in gate["evidence_files"]),
+            rt.V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES,
+        )
         for _name, relative_path in gate["evidence_files"]:
             with self.subTest(relative_path=relative_path):
                 self.assertTrue((ROOT / relative_path).exists())
+
+    def test_readiness_gate_records_explicit_evidence_for_all_six_gates(self) -> None:
+        gate = rt.validate_v1_5_1_collect_k_bounded_readiness_gate()
+        evidence = dict(gate["evidence_files"])
+
+        self.assertEqual(set(evidence), set(rt.V1_5_1_COLLECT_K_BOUNDED_READINESS_REQUIRED_GATES))
+        self.assertEqual(
+            evidence["bounds_tests"],
+            "docs/reports/v1_5_1_collect_k_bounded_contract_foundation_2026-05-06.md",
+        )
+        self.assertEqual(
+            evidence["external_3_ai_parity_consensus"],
+            evidence["native_embree_optix_parity"],
+        )
+        self.assertEqual(
+            evidence["external_3_ai_benchmark_consensus"],
+            evidence["same_contract_benchmarks"],
+        )
 
     def test_readiness_gate_claim_boundary_blocks_overclaiming(self) -> None:
         gate = rt.validate_v1_5_1_collect_k_bounded_readiness_gate()
