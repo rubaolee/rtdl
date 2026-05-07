@@ -9,7 +9,8 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = (
     "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
-    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+    "binary_validation_ok_generic_abi_parity_ok_production_wrapper_generic_symbol_route_ok_"
+    "stable_review_pending"
 )
 
 
@@ -48,7 +49,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
                 source_symbol="rtdl_optix_collect_polygon_pair_candidates_bounded",
             )
 
-    def test_embree_and_optix_polygon_wrappers_route_through_python_i64_adapter(self) -> None:
+    def test_embree_and_optix_polygon_wrappers_route_through_built_generic_symbol(self) -> None:
         for relative_path, backend, source_symbol in (
             (
                 "src/rtdsl/embree_runtime.py",
@@ -67,15 +68,17 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
             function_source = source[function_start:function_end]
             with self.subTest(relative_path=relative_path):
                 self.assertIn(
-                    "adapt_native_i64_rows_to_collect_k_bounded_result(",
+                    "collect_native_i64_rows_with_backend_symbol(",
                     function_source,
                 )
                 self.assertIn(f'backend="{backend}"', function_source)
-                self.assertIn(f'source_symbol="{source_symbol}"', function_source)
+                self.assertIn(f'candidate_source_symbol="{source_symbol}"', function_source)
+                self.assertIn(f'symbol_name="rtdl_{backend}_collect_k_bounded_i64"', function_source)
                 self.assertIn('"binary_symbol_validation_present"', function_source)
+                self.assertIn('"native_generic_symbol"', function_source)
                 self.assertIn('"native_emitted_count"', function_source)
                 self.assertIn('"overflow_policy": row_buffer["overflow_policy"]', function_source)
-                self.assertIn("built generic native symbol validation", function_source)
+                self.assertIn("built generic native i64 symbol", function_source)
                 self.assertNotIn("collect_k_bounded_rows(candidate_pairs", function_source)
 
     def test_contract_records_adapter_route_but_keeps_binary_validation_pending(self) -> None:

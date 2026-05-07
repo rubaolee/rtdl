@@ -39,7 +39,7 @@ from .db_reference import PredicateClause
 from .db_reference import normalize_denorm_table
 from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
-from .v1_5_1_collect_k_bounded import adapt_native_i64_rows_to_collect_k_bounded_result
+from .v1_5_1_collect_k_bounded import collect_native_i64_rows_with_backend_symbol
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .reference import Segment as _CanonicalSegment
@@ -877,21 +877,21 @@ def collect_polygon_pair_candidates_bounded_embree(
             "failure_mode=fail_closed_overflow"
         )
 
-    candidate_pairs = tuple(
-        sorted(
-            (
-                int(candidate_array[index].left_polygon_id),
-                int(candidate_array[index].right_polygon_id),
-            )
-            for index in range(emitted)
+    native_candidate_pairs = tuple(
+        (
+            int(candidate_array[index].left_polygon_id),
+            int(candidate_array[index].right_polygon_id),
         )
+        for index in range(emitted)
     )
-    row_buffer = adapt_native_i64_rows_to_collect_k_bounded_result(
-        candidate_pairs,
+    row_buffer = collect_native_i64_rows_with_backend_symbol(
+        native_candidate_pairs,
         capacity=int(candidate_capacity),
         row_width=2,
         backend="embree",
-        source_symbol="rtdl_embree_collect_polygon_pair_candidates_bounded",
+        library=library,
+        symbol_name="rtdl_embree_collect_k_bounded_i64",
+        candidate_source_symbol="rtdl_embree_collect_polygon_pair_candidates_bounded",
     )
     result = {
         "primitive": "COLLECT_K_BOUNDED",
@@ -901,7 +901,9 @@ def collect_polygon_pair_candidates_bounded_embree(
         "native_source_symbol": row_buffer["native_source_symbol"],
         "source_rows_are_row_major_i64": row_buffer["source_rows_are_row_major_i64"],
         "binary_symbol_validation_present": row_buffer["binary_symbol_validation_present"],
-        "candidate_pairs": candidate_pairs,
+        "native_generic_symbol": row_buffer["native_generic_symbol"],
+        "native_candidate_source_symbol": row_buffer["native_candidate_source_symbol"],
+        "candidate_pairs": row_buffer["candidate_id_rows"],
         "candidate_id_rows": row_buffer["candidate_id_rows"],
         "capacity": int(candidate_capacity),
         "valid_count": row_buffer["valid_count"],
@@ -923,8 +925,8 @@ def collect_polygon_pair_candidates_bounded_embree(
         ],
         "claim_boundary": (
             "native Embree bounded polygon-pair candidate collection only; "
-            "candidate rows route through the Python generic i64 adapter; "
-            "built generic native symbol validation, Jaccard score reduction, "
+            "candidate rows route through the built generic native i64 symbol; "
+            "Jaccard score reduction, "
             "stable promotion, and whole-app speedup require separate evidence"
         ),
     }

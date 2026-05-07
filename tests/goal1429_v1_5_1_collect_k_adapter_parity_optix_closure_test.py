@@ -9,7 +9,8 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = (
     "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
-    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+    "binary_validation_ok_generic_abi_parity_ok_production_wrapper_generic_symbol_route_ok_"
+    "stable_review_pending"
 )
 
 
@@ -26,6 +27,7 @@ class Goal1429V151CollectKAdapterParityOptixClosureTest(unittest.TestCase):
         self.assertIn("pod_optix_required", contract["post_adapter_parity_evidence"])
         self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
         self.assertIn("direct same-ABI smoke validation", contract["claim_boundary"])
+        self.assertIn("production wrappers now route native candidate rows", contract["claim_boundary"])
 
     def test_required_optix_pod_artifacts_record_acceptance(self) -> None:
         report = (

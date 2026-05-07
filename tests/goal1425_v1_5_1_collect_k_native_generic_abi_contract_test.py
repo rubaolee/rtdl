@@ -7,7 +7,8 @@ import rtdsl as rt
 
 STATUS = (
     "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
-    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+    "binary_validation_ok_generic_abi_parity_ok_production_wrapper_generic_symbol_route_ok_"
+    "stable_review_pending"
 )
 
 
@@ -85,11 +86,19 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
                 "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_pod_optix_2026-05-06.md",
             ),
         )
+        self.assertEqual(
+            contract["production_wrapper_generic_symbol_evidence"],
+            (
+                "docs/reports/goal1432_v1_5_1_collect_k_production_wrapper_generic_symbol_linux_embree_2026-05-06.md",
+                "docs/reports/goal1432_v1_5_1_collect_k_production_wrapper_generic_symbol_pod_optix_2026-05-06.md",
+            ),
+        )
         self.assertIn("native source-level ABI implementation step only", contract["claim_boundary"])
         self.assertIn("Python generic i64 adapter", contract["claim_boundary"])
         self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
         self.assertIn("direct same-ABI smoke validation", contract["claim_boundary"])
         self.assertIn("formal generic ABI parity checks", contract["claim_boundary"])
+        self.assertIn("production wrappers now route native candidate rows", contract["claim_boundary"])
 
 
 if __name__ == "__main__":

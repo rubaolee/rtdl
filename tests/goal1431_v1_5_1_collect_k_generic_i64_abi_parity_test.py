@@ -9,7 +9,8 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = (
     "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
-    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+    "binary_validation_ok_generic_abi_parity_ok_production_wrapper_generic_symbol_route_ok_"
+    "stable_review_pending"
 )
 
 
@@ -28,6 +29,7 @@ class Goal1431V151CollectKGenericI64AbiParityTest(unittest.TestCase):
             ),
         )
         self.assertIn("formal generic ABI parity checks", contract["claim_boundary"])
+        self.assertIn("production wrappers now route native candidate rows", contract["claim_boundary"])
         self.assertIn("does not authorize speedup", contract["claim_boundary"])
         self.assertIn("stable primitive wording", contract["claim_boundary"])
 

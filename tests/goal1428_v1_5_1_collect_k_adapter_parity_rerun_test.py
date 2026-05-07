@@ -9,7 +9,8 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = (
     "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
-    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+    "binary_validation_ok_generic_abi_parity_ok_production_wrapper_generic_symbol_route_ok_"
+    "stable_review_pending"
 )
 
 

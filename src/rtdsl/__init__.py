@@ -124,6 +124,7 @@ from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_resolu
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contracts
 from .v1_5_1_collect_k_bounded import adapt_native_i64_rows_to_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
+from .v1_5_1_collect_k_bounded import collect_native_i64_rows_with_backend_symbol
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_BACKENDS
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY
@@ -877,6 +878,7 @@ __all__ = [
     "ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS",
     "adapt_native_i64_rows_to_collect_k_bounded_result",
     "collect_k_bounded_rows",
+    "collect_native_i64_rows_with_backend_symbol",
     "collect_k_bounded_candidate_pairs",
     "FROZEN_BEFORE_V2_1_POLYGON_BACKENDS",
     "run_generic_polygon_pair_exact_area_summary",

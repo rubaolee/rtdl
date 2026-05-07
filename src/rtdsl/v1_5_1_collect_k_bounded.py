@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ctypes
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -100,7 +101,7 @@ V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS = (
     "rerun_3_ai_stable_promotion_review",
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_STATUS = (
-    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_generic_abi_parity_ok_production_wrapper_generic_symbol_route_ok_stable_review_pending"
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_SYMBOLS = (
     "rtdl_embree_collect_k_bounded_i64",
@@ -693,6 +694,10 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
             "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_linux_embree_2026-05-06.md",
             "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_pod_optix_2026-05-06.md",
         ),
+        "production_wrapper_generic_symbol_evidence": (
+            "docs/reports/goal1432_v1_5_1_collect_k_production_wrapper_generic_symbol_linux_embree_2026-05-06.md",
+            "docs/reports/goal1432_v1_5_1_collect_k_production_wrapper_generic_symbol_pod_optix_2026-05-06.md",
+        ),
         "post_adapter_parity_evidence": {
             "windows_optional": (
                 "docs/reports/goal1428_v1_5_1_collect_k_adapter_parity_windows_optional_2026-05-06.md"
@@ -716,10 +721,11 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
             "symbols required before stable promotion. Existing polygon-pair collection "
             "is routed through the Python generic i64 adapter. Post-adapter Embree "
             "and OptiX polygon-pair parity are accepted for the recorded Windows, "
-            "Linux, and RTX A5000 pod evidence, but the route is not through "
-            "validated built native generic symbols in production wrappers yet. "
-            "The built Embree and OptiX generic i64 symbols are present and pass "
-            "direct same-ABI smoke validation and formal generic ABI parity checks, "
+            "Linux, and RTX A5000 pod evidence. The production wrappers now route "
+            "native candidate rows through the validated built native generic "
+            "symbols for Embree and OptiX. The built Embree and OptiX generic "
+            "i64 symbols are present and pass direct same-ABI smoke validation "
+            "and formal generic ABI parity checks, "
             "but stable promotion still requires 3-AI stable-promotion review. "
             "This does not authorize "
             "speedup, zero-copy, whole-app, release-tag, or stable primitive wording."
@@ -765,7 +771,8 @@ def validate_v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str,
         "source symbols required before stable promotion",
         "Python generic i64 adapter",
         "Post-adapter Embree and OptiX polygon-pair parity are accepted",
-        "validated built native generic symbols in production wrappers yet",
+        "production wrappers now route native candidate rows",
+        "validated built native generic symbols",
         "direct same-ABI smoke validation",
         "formal generic ABI parity checks",
         "does not authorize speedup",
@@ -879,6 +886,131 @@ def adapt_native_i64_rows_to_collect_k_bounded_result(
             "production wrapper use of built Embree/OptiX generic symbols and stable promotion remain pending."
         ),
     }
+
+
+def collect_native_i64_rows_with_backend_symbol(
+    candidate_rows: Iterable[Any],
+    *,
+    capacity: int,
+    row_width: int,
+    backend: str,
+    library: Any,
+    symbol_name: str,
+    candidate_source_symbol: str,
+) -> dict[str, Any]:
+    """Run the built app-name-free native i64 collector from a Python wrapper."""
+    row_width = int(row_width)
+    capacity = int(capacity)
+    if capacity < 0:
+        raise ValueError("COLLECT_K_BOUNDED capacity must be non-negative")
+    if row_width <= 0:
+        raise ValueError("COLLECT_K_BOUNDED row_width must be positive")
+    symbol = getattr(library, symbol_name, None)
+    if symbol is None:
+        raise ValueError(
+            f"loaded {backend} backend does not export {symbol_name}; "
+            f"rebuild the {backend} backend from current main"
+        )
+    symbol.argtypes = [
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    symbol.restype = ctypes.c_int
+
+    input_rows = tuple(
+        (row,) if isinstance(row, int) else tuple(int(value) for value in row)
+        for row in candidate_rows
+    )
+    for row in input_rows:
+        if len(row) != row_width:
+            raise ValueError(
+                "COLLECT_K_BOUNDED candidate row width mismatch: "
+                f"expected {row_width}, got {len(row)}"
+            )
+    flat_input = [value for row in input_rows for value in row]
+    input_array = (
+        (ctypes.c_int64 * len(flat_input))(*flat_input)
+        if flat_input
+        else None
+    )
+    output_len = capacity * row_width
+    output_array = (
+        (ctypes.c_int64 * output_len)()
+        if output_len
+        else None
+    )
+    emitted_count = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        input_array,
+        len(input_rows),
+        row_width,
+        output_array,
+        capacity,
+        ctypes.byref(emitted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    error_text = error.value.decode("utf-8", errors="replace")
+    if int(status) != 0:
+        raise RuntimeError(error_text or f"{symbol_name} failed with status {status}")
+    emitted = int(emitted_count.value)
+    if int(overflowed.value) != 0:
+        raise RuntimeError(
+            "COLLECT_K_BOUNDED overflowed capacity "
+            f"{capacity}; emitted {emitted}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    rows = tuple(
+        tuple(
+            int(output_array[row_index * row_width + column_index])
+            for column_index in range(row_width)
+        )
+        for row_index in range(emitted)
+    )
+    result = {
+        "primitive": V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE,
+        "backend": str(backend),
+        "app_generic": True,
+        "native_i64_adapter": False,
+        "native_generic_symbol": str(symbol_name),
+        "native_source_symbol": str(symbol_name),
+        "native_candidate_source_symbol": str(candidate_source_symbol),
+        "source_rows_are_row_major_i64": True,
+        "binary_symbol_validation_present": True,
+        "row_dtype": "int64",
+        "row_width": row_width,
+        "capacity": capacity,
+        "valid_count": emitted,
+        "emitted_count": emitted,
+        "overflowed": False,
+        "complete_candidate_coverage": True,
+        "overflow_policy": V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY,
+        "failure_mode": "fail_closed_overflow",
+        "truncation_allowed": False,
+        "partial_result_on_overflow_allowed": False,
+        "score_or_reduction_after_overflow_allowed": False,
+        "result_layout": V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT,
+        "ordering_policy": V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY,
+        "duplicate_policy": V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY,
+        "candidate_id_rows": rows,
+        "claim_boundary": (
+            "Built native generic i64 COLLECT_K_BOUNDED symbol used inside "
+            "the production Python wrapper over native candidate rows; this "
+            "does not authorize stable promotion, speedup wording, zero-copy "
+            "wording, whole-app claims, or release action."
+        ),
+    }
+    return validate_collect_k_bounded_result(result, row_width=row_width, backend=str(backend))
 
 
 def validate_collect_k_bounded_result(
