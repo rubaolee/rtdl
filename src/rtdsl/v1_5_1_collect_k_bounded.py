@@ -1041,7 +1041,9 @@ def validate_collect_k_bounded_result(
         raise RuntimeError("COLLECT_K_BOUNDED result must report complete candidate coverage")
     if "candidate_id_rows" not in result:
         raise ValueError("bounded collection result must include candidate_id_rows")
-    capacity = int(result.get("capacity", result.get("valid_count", 0)))
+    if "capacity" not in result and "valid_count" not in result:
+        raise ValueError("bounded collection result must include capacity or valid_count metadata")
+    capacity = int(result.get("capacity", result["valid_count"]))
     normalized = collect_k_bounded_rows(
         result["candidate_id_rows"],
         k=capacity,

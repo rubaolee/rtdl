@@ -61,6 +61,27 @@ class Goal1413V151CollectKResultValidatorTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "candidate_id_rows must be canonicalized"):
             rt.validate_collect_k_bounded_result(result, row_width=2, backend="embree")
 
+    def test_validator_rejects_missing_capacity_and_valid_count_metadata(self) -> None:
+        result = rt.collect_k_bounded_rows(((1, 10),), k=1, row_width=2) | {
+            "backend": "embree",
+        }
+        result.pop("capacity")
+        result.pop("valid_count")
+
+        with self.assertRaisesRegex(ValueError, "capacity or valid_count metadata"):
+            rt.validate_collect_k_bounded_result(result, row_width=2, backend="embree")
+
+    def test_validator_accepts_valid_count_without_capacity_for_transition_results(self) -> None:
+        result = rt.collect_k_bounded_rows(((1, 10),), k=1, row_width=2) | {
+            "backend": "embree",
+        }
+        result.pop("capacity")
+
+        validated = rt.validate_collect_k_bounded_result(result, row_width=2, backend="embree")
+
+        self.assertEqual(validated["capacity"], 1)
+        self.assertEqual(validated["valid_count"], 1)
+
     def test_jaccard_bridge_uses_validator_for_candidate_id_rows(self) -> None:
         result = rt.collect_k_bounded_rows(((1, 10), (2, 20)), k=2, row_width=2) | {
             "backend": "embree",
