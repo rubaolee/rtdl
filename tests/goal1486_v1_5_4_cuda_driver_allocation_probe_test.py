@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 
@@ -76,6 +77,36 @@ class Goal1486V154CudaDriverAllocationProbeTest(unittest.TestCase):
         self.assertFalse(payload["true_zero_copy_authorized"])
         self.assertFalse(payload["release_action_authorized"])
         self.assertIn("not a public zero-copy claim", payload["claim_boundary"])
+
+    def test_allocation_evidence_survives_json_roundtrip(self) -> None:
+        probe_module = load_probe_module()
+        payload = probe_module.build_payload(
+            {
+                "status": "ok",
+                "reason": None,
+                "cuda_driver_loaded": True,
+                "device_count": 1,
+                "device_name": "NVIDIA synthetic unit test",
+                "cuda_driver_version": 12040,
+                "byte_count": 256,
+                "device_allocation_performed": True,
+                "device_free_performed": True,
+                "host_to_device_transfers": 0,
+                "device_to_host_transfers": 0,
+                "device_residency_observed": True,
+                "measured_on_real_nvidia": True,
+                "hardware_identity": "NVIDIA synthetic unit test driver_api=12040",
+                "backend_version": "CUDA Driver API 12040",
+                "device_pointer_nonzero": True,
+            }
+        )
+        roundtripped = json.loads(json.dumps(payload))
+
+        evidence = rt.validate_v1_5_4_python_rtdl_managed_buffer_allocation_evidence(
+            roundtripped["allocation_evidence"]
+        )
+
+        self.assertTrue(evidence["true_zero_copy_evidence_candidate"])
 
 
 if __name__ == "__main__":

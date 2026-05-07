@@ -1,0 +1,144 @@
+{
+  "allocation_evidence": {
+    "allocation_id": "goal1485_managed_buffer_probe",
+    "allocation_method": "cuda_device_alloc",
+    "backend_version": "",
+    "claim_boundary": "This v1.5.4 allocation evidence envelope records backend allocation method, transfer counts, hardware identity, and device residency observations for an RTDL-owned managed buffer. It may identify a true zero-copy evidence candidate only when a real NVIDIA device-resident path records zero host/device transfers and observed residency. It still does not authorize true zero-copy wording, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+    "device_residency_observed": true,
+    "device_to_host_transfers": 0,
+    "hardware_identity": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "host_to_device_transfers": 0,
+    "lifecycle": {
+      "allocation_backend": "optix",
+      "allocation_id": "goal1485_managed_buffer_probe",
+      "claim_boundary": "This v1.5.4 lifecycle record tracks RTDL-owned managed-buffer allocation bookkeeping and transfer events. It is not a native allocator and does not prove device residency. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+      "descriptor": {
+        "backend": "optix",
+        "buffer_kind": "rtdl_device_resident",
+        "byte_count": 256,
+        "claim_boundary": "This v1.5.4 Python+RTDL managed-buffer descriptor is RTDL-owned. Host managed buffers are reduced-copy or transfer-reuse plumbing. Device-resident and managed/unified buffers are residency candidates only until real NVIDIA allocation, residency, and transfer counts are measured. This descriptor does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+        "copy_boundary": "rtdl_owned_device_residency_candidate_unmeasured",
+        "depends_on_gate": "ready_to_design_rtdl_owned_managed_buffers_claims_blocked",
+        "device": "cuda:0",
+        "device_residency_candidate": true,
+        "dtype": "int64",
+        "host_data_zero_copy_default": false,
+        "lifetime": "explicit_release",
+        "managed_buffer_zero_copy_authorized": false,
+        "owner": "rtdl",
+        "partner_owned": false,
+        "partner_tensor_handoff_authorized": false,
+        "pointer": 123456,
+        "public_speedup_wording_authorized": false,
+        "release_action_authorized": false,
+        "residency_state": "device_candidate_unmeasured",
+        "shape": [
+          16,
+          2
+        ],
+        "stable_public_primitive_authorized": false,
+        "status": "v1_5_4_python_rtdl_managed_buffer_descriptor_prepared",
+        "track": "python_rtdl",
+        "transfer_count_state": "instrumentation_planned",
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "event_log": [
+        {
+          "allocation_id": "goal1485_managed_buffer_probe",
+          "backend": "optix",
+          "event": "begin_lifecycle",
+          "residency_state": "device_candidate_unmeasured"
+        }
+      ],
+      "host_to_rtdl_transfers": 0,
+      "lifecycle_state": "active_unmeasured",
+      "managed_buffer_zero_copy_authorized": false,
+      "measured_device_residency": false,
+      "measured_transfer_count": false,
+      "owner": "rtdl",
+      "partner_tensor_handoff_authorized": false,
+      "public_speedup_wording_authorized": false,
+      "release_action_authorized": false,
+      "rtdl_internal_transfers": 0,
+      "rtdl_to_host_transfers": 0,
+      "stable_public_primitive_authorized": false,
+      "status": "v1_5_4_python_rtdl_managed_buffer_lifecycle_active",
+      "track": "python_rtdl",
+      "true_zero_copy_authorized": false,
+      "true_zero_copy_evidence_candidate": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "managed_buffer_zero_copy_authorized": false,
+    "measured_device_residency": true,
+    "measured_on_real_nvidia": true,
+    "measured_transfer_count": true,
+    "measurement_backend": "optix",
+    "measurement_scope": "goal1485_real_nvidia_managed_buffer_allocation_probe",
+    "owner": "rtdl",
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_public_primitive_authorized": false,
+    "status": "v1_5_4_python_rtdl_managed_buffer_allocation_evidence_attached",
+    "track": "python_rtdl",
+    "true_zero_copy_authorized": false,
+    "true_zero_copy_evidence_candidate": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "claim_boundary": "Goal1485 prepares or records a managed-buffer allocation evidence packet only. A candidate result is not a public zero-copy claim. This packet does not authorize public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+  "environment": {
+    "git_head": "156be3b8eae4a13969cb3666b41764581404d7b4",
+    "nvcc_version": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 127,
+      "stderr": "FileNotFoundError: [Errno 2] No such file or directory: 'nvcc'",
+      "stdout": ""
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Thu May  7 22:37:20 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 550.127.05             Driver Version: 550.127.05     CUDA Version: 12.4     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX 4000 Ada Gene...    On  |   00000000:C2:00.0 Off |                  Off |\n| 30%   30C    P8             12W /  130W |       2MiB /  20475MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+"
+    },
+    "platform": {
+      "machine": "x86_64",
+      "python": "3.10.12",
+      "release": "6.8.0-40-generic",
+      "system": "Linux"
+    }
+  },
+  "goal": "Goal1485",
+  "input": {
+    "allocation_method": "cuda_device_alloc",
+    "backend_version": "",
+    "buffer_kind": "rtdl_device_resident",
+    "device": "cuda:0",
+    "device_residency_observed": true,
+    "device_to_host_transfers": 0,
+    "hardware_identity": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "host_to_device_transfers": 0,
+    "measured_on_real_nvidia": true,
+    "measurement_scope": "goal1485_real_nvidia_managed_buffer_allocation_probe"
+  },
+  "partner_tensor_handoff_authorized": false,
+  "pod_needed_for_stronger_result": false,
+  "probe_summary": {
+    "accepted_public_claim": false,
+    "candidate_only": true,
+    "nvcc_ok": false,
+    "nvidia_smi_ok": true,
+    "real_nvidia_evidence_attempted": true
+  },
+  "public_speedup_wording_authorized": false,
+  "release_action_authorized": false,
+  "scope": "v1.5.4 Python+RTDL managed-buffer pod evidence packet",
+  "stable_public_primitive_authorized": false,
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

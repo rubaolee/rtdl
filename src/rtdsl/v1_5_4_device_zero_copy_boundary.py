@@ -916,8 +916,9 @@ def validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(lifecycle: dict[str, An
     for field in ("host_to_rtdl_transfers", "rtdl_to_host_transfers", "rtdl_internal_transfers"):
         if int(lifecycle.get(field, -1)) < 0:
             raise ValueError("v1.5.4 managed buffer lifecycle transfer counts must be non-negative")
-    if not isinstance(lifecycle.get("event_log"), tuple) or not lifecycle["event_log"]:
-        raise ValueError("v1.5.4 managed buffer lifecycle requires a non-empty tuple event_log")
+    event_log = lifecycle.get("event_log")
+    if not isinstance(event_log, (tuple, list)) or not event_log:
+        raise ValueError("v1.5.4 managed buffer lifecycle requires a non-empty event_log")
     expected_measured_transfer = any(
         int(lifecycle[field]) > 0
         for field in ("host_to_rtdl_transfers", "rtdl_to_host_transfers", "rtdl_internal_transfers")
