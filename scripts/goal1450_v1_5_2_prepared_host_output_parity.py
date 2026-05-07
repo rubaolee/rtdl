@@ -328,6 +328,12 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines.append("- Failures: none")
     if report["skipped_required"]:
         lines.append(f"- Required backend skips: `{len(report['skipped_required'])}`")
+        for skipped in report["skipped_required"]:
+            reason = skipped.get("reason", "unknown")
+            lines.append(
+                f"- Required skip detail: backend={skipped['backend']}, "
+                f"case={skipped['case']}, reason={reason}"
+            )
     else:
         lines.append("- Required backend skips: none")
     lines.extend(

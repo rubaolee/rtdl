@@ -90,6 +90,21 @@ class Goal1450V152PreparedHostOutputParityTest(unittest.TestCase):
         self.assertIn("not a performance claim", rendered)
         self.assertIn("not a zero-copy claim", rendered)
 
+    def test_markdown_records_required_skip_reason(self) -> None:
+        report = parity.run_acceptance_package(
+            backends=("optix",),
+            required_backends=("optix",),
+            backend_libraries={},
+        )
+
+        if report["backend_summary"]["optix"]["skipped"] == 0:
+            self.skipTest("local OptiX backend is available; skip-path rendering is not applicable")
+        rendered = parity.render_markdown(report)
+
+        self.assertIn("Required backend skips", rendered)
+        self.assertIn("Required skip detail: backend=optix", rendered)
+        self.assertIn("reason=", rendered)
+
 
 if __name__ == "__main__":
     unittest.main()
