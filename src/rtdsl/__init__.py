@@ -227,8 +227,10 @@ from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_TRACK
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_device_zero_copy_entry_gate
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_device_memory_descriptor
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_device_memory_measurement
+from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_gpu_memory_architecture_consensus_gate
 from .v1_5_4_device_zero_copy_boundary import attach_v1_5_4_device_memory_measurement
 from .v1_5_4_device_zero_copy_boundary import prepare_v1_5_4_device_memory_descriptor
+from .v1_5_4_device_zero_copy_boundary import v1_5_4_gpu_memory_architecture_consensus_gate
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_device_zero_copy_entry_gate
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_BLOCKED_CLAIMS
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_ENTRY_STATUS
@@ -240,6 +242,8 @@ from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_MEMORY_ALLOWED_DTYPE
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_MEMORY_KINDS
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_MEASUREMENT_REQUIRED_FIELDS
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_MEMORY_ZERO_COPY_CANDIDATE_KINDS
+from .v1_5_4_device_zero_copy_boundary import V1_5_4_GPU_MEMORY_ARCHITECTURE_CONSENSUS_STATUS
+from .v1_5_4_device_zero_copy_boundary import V1_5_4_GPU_MEMORY_ARCHITECTURE_REQUIRED_EVIDENCE
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1425,8 +1429,10 @@ __all__ = [
     "validate_v1_5_4_device_zero_copy_entry_gate",
     "validate_v1_5_4_device_memory_descriptor",
     "validate_v1_5_4_device_memory_measurement",
+    "validate_v1_5_4_gpu_memory_architecture_consensus_gate",
     "attach_v1_5_4_device_memory_measurement",
     "prepare_v1_5_4_device_memory_descriptor",
+    "v1_5_4_gpu_memory_architecture_consensus_gate",
     "v1_5_4_device_zero_copy_entry_gate",
     "V1_5_4_DEVICE_ZERO_COPY_BLOCKED_CLAIMS",
     "V1_5_4_DEVICE_ZERO_COPY_ENTRY_STATUS",
@@ -1438,6 +1444,8 @@ __all__ = [
     "V1_5_4_DEVICE_MEMORY_KINDS",
     "V1_5_4_DEVICE_MEASUREMENT_REQUIRED_FIELDS",
     "V1_5_4_DEVICE_MEMORY_ZERO_COPY_CANDIDATE_KINDS",
+    "V1_5_4_GPU_MEMORY_ARCHITECTURE_CONSENSUS_STATUS",
+    "V1_5_4_GPU_MEMORY_ARCHITECTURE_REQUIRED_EVIDENCE",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",

@@ -57,6 +57,14 @@ V1_5_4_DEVICE_MEASUREMENT_REQUIRED_FIELDS = (
     "measurement_backend",
     "measurement_scope",
 )
+V1_5_4_GPU_MEMORY_ARCHITECTURE_CONSENSUS_STATUS = "accepted_python_rtdl_vs_partner_rtdl_memory_boundary"
+V1_5_4_GPU_MEMORY_ARCHITECTURE_REQUIRED_EVIDENCE = (
+    "docs/reports/goal1479_gpu_memory_architecture_python_rtdl_vs_partner_rtdl_2026-05-07.md",
+    "docs/handoff/goal1479_gpu_memory_architecture_external_review_request_2026-05-07.md",
+    "docs/reports/claude_goal1479_gpu_memory_architecture_review_2026-05-07.md",
+    "docs/reports/gemini_goal1479_gpu_memory_architecture_review_2026-05-07.md",
+    "docs/reports/three_ai_goal1479_gpu_memory_architecture_consensus_2026-05-07.md",
+)
 
 
 def v1_5_4_device_zero_copy_entry_gate() -> dict[str, Any]:
@@ -392,3 +400,90 @@ def validate_v1_5_4_device_memory_measurement(measurement: dict[str, Any]) -> di
         if phrase not in measurement.get("claim_boundary", ""):
             raise ValueError("v1.5.4 device memory measurement claim boundary is incomplete")
     return measurement
+
+
+def v1_5_4_gpu_memory_architecture_consensus_gate() -> dict[str, Any]:
+    """Return the accepted memory ownership boundary for GPU+RTDL work."""
+    return {
+        "status": V1_5_4_GPU_MEMORY_ARCHITECTURE_CONSENSUS_STATUS,
+        "track": V1_5_4_DEVICE_ZERO_COPY_TRACK,
+        "required_evidence": V1_5_4_GPU_MEMORY_ARCHITECTURE_REQUIRED_EVIDENCE,
+        "python_rtdl_memory_owner": "rtdl",
+        "python_rtdl_default_data_location": "cpu_main_memory",
+        "python_rtdl_zero_copy_default": False,
+        "python_rtdl_allowed_focus": (
+            "rtdl_managed_buffers",
+            "prepared_host_buffers",
+            "resident_rtdl_buffers",
+            "managed_or_unified_memory_candidates",
+            "measured_transfer_reuse",
+        ),
+        "python_partner_rtdl_memory_owner": "partner_runtime",
+        "python_partner_rtdl_default_data_location": "partner_managed_gpu_memory",
+        "python_partner_rtdl_zero_copy_plausible_with_evidence": True,
+        "python_partner_rtdl_required_interop_metadata": (
+            "device_pointer_or_handle",
+            "shape_dtype_layout_stride",
+            "owner_lifetime_rules",
+            "stream_or_synchronization_metadata",
+            "transfer_count_and_residency_evidence",
+        ),
+        "roadmap_boundary": (
+            "v1_5_x_to_v1_6_python_rtdl_managed_memory",
+            "v1_7_to_v2_0_python_partner_rtdl_external_gpu_memory_interop",
+        ),
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This gate records the accepted architecture consensus that "
+            "Python+RTDL and Python+partner+RTDL are separate GPU memory "
+            "ownership tracks. Python+RTDL may manage or reuse RTDL-owned "
+            "buffers but arbitrary Python data is not zero-copy. "
+            "Python+partner+RTDL may attach to partner-owned GPU buffers only "
+            "with explicit interop metadata and measured evidence. This gate "
+            "does not authorize true zero-copy, public speedup wording, "
+            "whole-app claims, stable primitive promotion, partner tensor "
+            "handoff, or release action."
+        ),
+    }
+
+
+def validate_v1_5_4_gpu_memory_architecture_consensus_gate() -> dict[str, Any]:
+    gate = v1_5_4_gpu_memory_architecture_consensus_gate()
+    if gate["status"] != V1_5_4_GPU_MEMORY_ARCHITECTURE_CONSENSUS_STATUS:
+        raise ValueError("invalid v1.5.4 GPU memory architecture consensus status")
+    if tuple(gate["required_evidence"]) != V1_5_4_GPU_MEMORY_ARCHITECTURE_REQUIRED_EVIDENCE:
+        raise ValueError("v1.5.4 GPU memory architecture required evidence changed")
+    if gate["python_rtdl_memory_owner"] != "rtdl":
+        raise ValueError("Python+RTDL memory owner must remain RTDL")
+    if gate["python_partner_rtdl_memory_owner"] != "partner_runtime":
+        raise ValueError("Python+partner+RTDL memory owner must remain partner runtime")
+    if gate["python_rtdl_zero_copy_default"] is not False:
+        raise ValueError("Python+RTDL arbitrary data must not default to zero-copy")
+    if gate["python_partner_rtdl_zero_copy_plausible_with_evidence"] is not True:
+        raise ValueError("Python+partner+RTDL should remain plausible only with evidence")
+    for flag in (
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5.4 GPU memory architecture gate must keep {flag}=False")
+    for phrase in (
+        "separate GPU memory ownership tracks",
+        "arbitrary Python data is not zero-copy",
+        "partner-owned GPU buffers",
+        "measured evidence",
+        "does not authorize true zero-copy",
+        "release action",
+    ):
+        if phrase not in gate["claim_boundary"]:
+            raise ValueError("v1.5.4 GPU memory architecture claim boundary is incomplete")
+    return gate
