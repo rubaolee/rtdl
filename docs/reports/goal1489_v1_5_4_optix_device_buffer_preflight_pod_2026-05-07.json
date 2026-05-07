@@ -1,0 +1,75 @@
+{
+  "blockers": [
+    "optix_header_available",
+    "optix_library_or_build_toolchain_available",
+    "rtdl_optix_library_exists"
+  ],
+  "checks": {
+    "cuda_driver_library_available": true,
+    "cuda_prefix_exists": true,
+    "goal1488_boundary_gate_accepted": true,
+    "nvcc_exists": true,
+    "nvidia_smi_available": true,
+    "optix_header_available": false,
+    "optix_library_or_build_toolchain_available": false,
+    "rtdl_optix_library_exists": false,
+    "source_clean": true
+  },
+  "claim_boundary": "Goal1489 is only an OptiX device-buffer execution preflight. It does not run backend execution and does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, or release action.",
+  "dry_run": false,
+  "environment": {
+    "cuda_prefix": "/usr/local/cuda",
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": "",
+      "returncode": 0
+    },
+    "goal1488_boundary_gate": {
+      "accepted": true,
+      "reason": null,
+      "status": "v1_5_4_managed_buffer_cuda_evidence_boundary_accepted"
+    },
+    "libcuda": "libcuda.so.1",
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda/bin/nvcc",
+        "--version"
+      ],
+      "output_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2022 NVIDIA Corporation\nBuilt on Wed_Sep_21_10:33:58_PDT_2022\nCuda compilation tools, release 11.8, V11.8.89\nBuild cuda_11.8.r11.8/compiler.31833905_0\n",
+      "returncode": 0
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "output_tail": "Thu May  7 23:03:06 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 550.127.05             Driver Version: 550.127.05     CUDA Version: 12.4     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX 4000 Ada Gene...    On  |   00000000:C2:00.0 Off |                  Off |\n| 30%   30C    P8             12W /  130W |       2MiB /  20475MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+      "returncode": 0
+    },
+    "nvidia_smi_path": "/usr/bin/nvidia-smi",
+    "optix_header": null,
+    "optix_prefix": null,
+    "rtdl_optix_library": "/root/rtdl_goal1485/build/librtdl_optix.so"
+  },
+  "goal": "Goal1489",
+  "partner_tensor_handoff_authorized": false,
+  "public_speedup_wording_authorized": false,
+  "release_action_authorized": false,
+  "required_next_evidence": [
+    "build_or_provide_librtdl_optix",
+    "add_backend_entry_accepting_rtdl_owned_device_memory_descriptor",
+    "run_same_contract_parity_against_host_or_embree_path",
+    "record_transfer_counts_around_backend_execution",
+    "external_ai_review_before_public_claims"
+  ],
+  "scope": "v1.5.4 OptiX device-buffer execution preflight",
+  "source_commit": "0476569b6a7aa2170dede303ed5ceff1c775df21",
+  "stable_public_primitive_authorized": false,
+  "true_zero_copy_authorized": false,
+  "valid_for_optix_device_buffer_execution_work": false,
+  "whole_app_speedup_claim_authorized": false
+}
