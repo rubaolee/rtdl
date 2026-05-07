@@ -6,10 +6,12 @@ from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 
 
 V1_5_2_COLLECT_BUFFER_STATUS = "python_rtdl_buffer_contract_foundation"
-V1_5_2_COLLECT_BUFFER_KINDS = ("result",)
+V1_5_2_COLLECT_BUFFER_KINDS = ("result", "prepared_result")
 V1_5_2_COLLECT_BUFFER_DEVICES = ("cpu", "cuda")
 V1_5_2_COLLECT_BUFFER_DTYPES = ("int64",)
 V1_5_2_COLLECT_BUFFER_LAYOUT = "row_major_dense_candidate_id_rows"
+V1_5_2_COLLECT_BUFFER_OWNERS = ("python", "rtdl", "native")
+V1_5_2_COLLECT_BUFFER_MUTABILITY = ("immutable", "mutable")
 V1_5_2_COLLECT_BUFFER_COPY_BOUNDARIES = (
     "python_materialized_rows",
     "native_row_buffer_metadata",
@@ -34,6 +36,8 @@ def v1_5_2_collect_buffer_contract() -> dict[str, Any]:
         "dtype_scope": V1_5_2_COLLECT_BUFFER_DTYPES,
         "device_scope": V1_5_2_COLLECT_BUFFER_DEVICES,
         "layout": V1_5_2_COLLECT_BUFFER_LAYOUT,
+        "owner_scope": V1_5_2_COLLECT_BUFFER_OWNERS,
+        "mutability_scope": V1_5_2_COLLECT_BUFFER_MUTABILITY,
         "required_fields": (
             "primitive",
             "buffer_kind",
@@ -76,6 +80,10 @@ def validate_v1_5_2_collect_buffer_contract() -> dict[str, Any]:
         raise ValueError("collect buffer dtype scope changed")
     if tuple(contract["device_scope"]) != V1_5_2_COLLECT_BUFFER_DEVICES:
         raise ValueError("collect buffer device scope changed")
+    if tuple(contract["owner_scope"]) != V1_5_2_COLLECT_BUFFER_OWNERS:
+        raise ValueError("collect buffer owner scope changed")
+    if tuple(contract["mutability_scope"]) != V1_5_2_COLLECT_BUFFER_MUTABILITY:
+        raise ValueError("collect buffer mutability scope changed")
     false_flags = (
         "true_zero_copy_authorized",
         "public_speedup_wording_authorized",
@@ -152,6 +160,53 @@ def collect_k_result_buffer_descriptor(
     return validate_collect_result_buffer_descriptor(descriptor)
 
 
+def prepare_collect_k_result_buffer_descriptor(
+    *,
+    capacity: int,
+    row_width: int,
+    backend: str | None = None,
+    device: str = "cpu",
+    owner: str = "rtdl",
+    mutability: str = "mutable",
+    copy_boundary: str = "prepared_host_buffer_reuse",
+) -> dict[str, Any]:
+    """Describe a caller-prepared collect-k output buffer before execution."""
+    contract = validate_v1_5_2_collect_buffer_contract()
+    capacity = int(capacity)
+    row_width = int(row_width)
+    descriptor = {
+        "primitive": "COLLECT_K_BOUNDED",
+        "status": contract["status"],
+        "track": contract["track"],
+        "buffer_kind": "prepared_result",
+        "backend": backend,
+        "dtype": "int64",
+        "layout": contract["layout"],
+        "shape": (capacity, row_width),
+        "valid_shape": (0, row_width),
+        "capacity": capacity,
+        "valid_count": 0,
+        "row_width": row_width,
+        "device": device,
+        "owner": str(owner),
+        "mutability": str(mutability),
+        "copy_boundary": copy_boundary,
+        "overflowed": False,
+        "fail_closed": True,
+        "materialized_python_rows_present": False,
+        "candidate_id_rows_present": False,
+        "source_result_layout": None,
+        "prepared_before_execution": True,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": contract["claim_boundary"],
+    }
+    return validate_collect_result_buffer_descriptor(descriptor)
+
+
 def validate_collect_result_buffer_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:
     contract = validate_v1_5_2_collect_buffer_contract()
     missing = [field for field in contract["required_fields"] if field not in descriptor]
@@ -165,6 +220,10 @@ def validate_collect_result_buffer_descriptor(descriptor: dict[str, Any]) -> dic
         raise ValueError("collect result buffer descriptor has invalid layout")
     if descriptor["device"] not in V1_5_2_COLLECT_BUFFER_DEVICES:
         raise ValueError("collect result buffer descriptor has invalid device")
+    if descriptor["owner"] not in V1_5_2_COLLECT_BUFFER_OWNERS:
+        raise ValueError("collect result buffer descriptor has invalid owner")
+    if descriptor["mutability"] not in V1_5_2_COLLECT_BUFFER_MUTABILITY:
+        raise ValueError("collect result buffer descriptor has invalid mutability")
     if descriptor["copy_boundary"] not in V1_5_2_COLLECT_BUFFER_COPY_BOUNDARIES:
         raise ValueError("collect result buffer descriptor has invalid copy_boundary")
     capacity = int(descriptor["capacity"])

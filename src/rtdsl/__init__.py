@@ -164,6 +164,7 @@ from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_readines
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_gate
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_proposal
 from .v1_5_2_collect_buffers import collect_k_result_buffer_descriptor
+from .v1_5_2_collect_buffers import prepare_collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
 from .v1_5_2_collect_buffers import validate_v1_5_2_collect_buffer_contract
 from .v1_5_2_collect_buffers import v1_5_2_collect_buffer_contract
@@ -173,6 +174,8 @@ from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_DTYPES
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_FORBIDDEN_CLAIMS
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_KINDS
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_LAYOUT
+from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_MUTABILITY
+from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_OWNERS
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_STATUS
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
@@ -1296,6 +1299,7 @@ __all__ = [
     "validate_v1_5_1_collect_k_bounded_release_surface_gate",
     "validate_v1_5_1_collect_k_bounded_release_surface_proposal",
     "collect_k_result_buffer_descriptor",
+    "prepare_collect_k_result_buffer_descriptor",
     "validate_collect_result_buffer_descriptor",
     "validate_v1_5_2_collect_buffer_contract",
     "v1_5_2_collect_buffer_contract",
@@ -1305,6 +1309,8 @@ __all__ = [
     "V1_5_2_COLLECT_BUFFER_FORBIDDEN_CLAIMS",
     "V1_5_2_COLLECT_BUFFER_KINDS",
     "V1_5_2_COLLECT_BUFFER_LAYOUT",
+    "V1_5_2_COLLECT_BUFFER_MUTABILITY",
+    "V1_5_2_COLLECT_BUFFER_OWNERS",
     "V1_5_2_COLLECT_BUFFER_STATUS",
     "engine_feature_support",
     "engine_feature_support_matrix",
