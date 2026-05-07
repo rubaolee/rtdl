@@ -10,7 +10,7 @@ release action and does not link the docs from the public documentation spine.
 - Directory: `docs/release_reports/v1_5_2`
 - Surface: prepared host-output evidence for `COLLECT_K_BOUNDED`
 - Classification: documented experimental evidence candidate
-- Gate status: `candidate_docs_drafted_pending_external_release_surface_review`
+- Gate status: `candidate_docs_reviewed_unlinked_pending_public_doc_link_decision`
 - Prepared evidence status: `evidence_complete_claims_blocked`
 
 ## Boundaries
@@ -21,7 +21,8 @@ release action and does not link the docs from the public documentation spine.
 - Whole-app claims remain unauthorized.
 - Stable primitive promotion remains unauthorized.
 - Release tag action remains unauthorized.
-- External release-surface review is still required before public docs linking.
+- External release-surface review is accepted for the unlinked candidate package.
+- Public docs link review is still required before public docs linking.
 
 ## Validation
 

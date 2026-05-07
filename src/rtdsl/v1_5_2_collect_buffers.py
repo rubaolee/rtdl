@@ -58,7 +58,7 @@ V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS = (
     "release_action",
 )
 V1_5_2_RELEASE_SURFACE_GATE_STATUS = (
-    "candidate_docs_drafted_pending_external_release_surface_review"
+    "candidate_docs_reviewed_unlinked_pending_public_doc_link_decision"
 )
 V1_5_2_RELEASE_SURFACE_CLASSIFICATION = "documented_experimental_evidence_candidate"
 V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS = (
@@ -79,7 +79,8 @@ V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES = (
     "no zero-copy wording",
     "no whole-app claims",
     "no release tag action",
-    "pending external release-surface review",
+    "external release-surface review accepted",
+    "public docs link still pending",
     "PYTHONPATH=src:. python",
 )
 V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES = (
@@ -277,7 +278,9 @@ def v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any]:
         "missing_required_phrases": missing_required_phrases,
         "present_forbidden_phrases": present_forbidden_phrases,
         "candidate_docs_drafted": not missing_required_phrases and not present_forbidden_phrases,
-        "external_release_surface_review_required": True,
+        "external_release_surface_review_required": False,
+        "external_release_surface_review_accepted": True,
+        "public_docs_link_review_required": True,
         "public_docs_change_authorized_by_this_gate": False,
         "prepared_buffer_reuse_claim_authorized_by_this_gate": False,
         "stable_promotion_authorized_by_this_gate": False,
@@ -286,15 +289,16 @@ def v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any]:
         "whole_app_speedup_claim_authorized_by_this_gate": False,
         "release_tag_action_authorized_by_this_gate": False,
         "allowed_next_actions": (
-            "request_external_release_surface_review",
-            "keep_v1_5_2_candidate_docs_unlinked_until_review_accepts",
+            "request_public_docs_link_review",
+            "keep_v1_5_2_candidate_docs_unlinked_until_link_review_accepts",
             "continue_python_rtdl_track_hardening",
         ),
         "claim_boundary": (
-            "The v1.5.2 prepared host-output candidate docs are drafted for "
-            "external release-surface review only. This gate does not authorize "
-            "public docs links, prepared-buffer reuse claims, stable promotion, "
-            "speedup wording, zero-copy wording, whole-app claims, or release tag action."
+            "The v1.5.2 prepared host-output candidate docs have accepted "
+            "external release-surface review as an unlinked candidate package. "
+            "This gate does not authorize public docs links, prepared-buffer "
+            "reuse claims, stable promotion, speedup wording, zero-copy "
+            "wording, whole-app claims, or release tag action."
         ),
     }
 
@@ -319,8 +323,12 @@ def validate_v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any
         )
     if gate["candidate_docs_drafted"] is not True:
         raise ValueError("v1.5.2 candidate docs must be drafted")
-    if gate["external_release_surface_review_required"] is not True:
-        raise ValueError("v1.5.2 release surface must require external review")
+    if gate["external_release_surface_review_required"] is not False:
+        raise ValueError("v1.5.2 release surface external review should be complete")
+    if gate["external_release_surface_review_accepted"] is not True:
+        raise ValueError("v1.5.2 release surface must have accepted external review")
+    if gate["public_docs_link_review_required"] is not True:
+        raise ValueError("v1.5.2 release surface must still require public docs link review")
     false_flags = (
         "public_docs_change_authorized_by_this_gate",
         "prepared_buffer_reuse_claim_authorized_by_this_gate",
@@ -334,7 +342,8 @@ def validate_v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any
         if gate[flag] is not False:
             raise ValueError(f"v1.5.2 release-surface gate must keep {flag}=False")
     for phrase in (
-        "external release-surface review only",
+        "accepted external release-surface review",
+        "unlinked candidate package",
         "does not authorize public docs links",
         "prepared-buffer reuse claims",
         "stable promotion",

@@ -33,7 +33,8 @@ Forbidden claims:
 - no zero-copy wording
 - no whole-app claims
 - no release tag action
-- pending external release-surface review
+- external release-surface review accepted
+- public docs link still pending
 
 This surface does not claim true zero-copy, device-resident output, broad
 row-returning app acceleration, or whole-app speedup. It only records that the

@@ -17,7 +17,8 @@ Boundaries:
 - no zero-copy wording
 - no whole-app claims
 - no release tag action
-- pending external release-surface review
+- external release-surface review accepted
+- public docs link still pending
 
 Read:
 
