@@ -198,6 +198,17 @@ from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES
 from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_GATE_STATUS
 from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS
 from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES
+from .v1_5_3_reduced_copy import validate_v1_5_3_reduced_copy_contract
+from .v1_5_3_reduced_copy import v1_5_3_reduced_copy_contract
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_ALLOWED_WORDING
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_BLOCKED_CLAIMS
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_FORBIDDEN_WORDING
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_MISSING_EVIDENCE
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_REQUIRED_EVIDENCE
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_SATISFIED_EVIDENCE
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_SCOPE
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_STATUS
+from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_TRACK
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1354,6 +1365,17 @@ __all__ = [
     "V1_5_2_RELEASE_SURFACE_GATE_STATUS",
     "V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS",
     "V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES",
+    "validate_v1_5_3_reduced_copy_contract",
+    "v1_5_3_reduced_copy_contract",
+    "V1_5_3_REDUCED_COPY_ALLOWED_WORDING",
+    "V1_5_3_REDUCED_COPY_BLOCKED_CLAIMS",
+    "V1_5_3_REDUCED_COPY_FORBIDDEN_WORDING",
+    "V1_5_3_REDUCED_COPY_MISSING_EVIDENCE",
+    "V1_5_3_REDUCED_COPY_REQUIRED_EVIDENCE",
+    "V1_5_3_REDUCED_COPY_SATISFIED_EVIDENCE",
+    "V1_5_3_REDUCED_COPY_SCOPE",
+    "V1_5_3_REDUCED_COPY_STATUS",
+    "V1_5_3_REDUCED_COPY_TRACK",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",
