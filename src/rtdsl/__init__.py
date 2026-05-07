@@ -169,7 +169,9 @@ from .v1_5_2_collect_buffers import prepare_collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import run_collect_k_bounded_rows_with_prepared_result_buffer
 from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepared_result_buffer
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
+from .v1_5_2_collect_buffers import validate_v1_5_2_prepared_buffer_reuse_gate
 from .v1_5_2_collect_buffers import validate_v1_5_2_collect_buffer_contract
+from .v1_5_2_collect_buffers import v1_5_2_prepared_buffer_reuse_gate
 from .v1_5_2_collect_buffers import v1_5_2_collect_buffer_contract
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_COPY_BOUNDARIES
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_DEVICES
@@ -180,6 +182,9 @@ from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_LAYOUT
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_MUTABILITY
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_OWNERS
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_STATUS
+from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS
+from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS
+from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1307,7 +1312,9 @@ __all__ = [
     "run_collect_k_bounded_rows_with_prepared_result_buffer",
     "run_native_collect_k_bounded_rows_with_prepared_result_buffer",
     "validate_collect_result_buffer_descriptor",
+    "validate_v1_5_2_prepared_buffer_reuse_gate",
     "validate_v1_5_2_collect_buffer_contract",
+    "v1_5_2_prepared_buffer_reuse_gate",
     "v1_5_2_collect_buffer_contract",
     "V1_5_2_COLLECT_BUFFER_COPY_BOUNDARIES",
     "V1_5_2_COLLECT_BUFFER_DEVICES",
@@ -1318,6 +1325,9 @@ __all__ = [
     "V1_5_2_COLLECT_BUFFER_MUTABILITY",
     "V1_5_2_COLLECT_BUFFER_OWNERS",
     "V1_5_2_COLLECT_BUFFER_STATUS",
+    "V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS",
+    "V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS",
+    "V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",

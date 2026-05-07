@@ -27,6 +27,23 @@ V1_5_2_COLLECT_BUFFER_FORBIDDEN_CLAIMS = (
     "stable_public_primitive",
     "release_action",
 )
+V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS = "blocked_pending_backend_reuse_evidence"
+V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE = (
+    "native_abi_accepts_prepared_output_buffer_pointer",
+    "python_wrapper_passes_prepared_output_buffer_pointer",
+    "host_reuse_or_device_reuse_measured",
+    "embree_optix_same_contract_parity",
+    "overflow_fail_closed_with_prepared_buffer",
+    "external_ai_review",
+)
+V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS = (
+    "prepared_buffer_reuse_proven",
+    "true_zero_copy",
+    "public_speedup",
+    "whole_app_speedup",
+    "stable_public_primitive",
+    "release_action",
+)
 
 
 def v1_5_2_collect_buffer_contract() -> dict[str, Any]:
@@ -105,6 +122,68 @@ def validate_v1_5_2_collect_buffer_contract() -> dict[str, Any]:
         if phrase not in contract["claim_boundary"]:
             raise ValueError("collect buffer claim boundary is incomplete")
     return contract
+
+
+def v1_5_2_prepared_buffer_reuse_gate() -> dict[str, Any]:
+    """Return the evidence gate for future prepared-buffer reuse claims."""
+    return {
+        "status": V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS,
+        "track": "python_rtdl",
+        "primitive": "COLLECT_K_BOUNDED",
+        "current_envelopes": (
+            "python_reference_prepared_descriptor_envelope",
+            "native_generic_symbol_prepared_descriptor_envelope",
+        ),
+        "required_evidence": V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE,
+        "missing_evidence": V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE,
+        "blocked_claims": V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS,
+        "prepared_buffer_reuse_proven": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "v1.5.2 prepared collect-buffer envelopes are metadata and "
+            "ctypes-wrapper surfaces only. Prepared-buffer reuse, true "
+            "zero-copy, public speedup wording, whole-app claims, stable "
+            "primitive wording, and release action remain blocked until all "
+            "required backend reuse evidence is present and externally reviewed."
+        ),
+    }
+
+
+def validate_v1_5_2_prepared_buffer_reuse_gate() -> dict[str, Any]:
+    gate = v1_5_2_prepared_buffer_reuse_gate()
+    if gate["status"] != V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS:
+        raise ValueError("invalid v1.5.2 prepared buffer reuse gate status")
+    if tuple(gate["required_evidence"]) != V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE:
+        raise ValueError("prepared buffer reuse required evidence changed")
+    if tuple(gate["missing_evidence"]) != V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE:
+        raise ValueError("prepared buffer reuse gate must keep all evidence missing")
+    if tuple(gate["blocked_claims"]) != V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS:
+        raise ValueError("prepared buffer reuse blocked claims changed")
+    false_flags = (
+        "prepared_buffer_reuse_proven",
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "release_action_authorized",
+    )
+    for flag in false_flags:
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5.2 prepared buffer reuse gate must keep {flag}=False")
+    for phrase in (
+        "metadata and ctypes-wrapper surfaces only",
+        "Prepared-buffer reuse",
+        "true zero-copy",
+        "public speedup wording",
+        "externally reviewed",
+    ):
+        if phrase not in gate["claim_boundary"]:
+            raise ValueError("prepared buffer reuse gate claim boundary is incomplete")
+    return gate
 
 
 def collect_k_result_buffer_descriptor(
