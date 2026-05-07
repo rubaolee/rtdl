@@ -17,6 +17,7 @@ goal archive.
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
 | Performance | [Performance Model](performance_model.md) | [v1.5 Release Package](release_reports/v1_5/README.md), [v1.1 OptiX/Embree Status](v1_1_optix_status.md), [v1.0 RTX App Status](v1_0_rtx_app_status.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
+| v1.5.1 candidate surface | [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md) | Documented experimental public-candidate only; not stable primitive promotion, no public speedup wording, no zero-copy wording, no whole-app claims, and no release tag action. |
 
 ## Current Public Surfaces
 
@@ -51,6 +52,10 @@ The honest public message is:
 - v1.5 is not a whole-app speedup release and not a zero-app-knowledge
   native-engine release.
 - v1.5.1 is the `COLLECT_K_BOUNDED` promotion track.
+- v1.5.1 `COLLECT_K_BOUNDED` candidate docs are now discoverable as a
+  documented experimental public-candidate surface, but they do not authorize
+  stable promotion, public speedup wording, zero-copy wording, whole-app claims,
+  or release tag action.
 - v2.0 is the broader performance target, where RTDL should interoperate
   cleanly with partner tools for non-RT phases.
 

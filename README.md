@@ -29,6 +29,7 @@ installation metadata.
 - [Application Catalog](docs/application_catalog.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
 - [v1.5 Release Package](docs/release_reports/v1_5/README.md)
+- [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](docs/release_reports/v1_5_1/README.md)
 - [v1.1 OptiX/Embree Status](docs/v1_1_optix_status.md)
 - [Current Main Support Matrix](docs/current_main_support_matrix.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
@@ -41,6 +42,7 @@ installation metadata.
 | --- | --- |
 | Release | current released version: `v1.5` |
 | v1.5 | released standalone Embree+OptiX language/runtime completion for the supported surface |
+| v1.5.1 candidate docs | `COLLECT_K_BOUNDED` documented experimental public-candidate; not stable primitive promotion, no public speedup wording, no zero-copy wording, no whole-app claims, and no release tag action |
 | v1.0 | released app-shaped RTDL proof, documentation, and bounded evidence |
 | Current main | post-v1.5 integration branch; do not infer broader claims than the v1.5 release package allows |
 | v1.1 OptiX evidence | `polygon_pair_overlap_area_rows` has bounded 3-AI-reviewed positive wording |

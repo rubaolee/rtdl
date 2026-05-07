@@ -22,11 +22,12 @@ the current public story:
 8. [App And Example Quickstart](app_example_quickstart.md)
 9. [Application Catalog](application_catalog.md)
 10. [v1.5 Release Package](release_reports/v1_5/README.md)
-11. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
-12. [IR And Lowering](rtdl/ir_and_lowering.md)
-13. [Performance Model](performance_model.md)
-14. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
-15. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
+11. [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
+12. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+13. [IR And Lowering](rtdl/ir_and_lowering.md)
+14. [Performance Model](performance_model.md)
+15. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
+16. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -97,6 +98,10 @@ Important public-claim rules:
   clustering, force reduction, SQL-style output assembly, or graph reductions.
 - The released v1.5 surface has 14 included app contracts and 4 excluded rows;
   `COLLECT_K_BOUNDED` remains experimental and moves to v1.5.1.
+- The v1.5.1 `COLLECT_K_BOUNDED` candidate docs are a documented experimental
+  public-candidate surface only: not stable primitive promotion, no public
+  speedup wording, no zero-copy wording, no whole-app claims, and no release
+  tag action.
 - v1.5 does not claim whole-app speedups or app-free native-engine internals.
 - v2.0 is the broader end-to-end performance target.
 
@@ -120,6 +125,7 @@ specific backend path says so.
 Use these for audit trails and exact release boundaries:
 
 - [v1.5 Release Package](release_reports/v1_5/README.md)
+- [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
 - [v1.0 Release Package](release_reports/v1_0/README.md)
 - [v1.0 Release Statement](release_reports/v1_0/release_statement.md)
 - [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
