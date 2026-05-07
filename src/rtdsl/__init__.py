@@ -233,6 +233,7 @@ from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_python_rtdl_manage
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_python_rtdl_managed_buffer_lifecycle
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_python_rtdl_managed_buffer_allocation_evidence
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_managed_buffer_cuda_evidence_boundary_gate
+from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_optix_device_buffer_execution_contract_gate
 from .v1_5_4_device_zero_copy_boundary import attach_v1_5_4_device_memory_measurement
 from .v1_5_4_device_zero_copy_boundary import attach_v1_5_4_python_rtdl_managed_buffer_allocation_evidence
 from .v1_5_4_device_zero_copy_boundary import begin_v1_5_4_python_rtdl_managed_buffer_lifecycle
@@ -241,6 +242,7 @@ from .v1_5_4_device_zero_copy_boundary import prepare_v1_5_4_python_rtdl_managed
 from .v1_5_4_device_zero_copy_boundary import record_v1_5_4_python_rtdl_managed_buffer_transfer
 from .v1_5_4_device_zero_copy_boundary import release_v1_5_4_python_rtdl_managed_buffer_lifecycle
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_managed_buffer_cuda_evidence_boundary_gate
+from .v1_5_4_device_zero_copy_boundary import v1_5_4_optix_device_buffer_execution_contract_gate
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_gpu_memory_architecture_consensus_gate
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_python_rtdl_managed_buffer_design_gate
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_device_zero_copy_entry_gate
@@ -1456,6 +1458,7 @@ __all__ = [
     "validate_v1_5_4_python_rtdl_managed_buffer_lifecycle",
     "validate_v1_5_4_python_rtdl_managed_buffer_allocation_evidence",
     "validate_v1_5_4_managed_buffer_cuda_evidence_boundary_gate",
+    "validate_v1_5_4_optix_device_buffer_execution_contract_gate",
     "attach_v1_5_4_device_memory_measurement",
     "attach_v1_5_4_python_rtdl_managed_buffer_allocation_evidence",
     "begin_v1_5_4_python_rtdl_managed_buffer_lifecycle",
@@ -1464,6 +1467,7 @@ __all__ = [
     "record_v1_5_4_python_rtdl_managed_buffer_transfer",
     "release_v1_5_4_python_rtdl_managed_buffer_lifecycle",
     "v1_5_4_managed_buffer_cuda_evidence_boundary_gate",
+    "v1_5_4_optix_device_buffer_execution_contract_gate",
     "v1_5_4_gpu_memory_architecture_consensus_gate",
     "v1_5_4_python_rtdl_managed_buffer_design_gate",
     "v1_5_4_device_zero_copy_entry_gate",

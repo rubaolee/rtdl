@@ -1232,3 +1232,133 @@ def validate_v1_5_4_managed_buffer_cuda_evidence_boundary_gate(gate: dict[str, A
         if phrase not in gate.get("claim_boundary", ""):
             raise ValueError("v1.5.4 CUDA evidence boundary claim boundary is incomplete")
     return gate
+
+
+def v1_5_4_optix_device_buffer_execution_contract_gate(
+    *,
+    preflight: dict[str, Any],
+    cuda_boundary_gate: dict[str, Any],
+) -> dict[str, Any]:
+    """Define the next OptiX device-buffer execution contract after preflight."""
+    boundary = validate_v1_5_4_managed_buffer_cuda_evidence_boundary_gate(cuda_boundary_gate)
+    preflight_valid = bool(preflight.get("valid_for_optix_device_buffer_execution_work"))
+    return {
+        "status": (
+            "v1_5_4_optix_device_buffer_execution_contract_ready"
+            if preflight_valid
+            else "v1_5_4_optix_device_buffer_execution_contract_blocked_by_preflight"
+        ),
+        "track": "python_rtdl",
+        "depends_on_cuda_boundary_gate": boundary["status"],
+        "preflight_valid": preflight_valid,
+        "preflight_blockers": tuple(preflight.get("blockers", ())),
+        "first_target_primitive": "COLLECT_K_BOUNDED",
+        "first_target_native_symbols": (
+            "rtdl_embree_collect_k_bounded_i64",
+            "rtdl_optix_collect_k_bounded_i64",
+        ),
+        "input_memory_contract": (
+            "rtdl_owned_device_resident_i64_candidate_rows",
+            "row_width_explicit",
+            "candidate_count_explicit",
+            "owner_lifetime_explicit",
+        ),
+        "output_memory_contract": (
+            "bounded_rtdl_owned_result_buffer",
+            "valid_count_out",
+            "overflowed_out",
+            "fail_closed_on_overflow",
+        ),
+        "required_parity": (
+            "same_candidate_rows",
+            "same_row_width",
+            "same_capacity",
+            "same_valid_count",
+            "same_overflow_flag",
+            "same_deduplicated_lexicographic_rows",
+        ),
+        "required_transfer_accounting": (
+            "host_to_device_transfers_before_backend_execution",
+            "device_to_host_transfers_after_backend_execution",
+            "internal_device_transfers_if_any",
+            "allocation_only_transfers_distinguished_from_content_transfers",
+        ),
+        "minimum_artifacts": (
+            "optix_preflight_green_json",
+            "device_buffer_execution_json",
+            "device_buffer_execution_markdown",
+            "same_contract_parity_json",
+            "transfer_accounting_summary",
+        ),
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This v1.5.4 OptiX device-buffer execution contract gate defines "
+            "the next Python+RTDL backend evidence target after an OptiX-ready "
+            "preflight. It targets COLLECT_K_BOUNDED first because the i64 row "
+            "ABI and parity contract already exist. The gate does not itself "
+            "run OptiX, does not prove true zero-copy, and does not authorize "
+            "public speedup wording, whole-app claims, partner tensor handoff, "
+            "or release action."
+        ),
+    }
+
+
+def validate_v1_5_4_optix_device_buffer_execution_contract_gate(gate: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(gate, dict):
+        raise ValueError("v1.5.4 OptiX device-buffer execution contract gate must be a dictionary")
+    if gate.get("status") not in (
+        "v1_5_4_optix_device_buffer_execution_contract_ready",
+        "v1_5_4_optix_device_buffer_execution_contract_blocked_by_preflight",
+    ):
+        raise ValueError("invalid v1.5.4 OptiX device-buffer execution contract status")
+    if gate.get("track") != "python_rtdl":
+        raise ValueError("v1.5.4 OptiX device-buffer execution contract must stay on Python+RTDL track")
+    if gate.get("depends_on_cuda_boundary_gate") != "v1_5_4_managed_buffer_cuda_evidence_boundary_accepted":
+        raise ValueError("v1.5.4 OptiX device-buffer execution contract requires accepted CUDA boundary")
+    if gate.get("first_target_primitive") != "COLLECT_K_BOUNDED":
+        raise ValueError("v1.5.4 first device-buffer target must remain COLLECT_K_BOUNDED")
+    for symbol in ("rtdl_embree_collect_k_bounded_i64", "rtdl_optix_collect_k_bounded_i64"):
+        if symbol not in gate.get("first_target_native_symbols", ()):
+            raise ValueError("v1.5.4 device-buffer contract native symbol list is incomplete")
+    for required in (
+        "same_candidate_rows",
+        "same_valid_count",
+        "same_overflow_flag",
+        "same_deduplicated_lexicographic_rows",
+    ):
+        if required not in gate.get("required_parity", ()):
+            raise ValueError("v1.5.4 device-buffer contract parity list is incomplete")
+    for required in (
+        "host_to_device_transfers_before_backend_execution",
+        "device_to_host_transfers_after_backend_execution",
+        "allocation_only_transfers_distinguished_from_content_transfers",
+    ):
+        if required not in gate.get("required_transfer_accounting", ()):
+            raise ValueError("v1.5.4 device-buffer contract transfer accounting list is incomplete")
+    for flag in (
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if gate.get(flag) is not False:
+            raise ValueError(f"v1.5.4 OptiX device-buffer contract must keep {flag}=False")
+    for phrase in (
+        "OptiX device-buffer execution contract gate",
+        "COLLECT_K_BOUNDED first",
+        "does not itself run OptiX",
+        "does not prove true zero-copy",
+        "public speedup wording",
+        "partner tensor handoff",
+        "release action",
+    ):
+        if phrase not in gate.get("claim_boundary", ""):
+            raise ValueError("v1.5.4 OptiX device-buffer contract claim boundary is incomplete")
+    return gate
