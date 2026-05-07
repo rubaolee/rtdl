@@ -1,0 +1,26 @@
+{
+  "backend_summary": {
+    "embree": {
+      "fail": 0,
+      "pass": 4,
+      "skipped": 0
+    },
+    "optix": {
+      "fail": 0,
+      "pass": 4,
+      "skipped": 0
+    }
+  },
+  "claim_boundary": "Pod summary records required-backend parity evidence only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive wording, or release action.",
+  "failed_count": 0,
+  "failed_labels": [],
+  "goal": "Goal1450",
+  "parity_accepted": true,
+  "required_backends": [
+    "embree",
+    "optix"
+  ],
+  "scope": "v1.5.2 prepared host-output required Embree+OptiX parity",
+  "skipped_required": [],
+  "status_count": 2
+}
