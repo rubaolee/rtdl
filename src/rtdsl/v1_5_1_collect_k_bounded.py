@@ -100,7 +100,7 @@ V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS = (
     "rerun_3_ai_stable_promotion_review",
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_STATUS = (
-    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending"
+    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_SYMBOLS = (
     "rtdl_embree_collect_k_bounded_i64",
@@ -689,6 +689,10 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
         "built_symbol_validation_evidence": (
             "docs/reports/goal1430_v1_5_1_collect_k_generic_i64_binary_validation_2026-05-06.md",
         ),
+        "generic_abi_parity_evidence": (
+            "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_linux_embree_2026-05-06.md",
+            "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_pod_optix_2026-05-06.md",
+        ),
         "post_adapter_parity_evidence": {
             "windows_optional": (
                 "docs/reports/goal1428_v1_5_1_collect_k_adapter_parity_windows_optional_2026-05-06.md"
@@ -715,8 +719,8 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
             "Linux, and RTX A5000 pod evidence, but the route is not through "
             "validated built native generic symbols in production wrappers yet. "
             "The built Embree and OptiX generic i64 symbols are present and pass "
-            "direct same-ABI smoke validation, but stable promotion still requires "
-            "3-AI stable-promotion review. "
+            "direct same-ABI smoke validation and formal generic ABI parity checks, "
+            "but stable promotion still requires 3-AI stable-promotion review. "
             "This does not authorize "
             "speedup, zero-copy, whole-app, release-tag, or stable primitive wording."
         ),
@@ -763,6 +767,7 @@ def validate_v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str,
         "Post-adapter Embree and OptiX polygon-pair parity are accepted",
         "validated built native generic symbols in production wrappers yet",
         "direct same-ABI smoke validation",
+        "formal generic ABI parity checks",
         "does not authorize speedup",
         "stable primitive wording",
     ):

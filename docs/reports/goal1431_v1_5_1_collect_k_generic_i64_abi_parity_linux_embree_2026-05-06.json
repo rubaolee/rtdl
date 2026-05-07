@@ -1,0 +1,78 @@
+{
+  "accepted": true,
+  "artifact": "goal1431_v1_5_1_collect_k_generic_i64_abi_parity_2026-05-06",
+  "backend": "embree",
+  "case_results": [
+    {
+      "case": "deduplicate_and_canonicalize_exact_fit",
+      "expected": {
+        "emitted_count": 2,
+        "error": "",
+        "overflowed": 0,
+        "rows_flat_prefix": [
+          1,
+          10,
+          2,
+          20
+        ],
+        "status": 0
+      },
+      "observed": {
+        "emitted_count": 2,
+        "error": "",
+        "overflowed": 0,
+        "rows_flat": [
+          1,
+          10,
+          2,
+          20
+        ],
+        "status": 0
+      },
+      "pass": true
+    },
+    {
+      "case": "fail_closed_overflow_no_partial_rows",
+      "expected": {
+        "emitted_count": 2,
+        "error": "",
+        "overflowed": 1,
+        "rows_flat_prefix": [
+          0,
+          0
+        ],
+        "status": 0
+      },
+      "observed": {
+        "emitted_count": 2,
+        "error": "",
+        "overflowed": 1,
+        "rows_flat": [
+          0,
+          0
+        ],
+        "status": 0
+      },
+      "pass": true
+    }
+  ],
+  "claim_boundary": "Generic i64 COLLECT_K_BOUNDED ABI parity only; not stable primitive promotion, not speedup wording, not zero-copy wording, not whole-app behavior, and not release action.",
+  "elapsed_sec": 0.004445298000064213,
+  "environment": {
+    "git_head": "610e81a776079803e95030d661d28cc6bd995aa5",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "failures": [],
+  "library_path": "build/librtdl_embree.so",
+  "run_scope": {
+    "capacity_policy": "exact fit plus fail-closed overflow",
+    "cases": [
+      "deduplicate_and_canonicalize_exact_fit",
+      "fail_closed_overflow_no_partial_rows"
+    ],
+    "row_width": 2
+  },
+  "status": "accepted",
+  "symbol": "rtdl_embree_collect_k_bounded_i64"
+}

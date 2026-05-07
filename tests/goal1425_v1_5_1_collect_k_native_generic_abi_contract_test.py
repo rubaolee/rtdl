@@ -5,6 +5,12 @@ import unittest
 import rtdsl as rt
 
 
+STATUS = (
+    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
+    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+)
+
+
 class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
     def test_contract_defines_app_name_free_backend_symbols_without_implementation_claim(self) -> None:
         contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
@@ -12,7 +18,7 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertEqual(contract["primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending",
+            STATUS,
         )
         self.assertTrue(contract["native_source_symbols_present"])
         self.assertTrue(contract["native_binary_validation_present"])
@@ -72,10 +78,18 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertIn("linux_embree_required", evidence)
         self.assertIn("linux_optix_required_not_accepted_superseded", evidence)
         self.assertIn("pod_optix_required", evidence)
+        self.assertEqual(
+            contract["generic_abi_parity_evidence"],
+            (
+                "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_linux_embree_2026-05-06.md",
+                "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_pod_optix_2026-05-06.md",
+            ),
+        )
         self.assertIn("native source-level ABI implementation step only", contract["claim_boundary"])
         self.assertIn("Python generic i64 adapter", contract["claim_boundary"])
         self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
         self.assertIn("direct same-ABI smoke validation", contract["claim_boundary"])
+        self.assertIn("formal generic ABI parity checks", contract["claim_boundary"])
 
 
 if __name__ == "__main__":

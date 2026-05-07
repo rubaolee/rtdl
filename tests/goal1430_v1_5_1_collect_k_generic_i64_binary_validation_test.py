@@ -7,6 +7,10 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
+STATUS = (
+    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
+    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+)
 
 
 class Goal1430V151CollectKGenericI64BinaryValidationTest(unittest.TestCase):
@@ -15,7 +19,7 @@ class Goal1430V151CollectKGenericI64BinaryValidationTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending",
+            STATUS,
         )
         self.assertTrue(contract["native_source_symbols_present"])
         self.assertTrue(contract["native_binary_validation_present"])
@@ -25,6 +29,13 @@ class Goal1430V151CollectKGenericI64BinaryValidationTest(unittest.TestCase):
             contract["built_symbol_validation_evidence"],
             (
                 "docs/reports/goal1430_v1_5_1_collect_k_generic_i64_binary_validation_2026-05-06.md",
+            ),
+        )
+        self.assertEqual(
+            contract["generic_abi_parity_evidence"],
+            (
+                "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_linux_embree_2026-05-06.md",
+                "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_pod_optix_2026-05-06.md",
             ),
         )
 

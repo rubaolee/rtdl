@@ -7,6 +7,10 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
+STATUS = (
+    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
+    "binary_validation_ok_generic_abi_parity_ok_stable_review_pending"
+)
 
 
 class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
@@ -79,7 +83,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending",
+            STATUS,
         )
         self.assertTrue(contract["native_source_symbols_present"])
         self.assertTrue(contract["native_binary_validation_present"])
