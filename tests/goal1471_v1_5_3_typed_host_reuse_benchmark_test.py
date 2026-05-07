@@ -1,8 +1,14 @@
 import ctypes
+import json
+from pathlib import Path
 import unittest
 from types import SimpleNamespace
 
 from scripts import goal1471_v1_5_3_typed_host_reuse_benchmark as benchmark
+
+
+ROOT = Path(__file__).resolve().parents[1]
+POD_JSON = ROOT / "docs" / "reports" / "goal1471_v1_5_3_typed_host_reuse_benchmark_pod_2026-05-07.json"
 
 
 class _CollectKSymbol:
@@ -61,6 +67,25 @@ class Goal1471V153TypedHostReuseBenchmarkTest(unittest.TestCase):
         self.assertTrue(result["timing_recorded_for_diagnostics_only"])
         self.assertFalse(payload["true_zero_copy_authorized"])
         self.assertFalse(payload["public_speedup_wording_authorized"])
+
+    def test_pod_benchmark_artifact_is_accepted_but_diagnostic_only(self) -> None:
+        payload = json.loads(POD_JSON.read_text(encoding="utf-8"))
+
+        self.assertTrue(payload["accepted"])
+        self.assertEqual(payload["required_backends"], ["embree", "optix"])
+        self.assertEqual(payload["skipped_required"], [])
+        by_backend = {row["backend"]: row for row in payload["results"]}
+        self.assertEqual(set(by_backend), {"embree", "optix"})
+        for backend, row in by_backend.items():
+            with self.subTest(backend=backend):
+                self.assertEqual(row["status"], "pass")
+                self.assertEqual(row["baseline_input_materialization_count"], 20)
+                self.assertEqual(row["typed_input_materialization_count"], 1)
+                self.assertEqual(row["input_materialization_count_delta"], 19)
+                self.assertTrue(row["timing_recorded_for_diagnostics_only"])
+        self.assertFalse(payload["true_zero_copy_authorized"])
+        self.assertFalse(payload["public_speedup_wording_authorized"])
+        self.assertIn("does not authorize true zero-copy", payload["claim_boundary"])
 
 
 if __name__ == "__main__":

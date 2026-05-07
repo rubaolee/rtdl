@@ -1,0 +1,72 @@
+{
+  "accepted": true,
+  "backends": [
+    "embree",
+    "optix"
+  ],
+  "claim_boundary": "This benchmark records wrapper-level input materialization counts and diagnostic timing for the accepted typed host path only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+  "failed": [],
+  "goal": "Goal1471",
+  "iterations": 20,
+  "platform": "Linux-6.8.0-64-generic-x86_64-with-glibc2.35",
+  "primitive": "COLLECT_K_BOUNDED",
+  "public_speedup_wording_authorized": false,
+  "python": "3.11.10 (main, Sep  7 2024, 18:35:41) [GCC 11.4.0]",
+  "release_action_authorized": false,
+  "repeats": 4,
+  "required_backends": [
+    "embree",
+    "optix"
+  ],
+  "results": [
+    {
+      "backend": "embree",
+      "baseline_elapsed_total_s": 0.31121692806482315,
+      "baseline_input_materialization_count": 20,
+      "candidate_row_count": 16384,
+      "copy_count_or_transfer_count_measurement": true,
+      "input_materialization_count_delta": 19,
+      "iterations": 20,
+      "public_speedup_wording_authorized": false,
+      "release_action_authorized": false,
+      "repeats": 4,
+      "stable_public_primitive_authorized": false,
+      "status": "pass",
+      "timing_recorded_for_diagnostics_only": true,
+      "true_zero_copy_authorized": false,
+      "typed_elapsed_total_s": 0.10408926196396351,
+      "typed_input_materialization_count": 1,
+      "typed_to_baseline_elapsed_ratio": 0.3344588696096982,
+      "unique_rows": 4096,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "backend": "optix",
+      "baseline_elapsed_total_s": 0.306499183177948,
+      "baseline_input_materialization_count": 20,
+      "candidate_row_count": 16384,
+      "copy_count_or_transfer_count_measurement": true,
+      "input_materialization_count_delta": 19,
+      "iterations": 20,
+      "public_speedup_wording_authorized": false,
+      "release_action_authorized": false,
+      "repeats": 4,
+      "stable_public_primitive_authorized": false,
+      "status": "pass",
+      "timing_recorded_for_diagnostics_only": true,
+      "true_zero_copy_authorized": false,
+      "typed_elapsed_total_s": 0.10491516627371311,
+      "typed_input_materialization_count": 1,
+      "typed_to_baseline_elapsed_ratio": 0.34230161785717134,
+      "unique_rows": 4096,
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "scope": "v1.5.3 typed host input reuse diagnostic benchmark",
+  "skipped_required": [],
+  "stable_public_primitive_authorized": false,
+  "status": "accepted",
+  "true_zero_copy_authorized": false,
+  "unique_rows": 4096,
+  "whole_app_speedup_claim_authorized": false
+}
