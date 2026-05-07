@@ -98,12 +98,12 @@ V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS = (
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS = (
     "add_embree_optix_generic_abi_parity_tests",
-    "route_polygon_pair_collection_through_generic_abi_adapter",
+    "prove_polygon_pair_collection_adapter_parity_is_unchanged",
     "validate_generic_native_symbols_in_built_libraries",
     "rerun_3_ai_stable_promotion_review",
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_STATUS = (
-    "source_symbols_present_adapter_parity_binary_validation_pending"
+    "source_symbols_present_python_adapter_routed_binary_validation_pending"
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_SYMBOLS = (
     "rtdl_embree_collect_k_bounded_i64",
@@ -689,7 +689,6 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
         "app_name_free": True,
         "forbidden_symbol_substrings": ("polygon", "jaccard", "segment", "graph", "app"),
         "required_adapter_work": (
-            "route_polygon_pair_candidate_collection_through_i64_adapter",
             "prove_existing_polygon_pair_parity_is_unchanged",
             "validate_embree_optix_generic_i64_symbols_in_built_libraries",
         ),
@@ -697,8 +696,9 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
             "This is a native source-level ABI implementation step only. It defines "
             "the app-name-free COLLECT_K_BOUNDED row collector shape and source "
             "symbols required before stable promotion, but it does not claim built "
-            "Embree or OptiX library validation, does not route existing polygon-pair "
-            "collection through the generic adapter yet, and does not authorize "
+            "Embree or OptiX library validation. Existing polygon-pair collection "
+            "is routed through the Python generic i64 adapter, but not through "
+            "validated built native generic symbols yet, and this does not authorize "
             "speedup, zero-copy, whole-app, release-tag, or stable primitive wording."
         ),
     }
@@ -741,6 +741,8 @@ def validate_v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str,
         "app-name-free COLLECT_K_BOUNDED row collector",
         "source symbols required before stable promotion",
         "does not claim built Embree or OptiX library validation",
+        "Python generic i64 adapter",
+        "not through validated built native generic symbols yet",
         "does not authorize speedup",
         "stable primitive wording",
     ):
@@ -819,6 +821,38 @@ def collect_k_bounded_rows(
         ],
         "candidate_id_rows": rows,
         "claim_boundary": contract["claim_boundary"],
+    }
+
+
+def adapt_native_i64_rows_to_collect_k_bounded_result(
+    candidate_rows: Iterable[Any],
+    *,
+    capacity: int,
+    row_width: int,
+    backend: str,
+    source_symbol: str,
+) -> dict[str, Any]:
+    """Adapt native row-major i64 candidates to the generic collect-k result.
+
+    This is the Python-side ABI seam used while built Embree/OptiX generic
+    collector symbol validation remains pending.
+    """
+    row_buffer = collect_k_bounded_rows(
+        candidate_rows,
+        k=int(capacity),
+        row_width=int(row_width),
+    )
+    return {
+        **row_buffer,
+        "backend": str(backend),
+        "native_i64_adapter": True,
+        "native_source_symbol": str(source_symbol),
+        "source_rows_are_row_major_i64": True,
+        "binary_symbol_validation_present": False,
+        "claim_boundary": (
+            "Python generic i64 adapter over native candidate rows only; "
+            "built Embree/OptiX generic symbol validation and stable promotion remain pending."
+        ),
     }
 
 

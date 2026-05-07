@@ -12,7 +12,7 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertEqual(contract["primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_adapter_parity_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_binary_validation_pending",
         )
         self.assertTrue(contract["native_source_symbols_present"])
         self.assertFalse(contract["native_binary_validation_present"])
@@ -67,13 +67,14 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertEqual(
             contract["required_adapter_work"],
             (
-                "route_polygon_pair_candidate_collection_through_i64_adapter",
                 "prove_existing_polygon_pair_parity_is_unchanged",
                 "validate_embree_optix_generic_i64_symbols_in_built_libraries",
             ),
         )
         self.assertIn("native source-level ABI implementation step only", contract["claim_boundary"])
         self.assertIn("does not claim built Embree or OptiX library validation", contract["claim_boundary"])
+        self.assertIn("Python generic i64 adapter", contract["claim_boundary"])
+        self.assertIn("not through validated built native generic symbols yet", contract["claim_boundary"])
 
 
 if __name__ == "__main__":

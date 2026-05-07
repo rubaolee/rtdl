@@ -122,6 +122,7 @@ from .bounded_collection_contracts import v1_5_collect_k_bounded_resolution
 from .bounded_collection_contracts import v1_5_collect_k_bounded_contracts
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_resolution
 from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contracts
+from .v1_5_1_collect_k_bounded import adapt_native_i64_rows_to_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_BACKENDS
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY
@@ -874,6 +875,7 @@ __all__ = [
     "v1_5_float_sum_reduction_contracts",
     "validate_v1_5_float_sum_reduction_contracts",
     "ACTIVE_V1_5_GENERIC_POLYGON_BACKENDS",
+    "adapt_native_i64_rows_to_collect_k_bounded_result",
     "collect_k_bounded_rows",
     "collect_k_bounded_candidate_pairs",
     "FROZEN_BEFORE_V2_1_POLYGON_BACKENDS",

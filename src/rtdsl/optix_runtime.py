@@ -77,6 +77,7 @@ from .runtime import _normalize_records
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 from .runtime import _identity_cache_token
+from .v1_5_1_collect_k_bounded import adapt_native_i64_rows_to_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 from .reference import Segment as _CanonicalSegment
@@ -3080,20 +3081,31 @@ def collect_polygon_pair_candidates_bounded_optix(
             for index in range(emitted)
         )
     )
-    row_buffer = collect_k_bounded_rows(candidate_pairs, k=int(candidate_capacity), row_width=2)
+    row_buffer = adapt_native_i64_rows_to_collect_k_bounded_result(
+        candidate_pairs,
+        capacity=int(candidate_capacity),
+        row_width=2,
+        backend="optix",
+        source_symbol="rtdl_optix_collect_polygon_pair_candidates_bounded",
+    )
     result = {
         "primitive": "COLLECT_K_BOUNDED",
         "backend": "optix",
         "app_generic": row_buffer["app_generic"],
+        "native_i64_adapter": row_buffer["native_i64_adapter"],
+        "native_source_symbol": row_buffer["native_source_symbol"],
+        "source_rows_are_row_major_i64": row_buffer["source_rows_are_row_major_i64"],
+        "binary_symbol_validation_present": row_buffer["binary_symbol_validation_present"],
         "candidate_pairs": candidate_pairs,
         "candidate_id_rows": row_buffer["candidate_id_rows"],
         "capacity": int(candidate_capacity),
         "valid_count": row_buffer["valid_count"],
-        "emitted_count": emitted,
+        "emitted_count": row_buffer["emitted_count"],
+        "native_emitted_count": emitted,
         "overflowed": False,
         "complete_candidate_coverage": True,
         "failure_mode": "fail_closed_overflow",
-        "overflow_policy": "no_silent_truncation",
+        "overflow_policy": row_buffer["overflow_policy"],
         "result_layout": "bounded_candidate_pair_ids",
         "generic_result_layout": row_buffer["result_layout"],
         "ordering_policy": row_buffer["ordering_policy"],
@@ -3106,7 +3118,9 @@ def collect_polygon_pair_candidates_bounded_optix(
         ],
         "claim_boundary": (
             "native OptiX bounded polygon-pair candidate collection only; "
-            "Jaccard score reduction and whole-app speedup require separate evidence"
+            "candidate rows route through the Python generic i64 adapter; "
+            "built generic native symbol validation, Jaccard score reduction, "
+            "stable promotion, and whole-app speedup require separate evidence"
         ),
     }
     return validate_collect_k_bounded_result(result, row_width=2, backend="optix")
