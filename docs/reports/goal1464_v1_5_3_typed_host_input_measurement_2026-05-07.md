@@ -18,7 +18,7 @@ calls.
 
 The timing fields are diagnostic only. This is not a public speedup claim, not
 true zero-copy, not whole-app evidence, not stable primitive promotion, and not
-a release action.
+partner tensor handoff evidence, and not a release action.
 
 ## Validation
 

@@ -96,6 +96,7 @@ class Goal1464V153TypedHostInputMeasurementTest(unittest.TestCase):
             with self.subTest(flag=flag):
                 self.assertIs(measurement[flag], False)
         self.assertIn("Timing is diagnostic only", measurement["claim_boundary"])
+        self.assertIn("partner tensor handoff", measurement["claim_boundary"])
 
     def test_measurement_rejects_non_positive_iterations(self) -> None:
         library = SimpleNamespace(rtdl_embree_collect_k_bounded_i64=_MeasurementCollectKSymbol())

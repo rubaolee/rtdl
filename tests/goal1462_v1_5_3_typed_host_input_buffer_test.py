@@ -42,6 +42,7 @@ class Goal1462V153TypedHostInputBufferTest(unittest.TestCase):
             with self.subTest(flag=flag):
                 self.assertIs(descriptor[flag], False)
         self.assertIn("still copies user rows into ctypes host storage", descriptor["claim_boundary"])
+        self.assertIn("partner tensor handoff", descriptor["claim_boundary"])
 
     def test_typed_input_buffer_rejects_bad_width(self) -> None:
         with self.assertRaisesRegex(ValueError, "row width mismatch"):

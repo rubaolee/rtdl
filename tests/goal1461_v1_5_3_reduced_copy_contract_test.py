@@ -58,6 +58,7 @@ class Goal1461V153ReducedCopyContractTest(unittest.TestCase):
         self.assertIn("true zero-copy", contract["forbidden_wording"])
         self.assertIn("public speedup", contract["forbidden_wording"])
         self.assertIn("does not authorize true zero-copy", contract["claim_boundary"])
+        self.assertIn("partner tensor handoff", contract["claim_boundary"])
 
 
 if __name__ == "__main__":

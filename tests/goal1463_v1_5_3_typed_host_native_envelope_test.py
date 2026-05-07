@@ -74,6 +74,7 @@ class Goal1463V153TypedHostNativeEnvelopeTest(unittest.TestCase):
         self.assertEqual(symbol.output_addresses, [envelope["output_buffer_address"]])
         self.assertIs(envelope["true_zero_copy_authorized"], False)
         self.assertIs(envelope["public_speedup_wording_authorized"], False)
+        self.assertIn("partner tensor handoff", envelope["claim_boundary"])
 
     def test_native_envelope_rejects_row_width_mismatch(self) -> None:
         input_descriptor = rt.prepare_collect_k_i64_host_input_buffer(((1, 10),), row_width=2)

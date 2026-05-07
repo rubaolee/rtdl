@@ -119,6 +119,7 @@ def validate_v1_5_3_reduced_copy_contract() -> dict[str, Any]:
         "does not authorize true zero-copy",
         "public speedup wording",
         "whole-app claims",
+        "partner tensor handoff",
         "release action",
     ):
         if phrase not in contract["claim_boundary"]:
@@ -182,7 +183,8 @@ def prepare_collect_k_i64_host_input_buffer(
             "storage explicit for measurement and reuse planning. This path "
             "still copies user rows into ctypes host storage and does not "
             "authorize true zero-copy, public speedup wording, whole-app "
-            "claims, stable primitive promotion, or release action."
+            "claims, stable primitive promotion, partner tensor handoff, or "
+            "release action."
         ),
     }
 
@@ -350,7 +352,7 @@ def run_native_collect_k_bounded_with_typed_host_buffers(
             "wrapper-internal row reflattening for this path, but still uses "
             "host ctypes storage and does not authorize true zero-copy, public "
             "speedup wording, whole-app claims, stable primitive promotion, or "
-            "release action."
+            "partner tensor handoff, or release action."
         ),
     }
 
@@ -448,6 +450,7 @@ def measure_collect_k_typed_host_input_reuse(
             "counts for a Python materialized baseline and a typed contiguous "
             "host input buffer. Timing is diagnostic only. It does not "
             "authorize true zero-copy, public speedup wording, whole-app "
-            "claims, stable primitive promotion, or release action."
+            "claims, stable primitive promotion, partner tensor handoff, or "
+            "release action."
         ),
     }
