@@ -15,8 +15,8 @@ Same-contract COLLECT_K_BOUNDED native candidate-row parity only; not a public p
 - Capacity policy: exact fit plus fail-closed overflow probes
 - Platform: Linux-5.15.0-102-generic-x86_64-with-glibc2.35
 - Python: 3.11.10
-- Git HEAD: 610e81a776079803e95030d661d28cc6bd995aa5
-- Elapsed seconds: 1.355926
+- Git HEAD: 8025d689d0b9b4b8b9ec9e86871b2d09601378d2
+- Elapsed seconds: 1.258603
 
 ## Parity Outcome
 

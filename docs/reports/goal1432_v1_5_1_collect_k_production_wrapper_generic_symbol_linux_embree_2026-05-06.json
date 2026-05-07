@@ -13,7 +13,7 @@
       "backends": {
         "embree": {
           "capacity": 0,
-          "elapsed_sec": 0.010009121004259214,
+          "elapsed_sec": 0.010124665997864213,
           "expect_overflow": false,
           "expected_rows": [],
           "mismatches": [],
@@ -25,7 +25,7 @@
       "case": "empty_zero_capacity",
       "reference": {
         "capacity": 0,
-        "elapsed_sec": 9.277399658458307e-05,
+        "elapsed_sec": 9.220899664796889e-05,
         "expect_overflow": false,
         "expected_rows": [],
         "status": "pass",
@@ -36,7 +36,7 @@
       "backends": {
         "embree": {
           "capacity": 2,
-          "elapsed_sec": 0.0003169450064888224,
+          "elapsed_sec": 0.00020709400268970057,
           "expect_overflow": false,
           "expected_rows": [
             [
@@ -66,7 +66,7 @@
       "case": "exact_fit_two_rows",
       "reference": {
         "capacity": 2,
-        "elapsed_sec": 0.00021869799820706248,
+        "elapsed_sec": 0.0002192920001107268,
         "expect_overflow": false,
         "expected_rows": [
           [
@@ -86,7 +86,7 @@
       "backends": {
         "embree": {
           "capacity": 1,
-          "elapsed_sec": 5.9350000810809433e-05,
+          "elapsed_sec": 0.000102426994999405,
           "expect_overflow": true,
           "expected_rows": [
             [
@@ -105,7 +105,7 @@
       "case": "one_short_fail_closed_overflow",
       "reference": {
         "capacity": 1,
-        "elapsed_sec": 0.00020694999693660066,
+        "elapsed_sec": 0.00019511299615260214,
         "expect_overflow": true,
         "expected_rows": [
           [
@@ -125,7 +125,7 @@
       "backends": {
         "embree": {
           "capacity": 0,
-          "elapsed_sec": 3.7230995076242834e-05,
+          "elapsed_sec": 3.7655998312402517e-05,
           "expect_overflow": true,
           "expected_rows": [
             [
@@ -144,7 +144,7 @@
       "case": "zero_capacity_positive_fail_closed_overflow",
       "reference": {
         "capacity": 0,
-        "elapsed_sec": 0.00018447100592311472,
+        "elapsed_sec": 0.0001888919941848144,
         "expect_overflow": true,
         "expected_rows": [
           [
@@ -162,9 +162,9 @@
     }
   ],
   "claim_boundary": "Same-contract COLLECT_K_BOUNDED native candidate-row parity only; not a public primitive promotion, not a performance claim, and not a zero-copy claim.",
-  "elapsed_sec": 0.013416431000223383,
+  "elapsed_sec": 0.013514796999515966,
   "environment": {
-    "git_head": "610e81a776079803e95030d661d28cc6bd995aa5",
+    "git_head": "8025d689d0b9b4b8b9ec9e86871b2d09601378d2",
     "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
     "python": "3.12.3"
   },

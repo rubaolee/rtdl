@@ -20,7 +20,7 @@ The Embree and OptiX polygon candidate wrappers now route native candidate rows 
 - Embree required run: `pass=4, fail=0, skipped=0`
 - OptiX required run on NVIDIA RTX A5000 pod: `pass=4, fail=0, skipped=0`
 - Wrapper route: native polygon candidate rows are passed to the built generic i64 symbol for canonicalization, deduplication, capacity checking, and result materialization
-- Validation note: the measured Linux and pod checkouts used current Goal1432 Python wrapper changes copied from the Windows working tree before this summary was committed
+- Clean rerun note: the measured Linux and pod artifacts were refreshed after `8025d689d0b9b4b8b9ec9e86871b2d09601378d2` was pushed to `origin/main`
 
 ## Claim Boundary
 
