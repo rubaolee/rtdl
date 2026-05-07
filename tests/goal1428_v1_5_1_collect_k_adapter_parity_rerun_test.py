@@ -15,16 +15,13 @@ class Goal1428V151CollectKAdapterParityRerunTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending",
         )
-        self.assertFalse(contract["native_binary_validation_present"])
+        self.assertTrue(contract["native_binary_validation_present"])
         self.assertFalse(contract["stable_promotion_authorized"])
         self.assertEqual(
             contract["required_adapter_work"],
-            (
-                "add_embree_optix_generic_abi_parity_tests",
-                "validate_embree_optix_generic_i64_symbols_in_built_libraries",
-            ),
+            (),
         )
         self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
 

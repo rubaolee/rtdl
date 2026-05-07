@@ -29,7 +29,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
         self.assertEqual(result["candidate_id_rows"], ((1, 10), (2, 20)))
         self.assertEqual(result["valid_count"], 2)
         self.assertFalse(result["binary_symbol_validation_present"])
-        self.assertIn("built Embree/OptiX generic symbol validation", result["claim_boundary"])
+        self.assertIn("production wrapper use of built Embree/OptiX generic symbols", result["claim_boundary"])
 
     def test_python_i64_adapter_keeps_fail_closed_overflow(self) -> None:
         with self.assertRaisesRegex(
@@ -79,17 +79,14 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending",
         )
         self.assertTrue(contract["native_source_symbols_present"])
-        self.assertFalse(contract["native_binary_validation_present"])
+        self.assertTrue(contract["native_binary_validation_present"])
         self.assertFalse(contract["stable_promotion_authorized"])
         self.assertEqual(
             contract["required_adapter_work"],
-            (
-                "add_embree_optix_generic_abi_parity_tests",
-                "validate_embree_optix_generic_i64_symbols_in_built_libraries",
-            ),
+            (),
         )
 
 

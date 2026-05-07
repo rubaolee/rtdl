@@ -61,9 +61,9 @@ class Goal1426V151CollectKNativeI64SourceTest(unittest.TestCase):
         contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
 
         self.assertTrue(contract["native_source_symbols_present"])
-        self.assertFalse(contract["native_binary_validation_present"])
+        self.assertTrue(contract["native_binary_validation_present"])
         self.assertFalse(contract["stable_promotion_authorized"])
-        self.assertIn("validate_embree_optix_generic_i64_symbols_in_built_libraries", contract["required_adapter_work"])
+        self.assertIn("built_symbol_validation_evidence", contract)
 
 
 if __name__ == "__main__":

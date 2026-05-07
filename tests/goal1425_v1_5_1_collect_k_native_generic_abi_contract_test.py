@@ -12,10 +12,10 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertEqual(contract["primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending",
         )
         self.assertTrue(contract["native_source_symbols_present"])
-        self.assertFalse(contract["native_binary_validation_present"])
+        self.assertTrue(contract["native_binary_validation_present"])
         self.assertFalse(contract["stable_promotion_authorized"])
         self.assertTrue(contract["app_name_free"])
         self.assertEqual(
@@ -66,20 +66,16 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
 
         self.assertEqual(
             contract["required_adapter_work"],
-            (
-                "add_embree_optix_generic_abi_parity_tests",
-                "validate_embree_optix_generic_i64_symbols_in_built_libraries",
-            ),
+            (),
         )
         evidence = contract["post_adapter_parity_evidence"]
         self.assertIn("linux_embree_required", evidence)
         self.assertIn("linux_optix_required_not_accepted_superseded", evidence)
         self.assertIn("pod_optix_required", evidence)
         self.assertIn("native source-level ABI implementation step only", contract["claim_boundary"])
-        self.assertIn("does not claim built Embree or OptiX library validation", contract["claim_boundary"])
         self.assertIn("Python generic i64 adapter", contract["claim_boundary"])
         self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
-        self.assertIn("not through validated built native generic symbols yet", contract["claim_boundary"])
+        self.assertIn("direct same-ABI smoke validation", contract["claim_boundary"])
 
 
 if __name__ == "__main__":

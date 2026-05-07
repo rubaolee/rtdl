@@ -15,13 +15,13 @@ class Goal1429V151CollectKAdapterParityOptixClosureTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_ok_stable_review_pending",
         )
-        self.assertFalse(contract["native_binary_validation_present"])
+        self.assertTrue(contract["native_binary_validation_present"])
         self.assertFalse(contract["stable_promotion_authorized"])
         self.assertIn("pod_optix_required", contract["post_adapter_parity_evidence"])
         self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
-        self.assertIn("not through validated built native generic symbols yet", contract["claim_boundary"])
+        self.assertIn("direct same-ABI smoke validation", contract["claim_boundary"])
 
     def test_required_optix_pod_artifacts_record_acceptance(self) -> None:
         report = (
