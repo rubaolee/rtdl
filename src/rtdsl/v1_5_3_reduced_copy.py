@@ -72,6 +72,15 @@ V1_5_3_TYPED_HOST_PARITY_REQUIRED_EVIDENCE = (
     "docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_pod_summary.json",
 )
 V1_5_3_TYPED_HOST_PARITY_REQUIRED_PASS_COUNT = 4
+V1_5_3_POST_CONSENSUS_GATE_STATUS = "accepted_internal_evidence_checkpoint_claims_blocked"
+V1_5_3_POST_CONSENSUS_REQUIRED_EVIDENCE = (
+    "docs/reports/goal1473_v1_5_3_evidence_summary_2026-05-07.json",
+    "docs/reports/goal1473_v1_5_3_evidence_summary_2026-05-07.md",
+    "docs/handoff/goal1474_v1_5_3_evidence_summary_external_review_request_2026-05-07.md",
+    "docs/reports/claude_goal1474_v1_5_3_evidence_summary_review_2026-05-07.md",
+    "docs/reports/gemini_goal1474_v1_5_3_evidence_summary_review_2026-05-07.md",
+    "docs/reports/three_ai_goal1474_v1_5_3_evidence_summary_consensus_2026-05-07.md",
+)
 
 
 def v1_5_3_reduced_copy_contract() -> dict[str, Any]:
@@ -285,6 +294,103 @@ def validate_v1_5_3_typed_host_pod_parity_payload(payload: dict[str, Any]) -> di
             "promotion, partner tensor handoff, or release action."
         ),
     }
+
+
+def v1_5_3_post_consensus_checkpoint_gate() -> dict[str, Any]:
+    contract = validate_v1_5_3_reduced_copy_contract()
+    parity_gate = validate_v1_5_3_typed_host_buffer_parity_gate()
+    return {
+        "status": V1_5_3_POST_CONSENSUS_GATE_STATUS,
+        "track": V1_5_3_REDUCED_COPY_TRACK,
+        "primitive": "COLLECT_K_BOUNDED",
+        "surface": "typed_host_input_plus_prepared_host_output",
+        "contract_status": contract["status"],
+        "parity_gate_status": parity_gate["status"],
+        "required_evidence": V1_5_3_POST_CONSENSUS_REQUIRED_EVIDENCE,
+        "internal_evidence_checkpoint_accepted": True,
+        "same_contract_embree_optix_parity_accepted": True,
+        "diagnostic_typed_host_reuse_data_accepted": True,
+        "external_review_consensus_accepted": True,
+        "closed_items": (
+            "typed_host_input_plus_prepared_host_output_same_contract_parity",
+            "diagnostic_typed_host_reuse_materialization_count_evidence",
+            "three_ai_internal_evidence_summary_consensus",
+        ),
+        "still_blocked_items": (
+            "true_zero_copy_claim",
+            "public_speedup_wording",
+            "whole_app_speedup_claim",
+            "stable_public_primitive_promotion",
+            "partner_tensor_handoff_claim",
+            "release_action",
+        ),
+        "allowed_next_actions": (
+            "start_next_v1_5_x_python_rtdl_lane_from_this_internal_checkpoint",
+            "design_true_device_zero_copy_only_as_separate_evidence_track",
+            "design_partner_tensor_handoff_only_as_separate_evidence_track",
+            "seek_external_review_before_public_performance_wording",
+        ),
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This post-consensus gate accepts the internal v1.5.3 "
+            "same-contract Embree+OptiX parity and diagnostic typed-host "
+            "reuse evidence checkpoint only. It does not authorize true "
+            "zero-copy, public speedup wording, whole-app claims, stable "
+            "primitive promotion, partner tensor handoff, or release action."
+        ),
+    }
+
+
+def validate_v1_5_3_post_consensus_checkpoint_gate() -> dict[str, Any]:
+    gate = v1_5_3_post_consensus_checkpoint_gate()
+    if gate["status"] != V1_5_3_POST_CONSENSUS_GATE_STATUS:
+        raise ValueError("invalid v1.5.3 post-consensus checkpoint gate status")
+    if tuple(gate["required_evidence"]) != V1_5_3_POST_CONSENSUS_REQUIRED_EVIDENCE:
+        raise ValueError("v1.5.3 post-consensus required evidence changed")
+    for flag in (
+        "internal_evidence_checkpoint_accepted",
+        "same_contract_embree_optix_parity_accepted",
+        "diagnostic_typed_host_reuse_data_accepted",
+        "external_review_consensus_accepted",
+    ):
+        if gate[flag] is not True:
+            raise ValueError(f"v1.5.3 post-consensus gate must keep {flag}=True")
+    for flag in (
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5.3 post-consensus gate must keep {flag}=False")
+    for blocked in (
+        "true_zero_copy_claim",
+        "public_speedup_wording",
+        "whole_app_speedup_claim",
+        "stable_public_primitive_promotion",
+        "partner_tensor_handoff_claim",
+        "release_action",
+    ):
+        if blocked not in gate["still_blocked_items"]:
+            raise ValueError("v1.5.3 post-consensus gate missing blocked item")
+    for phrase in (
+        "internal v1.5.3",
+        "diagnostic typed-host reuse evidence checkpoint only",
+        "does not authorize true zero-copy",
+        "public speedup wording",
+        "partner tensor handoff",
+        "release action",
+    ):
+        if phrase not in gate["claim_boundary"]:
+            raise ValueError("v1.5.3 post-consensus gate claim boundary is incomplete")
+    return gate
 
 
 def prepare_collect_k_i64_host_input_buffer(

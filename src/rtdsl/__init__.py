@@ -202,11 +202,15 @@ from .v1_5_3_reduced_copy import validate_v1_5_3_reduced_copy_contract
 from .v1_5_3_reduced_copy import validate_collect_k_i64_host_input_buffer
 from .v1_5_3_reduced_copy import validate_v1_5_3_typed_host_buffer_parity_gate
 from .v1_5_3_reduced_copy import validate_v1_5_3_typed_host_pod_parity_payload
+from .v1_5_3_reduced_copy import validate_v1_5_3_post_consensus_checkpoint_gate
 from .v1_5_3_reduced_copy import prepare_collect_k_i64_host_input_buffer
 from .v1_5_3_reduced_copy import measure_collect_k_typed_host_input_reuse
 from .v1_5_3_reduced_copy import run_native_collect_k_bounded_with_typed_host_buffers
+from .v1_5_3_reduced_copy import v1_5_3_post_consensus_checkpoint_gate
 from .v1_5_3_reduced_copy import v1_5_3_typed_host_buffer_parity_gate
 from .v1_5_3_reduced_copy import v1_5_3_reduced_copy_contract
+from .v1_5_3_reduced_copy import V1_5_3_POST_CONSENSUS_GATE_STATUS
+from .v1_5_3_reduced_copy import V1_5_3_POST_CONSENSUS_REQUIRED_EVIDENCE
 from .v1_5_3_reduced_copy import V1_5_3_TYPED_HOST_PARITY_GATE_STATUS
 from .v1_5_3_reduced_copy import V1_5_3_TYPED_HOST_PARITY_REQUIRED_PASS_COUNT
 from .v1_5_3_reduced_copy import V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS
@@ -1380,11 +1384,15 @@ __all__ = [
     "validate_collect_k_i64_host_input_buffer",
     "validate_v1_5_3_typed_host_buffer_parity_gate",
     "validate_v1_5_3_typed_host_pod_parity_payload",
+    "validate_v1_5_3_post_consensus_checkpoint_gate",
     "prepare_collect_k_i64_host_input_buffer",
     "measure_collect_k_typed_host_input_reuse",
     "run_native_collect_k_bounded_with_typed_host_buffers",
+    "v1_5_3_post_consensus_checkpoint_gate",
     "v1_5_3_typed_host_buffer_parity_gate",
     "v1_5_3_reduced_copy_contract",
+    "V1_5_3_POST_CONSENSUS_GATE_STATUS",
+    "V1_5_3_POST_CONSENSUS_REQUIRED_EVIDENCE",
     "V1_5_3_TYPED_HOST_PARITY_GATE_STATUS",
     "V1_5_3_TYPED_HOST_PARITY_REQUIRED_PASS_COUNT",
     "V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS",
