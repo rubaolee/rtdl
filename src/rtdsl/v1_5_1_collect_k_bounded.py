@@ -1021,6 +1021,143 @@ def collect_native_i64_rows_with_backend_symbol(
     return validate_collect_k_bounded_result(result, row_width=row_width, backend=str(backend))
 
 
+def collect_native_i64_rows_into_prepared_output_buffer(
+    candidate_rows: Iterable[Any],
+    *,
+    output_buffer: Any,
+    capacity: int,
+    row_width: int,
+    backend: str,
+    library: Any,
+    symbol_name: str,
+    candidate_source_symbol: str,
+) -> dict[str, Any]:
+    """Run the native i64 collector using caller-owned ctypes output storage."""
+    row_width = int(row_width)
+    capacity = int(capacity)
+    if capacity < 0:
+        raise ValueError("COLLECT_K_BOUNDED capacity must be non-negative")
+    if row_width <= 0:
+        raise ValueError("COLLECT_K_BOUNDED row_width must be positive")
+    output_len = capacity * row_width
+    if output_buffer is None and output_len != 0:
+        raise ValueError("prepared output_buffer must not be None when capacity is nonzero")
+    if output_buffer is not None:
+        try:
+            buffer_len = len(output_buffer)
+        except TypeError as exc:
+            raise TypeError("prepared output_buffer must be a sized ctypes int64 buffer") from exc
+        if int(buffer_len) < output_len:
+            raise ValueError("prepared output_buffer is smaller than capacity * row_width")
+        output_pointer = ctypes.cast(output_buffer, ctypes.POINTER(ctypes.c_int64))
+    else:
+        output_pointer = None
+    symbol = getattr(library, symbol_name, None)
+    if symbol is None:
+        raise ValueError(
+            f"loaded {backend} backend does not export {symbol_name}; "
+            f"rebuild the {backend} backend from current main"
+        )
+    symbol.argtypes = [
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    symbol.restype = ctypes.c_int
+
+    input_rows = tuple(
+        (row,) if isinstance(row, int) else tuple(int(value) for value in row)
+        for row in candidate_rows
+    )
+    for row in input_rows:
+        if len(row) != row_width:
+            raise ValueError(
+                "COLLECT_K_BOUNDED candidate row width mismatch: "
+                f"expected {row_width}, got {len(row)}"
+            )
+    flat_input = [value for row in input_rows for value in row]
+    input_array = (
+        (ctypes.c_int64 * len(flat_input))(*flat_input)
+        if flat_input
+        else None
+    )
+    emitted_count = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        input_array,
+        len(input_rows),
+        row_width,
+        output_pointer,
+        capacity,
+        ctypes.byref(emitted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    error_text = error.value.decode("utf-8", errors="replace")
+    if int(status) != 0:
+        raise RuntimeError(error_text or f"{symbol_name} failed with status {status}")
+    emitted = int(emitted_count.value)
+    if int(overflowed.value) != 0:
+        raise RuntimeError(
+            "COLLECT_K_BOUNDED overflowed capacity "
+            f"{capacity}; emitted {emitted}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    rows = tuple(
+        tuple(
+            int(output_pointer[row_index * row_width + column_index])
+            for column_index in range(row_width)
+        )
+        for row_index in range(emitted)
+    )
+    result = {
+        "primitive": V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE,
+        "backend": str(backend),
+        "app_generic": True,
+        "native_i64_adapter": False,
+        "native_generic_symbol": str(symbol_name),
+        "native_source_symbol": str(symbol_name),
+        "native_candidate_source_symbol": str(candidate_source_symbol),
+        "source_rows_are_row_major_i64": True,
+        "binary_symbol_validation_present": True,
+        "prepared_output_buffer_supplied": True,
+        "prepared_output_buffer_kind": "ctypes_host_i64",
+        "prepared_output_buffer_reused_by_python_wrapper": True,
+        "row_dtype": "int64",
+        "row_width": row_width,
+        "capacity": capacity,
+        "valid_count": emitted,
+        "emitted_count": emitted,
+        "overflowed": False,
+        "complete_candidate_coverage": True,
+        "overflow_policy": V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY,
+        "failure_mode": "fail_closed_overflow",
+        "truncation_allowed": False,
+        "partial_result_on_overflow_allowed": False,
+        "score_or_reduction_after_overflow_allowed": False,
+        "result_layout": V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT,
+        "ordering_policy": V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY,
+        "duplicate_policy": V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY,
+        "candidate_id_rows": rows,
+        "claim_boundary": (
+            "Built native generic i64 COLLECT_K_BOUNDED symbol wrote into "
+            "caller-owned ctypes host output storage through the Python "
+            "wrapper. This is host prepared-buffer plumbing only; it does not "
+            "authorize true zero-copy, speedup wording, whole-app claims, "
+            "stable promotion, or release action."
+        ),
+    }
+    return validate_collect_k_bounded_result(result, row_width=row_width, backend=str(backend))
+
+
 def validate_collect_k_bounded_result(
     result: dict[str, Any],
     *,

@@ -125,6 +125,7 @@ from .bounded_collection_contracts import validate_v1_5_collect_k_bounded_contra
 from .v1_5_1_collect_k_bounded import adapt_native_i64_rows_to_collect_k_bounded_result
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 from .v1_5_1_collect_k_bounded import collect_native_i64_rows_with_backend_symbol
+from .v1_5_1_collect_k_bounded import collect_native_i64_rows_into_prepared_output_buffer
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_BACKENDS
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_DUPLICATE_POLICY
 from .v1_5_1_collect_k_bounded import V1_5_1_COLLECT_K_BOUNDED_ORDERING_POLICY
@@ -184,7 +185,9 @@ from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_OWNERS
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_STATUS
 from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS
 from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS
+from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE
 from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE
+from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_SATISFIED_EVIDENCE
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -901,6 +904,7 @@ __all__ = [
     "adapt_native_i64_rows_to_collect_k_bounded_result",
     "collect_k_bounded_rows",
     "collect_native_i64_rows_with_backend_symbol",
+    "collect_native_i64_rows_into_prepared_output_buffer",
     "collect_k_bounded_candidate_pairs",
     "FROZEN_BEFORE_V2_1_POLYGON_BACKENDS",
     "run_generic_polygon_pair_exact_area_summary",
@@ -1327,7 +1331,9 @@ __all__ = [
     "V1_5_2_COLLECT_BUFFER_STATUS",
     "V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS",
     "V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS",
+    "V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE",
     "V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE",
+    "V1_5_2_PREPARED_BUFFER_REUSE_SATISFIED_EVIDENCE",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",
