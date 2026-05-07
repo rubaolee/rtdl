@@ -167,6 +167,7 @@ from .v1_5_2_collect_buffers import complete_prepared_collect_k_result_buffer_de
 from .v1_5_2_collect_buffers import collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import prepare_collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import run_collect_k_bounded_rows_with_prepared_result_buffer
+from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepared_result_buffer
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
 from .v1_5_2_collect_buffers import validate_v1_5_2_collect_buffer_contract
 from .v1_5_2_collect_buffers import v1_5_2_collect_buffer_contract
@@ -1304,6 +1305,7 @@ __all__ = [
     "collect_k_result_buffer_descriptor",
     "prepare_collect_k_result_buffer_descriptor",
     "run_collect_k_bounded_rows_with_prepared_result_buffer",
+    "run_native_collect_k_bounded_rows_with_prepared_result_buffer",
     "validate_collect_result_buffer_descriptor",
     "validate_v1_5_2_collect_buffer_contract",
     "v1_5_2_collect_buffer_contract",
