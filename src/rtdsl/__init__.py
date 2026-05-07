@@ -199,6 +199,8 @@ from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_GATE_STATUS
 from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS
 from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES
 from .v1_5_3_reduced_copy import validate_v1_5_3_reduced_copy_contract
+from .v1_5_3_reduced_copy import validate_collect_k_i64_host_input_buffer
+from .v1_5_3_reduced_copy import prepare_collect_k_i64_host_input_buffer
 from .v1_5_3_reduced_copy import v1_5_3_reduced_copy_contract
 from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_ALLOWED_WORDING
 from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_BLOCKED_CLAIMS
@@ -1366,6 +1368,8 @@ __all__ = [
     "V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS",
     "V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES",
     "validate_v1_5_3_reduced_copy_contract",
+    "validate_collect_k_i64_host_input_buffer",
+    "prepare_collect_k_i64_host_input_buffer",
     "v1_5_3_reduced_copy_contract",
     "V1_5_3_REDUCED_COPY_ALLOWED_WORDING",
     "V1_5_3_REDUCED_COPY_BLOCKED_CLAIMS",

@@ -2,9 +2,9 @@
 
 ## Verdict
 
-Defined the first v1.5.3 reduced-copy contract for the Python+RTDL track. This
-is a contract and planning gate only; implementation, measurement, external
-review, and public claims remain pending.
+Defined the first v1.5.3 reduced-copy contract for the Python+RTDL track. The
+typed contiguous host input-buffer path is now present, while measurement,
+external review, and public claims remain pending.
 
 ## Scope
 
@@ -27,11 +27,11 @@ review, and public claims remain pending.
 Satisfied evidence:
 
 - Python materialized rows baseline.
+- Typed contiguous host-buffer path.
 - Preallocated result-buffer reuse path.
 
 Missing evidence:
 
-- Typed contiguous host-buffer path.
 - Copy-count or transfer-count measurement.
 - Embree/OptiX same-contract parity where claimed.
 - External AI review before public claims.

@@ -7,7 +7,7 @@ class Goal1461V153ReducedCopyContractTest(unittest.TestCase):
     def test_contract_defines_reduced_copy_scope_without_zero_copy_claim(self) -> None:
         contract = rt.validate_v1_5_3_reduced_copy_contract()
 
-        self.assertEqual(contract["status"], "contract_defined_implementation_pending")
+        self.assertEqual(contract["status"], "typed_host_input_buffer_path_present_measurement_pending")
         self.assertEqual(contract["track"], "python_rtdl")
         self.assertIn("typed_contiguous_host_buffers", contract["scope"])
         self.assertIn("preallocated_result_buffers", contract["scope"])
@@ -21,6 +21,7 @@ class Goal1461V153ReducedCopyContractTest(unittest.TestCase):
         self.assertIn("copy_count_or_transfer_count_measurement", contract["missing_evidence"])
         self.assertIn("embree_optix_same_contract_parity_where_claimed", contract["missing_evidence"])
         self.assertIn("external_ai_review_before_public_claims", contract["missing_evidence"])
+        self.assertIn("typed_contiguous_host_buffer_path", contract["satisfied_evidence"])
         self.assertIn("preallocated_result_buffer_reuse_path", contract["satisfied_evidence"])
 
     def test_contract_keeps_public_claims_blocked(self) -> None:
