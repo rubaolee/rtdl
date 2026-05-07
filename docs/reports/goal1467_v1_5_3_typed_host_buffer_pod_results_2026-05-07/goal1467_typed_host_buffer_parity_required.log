@@ -1,0 +1,12 @@
+{
+  "embree": {
+    "fail": 0,
+    "pass": 4,
+    "skipped": 0
+  },
+  "optix": {
+    "fail": 0,
+    "pass": 4,
+    "skipped": 0
+  }
+}
