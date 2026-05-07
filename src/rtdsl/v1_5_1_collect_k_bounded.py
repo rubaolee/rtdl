@@ -50,7 +50,9 @@ V1_5_1_COLLECT_K_BOUNDED_RELEASE_SURFACE_FORBIDDEN_WORDING = (
     "whole-app speedup",
     "release tag action",
 )
-V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STATUS = "candidate_docs_ready_pending_explicit_release_action"
+V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_STATUS = (
+    "candidate_docs_publicly_discoverable_pending_explicit_release_action"
+)
 V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS = (
     "docs/release_reports/v1_5_1/README.md",
     "docs/release_reports/v1_5_1/collect_k_bounded.md",
@@ -475,6 +477,12 @@ def v1_5_1_collect_k_bounded_release_surface_gate() -> dict[str, Any]:
         "proposal_consensus": (
             "docs/reports/three_ai_goal1419_v1_5_1_collect_k_release_surface_proposal_consensus_2026-05-06.md"
         ),
+        "release_surface_gate_consensus": (
+            "docs/reports/three_ai_goal1420_v1_5_1_collect_k_release_surface_gate_consensus_2026-05-06.md"
+        ),
+        "public_doc_link_consensus": (
+            "docs/reports/three_ai_goal1421_v1_5_1_collect_k_public_doc_link_consensus_2026-05-06.md"
+        ),
         "readiness_consensus": proposal["readiness_consensus"],
         "public_docs_change_authorized_by_this_gate": False,
         "stable_promotion_authorized_by_this_gate": False,
@@ -484,15 +492,16 @@ def v1_5_1_collect_k_bounded_release_surface_gate() -> dict[str, Any]:
         "release_tag_action_authorized_by_this_gate": False,
         "explicit_release_approval_required": True,
         "allowed_next_actions": (
-            "request_external_release_surface_gate_review",
-            "after_review_accepts_prepare_public_doc_link_patch",
+            "keep_candidate_docs_discoverable_without_broader_claims",
+            "continue_python_rtdl_track_hardening",
             "request_explicit_v1_5_1_release_action_if_user_wants_release",
         ),
         "claim_boundary": (
-            "The v1.5.1 COLLECT_K_BOUNDED candidate docs are ready for external "
-            "release-surface gate review as documented experimental public-candidate "
-            "material only. This gate does not authorize public docs changes, stable "
-            "promotion, speedup wording, zero-copy wording, whole-app claims, or release tag action."
+            "The v1.5.1 COLLECT_K_BOUNDED candidate docs are publicly discoverable "
+            "as documented experimental public-candidate material only after "
+            "Goal1421 3-AI public-doc-link consensus. This gate does not authorize "
+            "public docs changes beyond that discoverability link, stable promotion, "
+            "speedup wording, zero-copy wording, whole-app claims, or release tag action."
         ),
     }
 
@@ -532,9 +541,10 @@ def validate_v1_5_1_collect_k_bounded_release_surface_gate() -> dict[str, Any]:
         raise ValueError("v1.5.1 collect-k release-surface gate requires explicit release approval")
     boundary = str(gate["claim_boundary"])
     for phrase in (
-        "candidate docs are ready",
+        "candidate docs are publicly discoverable",
         "documented experimental public-candidate",
         "does not authorize public docs changes",
+        "Goal1421 3-AI public-doc-link consensus",
         "stable promotion",
         "speedup wording",
         "zero-copy wording",

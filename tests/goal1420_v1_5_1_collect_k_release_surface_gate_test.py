@@ -13,7 +13,10 @@ class Goal1420V151CollectKReleaseSurfaceGateTest(unittest.TestCase):
     def test_release_surface_gate_validates_candidate_docs(self) -> None:
         gate = rt.validate_v1_5_1_collect_k_bounded_release_surface_gate()
 
-        self.assertEqual(gate["status"], "candidate_docs_ready_pending_explicit_release_action")
+        self.assertEqual(
+            gate["status"],
+            "candidate_docs_publicly_discoverable_pending_explicit_release_action",
+        )
         self.assertEqual(gate["primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(gate["classification"], "documented_experimental_public_candidate")
         self.assertTrue(gate["release_surface_docs_ready"])
@@ -50,8 +53,9 @@ class Goal1420V151CollectKReleaseSurfaceGateTest(unittest.TestCase):
         gate = rt.validate_v1_5_1_collect_k_bounded_release_surface_gate()
         boundary = gate["claim_boundary"]
 
-        self.assertIn("candidate docs are ready", boundary)
+        self.assertIn("candidate docs are publicly discoverable", boundary)
         self.assertIn("documented experimental public-candidate", boundary)
+        self.assertIn("Goal1421 3-AI public-doc-link consensus", boundary)
         self.assertIn("does not authorize public docs changes", boundary)
         self.assertIn("stable promotion", boundary)
         self.assertIn("speedup wording", boundary)
@@ -65,8 +69,8 @@ class Goal1420V151CollectKReleaseSurfaceGateTest(unittest.TestCase):
         self.assertEqual(
             gate["allowed_next_actions"],
             (
-                "request_external_release_surface_gate_review",
-                "after_review_accepts_prepare_public_doc_link_patch",
+                "keep_candidate_docs_discoverable_without_broader_claims",
+                "continue_python_rtdl_track_hardening",
                 "request_explicit_v1_5_1_release_action_if_user_wants_release",
             ),
         )

@@ -2,6 +2,8 @@
 
 `COLLECT_K_BOUNDED` is proposed for v1.5.1 as a documented experimental public-candidate in the Python+RTDL track.
 
+Goal1421 accepted public documentation discoverability for this candidate package after 3-AI review. That acceptance is discoverability only: it is not stable primitive promotion, not public speedup wording, not zero-copy wording, not a whole-app claim, and not a release-tag action.
+
 The primitive materializes bounded candidate-id rows with:
 
 - explicit capacity `k`
@@ -24,8 +26,8 @@ Forbidden claims:
 - not stable primitive promotion
 - no public speedup wording
 - no zero-copy wording
+- no whole-app claims
 - no release tag action
-- no whole-app speedup claim
 
 Source-tree usage remains the supported usage style, for example:
 
