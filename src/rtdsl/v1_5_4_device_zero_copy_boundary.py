@@ -108,6 +108,13 @@ V1_5_4_MANAGED_BUFFER_TRANSFER_DIRECTIONS = (
     "rtdl_to_host",
     "rtdl_internal",
 )
+V1_5_4_MANAGED_BUFFER_ALLOCATION_METHODS = (
+    "host_prepared",
+    "host_pinned_staging",
+    "cuda_device_alloc",
+    "cuda_managed_alloc",
+    "synthetic_contract_only",
+)
 
 
 def v1_5_4_device_zero_copy_entry_gate() -> dict[str, Any]:
@@ -943,3 +950,147 @@ def validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(lifecycle: dict[str, An
         if phrase not in lifecycle.get("claim_boundary", ""):
             raise ValueError("v1.5.4 managed buffer lifecycle claim boundary is incomplete")
     return lifecycle
+
+
+def attach_v1_5_4_python_rtdl_managed_buffer_allocation_evidence(
+    lifecycle: dict[str, Any],
+    *,
+    allocation_method: str,
+    measurement_backend: str,
+    measurement_scope: str,
+    host_to_device_transfers: int,
+    device_to_host_transfers: int,
+    device_residency_observed: bool,
+    measured_on_real_nvidia: bool = False,
+    hardware_identity: str | None = None,
+    backend_version: str | None = None,
+) -> dict[str, Any]:
+    """Attach backend allocation evidence without promoting public claims."""
+    validated = validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(lifecycle)
+    if allocation_method not in V1_5_4_MANAGED_BUFFER_ALLOCATION_METHODS:
+        raise ValueError("unsupported v1.5.4 managed buffer allocation method")
+    if not measurement_backend:
+        raise ValueError("v1.5.4 managed buffer allocation evidence requires measurement_backend")
+    if not measurement_scope:
+        raise ValueError("v1.5.4 managed buffer allocation evidence requires measurement_scope")
+    h2d = int(host_to_device_transfers)
+    d2h = int(device_to_host_transfers)
+    if h2d < 0 or d2h < 0:
+        raise ValueError("v1.5.4 managed buffer allocation evidence transfer counts must be non-negative")
+    descriptor = validated["descriptor"]
+    device_candidate = bool(descriptor["device_residency_candidate"])
+    residency = bool(device_residency_observed)
+    measured_device_residency = device_candidate and residency
+    true_zero_copy_evidence_candidate = (
+        device_candidate
+        and measured_device_residency
+        and h2d == 0
+        and d2h == 0
+        and bool(measured_on_real_nvidia)
+        and allocation_method in ("cuda_device_alloc", "cuda_managed_alloc")
+    )
+    return {
+        "status": "v1_5_4_python_rtdl_managed_buffer_allocation_evidence_attached",
+        "track": "python_rtdl",
+        "lifecycle": dict(validated),
+        "owner": "rtdl",
+        "allocation_id": validated["allocation_id"],
+        "allocation_method": str(allocation_method),
+        "measurement_backend": str(measurement_backend),
+        "measurement_scope": str(measurement_scope),
+        "host_to_device_transfers": h2d,
+        "device_to_host_transfers": d2h,
+        "device_residency_observed": residency,
+        "measured_device_residency": measured_device_residency,
+        "measured_transfer_count": True,
+        "measured_on_real_nvidia": bool(measured_on_real_nvidia),
+        "hardware_identity": None if hardware_identity is None else str(hardware_identity),
+        "backend_version": None if backend_version is None else str(backend_version),
+        "true_zero_copy_evidence_candidate": true_zero_copy_evidence_candidate,
+        "managed_buffer_zero_copy_authorized": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This v1.5.4 allocation evidence envelope records backend "
+            "allocation method, transfer counts, hardware identity, and "
+            "device residency observations for an RTDL-owned managed buffer. "
+            "It may identify a true zero-copy evidence candidate only when "
+            "a real NVIDIA device-resident path records zero host/device "
+            "transfers and observed residency. It still does not authorize "
+            "true zero-copy wording, public speedup wording, whole-app "
+            "claims, stable primitive promotion, partner tensor handoff, or "
+            "release action."
+        ),
+    }
+
+
+def validate_v1_5_4_python_rtdl_managed_buffer_allocation_evidence(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    if not isinstance(evidence, dict):
+        raise ValueError("v1.5.4 managed buffer allocation evidence must be a dictionary")
+    if evidence.get("status") != "v1_5_4_python_rtdl_managed_buffer_allocation_evidence_attached":
+        raise ValueError("invalid v1.5.4 managed buffer allocation evidence status")
+    if evidence.get("track") != "python_rtdl":
+        raise ValueError("v1.5.4 managed buffer allocation evidence must stay on Python+RTDL track")
+    if evidence.get("owner") != "rtdl":
+        raise ValueError("v1.5.4 managed buffer allocation evidence must be RTDL-owned")
+    lifecycle = validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(evidence.get("lifecycle", {}))
+    if evidence.get("allocation_id") != lifecycle["allocation_id"]:
+        raise ValueError("v1.5.4 managed buffer allocation evidence allocation_id mismatch")
+    if evidence.get("allocation_method") not in V1_5_4_MANAGED_BUFFER_ALLOCATION_METHODS:
+        raise ValueError("invalid v1.5.4 managed buffer allocation method")
+    if not evidence.get("measurement_backend"):
+        raise ValueError("v1.5.4 managed buffer allocation evidence requires measurement_backend")
+    if not evidence.get("measurement_scope"):
+        raise ValueError("v1.5.4 managed buffer allocation evidence requires measurement_scope")
+    h2d = int(evidence.get("host_to_device_transfers", -1))
+    d2h = int(evidence.get("device_to_host_transfers", -1))
+    if h2d < 0 or d2h < 0:
+        raise ValueError("v1.5.4 managed buffer allocation evidence transfer counts must be non-negative")
+    descriptor = lifecycle["descriptor"]
+    expected_residency = bool(descriptor["device_residency_candidate"]) and bool(
+        evidence.get("device_residency_observed")
+    )
+    if evidence.get("measured_device_residency") is not expected_residency:
+        raise ValueError("invalid v1.5.4 managed buffer measured residency flag")
+    if evidence.get("measured_transfer_count") is not True:
+        raise ValueError("v1.5.4 managed buffer allocation evidence must measure transfer counts")
+    expected_candidate = (
+        bool(descriptor["device_residency_candidate"])
+        and expected_residency
+        and h2d == 0
+        and d2h == 0
+        and bool(evidence.get("measured_on_real_nvidia"))
+        and evidence.get("allocation_method") in ("cuda_device_alloc", "cuda_managed_alloc")
+    )
+    if evidence.get("true_zero_copy_evidence_candidate") is not expected_candidate:
+        raise ValueError("invalid v1.5.4 managed buffer true zero-copy evidence candidate flag")
+    for flag in (
+        "managed_buffer_zero_copy_authorized",
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if evidence.get(flag) is not False:
+            raise ValueError(f"v1.5.4 managed buffer allocation evidence must keep {flag}=False")
+    for phrase in (
+        "allocation method",
+        "transfer counts",
+        "hardware identity",
+        "device residency observations",
+        "true zero-copy evidence candidate",
+        "does not authorize true zero-copy wording",
+        "public speedup wording",
+        "release action",
+    ):
+        if phrase not in evidence.get("claim_boundary", ""):
+            raise ValueError("v1.5.4 managed buffer allocation evidence claim boundary is incomplete")
+    return evidence
