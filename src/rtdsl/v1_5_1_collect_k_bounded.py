@@ -414,6 +414,7 @@ def v1_5_1_collect_k_bounded_release_surface_proposal() -> dict[str, Any]:
         "stable_promotion_authorized_by_this_proposal": False,
         "public_speedup_wording_authorized_by_this_proposal": False,
         "zero_copy_wording_authorized_by_this_proposal": False,
+        "whole_app_speedup_claim_authorized_by_this_proposal": False,
         "release_tag_action_authorized_by_this_proposal": False,
         "allowed_next_actions": (
             "request_external_release_surface_review",
@@ -450,6 +451,7 @@ def validate_v1_5_1_collect_k_bounded_release_surface_proposal() -> dict[str, An
         "stable_promotion_authorized_by_this_proposal",
         "public_speedup_wording_authorized_by_this_proposal",
         "zero_copy_wording_authorized_by_this_proposal",
+        "whole_app_speedup_claim_authorized_by_this_proposal",
         "release_tag_action_authorized_by_this_proposal",
     )
     for flag in false_flags:

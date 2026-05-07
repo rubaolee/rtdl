@@ -33,6 +33,7 @@ class Goal1419V151CollectKReleaseSurfaceProposalTest(unittest.TestCase):
             "stable_promotion_authorized_by_this_proposal",
             "public_speedup_wording_authorized_by_this_proposal",
             "zero_copy_wording_authorized_by_this_proposal",
+            "whole_app_speedup_claim_authorized_by_this_proposal",
             "release_tag_action_authorized_by_this_proposal",
         ):
             with self.subTest(flag=flag):
