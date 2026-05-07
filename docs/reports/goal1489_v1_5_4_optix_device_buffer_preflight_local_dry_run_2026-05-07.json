@@ -1,0 +1,58 @@
+{
+  "blockers": [],
+  "checks": {
+    "cuda_driver_library_available": true,
+    "cuda_prefix_exists": true,
+    "goal1488_boundary_gate_accepted": true,
+    "nvcc_exists": true,
+    "nvidia_smi_available": true,
+    "optix_header_available": true,
+    "optix_library_or_build_toolchain_available": true,
+    "rtdl_optix_library_exists": true,
+    "source_clean": true
+  },
+  "claim_boundary": "Goal1489 is only an OptiX device-buffer execution preflight. It does not run backend execution and does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, or release action.",
+  "dry_run": true,
+  "environment": {
+    "cuda_prefix": "\\usr\\local\\cuda",
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": "?? docs/reports/goal1489_v1_5_4_optix_device_buffer_preflight_plan_2026-05-07.md\n?? scripts/goal1489_v1_5_4_optix_device_buffer_preflight.py\n?? tests/goal1489_v1_5_4_optix_device_buffer_preflight_test.py\n",
+      "returncode": 0
+    },
+    "goal1488_boundary_gate": {
+      "accepted": true,
+      "reason": null,
+      "status": "v1_5_4_managed_buffer_cuda_evidence_boundary_accepted"
+    },
+    "libcuda": null,
+    "nvcc": "\\usr\\local\\cuda\\bin\\nvcc",
+    "nvcc_version": null,
+    "nvidia_smi": null,
+    "nvidia_smi_path": null,
+    "optix_header": null,
+    "optix_prefix": null,
+    "rtdl_optix_library": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\build\\librtdl_optix.so"
+  },
+  "goal": "Goal1489",
+  "partner_tensor_handoff_authorized": false,
+  "public_speedup_wording_authorized": false,
+  "release_action_authorized": false,
+  "required_next_evidence": [
+    "build_or_provide_librtdl_optix",
+    "add_backend_entry_accepting_rtdl_owned_device_memory_descriptor",
+    "run_same_contract_parity_against_host_or_embree_path",
+    "record_transfer_counts_around_backend_execution",
+    "external_ai_review_before_public_claims"
+  ],
+  "scope": "v1.5.4 OptiX device-buffer execution preflight",
+  "source_commit": "3613a53bddfbde4f7aac99300ede94b8f00ca119",
+  "stable_public_primitive_authorized": false,
+  "true_zero_copy_authorized": false,
+  "valid_for_optix_device_buffer_execution_work": true,
+  "whole_app_speedup_claim_authorized": false
+}
