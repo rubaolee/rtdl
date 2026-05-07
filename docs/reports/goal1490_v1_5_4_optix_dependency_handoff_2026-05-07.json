@@ -1,0 +1,79 @@
+{
+  "acceptable_resolution_paths": [
+    {
+      "commands": [
+        "export OPTIX_PREFIX=/path/to/NVIDIA-OptiX-SDK",
+        "export CUDA_PREFIX=/usr/local/cuda",
+        "make build-optix OPTIX_PREFIX=$OPTIX_PREFIX CUDA_PREFIX=$CUDA_PREFIX",
+        "export RTDL_OPTIX_LIB=$(pwd)/build/librtdl_optix.so",
+        "PYTHONPATH=src:. python3 scripts/goal1489_v1_5_4_optix_device_buffer_preflight.py"
+      ],
+      "name": "install_optix_sdk_headers_then_build",
+      "requires": [
+        "OptiX SDK root with include/optix.h",
+        "CUDA toolkit with nvcc",
+        "CUDA driver library"
+      ]
+    },
+    {
+      "commands": [
+        "export RTDL_OPTIX_LIB=/path/to/librtdl_optix.so",
+        "PYTHONPATH=src:. python3 scripts/goal1489_v1_5_4_optix_device_buffer_preflight.py"
+      ],
+      "name": "provide_compatible_prebuilt_librtdl_optix",
+      "requires": [
+        "prebuilt librtdl_optix.so from the same source commit or documented compatible commit",
+        "matching CUDA driver/runtime availability"
+      ]
+    },
+    {
+      "commands": [
+        "git fetch origin",
+        "git reset --hard origin/main",
+        "PYTHONPATH=src:. python3 scripts/goal1489_v1_5_4_optix_device_buffer_preflight.py"
+      ],
+      "name": "use_optix_ready_image",
+      "requires": [
+        "image already contains OptiX SDK headers",
+        "image already contains CUDA toolkit and nvcc",
+        "repo can build or load librtdl_optix.so"
+      ]
+    }
+  ],
+  "accepted_current_pod_uses": [
+    "CUDA Driver API allocation probes",
+    "CUDA Driver API copy-boundary probes",
+    "preflight and diagnostic checks"
+  ],
+  "blocked_current_pod_uses": [
+    "end_to_end_rtdl_optix_device_buffer_execution",
+    "native_optix_extension_build_without_optix_headers",
+    "public_true_zero_copy_or_speedup_claims"
+  ],
+  "claim_boundary": "Goal1490 is an OptiX dependency handoff only. It does not install OptiX, does not run RTDL/OptiX backend execution, and does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, or release action.",
+  "goal": "Goal1490",
+  "must_rerun_after_resolution": [
+    "PYTHONPATH=src:. python3 scripts/goal1489_v1_5_4_optix_device_buffer_preflight.py",
+    "PYTHONPATH=src:. python3 -m unittest tests.goal1489_v1_5_4_optix_device_buffer_preflight_test tests.goal1488_v1_5_4_cuda_evidence_boundary_gate_test"
+  ],
+  "next_milestone_after_green_preflight": [
+    "add_or_select_backend_entry_accepting_rtdl_owned_device_memory_descriptor",
+    "run_same_contract_parity_against_host_or_embree_path",
+    "record_transfer_counts_around_backend_execution",
+    "write candidate-only evidence report"
+  ],
+  "optix_dependency_blocked": true,
+  "partner_tensor_handoff_authorized": false,
+  "public_speedup_wording_authorized": false,
+  "release_action_authorized": false,
+  "scope": "v1.5.4 OptiX dependency handoff for RTDL-owned device-buffer execution",
+  "source_preflight_blockers": [
+    "optix_header_available",
+    "optix_library_or_build_toolchain_available",
+    "rtdl_optix_library_exists"
+  ],
+  "source_preflight_valid": false,
+  "stable_public_primitive_authorized": false,
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
