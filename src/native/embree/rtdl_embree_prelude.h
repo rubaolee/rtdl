@@ -400,6 +400,16 @@ int rtdl_embree_run_segment_polygon_anyhit_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_collect_k_bounded_i64(
+    const int64_t* candidate_rows,
+    size_t candidate_count,
+    size_t row_width,
+    int64_t* rows_out,
+    size_t row_capacity,
+    size_t* emitted_count_out,
+    uint32_t* overflowed_out,
+    char* error_out,
+    size_t error_size);
 int rtdl_embree_collect_polygon_pair_candidates_bounded(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,

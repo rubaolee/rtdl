@@ -10,8 +10,12 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
 
         self.assertEqual(contract["primitive"], "COLLECT_K_BOUNDED")
-        self.assertEqual(contract["status"], "design_ready_native_implementation_pending")
-        self.assertFalse(contract["native_implementation_present"])
+        self.assertEqual(
+            contract["status"],
+            "source_symbols_present_adapter_parity_binary_validation_pending",
+        )
+        self.assertTrue(contract["native_source_symbols_present"])
+        self.assertFalse(contract["native_binary_validation_present"])
         self.assertFalse(contract["stable_promotion_authorized"])
         self.assertTrue(contract["app_name_free"])
         self.assertEqual(
@@ -63,14 +67,13 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertEqual(
             contract["required_adapter_work"],
             (
-                "add_embree_generic_i64_collector",
-                "add_optix_generic_i64_collector",
                 "route_polygon_pair_candidate_collection_through_i64_adapter",
                 "prove_existing_polygon_pair_parity_is_unchanged",
+                "validate_embree_optix_generic_i64_symbols_in_built_libraries",
             ),
         )
-        self.assertIn("native ABI contract only", contract["claim_boundary"])
-        self.assertIn("does not claim that Embree or OptiX already implements", contract["claim_boundary"])
+        self.assertIn("native source-level ABI implementation step only", contract["claim_boundary"])
+        self.assertIn("does not claim built Embree or OptiX library validation", contract["claim_boundary"])
 
 
 if __name__ == "__main__":

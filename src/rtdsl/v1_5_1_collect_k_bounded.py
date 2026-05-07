@@ -97,13 +97,13 @@ V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS = (
     ),
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS = (
-    "define_app_name_free_native_collect_k_bounded_abi",
-    "route_polygon_pair_collection_through_generic_abi_adapter",
     "add_embree_optix_generic_abi_parity_tests",
+    "route_polygon_pair_collection_through_generic_abi_adapter",
+    "validate_generic_native_symbols_in_built_libraries",
     "rerun_3_ai_stable_promotion_review",
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_STATUS = (
-    "design_ready_native_implementation_pending"
+    "source_symbols_present_adapter_parity_binary_validation_pending"
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_SYMBOLS = (
     "rtdl_embree_collect_k_bounded_i64",
@@ -670,7 +670,8 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
     return {
         "primitive": V1_5_1_COLLECT_K_BOUNDED_PRIMITIVE,
         "status": V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_STATUS,
-        "native_implementation_present": False,
+        "native_source_symbols_present": True,
+        "native_binary_validation_present": False,
         "stable_promotion_authorized": False,
         "backend_symbols": V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_SYMBOLS,
         "prototype_template": V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_PROTOTYPE,
@@ -688,17 +689,17 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
         "app_name_free": True,
         "forbidden_symbol_substrings": ("polygon", "jaccard", "segment", "graph", "app"),
         "required_adapter_work": (
-            "add_embree_generic_i64_collector",
-            "add_optix_generic_i64_collector",
             "route_polygon_pair_candidate_collection_through_i64_adapter",
             "prove_existing_polygon_pair_parity_is_unchanged",
+            "validate_embree_optix_generic_i64_symbols_in_built_libraries",
         ),
         "claim_boundary": (
-            "This is a native ABI contract only. It defines the app-name-free "
-            "COLLECT_K_BOUNDED row collector shape required before stable "
-            "promotion, but it does not claim that Embree or OptiX already "
-            "implements this ABI and does not authorize speedup, zero-copy, "
-            "whole-app, release-tag, or stable primitive wording."
+            "This is a native source-level ABI implementation step only. It defines "
+            "the app-name-free COLLECT_K_BOUNDED row collector shape and source "
+            "symbols required before stable promotion, but it does not claim built "
+            "Embree or OptiX library validation, does not route existing polygon-pair "
+            "collection through the generic adapter yet, and does not authorize "
+            "speedup, zero-copy, whole-app, release-tag, or stable primitive wording."
         ),
     }
 
@@ -707,8 +708,10 @@ def validate_v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str,
     contract = v1_5_1_collect_k_bounded_native_generic_abi_contract()
     if contract["status"] != V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_STATUS:
         raise ValueError("invalid collect-k native generic ABI contract status")
-    if contract["native_implementation_present"] is not False:
-        raise ValueError("generic collect-k native ABI must remain implementation-pending")
+    if contract["native_source_symbols_present"] is not True:
+        raise ValueError("generic collect-k native ABI source symbols must be present")
+    if contract["native_binary_validation_present"] is not False:
+        raise ValueError("generic collect-k native ABI binary validation must remain pending")
     if contract["stable_promotion_authorized"] is not False:
         raise ValueError("generic collect-k native ABI contract must not authorize stable promotion")
     if contract["app_name_free"] is not True:
@@ -734,9 +737,10 @@ def validate_v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str,
                 raise ValueError("generic collect-k native ABI prototype is incomplete")
     boundary = str(contract["claim_boundary"])
     for phrase in (
-        "native ABI contract only",
+        "native source-level ABI implementation step only",
         "app-name-free COLLECT_K_BOUNDED row collector",
-        "does not claim that Embree or OptiX already implements",
+        "source symbols required before stable promotion",
+        "does not claim built Embree or OptiX library validation",
         "does not authorize speedup",
         "stable primitive wording",
     ):

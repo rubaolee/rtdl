@@ -51,6 +51,7 @@
 #include <cstring>
 #include <fstream>
 #include <filesystem>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <new>
@@ -403,6 +404,11 @@ int  rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
          const RtdlPolygonRef* polygons, size_t polygon_count,
          const double* vertices_xy,      size_t vertex_xy_count,
          RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+         size_t* emitted_count_out, uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_k_bounded_i64(
+         const int64_t* candidate_rows, size_t candidate_count,
+         size_t row_width, int64_t* rows_out, size_t row_capacity,
          size_t* emitted_count_out, uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_collect_polygon_pair_candidates_bounded(
