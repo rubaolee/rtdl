@@ -1,0 +1,89 @@
+{
+  "accepted": true,
+  "claim_boundary": "This summary accepts same-contract Embree+OptiX parity and diagnostic typed-host reuse evidence for the named v1.5.3 subpath only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+  "diagnostic_sweep": {
+    "accepted": true,
+    "ratio_summary_by_backend": {
+      "embree": {
+        "materialization_deltas": [
+          19,
+          19,
+          11
+        ],
+        "max_typed_to_baseline_elapsed_ratio": 0.4372406871668602,
+        "min_typed_to_baseline_elapsed_ratio": 0.32708198139834865
+      },
+      "optix": {
+        "materialization_deltas": [
+          19,
+          19,
+          11
+        ],
+        "max_typed_to_baseline_elapsed_ratio": 0.4369706746291607,
+        "min_typed_to_baseline_elapsed_ratio": 0.3433590772170239
+      }
+    },
+    "required_backends": [
+      "embree",
+      "optix"
+    ],
+    "sweep_specs": [
+      [
+        1024,
+        4,
+        20
+      ],
+      [
+        4096,
+        4,
+        20
+      ],
+      [
+        16384,
+        2,
+        12
+      ]
+    ]
+  },
+  "evidence_paths": [
+    "docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.json",
+    "docs/reports/goal1472_v1_5_3_typed_host_reuse_sweep_pod_2026-05-07.json",
+    "docs/reports/goal1470_v1_5_3_typed_host_pod_parity_acceptance_2026-05-07.md",
+    "docs/reports/goal1472_v1_5_3_typed_host_reuse_sweep_pod_2026-05-07.md"
+  ],
+  "goal": "Goal1473",
+  "next_steps": [
+    "separate true device zero-copy from current typed host reuse evidence",
+    "measure device or partner handoff only when a concrete implementation exists",
+    "seek external AI review before any public performance wording"
+  ],
+  "parity": {
+    "accepted": true,
+    "backend_summary": {
+      "embree": {
+        "fail": 0,
+        "pass": 4,
+        "skipped": 0
+      },
+      "optix": {
+        "fail": 0,
+        "pass": 4,
+        "skipped": 0
+      }
+    },
+    "required_backends": [
+      "embree",
+      "optix"
+    ],
+    "scope": "v1.5.3 typed host input plus prepared host output backend parity"
+  },
+  "primitive": "COLLECT_K_BOUNDED",
+  "public_speedup_wording_authorized": false,
+  "release_action_authorized": false,
+  "stable_public_primitive_authorized": false,
+  "status": "accepted_diagnostic_evidence_summary",
+  "surface": "typed_host_input_plus_prepared_host_output",
+  "track": "v1.5.3_python_rtdl_reduced_copy",
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
