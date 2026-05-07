@@ -1095,3 +1095,140 @@ def validate_v1_5_4_python_rtdl_managed_buffer_allocation_evidence(
         if phrase not in evidence.get("claim_boundary", ""):
             raise ValueError("v1.5.4 managed buffer allocation evidence claim boundary is incomplete")
     return evidence
+
+
+def v1_5_4_managed_buffer_cuda_evidence_boundary_gate(
+    *,
+    allocation_evidence: dict[str, Any],
+    copy_boundary_evidence: dict[str, Any],
+) -> dict[str, Any]:
+    """Summarize the accepted boundary between allocation-only and copy evidence."""
+    allocation = validate_v1_5_4_python_rtdl_managed_buffer_allocation_evidence(allocation_evidence)
+    copy_boundary = validate_v1_5_4_python_rtdl_managed_buffer_allocation_evidence(copy_boundary_evidence)
+    allocation_candidate = bool(allocation["true_zero_copy_evidence_candidate"])
+    copy_candidate = bool(copy_boundary["true_zero_copy_evidence_candidate"])
+    allocation_zero_transfers = (
+        int(allocation["host_to_device_transfers"]) == 0
+        and int(allocation["device_to_host_transfers"]) == 0
+    )
+    copy_has_counted_transfers = (
+        int(copy_boundary["host_to_device_transfers"]) > 0
+        or int(copy_boundary["device_to_host_transfers"]) > 0
+    )
+    accepted = (
+        allocation_candidate
+        and allocation_zero_transfers
+        and not copy_candidate
+        and copy_has_counted_transfers
+        and bool(allocation["measured_on_real_nvidia"])
+        and bool(copy_boundary["measured_on_real_nvidia"])
+    )
+    return {
+        "status": "v1_5_4_managed_buffer_cuda_evidence_boundary_accepted" if accepted else "v1_5_4_managed_buffer_cuda_evidence_boundary_incomplete",
+        "track": "python_rtdl",
+        "allocation_only_candidate": allocation_candidate,
+        "allocation_only_zero_transfers": allocation_zero_transfers,
+        "copy_boundary_candidate": copy_candidate,
+        "copy_boundary_has_counted_transfers": copy_has_counted_transfers,
+        "both_measured_on_real_nvidia": bool(allocation["measured_on_real_nvidia"])
+        and bool(copy_boundary["measured_on_real_nvidia"]),
+        "accepted_boundary": accepted,
+        "proven": (
+            "rtdl_owned_cuda_driver_allocation_free_path_exists",
+            "allocation_only_probe_can_be_candidate_evidence",
+            "python_origin_content_copy_boundary_is_counted",
+            "explicit_copy_boundary_is_not_true_zero_copy_candidate",
+        ),
+        "not_proven": (
+            "end_to_end_rtdl_optix_device_buffer_execution",
+            "public_true_zero_copy",
+            "public_speedup",
+            "whole_application_speedup",
+            "partner_tensor_handoff",
+            "release_readiness",
+        ),
+        "next_required_evidence": (
+            "optix_ready_environment_with_librtdl_optix_or_build_toolchain",
+            "rtdl_backend_entry_accepting_rtdl_owned_device_memory_descriptor",
+            "same_contract_parity_against_host_or_embree_path",
+            "transfer_count_accounting_around_backend_execution",
+            "external_ai_review_before_public_claims",
+        ),
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This v1.5.4 boundary gate accepts the contrast between CUDA "
+            "Driver API allocation-only evidence and explicit content-copy "
+            "evidence. Allocation-only evidence may be a candidate shape, "
+            "while Python-origin content movement must be counted and is not "
+            "true zero-copy. This gate does not prove end-to-end RTDL/OptiX "
+            "device-buffer execution and does not authorize public true "
+            "zero-copy wording, public speedup wording, whole-app claims, "
+            "partner tensor handoff, or release action."
+        ),
+    }
+
+
+def validate_v1_5_4_managed_buffer_cuda_evidence_boundary_gate(gate: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(gate, dict):
+        raise ValueError("v1.5.4 CUDA evidence boundary gate must be a dictionary")
+    if gate.get("status") != "v1_5_4_managed_buffer_cuda_evidence_boundary_accepted":
+        raise ValueError("v1.5.4 CUDA evidence boundary gate is not accepted")
+    if gate.get("track") != "python_rtdl":
+        raise ValueError("v1.5.4 CUDA evidence boundary gate must stay on Python+RTDL track")
+    if gate.get("allocation_only_candidate") is not True:
+        raise ValueError("v1.5.4 CUDA boundary requires allocation-only candidate evidence")
+    if gate.get("allocation_only_zero_transfers") is not True:
+        raise ValueError("v1.5.4 CUDA boundary requires zero allocation-only transfers")
+    if gate.get("copy_boundary_candidate") is not False:
+        raise ValueError("v1.5.4 CUDA copy boundary must not be a zero-copy candidate")
+    if gate.get("copy_boundary_has_counted_transfers") is not True:
+        raise ValueError("v1.5.4 CUDA copy boundary requires counted transfers")
+    if gate.get("both_measured_on_real_nvidia") is not True:
+        raise ValueError("v1.5.4 CUDA evidence boundary requires real NVIDIA evidence")
+    if gate.get("accepted_boundary") is not True:
+        raise ValueError("v1.5.4 CUDA evidence boundary must be accepted")
+    for required in (
+        "rtdl_owned_cuda_driver_allocation_free_path_exists",
+        "allocation_only_probe_can_be_candidate_evidence",
+        "python_origin_content_copy_boundary_is_counted",
+        "explicit_copy_boundary_is_not_true_zero_copy_candidate",
+    ):
+        if required not in gate.get("proven", ()):
+            raise ValueError("v1.5.4 CUDA evidence boundary proven list is incomplete")
+    for forbidden in (
+        "end_to_end_rtdl_optix_device_buffer_execution",
+        "public_true_zero_copy",
+        "public_speedup",
+        "whole_application_speedup",
+        "partner_tensor_handoff",
+        "release_readiness",
+    ):
+        if forbidden not in gate.get("not_proven", ()):
+            raise ValueError("v1.5.4 CUDA evidence boundary not_proven list is incomplete")
+    for flag in (
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if gate.get(flag) is not False:
+            raise ValueError(f"v1.5.4 CUDA evidence boundary must keep {flag}=False")
+    for phrase in (
+        "allocation-only evidence",
+        "explicit content-copy evidence",
+        "Python-origin content movement must be counted",
+        "does not prove end-to-end RTDL/OptiX",
+        "does not authorize public true zero-copy wording",
+        "public speedup wording",
+        "release action",
+    ):
+        if phrase not in gate.get("claim_boundary", ""):
+            raise ValueError("v1.5.4 CUDA evidence boundary claim boundary is incomplete")
+    return gate
