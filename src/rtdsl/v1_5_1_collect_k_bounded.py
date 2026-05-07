@@ -68,6 +68,7 @@ V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_PHRASES = (
     "not stable primitive promotion",
     "no public speedup wording",
     "no zero-copy wording",
+    "no whole-app claims",
     "no release tag action",
     "PYTHONPATH=src:. python",
 )

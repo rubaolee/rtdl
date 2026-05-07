@@ -30,6 +30,10 @@ class Goal1420V151CollectKReleaseSurfaceGateTest(unittest.TestCase):
             gate["required_docs"],
             rt.V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_DOCS,
         )
+        self.assertIn(
+            "no whole-app claims",
+            rt.V1_5_1_COLLECT_K_BOUNDED_RELEASE_GATE_REQUIRED_PHRASES,
+        )
         for relative_path in gate["required_docs"]:
             with self.subTest(relative_path=relative_path):
                 self.assertTrue((ROOT / relative_path).exists())
