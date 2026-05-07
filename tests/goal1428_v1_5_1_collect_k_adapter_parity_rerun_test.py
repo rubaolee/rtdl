@@ -10,24 +10,23 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1428V151CollectKAdapterParityRerunTest(unittest.TestCase):
-    def test_contract_records_embree_ok_and_optix_pending(self) -> None:
+    def test_contract_records_adapter_parity_ok_and_binary_validation_pending(self) -> None:
         contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
 
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_parity_ok_optix_pending_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending",
         )
         self.assertFalse(contract["native_binary_validation_present"])
         self.assertFalse(contract["stable_promotion_authorized"])
         self.assertEqual(
             contract["required_adapter_work"],
             (
-                "prove_existing_polygon_pair_optix_parity_is_unchanged",
+                "add_embree_optix_generic_abi_parity_tests",
                 "validate_embree_optix_generic_i64_symbols_in_built_libraries",
             ),
         )
-        self.assertIn("Post-adapter Embree polygon-pair parity is accepted", contract["claim_boundary"])
-        self.assertIn("OptiX post-adapter parity remains pending", contract["claim_boundary"])
+        self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
 
     def test_summary_report_records_exact_post_adapter_parity_state(self) -> None:
         report = (

@@ -98,12 +98,11 @@ V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS = (
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS = (
     "add_embree_optix_generic_abi_parity_tests",
-    "rerun_optix_polygon_pair_adapter_parity_on_gpu_pod",
     "validate_generic_native_symbols_in_built_libraries",
     "rerun_3_ai_stable_promotion_review",
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_STATUS = (
-    "source_symbols_present_python_adapter_routed_embree_parity_ok_optix_pending_binary_validation_pending"
+    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending"
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_GENERIC_ABI_SYMBOLS = (
     "rtdl_embree_collect_k_bounded_i64",
@@ -689,7 +688,7 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
         "app_name_free": True,
         "forbidden_symbol_substrings": ("polygon", "jaccard", "segment", "graph", "app"),
         "required_adapter_work": (
-            "prove_existing_polygon_pair_optix_parity_is_unchanged",
+            "add_embree_optix_generic_abi_parity_tests",
             "validate_embree_optix_generic_i64_symbols_in_built_libraries",
         ),
         "post_adapter_parity_evidence": {
@@ -699,11 +698,14 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
             "linux_embree_required": (
                 "docs/reports/goal1428_v1_5_1_collect_k_adapter_parity_linux_embree_2026-05-06.md"
             ),
-            "linux_optix_required_not_accepted": (
+            "linux_optix_required_not_accepted_superseded": (
                 "docs/reports/goal1428_v1_5_1_collect_k_adapter_parity_linux_optix_2026-05-06.md"
             ),
+            "pod_optix_required": (
+                "docs/reports/goal1429_v1_5_1_collect_k_adapter_parity_pod_optix_required_2026-05-06.md"
+            ),
             "summary": (
-                "docs/reports/goal1428_v1_5_1_collect_k_adapter_parity_rerun_2026-05-06.md"
+                "docs/reports/goal1429_v1_5_1_collect_k_adapter_parity_optix_closure_2026-05-06.md"
             ),
         },
         "claim_boundary": (
@@ -712,9 +714,9 @@ def v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str, Any]:
             "symbols required before stable promotion, but it does not claim built "
             "Embree or OptiX library validation. Existing polygon-pair collection "
             "is routed through the Python generic i64 adapter. Post-adapter Embree "
-            "polygon-pair parity is accepted, OptiX post-adapter parity remains "
-            "pending because no reachable OptiX library or GPU pod was available, "
-            "and the route is not through validated built native generic symbols yet. "
+            "and OptiX polygon-pair parity are accepted for the recorded Windows, "
+            "Linux, and RTX A5000 pod evidence, but the route is not through "
+            "validated built native generic symbols yet. "
             "This does not authorize "
             "speedup, zero-copy, whole-app, release-tag, or stable primitive wording."
         ),
@@ -759,8 +761,7 @@ def validate_v1_5_1_collect_k_bounded_native_generic_abi_contract() -> dict[str,
         "source symbols required before stable promotion",
         "does not claim built Embree or OptiX library validation",
         "Python generic i64 adapter",
-        "Post-adapter Embree polygon-pair parity is accepted",
-        "OptiX post-adapter parity remains pending",
+        "Post-adapter Embree and OptiX polygon-pair parity are accepted",
         "not through validated built native generic symbols yet",
         "does not authorize speedup",
         "stable primitive wording",

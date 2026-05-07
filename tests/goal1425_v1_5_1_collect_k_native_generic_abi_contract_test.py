@@ -12,7 +12,7 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertEqual(contract["primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_parity_ok_optix_pending_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending",
         )
         self.assertTrue(contract["native_source_symbols_present"])
         self.assertFalse(contract["native_binary_validation_present"])
@@ -67,17 +67,18 @@ class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
         self.assertEqual(
             contract["required_adapter_work"],
             (
-                "prove_existing_polygon_pair_optix_parity_is_unchanged",
+                "add_embree_optix_generic_abi_parity_tests",
                 "validate_embree_optix_generic_i64_symbols_in_built_libraries",
             ),
         )
-        self.assertIn("linux_embree_required", contract["post_adapter_parity_evidence"])
-        self.assertIn("linux_optix_required_not_accepted", contract["post_adapter_parity_evidence"])
+        evidence = contract["post_adapter_parity_evidence"]
+        self.assertIn("linux_embree_required", evidence)
+        self.assertIn("linux_optix_required_not_accepted_superseded", evidence)
+        self.assertIn("pod_optix_required", evidence)
         self.assertIn("native source-level ABI implementation step only", contract["claim_boundary"])
         self.assertIn("does not claim built Embree or OptiX library validation", contract["claim_boundary"])
         self.assertIn("Python generic i64 adapter", contract["claim_boundary"])
-        self.assertIn("Post-adapter Embree polygon-pair parity is accepted", contract["claim_boundary"])
-        self.assertIn("OptiX post-adapter parity remains pending", contract["claim_boundary"])
+        self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
         self.assertIn("not through validated built native generic symbols yet", contract["claim_boundary"])
 
 

@@ -79,7 +79,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
 
         self.assertEqual(
             contract["status"],
-            "source_symbols_present_python_adapter_routed_embree_parity_ok_optix_pending_binary_validation_pending",
+            "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_binary_validation_pending",
         )
         self.assertTrue(contract["native_source_symbols_present"])
         self.assertFalse(contract["native_binary_validation_present"])
@@ -87,7 +87,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
         self.assertEqual(
             contract["required_adapter_work"],
             (
-                "prove_existing_polygon_pair_optix_parity_is_unchanged",
+                "add_embree_optix_generic_abi_parity_tests",
                 "validate_embree_optix_generic_i64_symbols_in_built_libraries",
             ),
         )

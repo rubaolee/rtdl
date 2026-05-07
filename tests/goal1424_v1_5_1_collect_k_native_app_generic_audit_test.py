@@ -71,7 +71,6 @@ class Goal1424V151CollectKNativeAppGenericAuditTest(unittest.TestCase):
             rt.V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS,
         )
         self.assertIn("add_embree_optix_generic_abi_parity_tests", audit["required_next_steps"])
-        self.assertIn("rerun_optix_polygon_pair_adapter_parity_on_gpu_pod", audit["required_next_steps"])
         self.assertIn("validate_generic_native_symbols_in_built_libraries", audit["required_next_steps"])
         self.assertIn("rerun_3_ai_stable_promotion_review", audit["required_next_steps"])
 
