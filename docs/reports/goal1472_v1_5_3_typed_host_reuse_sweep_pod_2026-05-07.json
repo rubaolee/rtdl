@@ -1,0 +1,259 @@
+{
+  "accepted": true,
+  "backends": [
+    "embree",
+    "optix"
+  ],
+  "claim_boundary": "This sweep records wrapper-level input materialization counts and diagnostic timing across multiple typed-host benchmark sizes. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+  "failed_packages": [],
+  "goal": "Goal1472",
+  "packages": [
+    {
+      "accepted": true,
+      "backends": [
+        "embree",
+        "optix"
+      ],
+      "claim_boundary": "This benchmark records wrapper-level input materialization counts and diagnostic timing for the accepted typed host path only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+      "failed": [],
+      "goal": "Goal1471",
+      "iterations": 20,
+      "platform": "Linux-6.8.0-64-generic-x86_64-with-glibc2.35",
+      "primitive": "COLLECT_K_BOUNDED",
+      "public_speedup_wording_authorized": false,
+      "python": "3.11.10 (main, Sep  7 2024, 18:35:41) [GCC 11.4.0]",
+      "release_action_authorized": false,
+      "repeats": 4,
+      "required_backends": [
+        "embree",
+        "optix"
+      ],
+      "results": [
+        {
+          "backend": "embree",
+          "baseline_elapsed_total_s": 0.08159223571419716,
+          "baseline_input_materialization_count": 20,
+          "candidate_row_count": 4096,
+          "copy_count_or_transfer_count_measurement": true,
+          "input_materialization_count_delta": 19,
+          "iterations": 20,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "repeats": 4,
+          "stable_public_primitive_authorized": false,
+          "status": "pass",
+          "timing_recorded_for_diagnostics_only": true,
+          "true_zero_copy_authorized": false,
+          "typed_elapsed_total_s": 0.026687350124120712,
+          "typed_input_materialization_count": 1,
+          "typed_to_baseline_elapsed_ratio": 0.32708198139834865,
+          "unique_rows": 1024,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "backend": "optix",
+          "baseline_elapsed_total_s": 0.0719907209277153,
+          "baseline_input_materialization_count": 20,
+          "candidate_row_count": 4096,
+          "copy_count_or_transfer_count_measurement": true,
+          "input_materialization_count_delta": 19,
+          "iterations": 20,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "repeats": 4,
+          "stable_public_primitive_authorized": false,
+          "status": "pass",
+          "timing_recorded_for_diagnostics_only": true,
+          "true_zero_copy_authorized": false,
+          "typed_elapsed_total_s": 0.02498878724873066,
+          "typed_input_materialization_count": 1,
+          "typed_to_baseline_elapsed_ratio": 0.347111223873164,
+          "unique_rows": 1024,
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "scope": "v1.5.3 typed host input reuse diagnostic benchmark",
+      "skipped_required": [],
+      "stable_public_primitive_authorized": false,
+      "status": "accepted",
+      "true_zero_copy_authorized": false,
+      "unique_rows": 1024,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "accepted": true,
+      "backends": [
+        "embree",
+        "optix"
+      ],
+      "claim_boundary": "This benchmark records wrapper-level input materialization counts and diagnostic timing for the accepted typed host path only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+      "failed": [],
+      "goal": "Goal1471",
+      "iterations": 20,
+      "platform": "Linux-6.8.0-64-generic-x86_64-with-glibc2.35",
+      "primitive": "COLLECT_K_BOUNDED",
+      "public_speedup_wording_authorized": false,
+      "python": "3.11.10 (main, Sep  7 2024, 18:35:41) [GCC 11.4.0]",
+      "release_action_authorized": false,
+      "repeats": 4,
+      "required_backends": [
+        "embree",
+        "optix"
+      ],
+      "results": [
+        {
+          "backend": "embree",
+          "baseline_elapsed_total_s": 0.3071350120007992,
+          "baseline_input_materialization_count": 20,
+          "candidate_row_count": 16384,
+          "copy_count_or_transfer_count_measurement": true,
+          "input_materialization_count_delta": 19,
+          "iterations": 20,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "repeats": 4,
+          "stable_public_primitive_authorized": false,
+          "status": "pass",
+          "timing_recorded_for_diagnostics_only": true,
+          "true_zero_copy_authorized": false,
+          "typed_elapsed_total_s": 0.10243142582476139,
+          "typed_input_materialization_count": 1,
+          "typed_to_baseline_elapsed_ratio": 0.33350618399863463,
+          "unique_rows": 4096,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "backend": "optix",
+          "baseline_elapsed_total_s": 0.3077847380191088,
+          "baseline_input_materialization_count": 20,
+          "candidate_row_count": 16384,
+          "copy_count_or_transfer_count_measurement": true,
+          "input_materialization_count_delta": 19,
+          "iterations": 20,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "repeats": 4,
+          "stable_public_primitive_authorized": false,
+          "status": "pass",
+          "timing_recorded_for_diagnostics_only": true,
+          "true_zero_copy_authorized": false,
+          "typed_elapsed_total_s": 0.10568068362772465,
+          "typed_input_materialization_count": 1,
+          "typed_to_baseline_elapsed_ratio": 0.3433590772170239,
+          "unique_rows": 4096,
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "scope": "v1.5.3 typed host input reuse diagnostic benchmark",
+      "skipped_required": [],
+      "stable_public_primitive_authorized": false,
+      "status": "accepted",
+      "true_zero_copy_authorized": false,
+      "unique_rows": 4096,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "accepted": true,
+      "backends": [
+        "embree",
+        "optix"
+      ],
+      "claim_boundary": "This benchmark records wrapper-level input materialization counts and diagnostic timing for the accepted typed host path only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
+      "failed": [],
+      "goal": "Goal1471",
+      "iterations": 12,
+      "platform": "Linux-6.8.0-64-generic-x86_64-with-glibc2.35",
+      "primitive": "COLLECT_K_BOUNDED",
+      "public_speedup_wording_authorized": false,
+      "python": "3.11.10 (main, Sep  7 2024, 18:35:41) [GCC 11.4.0]",
+      "release_action_authorized": false,
+      "repeats": 2,
+      "required_backends": [
+        "embree",
+        "optix"
+      ],
+      "results": [
+        {
+          "backend": "embree",
+          "baseline_elapsed_total_s": 0.5461574736982584,
+          "baseline_input_materialization_count": 12,
+          "candidate_row_count": 32768,
+          "copy_count_or_transfer_count_measurement": true,
+          "input_materialization_count_delta": 11,
+          "iterations": 12,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "repeats": 2,
+          "stable_public_primitive_authorized": false,
+          "status": "pass",
+          "timing_recorded_for_diagnostics_only": true,
+          "true_zero_copy_authorized": false,
+          "typed_elapsed_total_s": 0.23880226910114288,
+          "typed_input_materialization_count": 1,
+          "typed_to_baseline_elapsed_ratio": 0.4372406871668602,
+          "unique_rows": 16384,
+          "whole_app_speedup_claim_authorized": false
+        },
+        {
+          "backend": "optix",
+          "baseline_elapsed_total_s": 0.5608218014240265,
+          "baseline_input_materialization_count": 12,
+          "candidate_row_count": 32768,
+          "copy_count_or_transfer_count_measurement": true,
+          "input_materialization_count_delta": 11,
+          "iterations": 12,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "repeats": 2,
+          "stable_public_primitive_authorized": false,
+          "status": "pass",
+          "timing_recorded_for_diagnostics_only": true,
+          "true_zero_copy_authorized": false,
+          "typed_elapsed_total_s": 0.24506268091499805,
+          "typed_input_materialization_count": 1,
+          "typed_to_baseline_elapsed_ratio": 0.4369706746291607,
+          "unique_rows": 16384,
+          "whole_app_speedup_claim_authorized": false
+        }
+      ],
+      "scope": "v1.5.3 typed host input reuse diagnostic benchmark",
+      "skipped_required": [],
+      "stable_public_primitive_authorized": false,
+      "status": "accepted",
+      "true_zero_copy_authorized": false,
+      "unique_rows": 16384,
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "platform": "Linux-6.8.0-64-generic-x86_64-with-glibc2.35",
+  "primitive": "COLLECT_K_BOUNDED",
+  "public_speedup_wording_authorized": false,
+  "python": "3.11.10 (main, Sep  7 2024, 18:35:41) [GCC 11.4.0]",
+  "release_action_authorized": false,
+  "required_backends": [
+    "embree",
+    "optix"
+  ],
+  "scope": "v1.5.3 typed host input reuse diagnostic sweep",
+  "stable_public_primitive_authorized": false,
+  "status": "accepted",
+  "sweep_specs": [
+    [
+      1024,
+      4,
+      20
+    ],
+    [
+      4096,
+      4,
+      20
+    ],
+    [
+      16384,
+      2,
+      12
+    ]
+  ],
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
