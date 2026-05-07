@@ -30,10 +30,10 @@ Satisfied evidence:
 - Python materialized rows baseline.
 - Typed contiguous host-buffer path.
 - Preallocated result-buffer reuse path.
+- Copy-count or transfer-count measurement.
 
 Missing evidence:
 
-- Copy-count or transfer-count measurement.
 - Embree/OptiX same-contract parity where claimed.
 - External AI review before public claims.
 
