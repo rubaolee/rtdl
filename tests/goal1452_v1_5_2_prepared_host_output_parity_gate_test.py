@@ -13,10 +13,11 @@ class Goal1452V152PreparedHostOutputParityGateTest(unittest.TestCase):
     def test_gate_records_prepared_host_output_embree_optix_parity_satisfied(self) -> None:
         gate = rt.validate_v1_5_2_prepared_buffer_reuse_gate()
 
-        self.assertEqual(gate["status"], "blocked_pending_external_review")
+        self.assertEqual(gate["status"], "evidence_complete_claims_blocked")
         self.assertIn("embree_optix_same_contract_parity", gate["satisfied_evidence"])
         self.assertNotIn("embree_optix_same_contract_parity", gate["missing_evidence"])
-        self.assertEqual(gate["missing_evidence"], ("external_ai_review",))
+        self.assertIn("external_ai_review", gate["satisfied_evidence"])
+        self.assertEqual(gate["missing_evidence"], ())
         self.assertFalse(gate["prepared_buffer_reuse_proven"])
         self.assertFalse(gate["true_zero_copy_authorized"])
         self.assertFalse(gate["public_speedup_wording_authorized"])

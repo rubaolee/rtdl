@@ -30,7 +30,7 @@ V1_5_2_COLLECT_BUFFER_FORBIDDEN_CLAIMS = (
     "stable_public_primitive",
     "release_action",
 )
-V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS = "blocked_pending_external_review"
+V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS = "evidence_complete_claims_blocked"
 V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE = (
     "native_abi_accepts_prepared_output_buffer_pointer",
     "python_wrapper_passes_prepared_output_buffer_pointer",
@@ -45,10 +45,9 @@ V1_5_2_PREPARED_BUFFER_REUSE_SATISFIED_EVIDENCE = (
     "host_reuse_or_device_reuse_measured",
     "overflow_fail_closed_with_prepared_buffer",
     "embree_optix_same_contract_parity",
-)
-V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE = (
     "external_ai_review",
 )
+V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE = ()
 V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS = (
     "prepared_buffer_reuse_proven",
     "true_zero_copy",
@@ -162,10 +161,10 @@ def v1_5_2_prepared_buffer_reuse_gate() -> dict[str, Any]:
             "native ABI pointer shape and Python wrapper host ctypes output "
             "pointer plumbing with Python-wrapper host buffer reuse measurement. "
             "Embree/OptiX parity is accepted for the same prepared "
-            "host-output contract. "
+            "host-output contract, and external claim review is accepted. "
             "Prepared-buffer reuse, true zero-copy, public speedup wording, "
             "whole-app claims, stable primitive wording, and release action "
-            "remain blocked until external claim review is present."
+            "remain blocked for separate claim-specific gates."
         ),
     }
 
