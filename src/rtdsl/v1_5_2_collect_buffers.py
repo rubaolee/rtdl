@@ -30,7 +30,7 @@ V1_5_2_COLLECT_BUFFER_FORBIDDEN_CLAIMS = (
     "stable_public_primitive",
     "release_action",
 )
-V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS = "blocked_pending_parity_overflow_external_review"
+V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS = "blocked_pending_parity_external_review"
 V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE = (
     "native_abi_accepts_prepared_output_buffer_pointer",
     "python_wrapper_passes_prepared_output_buffer_pointer",
@@ -43,10 +43,10 @@ V1_5_2_PREPARED_BUFFER_REUSE_SATISFIED_EVIDENCE = (
     "native_abi_accepts_prepared_output_buffer_pointer",
     "python_wrapper_passes_prepared_output_buffer_pointer",
     "host_reuse_or_device_reuse_measured",
+    "overflow_fail_closed_with_prepared_buffer",
 )
 V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE = (
     "embree_optix_same_contract_parity",
-    "overflow_fail_closed_with_prepared_buffer",
     "external_ai_review",
 )
 V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS = (
@@ -163,8 +163,8 @@ def v1_5_2_prepared_buffer_reuse_gate() -> dict[str, Any]:
             "pointer plumbing with Python-wrapper host buffer reuse measurement. "
             "Prepared-buffer reuse, true zero-copy, public speedup wording, "
             "whole-app claims, stable primitive wording, and release action "
-            "remain blocked until Embree/OptiX parity, prepared-buffer overflow "
-            "validation, and external claim review are present."
+            "remain blocked until Embree/OptiX parity and external claim "
+            "review are present."
         ),
     }
 
@@ -595,6 +595,54 @@ def measure_native_collect_k_prepared_host_output_reuse(
             "speedup, stable primitive readiness, or release readiness."
         ),
     }
+
+
+def validate_native_collect_k_prepared_host_output_overflow_fail_closed(
+    candidate_rows: Any,
+    prepared_descriptor: dict[str, Any],
+    *,
+    output_buffer: Any,
+    library: Any,
+    symbol_name: str,
+    candidate_source_symbol: str,
+    backend: str | None = None,
+) -> dict[str, Any]:
+    """Validate that prepared host-output execution fails closed on overflow."""
+    try:
+        run_native_collect_k_bounded_rows_with_prepared_host_output_buffer(
+            candidate_rows,
+            prepared_descriptor,
+            output_buffer=output_buffer,
+            library=library,
+            symbol_name=symbol_name,
+            candidate_source_symbol=candidate_source_symbol,
+            backend=backend,
+        )
+    except RuntimeError as exc:
+        message = str(exc)
+        if "overflowed capacity" not in message:
+            raise
+        return {
+            "primitive": "COLLECT_K_BOUNDED",
+            "status": "prepared_host_output_overflow_fail_closed_validated",
+            "track": "python_rtdl",
+            "overflow_fail_closed_with_prepared_buffer": True,
+            "partial_result_returned": False,
+            "exception_type": type(exc).__name__,
+            "exception_message": message,
+            "true_zero_copy_authorized": False,
+            "public_speedup_wording_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "stable_public_primitive_authorized": False,
+            "release_action_authorized": False,
+            "claim_boundary": (
+                "Prepared host-output overflow validation confirms fail-closed "
+                "Python-wrapper behavior for caller-owned ctypes host output "
+                "storage only. It does not prove Embree/OptiX parity, true "
+                "zero-copy, speedup, stable promotion, or release readiness."
+            ),
+        }
+    raise AssertionError("prepared host-output overflow validation did not fail closed")
 
 
 def validate_collect_result_buffer_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:

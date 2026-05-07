@@ -172,6 +172,7 @@ from .v1_5_2_collect_buffers import run_collect_k_bounded_rows_with_prepared_res
 from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepared_host_output_buffer
 from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepared_result_buffer
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
+from .v1_5_2_collect_buffers import validate_native_collect_k_prepared_host_output_overflow_fail_closed
 from .v1_5_2_collect_buffers import validate_v1_5_2_prepared_buffer_reuse_gate
 from .v1_5_2_collect_buffers import validate_v1_5_2_collect_buffer_contract
 from .v1_5_2_collect_buffers import v1_5_2_prepared_buffer_reuse_gate
@@ -1320,6 +1321,7 @@ __all__ = [
     "run_native_collect_k_bounded_rows_with_prepared_host_output_buffer",
     "run_native_collect_k_bounded_rows_with_prepared_result_buffer",
     "validate_collect_result_buffer_descriptor",
+    "validate_native_collect_k_prepared_host_output_overflow_fail_closed",
     "validate_v1_5_2_prepared_buffer_reuse_gate",
     "validate_v1_5_2_collect_buffer_contract",
     "v1_5_2_prepared_buffer_reuse_gate",
