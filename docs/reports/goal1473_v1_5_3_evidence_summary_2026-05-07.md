@@ -25,6 +25,7 @@ ACCEPTED.
 ## Evidence Paths
 
 - `docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.json`
+- `docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.md`
 - `docs/reports/goal1472_v1_5_3_typed_host_reuse_sweep_pod_2026-05-07.json`
 - `docs/reports/goal1470_v1_5_3_typed_host_pod_parity_acceptance_2026-05-07.md`
 - `docs/reports/goal1472_v1_5_3_typed_host_reuse_sweep_pod_2026-05-07.md`

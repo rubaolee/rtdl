@@ -74,12 +74,14 @@ def build_summary(parity_payload: dict[str, Any], sweep_payload: dict[str, Any])
         },
         "diagnostic_sweep": {
             "accepted": sweep_accepted,
+            "data_collection_accepted": sweep_accepted,
             "required_backends": tuple(sweep_payload["required_backends"]),
             "sweep_specs": tuple(tuple(spec) for spec in sweep_payload["sweep_specs"]),
             "ratio_summary_by_backend": summarize_ratios(sweep_payload),
         },
         "evidence_paths": (
             str(PARITY_JSON.relative_to(ROOT)).replace("\\", "/"),
+            "docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.md",
             str(SWEEP_JSON.relative_to(ROOT)).replace("\\", "/"),
             "docs/reports/goal1470_v1_5_3_typed_host_pod_parity_acceptance_2026-05-07.md",
             "docs/reports/goal1472_v1_5_3_typed_host_reuse_sweep_pod_2026-05-07.md",

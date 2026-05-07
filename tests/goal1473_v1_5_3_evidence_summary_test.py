@@ -20,6 +20,7 @@ class Goal1473V153EvidenceSummaryTest(unittest.TestCase):
         self.assertEqual(payload["status"], "accepted_diagnostic_evidence_summary")
         self.assertTrue(payload["parity"]["accepted"])
         self.assertTrue(payload["diagnostic_sweep"]["accepted"])
+        self.assertTrue(payload["diagnostic_sweep"]["data_collection_accepted"])
         self.assertEqual(payload["parity"]["backend_summary"]["embree"], {"fail": 0, "pass": 4, "skipped": 0})
         self.assertEqual(payload["parity"]["backend_summary"]["optix"], {"fail": 0, "pass": 4, "skipped": 0})
         self.assertFalse(payload["true_zero_copy_authorized"])
@@ -46,6 +47,7 @@ class Goal1473V153EvidenceSummaryTest(unittest.TestCase):
         self.assertTrue(payload["accepted"])
         self.assertEqual(payload["primitive"], "COLLECT_K_BOUNDED")
         self.assertEqual(payload["surface"], "typed_host_input_plus_prepared_host_output")
+        self.assertTrue(payload["diagnostic_sweep"]["data_collection_accepted"])
         for relative_path in payload["evidence_paths"]:
             with self.subTest(relative_path=relative_path):
                 self.assertTrue((ROOT / relative_path).exists())

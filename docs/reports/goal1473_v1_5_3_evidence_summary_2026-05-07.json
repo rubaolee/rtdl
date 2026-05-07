@@ -3,6 +3,7 @@
   "claim_boundary": "This summary accepts same-contract Embree+OptiX parity and diagnostic typed-host reuse evidence for the named v1.5.3 subpath only. It does not authorize true zero-copy, public speedup wording, whole-app claims, stable primitive promotion, partner tensor handoff, or release action.",
   "diagnostic_sweep": {
     "accepted": true,
+    "data_collection_accepted": true,
     "ratio_summary_by_backend": {
       "embree": {
         "materialization_deltas": [
@@ -47,6 +48,7 @@
   },
   "evidence_paths": [
     "docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.json",
+    "docs/reports/goal1467_v1_5_3_typed_host_buffer_pod_results_2026-05-07/goal1467_typed_host_buffer_parity_required_2026-05-07.md",
     "docs/reports/goal1472_v1_5_3_typed_host_reuse_sweep_pod_2026-05-07.json",
     "docs/reports/goal1470_v1_5_3_typed_host_pod_parity_acceptance_2026-05-07.md",
     "docs/reports/goal1472_v1_5_3_typed_host_reuse_sweep_pod_2026-05-07.md"
