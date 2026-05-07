@@ -207,6 +207,52 @@ def prepare_collect_k_result_buffer_descriptor(
     return validate_collect_result_buffer_descriptor(descriptor)
 
 
+def complete_prepared_collect_k_result_buffer_descriptor(
+    prepared_descriptor: dict[str, Any],
+    result: dict[str, Any],
+    *,
+    backend: str | None = None,
+) -> dict[str, Any]:
+    """Bind a validated collect-k result to a compatible prepared descriptor."""
+    prepared = validate_collect_result_buffer_descriptor(prepared_descriptor)
+    if prepared["buffer_kind"] != "prepared_result":
+        raise ValueError("prepared collect buffer completion requires buffer_kind=prepared_result")
+    if "row_width" in result and int(result["row_width"]) != prepared["row_width"]:
+        raise ValueError("completed collect result row_width does not match prepared buffer")
+    result_backend = backend if backend is not None else result.get("backend")
+    result_descriptor = collect_k_result_buffer_descriptor(
+        result,
+        row_width=prepared["row_width"],
+        backend=result_backend,
+        device=prepared["device"],
+        owner=prepared["owner"],
+        mutability=prepared["mutability"],
+        copy_boundary=prepared["copy_boundary"],
+    )
+    if result_descriptor["capacity"] > prepared["capacity"]:
+        raise RuntimeError("completed collect result exceeds prepared buffer capacity")
+    if result_descriptor["device"] != prepared["device"]:
+        raise ValueError("completed collect result device does not match prepared buffer")
+    prepared_backend = prepared.get("backend")
+    completed_backend = result_descriptor.get("backend")
+    if prepared_backend is not None and completed_backend is not None:
+        if completed_backend != prepared_backend:
+            raise ValueError("completed collect result backend mismatch")
+    completed = {
+        **result_descriptor,
+        "buffer_kind": "result",
+        "prepared_buffer_kind": prepared["buffer_kind"],
+        "prepared_backend": prepared_backend,
+        "prepared_before_execution": bool(prepared.get("prepared_before_execution", False)),
+        "prepared_capacity": prepared["capacity"],
+        "prepared_shape": prepared["shape"],
+        "prepared_valid_shape": prepared["valid_shape"],
+        "prepared_copy_boundary": prepared["copy_boundary"],
+        "prepared_descriptor_compatible": True,
+    }
+    return validate_collect_result_buffer_descriptor(completed)
+
+
 def validate_collect_result_buffer_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:
     contract = validate_v1_5_2_collect_buffer_contract()
     missing = [field for field in contract["required_fields"] if field not in descriptor]

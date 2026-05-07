@@ -163,6 +163,7 @@ from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_native_g
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_readiness_gate
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_gate
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_proposal
+from .v1_5_2_collect_buffers import complete_prepared_collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import prepare_collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
@@ -1298,6 +1299,7 @@ __all__ = [
     "validate_v1_5_1_collect_k_bounded_readiness_gate",
     "validate_v1_5_1_collect_k_bounded_release_surface_gate",
     "validate_v1_5_1_collect_k_bounded_release_surface_proposal",
+    "complete_prepared_collect_k_result_buffer_descriptor",
     "collect_k_result_buffer_descriptor",
     "prepare_collect_k_result_buffer_descriptor",
     "validate_collect_result_buffer_descriptor",
