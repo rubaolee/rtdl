@@ -84,6 +84,21 @@ V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_REQUIRED_METADATA = (
     "residency_state",
     "transfer_count_state",
 )
+V1_5_4_MANAGED_BUFFER_LIFETIMES = (
+    "single_call",
+    "session",
+    "explicit_release",
+)
+V1_5_4_MANAGED_BUFFER_RESIDENCY_STATES = (
+    "host_resident",
+    "device_candidate_unmeasured",
+    "managed_unified_candidate_unmeasured",
+)
+V1_5_4_MANAGED_BUFFER_TRANSFER_STATES = (
+    "not_measured",
+    "instrumentation_planned",
+    "measured_candidate",
+)
 
 
 def v1_5_4_device_zero_copy_entry_gate() -> dict[str, Any]:
@@ -592,3 +607,158 @@ def validate_v1_5_4_python_rtdl_managed_buffer_design_gate() -> dict[str, Any]:
         if phrase not in gate["claim_boundary"]:
             raise ValueError("v1.5.4 managed-buffer gate claim boundary is incomplete")
     return gate
+
+
+def prepare_v1_5_4_python_rtdl_managed_buffer_descriptor(
+    *,
+    buffer_kind: str,
+    backend: str,
+    device: str,
+    dtype: str,
+    shape: tuple[int, ...] | list[int],
+    lifetime: str,
+    byte_count: int | None = None,
+    pointer: int | None = None,
+    residency_state: str | None = None,
+    transfer_count_state: str = "not_measured",
+) -> dict[str, Any]:
+    """Prepare an RTDL-owned managed-buffer descriptor for Python+RTDL."""
+    design_gate = validate_v1_5_4_python_rtdl_managed_buffer_design_gate()
+    kind = str(buffer_kind)
+    if kind not in V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_KINDS:
+        raise ValueError(f"unsupported v1.5.4 Python+RTDL managed buffer kind: {kind}")
+    if dtype not in V1_5_4_DEVICE_MEMORY_ALLOWED_DTYPES:
+        raise ValueError(f"unsupported v1.5.4 Python+RTDL managed buffer dtype: {dtype}")
+    normalized_shape = tuple(int(value) for value in shape)
+    if not normalized_shape or any(value <= 0 for value in normalized_shape):
+        raise ValueError("v1.5.4 Python+RTDL managed buffer shape must contain positive dimensions")
+    if lifetime not in V1_5_4_MANAGED_BUFFER_LIFETIMES:
+        raise ValueError("unsupported v1.5.4 Python+RTDL managed buffer lifetime")
+    normalized_byte_count = None if byte_count is None else int(byte_count)
+    if normalized_byte_count is not None and normalized_byte_count <= 0:
+        raise ValueError("v1.5.4 Python+RTDL managed buffer byte_count must be positive")
+    normalized_pointer = None if pointer is None else int(pointer)
+    if kind in ("prepared_host", "pinned_host_staging"):
+        if device != "cpu":
+            raise ValueError("v1.5.4 Python+RTDL host managed buffers must use device='cpu'")
+        inferred_residency = "host_resident"
+        copy_boundary = "rtdl_owned_host_reduced_copy"
+    elif kind == "rtdl_device_resident":
+        if device == "cpu":
+            raise ValueError("v1.5.4 RTDL device-resident buffers must not use cpu device")
+        inferred_residency = "device_candidate_unmeasured"
+        copy_boundary = "rtdl_owned_device_residency_candidate_unmeasured"
+    else:
+        if device == "cpu":
+            raise ValueError("v1.5.4 RTDL managed/unified buffers must not use cpu device")
+        inferred_residency = "managed_unified_candidate_unmeasured"
+        copy_boundary = "rtdl_owned_managed_unified_candidate_unmeasured"
+    final_residency = inferred_residency if residency_state is None else str(residency_state)
+    if final_residency not in V1_5_4_MANAGED_BUFFER_RESIDENCY_STATES:
+        raise ValueError("unsupported v1.5.4 Python+RTDL managed buffer residency state")
+    if final_residency != inferred_residency:
+        raise ValueError("v1.5.4 Python+RTDL managed buffer residency state does not match buffer kind")
+    if transfer_count_state not in V1_5_4_MANAGED_BUFFER_TRANSFER_STATES:
+        raise ValueError("unsupported v1.5.4 Python+RTDL managed buffer transfer-count state")
+    device_residency_candidate = kind in ("rtdl_device_resident", "rtdl_managed_unified")
+    return {
+        "status": "v1_5_4_python_rtdl_managed_buffer_descriptor_prepared",
+        "track": "python_rtdl",
+        "depends_on_gate": design_gate["status"],
+        "buffer_kind": kind,
+        "backend": str(backend),
+        "device": str(device),
+        "dtype": str(dtype),
+        "shape": normalized_shape,
+        "owner": "rtdl",
+        "lifetime": str(lifetime),
+        "byte_count": normalized_byte_count,
+        "pointer": normalized_pointer,
+        "copy_boundary": copy_boundary,
+        "residency_state": final_residency,
+        "transfer_count_state": str(transfer_count_state),
+        "device_residency_candidate": device_residency_candidate,
+        "partner_owned": False,
+        "host_data_zero_copy_default": False,
+        "managed_buffer_zero_copy_authorized": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This v1.5.4 Python+RTDL managed-buffer descriptor is RTDL-owned. "
+            "Host managed buffers are reduced-copy or transfer-reuse plumbing. "
+            "Device-resident and managed/unified buffers are residency "
+            "candidates only until real NVIDIA allocation, residency, and "
+            "transfer counts are measured. This descriptor does not authorize "
+            "true zero-copy, public speedup wording, whole-app claims, stable "
+            "primitive promotion, partner tensor handoff, or release action."
+        ),
+    }
+
+
+def validate_v1_5_4_python_rtdl_managed_buffer_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(descriptor, dict):
+        raise ValueError("v1.5.4 Python+RTDL managed buffer descriptor must be a dictionary")
+    if descriptor.get("status") != "v1_5_4_python_rtdl_managed_buffer_descriptor_prepared":
+        raise ValueError("invalid v1.5.4 Python+RTDL managed buffer descriptor status")
+    if descriptor.get("track") != "python_rtdl":
+        raise ValueError("v1.5.4 managed buffer descriptor must stay on Python+RTDL track")
+    if descriptor.get("owner") != "rtdl":
+        raise ValueError("v1.5.4 managed buffer descriptor must be RTDL-owned")
+    if descriptor.get("partner_owned") is not False:
+        raise ValueError("v1.5.4 Python+RTDL managed buffer descriptor must not be partner-owned")
+    kind = descriptor.get("buffer_kind")
+    if kind not in V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_KINDS:
+        raise ValueError("invalid v1.5.4 managed buffer kind")
+    if descriptor.get("dtype") not in V1_5_4_DEVICE_MEMORY_ALLOWED_DTYPES:
+        raise ValueError("invalid v1.5.4 managed buffer dtype")
+    shape = tuple(descriptor.get("shape", ()))
+    if not shape or any(int(value) <= 0 for value in shape):
+        raise ValueError("invalid v1.5.4 managed buffer shape")
+    if descriptor.get("lifetime") not in V1_5_4_MANAGED_BUFFER_LIFETIMES:
+        raise ValueError("invalid v1.5.4 managed buffer lifetime")
+    if descriptor.get("residency_state") not in V1_5_4_MANAGED_BUFFER_RESIDENCY_STATES:
+        raise ValueError("invalid v1.5.4 managed buffer residency state")
+    if descriptor.get("transfer_count_state") not in V1_5_4_MANAGED_BUFFER_TRANSFER_STATES:
+        raise ValueError("invalid v1.5.4 managed buffer transfer-count state")
+    if kind in ("prepared_host", "pinned_host_staging"):
+        if descriptor.get("device") != "cpu":
+            raise ValueError("v1.5.4 host managed buffer descriptor must use cpu device")
+        if descriptor.get("residency_state") != "host_resident":
+            raise ValueError("v1.5.4 host managed buffer descriptor must remain host-resident")
+        if descriptor.get("copy_boundary") != "rtdl_owned_host_reduced_copy":
+            raise ValueError("v1.5.4 host managed buffer copy boundary changed")
+        if descriptor.get("device_residency_candidate") is not False:
+            raise ValueError("v1.5.4 host managed buffer must not be a device residency candidate")
+    else:
+        if descriptor.get("device") == "cpu":
+            raise ValueError("v1.5.4 device managed buffer descriptor must not use cpu device")
+        if descriptor.get("device_residency_candidate") is not True:
+            raise ValueError("v1.5.4 device managed buffer must be a residency candidate")
+    for flag in (
+        "host_data_zero_copy_default",
+        "managed_buffer_zero_copy_authorized",
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if descriptor.get(flag) is not False:
+            raise ValueError(f"v1.5.4 managed buffer descriptor must keep {flag}=False")
+    for phrase in (
+        "RTDL-owned",
+        "Host managed buffers are reduced-copy",
+        "residency candidates only",
+        "does not authorize true zero-copy",
+        "public speedup wording",
+        "partner tensor handoff",
+        "release action",
+    ):
+        if phrase not in descriptor.get("claim_boundary", ""):
+            raise ValueError("v1.5.4 managed buffer descriptor claim boundary is incomplete")
+    return descriptor
