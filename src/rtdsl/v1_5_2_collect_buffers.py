@@ -58,7 +58,7 @@ V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS = (
     "release_action",
 )
 V1_5_2_RELEASE_SURFACE_GATE_STATUS = (
-    "candidate_docs_reviewed_unlinked_pending_public_doc_link_decision"
+    "candidate_docs_publicly_discoverable_pending_explicit_release_action"
 )
 V1_5_2_RELEASE_SURFACE_CLASSIFICATION = "documented_experimental_evidence_candidate"
 V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS = (
@@ -80,7 +80,8 @@ V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES = (
     "no whole-app claims",
     "no release tag action",
     "external release-surface review accepted",
-    "public docs link still pending",
+    "public docs link accepted",
+    "publicly discoverable",
     "PYTHONPATH=src:. python",
 )
 V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES = (
@@ -275,12 +276,18 @@ def v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any]:
         "required_docs": V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS,
         "required_phrases": V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES,
         "forbidden_phrases": V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES,
+        "public_doc_link_consensus": (
+            "docs/reports/three_ai_goal1458_v1_5_2_public_docs_link_consensus_2026-05-07.md"
+        ),
         "missing_required_phrases": missing_required_phrases,
         "present_forbidden_phrases": present_forbidden_phrases,
         "candidate_docs_drafted": not missing_required_phrases and not present_forbidden_phrases,
         "external_release_surface_review_required": False,
         "external_release_surface_review_accepted": True,
-        "public_docs_link_review_required": True,
+        "public_docs_link_review_required": False,
+        "public_docs_link_accepted": True,
+        "publicly_discoverable": True,
+        "explicit_release_approval_required": True,
         "public_docs_change_authorized_by_this_gate": False,
         "prepared_buffer_reuse_claim_authorized_by_this_gate": False,
         "stable_promotion_authorized_by_this_gate": False,
@@ -289,16 +296,17 @@ def v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any]:
         "whole_app_speedup_claim_authorized_by_this_gate": False,
         "release_tag_action_authorized_by_this_gate": False,
         "allowed_next_actions": (
-            "request_public_docs_link_review",
-            "keep_v1_5_2_candidate_docs_unlinked_until_link_review_accepts",
+            "keep_candidate_docs_discoverable_without_broader_claims",
             "continue_python_rtdl_track_hardening",
+            "request_explicit_v1_5_2_release_action_if_user_wants_release",
         ),
         "claim_boundary": (
-            "The v1.5.2 prepared host-output candidate docs have accepted "
-            "external release-surface review as an unlinked candidate package. "
-            "This gate does not authorize public docs links, prepared-buffer "
-            "reuse claims, stable promotion, speedup wording, zero-copy "
-            "wording, whole-app claims, or release tag action."
+            "The v1.5.2 prepared host-output candidate docs are publicly "
+            "discoverable after Goal1458 3-AI public-doc-link consensus. "
+            "This gate does not authorize public docs claims beyond the "
+            "accepted candidate-doc link, prepared-buffer reuse claims, stable "
+            "promotion, speedup wording, zero-copy wording, whole-app claims, "
+            "or release tag action."
         ),
     }
 
@@ -327,8 +335,14 @@ def validate_v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any
         raise ValueError("v1.5.2 release surface external review should be complete")
     if gate["external_release_surface_review_accepted"] is not True:
         raise ValueError("v1.5.2 release surface must have accepted external review")
-    if gate["public_docs_link_review_required"] is not True:
-        raise ValueError("v1.5.2 release surface must still require public docs link review")
+    if gate["public_docs_link_review_required"] is not False:
+        raise ValueError("v1.5.2 public docs link review should be complete")
+    if gate["public_docs_link_accepted"] is not True:
+        raise ValueError("v1.5.2 public docs link must be accepted")
+    if gate["publicly_discoverable"] is not True:
+        raise ValueError("v1.5.2 candidate docs must be publicly discoverable")
+    if gate["explicit_release_approval_required"] is not True:
+        raise ValueError("v1.5.2 release surface must still require explicit release approval")
     false_flags = (
         "public_docs_change_authorized_by_this_gate",
         "prepared_buffer_reuse_claim_authorized_by_this_gate",
@@ -342,9 +356,9 @@ def validate_v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any
         if gate[flag] is not False:
             raise ValueError(f"v1.5.2 release-surface gate must keep {flag}=False")
     for phrase in (
-        "accepted external release-surface review",
-        "unlinked candidate package",
-        "does not authorize public docs links",
+        "publicly discoverable",
+        "Goal1458 3-AI public-doc-link consensus",
+        "does not authorize public docs claims beyond the accepted candidate-doc link",
         "prepared-buffer reuse claims",
         "stable promotion",
         "speedup wording",

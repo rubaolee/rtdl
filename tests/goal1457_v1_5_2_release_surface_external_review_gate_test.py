@@ -15,11 +15,14 @@ class Goal1457V152ReleaseSurfaceExternalReviewGateTest(unittest.TestCase):
 
         self.assertEqual(
             gate["status"],
-            "candidate_docs_reviewed_unlinked_pending_public_doc_link_decision",
+            "candidate_docs_publicly_discoverable_pending_explicit_release_action",
         )
         self.assertTrue(gate["external_release_surface_review_accepted"])
         self.assertFalse(gate["external_release_surface_review_required"])
-        self.assertTrue(gate["public_docs_link_review_required"])
+        self.assertFalse(gate["public_docs_link_review_required"])
+        self.assertTrue(gate["public_docs_link_accepted"])
+        self.assertTrue(gate["publicly_discoverable"])
+        self.assertTrue(gate["explicit_release_approval_required"])
         self.assertFalse(gate["public_docs_change_authorized_by_this_gate"])
 
     def test_external_review_artifacts_exist_and_accept(self) -> None:
@@ -53,8 +56,11 @@ class Goal1457V152ReleaseSurfaceExternalReviewGateTest(unittest.TestCase):
             with self.subTest(flag=flag):
                 self.assertIs(gate[flag], False)
 
-        self.assertIn("unlinked candidate package", gate["claim_boundary"])
-        self.assertIn("does not authorize public docs links", gate["claim_boundary"])
+        self.assertIn("publicly discoverable", gate["claim_boundary"])
+        self.assertIn(
+            "does not authorize public docs claims beyond the accepted candidate-doc link",
+            gate["claim_boundary"],
+        )
 
 
 if __name__ == "__main__":

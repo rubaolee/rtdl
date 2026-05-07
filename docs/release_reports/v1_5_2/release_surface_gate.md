@@ -1,12 +1,12 @@
 # v1.5.2 Release-Surface Gate
 
-The v1.5.2 candidate docs have accepted external release-surface review as an
-unlinked candidate package. They are not linked from the public documentation
-spine by this gate, and this file is not a release action.
+The v1.5.2 candidate docs have accepted external release-surface review and
+Goal1458 public-doc-link review. They are publicly discoverable as a candidate
+package, and this file is not a release action.
 
 Gate status:
 
-- Candidate docs: reviewed candidate package, still unlinked
+- Candidate docs: publicly discoverable reviewed candidate package
 - Proposed classification: documented experimental evidence candidate
 - Primitive: `COLLECT_K_BOUNDED`
 - Track: Python+RTDL
@@ -30,11 +30,12 @@ Required caution wording:
 - no whole-app claims
 - no release tag action
 - external release-surface review accepted
-- public docs link still pending
+- public docs link accepted
+- publicly discoverable
 
-This gate does not authorize public docs links, prepared-buffer reuse claims,
-stable promotion, public speedup wording, zero-copy wording, whole-app claims,
-or release tag action.
+This gate does not authorize public docs claims beyond the accepted
+candidate-doc link, prepared-buffer reuse claims, stable promotion, public
+speedup wording, zero-copy wording, whole-app claims, or release tag action.
 
 Example validation command:
 

@@ -15,7 +15,7 @@ class Goal1456V152ReleaseSurfaceCandidateDocsTest(unittest.TestCase):
 
         self.assertEqual(
             gate["status"],
-            "candidate_docs_reviewed_unlinked_pending_public_doc_link_decision",
+            "candidate_docs_publicly_discoverable_pending_explicit_release_action",
         )
         self.assertEqual(gate["classification"], "documented_experimental_evidence_candidate")
         self.assertEqual(gate["prepared_evidence_gate_status"], "evidence_complete_claims_blocked")
@@ -24,7 +24,10 @@ class Goal1456V152ReleaseSurfaceCandidateDocsTest(unittest.TestCase):
         self.assertEqual(gate["present_forbidden_phrases"], ())
         self.assertFalse(gate["external_release_surface_review_required"])
         self.assertTrue(gate["external_release_surface_review_accepted"])
-        self.assertTrue(gate["public_docs_link_review_required"])
+        self.assertFalse(gate["public_docs_link_review_required"])
+        self.assertTrue(gate["public_docs_link_accepted"])
+        self.assertTrue(gate["publicly_discoverable"])
+        self.assertTrue(gate["explicit_release_approval_required"])
 
     def test_release_surface_gate_required_docs_exist(self) -> None:
         gate = rt.validate_v1_5_2_prepared_host_output_release_surface_gate()
@@ -68,9 +71,9 @@ class Goal1456V152ReleaseSurfaceCandidateDocsTest(unittest.TestCase):
         self.assertEqual(
             gate["allowed_next_actions"],
             (
-                "request_public_docs_link_review",
-                "keep_v1_5_2_candidate_docs_unlinked_until_link_review_accepts",
+                "keep_candidate_docs_discoverable_without_broader_claims",
                 "continue_python_rtdl_track_hardening",
+                "request_explicit_v1_5_2_release_action_if_user_wants_release",
             ),
         )
 
