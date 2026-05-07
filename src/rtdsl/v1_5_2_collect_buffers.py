@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
 from .v1_5_1_collect_k_bounded import validate_collect_k_bounded_result
 
 
@@ -251,6 +252,46 @@ def complete_prepared_collect_k_result_buffer_descriptor(
         "prepared_descriptor_compatible": True,
     }
     return validate_collect_result_buffer_descriptor(completed)
+
+
+def run_collect_k_bounded_rows_with_prepared_result_buffer(
+    candidate_rows: Any,
+    prepared_descriptor: dict[str, Any],
+) -> dict[str, Any]:
+    """Run the Python reference collector through a prepared descriptor envelope."""
+    prepared = validate_collect_result_buffer_descriptor(prepared_descriptor)
+    if prepared["buffer_kind"] != "prepared_result":
+        raise ValueError("prepared collect buffer execution requires buffer_kind=prepared_result")
+    result = collect_k_bounded_rows(
+        candidate_rows,
+        k=prepared["capacity"],
+        row_width=prepared["row_width"],
+    )
+    completed_descriptor = complete_prepared_collect_k_result_buffer_descriptor(
+        prepared,
+        result,
+    )
+    return {
+        "primitive": "COLLECT_K_BOUNDED",
+        "status": prepared["status"],
+        "track": prepared["track"],
+        "execution_mode": "python_reference_prepared_descriptor_envelope",
+        "backend": prepared.get("backend"),
+        "prepared_descriptor": prepared,
+        "result": result,
+        "result_buffer_descriptor": completed_descriptor,
+        "prepared_descriptor_compatible": completed_descriptor["prepared_descriptor_compatible"],
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "Python reference execution envelope over prepared collect-buffer "
+            "metadata only; this does not allocate native memory, prove buffer "
+            "reuse, authorize zero-copy wording, or authorize performance claims."
+        ),
+    }
 
 
 def validate_collect_result_buffer_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:
