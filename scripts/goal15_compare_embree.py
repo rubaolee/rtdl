@@ -5,6 +5,7 @@ import csv
 import json
 import os
 import platform
+import stat
 import subprocess
 import sys
 import tempfile
@@ -186,6 +187,12 @@ def compile_native(exe_name: str, source_name: str) -> Path:
             str(output_path),
         ]
         subprocess.run(cmd, check=True)
+        output_path.chmod(
+            output_path.stat().st_mode
+            | stat.S_IXUSR
+            | stat.S_IXGRP
+            | stat.S_IXOTH
+        )
     return output_path
 
 

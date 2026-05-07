@@ -1,0 +1,47 @@
+Goal1438 post-hardening broad pod regression
+date_utc=2026-05-07T12:43:39Z
+head=57241f6d734b946a00b6ef7c3b654cd1ca6ebbc6
+gpu=NVIDIA RTX A5000, 580.126.09, 24564 MiB
+command=PYTHONPATH=src:. RTDL_OPTIX_LIB=/workspace/rtdl/build/librtdl_optix.so python3 -m unittest discover -s tests -p '*_test.py'
+.................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................s...sss...............................ss........s.ss.s.........s...ss......................................................................../tmp/tmp7pml_f7g/scaling.json
+........................ssssssssssssss.........................................................................................................{
+  "dataset": "authored_fixed_radius_neighbors_minimal",
+  "workload": "fixed_radius_neighbors"
+}
+[goal28b] zipcode_feature_layer offset=0 requested=2 downloaded=2
+.[goal28b] zipcode_feature_layer offset=0 requested=2 downloaded=2
+...................................sssss..................................................ssss.........ssss.ss..............................s..s..s...s.....s.....................ssss...s.........s..........s...s............................................................................................sssssss...........s.s..ssss.....sssssssssssssssss..sssssssssssssssssssssss....sssssssssssss..........sssssssssss..sss..ssssss..s.ssssssssssssssssssssssssssssssssssssssssssssssssssssssss...........s.s.s.ss.....sss.....................sss............ssss.......................sss...ss................................................................................................................................................................................................................................................................................s.................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................E............s..............................................s..........
+======================================================================
+ERROR: test_full_verification_smoke_path (report_smoke_test.ReportSmokeTest.test_full_verification_smoke_path)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/rtdl/tests/report_smoke_test.py", line 51, in test_full_verification_smoke_path
+    payload = run_full_verification(skip_unittest=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/scripts/run_full_verification.py", line 142, in run_full_verification
+    results["artifacts"] = run_artifact_smokes()
+                           ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/scripts/run_full_verification.py", line 110, in run_artifact_smokes
+    compare_payload = compare_goal15(tmp / "goal15")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/scripts/goal15_compare_embree.py", line 286, in compare_goal15
+    run_native(
+  File "/workspace/rtdl/scripts/goal15_compare_embree.py", line 220, in run_native
+    subprocess.run([str(executable), *args], check=True, env=env)
+  File "/usr/lib/python3.11/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.11/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+PermissionError: [Errno 13] Permission denied: '/workspace/rtdl/build/goal15_native/goal15_lsi_native'
+
+----------------------------------------------------------------------
+Ran 2829 tests in 1214.674s
+
+FAILED (errors=1, skipped=221)
+{"output_json": "docs/reports/goal807_test_output.json", "status": "pass"}
+{"mode": "dry-run", "output_json": "docs/reports/goal811_test_output.json", "scenario": "service_coverage_gaps"}
+{"output_json": "/workspace/rtdl/build/tmplamk5kxq/goal933.json", "status": "pass"}
+{"output_json": "/workspace/rtdl/build/tmp83z6ado0/goal934.json", "status": "pass"}
