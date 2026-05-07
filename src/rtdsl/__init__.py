@@ -225,6 +225,8 @@ from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_SCOPE
 from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_STATUS
 from .v1_5_3_reduced_copy import V1_5_3_REDUCED_COPY_TRACK
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_device_zero_copy_entry_gate
+from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_device_memory_descriptor
+from .v1_5_4_device_zero_copy_boundary import prepare_v1_5_4_device_memory_descriptor
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_device_zero_copy_entry_gate
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_BLOCKED_CLAIMS
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_ENTRY_STATUS
@@ -232,6 +234,9 @@ from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_REQUIRED_F
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_REQUIRED_PRECONDITIONS
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_SCOPE
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_ZERO_COPY_TRACK
+from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_MEMORY_ALLOWED_DTYPES
+from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_MEMORY_KINDS
+from .v1_5_4_device_zero_copy_boundary import V1_5_4_DEVICE_MEMORY_ZERO_COPY_CANDIDATE_KINDS
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1415,6 +1420,8 @@ __all__ = [
     "V1_5_3_REDUCED_COPY_STATUS",
     "V1_5_3_REDUCED_COPY_TRACK",
     "validate_v1_5_4_device_zero_copy_entry_gate",
+    "validate_v1_5_4_device_memory_descriptor",
+    "prepare_v1_5_4_device_memory_descriptor",
     "v1_5_4_device_zero_copy_entry_gate",
     "V1_5_4_DEVICE_ZERO_COPY_BLOCKED_CLAIMS",
     "V1_5_4_DEVICE_ZERO_COPY_ENTRY_STATUS",
@@ -1422,6 +1429,9 @@ __all__ = [
     "V1_5_4_DEVICE_ZERO_COPY_REQUIRED_PRECONDITIONS",
     "V1_5_4_DEVICE_ZERO_COPY_SCOPE",
     "V1_5_4_DEVICE_ZERO_COPY_TRACK",
+    "V1_5_4_DEVICE_MEMORY_ALLOWED_DTYPES",
+    "V1_5_4_DEVICE_MEMORY_KINDS",
+    "V1_5_4_DEVICE_MEMORY_ZERO_COPY_CANDIDATE_KINDS",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",
