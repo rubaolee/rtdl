@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import unittest
+import ctypes
+from types import SimpleNamespace
 from unittest import mock
 
 import rtdsl as rt
@@ -14,10 +16,42 @@ def _polygons():
     )
 
 
+def _make_generic_collect_k_symbol():
+    def _symbol(
+        candidate_rows,
+        candidate_count,
+        row_width,
+        rows_out,
+        row_capacity,
+        emitted_count_out,
+        overflowed_out,
+        _error,
+        _error_size,
+    ):
+        rows = []
+        for row_index in range(int(candidate_count)):
+            start = row_index * int(row_width)
+            rows.append(
+                tuple(int(candidate_rows[start + column]) for column in range(int(row_width)))
+            )
+        normalized = tuple(sorted(set(rows)))
+        ctypes.cast(emitted_count_out, ctypes.POINTER(ctypes.c_size_t))[0] = len(normalized)
+        overflowed = len(normalized) > int(row_capacity)
+        ctypes.cast(overflowed_out, ctypes.POINTER(ctypes.c_uint32))[0] = 1 if overflowed else 0
+        if overflowed:
+            return 0
+        for row_index, row in enumerate(normalized):
+            for column, value in enumerate(row):
+                rows_out[row_index * int(row_width) + column] = value
+        return 0
+
+    return _symbol
+
+
 class Goal1314V15NativePolygonCandidateCollectionSurfaceTest(unittest.TestCase):
     def test_optix_collection_requires_current_native_export(self) -> None:
         with (
-            mock.patch.object(optix_runtime, "_load_optix_library", return_value=object()),
+            mock.patch.object(optix_runtime, "_load_optix_library", return_value=SimpleNamespace()),
             mock.patch.object(optix_runtime, "_find_optional_backend_symbol", return_value=None),
         ):
             with self.assertRaisesRegex(ValueError, "rtdl_optix_collect_polygon_pair_candidates_bounded"):
@@ -53,7 +87,13 @@ class Goal1314V15NativePolygonCandidateCollectionSurfaceTest(unittest.TestCase):
             return 0
 
         with (
-            mock.patch.object(optix_runtime, "_load_optix_library", return_value=object()),
+            mock.patch.object(
+                optix_runtime,
+                "_load_optix_library",
+                return_value=SimpleNamespace(
+                    rtdl_optix_collect_k_bounded_i64=_make_generic_collect_k_symbol()
+                ),
+            ),
             mock.patch.object(optix_runtime, "_find_optional_backend_symbol", return_value=fake_symbol),
         ):
             result = rt.collect_polygon_pair_candidates_bounded_optix(
@@ -70,7 +110,7 @@ class Goal1314V15NativePolygonCandidateCollectionSurfaceTest(unittest.TestCase):
         self.assertFalse(result["overflowed"])
         self.assertTrue(result["complete_candidate_coverage"])
         self.assertEqual(result["failure_mode"], "fail_closed_overflow")
-        self.assertEqual(result["overflow_policy"], "no_silent_truncation")
+        self.assertEqual(result["overflow_policy"], "fail_closed_before_result_materialization")
         self.assertIn("whole-app speedup require separate evidence", result["claim_boundary"])
 
     def test_optix_collection_overflow_fails_closed(self) -> None:
@@ -95,7 +135,13 @@ class Goal1314V15NativePolygonCandidateCollectionSurfaceTest(unittest.TestCase):
             return 0
 
         with (
-            mock.patch.object(optix_runtime, "_load_optix_library", return_value=object()),
+            mock.patch.object(
+                optix_runtime,
+                "_load_optix_library",
+                return_value=SimpleNamespace(
+                    rtdl_optix_collect_k_bounded_i64=_make_generic_collect_k_symbol()
+                ),
+            ),
             mock.patch.object(optix_runtime, "_find_optional_backend_symbol", return_value=fake_overflow_symbol),
         ):
             with self.assertRaisesRegex(RuntimeError, "fail_closed_overflow"):

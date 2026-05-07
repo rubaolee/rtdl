@@ -70,11 +70,44 @@ def _make_duplicate_result_symbol():
     return _symbol
 
 
+def _make_generic_collect_k_symbol():
+    def _symbol(
+        candidate_rows,
+        candidate_count,
+        row_width,
+        rows_out,
+        row_capacity,
+        emitted_count_out,
+        overflowed_out,
+        _error,
+        _error_size,
+    ):
+        rows = []
+        for row_index in range(int(candidate_count)):
+            start = row_index * int(row_width)
+            rows.append(
+                tuple(int(candidate_rows[start + column]) for column in range(int(row_width)))
+            )
+        normalized = tuple(sorted(set(rows)))
+        ctypes.cast(emitted_count_out, ctypes.POINTER(ctypes.c_size_t))[0] = len(normalized)
+        overflowed = len(normalized) > int(row_capacity)
+        ctypes.cast(overflowed_out, ctypes.POINTER(ctypes.c_uint32))[0] = 1 if overflowed else 0
+        if overflowed:
+            return 0
+        for row_index, row in enumerate(normalized):
+            for column, value in enumerate(row):
+                rows_out[row_index * int(row_width) + column] = value
+        return 0
+
+    return _symbol
+
+
 class Goal1415V151NativeCollectKZeroCapacityTest(unittest.TestCase):
     def test_embree_wrapper_allows_zero_capacity_empty_collection(self) -> None:
         captured = {}
         library = SimpleNamespace(
-            rtdl_embree_collect_polygon_pair_candidates_bounded=_make_zero_result_symbol(captured)
+            rtdl_embree_collect_polygon_pair_candidates_bounded=_make_zero_result_symbol(captured),
+            rtdl_embree_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 
         with mock.patch.object(embree_runtime, "pack_polygons", return_value=_PackedPolygons()), \
@@ -95,7 +128,8 @@ class Goal1415V151NativeCollectKZeroCapacityTest(unittest.TestCase):
     def test_optix_wrapper_allows_zero_capacity_empty_collection(self) -> None:
         captured = {}
         library = SimpleNamespace(
-            rtdl_optix_collect_polygon_pair_candidates_bounded=_make_zero_result_symbol(captured)
+            rtdl_optix_collect_polygon_pair_candidates_bounded=_make_zero_result_symbol(captured),
+            rtdl_optix_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 
         with mock.patch.object(optix_runtime, "pack_polygons", return_value=_PackedPolygons()), \
@@ -120,33 +154,43 @@ class Goal1415V151NativeCollectKZeroCapacityTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "candidate_capacity must be non-negative"):
             optix_runtime.collect_polygon_pair_candidates_bounded_optix((), (), candidate_capacity=-1)
 
-    def test_embree_wrapper_validates_native_result_metadata(self) -> None:
+    def test_embree_wrapper_canonicalizes_duplicate_native_rows_through_generic_symbol(self) -> None:
         library = SimpleNamespace(
-            rtdl_embree_collect_polygon_pair_candidates_bounded=_make_duplicate_result_symbol()
+            rtdl_embree_collect_polygon_pair_candidates_bounded=_make_duplicate_result_symbol(),
+            rtdl_embree_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 
         with mock.patch.object(embree_runtime, "pack_polygons", return_value=_PackedPolygons()), \
              mock.patch.object(embree_runtime, "_load_embree_library", return_value=library):
-            with self.assertRaisesRegex(ValueError, "emitted_count metadata mismatch"):
-                embree_runtime.collect_polygon_pair_candidates_bounded_embree(
-                    (),
-                    (),
-                    candidate_capacity=2,
-                )
+            result = embree_runtime.collect_polygon_pair_candidates_bounded_embree(
+                (),
+                (),
+                candidate_capacity=2,
+            )
 
-    def test_optix_wrapper_validates_native_result_metadata(self) -> None:
+        self.assertEqual(result["candidate_id_rows"], ((1, 10),))
+        self.assertEqual(result["emitted_count"], 1)
+        self.assertEqual(result["native_emitted_count"], 2)
+        self.assertEqual(result["native_generic_symbol"], "rtdl_embree_collect_k_bounded_i64")
+
+    def test_optix_wrapper_canonicalizes_duplicate_native_rows_through_generic_symbol(self) -> None:
         library = SimpleNamespace(
-            rtdl_optix_collect_polygon_pair_candidates_bounded=_make_duplicate_result_symbol()
+            rtdl_optix_collect_polygon_pair_candidates_bounded=_make_duplicate_result_symbol(),
+            rtdl_optix_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 
         with mock.patch.object(optix_runtime, "pack_polygons", return_value=_PackedPolygons()), \
              mock.patch.object(optix_runtime, "_load_optix_library", return_value=library):
-            with self.assertRaisesRegex(ValueError, "emitted_count metadata mismatch"):
-                optix_runtime.collect_polygon_pair_candidates_bounded_optix(
-                    (),
-                    (),
-                    candidate_capacity=2,
-                )
+            result = optix_runtime.collect_polygon_pair_candidates_bounded_optix(
+                (),
+                (),
+                candidate_capacity=2,
+            )
+
+        self.assertEqual(result["candidate_id_rows"], ((1, 10),))
+        self.assertEqual(result["emitted_count"], 1)
+        self.assertEqual(result["native_emitted_count"], 2)
+        self.assertEqual(result["native_generic_symbol"], "rtdl_optix_collect_k_bounded_i64")
 
 
 if __name__ == "__main__":

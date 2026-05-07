@@ -67,7 +67,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
         numbered = re.findall(r"^\d+\. ", section, flags=re.MULTILINE)
 
         self.assertGreaterEqual(len(numbered), 8)
-        self.assertLessEqual(len(numbered), 15)
+        self.assertLessEqual(len(numbered), 16)
         self.assertIn("[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)", section)
         self.assertIn("[v1.5 Release Package](release_reports/v1_5/README.md)", section)
         self.assertIn("Older release packages remain linked below", section)

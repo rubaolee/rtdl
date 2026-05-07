@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+import ctypes
 from unittest import mock
 
 import rtdsl as rt
@@ -12,6 +13,38 @@ def _polygons():
         rt.Polygon(1, ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))),
         rt.Polygon(2, ((2.0, 0.0), (3.0, 0.0), (3.0, 1.0), (2.0, 1.0))),
     )
+
+
+def _make_generic_collect_k_symbol():
+    def _symbol(
+        candidate_rows,
+        candidate_count,
+        row_width,
+        rows_out,
+        row_capacity,
+        emitted_count_out,
+        overflowed_out,
+        _error,
+        _error_size,
+    ):
+        rows = []
+        for row_index in range(int(candidate_count)):
+            start = row_index * int(row_width)
+            rows.append(
+                tuple(int(candidate_rows[start + column]) for column in range(int(row_width)))
+            )
+        normalized = tuple(sorted(set(rows)))
+        ctypes.cast(emitted_count_out, ctypes.POINTER(ctypes.c_size_t))[0] = len(normalized)
+        overflowed = len(normalized) > int(row_capacity)
+        ctypes.cast(overflowed_out, ctypes.POINTER(ctypes.c_uint32))[0] = 1 if overflowed else 0
+        if overflowed:
+            return 0
+        for row_index, row in enumerate(normalized):
+            for column, value in enumerate(row):
+                rows_out[row_index * int(row_width) + column] = value
+        return 0
+
+    return _symbol
 
 
 class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
@@ -54,6 +87,7 @@ class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
 
         library = FakeLibrary()
         library.rtdl_embree_collect_polygon_pair_candidates_bounded = fake_symbol
+        library.rtdl_embree_collect_k_bounded_i64 = _make_generic_collect_k_symbol()
         with mock.patch.object(embree_runtime, "_load_embree_library", return_value=library):
             result = rt.collect_polygon_pair_candidates_bounded_embree(
                 _polygons(),
@@ -69,7 +103,7 @@ class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
         self.assertFalse(result["overflowed"])
         self.assertTrue(result["complete_candidate_coverage"])
         self.assertEqual(result["failure_mode"], "fail_closed_overflow")
-        self.assertEqual(result["overflow_policy"], "no_silent_truncation")
+        self.assertEqual(result["overflow_policy"], "fail_closed_before_result_materialization")
 
     def test_embree_collection_overflow_fails_closed(self) -> None:
         class FakeLibrary:
@@ -97,6 +131,7 @@ class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
 
         library = FakeLibrary()
         library.rtdl_embree_collect_polygon_pair_candidates_bounded = fake_overflow_symbol
+        library.rtdl_embree_collect_k_bounded_i64 = _make_generic_collect_k_symbol()
         with mock.patch.object(embree_runtime, "_load_embree_library", return_value=library):
             with self.assertRaisesRegex(RuntimeError, "fail_closed_overflow"):
                 rt.collect_polygon_pair_candidates_bounded_embree(
