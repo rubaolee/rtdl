@@ -23,11 +23,12 @@ the current public story:
 9. [Application Catalog](application_catalog.md)
 10. [v1.5 Release Package](release_reports/v1_5/README.md)
 11. [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
-12. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
-13. [IR And Lowering](rtdl/ir_and_lowering.md)
-14. [Performance Model](performance_model.md)
-15. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
-16. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
+12. [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
+13. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+14. [IR And Lowering](rtdl/ir_and_lowering.md)
+15. [Performance Model](performance_model.md)
+16. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
+17. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -102,6 +103,10 @@ Important public-claim rules:
   public-candidate surface only: not stable primitive promotion, no public
   speedup wording, no zero-copy wording, no whole-app claims, and no release
   tag action.
+- The v1.5.2 candidate docs record reviewed prepared host-output evidence for
+  COLLECT_K_BOUNDED; still no prepared-buffer reuse claim, no public speedup
+  wording, no zero-copy wording, no whole-app claims, no stable primitive
+  promotion, and no release tag action.
 - v1.5 does not claim whole-app speedups or app-free native-engine internals.
 - v2.0 is the broader end-to-end performance target.
 
@@ -126,6 +131,7 @@ Use these for audit trails and exact release boundaries:
 
 - [v1.5 Release Package](release_reports/v1_5/README.md)
 - [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
+- [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
 - [v1.0 Release Package](release_reports/v1_0/README.md)
 - [v1.0 Release Statement](release_reports/v1_0/release_statement.md)
 - [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
