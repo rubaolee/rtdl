@@ -65,6 +65,25 @@ V1_5_4_GPU_MEMORY_ARCHITECTURE_REQUIRED_EVIDENCE = (
     "docs/reports/gemini_goal1479_gpu_memory_architecture_review_2026-05-07.md",
     "docs/reports/three_ai_goal1479_gpu_memory_architecture_consensus_2026-05-07.md",
 )
+V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_STATUS = "ready_to_design_rtdl_owned_managed_buffers_claims_blocked"
+V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_KINDS = (
+    "prepared_host",
+    "pinned_host_staging",
+    "rtdl_device_resident",
+    "rtdl_managed_unified",
+)
+V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_REQUIRED_METADATA = (
+    "buffer_kind",
+    "backend",
+    "device",
+    "dtype",
+    "shape",
+    "owner",
+    "lifetime",
+    "copy_boundary",
+    "residency_state",
+    "transfer_count_state",
+)
 
 
 def v1_5_4_device_zero_copy_entry_gate() -> dict[str, Any]:
@@ -486,4 +505,90 @@ def validate_v1_5_4_gpu_memory_architecture_consensus_gate() -> dict[str, Any]:
     ):
         if phrase not in gate["claim_boundary"]:
             raise ValueError("v1.5.4 GPU memory architecture claim boundary is incomplete")
+    return gate
+
+
+def v1_5_4_python_rtdl_managed_buffer_design_gate() -> dict[str, Any]:
+    architecture_gate = validate_v1_5_4_gpu_memory_architecture_consensus_gate()
+    return {
+        "status": V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_STATUS,
+        "track": "python_rtdl",
+        "depends_on_architecture_gate": architecture_gate["status"],
+        "memory_owner": "rtdl",
+        "not_partner_owned": True,
+        "buffer_kinds": V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_KINDS,
+        "required_metadata": V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_REQUIRED_METADATA,
+        "allowed_design_actions": (
+            "define_rtdl_owned_buffer_descriptor",
+            "define_buffer_lifetime_and_reuse_rules",
+            "define_copy_boundary_and_residency_metadata",
+            "define_transfer_count_instrumentation_points",
+            "prepare_future_optix_validation_plan",
+        ),
+        "requires_pod_now": False,
+        "pod_required_for": (
+            "device_resident_buffer_allocation_validation",
+            "managed_or_unified_memory_residency_validation",
+            "transfer_count_measurement_on_real_nvidia",
+            "public_gpu_performance_claim_review_package",
+        ),
+        "host_data_zero_copy_default": False,
+        "managed_buffer_zero_copy_authorized": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This v1.5.4 gate starts the Python+RTDL RTDL-owned managed-buffer "
+            "design lane. It covers RTDL-owned prepared host, pinned staging, "
+            "device-resident, and managed/unified buffer candidates. It does "
+            "not cover partner-owned GPU memory. Ordinary Python input data "
+            "does not become zero-copy by default. This gate does not "
+            "authorize true zero-copy, public speedup wording, whole-app "
+            "claims, stable primitive promotion, partner tensor handoff, or "
+            "release action."
+        ),
+    }
+
+
+def validate_v1_5_4_python_rtdl_managed_buffer_design_gate() -> dict[str, Any]:
+    gate = v1_5_4_python_rtdl_managed_buffer_design_gate()
+    if gate["status"] != V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_STATUS:
+        raise ValueError("invalid v1.5.4 Python+RTDL managed-buffer gate status")
+    if gate["track"] != "python_rtdl":
+        raise ValueError("v1.5.4 managed-buffer gate must stay on Python+RTDL track")
+    if gate["memory_owner"] != "rtdl":
+        raise ValueError("v1.5.4 Python+RTDL managed buffers must be RTDL-owned")
+    if gate["not_partner_owned"] is not True:
+        raise ValueError("v1.5.4 Python+RTDL managed buffers must not be partner-owned")
+    if tuple(gate["buffer_kinds"]) != V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_KINDS:
+        raise ValueError("v1.5.4 Python+RTDL managed-buffer kinds changed")
+    if tuple(gate["required_metadata"]) != V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_REQUIRED_METADATA:
+        raise ValueError("v1.5.4 Python+RTDL managed-buffer metadata changed")
+    if gate["requires_pod_now"] is not False:
+        raise ValueError("v1.5.4 managed-buffer design gate must not require pod now")
+    for flag in (
+        "host_data_zero_copy_default",
+        "managed_buffer_zero_copy_authorized",
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5.4 managed-buffer gate must keep {flag}=False")
+    for phrase in (
+        "RTDL-owned managed-buffer",
+        "does not cover partner-owned GPU memory",
+        "Ordinary Python input data does not become zero-copy by default",
+        "does not authorize true zero-copy",
+        "public speedup wording",
+        "release action",
+    ):
+        if phrase not in gate["claim_boundary"]:
+            raise ValueError("v1.5.4 managed-buffer gate claim boundary is incomplete")
     return gate
