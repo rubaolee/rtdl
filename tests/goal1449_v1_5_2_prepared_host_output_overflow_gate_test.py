@@ -100,7 +100,7 @@ class Goal1449V152PreparedHostOutputOverflowGateTest(unittest.TestCase):
 
         self.assertIn("overflow_fail_closed_with_prepared_buffer", gate["satisfied_evidence"])
         self.assertNotIn("overflow_fail_closed_with_prepared_buffer", gate["missing_evidence"])
-        self.assertEqual(gate["missing_evidence"], ("embree_optix_same_contract_parity", "external_ai_review"))
+        self.assertEqual(gate["missing_evidence"], ("external_ai_review",))
 
 
 if __name__ == "__main__":
