@@ -166,6 +166,7 @@ from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_
 from .v1_5_1_collect_k_bounded import validate_v1_5_1_collect_k_bounded_release_surface_proposal
 from .v1_5_2_collect_buffers import complete_prepared_collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import collect_k_result_buffer_descriptor
+from .v1_5_2_collect_buffers import measure_native_collect_k_prepared_host_output_reuse
 from .v1_5_2_collect_buffers import prepare_collect_k_result_buffer_descriptor
 from .v1_5_2_collect_buffers import run_collect_k_bounded_rows_with_prepared_result_buffer
 from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepared_host_output_buffer
@@ -1313,6 +1314,7 @@ __all__ = [
     "validate_v1_5_1_collect_k_bounded_release_surface_proposal",
     "complete_prepared_collect_k_result_buffer_descriptor",
     "collect_k_result_buffer_descriptor",
+    "measure_native_collect_k_prepared_host_output_reuse",
     "prepare_collect_k_result_buffer_descriptor",
     "run_collect_k_bounded_rows_with_prepared_result_buffer",
     "run_native_collect_k_bounded_rows_with_prepared_host_output_buffer",

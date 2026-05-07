@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import ctypes
+import time
 from typing import Any
 
 from .v1_5_1_collect_k_bounded import collect_k_bounded_rows
@@ -28,7 +30,7 @@ V1_5_2_COLLECT_BUFFER_FORBIDDEN_CLAIMS = (
     "stable_public_primitive",
     "release_action",
 )
-V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS = "blocked_pending_measurement_parity_overflow_external_review"
+V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS = "blocked_pending_parity_overflow_external_review"
 V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE = (
     "native_abi_accepts_prepared_output_buffer_pointer",
     "python_wrapper_passes_prepared_output_buffer_pointer",
@@ -40,9 +42,9 @@ V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE = (
 V1_5_2_PREPARED_BUFFER_REUSE_SATISFIED_EVIDENCE = (
     "native_abi_accepts_prepared_output_buffer_pointer",
     "python_wrapper_passes_prepared_output_buffer_pointer",
+    "host_reuse_or_device_reuse_measured",
 )
 V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE = (
-    "host_reuse_or_device_reuse_measured",
     "embree_optix_same_contract_parity",
     "overflow_fail_closed_with_prepared_buffer",
     "external_ai_review",
@@ -158,11 +160,11 @@ def v1_5_2_prepared_buffer_reuse_gate() -> dict[str, Any]:
         "claim_boundary": (
             "v1.5.2 prepared collect-buffer envelopes now include source-level "
             "native ABI pointer shape and Python wrapper host ctypes output "
-            "pointer plumbing. Prepared-buffer reuse, true zero-copy, public "
-            "speedup wording, whole-app claims, stable primitive wording, and "
-            "release action remain blocked until measurement, Embree/OptiX "
-            "parity, prepared-buffer overflow validation, and external claim "
-            "review are present."
+            "pointer plumbing with Python-wrapper host buffer reuse measurement. "
+            "Prepared-buffer reuse, true zero-copy, public speedup wording, "
+            "whole-app claims, stable primitive wording, and release action "
+            "remain blocked until Embree/OptiX parity, prepared-buffer overflow "
+            "validation, and external claim review are present."
         ),
     }
 
@@ -193,6 +195,7 @@ def validate_v1_5_2_prepared_buffer_reuse_gate() -> dict[str, Any]:
     for phrase in (
         "source-level native ABI pointer shape",
         "Python wrapper host ctypes output pointer plumbing",
+        "host buffer reuse measurement",
         "true zero-copy",
         "public speedup wording",
         "external claim review",
@@ -516,6 +519,80 @@ def run_native_collect_k_bounded_rows_with_prepared_host_output_buffer(
             "ctypes host output storage. This proves Python-wrapper host "
             "pointer passing only; it does not prove measured reuse, "
             "device-resident output, true zero-copy, or performance claims."
+        ),
+    }
+
+
+def measure_native_collect_k_prepared_host_output_reuse(
+    candidate_rows: Any,
+    prepared_descriptor: dict[str, Any],
+    *,
+    output_buffer: Any,
+    library: Any,
+    symbol_name: str,
+    candidate_source_symbol: str,
+    backend: str | None = None,
+    iterations: int = 3,
+) -> dict[str, Any]:
+    """Measure repeated host-output envelope use of one caller-owned buffer."""
+    iteration_count = int(iterations)
+    if iteration_count <= 0:
+        raise ValueError("prepared host output reuse measurement requires iterations > 0")
+    runs = []
+    elapsed_total_s = 0.0
+    for iteration in range(iteration_count):
+        if output_buffer is None:
+            iteration_buffer_address = None
+        else:
+            iteration_buffer_address = ctypes.addressof(output_buffer)
+        start = time.perf_counter()
+        envelope = run_native_collect_k_bounded_rows_with_prepared_host_output_buffer(
+            candidate_rows,
+            prepared_descriptor,
+            output_buffer=output_buffer,
+            library=library,
+            symbol_name=symbol_name,
+            candidate_source_symbol=candidate_source_symbol,
+            backend=backend,
+        )
+        elapsed_s = time.perf_counter() - start
+        elapsed_total_s += elapsed_s
+        runs.append(
+            {
+                "iteration": iteration,
+                "output_buffer_address": iteration_buffer_address,
+                "elapsed_s": elapsed_s,
+                "valid_shape": envelope["result_buffer_descriptor"]["valid_shape"],
+                "valid_count": envelope["result"]["valid_count"],
+                "prepared_descriptor_compatible": envelope["prepared_descriptor_compatible"],
+            }
+        )
+    addresses = tuple(run["output_buffer_address"] for run in runs)
+    stable_address = len(set(addresses)) <= 1
+    buffer_address = addresses[0]
+    return {
+        "primitive": "COLLECT_K_BOUNDED",
+        "status": "host_prepared_output_reuse_measured_python_wrapper_scope",
+        "track": "python_rtdl",
+        "iterations": iteration_count,
+        "output_buffer_address": buffer_address,
+        "stable_output_buffer_address": stable_address,
+        "runs": tuple(runs),
+        "elapsed_total_s": elapsed_total_s,
+        "average_elapsed_s": elapsed_total_s / iteration_count,
+        "host_reuse_or_device_reuse_measured": True,
+        "measurement_scope": "python_wrapper_ctypes_host_output_buffer_reuse_only",
+        "device_reuse_measured": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This measurement observes repeated Python-wrapper use of one "
+            "caller-owned ctypes host output buffer address only. It does not "
+            "measure device reuse, true zero-copy, public speedup, whole-app "
+            "speedup, stable primitive readiness, or release readiness."
         ),
     }
 
