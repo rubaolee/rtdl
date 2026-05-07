@@ -99,6 +99,15 @@ V1_5_4_MANAGED_BUFFER_TRANSFER_STATES = (
     "instrumentation_planned",
     "measured_candidate",
 )
+V1_5_4_MANAGED_BUFFER_LIFECYCLE_STATES = (
+    "active_unmeasured",
+    "released",
+)
+V1_5_4_MANAGED_BUFFER_TRANSFER_DIRECTIONS = (
+    "host_to_rtdl",
+    "rtdl_to_host",
+    "rtdl_internal",
+)
 
 
 def v1_5_4_device_zero_copy_entry_gate() -> dict[str, Any]:
@@ -762,3 +771,175 @@ def validate_v1_5_4_python_rtdl_managed_buffer_descriptor(descriptor: dict[str, 
         if phrase not in descriptor.get("claim_boundary", ""):
             raise ValueError("v1.5.4 managed buffer descriptor claim boundary is incomplete")
     return descriptor
+
+
+def begin_v1_5_4_python_rtdl_managed_buffer_lifecycle(
+    descriptor: dict[str, Any],
+    *,
+    allocation_id: str,
+    allocation_backend: str | None = None,
+) -> dict[str, Any]:
+    """Create RTDL-owned lifecycle bookkeeping around a managed-buffer descriptor."""
+    validated = validate_v1_5_4_python_rtdl_managed_buffer_descriptor(descriptor)
+    if not allocation_id:
+        raise ValueError("v1.5.4 managed buffer lifecycle requires allocation_id")
+    backend = validated["backend"] if allocation_backend is None else str(allocation_backend)
+    return {
+        "status": "v1_5_4_python_rtdl_managed_buffer_lifecycle_active",
+        "track": "python_rtdl",
+        "allocation_id": str(allocation_id),
+        "allocation_backend": backend,
+        "descriptor": dict(validated),
+        "owner": "rtdl",
+        "lifecycle_state": "active_unmeasured",
+        "host_to_rtdl_transfers": 0,
+        "rtdl_to_host_transfers": 0,
+        "rtdl_internal_transfers": 0,
+        "event_log": (
+            {
+                "event": "begin_lifecycle",
+                "allocation_id": str(allocation_id),
+                "backend": backend,
+                "residency_state": validated["residency_state"],
+            },
+        ),
+        "measured_transfer_count": False,
+        "measured_device_residency": False,
+        "true_zero_copy_evidence_candidate": False,
+        "managed_buffer_zero_copy_authorized": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "partner_tensor_handoff_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This v1.5.4 lifecycle record tracks RTDL-owned managed-buffer "
+            "allocation bookkeeping and transfer events. It is not a native "
+            "allocator and does not prove device residency. It does not "
+            "authorize true zero-copy, public speedup wording, whole-app "
+            "claims, stable primitive promotion, partner tensor handoff, or "
+            "release action."
+        ),
+    }
+
+
+def record_v1_5_4_python_rtdl_managed_buffer_transfer(
+    lifecycle: dict[str, Any],
+    *,
+    direction: str,
+    count: int = 1,
+    note: str | None = None,
+) -> dict[str, Any]:
+    """Record transfer-count instrumentation for an active RTDL-owned buffer."""
+    validated = validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(lifecycle)
+    if validated["lifecycle_state"] != "active_unmeasured":
+        raise ValueError("v1.5.4 managed buffer transfers require an active lifecycle")
+    if direction not in V1_5_4_MANAGED_BUFFER_TRANSFER_DIRECTIONS:
+        raise ValueError("unsupported v1.5.4 managed buffer transfer direction")
+    normalized_count = int(count)
+    if normalized_count < 0:
+        raise ValueError("v1.5.4 managed buffer transfer count must be non-negative")
+    updated = dict(validated)
+    if direction == "host_to_rtdl":
+        updated["host_to_rtdl_transfers"] += normalized_count
+    elif direction == "rtdl_to_host":
+        updated["rtdl_to_host_transfers"] += normalized_count
+    else:
+        updated["rtdl_internal_transfers"] += normalized_count
+    event = {
+        "event": "record_transfer",
+        "direction": direction,
+        "count": normalized_count,
+    }
+    if note is not None:
+        event["note"] = str(note)
+    updated["event_log"] = tuple(validated["event_log"]) + (event,)
+    updated["measured_transfer_count"] = True
+    updated["true_zero_copy_evidence_candidate"] = False
+    return validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(updated)
+
+
+def release_v1_5_4_python_rtdl_managed_buffer_lifecycle(lifecycle: dict[str, Any]) -> dict[str, Any]:
+    """Mark RTDL-owned managed-buffer bookkeeping as released."""
+    validated = validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(lifecycle)
+    if validated["lifecycle_state"] == "released":
+        return validated
+    updated = dict(validated)
+    updated["status"] = "v1_5_4_python_rtdl_managed_buffer_lifecycle_released"
+    updated["lifecycle_state"] = "released"
+    updated["event_log"] = tuple(validated["event_log"]) + (
+        {
+            "event": "release_lifecycle",
+            "allocation_id": validated["allocation_id"],
+        },
+    )
+    return validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(updated)
+
+
+def validate_v1_5_4_python_rtdl_managed_buffer_lifecycle(lifecycle: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(lifecycle, dict):
+        raise ValueError("v1.5.4 managed buffer lifecycle must be a dictionary")
+    if lifecycle.get("status") not in (
+        "v1_5_4_python_rtdl_managed_buffer_lifecycle_active",
+        "v1_5_4_python_rtdl_managed_buffer_lifecycle_released",
+    ):
+        raise ValueError("invalid v1.5.4 managed buffer lifecycle status")
+    if lifecycle.get("track") != "python_rtdl":
+        raise ValueError("v1.5.4 managed buffer lifecycle must stay on Python+RTDL track")
+    if lifecycle.get("owner") != "rtdl":
+        raise ValueError("v1.5.4 managed buffer lifecycle must be RTDL-owned")
+    if not lifecycle.get("allocation_id"):
+        raise ValueError("v1.5.4 managed buffer lifecycle requires allocation_id")
+    if not lifecycle.get("allocation_backend"):
+        raise ValueError("v1.5.4 managed buffer lifecycle requires allocation_backend")
+    descriptor = validate_v1_5_4_python_rtdl_managed_buffer_descriptor(lifecycle.get("descriptor", {}))
+    if descriptor["owner"] != "rtdl":
+        raise ValueError("v1.5.4 managed buffer lifecycle descriptor must be RTDL-owned")
+    state = lifecycle.get("lifecycle_state")
+    if state not in V1_5_4_MANAGED_BUFFER_LIFECYCLE_STATES:
+        raise ValueError("invalid v1.5.4 managed buffer lifecycle state")
+    expected_status = (
+        "v1_5_4_python_rtdl_managed_buffer_lifecycle_released"
+        if state == "released"
+        else "v1_5_4_python_rtdl_managed_buffer_lifecycle_active"
+    )
+    if lifecycle.get("status") != expected_status:
+        raise ValueError("v1.5.4 managed buffer lifecycle status/state mismatch")
+    for field in ("host_to_rtdl_transfers", "rtdl_to_host_transfers", "rtdl_internal_transfers"):
+        if int(lifecycle.get(field, -1)) < 0:
+            raise ValueError("v1.5.4 managed buffer lifecycle transfer counts must be non-negative")
+    if not isinstance(lifecycle.get("event_log"), tuple) or not lifecycle["event_log"]:
+        raise ValueError("v1.5.4 managed buffer lifecycle requires a non-empty tuple event_log")
+    expected_measured_transfer = any(
+        int(lifecycle[field]) > 0
+        for field in ("host_to_rtdl_transfers", "rtdl_to_host_transfers", "rtdl_internal_transfers")
+    )
+    if lifecycle.get("measured_transfer_count") is not expected_measured_transfer:
+        raise ValueError("v1.5.4 managed buffer lifecycle measured transfer flag is inconsistent")
+    if lifecycle.get("measured_device_residency") is not False:
+        raise ValueError("v1.5.4 managed buffer lifecycle must not claim measured device residency")
+    for flag in (
+        "true_zero_copy_evidence_candidate",
+        "managed_buffer_zero_copy_authorized",
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if lifecycle.get(flag) is not False:
+            raise ValueError(f"v1.5.4 managed buffer lifecycle must keep {flag}=False")
+    for phrase in (
+        "allocation bookkeeping",
+        "transfer events",
+        "not a native allocator",
+        "does not prove device residency",
+        "does not authorize true zero-copy",
+        "public speedup wording",
+        "release action",
+    ):
+        if phrase not in lifecycle.get("claim_boundary", ""):
+            raise ValueError("v1.5.4 managed buffer lifecycle claim boundary is incomplete")
+    return lifecycle

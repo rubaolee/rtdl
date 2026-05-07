@@ -230,9 +230,13 @@ from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_device_memory_meas
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_gpu_memory_architecture_consensus_gate
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_python_rtdl_managed_buffer_design_gate
 from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_python_rtdl_managed_buffer_descriptor
+from .v1_5_4_device_zero_copy_boundary import validate_v1_5_4_python_rtdl_managed_buffer_lifecycle
 from .v1_5_4_device_zero_copy_boundary import attach_v1_5_4_device_memory_measurement
+from .v1_5_4_device_zero_copy_boundary import begin_v1_5_4_python_rtdl_managed_buffer_lifecycle
 from .v1_5_4_device_zero_copy_boundary import prepare_v1_5_4_device_memory_descriptor
 from .v1_5_4_device_zero_copy_boundary import prepare_v1_5_4_python_rtdl_managed_buffer_descriptor
+from .v1_5_4_device_zero_copy_boundary import record_v1_5_4_python_rtdl_managed_buffer_transfer
+from .v1_5_4_device_zero_copy_boundary import release_v1_5_4_python_rtdl_managed_buffer_lifecycle
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_gpu_memory_architecture_consensus_gate
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_python_rtdl_managed_buffer_design_gate
 from .v1_5_4_device_zero_copy_boundary import v1_5_4_device_zero_copy_entry_gate
@@ -254,6 +258,8 @@ from .v1_5_4_device_zero_copy_boundary import V1_5_4_PYTHON_RTDL_MANAGED_BUFFER_
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_MANAGED_BUFFER_LIFETIMES
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_MANAGED_BUFFER_RESIDENCY_STATES
 from .v1_5_4_device_zero_copy_boundary import V1_5_4_MANAGED_BUFFER_TRANSFER_STATES
+from .v1_5_4_device_zero_copy_boundary import V1_5_4_MANAGED_BUFFER_LIFECYCLE_STATES
+from .v1_5_4_device_zero_copy_boundary import V1_5_4_MANAGED_BUFFER_TRANSFER_DIRECTIONS
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1442,9 +1448,13 @@ __all__ = [
     "validate_v1_5_4_gpu_memory_architecture_consensus_gate",
     "validate_v1_5_4_python_rtdl_managed_buffer_design_gate",
     "validate_v1_5_4_python_rtdl_managed_buffer_descriptor",
+    "validate_v1_5_4_python_rtdl_managed_buffer_lifecycle",
     "attach_v1_5_4_device_memory_measurement",
+    "begin_v1_5_4_python_rtdl_managed_buffer_lifecycle",
     "prepare_v1_5_4_device_memory_descriptor",
     "prepare_v1_5_4_python_rtdl_managed_buffer_descriptor",
+    "record_v1_5_4_python_rtdl_managed_buffer_transfer",
+    "release_v1_5_4_python_rtdl_managed_buffer_lifecycle",
     "v1_5_4_gpu_memory_architecture_consensus_gate",
     "v1_5_4_python_rtdl_managed_buffer_design_gate",
     "v1_5_4_device_zero_copy_entry_gate",
@@ -1466,6 +1476,8 @@ __all__ = [
     "V1_5_4_MANAGED_BUFFER_LIFETIMES",
     "V1_5_4_MANAGED_BUFFER_RESIDENCY_STATES",
     "V1_5_4_MANAGED_BUFFER_TRANSFER_STATES",
+    "V1_5_4_MANAGED_BUFFER_LIFECYCLE_STATES",
+    "V1_5_4_MANAGED_BUFFER_TRANSFER_DIRECTIONS",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",
