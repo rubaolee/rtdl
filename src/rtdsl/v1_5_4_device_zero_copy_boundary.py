@@ -50,6 +50,13 @@ V1_5_4_DEVICE_MEMORY_ZERO_COPY_CANDIDATE_KINDS = (
     "device_resident",
     "external_shareable_device",
 )
+V1_5_4_DEVICE_MEASUREMENT_REQUIRED_FIELDS = (
+    "host_to_device_transfers",
+    "device_to_host_transfers",
+    "device_residency_observed",
+    "measurement_backend",
+    "measurement_scope",
+)
 
 
 def v1_5_4_device_zero_copy_entry_gate() -> dict[str, Any]:
@@ -272,3 +279,116 @@ def validate_v1_5_4_device_memory_descriptor(descriptor: dict[str, Any]) -> dict
         if phrase not in descriptor.get("claim_boundary", ""):
             raise ValueError("v1.5.4 device memory descriptor claim boundary is incomplete")
     return descriptor
+
+
+def attach_v1_5_4_device_memory_measurement(
+    descriptor: dict[str, Any],
+    *,
+    host_to_device_transfers: int,
+    device_to_host_transfers: int,
+    device_residency_observed: bool,
+    measurement_backend: str,
+    measurement_scope: str,
+    measured_on_real_nvidia: bool = False,
+) -> dict[str, Any]:
+    """Attach measurement metadata without promoting a descriptor to a public claim."""
+    validated = validate_v1_5_4_device_memory_descriptor(descriptor)
+    h2d = int(host_to_device_transfers)
+    d2h = int(device_to_host_transfers)
+    if h2d < 0 or d2h < 0:
+        raise ValueError("v1.5.4 device memory transfer counts must be non-negative")
+    if not measurement_backend:
+        raise ValueError("v1.5.4 device memory measurement requires measurement_backend")
+    if not measurement_scope:
+        raise ValueError("v1.5.4 device memory measurement requires measurement_scope")
+    device_residency = bool(device_residency_observed)
+    measured_transfer_count = True
+    measured_device_residency = device_residency and validated["memory_kind"] in V1_5_4_DEVICE_MEMORY_ZERO_COPY_CANDIDATE_KINDS
+    true_zero_copy_evidence_candidate = (
+        validated["zero_copy_candidate"]
+        and measured_device_residency
+        and h2d == 0
+        and d2h == 0
+        and bool(measured_on_real_nvidia)
+    )
+    updated = dict(validated)
+    updated.update(
+        {
+            "status": "v1_5_4_device_memory_descriptor_measured_candidate",
+            "host_to_device_transfers": h2d,
+            "device_to_host_transfers": d2h,
+            "device_residency_observed": device_residency,
+            "measurement_backend": str(measurement_backend),
+            "measurement_scope": str(measurement_scope),
+            "measured_on_real_nvidia": bool(measured_on_real_nvidia),
+            "measured_device_residency": measured_device_residency,
+            "measured_transfer_count": measured_transfer_count,
+            "true_zero_copy_evidence_candidate": true_zero_copy_evidence_candidate,
+            "true_zero_copy_authorized": False,
+            "public_speedup_wording_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "stable_public_primitive_authorized": False,
+            "partner_tensor_handoff_authorized": False,
+            "release_action_authorized": False,
+            "claim_boundary": (
+                "This v1.5.4 measurement envelope records transfer counts and "
+                "device residency observations for a descriptor. Even if it "
+                "identifies a true zero-copy evidence candidate, it does not "
+                "authorize true zero-copy wording, public speedup wording, "
+                "whole-app claims, stable primitive promotion, partner tensor "
+                "handoff, or release action without separate reviewed evidence."
+            ),
+        }
+    )
+    return updated
+
+
+def validate_v1_5_4_device_memory_measurement(measurement: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(measurement, dict):
+        raise ValueError("v1.5.4 device memory measurement must be a dictionary")
+    if measurement.get("status") != "v1_5_4_device_memory_descriptor_measured_candidate":
+        raise ValueError("invalid v1.5.4 device memory measurement status")
+    for field in V1_5_4_DEVICE_MEASUREMENT_REQUIRED_FIELDS:
+        if field not in measurement:
+            raise ValueError(f"v1.5.4 device memory measurement missing {field}")
+    h2d = int(measurement["host_to_device_transfers"])
+    d2h = int(measurement["device_to_host_transfers"])
+    if h2d < 0 or d2h < 0:
+        raise ValueError("v1.5.4 device memory measurement transfer counts must be non-negative")
+    kind = measurement.get("memory_kind")
+    zero_copy_candidate = kind in V1_5_4_DEVICE_MEMORY_ZERO_COPY_CANDIDATE_KINDS
+    expected_measured_residency = bool(measurement["device_residency_observed"]) and zero_copy_candidate
+    if measurement.get("measured_device_residency") is not expected_measured_residency:
+        raise ValueError("invalid v1.5.4 measured device residency flag")
+    if measurement.get("measured_transfer_count") is not True:
+        raise ValueError("v1.5.4 device memory measurement must record transfer counts")
+    expected_evidence_candidate = (
+        zero_copy_candidate
+        and expected_measured_residency
+        and h2d == 0
+        and d2h == 0
+        and bool(measurement.get("measured_on_real_nvidia"))
+    )
+    if measurement.get("true_zero_copy_evidence_candidate") is not expected_evidence_candidate:
+        raise ValueError("invalid v1.5.4 true zero-copy evidence candidate flag")
+    for flag in (
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "partner_tensor_handoff_authorized",
+        "release_action_authorized",
+    ):
+        if measurement.get(flag) is not False:
+            raise ValueError(f"v1.5.4 device memory measurement must keep {flag}=False")
+    for phrase in (
+        "records transfer counts and device residency observations",
+        "true zero-copy evidence candidate",
+        "does not authorize true zero-copy wording",
+        "public speedup wording",
+        "partner tensor handoff",
+        "release action",
+    ):
+        if phrase not in measurement.get("claim_boundary", ""):
+            raise ValueError("v1.5.4 device memory measurement claim boundary is incomplete")
+    return measurement
