@@ -65,6 +65,7 @@ V1_5_3_TYPED_HOST_PARITY_REQUIRED_EVIDENCE = (
     "docs/reports/goal1467_v1_5_3_typed_host_buffer_parity_runbook_2026-05-07.md",
     "docs/reports/goal1467_linux_smoke_v1_5_3_typed_host_buffer_2026-05-07.md",
 )
+V1_5_3_TYPED_HOST_PARITY_REQUIRED_PASS_COUNT = 4
 
 
 def v1_5_3_reduced_copy_contract() -> dict[str, Any]:
@@ -212,6 +213,71 @@ def validate_v1_5_3_typed_host_buffer_parity_gate() -> dict[str, Any]:
         if phrase not in gate["claim_boundary"]:
             raise ValueError("v1.5.3 typed host parity claim boundary is incomplete")
     return gate
+
+
+def validate_v1_5_3_typed_host_pod_parity_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    """Fail-closed acceptance check for a Goal1467 required-backend pod payload."""
+    if not isinstance(payload, dict):
+        raise ValueError("v1.5.3 typed host pod parity payload must be a dictionary")
+    backend_summary = payload.get("backend_summary")
+    if not isinstance(backend_summary, dict):
+        raise ValueError("v1.5.3 typed host pod parity payload missing backend_summary")
+    if tuple(payload.get("required_backends", ())) != V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS:
+        raise ValueError("v1.5.3 typed host pod parity required backends mismatch")
+    if payload.get("accepted") is not True:
+        raise ValueError("v1.5.3 typed host pod parity payload is not accepted")
+    if tuple(payload.get("skipped_required", ())) != ():
+        raise ValueError("v1.5.3 typed host pod parity has skipped required backend rows")
+    failed = payload.get("failed", ())
+    if tuple(failed) != ():
+        raise ValueError("v1.5.3 typed host pod parity has failed rows")
+    for backend in V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS:
+        summary = backend_summary.get(backend)
+        if not isinstance(summary, dict):
+            raise ValueError(f"v1.5.3 typed host pod parity missing {backend} summary")
+        if int(summary.get("pass", -1)) != V1_5_3_TYPED_HOST_PARITY_REQUIRED_PASS_COUNT:
+            raise ValueError(f"v1.5.3 typed host pod parity {backend} pass count mismatch")
+        if int(summary.get("fail", -1)) != 0:
+            raise ValueError(f"v1.5.3 typed host pod parity {backend} fail count must be zero")
+        if int(summary.get("skipped", -1)) != 0:
+            raise ValueError(f"v1.5.3 typed host pod parity {backend} skipped count must be zero")
+    for flag in (
+        "true_zero_copy_authorized",
+        "public_speedup_wording_authorized",
+        "whole_app_speedup_claim_authorized",
+        "stable_public_primitive_authorized",
+        "release_action_authorized",
+    ):
+        if payload.get(flag) is not False:
+            raise ValueError(f"v1.5.3 typed host pod parity payload must keep {flag}=False")
+    boundary = str(payload.get("claim_boundary", ""))
+    for phrase in (
+        "does not authorize true zero-copy",
+        "public speedup wording",
+        "partner tensor handoff",
+        "release action",
+    ):
+        if phrase not in boundary:
+            raise ValueError("v1.5.3 typed host pod parity claim boundary is incomplete")
+    return {
+        "status": "accepted_required_embree_optix_pod_parity_payload",
+        "backend_parity_where_claimed_satisfied": True,
+        "required_pod_parity_accepted": True,
+        "required_backends": V1_5_3_TYPED_HOST_PARITY_REQUIRED_BACKENDS,
+        "required_pass_count_per_backend": V1_5_3_TYPED_HOST_PARITY_REQUIRED_PASS_COUNT,
+        "accepted": True,
+        "true_zero_copy_authorized": False,
+        "public_speedup_wording_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "stable_public_primitive_authorized": False,
+        "release_action_authorized": False,
+        "claim_boundary": (
+            "This acceptance check covers required Embree+OptiX typed-host "
+            "parity payload shape only. It does not authorize true zero-copy, "
+            "public speedup wording, whole-app claims, stable primitive "
+            "promotion, partner tensor handoff, or release action."
+        ),
+    }
 
 
 def prepare_collect_k_i64_host_input_buffer(
