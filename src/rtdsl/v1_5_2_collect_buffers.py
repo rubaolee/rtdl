@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ctypes
+from pathlib import Path
 import time
 from typing import Any
 
@@ -55,6 +56,39 @@ V1_5_2_PREPARED_BUFFER_REUSE_BLOCKED_CLAIMS = (
     "whole_app_speedup",
     "stable_public_primitive",
     "release_action",
+)
+V1_5_2_RELEASE_SURFACE_GATE_STATUS = (
+    "candidate_docs_drafted_pending_external_release_surface_review"
+)
+V1_5_2_RELEASE_SURFACE_CLASSIFICATION = "documented_experimental_evidence_candidate"
+V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS = (
+    "docs/release_reports/v1_5_2/README.md",
+    "docs/release_reports/v1_5_2/prepared_host_output_buffers.md",
+    "docs/release_reports/v1_5_2/release_surface_gate.md",
+)
+V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES = (
+    "documented experimental evidence candidate",
+    "prepared host-output",
+    "COLLECT_K_BOUNDED",
+    "Python+RTDL",
+    "Embree and OptiX",
+    "evidence_complete_claims_blocked",
+    "prepared_buffer_reuse_proven remains False",
+    "not stable primitive promotion",
+    "no public speedup wording",
+    "no zero-copy wording",
+    "no whole-app claims",
+    "no release tag action",
+    "pending external release-surface review",
+    "PYTHONPATH=src:. python",
+)
+V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES = (
+    "prepared buffer reuse is proven",
+    "true zero-copy is authorized",
+    "public speedup is authorized",
+    "stable primitive promotion is authorized",
+    "release tag action is authorized",
+    "whole-app speedup is authorized",
 )
 
 
@@ -203,6 +237,114 @@ def validate_v1_5_2_prepared_buffer_reuse_gate() -> dict[str, Any]:
     ):
         if phrase not in gate["claim_boundary"]:
             raise ValueError("prepared buffer reuse gate claim boundary is incomplete")
+    return gate
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
+def _read_release_surface_doc(relative_path: str) -> str:
+    path = _repo_root() / relative_path
+    if not path.exists():
+        raise ValueError(f"missing v1.5.2 release-surface candidate doc: {relative_path}")
+    return path.read_text(encoding="utf-8")
+
+
+def v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any]:
+    """Return the v1.5.2 candidate-doc gate for prepared host-output evidence."""
+    evidence_gate = validate_v1_5_2_prepared_buffer_reuse_gate()
+    docs = {
+        relative_path: _read_release_surface_doc(relative_path)
+        for relative_path in V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS
+    }
+    combined = "\n".join(docs.values())
+    missing_required_phrases = tuple(
+        phrase for phrase in V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES if phrase not in combined
+    )
+    present_forbidden_phrases = tuple(
+        phrase for phrase in V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES if phrase in combined
+    )
+    return {
+        "status": V1_5_2_RELEASE_SURFACE_GATE_STATUS,
+        "primitive": evidence_gate["primitive"],
+        "track": evidence_gate["track"],
+        "classification": V1_5_2_RELEASE_SURFACE_CLASSIFICATION,
+        "prepared_evidence_gate_status": evidence_gate["status"],
+        "required_docs": V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS,
+        "required_phrases": V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES,
+        "forbidden_phrases": V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES,
+        "missing_required_phrases": missing_required_phrases,
+        "present_forbidden_phrases": present_forbidden_phrases,
+        "candidate_docs_drafted": not missing_required_phrases and not present_forbidden_phrases,
+        "external_release_surface_review_required": True,
+        "public_docs_change_authorized_by_this_gate": False,
+        "prepared_buffer_reuse_claim_authorized_by_this_gate": False,
+        "stable_promotion_authorized_by_this_gate": False,
+        "public_speedup_wording_authorized_by_this_gate": False,
+        "zero_copy_wording_authorized_by_this_gate": False,
+        "whole_app_speedup_claim_authorized_by_this_gate": False,
+        "release_tag_action_authorized_by_this_gate": False,
+        "allowed_next_actions": (
+            "request_external_release_surface_review",
+            "keep_v1_5_2_candidate_docs_unlinked_until_review_accepts",
+            "continue_python_rtdl_track_hardening",
+        ),
+        "claim_boundary": (
+            "The v1.5.2 prepared host-output candidate docs are drafted for "
+            "external release-surface review only. This gate does not authorize "
+            "public docs links, prepared-buffer reuse claims, stable promotion, "
+            "speedup wording, zero-copy wording, whole-app claims, or release tag action."
+        ),
+    }
+
+
+def validate_v1_5_2_prepared_host_output_release_surface_gate() -> dict[str, Any]:
+    gate = v1_5_2_prepared_host_output_release_surface_gate()
+    if gate["status"] != V1_5_2_RELEASE_SURFACE_GATE_STATUS:
+        raise ValueError("invalid v1.5.2 release-surface gate status")
+    if gate["classification"] != V1_5_2_RELEASE_SURFACE_CLASSIFICATION:
+        raise ValueError("invalid v1.5.2 release-surface classification")
+    if tuple(gate["required_docs"]) != V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS:
+        raise ValueError("v1.5.2 release-surface required docs mismatch")
+    if tuple(gate["missing_required_phrases"]) != ():
+        raise ValueError(
+            "v1.5.2 release-surface docs are missing required phrases: "
+            f"{gate['missing_required_phrases']}"
+        )
+    if tuple(gate["present_forbidden_phrases"]) != ():
+        raise ValueError(
+            "v1.5.2 release-surface docs contain forbidden phrases: "
+            f"{gate['present_forbidden_phrases']}"
+        )
+    if gate["candidate_docs_drafted"] is not True:
+        raise ValueError("v1.5.2 candidate docs must be drafted")
+    if gate["external_release_surface_review_required"] is not True:
+        raise ValueError("v1.5.2 release surface must require external review")
+    false_flags = (
+        "public_docs_change_authorized_by_this_gate",
+        "prepared_buffer_reuse_claim_authorized_by_this_gate",
+        "stable_promotion_authorized_by_this_gate",
+        "public_speedup_wording_authorized_by_this_gate",
+        "zero_copy_wording_authorized_by_this_gate",
+        "whole_app_speedup_claim_authorized_by_this_gate",
+        "release_tag_action_authorized_by_this_gate",
+    )
+    for flag in false_flags:
+        if gate[flag] is not False:
+            raise ValueError(f"v1.5.2 release-surface gate must keep {flag}=False")
+    for phrase in (
+        "external release-surface review only",
+        "does not authorize public docs links",
+        "prepared-buffer reuse claims",
+        "stable promotion",
+        "speedup wording",
+        "zero-copy wording",
+        "whole-app claims",
+        "release tag action",
+    ):
+        if phrase not in gate["claim_boundary"]:
+            raise ValueError("v1.5.2 release-surface claim boundary is incomplete")
     return gate
 
 

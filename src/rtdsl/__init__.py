@@ -173,8 +173,10 @@ from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepa
 from .v1_5_2_collect_buffers import run_native_collect_k_bounded_rows_with_prepared_result_buffer
 from .v1_5_2_collect_buffers import validate_collect_result_buffer_descriptor
 from .v1_5_2_collect_buffers import validate_native_collect_k_prepared_host_output_overflow_fail_closed
+from .v1_5_2_collect_buffers import validate_v1_5_2_prepared_host_output_release_surface_gate
 from .v1_5_2_collect_buffers import validate_v1_5_2_prepared_buffer_reuse_gate
 from .v1_5_2_collect_buffers import validate_v1_5_2_collect_buffer_contract
+from .v1_5_2_collect_buffers import v1_5_2_prepared_host_output_release_surface_gate
 from .v1_5_2_collect_buffers import v1_5_2_prepared_buffer_reuse_gate
 from .v1_5_2_collect_buffers import v1_5_2_collect_buffer_contract
 from .v1_5_2_collect_buffers import V1_5_2_COLLECT_BUFFER_COPY_BOUNDARIES
@@ -191,6 +193,11 @@ from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_GATE_STATUS
 from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE
 from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE
 from .v1_5_2_collect_buffers import V1_5_2_PREPARED_BUFFER_REUSE_SATISFIED_EVIDENCE
+from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_CLASSIFICATION
+from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES
+from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_GATE_STATUS
+from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS
+from .v1_5_2_collect_buffers import V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -1322,8 +1329,10 @@ __all__ = [
     "run_native_collect_k_bounded_rows_with_prepared_result_buffer",
     "validate_collect_result_buffer_descriptor",
     "validate_native_collect_k_prepared_host_output_overflow_fail_closed",
+    "validate_v1_5_2_prepared_host_output_release_surface_gate",
     "validate_v1_5_2_prepared_buffer_reuse_gate",
     "validate_v1_5_2_collect_buffer_contract",
+    "v1_5_2_prepared_host_output_release_surface_gate",
     "v1_5_2_prepared_buffer_reuse_gate",
     "v1_5_2_collect_buffer_contract",
     "V1_5_2_COLLECT_BUFFER_COPY_BOUNDARIES",
@@ -1340,6 +1349,11 @@ __all__ = [
     "V1_5_2_PREPARED_BUFFER_REUSE_MISSING_EVIDENCE",
     "V1_5_2_PREPARED_BUFFER_REUSE_REQUIRED_EVIDENCE",
     "V1_5_2_PREPARED_BUFFER_REUSE_SATISFIED_EVIDENCE",
+    "V1_5_2_RELEASE_SURFACE_CLASSIFICATION",
+    "V1_5_2_RELEASE_SURFACE_FORBIDDEN_PHRASES",
+    "V1_5_2_RELEASE_SURFACE_GATE_STATUS",
+    "V1_5_2_RELEASE_SURFACE_REQUIRED_DOCS",
+    "V1_5_2_RELEASE_SURFACE_REQUIRED_PHRASES",
     "engine_feature_support",
     "engine_feature_support_matrix",
     "app_engine_support",
