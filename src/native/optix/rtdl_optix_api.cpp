@@ -520,7 +520,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             return;
 
         (void)get_optix_context();
-        if (row_width == 2 && candidate_count <= 1024) {
+        if (row_width == 2 && candidate_count <= 2048) {
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
                 std::string ptx = compile_to_ptx(
                     kCollectKBoundedI64RowWidth2SortKernelSrc,
@@ -552,7 +552,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             CU_CHECK(cuLaunchKernel(
                 g_collect_k_i64_row_width2_sort.fn,
                 1, 1, 1,
-                static_cast<unsigned>(padded_count), 1, 1,
+                static_cast<unsigned>(std::min<size_t>(padded_count, 1024)), 1, 1,
                 shared_bytes, nullptr, args, nullptr));
             CU_CHECK(cuStreamSynchronize(nullptr));
 

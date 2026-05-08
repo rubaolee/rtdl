@@ -1854,32 +1854,35 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
     int64_t* first = shared;
     int64_t* second = shared + padded_count;
     const size_t tid = static_cast<size_t>(threadIdx.x);
+    const size_t stride = static_cast<size_t>(blockDim.x);
 
-    if (tid < padded_count) {
-        if (tid < candidate_count) {
-            first[tid] = candidate_rows[tid * 2];
-            second[tid] = candidate_rows[tid * 2 + 1];
+    for (size_t index = tid; index < padded_count; index += stride) {
+        if (index < candidate_count) {
+            first[index] = candidate_rows[index * 2];
+            second[index] = candidate_rows[index * 2 + 1];
         } else {
-            first[tid] = INT64_MAX;
-            second[tid] = INT64_MAX;
+            first[index] = INT64_MAX;
+            second[index] = INT64_MAX;
         }
     }
     __syncthreads();
 
     for (size_t k = 2; k <= padded_count; k <<= 1) {
         for (size_t j = k >> 1; j > 0; j >>= 1) {
-            const size_t peer = tid ^ j;
-            if (peer > tid && peer < padded_count) {
-                const bool ascending = (tid & k) == 0;
-                const int cmp = collect_k_pair_compare(first[tid], second[tid], first[peer], second[peer]);
-                const bool should_swap = ascending ? (cmp > 0) : (cmp < 0);
-                if (should_swap) {
-                    const int64_t tmp_first = first[tid];
-                    const int64_t tmp_second = second[tid];
-                    first[tid] = first[peer];
-                    second[tid] = second[peer];
-                    first[peer] = tmp_first;
-                    second[peer] = tmp_second;
+            for (size_t index = tid; index < padded_count; index += stride) {
+                const size_t peer = index ^ j;
+                if (peer > index && peer < padded_count) {
+                    const bool ascending = (index & k) == 0;
+                    const int cmp = collect_k_pair_compare(first[index], second[index], first[peer], second[peer]);
+                    const bool should_swap = ascending ? (cmp > 0) : (cmp < 0);
+                    if (should_swap) {
+                        const int64_t tmp_first = first[index];
+                        const int64_t tmp_second = second[index];
+                        first[index] = first[peer];
+                        second[index] = second[peer];
+                        first[peer] = tmp_first;
+                        second[peer] = tmp_second;
+                    }
                 }
             }
             __syncthreads();
