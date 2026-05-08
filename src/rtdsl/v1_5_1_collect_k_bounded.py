@@ -978,6 +978,12 @@ def collect_native_i64_rows_with_backend_symbol(
             f"{capacity}; emitted {emitted}; "
             "failure_mode=fail_closed_overflow; partial_result_returned=False"
         )
+    if emitted > capacity:
+        raise RuntimeError(
+            "COLLECT_K_BOUNDED native emitted_count exceeded capacity "
+            f"{capacity}; emitted {emitted}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
     rows = tuple(
         tuple(
             int(output_array[row_index * row_width + column_index])
@@ -1108,6 +1114,12 @@ def collect_native_i64_rows_into_prepared_output_buffer(
     if int(overflowed.value) != 0:
         raise RuntimeError(
             "COLLECT_K_BOUNDED overflowed capacity "
+            f"{capacity}; emitted {emitted}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    if emitted > capacity:
+        raise RuntimeError(
+            "COLLECT_K_BOUNDED native emitted_count exceeded capacity "
             f"{capacity}; emitted {emitted}; "
             "failure_mode=fail_closed_overflow; partial_result_returned=False"
         )
