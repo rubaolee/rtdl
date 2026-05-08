@@ -81,18 +81,24 @@ class Goal1517EmbreePreparedSummaryReusePerfTest(unittest.TestCase):
             goal1517.validate_payload(payload)
 
     def test_measured_artifacts_are_valid_when_present(self):
-        if not REPORT_JSON.exists() or not REPORT_MD.exists():
-            self.skipTest("Goal1517 measured artifacts are not present yet")
+        self.assertTrue(REPORT_JSON.exists())
+        self.assertTrue(REPORT_MD.exists())
         import json
 
         payload = json.loads(REPORT_JSON.read_text(encoding="utf-8"))
         goal1517.validate_payload(payload)
         self.assertTrue(payload["valid"])
         self.assertEqual("Goal1517", payload["goal"])
+        self.assertEqual("lx1", payload["host"])
+        self.assertEqual([512, 2048, 8192], payload["copies"])
         self.assertGreaterEqual(len(payload["cases"]), 1)
+        for case in payload["cases"]:
+            self.assertGreater(float(case["outlier"]["prepared_speedup_vs_one_shot"]), 1.0)
+            self.assertGreater(float(case["dbscan"]["prepared_speedup_vs_one_shot"]), 1.0)
         markdown = REPORT_MD.read_text(encoding="utf-8")
         self.assertIn("outlier", markdown)
         self.assertIn("dbscan", markdown)
+        self.assertIn("Prepared/one-shot ratio", markdown)
         self.assertIn("does not authorize public speedup wording", markdown)
 
 
