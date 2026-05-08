@@ -2544,6 +2544,30 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact_level(
         rows_out[output_index * 2 + 1] = pair_merged_rows[local_index * 2 + 1];
     }
 }
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_prefix_offsets_level(
+        const uint32_t* block_counts,
+        size_t pair_count,
+        size_t blocks_per_pair,
+        uint32_t* block_offsets,
+        uint32_t* pair_offsets,
+        size_t* pair_counts)
+{
+    const size_t pair_index = blockIdx.x;
+    if (pair_index >= pair_count || threadIdx.x != 0)
+        return;
+
+    uint32_t running_total = 0;
+    for (size_t block_index = 0; block_index < blocks_per_pair; ++block_index) {
+        const size_t global_block = pair_index * blocks_per_pair + block_index;
+        block_offsets[global_block] = running_total;
+        running_total += block_counts[global_block];
+    }
+    // Offsets are local to each pair in this path; the existing compact kernel
+    // subtracts pair_offsets[pair_index], so keep the pair base at zero.
+    pair_offsets[pair_index] = 0;
+    pair_counts[pair_index] = static_cast<size_t>(running_total);
+}
 )CUDA";
 
 static const char* kFixedRadiusNeighbors3DKernelSrc = R"CUDA(
@@ -3165,6 +3189,7 @@ static KnnCuFunction      g_collect_k_i64_row_width2_final_compact;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_prefix_offsets_level;
 
 // GPU structs for upload
 

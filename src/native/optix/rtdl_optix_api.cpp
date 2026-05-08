@@ -652,6 +652,12 @@ static bool collect_k_use_batched_compact_level()
     return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
 }
 
+static bool collect_k_use_device_prefix_compact()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT");
+    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+}
+
 static bool collect_k_reuse_workspace()
 {
     const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
@@ -907,6 +913,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     &g_collect_k_i64_row_width2_final_compact_level.fn,
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_compact_level"));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_final_prefix_offsets_level"));
             });
             profile.add_since(profile.module_load_ms, module_start);
 
@@ -1140,7 +1150,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             };
             auto launch_parallel_compact_level = [&](size_t pair_count, size_t output_capacity,
                                                      size_t blocks_per_pair,
-                                                     std::vector<size_t>* pair_counts_out) {
+                                                     std::vector<size_t>* pair_counts_out,
+                                                     bool use_device_prefix_compact) {
                 const unsigned threads = 256;
                 const unsigned total_blocks = static_cast<unsigned>(pair_count * blocks_per_pair);
                 void* materialize_args[] = {
@@ -1174,28 +1185,46 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     total_blocks, 1, 1,
                     threads, 1, 1,
                     sizeof(uint32_t) * threads, nullptr, mark_args, nullptr));
-                CU_CHECK(cuStreamSynchronize(nullptr));
 
-                std::array<uint32_t, 512> block_counts = {};
-                std::array<uint32_t, 512> block_offsets = {};
-                std::array<uint32_t, 64> pair_offsets = {};
-                download(block_counts.data(), final_block_counts.ptr, total_blocks);
-                uint32_t running_total = 0;
                 pair_counts_out->clear();
-                pair_counts_out->reserve(pair_count);
-                for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
-                    pair_offsets[pair_index] = running_total;
-                    uint32_t pair_total = 0;
-                    for (size_t block_index = 0; block_index < blocks_per_pair; ++block_index) {
-                        const size_t global_block = pair_index * blocks_per_pair + block_index;
-                        block_offsets[global_block] = running_total;
-                        pair_total += block_counts[global_block];
-                        running_total += block_counts[global_block];
+                pair_counts_out->resize(pair_count);
+                if (use_device_prefix_compact) {
+                    void* prefix_args[] = {
+                        &final_block_counts.ptr,
+                        &pair_count,
+                        &blocks_per_pair,
+                        &final_block_offsets.ptr,
+                        &final_pair_offsets.ptr,
+                        &merge_emitted_device.ptr,
+                    };
+                    CU_CHECK(cuLaunchKernel(
+                        g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                        static_cast<unsigned>(pair_count), 1, 1,
+                        1, 1, 1,
+                        0, nullptr, prefix_args, nullptr));
+                    download(pair_counts_out->data(), merge_emitted_device.ptr, pair_count);
+                } else {
+                    CU_CHECK(cuStreamSynchronize(nullptr));
+
+                    std::array<uint32_t, 512> block_counts = {};
+                    std::array<uint32_t, 512> block_offsets = {};
+                    std::array<uint32_t, 64> pair_offsets = {};
+                    download(block_counts.data(), final_block_counts.ptr, total_blocks);
+                    uint32_t running_total = 0;
+                    for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
+                        pair_offsets[pair_index] = running_total;
+                        uint32_t pair_total = 0;
+                        for (size_t block_index = 0; block_index < blocks_per_pair; ++block_index) {
+                            const size_t global_block = pair_index * blocks_per_pair + block_index;
+                            block_offsets[global_block] = running_total;
+                            pair_total += block_counts[global_block];
+                            running_total += block_counts[global_block];
+                        }
+                        (*pair_counts_out)[pair_index] = static_cast<size_t>(pair_total);
                     }
-                    pair_counts_out->push_back(static_cast<size_t>(pair_total));
+                    upload(final_block_offsets.ptr, block_offsets.data(), total_blocks);
+                    upload(final_pair_offsets.ptr, pair_offsets.data(), pair_count);
                 }
-                upload(final_block_offsets.ptr, block_offsets.data(), total_blocks);
-                upload(final_pair_offsets.ptr, pair_offsets.data(), pair_count);
 
                 void* compact_args[] = {
                     &final_merged_rows.ptr,
@@ -1254,6 +1283,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             uint64_t merge_launches = 0;
             const bool use_parallel_final_compact = collect_k_use_parallel_final_compact();
             const bool use_batched_compact_level = collect_k_use_batched_compact_level();
+            const bool use_device_prefix_compact = collect_k_use_device_prefix_compact();
             const size_t parallel_compact_min_capacity =
                 collect_k_parallel_compact_min_capacity(use_cub_tile_sort);
             while (current_rows.size() > 1) {
@@ -1297,9 +1327,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         *h2d_transfers_out += static_cast<uint64_t>(pair_count * 5);
                         const size_t blocks_per_pair = (output_segment_capacity + 255) / 256;
                         launch_parallel_compact_level(
-                            pair_count, output_segment_capacity, blocks_per_pair, &next_counts);
-                        merge_launches += 3;
-                        profile.merge_launches += 3;
+                            pair_count, output_segment_capacity, blocks_per_pair, &next_counts,
+                            use_device_prefix_compact);
+                        merge_launches += use_device_prefix_compact ? 4 : 3;
+                        profile.merge_launches += use_device_prefix_compact ? 4 : 3;
                     } else {
                         for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
                             CUdeviceptr pair_output = current_rows.size() == 2
