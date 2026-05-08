@@ -40,18 +40,28 @@ PROFILE_ENV = {
     "RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS": "1",
 }
 
+CANDIDATE_PRESET_ENV = {
+    "RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE": "1",
+}
+
 
 def _run(cmd: list[str], *, env: dict[str, str] | None = None) -> None:
     print("+ " + " ".join(cmd), flush=True)
     subprocess.run(cmd, cwd=ROOT, env=env, check=True)
 
 
-def _profile_env(*, enable_alias: bool, ld_library_path: str | None) -> dict[str, str]:
+def _profile_env(*, enable_alias: bool, ld_library_path: str | None, use_candidate_preset: bool = False) -> dict[str, str]:
     env = os.environ.copy()
-    env.update(PROFILE_ENV)
-    if enable_alias:
-        env["RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"] = "1"
+    if use_candidate_preset:
+        for key in PROFILE_ENV:
+            env.pop(key, None)
+        env.pop("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC", None)
+        env.update(CANDIDATE_PRESET_ENV)
     else:
+        env.update(PROFILE_ENV)
+    if enable_alias and not use_candidate_preset:
+        env["RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"] = "1"
+    elif not use_candidate_preset:
         env.pop("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC", None)
     existing_pythonpath = env.get("PYTHONPATH")
     env["PYTHONPATH"] = f"src{os.pathsep}." + (f"{os.pathsep}{existing_pythonpath}" if existing_pythonpath else "")
@@ -69,6 +79,7 @@ def _run_profile(
     label: str,
     enable_alias: bool,
     ld_library_path: str | None,
+    use_candidate_preset: bool = False,
 ) -> Path:
     json_path = output_prefix.with_name(f"{output_prefix.name}_{label}.json")
     md_path = output_prefix.with_name(f"{output_prefix.name}_{label}.md")
@@ -89,7 +100,14 @@ def _run_profile(
         "--md-out",
         str(md_path),
     ]
-    _run(cmd, env=_profile_env(enable_alias=enable_alias, ld_library_path=ld_library_path))
+    _run(
+        cmd,
+        env=_profile_env(
+            enable_alias=enable_alias,
+            ld_library_path=ld_library_path,
+            use_candidate_preset=use_candidate_preset,
+        ),
+    )
     return json_path
 
 
@@ -108,6 +126,7 @@ def _write_summary(
     alias_path: Path,
     targeted_baseline_path: Path | None,
     targeted_alias_path: Path | None,
+    candidate_preset_path: Path | None,
 ) -> None:
     baseline = _load_json(baseline_path)
     alias = _load_json(alias_path)
@@ -143,6 +162,7 @@ def _write_summary(
         "rows": rows,
         "targeted_baseline_json": str(targeted_baseline_path) if targeted_baseline_path else None,
         "targeted_alias_json": str(targeted_alias_path) if targeted_alias_path else None,
+        "candidate_preset_json": str(candidate_preset_path) if candidate_preset_path else None,
     }
     summary_json = output_prefix.with_name(f"{output_prefix.name}_summary.json")
     summary_md = output_prefix.with_name(f"{output_prefix.name}_summary.md")
@@ -163,6 +183,7 @@ def _write_summary(
         f"- Alias parity: `{summary['alias_parity']}`",
         f"- Baseline topology: `{summary['baseline_topology']}`",
         f"- Alias topology: `{summary['alias_topology']}`",
+        f"- Candidate preset smoke JSON: `{summary['candidate_preset_json']}`",
         "",
         "## Sweep",
         "",
@@ -194,6 +215,11 @@ def main() -> int:
     parser.add_argument("--repeats", type=int, default=5, help="Sweep repeats")
     parser.add_argument("--targeted-repeats", type=int, default=9, help="Targeted rerun repeats")
     parser.add_argument("--skip-targeted", action="store_true", help="Skip targeted rerun")
+    parser.add_argument(
+        "--candidate-preset-smoke",
+        action="store_true",
+        help="Also run a cheap targeted profile with only RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE enabled",
+    )
     parser.add_argument("--build", action="store_true", help="Build OptiX library before running")
     parser.add_argument("--optix-prefix", default="/root/vendor/optix-sdk", help="OptiX SDK prefix for --build")
     parser.add_argument(
@@ -235,6 +261,7 @@ def main() -> int:
 
     targeted_baseline_path = None
     targeted_alias_path = None
+    candidate_preset_path = None
     if not args.skip_targeted:
         targeted_baseline_path = _run_profile(
             library=library,
@@ -255,12 +282,25 @@ def main() -> int:
             ld_library_path=args.ld_library_path,
         )
 
+    if args.candidate_preset_smoke:
+        candidate_preset_path = _run_profile(
+            library=library,
+            counts=TARGETED_COUNTS,
+            repeats=1,
+            output_prefix=output_prefix,
+            label="candidate_preset",
+            enable_alias=False,
+            ld_library_path=args.ld_library_path,
+            use_candidate_preset=True,
+        )
+
     _write_summary(
         output_prefix=output_prefix,
         baseline_path=baseline_path,
         alias_path=alias_path,
         targeted_baseline_path=targeted_baseline_path,
         targeted_alias_path=targeted_alias_path,
+        candidate_preset_path=candidate_preset_path,
     )
     print(json.dumps({"status": "goal1579_next_arch_validation_recorded", "output_prefix": str(output_prefix)}, indent=2))
     return 0

@@ -626,10 +626,20 @@ struct CollectKStageProfile {
     }
 };
 
+static bool collect_k_env_enabled(const char* name)
+{
+    const char* raw = std::getenv(name);
+    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+}
+
+static bool collect_k_use_fastest_candidate()
+{
+    return collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE");
+}
+
 static bool collect_k_use_parallel_final_compact()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT");
 }
 
 static size_t collect_k_parallel_compact_min_capacity(bool use_cub_tile_sort)
@@ -646,62 +656,52 @@ static size_t collect_k_parallel_compact_min_capacity(bool use_cub_tile_sort)
 
 static bool collect_k_use_cub_tile_sort()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT");
 }
 
 static bool collect_k_use_batched_compact_level()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL");
 }
 
 static bool collect_k_use_device_prefix_compact()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT");
 }
 
 static bool collect_k_use_derived_level_descriptors()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS");
 }
 
 static bool collect_k_use_device_level_counts()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS");
 }
 
 static bool collect_k_use_device_final_counts()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS");
 }
 
 static bool collect_k_use_carry_pointer_diagnostic()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC");
 }
 
 static bool collect_k_use_carry_pointer_device_counts_diagnostic()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC");
 }
 
 static bool collect_k_use_derived_carry_alias_diagnostic()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC");
 }
 
 static bool collect_k_reuse_workspace()
 {
-    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
-    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+    return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
 }
 
 struct CollectKRowWidth2Workspace {

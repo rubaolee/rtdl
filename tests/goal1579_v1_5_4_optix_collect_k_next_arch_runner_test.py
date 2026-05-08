@@ -13,6 +13,8 @@ class Goal1579V154OptixCollectKNextArchRunnerTest(unittest.TestCase):
         self.assertIn("TARGETED_COUNTS = [49153, 65536, 65537]", source)
         self.assertIn('"RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"', source)
         self.assertIn('"RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS": "1"', source)
+        self.assertIn('"RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE": "1"', source)
+        self.assertIn("--candidate-preset-smoke", source)
 
     def test_runner_preserves_claim_boundary_and_writes_summary(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
@@ -21,6 +23,7 @@ class Goal1579V154OptixCollectKNextArchRunnerTest(unittest.TestCase):
         self.assertIn("summary_md.write_text", source)
         self.assertIn("does not authorize public speedup wording", source)
         self.assertIn("stable primitive promotion", source)
+        self.assertIn("candidate_preset_json", source)
 
     def test_runner_runs_focused_static_tests_before_profiles(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
