@@ -1,0 +1,73 @@
+{
+  "backend": "optix",
+  "candidate_rows": [
+    [
+      2,
+      20
+    ],
+    [
+      1,
+      10
+    ],
+    [
+      2,
+      20
+    ],
+    [
+      3,
+      30
+    ]
+  ],
+  "capacity": 3,
+  "claim_boundary": "Goal1493 accepts measured OptiX device-buffer execution parity and transfer-accounting evidence only. It still does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "cuda_driver_version": 12040,
+  "device_name": "NVIDIA RTX 4000 Ada Generation",
+  "git_commit": "6f953c4434147abd29b9c88dda1f72f14b23b233",
+  "goal": "Goal1493",
+  "goal1489_preflight_green": true,
+  "library_path": "/root/rtdl_goal1498/rtdl/build/librtdl_optix.so",
+  "measured_on_real_nvidia": true,
+  "measurement_goal": "Goal1500",
+  "native_symbol": "rtdl_optix_collect_k_bounded_i64_device",
+  "parity": {
+    "same_candidate_rows": true,
+    "same_overflowed_flag": true,
+    "same_valid_count": true
+  },
+  "partner_tensor_handoff_authorized": false,
+  "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+  "primitive": "COLLECT_K_BOUNDED",
+  "public_speedup_wording_authorized": false,
+  "release_action_authorized": false,
+  "result": {
+    "candidate_id_rows": [
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        20
+      ],
+      [
+        3,
+        30
+      ]
+    ],
+    "overflowed": false,
+    "valid_count": 3
+  },
+  "row_width": 2,
+  "source_packet_goal": "Goal1492",
+  "stable_public_primitive_authorized": false,
+  "status": "goal1493_measured_optix_execution_intake_accepted",
+  "transfer_accounting": {
+    "allocation_only_transfers_distinguished_from_content_transfers": true,
+    "device_to_host_transfers_after_backend_execution": 2,
+    "host_to_device_transfers_before_backend_execution": 1,
+    "internal_device_transfers_if_any": 0,
+    "verification_copies_excluded_from_backend_counters": true
+  },
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
