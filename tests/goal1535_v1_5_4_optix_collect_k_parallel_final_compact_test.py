@@ -40,14 +40,14 @@ class Goal1535V154OptixCollectKParallelFinalCompactTest(unittest.TestCase):
             else:
                 os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"] = old_value
 
-        self.assertEqual(topology_4097["merge_launches"], 3)
-        self.assertEqual(topology_4097["metadata_fields_downloaded"], 5)
-        self.assertEqual(topology_4097["final_copies"], 0)
-        self.assertEqual(topology_65537["merge_launches"], 7)
-        self.assertEqual(topology_65537["metadata_fields_downloaded"], 65)
+        self.assertEqual(topology_4097["merge_launches"], 1)
+        self.assertEqual(topology_4097["metadata_fields_downloaded"], 6)
+        self.assertEqual(topology_4097["final_copies"], 1)
+        self.assertEqual(topology_65537["merge_launches"], 9)
+        self.assertEqual(topology_65537["metadata_fields_downloaded"], 64)
         self.assertEqual(topology_65537["final_copies"], 0)
-        self.assertEqual(topology_131072["merge_launches"], 7)
-        self.assertEqual(topology_131072["metadata_fields_downloaded"], 125)
+        self.assertEqual(topology_131072["merge_launches"], 12)
+        self.assertEqual(topology_131072["metadata_fields_downloaded"], 123)
         self.assertEqual(topology_131072["final_copies"], 0)
 
 

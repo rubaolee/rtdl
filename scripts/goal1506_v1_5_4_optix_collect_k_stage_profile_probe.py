@@ -139,6 +139,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     tile_size = 4096
     tile_count = (candidate_count + tile_size - 1) // tile_size
     current_segments = tile_count
+    segment_capacity = tile_size
     merge_levels = 0
     merge_launches = 0
     carry_copies = 0
@@ -146,19 +147,21 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     while current_segments > 1:
         pair_count = current_segments // 2
         has_carry = (current_segments % 2) != 0
+        output_segment_capacity = segment_capacity * 2
         merge_levels += 1
         if (
             os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
-            and current_segments == 2
+            and output_segment_capacity >= 65536
         ):
-            merge_launches += 3
-            metadata_fields_downloaded += 1
+            merge_launches += pair_count * 3
+            metadata_fields_downloaded += pair_count
         else:
             merge_launches += 1
             metadata_fields_downloaded += pair_count * 2
         if has_carry:
             carry_copies += 1
         current_segments = pair_count + (1 if has_carry else 0)
+        segment_capacity = output_segment_capacity
     return {
         "native_path": expected_path,
         "tile_count": tile_count,
@@ -166,9 +169,10 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         "sort_launches": tile_count,
         "merge_launches": merge_launches,
         "carry_copies": carry_copies,
-        "final_copies": 0
-        if os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
-        else 1,
+        "final_copies": 0 if (
+            os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
+            and segment_capacity >= 65536
+        ) else 1,
         "metadata_fields_downloaded": metadata_fields_downloaded,
     }
 

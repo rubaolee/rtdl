@@ -880,10 +880,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     1, 1, 1,
                     0, nullptr, merge_args, nullptr));
             };
-            auto launch_final_compact = [&](CUdeviceptr first_rows, size_t first_count,
-                                            CUdeviceptr second_rows, size_t second_count,
-                                            CUdeviceptr output_rows, size_t output_capacity,
-                                            size_t* final_count_out) {
+            auto launch_parallel_compact_pair = [&](CUdeviceptr first_rows, size_t first_count,
+                                                    CUdeviceptr second_rows, size_t second_count,
+                                                    CUdeviceptr output_rows, size_t output_capacity,
+                                                    size_t* final_count_out) {
                 size_t total = first_count + second_count;
                 const unsigned threads = 256;
                 const unsigned blocks = static_cast<unsigned>((total + threads - 1) / threads);
@@ -985,19 +985,33 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 level_profile.output_segments = pair_count + (has_carry ? 1 : 0);
                 level_profile.output_capacity = output_segment_capacity;
 
-                if (use_parallel_final_compact && current_rows.size() == 2) {
-                    size_t final_count = 0;
+                if (use_parallel_final_compact && output_segment_capacity >= 65536) {
                     auto merge_launch_start = CollectKStageProfile::Clock::now();
-                    launch_final_compact(
-                        current_rows[0], current_counts[0],
-                        current_rows[1], current_counts[1],
-                        rows_out, row_capacity,
-                        &final_count);
-                    merge_launches += 3;
+                    std::vector<CUdeviceptr> next_rows;
+                    std::vector<size_t> next_counts;
+                    next_rows.reserve(pair_count + (has_carry ? 1 : 0));
+                    next_counts.reserve(pair_count + (has_carry ? 1 : 0));
+                    for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
+                        CUdeviceptr pair_output = current_rows.size() == 2
+                            ? rows_out
+                            : output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index;
+                        const size_t pair_capacity = current_rows.size() == 2
+                            ? row_capacity
+                            : output_segment_capacity;
+                        size_t pair_count_out = 0;
+                        launch_parallel_compact_pair(
+                            current_rows[pair_index * 2], current_counts[pair_index * 2],
+                            current_rows[pair_index * 2 + 1], current_counts[pair_index * 2 + 1],
+                            pair_output, pair_capacity,
+                            &pair_count_out);
+                        next_rows.push_back(pair_output);
+                        next_counts.push_back(pair_count_out);
+                    }
+                    merge_launches += pair_count * 3;
                     level_profile.launch_ms = CollectKStageProfile::elapsed_ms(merge_launch_start);
                     if (profile.enabled)
                         profile.merge_launch_ms += level_profile.launch_ms;
-                    profile.merge_launches += 3;
+                    profile.merge_launches += pair_count * 3;
                     ++profile.merge_levels;
 
                     auto merge_sync_start = CollectKStageProfile::Clock::now();
@@ -1005,17 +1019,45 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     level_profile.sync_ms = CollectKStageProfile::elapsed_ms(merge_sync_start);
                     if (profile.enabled)
                         profile.merge_sync_ms += level_profile.sync_ms;
+
+                    *h2d_transfers_out += static_cast<uint64_t>(pair_count);
+                    *d2h_transfers_out += static_cast<uint64_t>(pair_count);
+                    profile.metadata_fields_downloaded += static_cast<uint64_t>(pair_count);
+
+                    if (has_carry) {
+                        CUdeviceptr carry_output =
+                            output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_count;
+                        auto carry_copy_start = CollectKStageProfile::Clock::now();
+                        CU_CHECK(cuMemcpyDtoD(
+                            carry_output,
+                            current_rows.back(),
+                            sizeof(int64_t) * current_counts.back() * 2));
+                        level_profile.carry_copy_ms = CollectKStageProfile::elapsed_ms(carry_copy_start);
+                        if (profile.enabled)
+                            profile.carry_copy_ms += level_profile.carry_copy_ms;
+                        ++merge_launches;
+                        ++profile.carry_copies;
+                        ++level_profile.carry_copies;
+                        next_rows.push_back(carry_output);
+                        next_counts.push_back(current_counts.back());
+                    }
                     profile.record_merge_level(level_profile);
 
-                    *h2d_transfers_out += 1;
-                    *d2h_transfers_out += 1;
-                    profile.metadata_fields_downloaded += 1;
-                    *emitted_count_out = final_count;
-                    *overflowed_out = final_count > row_capacity ? 1u : 0u;
-                    *internal_device_transfers_out += merge_launches;
-                    profile.append(*emitted_count_out, *overflowed_out, *h2d_transfers_out,
-                                   *d2h_transfers_out, *internal_device_transfers_out);
-                    return;
+                    if (current_rows.size() == 2) {
+                        const size_t final_count = next_counts.front();
+                        *emitted_count_out = final_count;
+                        *overflowed_out = final_count > row_capacity ? 1u : 0u;
+                        *internal_device_transfers_out += merge_launches;
+                        profile.append(*emitted_count_out, *overflowed_out, *h2d_transfers_out,
+                                       *d2h_transfers_out, *internal_device_transfers_out);
+                        return;
+                    }
+
+                    current_rows = std::move(next_rows);
+                    current_counts = std::move(next_counts);
+                    segment_capacity = output_segment_capacity;
+                    write_stage_b = !write_stage_b;
+                    continue;
                 }
 
                 auto merge_launch_start = CollectKStageProfile::Clock::now();
