@@ -2790,3 +2790,311 @@ extern "C" int rtdl_optix_collect_k_level_graph_replay_probe(
         cleanup();
     }, error_out, error_size);
 }
+
+extern "C" int rtdl_optix_collect_k_level_graph_update_probe(
+        size_t repeats,
+        size_t initial_pair_count,
+        size_t target_pair_count,
+        size_t segment_capacity,
+        double* direct_ms_out,
+        double* graph_update_ms_out,
+        uint64_t* first_pair_count_out,
+        uint64_t* kernel_node_count_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!direct_ms_out || !graph_update_ms_out || !first_pair_count_out || !kernel_node_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        if (repeats == 0) {
+            repeats = 1;
+        }
+        if (initial_pair_count == 0) {
+            initial_pair_count = 1;
+        }
+        if (target_pair_count == 0) {
+            target_pair_count = 1;
+        }
+        if (segment_capacity == 0) {
+            segment_capacity = 2048;
+        }
+
+        (void)get_optix_context();
+        ensure_collect_k_row_width2_final_compact_kernels();
+
+        size_t output_capacity = segment_capacity * 2;
+        const unsigned threads = 256;
+        size_t blocks_per_pair = (output_capacity + threads - 1) / threads;
+        const size_t max_pair_count = std::max(initial_pair_count, target_pair_count);
+        const unsigned max_total_blocks = static_cast<unsigned>(max_pair_count * blocks_per_pair);
+        if (max_total_blocks == 0 || max_total_blocks > 512) {
+            throw std::runtime_error("collect-k graph update probe total block count must be in 1..512");
+        }
+
+        const size_t input_segments = max_pair_count * 2;
+        const size_t current_values = input_segments * segment_capacity * 2;
+        const size_t merged_values = max_pair_count * output_capacity * 2;
+        std::vector<int64_t> host_rows(current_values);
+        std::vector<size_t> host_counts(input_segments, segment_capacity);
+        for (size_t segment = 0; segment < input_segments; ++segment) {
+            int64_t* segment_rows = host_rows.data() + segment * segment_capacity * 2;
+            for (size_t index = 0; index < segment_capacity; ++index) {
+                segment_rows[index * 2] = static_cast<int64_t>(index);
+                segment_rows[index * 2 + 1] = static_cast<int64_t>(segment);
+            }
+        }
+
+        CUdeviceptr current_base = 0;
+        CUdeviceptr current_counts = 0;
+        CUdeviceptr merged_rows = 0;
+        CUdeviceptr marks = 0;
+        CUdeviceptr block_counts = 0;
+        CUdeviceptr block_offsets = 0;
+        CUdeviceptr pair_offsets = 0;
+        CUdeviceptr pair_counts = 0;
+        CUdeviceptr output_base = 0;
+        CUstream stream = nullptr;
+        CUgraph graph = nullptr;
+        CUgraphExec graph_exec = nullptr;
+
+        auto cleanup = [&]() {
+            if (graph_exec)
+                cuGraphExecDestroy(graph_exec);
+            if (graph)
+                cuGraphDestroy(graph);
+            if (stream)
+                cuStreamDestroy(stream);
+            if (output_base)
+                cuMemFree(output_base);
+            if (pair_counts)
+                cuMemFree(pair_counts);
+            if (pair_offsets)
+                cuMemFree(pair_offsets);
+            if (block_offsets)
+                cuMemFree(block_offsets);
+            if (block_counts)
+                cuMemFree(block_counts);
+            if (marks)
+                cuMemFree(marks);
+            if (merged_rows)
+                cuMemFree(merged_rows);
+            if (current_counts)
+                cuMemFree(current_counts);
+            if (current_base)
+                cuMemFree(current_base);
+        };
+
+        try {
+            CU_CHECK(cuMemAlloc(&current_base, sizeof(int64_t) * current_values));
+            CU_CHECK(cuMemAlloc(&current_counts, sizeof(size_t) * input_segments));
+            CU_CHECK(cuMemAlloc(&merged_rows, sizeof(int64_t) * merged_values));
+            CU_CHECK(cuMemAlloc(&marks, sizeof(uint32_t) * max_total_blocks * threads));
+            CU_CHECK(cuMemAlloc(&block_counts, sizeof(uint32_t) * max_total_blocks));
+            CU_CHECK(cuMemAlloc(&block_offsets, sizeof(uint32_t) * max_total_blocks));
+            CU_CHECK(cuMemAlloc(&pair_offsets, sizeof(uint32_t) * max_pair_count));
+            CU_CHECK(cuMemAlloc(&pair_counts, sizeof(size_t) * max_pair_count));
+            CU_CHECK(cuMemAlloc(&output_base, sizeof(int64_t) * merged_values));
+            CU_CHECK(cuMemcpyHtoD(current_base, host_rows.data(), sizeof(int64_t) * host_rows.size()));
+            CU_CHECK(cuMemcpyHtoD(current_counts, host_counts.data(), sizeof(size_t) * host_counts.size()));
+            CU_CHECK(cuStreamCreate(&stream, CU_STREAM_NON_BLOCKING));
+
+            auto launch_sequence = [&](size_t active_pair_count) {
+                unsigned total_blocks = static_cast<unsigned>(active_pair_count * blocks_per_pair);
+                void* materialize_args[] = {
+                    &current_base,
+                    &current_counts,
+                    &segment_capacity,
+                    &output_capacity,
+                    &merged_rows,
+                    &active_pair_count,
+                    &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_materialize_level_counts_derived.fn,
+                    total_blocks, 1, 1,
+                    threads, 1, 1,
+                    0, stream, materialize_args, nullptr));
+
+                void* mark_args[] = {
+                    &merged_rows,
+                    &current_counts,
+                    &output_capacity,
+                    &active_pair_count,
+                    &marks,
+                    &block_counts,
+                    &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_mark_counts_level_counts.fn,
+                    total_blocks, 1, 1,
+                    threads, 1, 1,
+                    sizeof(uint32_t) * threads, stream, mark_args, nullptr));
+
+                void* prefix_args[] = {
+                    &block_counts,
+                    &active_pair_count,
+                    &blocks_per_pair,
+                    &block_offsets,
+                    &pair_offsets,
+                    &pair_counts,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                    static_cast<unsigned>(active_pair_count), 1, 1,
+                    1, 1, 1,
+                    0, stream, prefix_args, nullptr));
+
+                void* compact_args[] = {
+                    &merged_rows,
+                    &marks,
+                    &block_offsets,
+                    &pair_offsets,
+                    &output_base,
+                    &output_capacity,
+                    &active_pair_count,
+                    &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                    total_blocks, 1, 1,
+                    threads, 1, 1,
+                    sizeof(uint32_t) * threads, stream, compact_args, nullptr));
+            };
+
+            auto direct_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index) {
+                launch_sequence(target_pair_count);
+            }
+            CU_CHECK(cuStreamSynchronize(stream));
+            *direct_ms_out = CollectKStageProfile::elapsed_ms(direct_start);
+
+            CU_CHECK(cuStreamBeginCapture(stream, CU_STREAM_CAPTURE_MODE_GLOBAL));
+            launch_sequence(initial_pair_count);
+            CU_CHECK(cuStreamEndCapture(stream, &graph));
+            CU_CHECK(cuGraphInstantiate(&graph_exec, graph, 0));
+
+            size_t node_count = 0;
+            CU_CHECK(cuGraphGetNodes(graph, nullptr, &node_count));
+            std::vector<CUgraphNode> nodes(node_count);
+            CU_CHECK(cuGraphGetNodes(graph, nodes.data(), &node_count));
+            std::vector<CUgraphNode> kernel_nodes;
+            for (CUgraphNode node : nodes) {
+                CUgraphNodeType node_type;
+                CU_CHECK(cuGraphNodeGetType(node, &node_type));
+                if (node_type == CU_GRAPH_NODE_TYPE_KERNEL) {
+                    kernel_nodes.push_back(node);
+                }
+            }
+            if (kernel_nodes.size() != 4) {
+                throw std::runtime_error("collect-k graph update probe expected exactly four kernel nodes");
+            }
+            *kernel_node_count_out = static_cast<uint64_t>(kernel_nodes.size());
+
+            auto set_kernel_node = [&](size_t node_index,
+                                       CUfunction function,
+                                       unsigned grid_x,
+                                       unsigned block_x,
+                                       unsigned shared_mem,
+                                       void** kernel_params) {
+                CUDA_KERNEL_NODE_PARAMS params = {};
+                params.func = function;
+                params.gridDimX = grid_x;
+                params.gridDimY = 1;
+                params.gridDimZ = 1;
+                params.blockDimX = block_x;
+                params.blockDimY = 1;
+                params.blockDimZ = 1;
+                params.sharedMemBytes = shared_mem;
+                params.kernelParams = kernel_params;
+                params.extra = nullptr;
+                CU_CHECK(cuGraphExecKernelNodeSetParams(graph_exec, kernel_nodes[node_index], &params));
+            };
+
+            unsigned target_total_blocks = static_cast<unsigned>(target_pair_count * blocks_per_pair);
+            void* materialize_args[] = {
+                &current_base,
+                &current_counts,
+                &segment_capacity,
+                &output_capacity,
+                &merged_rows,
+                &target_pair_count,
+                &blocks_per_pair,
+            };
+            set_kernel_node(
+                0,
+                g_collect_k_i64_row_width2_final_materialize_level_counts_derived.fn,
+                target_total_blocks,
+                threads,
+                0,
+                materialize_args);
+
+            void* mark_args[] = {
+                &merged_rows,
+                &current_counts,
+                &output_capacity,
+                &target_pair_count,
+                &marks,
+                &block_counts,
+                &blocks_per_pair,
+            };
+            set_kernel_node(
+                1,
+                g_collect_k_i64_row_width2_final_mark_counts_level_counts.fn,
+                target_total_blocks,
+                threads,
+                sizeof(uint32_t) * threads,
+                mark_args);
+
+            void* prefix_args[] = {
+                &block_counts,
+                &target_pair_count,
+                &blocks_per_pair,
+                &block_offsets,
+                &pair_offsets,
+                &pair_counts,
+            };
+            set_kernel_node(
+                2,
+                g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                static_cast<unsigned>(target_pair_count),
+                1,
+                0,
+                prefix_args);
+
+            void* compact_args[] = {
+                &merged_rows,
+                &marks,
+                &block_offsets,
+                &pair_offsets,
+                &output_base,
+                &output_capacity,
+                &target_pair_count,
+                &blocks_per_pair,
+            };
+            set_kernel_node(
+                3,
+                g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                target_total_blocks,
+                threads,
+                sizeof(uint32_t) * threads,
+                compact_args);
+
+            auto graph_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index) {
+                CU_CHECK(cuGraphLaunch(graph_exec, stream));
+            }
+            CU_CHECK(cuStreamSynchronize(stream));
+            *graph_update_ms_out = CollectKStageProfile::elapsed_ms(graph_start);
+
+            size_t first_pair_count = 0;
+            CU_CHECK(cuMemcpyDtoH(&first_pair_count, pair_counts, sizeof(size_t)));
+            *first_pair_count_out = static_cast<uint64_t>(first_pair_count);
+        } catch (...) {
+            cleanup();
+            throw;
+        }
+
+        cleanup();
+    }, error_out, error_size);
+}

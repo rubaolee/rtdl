@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "direct_ms": 58.7288,
+      "direct_over_graph_update_speedup": 1.1560421700833206,
+      "direct_per_replay_us": 11.74576,
+      "first_pair_count": 4096,
+      "graph_update_ms": 50.801607,
+      "graph_update_per_replay_us": 10.160321399999999,
+      "initial_pair_count": 1,
+      "kernel_node_count": 4,
+      "repeats": 5000,
+      "segment_capacity": 2048,
+      "target_pair_count": 4
+    },
+    {
+      "direct_ms": 86.580558,
+      "direct_over_graph_update_speedup": 1.1325674176424532,
+      "direct_per_replay_us": 17.3161116,
+      "first_pair_count": 4096,
+      "graph_update_ms": 76.446273,
+      "graph_update_per_replay_us": 15.2892546,
+      "initial_pair_count": 1,
+      "kernel_node_count": 4,
+      "repeats": 5000,
+      "segment_capacity": 2048,
+      "target_pair_count": 16
+    }
+  ],
+  "claim_boundary": "Diagnostic collect-k graph executable parameter update only; not a production COLLECT_K_BOUNDED optimization and not a public speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1559_v1_5_4_optix_collect_k_level_graph_update_probe",
+  "repeats": 5000
+}
