@@ -99,6 +99,31 @@ from .graph_reference import normalize_vertex_set
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_optix_execution_cache: OrderedDict[tuple[object, ...], "PreparedOptixExecution"] = OrderedDict()
 _DB_MAX_ROWS_PER_JOB = 1_000_000
+OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL = "rtdl_optix_collect_k_bounded_i64_device"
+OPTIX_COLLECT_K_BOUNDED_I64_HOST_SYMBOL = "rtdl_optix_collect_k_bounded_i64"
+
+
+def collect_k_bounded_i64_device_optix(
+    *,
+    candidate_rows_device_ptr: int,
+    candidate_count: int,
+    row_width: int,
+    rows_out_device_ptr: int,
+    row_capacity: int,
+) -> dict[str, object]:
+    """Reserved Python entry point for the future OptiX device-pointer ABI."""
+    if row_width <= 0:
+        raise ValueError("row_width must be positive")
+    if candidate_count < 0 or row_capacity < 0:
+        raise ValueError("candidate_count and row_capacity must be nonnegative")
+    if candidate_count and int(candidate_rows_device_ptr) == 0:
+        raise ValueError("candidate_rows_device_ptr must be nonzero when candidate_count is nonzero")
+    if row_capacity and int(rows_out_device_ptr) == 0:
+        raise ValueError("rows_out_device_ptr must be nonzero when row_capacity is nonzero")
+    raise RuntimeError(
+        f"{OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL} is reserved but not implemented; "
+        "do not use it as Goal1493 device-buffer execution evidence"
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
