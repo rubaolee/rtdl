@@ -149,6 +149,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     merge_launches = 0
     carry_copies = 0
     metadata_fields_downloaded = tile_count * 2
+    use_batched_compact_level = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL"))
     while current_segments > 1:
         pair_count = current_segments // 2
         has_carry = (current_segments % 2) != 0
@@ -158,7 +159,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
             and output_segment_capacity >= compact_min_capacity
         ):
-            merge_launches += pair_count * 3
+            merge_launches += 3 if use_batched_compact_level and current_segments != 2 else pair_count * 3
             metadata_fields_downloaded += pair_count
         else:
             merge_launches += 1

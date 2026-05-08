@@ -15,6 +15,7 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
         api = API_CPP.read_text(encoding="utf-8")
 
         self.assertIn("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT", api)
+        self.assertIn("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL", api)
         self.assertIn("collect_k_use_cub_tile_sort", api)
         self.assertIn("if (use_cub_tile_sort)", api)
         self.assertIn("launch_cub_sort_tiles", api)
@@ -100,6 +101,33 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
         self.assertEqual(topology["tile_count"], 64)
         self.assertEqual(topology["merge_launches"], 189)
         self.assertEqual(topology["metadata_fields_downloaded"], 191)
+
+    def test_batched_compact_level_topology_reduces_merge_launches(self) -> None:
+        saved = {
+            name: os.environ.get(name)
+            for name in (
+                "RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT",
+                "RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT",
+                "RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL",
+                "RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY",
+            )
+        }
+        os.environ["RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL"] = "1"
+        os.environ.pop("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY", None)
+        try:
+            topology = probe.expected_topology(131072, 2)
+        finally:
+            for name, value in saved.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+
+        self.assertEqual(topology["tile_count"], 64)
+        self.assertEqual(topology["sort_launches"], 1)
+        self.assertEqual(topology["merge_launches"], 18)
 
 
 if __name__ == "__main__":

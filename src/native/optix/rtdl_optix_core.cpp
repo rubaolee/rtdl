@@ -2351,6 +2351,51 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize(
     merged_rows[output_index * 2 + 1] = value1;
 }
 
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level(
+        const uint64_t* first_row_ptrs,
+        const size_t* first_counts,
+        const uint64_t* second_row_ptrs,
+        const size_t* second_counts,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(first_row_ptrs[pair_index]));
+    const int64_t* second_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(second_row_ptrs[pair_index]));
+    const size_t first_count = first_counts[pair_index];
+    const size_t second_count = second_counts[pair_index];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        pair_merged_rows[output_index * 2] = value0;
+        pair_merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+}
+
 extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts(
         const int64_t* merged_rows,
         size_t total_count,
@@ -2375,6 +2420,50 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts(
     shared_counts[threadIdx.x] = mark;
     __syncthreads();
 
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_level(
+        const int64_t* merged_rows,
+        const size_t* first_counts,
+        const size_t* second_counts,
+        size_t output_capacity,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (pair_index < pair_count) {
+        const size_t total = first_counts[pair_index] + second_counts[pair_index];
+        if (local_index < total) {
+            const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+            if (local_index == 0) {
+                mark = 1;
+            } else {
+                const int64_t value0 = pair_merged_rows[local_index * 2];
+                const int64_t value1 = pair_merged_rows[local_index * 2 + 1];
+                const int64_t prev0 = pair_merged_rows[(local_index - 1) * 2];
+                const int64_t prev1 = pair_merged_rows[(local_index - 1) * 2 + 1];
+                mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+            }
+        }
+    }
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    marks[global_index] = mark;
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
     for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
         if (threadIdx.x < stride)
             shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
@@ -2412,6 +2501,47 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact(
             rows_out[output_index * 2] = merged_rows[index * 2];
             rows_out[output_index * 2 + 1] = merged_rows[index * 2 + 1];
         }
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact_level(
+        const int64_t* merged_rows,
+        const uint32_t* marks,
+        const uint32_t* block_offsets,
+        const uint32_t* pair_offsets,
+        const uint64_t* output_row_ptrs,
+        size_t output_capacity,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_marks[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    if (local_index >= output_capacity)
+        return;
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t mark = marks[global_index];
+    shared_marks[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned offset = 1; offset < blockDim.x; offset <<= 1) {
+        const uint32_t value = threadIdx.x >= offset ? shared_marks[threadIdx.x - offset] : 0u;
+        __syncthreads();
+        shared_marks[threadIdx.x] += value;
+        __syncthreads();
+    }
+
+    if (mark) {
+        const size_t output_index =
+            static_cast<size_t>(block_offsets[blockIdx.x] + shared_marks[threadIdx.x] - 1u - pair_offsets[pair_index]);
+        int64_t* rows_out =
+            reinterpret_cast<int64_t*>(static_cast<uintptr_t>(output_row_ptrs[pair_index]));
+        const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+        rows_out[output_index * 2] = pair_merged_rows[local_index * 2];
+        rows_out[output_index * 2 + 1] = pair_merged_rows[local_index * 2 + 1];
     }
 }
 )CUDA";
@@ -3032,6 +3162,9 @@ static KnnCuFunction      g_collect_k_i64_row_width2_merge_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_compact;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level;
 
 // GPU structs for upload
 
