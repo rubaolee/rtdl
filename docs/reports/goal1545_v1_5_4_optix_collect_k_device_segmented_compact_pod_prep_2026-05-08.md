@@ -135,6 +135,15 @@ When a pod is available, run these in order:
 5. Compare total, merge launch, merge sync, metadata, and topology.
 6. Accept only if parity is perfect and the largest count improves versus the fresh Goal 1543 control.
 
+The helper runner below executes the Goal 1543 control and the device-prefix candidate back-to-back and writes a comparison summary:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1545_v1_5_4_optix_collect_k_device_prefix_pod_runner.py \
+  --library build/librtdl_optix.so \
+  --counts 4097 65537 131072 \
+  --repeats 7
+```
+
 Control command shape:
 
 ```bash
