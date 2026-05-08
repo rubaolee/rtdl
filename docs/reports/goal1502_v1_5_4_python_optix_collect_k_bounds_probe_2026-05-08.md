@@ -9,7 +9,7 @@
 - Python entry point: `rtdsl.optix_runtime.collect_k_bounded_i64_device_optix`
 - Native symbol: `rtdl_optix_collect_k_bounded_i64_device`
 - Device: `NVIDIA RTX 4000 Ada Generation`
-- Git commit: `6119e2f4ae9a43dd0ecdee2b05266630ef8cfb80`
+- Git commit: `b42ac66332355fc6f3b3e5e957f65a9d8597c54a`
 
 ## Bounds
 
@@ -19,6 +19,9 @@
 - Dynamic row_width=3 row parity: `True`
 - Dynamic row_width=3 valid count parity: `True`
 - Dynamic row_width=3 overflow parity: `True`
+- INT64_MAX pair row parity: `True`
+- INT64_MAX pair valid count parity: `True`
+- INT64_MAX pair overflow parity: `True`
 
 ## Claim Boundary
 
