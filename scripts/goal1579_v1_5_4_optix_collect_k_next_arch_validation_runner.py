@@ -56,6 +56,8 @@ def _profile_env(*, enable_alias: bool, ld_library_path: str | None, use_candida
         for key in PROFILE_ENV:
             env.pop(key, None)
         env.pop("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC", None)
+        env.pop("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC", None)
+        env.pop("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC", None)
         env.update(CANDIDATE_PRESET_ENV)
     else:
         env.update(PROFILE_ENV)
@@ -214,6 +216,7 @@ def main() -> int:
     parser.add_argument("--output-prefix", default="/tmp/goal1579_next_arch", help="Output artifact prefix")
     parser.add_argument("--repeats", type=int, default=5, help="Sweep repeats")
     parser.add_argument("--targeted-repeats", type=int, default=9, help="Targeted rerun repeats")
+    parser.add_argument("--candidate-preset-repeats", type=int, default=5, help="Candidate preset smoke repeats")
     parser.add_argument("--skip-targeted", action="store_true", help="Skip targeted rerun")
     parser.add_argument(
         "--candidate-preset-smoke",
@@ -286,7 +289,7 @@ def main() -> int:
         candidate_preset_path = _run_profile(
             library=library,
             counts=TARGETED_COUNTS,
-            repeats=1,
+            repeats=args.candidate_preset_repeats,
             output_prefix=output_prefix,
             label="candidate_preset",
             enable_alias=False,

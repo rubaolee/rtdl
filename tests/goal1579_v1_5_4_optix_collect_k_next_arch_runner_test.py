@@ -15,6 +15,7 @@ class Goal1579V154OptixCollectKNextArchRunnerTest(unittest.TestCase):
         self.assertIn('"RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS": "1"', source)
         self.assertIn('"RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE": "1"', source)
         self.assertIn("--candidate-preset-smoke", source)
+        self.assertIn("--candidate-preset-repeats", source)
 
     def test_runner_preserves_claim_boundary_and_writes_summary(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
@@ -24,6 +25,8 @@ class Goal1579V154OptixCollectKNextArchRunnerTest(unittest.TestCase):
         self.assertIn("does not authorize public speedup wording", source)
         self.assertIn("stable primitive promotion", source)
         self.assertIn("candidate_preset_json", source)
+        self.assertIn('env.pop("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC", None)', source)
+        self.assertIn('env.pop("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC", None)', source)
 
     def test_runner_runs_focused_static_tests_before_profiles(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")

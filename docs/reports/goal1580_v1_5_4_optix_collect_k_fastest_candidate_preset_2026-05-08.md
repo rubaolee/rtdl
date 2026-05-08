@@ -27,6 +27,10 @@ The preset does not enable the rejected pointer-carry diagnostics:
 
 The Goal1579 next-architecture validation runner now accepts `--candidate-preset-smoke`. When present, it writes an extra targeted profile with only `RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE=1` enabled, so a pod run can verify the one-flag candidate path without replacing the existing baseline-vs-alias comparison.
 
+The candidate-preset subprocess explicitly removes all individual positive-bundle flags, the explicit derived-carry alias diagnostic flag, and both rejected pointer-carry diagnostic flags before setting the one candidate preset flag. This prevents parent-shell env contamination from accidentally changing the intended one-flag candidate smoke.
+
+The candidate-preset smoke repeat count is controlled by `--candidate-preset-repeats`, defaulting to `5`.
+
 ## Validation
 
 Local focused tests passed:
