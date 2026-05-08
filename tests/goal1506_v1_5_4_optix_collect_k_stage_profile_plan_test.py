@@ -98,6 +98,20 @@ class Goal1506V154OptixCollectKStageProfilePlanTest(unittest.TestCase):
                 )
                 self.assertFalse(mutated["accepted_goal1506_evidence"])
 
+    def test_probe_validator_rejects_inconsistent_accepted_flag(self) -> None:
+        payload = make_synthetic_probe()
+        payload["accepted_goal1506_evidence"] = False
+
+        with self.assertRaisesRegex(ValueError, "accepted evidence flag"):
+            probe.validate_probe(payload)
+
+    def test_probe_validator_rejects_smoke_flag_without_smoke_mode(self) -> None:
+        payload = make_synthetic_probe()
+        payload["local_fallback_smoke_only"] = True
+
+        with self.assertRaisesRegex(ValueError, "explicit smoke mode"):
+            probe.validate_probe(payload)
+
     def test_probe_validator_rejects_topology_mismatch(self) -> None:
         payload = make_synthetic_probe()
         payload["all_profile_topologies_match_expected"] = False

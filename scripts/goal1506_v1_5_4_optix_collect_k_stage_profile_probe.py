@@ -286,9 +286,19 @@ def validate_probe(probe: dict[str, Any], *, allow_local_fallback_smoke: bool = 
         raise ValueError("Goal1506 native path records must match expected paths")
     if probe.get("all_profile_topologies_match_expected") is not True and not allow_local_fallback_smoke:
         raise ValueError("Goal1506 native topology records must match expected topology")
+    expected_accepted = (
+        probe.get("all_parity_passed") is True
+        and probe.get("all_profile_records_present") is True
+        and probe.get("all_profile_paths_match_expected") is True
+        and probe.get("all_profile_topologies_match_expected") is True
+    )
+    if probe.get("accepted_goal1506_evidence") is not expected_accepted:
+        raise ValueError("Goal1506 accepted evidence flag must match core gates")
     if allow_local_fallback_smoke and probe.get("accepted_goal1506_evidence") is not True:
         if probe.get("local_fallback_smoke_only") is not True:
             raise ValueError("Goal1506 fallback smoke must be explicitly classified as smoke only")
+    if not allow_local_fallback_smoke and probe.get("local_fallback_smoke_only") is not False:
+        raise ValueError("Goal1506 local fallback smoke flag requires explicit smoke mode")
     for case in probe.get("cases", []):
         if case.get("row_width") != 2:
             raise ValueError("Goal1506 currently profiles row_width=2 only")
