@@ -1,0 +1,41 @@
+{
+  "cases": [
+    {
+      "direct_ms": 54.443597,
+      "direct_over_graph_speedup": 1.187312726822211,
+      "direct_per_replay_us": 10.8887194,
+      "first_pair_count": 4096,
+      "graph_ms": 45.854471,
+      "graph_per_replay_us": 9.1708942,
+      "pair_count": 1,
+      "repeats": 5000,
+      "segment_capacity": 2048
+    },
+    {
+      "direct_ms": 58.961368,
+      "direct_over_graph_speedup": 1.1591349381645544,
+      "direct_per_replay_us": 11.7922736,
+      "first_pair_count": 4096,
+      "graph_ms": 50.866699,
+      "graph_per_replay_us": 10.1733398,
+      "pair_count": 4,
+      "repeats": 5000,
+      "segment_capacity": 2048
+    },
+    {
+      "direct_ms": 85.732588,
+      "direct_over_graph_speedup": 1.122013439386163,
+      "direct_per_replay_us": 17.1465176,
+      "first_pair_count": 4096,
+      "graph_ms": 76.409591,
+      "graph_per_replay_us": 15.2819182,
+      "pair_count": 16,
+      "repeats": 5000,
+      "segment_capacity": 2048
+    }
+  ],
+  "claim_boundary": "Diagnostic collect-k compact-level graph replay only; not a production COLLECT_K_BOUNDED optimization and not a public speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1557_v1_5_4_optix_collect_k_level_graph_probe",
+  "repeats": 5000
+}
