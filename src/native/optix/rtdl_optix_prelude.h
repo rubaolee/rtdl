@@ -411,6 +411,13 @@ int  rtdl_optix_collect_k_bounded_i64(
          size_t row_width, int64_t* rows_out, size_t row_capacity,
          size_t* emitted_count_out, uint32_t* overflowed_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_collect_k_bounded_i64_device(
+         uint64_t candidate_rows_device_ptr, size_t candidate_count,
+         size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,
+         size_t* emitted_count_out, uint32_t* overflowed_out,
+         uint64_t* h2d_transfers_out, uint64_t* d2h_transfers_out,
+         uint64_t* internal_device_transfers_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_collect_polygon_pair_candidates_bounded(
          const RtdlPolygonRef* left_polygons, size_t left_count,
          const double* left_vertices_xy,      size_t left_vertex_xy_count,

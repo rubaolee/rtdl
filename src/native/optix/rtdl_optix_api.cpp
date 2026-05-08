@@ -493,6 +493,36 @@ extern "C" int rtdl_optix_collect_k_bounded_i64(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_collect_k_bounded_i64_device(
+        uint64_t candidate_rows_device_ptr, size_t candidate_count,
+        size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,
+        size_t* emitted_count_out, uint32_t* overflowed_out,
+        uint64_t* h2d_transfers_out, uint64_t* d2h_transfers_out,
+        uint64_t* internal_device_transfers_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!emitted_count_out || !overflowed_out ||
+            !h2d_transfers_out || !d2h_transfers_out || !internal_device_transfers_out)
+            throw std::runtime_error("metadata and transfer-accounting outputs must not be null");
+        *emitted_count_out = 0;
+        *overflowed_out = 0;
+        *h2d_transfers_out = 0;
+        *d2h_transfers_out = 0;
+        *internal_device_transfers_out = 0;
+        if (row_width == 0)
+            throw std::runtime_error("row_width must be positive");
+        if (candidate_count != 0 && candidate_rows_device_ptr == 0)
+            throw std::runtime_error("candidate_rows_device_ptr must not be zero when candidate_count is nonzero");
+        if (row_capacity != 0 && rows_out_device_ptr == 0)
+            throw std::runtime_error("rows_out_device_ptr must not be zero when row_capacity is nonzero");
+
+        throw std::runtime_error(
+            "rtdl_optix_collect_k_bounded_i64_device is ABI-reserved but not implemented; "
+            "do not use as Goal1493 device-buffer execution evidence");
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepare_segment_polygon_anyhit_rows_2d(
         const RtdlPolygonRef* polygons, size_t polygon_count,
         const double* vertices_xy, size_t vertex_xy_count,
