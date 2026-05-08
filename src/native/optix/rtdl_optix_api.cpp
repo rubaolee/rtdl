@@ -520,7 +520,25 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             return;
 
         (void)get_optix_context();
+        size_t padded_count = 1;
+        unsigned row_width2_shared_bytes = 0;
+        int max_optin_shared_bytes = 0;
+        bool row_width2_fast_supported = false;
         if (row_width == 2 && candidate_count <= 4096) {
+            while (padded_count < candidate_count)
+                padded_count <<= 1;
+            row_width2_shared_bytes = static_cast<unsigned>(
+                sizeof(int64_t) * padded_count * 2 + sizeof(uint8_t) * padded_count);
+            CUdevice current_device = 0;
+            CU_CHECK(cuCtxGetDevice(&current_device));
+            CU_CHECK(cuDeviceGetAttribute(
+                &max_optin_shared_bytes,
+                CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK_OPTIN,
+                current_device));
+            row_width2_fast_supported =
+                row_width2_shared_bytes <= static_cast<unsigned>(max_optin_shared_bytes);
+        }
+        if (row_width2_fast_supported) {
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
                 std::string ptx = compile_to_ptx(
                     kCollectKBoundedI64RowWidth2SortKernelSrc,
@@ -532,9 +550,6 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     "collect_k_bounded_i64_row_width2_sort"));
             });
 
-            size_t padded_count = 1;
-            while (padded_count < candidate_count)
-                padded_count <<= 1;
             DevPtr emitted_device(sizeof(size_t));
             DevPtr overflowed_device(sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
@@ -548,19 +563,17 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 &emitted_device.ptr,
                 &overflowed_device.ptr,
             };
-            const unsigned shared_bytes = static_cast<unsigned>(
-                sizeof(int64_t) * padded_count * 2 + sizeof(uint8_t) * padded_count);
-            if (shared_bytes > 49152u) {
+            if (row_width2_shared_bytes > 49152u) {
                 CU_CHECK(cuFuncSetAttribute(
                     g_collect_k_i64_row_width2_sort.fn,
                     CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES,
-                    static_cast<int>(shared_bytes)));
+                    static_cast<int>(row_width2_shared_bytes)));
             }
             CU_CHECK(cuLaunchKernel(
                 g_collect_k_i64_row_width2_sort.fn,
                 1, 1, 1,
                 static_cast<unsigned>(std::min<size_t>(padded_count, 1024)), 1, 1,
-                shared_bytes, nullptr, args, nullptr));
+                row_width2_shared_bytes, nullptr, args, nullptr));
             CU_CHECK(cuStreamSynchronize(nullptr));
 
             download(emitted_count_out, emitted_device.ptr, 1);
