@@ -7,7 +7,7 @@
 ## Scope
 
 - Device: `NVIDIA RTX 4000 Ada Generation`
-- Git commit: `128ec41e328ff9c9a18f890a7dd14602b9d5eec4`
+- Git commit: `7ce1e12868207b5f39d84a0f31f1712029784ee6`
 - Native profile env: `RTDL_OPTIX_COLLECT_K_PROFILE_JSONL`
 - Accepted Goal1506 evidence: `True`
 - Local fallback smoke only: `False`
@@ -15,8 +15,8 @@
 
 ## Cases
 
-- candidates=`65537`, path=`row_width2_bounded_multi_tile_sort_merge`, total_ms=`0.336458`, sort_sync_ms=`0.036179`, merge_sync_ms=`0.081975`, metadata_ms=`0.008335`, sort_launches=`1`, merge_launches=`23`, carry_copies=`5`
-- candidates=`131072`, path=`row_width2_bounded_multi_tile_sort_merge`, total_ms=`0.308364`, sort_sync_ms=`0.054584`, merge_sync_ms=`0.120547`, metadata_ms=`0.007755`, sort_launches=`1`, merge_launches=`23`, carry_copies=`0`
+- candidates=`65537`, path=`row_width2_bounded_multi_tile_sort_merge`, total_ms=`0.336778`, sort_sync_ms=`0.036349`, merge_sync_ms=`0.081076`, metadata_ms=`0.008386`, sort_launches=`1`, merge_launches=`23`, carry_copies=`5`
+- candidates=`131072`, path=`row_width2_bounded_multi_tile_sort_merge`, total_ms=`0.310448`, sort_sync_ms=`0.054674`, merge_sync_ms=`0.120899`, metadata_ms=`0.008496`, sort_launches=`1`, merge_launches=`23`, carry_copies=`0`
 
 ## Claim Boundary
 

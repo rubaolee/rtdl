@@ -8,7 +8,7 @@ The diagnostic preserves parity and is accepted measured Goal1506-style evidence
 
 ## Scope
 
-- Repository commit measured on pod: `128ec41e328ff9c9a18f890a7dd14602b9d5eec4` plus the uncommitted Goal1572 diagnostic patch.
+- Repository commit measured on pod: `7ce1e12868207b5f39d84a0f31f1712029784ee6`.
 - Pod: `root@157.157.221.29 -p 22942`, NVIDIA RTX 4000 Ada Generation, driver `550.127.05`.
 - CUDA/OptiX: CUDA `12.8`, OptiX SDK at `/root/vendor/optix-sdk`.
 - Library: `/root/rtdl_goal1545_pod/build/librtdl_optix.so`.
@@ -19,12 +19,12 @@ The diagnostic preserves parity and is accepted measured Goal1506-style evidence
 
 | Case | Path | Accepted | Parity | Stage total ms | Merge launch ms | Merge sync ms | Carry copy ms | H2D fields | D2H fields |
 |---:|---|---|---|---:|---:|---:|---:|---:|---:|
-| 65537 | Baseline derived descriptors | Yes | Yes | 0.284950 | 0.081785 | 0.083701 | 0.037389 | 1 | 34 |
-| 65537 | Device-count carry pointer diagnostic | Yes | Yes | 0.336458 | 0.148261 | 0.081975 | 0.018446 | 94 | 34 |
-| 131072 | Baseline derived descriptors | Yes | Yes | 0.307693 | 0.089981 | 0.121340 | 0.000000 | 1 | 65 |
-| 131072 | Device-count carry pointer diagnostic | Yes | Yes | 0.308364 | 0.090702 | 0.120547 | 0.000000 | 1 | 65 |
+| 65537 | Baseline derived descriptors | Yes | Yes | 0.281413 | 0.081866 | 0.084339 | 0.035708 | 1 | 34 |
+| 65537 | Device-count carry pointer diagnostic | Yes | Yes | 0.336778 | 0.151046 | 0.081076 | 0.018686 | 94 | 34 |
+| 131072 | Baseline derived descriptors | Yes | Yes | 0.310809 | 0.090161 | 0.121732 | 0.000000 | 1 | 65 |
+| 131072 | Device-count carry pointer diagnostic | Yes | Yes | 0.310448 | 0.090421 | 0.120899 | 0.000000 | 1 | 65 |
 
-For `65537`, the diagnostic reduces carry-copy time by about `0.018943 ms`, but increases merge-launch time by about `0.066476 ms`. Net stage total worsens by about `0.051508 ms`.
+For `65537`, the diagnostic reduces carry-copy time by about `0.017022 ms`, but increases merge-launch time by about `0.069180 ms`. Net stage total worsens by about `0.055365 ms`.
 
 For `131072`, there is no odd carry level, so the diagnostic is effectively neutral.
 
