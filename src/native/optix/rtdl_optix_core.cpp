@@ -2143,6 +2143,159 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_level(
 }
 )CUDA";
 
+static const char* kCollectKBoundedI64RowWidth2FinalCompactKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+__device__ int collect_k_final_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+__device__ size_t collect_k_final_lower_bound(
+        const int64_t* rows,
+        size_t count,
+        int64_t value0,
+        int64_t value1)
+{
+    size_t low = 0;
+    size_t high = count;
+    while (low < high) {
+        const size_t mid = low + (high - low) / 2;
+        const int64_t mid0 = rows[mid * 2];
+        const int64_t mid1 = rows[mid * 2 + 1];
+        if (collect_k_final_pair_compare(mid0, mid1, value0, value1) < 0)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    return low;
+}
+
+__device__ size_t collect_k_final_upper_bound(
+        const int64_t* rows,
+        size_t count,
+        int64_t value0,
+        int64_t value1)
+{
+    size_t low = 0;
+    size_t high = count;
+    while (low < high) {
+        const size_t mid = low + (high - low) / 2;
+        const int64_t mid0 = rows[mid * 2];
+        const int64_t mid1 = rows[mid * 2 + 1];
+        if (collect_k_final_pair_compare(mid0, mid1, value0, value1) <= 0)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    return low;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        int64_t* merged_rows)
+{
+    const size_t total = first_count + second_count;
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= total)
+        return;
+
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        merged_rows[output_index * 2] = value0;
+        merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    merged_rows[output_index * 2] = value0;
+    merged_rows[output_index * 2 + 1] = value1;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts(
+        const int64_t* merged_rows,
+        size_t total_count,
+        uint32_t* marks,
+        uint32_t* block_counts)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (index < total_count) {
+        if (index == 0) {
+            mark = 1;
+        } else {
+            const int64_t value0 = merged_rows[index * 2];
+            const int64_t value1 = merged_rows[index * 2 + 1];
+            const int64_t prev0 = merged_rows[(index - 1) * 2];
+            const int64_t prev1 = merged_rows[(index - 1) * 2 + 1];
+            mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+        }
+        marks[index] = mark;
+    }
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact(
+        const int64_t* merged_rows,
+        const uint32_t* marks,
+        const uint32_t* block_offsets,
+        size_t total_count,
+        int64_t* rows_out,
+        size_t row_capacity)
+{
+    extern __shared__ uint32_t shared_marks[];
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t mark = index < total_count ? marks[index] : 0u;
+    shared_marks[threadIdx.x] = mark;
+    __syncthreads();
+
+    for (unsigned offset = 1; offset < blockDim.x; offset <<= 1) {
+        const uint32_t value = threadIdx.x >= offset ? shared_marks[threadIdx.x - offset] : 0u;
+        __syncthreads();
+        shared_marks[threadIdx.x] += value;
+        __syncthreads();
+    }
+
+    if (index < total_count && mark) {
+        const size_t output_index =
+            static_cast<size_t>(block_offsets[blockIdx.x]) + shared_marks[threadIdx.x] - 1u;
+        if (output_index < row_capacity) {
+            rows_out[output_index * 2] = merged_rows[index * 2];
+            rows_out[output_index * 2 + 1] = merged_rows[index * 2 + 1];
+        }
+    }
+}
+)CUDA";
+
 static const char* kFixedRadiusNeighbors3DKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -2754,6 +2907,9 @@ static KnnCuFunction      g_collect_k_i64;
 static KnnCuFunction      g_collect_k_i64_row_width2_sort;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_two;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_compact;
 
 // GPU structs for upload
 

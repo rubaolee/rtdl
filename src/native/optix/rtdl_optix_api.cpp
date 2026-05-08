@@ -622,6 +622,12 @@ struct CollectKStageProfile {
     }
 };
 
+static bool collect_k_use_parallel_final_compact()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT");
+    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+}
+
 extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         uint64_t candidate_rows_device_ptr, size_t candidate_count,
         size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,
@@ -773,6 +779,24 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     g_collect_k_i64_row_width2_merge_level.module,
                     "collect_k_bounded_i64_row_width2_merge_level"));
             });
+            std::call_once(g_collect_k_i64_row_width2_final_materialize.init, [&]() {
+                std::string ptx = compile_to_ptx(
+                    kCollectKBoundedI64RowWidth2FinalCompactKernelSrc,
+                    "collect_k_bounded_i64_row_width2_final_compact_kernel.cu");
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_final_materialize.module, ptx.c_str()));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_final_materialize.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_final_materialize"));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_final_mark_counts.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_final_mark_counts"));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_final_compact.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_final_compact"));
+            });
             profile.add_since(profile.module_load_ms, module_start);
 
             const unsigned tile_shared_bytes = static_cast<unsigned>(
@@ -800,6 +824,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             DevPtr merge_output_rows_device(sizeof(uint64_t) * 32);
             DevPtr merge_first_counts_device(sizeof(size_t) * 32);
             DevPtr merge_second_counts_device(sizeof(size_t) * 32);
+            DevPtr final_merged_rows(sizeof(int64_t) * max_tiled_candidates * 2);
+            DevPtr final_marks(sizeof(uint32_t) * max_tiled_candidates);
+            DevPtr final_block_counts(sizeof(uint32_t) * 512);
+            DevPtr final_block_offsets(sizeof(uint32_t) * 512);
             DevPtr final_emitted_device(sizeof(size_t));
             DevPtr final_overflowed_device(sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
@@ -852,6 +880,64 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     1, 1, 1,
                     0, nullptr, merge_args, nullptr));
             };
+            auto launch_final_compact = [&](CUdeviceptr first_rows, size_t first_count,
+                                            CUdeviceptr second_rows, size_t second_count,
+                                            CUdeviceptr output_rows, size_t output_capacity,
+                                            size_t* final_count_out) {
+                size_t total = first_count + second_count;
+                const unsigned threads = 256;
+                const unsigned blocks = static_cast<unsigned>((total + threads - 1) / threads);
+                void* materialize_args[] = {
+                    &first_rows,
+                    &first_count,
+                    &second_rows,
+                    &second_count,
+                    &final_merged_rows.ptr,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_materialize.fn,
+                    blocks, 1, 1,
+                    threads, 1, 1,
+                    0, nullptr, materialize_args, nullptr));
+
+                void* mark_args[] = {
+                    &final_merged_rows.ptr,
+                    &total,
+                    &final_marks.ptr,
+                    &final_block_counts.ptr,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_mark_counts.fn,
+                    blocks, 1, 1,
+                    threads, 1, 1,
+                    sizeof(uint32_t) * threads, nullptr, mark_args, nullptr));
+                CU_CHECK(cuStreamSynchronize(nullptr));
+
+                std::array<uint32_t, 512> block_counts = {};
+                std::array<uint32_t, 512> block_offsets = {};
+                download(block_counts.data(), final_block_counts.ptr, blocks);
+                uint32_t running_total = 0;
+                for (unsigned block_index = 0; block_index < blocks; ++block_index) {
+                    block_offsets[block_index] = running_total;
+                    running_total += block_counts[block_index];
+                }
+                upload(final_block_offsets.ptr, block_offsets.data(), blocks);
+                *final_count_out = static_cast<size_t>(running_total);
+
+                void* compact_args[] = {
+                    &final_merged_rows.ptr,
+                    &final_marks.ptr,
+                    &final_block_offsets.ptr,
+                    &total,
+                    &output_rows,
+                    &output_capacity,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_compact.fn,
+                    blocks, 1, 1,
+                    threads, 1, 1,
+                    sizeof(uint32_t) * threads, nullptr, compact_args, nullptr));
+            };
 
             auto sort_launch_start = CollectKStageProfile::Clock::now();
             for (size_t tile_index = 0; tile_index < tile_count; ++tile_index)
@@ -887,6 +973,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             size_t segment_capacity = tile_size;
             bool write_stage_b = true;
             uint64_t merge_launches = 0;
+            const bool use_parallel_final_compact = collect_k_use_parallel_final_compact();
             while (current_rows.size() > 1) {
                 CollectKStageProfile::MergeLevel level_profile;
                 level_profile.input_segments = current_rows.size();
@@ -897,6 +984,39 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 level_profile.pair_count = pair_count;
                 level_profile.output_segments = pair_count + (has_carry ? 1 : 0);
                 level_profile.output_capacity = output_segment_capacity;
+
+                if (use_parallel_final_compact && current_rows.size() == 2) {
+                    size_t final_count = 0;
+                    auto merge_launch_start = CollectKStageProfile::Clock::now();
+                    launch_final_compact(
+                        current_rows[0], current_counts[0],
+                        current_rows[1], current_counts[1],
+                        rows_out, row_capacity,
+                        &final_count);
+                    merge_launches += 3;
+                    level_profile.launch_ms = CollectKStageProfile::elapsed_ms(merge_launch_start);
+                    if (profile.enabled)
+                        profile.merge_launch_ms += level_profile.launch_ms;
+                    profile.merge_launches += 3;
+                    ++profile.merge_levels;
+
+                    auto merge_sync_start = CollectKStageProfile::Clock::now();
+                    CU_CHECK(cuStreamSynchronize(nullptr));
+                    level_profile.sync_ms = CollectKStageProfile::elapsed_ms(merge_sync_start);
+                    if (profile.enabled)
+                        profile.merge_sync_ms += level_profile.sync_ms;
+                    profile.record_merge_level(level_profile);
+
+                    *h2d_transfers_out += 1;
+                    *d2h_transfers_out += 1;
+                    profile.metadata_fields_downloaded += 1;
+                    *emitted_count_out = final_count;
+                    *overflowed_out = final_count > row_capacity ? 1u : 0u;
+                    *internal_device_transfers_out += merge_launches;
+                    profile.append(*emitted_count_out, *overflowed_out, *h2d_transfers_out,
+                                   *d2h_transfers_out, *internal_device_transfers_out);
+                    return;
+                }
 
                 auto merge_launch_start = CollectKStageProfile::Clock::now();
                 std::array<uint64_t, 32> merge_first_rows = {};

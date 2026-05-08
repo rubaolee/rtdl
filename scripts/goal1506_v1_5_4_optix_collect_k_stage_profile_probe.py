@@ -147,8 +147,15 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         pair_count = current_segments // 2
         has_carry = (current_segments % 2) != 0
         merge_levels += 1
-        merge_launches += 1
-        metadata_fields_downloaded += pair_count * 2
+        if (
+            os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
+            and current_segments == 2
+        ):
+            merge_launches += 3
+            metadata_fields_downloaded += 1
+        else:
+            merge_launches += 1
+            metadata_fields_downloaded += pair_count * 2
         if has_carry:
             carry_copies += 1
         current_segments = pair_count + (1 if has_carry else 0)
@@ -159,7 +166,9 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         "sort_launches": tile_count,
         "merge_launches": merge_launches,
         "carry_copies": carry_copies,
-        "final_copies": 1,
+        "final_copies": 0
+        if os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
+        else 1,
         "metadata_fields_downloaded": metadata_fields_downloaded,
     }
 
