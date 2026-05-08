@@ -1,0 +1,9 @@
+{
+  "d2h_transfers": 0,
+  "emitted_count": 0,
+  "error": "rtdl_optix_collect_k_bounded_i64_device is ABI-reserved but not implemented; do not use as Goal1493 device-buffer execution evidence",
+  "h2d_transfers": 0,
+  "internal_device_transfers": 0,
+  "overflowed": 0,
+  "status": 1
+}

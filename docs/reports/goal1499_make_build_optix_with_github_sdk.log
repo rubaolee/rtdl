@@ -1,0 +1,5 @@
+mkdir -p build
+/usr/local/cuda/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-sdk/include -I/usr/local/cuda/include  -DRTDL_OPTIX_INCLUDE_DIR=\"/root/vendor/optix-sdk/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC \
+	src/native/rtdl_optix.cpp \
+	-L/usr/local/cuda/lib64 -lcuda -lnvrtc  \
+	-o build/librtdl_optix.so
