@@ -131,6 +131,10 @@ def _run_case(
             "candidate_count": candidate_count,
             "row_width": row_width,
             "unique_count": capacity,
+            "expected_native_path": (
+                "row_width2_parallel_bitonic_sort" if row_width == 2 and candidate_count <= 1024
+                else "dynamic_row_width_single_thread_fallback"
+            ),
             "repeats": repeats,
             "median_ms": statistics.median(elapsed_ms),
             "min_ms": min(elapsed_ms),
@@ -148,13 +152,13 @@ def _run_case(
             cuda.free(candidate_ptr)
 
 
-def run_probe(library_path: Path, repeats: int) -> dict[str, Any]:
+def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...]) -> dict[str, Any]:
     os.environ["RTDL_OPTIX_LIB"] = str(library_path)
     cuda = CudaDriver()
     try:
         cases = [
             _run_case(cuda, candidate_count=count, row_width=2, repeats=repeats)
-            for count in (8, 32, 128, 512)
+            for count in counts
         ]
         return {
             "goal": "Goal1503",
@@ -238,7 +242,8 @@ def to_markdown(probe: dict[str, Any]) -> str:
     for case in probe["cases"]:
         lines.append(
             f"- candidates=`{case['candidate_count']}`, unique=`{case['unique_count']}`, "
-            f"row_width=`{case['row_width']}`, median_ms=`{case['median_ms']:.6f}`, "
+            f"row_width=`{case['row_width']}`, path=`{case['expected_native_path']}`, "
+            f"median_ms=`{case['median_ms']:.6f}`, "
             f"parity=`{case['same_candidate_rows'] and case['same_valid_count'] and case['same_overflowed_flag']}`"
         )
     lines.extend(
@@ -257,6 +262,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Record OptiX collect-k scaling observations.")
     parser.add_argument("--library", type=Path, default=DEFAULT_LIBRARY_PATH)
     parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--counts", nargs="+", type=int, default=[8, 32, 128, 512, 1024, 1025])
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--md-out", type=Path, default=DEFAULT_MD_PATH)
     return parser.parse_args()
@@ -266,7 +272,9 @@ def main() -> int:
     args = parse_args()
     if args.repeats <= 0:
         raise ValueError("repeats must be positive")
-    probe = validate_probe(run_probe(args.library, args.repeats))
+    if any(count <= 0 for count in args.counts):
+        raise ValueError("counts must all be positive")
+    probe = validate_probe(run_probe(args.library, args.repeats, tuple(args.counts)))
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
     args.md_out.parent.mkdir(parents=True, exist_ok=True)
     args.json_out.write_text(json.dumps(probe, indent=2, sort_keys=True) + "\n", encoding="utf-8")
