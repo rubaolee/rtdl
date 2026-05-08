@@ -25,6 +25,8 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
             "v1.5 is not a whole-app speedup release",
             "v2.0 is the broader performance target",
             "`--backend optix` is not by itself an NVIDIA RT-core speedup claim",
+            "Technical App Notes",
+            "current reduction/collection planning",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
@@ -92,6 +94,8 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
             "--backend optix is not a public NVIDIA RT-core speedup claim",
             "Only claim the exact prepared/native sub-path",
             "RTDL can express real app-shaped RT workloads from Python",
+            "Technical App Notes",
+            "copy/reduction boundaries",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)

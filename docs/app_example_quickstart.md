@@ -46,7 +46,9 @@ What this does not show:
 | Graph analytics app | `examples/rtdl_graph_analytics_app.py` | bounded graph rows and native summaries | graph database/distributed analytics |
 
 For the full inventory, read [Application Catalog](application_catalog.md) and
-[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md).
+[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md). For
+technical implementation notes rather than tutorials, read
+[Technical App Notes](technical_app_notes/README.md).
 
 ## Engine Customization Boundary
 
@@ -72,6 +74,7 @@ the authoritative per-app list of:
 | Release-facing examples | [Release-Facing Examples](release_facing_examples.md) | canonical command list and setup notes |
 | All examples | [Examples Index](../examples/README.md) | full directory inventory |
 | App boundaries | [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) | what RTDL accelerates and what remains outside |
+| Technical app notes | [Technical App Notes](technical_app_notes/README.md) | v1.0/current implementation, primitive groups, and copy/reduction boundaries |
 | RTX wording | [v1.0 RTX App Status](v1_0_rtx_app_status.md) | public NVIDIA wording state |
 
 ## RTX Rule For App Runs

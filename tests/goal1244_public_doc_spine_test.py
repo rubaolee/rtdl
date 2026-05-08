@@ -18,6 +18,7 @@ class Goal1244PublicDocSpineTest(unittest.TestCase):
             "Apps and examples",
             "Architecture, model, IR, and performance",
             "Use this table before opening historical reports",
+            "Technical App Notes",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
@@ -29,7 +30,7 @@ class Goal1244PublicDocSpineTest(unittest.TestCase):
             "Public Surfaces",
             "What RTDL is, what the current release is, and what not to overclaim.",
             "How to run a first kernel and learn the authoring shape.",
-            "Which apps exist, what RTDL accelerates, and which app phases remain outside.",
+            "Which apps exist, how they are implemented, what RTDL accelerates, and which app phases remain outside.",
             "How the runtime is structured, how lowering works, and how to read evidence.",
         ):
             with self.subTest(phrase=phrase):

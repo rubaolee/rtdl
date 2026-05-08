@@ -11,7 +11,7 @@ goal archive.
 | --- | --- | --- |
 | Front page and project promise | [Project Front Page](../README.md) | [Feature Guide](rtdl_feature_guide.md), [Capability Boundaries](capability_boundaries.md) |
 | Tutorials | [Quick Tutorial](quick_tutorial.md) | [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
-| Apps | [v1.5 Release Package](release_reports/v1_5/README.md) | [Application Catalog](application_catalog.md), [App Engine Support Matrix](app_engine_support_matrix.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
+| Apps | [v1.5 Release Package](release_reports/v1_5/README.md) | [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [App Engine Support Matrix](app_engine_support_matrix.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
 | Examples | [App And Example Quickstart](app_example_quickstart.md) | [Release-Facing Examples](release_facing_examples.md), [Examples Index](../examples/README.md), [v0.8 App Building](tutorials/v0_8_app_building.md) |
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
@@ -27,7 +27,7 @@ The public docs are organized around four surfaces. Use this table before openin
 | --- | --- | --- |
 | Front page | Short project promise and current public boundary | [Project Front Page](../README.md), [Docs Index](README.md) |
 | Tutorials | Teach the kernel shape and first app runs | [Quick Tutorial](quick_tutorial.md), [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
-| Apps and examples | Show what each app does, what RTDL accelerates, and what remains outside | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
+| Apps and examples | Show what each app does, how app implementation is structured, what RTDL accelerates, and what remains outside | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
 | Architecture, model, IR, and performance | Explain how the system is built and how to read performance evidence | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [Performance Model](performance_model.md) |
 
 ## Current v1.5 Story
@@ -78,11 +78,13 @@ release-audit history.
 
 Use [App And Example Quickstart](app_example_quickstart.md),
 [Application Catalog](application_catalog.md),
+[Technical App Notes](technical_app_notes/README.md),
 [v1.5 Release Package](release_reports/v1_5/README.md),
 [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), and
 [Examples Index](../examples/README.md) to understand supported app demos.
 These docs should say what each app does, which part is RT-accelerated, which
-part remains Python-owned or app-specific native continuation, and what public
+part remains Python-owned or app-specific native continuation, how the v1.0
+app model maps to current reduction/collection planning, and what public
 wording is allowed.
 
 ### 4. Architecture, Model, And IR
