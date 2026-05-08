@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import ctypes
+from pathlib import Path
 import unittest
 
 import rtdsl as rt
+
+
+ROOT = Path(__file__).resolve().parents[1]
+REPORT = ROOT / "docs" / "reports" / "goal1520_v1_5_4_collect_k_native_emitted_count_guard_2026-05-08.md"
 
 
 class _LyingEmittedCountSymbol:
@@ -36,6 +41,13 @@ class _FakeLibrary:
 
 
 class Goal1520V154CollectKNativeEmittedCountGuardTest(unittest.TestCase):
+    def test_report_records_boundary_and_validation(self):
+        self.assertTrue(REPORT.exists())
+        text = REPORT.read_text(encoding="utf-8")
+        self.assertIn("emitted_count > capacity", text)
+        self.assertIn("Ran 23 tests", text)
+        self.assertIn("does not authorize stable `COLLECT_K_BOUNDED` promotion", text)
+
     def test_native_i64_wrapper_fails_closed_when_emitted_count_exceeds_capacity(self):
         with self.assertRaisesRegex(RuntimeError, "emitted_count exceeded capacity"):
             rt.collect_native_i64_rows_with_backend_symbol(
