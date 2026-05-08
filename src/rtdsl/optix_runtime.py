@@ -3140,6 +3140,12 @@ def collect_polygon_pair_candidates_bounded_optix(
             f"capacity {candidate_capacity}; emitted at least {emitted}; "
             "failure_mode=fail_closed_overflow"
         )
+    if emitted > int(candidate_capacity):
+        raise RuntimeError(
+            "native bounded OptiX polygon-pair candidate collection reported "
+            f"emitted_count {emitted} beyond capacity {candidate_capacity}; "
+            "failure_mode=fail_closed_overflow"
+        )
 
     native_candidate_pairs = tuple(
         (

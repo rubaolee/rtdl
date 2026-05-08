@@ -2,10 +2,10 @@
 
 ## Verdict
 
-The Python native `COLLECT_K_BOUNDED` wrappers now fail closed when a native
-backend reports `overflowed = 0` but also reports `emitted_count > capacity`.
-This closes a defensive ABI boundary gap before further Embree/OptiX promotion
-work.
+The Python native `COLLECT_K_BOUNDED` wrappers and polygon candidate wrappers
+now fail closed when a native backend reports `overflowed = 0` but also reports
+`emitted_count > capacity`. This closes a defensive ABI boundary gap before
+further Embree/OptiX promotion work.
 
 ## Fixed Boundary
 
@@ -13,6 +13,8 @@ The affected wrapper paths are:
 
 - `collect_native_i64_rows_with_backend_symbol(...)`
 - `collect_native_i64_rows_into_prepared_output_buffer(...)`
+- `collect_polygon_pair_candidates_bounded_embree(...)`
+- `collect_polygon_pair_candidates_bounded_optix(...)`
 
 Both paths already failed closed when the native overflow flag was set. Goal1520
 adds the second required check: native emitted metadata must also be within the
