@@ -1,0 +1,15 @@
+# Goal1498 current pod environment
+git_commit=d4c1205837851226705e57b52404a395734a431b
+git_status_short_count=0
+hostname=91aee8725935
+kernel=Linux 91aee8725935 6.8.0-40-generic #40~22.04.3-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 30 17:30:19 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+python=Python 3.10.12
+nvidia_smi
+NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB
+cuda_driver_lib
+	libcuda.so.1 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libcuda.so.1
+nvcc_path=
+optix_headers
+build_optix_exit=2
+preflight_exit=1
+guard_exit=0

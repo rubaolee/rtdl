@@ -1,0 +1,5 @@
+mkdir -p build
+RTDL OptiX SDK header not found at /opt/optix/include/optix.h
+Set OPTIX_PREFIX to the OptiX SDK root, for example:
+  make build-optix OPTIX_PREFIX=$HOME/vendor/optix-dev
+make: *** [Makefile:193: build-optix] Error 1
