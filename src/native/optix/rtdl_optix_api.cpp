@@ -956,6 +956,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_materialize_mark_counts_level_counts"));
                 CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts"));
+                CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_final_compact_level.fn,
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_compact_level"));
@@ -2502,6 +2506,10 @@ static void ensure_collect_k_row_width2_final_compact_kernels()
             g_collect_k_i64_row_width2_final_materialize.module,
             "collect_k_bounded_i64_row_width2_final_materialize_mark_counts_level_counts"));
         CU_CHECK(cuModuleGetFunction(
+            &g_collect_k_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts.fn,
+            g_collect_k_i64_row_width2_final_materialize.module,
+            "collect_k_bounded_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts"));
+        CU_CHECK(cuModuleGetFunction(
             &g_collect_k_i64_row_width2_final_compact_level.fn,
             g_collect_k_i64_row_width2_final_materialize.module,
             "collect_k_bounded_i64_row_width2_final_compact_level"));
@@ -3345,6 +3353,248 @@ extern "C" int rtdl_optix_collect_k_fused_materialize_mark_probe(
                     g_collect_k_i64_row_width2_final_compact_level_derived.fn,
                     total_blocks, 1, 1,
                     threads, 1, 1,
+                    sizeof(uint32_t) * threads, stream, compact_args, nullptr));
+            };
+
+            auto ref_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index)
+                launch_reference();
+            CU_CHECK(cuStreamSynchronize(stream));
+            *reference_ms_out = CollectKStageProfile::elapsed_ms(ref_start);
+
+            auto fused_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index)
+                launch_fused();
+            CU_CHECK(cuStreamSynchronize(stream));
+            *fused_ms_out = CollectKStageProfile::elapsed_ms(fused_start);
+
+            launch_reference();
+            launch_fused();
+            CU_CHECK(cuStreamSynchronize(stream));
+
+            std::vector<size_t> ref_counts(pair_count);
+            std::vector<size_t> fused_counts(pair_count);
+            std::vector<int64_t> ref_rows(merged_values);
+            std::vector<int64_t> fused_rows(merged_values);
+            CU_CHECK(cuMemcpyDtoH(ref_counts.data(), ref_pair_counts, sizeof(size_t) * pair_count));
+            CU_CHECK(cuMemcpyDtoH(fused_counts.data(), fused_pair_counts, sizeof(size_t) * pair_count));
+            CU_CHECK(cuMemcpyDtoH(ref_rows.data(), ref_output_base, sizeof(int64_t) * merged_values));
+            CU_CHECK(cuMemcpyDtoH(fused_rows.data(), fused_output_base, sizeof(int64_t) * merged_values));
+
+            uint64_t mismatches = 0;
+            for (size_t pair = 0; pair < pair_count; ++pair) {
+                if (ref_counts[pair] != fused_counts[pair])
+                    ++mismatches;
+                const size_t compare_rows = std::min(ref_counts[pair], fused_counts[pair]);
+                const size_t base = pair * output_capacity * 2;
+                for (size_t row = 0; row < compare_rows; ++row) {
+                    if (ref_rows[base + row * 2] != fused_rows[base + row * 2] ||
+                        ref_rows[base + row * 2 + 1] != fused_rows[base + row * 2 + 1]) {
+                        ++mismatches;
+                    }
+                }
+            }
+            *mismatch_count_out = mismatches;
+            *first_pair_count_out = pair_count > 0 ? static_cast<uint64_t>(ref_counts[0]) : 0u;
+        } catch (...) {
+            cleanup();
+            throw;
+        }
+
+        cleanup();
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_k_output_indexed_fused_materialize_mark_probe(
+        size_t repeats,
+        size_t pair_count,
+        size_t segment_capacity,
+        double* reference_ms_out,
+        double* fused_ms_out,
+        uint64_t* mismatch_count_out,
+        uint64_t* first_pair_count_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!reference_ms_out || !fused_ms_out || !mismatch_count_out || !first_pair_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        if (repeats == 0)
+            repeats = 1;
+        if (pair_count == 0)
+            pair_count = 1;
+        if (segment_capacity == 0)
+            segment_capacity = 2048;
+
+        (void)get_optix_context();
+        ensure_collect_k_row_width2_final_compact_kernels();
+
+        size_t output_capacity = segment_capacity * 2;
+        const unsigned threads = 256;
+        size_t blocks_per_pair = (output_capacity + threads - 1) / threads;
+        const unsigned total_blocks = static_cast<unsigned>(pair_count * blocks_per_pair);
+        if (total_blocks == 0 || total_blocks > 4096) {
+            throw std::runtime_error("collect-k output-indexed fused probe total block count must be in 1..4096");
+        }
+
+        const size_t input_segments = pair_count * 2;
+        const size_t current_values = input_segments * segment_capacity * 2;
+        const size_t merged_values = pair_count * output_capacity * 2;
+        const size_t mark_values = static_cast<size_t>(total_blocks) * threads;
+        std::vector<int64_t> host_rows(current_values);
+        std::vector<size_t> host_counts(input_segments, segment_capacity);
+        for (size_t pair = 0; pair < pair_count; ++pair) {
+            int64_t* first_rows = host_rows.data() + (pair * 2) * segment_capacity * 2;
+            int64_t* second_rows = host_rows.data() + (pair * 2 + 1) * segment_capacity * 2;
+            for (size_t index = 0; index < segment_capacity; ++index) {
+                const int64_t value0 = static_cast<int64_t>(index);
+                const int64_t value1 = static_cast<int64_t>(index % 7);
+                first_rows[index * 2] = value0;
+                first_rows[index * 2 + 1] = value1;
+                second_rows[index * 2] = value0;
+                second_rows[index * 2 + 1] = value1;
+            }
+        }
+
+        CUdeviceptr current_base = 0;
+        CUdeviceptr current_counts = 0;
+        CUdeviceptr ref_merged_rows = 0;
+        CUdeviceptr fused_merged_rows = 0;
+        CUdeviceptr ref_marks = 0;
+        CUdeviceptr fused_marks = 0;
+        CUdeviceptr ref_block_counts = 0;
+        CUdeviceptr fused_block_counts = 0;
+        CUdeviceptr ref_block_offsets = 0;
+        CUdeviceptr fused_block_offsets = 0;
+        CUdeviceptr ref_pair_offsets = 0;
+        CUdeviceptr fused_pair_offsets = 0;
+        CUdeviceptr ref_pair_counts = 0;
+        CUdeviceptr fused_pair_counts = 0;
+        CUdeviceptr ref_output_base = 0;
+        CUdeviceptr fused_output_base = 0;
+        CUstream stream = nullptr;
+
+        auto cleanup = [&]() {
+            if (stream)
+                cuStreamDestroy(stream);
+            if (fused_output_base)
+                cuMemFree(fused_output_base);
+            if (ref_output_base)
+                cuMemFree(ref_output_base);
+            if (fused_pair_counts)
+                cuMemFree(fused_pair_counts);
+            if (ref_pair_counts)
+                cuMemFree(ref_pair_counts);
+            if (fused_pair_offsets)
+                cuMemFree(fused_pair_offsets);
+            if (ref_pair_offsets)
+                cuMemFree(ref_pair_offsets);
+            if (fused_block_offsets)
+                cuMemFree(fused_block_offsets);
+            if (ref_block_offsets)
+                cuMemFree(ref_block_offsets);
+            if (fused_block_counts)
+                cuMemFree(fused_block_counts);
+            if (ref_block_counts)
+                cuMemFree(ref_block_counts);
+            if (fused_marks)
+                cuMemFree(fused_marks);
+            if (ref_marks)
+                cuMemFree(ref_marks);
+            if (fused_merged_rows)
+                cuMemFree(fused_merged_rows);
+            if (ref_merged_rows)
+                cuMemFree(ref_merged_rows);
+            if (current_counts)
+                cuMemFree(current_counts);
+            if (current_base)
+                cuMemFree(current_base);
+        };
+
+        try {
+            CU_CHECK(cuMemAlloc(&current_base, sizeof(int64_t) * current_values));
+            CU_CHECK(cuMemAlloc(&current_counts, sizeof(size_t) * input_segments));
+            CU_CHECK(cuMemAlloc(&ref_merged_rows, sizeof(int64_t) * merged_values));
+            CU_CHECK(cuMemAlloc(&fused_merged_rows, sizeof(int64_t) * merged_values));
+            CU_CHECK(cuMemAlloc(&ref_marks, sizeof(uint32_t) * mark_values));
+            CU_CHECK(cuMemAlloc(&fused_marks, sizeof(uint32_t) * mark_values));
+            CU_CHECK(cuMemAlloc(&ref_block_counts, sizeof(uint32_t) * total_blocks));
+            CU_CHECK(cuMemAlloc(&fused_block_counts, sizeof(uint32_t) * total_blocks));
+            CU_CHECK(cuMemAlloc(&ref_block_offsets, sizeof(uint32_t) * total_blocks));
+            CU_CHECK(cuMemAlloc(&fused_block_offsets, sizeof(uint32_t) * total_blocks));
+            CU_CHECK(cuMemAlloc(&ref_pair_offsets, sizeof(uint32_t) * pair_count));
+            CU_CHECK(cuMemAlloc(&fused_pair_offsets, sizeof(uint32_t) * pair_count));
+            CU_CHECK(cuMemAlloc(&ref_pair_counts, sizeof(size_t) * pair_count));
+            CU_CHECK(cuMemAlloc(&fused_pair_counts, sizeof(size_t) * pair_count));
+            CU_CHECK(cuMemAlloc(&ref_output_base, sizeof(int64_t) * merged_values));
+            CU_CHECK(cuMemAlloc(&fused_output_base, sizeof(int64_t) * merged_values));
+            CU_CHECK(cuMemcpyHtoD(current_base, host_rows.data(), sizeof(int64_t) * host_rows.size()));
+            CU_CHECK(cuMemcpyHtoD(current_counts, host_counts.data(), sizeof(size_t) * host_counts.size()));
+            CU_CHECK(cuStreamCreate(&stream, CU_STREAM_NON_BLOCKING));
+
+            auto launch_reference = [&]() {
+                void* materialize_args[] = {
+                    &current_base, &current_counts, &segment_capacity, &output_capacity,
+                    &ref_merged_rows, &pair_count, &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_materialize_level_counts_derived.fn,
+                    total_blocks, 1, 1, threads, 1, 1, 0, stream, materialize_args, nullptr));
+
+                void* mark_args[] = {
+                    &ref_merged_rows, &current_counts, &output_capacity, &pair_count,
+                    &ref_marks, &ref_block_counts, &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_mark_counts_level_counts.fn,
+                    total_blocks, 1, 1, threads, 1, 1,
+                    sizeof(uint32_t) * threads, stream, mark_args, nullptr));
+
+                void* prefix_args[] = {
+                    &ref_block_counts, &pair_count, &blocks_per_pair,
+                    &ref_block_offsets, &ref_pair_offsets, &ref_pair_counts,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                    static_cast<unsigned>(pair_count), 1, 1, 1, 1, 1, 0, stream, prefix_args, nullptr));
+
+                void* compact_args[] = {
+                    &ref_merged_rows, &ref_marks, &ref_block_offsets, &ref_pair_offsets,
+                    &ref_output_base, &output_capacity, &pair_count, &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                    total_blocks, 1, 1, threads, 1, 1,
+                    sizeof(uint32_t) * threads, stream, compact_args, nullptr));
+            };
+
+            auto launch_fused = [&]() {
+                void* fused_args[] = {
+                    &current_base, &current_counts, &segment_capacity, &output_capacity,
+                    &fused_merged_rows, &pair_count, &fused_marks, &fused_block_counts,
+                    &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts.fn,
+                    total_blocks, 1, 1, threads, 1, 1,
+                    sizeof(uint32_t) * threads, stream, fused_args, nullptr));
+
+                void* prefix_args[] = {
+                    &fused_block_counts, &pair_count, &blocks_per_pair,
+                    &fused_block_offsets, &fused_pair_offsets, &fused_pair_counts,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                    static_cast<unsigned>(pair_count), 1, 1, 1, 1, 1, 0, stream, prefix_args, nullptr));
+
+                void* compact_args[] = {
+                    &fused_merged_rows, &fused_marks, &fused_block_offsets, &fused_pair_offsets,
+                    &fused_output_base, &output_capacity, &pair_count, &blocks_per_pair,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                    total_blocks, 1, 1, threads, 1, 1,
                     sizeof(uint32_t) * threads, stream, compact_args, nullptr));
             };
 

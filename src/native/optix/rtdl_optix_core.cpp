@@ -2759,6 +2759,128 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_ma
         atomicAdd(&block_counts[pair_index * blocks_per_pair + output_block], 1u);
 }
 
+__device__ size_t collect_k_final_stable_partition(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t output_index)
+{
+    size_t low = output_index > second_count ? output_index - second_count : 0;
+    size_t high = output_index < first_count ? output_index : first_count;
+    while (low <= high) {
+        const size_t first_take = low + (high - low) / 2;
+        const size_t second_take = output_index - first_take;
+        const bool too_many_first =
+            first_take > 0 && second_take < second_count &&
+            collect_k_final_pair_compare(
+                first_rows[(first_take - 1) * 2],
+                first_rows[(first_take - 1) * 2 + 1],
+                second_rows[second_take * 2],
+                second_rows[second_take * 2 + 1]) > 0;
+        const bool too_few_first =
+            second_take > 0 && first_take < first_count &&
+            collect_k_final_pair_compare(
+                second_rows[(second_take - 1) * 2],
+                second_rows[(second_take - 1) * 2 + 1],
+                first_rows[first_take * 2],
+                first_rows[first_take * 2 + 1]) >= 0;
+        if (too_many_first) {
+            if (first_take == 0)
+                return 0;
+            high = first_take - 1;
+        } else if (too_few_first) {
+            low = first_take + 1;
+        } else {
+            return first_take;
+        }
+    }
+    return low;
+}
+
+__device__ void collect_k_final_select_stable_output(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t output_index,
+        int64_t* value0,
+        int64_t* value1)
+{
+    const size_t first_take =
+        collect_k_final_stable_partition(first_rows, first_count, second_rows, second_count, output_index);
+    const size_t second_take = output_index - first_take;
+    if (first_take < first_count &&
+        (second_take >= second_count ||
+         collect_k_final_pair_compare(
+             first_rows[first_take * 2],
+             first_rows[first_take * 2 + 1],
+             second_rows[second_take * 2],
+             second_rows[second_take * 2 + 1]) <= 0)) {
+        *value0 = first_rows[first_take * 2];
+        *value1 = first_rows[first_take * 2 + 1];
+        return;
+    }
+    *value0 = second_rows[second_take * 2];
+    *value1 = second_rows[second_take * 2 + 1];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts(
+        const int64_t* current_base,
+        const size_t* current_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+
+    if (pair_index < pair_count) {
+        const int64_t* first_rows = current_base + (pair_index * 2) * segment_capacity * 2;
+        const int64_t* second_rows = current_base + (pair_index * 2 + 1) * segment_capacity * 2;
+        const size_t first_count = current_counts[pair_index * 2];
+        const size_t second_count = current_counts[pair_index * 2 + 1];
+        const size_t total = first_count + second_count;
+        if (local_index < total && local_index < output_capacity) {
+            int64_t value0 = 0;
+            int64_t value1 = 0;
+            collect_k_final_select_stable_output(
+                first_rows, first_count, second_rows, second_count, local_index, &value0, &value1);
+            int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+            pair_merged_rows[local_index * 2] = value0;
+            pair_merged_rows[local_index * 2 + 1] = value1;
+            if (local_index == 0) {
+                mark = 1;
+            } else {
+                int64_t prev0 = 0;
+                int64_t prev1 = 0;
+                collect_k_final_select_stable_output(
+                    first_rows, first_count, second_rows, second_count, local_index - 1, &prev0, &prev1);
+                mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+            }
+        }
+    }
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    marks[global_index] = mark;
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
 extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact(
         const int64_t* merged_rows,
         const uint32_t* marks,
@@ -3554,6 +3676,7 @@ static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_der
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_counts_derived;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level_counts;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_mark_counts_level_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level_derived;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_prefix_offsets_level;
 
