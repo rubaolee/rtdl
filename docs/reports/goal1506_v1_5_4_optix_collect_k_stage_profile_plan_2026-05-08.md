@@ -75,7 +75,7 @@ The pod-facing runner is:
 
 - `scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh`
 
-The runner builds OptiX, runs the probe, and runs the local Goal1502-Goal1506 evidence/profile guards. If the pod needs a non-default OptiX SDK path, set `OPTIX_PREFIX` before invoking it.
+The runner first runs the Goal1508 tiled shared-memory preflight, then builds OptiX, runs the Goal1506 probe, and runs the local Goal1502-Goal1506 evidence/profile guards. If the pod needs a non-default OptiX SDK path, set `OPTIX_PREFIX` before invoking it.
 
 ```bash
 OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh
@@ -110,6 +110,11 @@ By default, the probe writes:
 - `docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.json`
 - `docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.md`
 - `docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl`
+
+The preflight writes:
+
+- `docs/reports/goal1508_v1_5_4_optix_collect_k_tiled_preflight_2026-05-08.json`
+- `docs/reports/goal1508_v1_5_4_optix_collect_k_tiled_preflight_2026-05-08.md`
 
 The guarded profiling mode records host-side stage timings around:
 

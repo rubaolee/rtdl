@@ -20,6 +20,9 @@ if command -v nvidia-smi >/dev/null 2>&1; then
   nvidia-smi --query-gpu=name,driver_version --format=csv,noheader || true
 fi
 
+PYTHONPATH=src:. python3 scripts/goal1508_v1_5_4_optix_collect_k_tiled_preflight.py \
+  --counts $COUNTS
+
 make build-optix "${OPTIX_PREFIX_ARG[@]}"
 
 PYTHONPATH=src:. python3 scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py \
@@ -38,3 +41,6 @@ echo "Goal1506 stage profile artifacts:"
 echo "  docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.json"
 echo "  docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.md"
 echo "  docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl"
+echo "Goal1508 tiled preflight artifacts:"
+echo "  docs/reports/goal1508_v1_5_4_optix_collect_k_tiled_preflight_2026-05-08.json"
+echo "  docs/reports/goal1508_v1_5_4_optix_collect_k_tiled_preflight_2026-05-08.md"
