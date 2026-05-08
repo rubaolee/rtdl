@@ -105,6 +105,7 @@ def _summarize_records(records: list[dict[str, Any]]) -> dict[str, Any]:
             "sort_launches": int(records[-1]["sort_launches"]) if records else 0,
             "merge_launches": int(records[-1]["merge_launches"]) if records else 0,
             "carry_copies": int(records[-1]["carry_copies"]) if records else 0,
+            "carry_payload_copies": int(records[-1].get("carry_payload_copies", records[-1]["carry_copies"])) if records else 0,
             "final_copies": int(records[-1]["final_copies"]) if records else 0,
             "metadata_fields_downloaded": int(records[-1]["metadata_fields_downloaded"]) if records else 0,
         },
@@ -121,6 +122,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             "sort_launches": 1,
             "merge_launches": 0,
             "carry_copies": 0,
+            "carry_payload_copies": 0,
             "final_copies": 0,
             "metadata_fields_downloaded": 2,
         }
@@ -132,6 +134,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             "sort_launches": 1,
             "merge_launches": 0,
             "carry_copies": 0,
+            "carry_payload_copies": 0,
             "final_copies": 0,
             "metadata_fields_downloaded": 2,
         }
@@ -148,6 +151,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     merge_levels = 0
     merge_launches = 0
     carry_copies = 0
+    carry_payload_copies = 0
     use_batched_compact_level = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL"))
     use_device_prefix_compact = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT"))
     use_derived_level_descriptors = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS"))
@@ -158,6 +162,18 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     )
     use_device_final_counts = (
         bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS"))
+        and use_device_level_counts
+    )
+    use_carry_pointer_diagnostic = (
+        bool(os.environ.get("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC"))
+        and use_device_level_counts
+    )
+    use_carry_pointer_device_counts_diagnostic = (
+        bool(os.environ.get("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC"))
+        and use_device_level_counts
+    )
+    use_derived_carry_alias_diagnostic = (
+        bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"))
         and use_device_level_counts
     )
     metadata_fields_downloaded = tile_count * (1 if use_device_level_counts else 2)
@@ -173,6 +189,8 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         pair_count = current_segments // 2
         has_carry = (current_segments % 2) != 0
         output_segment_capacity = segment_capacity * 2
+        next_segment_count = pair_count + (1 if has_carry else 0)
+        derived_carry_alias_safe_next = next_segment_count == 2 or (next_segment_count % 2) != 0
         merge_levels += 1
         if (
             os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
@@ -192,7 +210,23 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             metadata_fields_downloaded += pair_count * 2
         if has_carry:
             carry_copies += 1
-        current_segments = pair_count + (1 if has_carry else 0)
+            use_pointer_carry_level = (
+                (use_carry_pointer_diagnostic or use_carry_pointer_device_counts_diagnostic)
+                and not use_derived_carry_alias_diagnostic
+                and use_batched_compact_level
+                and current_segments != 2
+                and use_derived_level_descriptors
+            )
+            use_derived_carry_alias_level = (
+                use_derived_carry_alias_diagnostic
+                and use_batched_compact_level
+                and current_segments != 2
+                and use_derived_level_descriptors
+                and derived_carry_alias_safe_next
+            )
+            if not use_pointer_carry_level and not use_derived_carry_alias_level:
+                carry_payload_copies += 1
+        current_segments = next_segment_count
         segment_capacity = output_segment_capacity
     return {
         "native_path": expected_path,
@@ -201,6 +235,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         "sort_launches": 1 if use_cub_tile_sort else tile_count,
         "merge_launches": merge_launches,
         "carry_copies": carry_copies,
+        "carry_payload_copies": carry_payload_copies,
         "final_copies": 0 if (
             os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
             and segment_capacity >= compact_min_capacity

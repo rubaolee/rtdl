@@ -502,6 +502,7 @@ struct CollectKStageProfile {
         size_t output_segments = 0;
         size_t output_capacity = 0;
         uint64_t carry_copies = 0;
+        uint64_t carry_payload_copies = 0;
         double launch_ms = 0.0;
         double sync_ms = 0.0;
         double metadata_ms = 0.0;
@@ -519,6 +520,7 @@ struct CollectKStageProfile {
     uint64_t sort_launches = 0;
     uint64_t merge_launches = 0;
     uint64_t carry_copies = 0;
+    uint64_t carry_payload_copies = 0;
     uint64_t final_copies = 0;
     uint64_t metadata_fields_downloaded = 0;
     double module_load_ms = 0.0;
@@ -578,6 +580,7 @@ struct CollectKStageProfile {
                 << "\"sort_launches\":" << sort_launches << ","
                 << "\"merge_launches\":" << merge_launches << ","
                 << "\"carry_copies\":" << carry_copies << ","
+                << "\"carry_payload_copies\":" << carry_payload_copies << ","
                 << "\"final_copies\":" << final_copies << ","
                 << "\"metadata_fields_downloaded\":" << metadata_fields_downloaded << ","
                 << "\"emitted_count\":" << emitted_count << ","
@@ -607,6 +610,7 @@ struct CollectKStageProfile {
                     << "\"output_segments\":" << level.output_segments << ","
                     << "\"output_capacity\":" << level.output_capacity << ","
                     << "\"carry_copies\":" << level.carry_copies << ","
+                    << "\"carry_payload_copies\":" << level.carry_payload_copies << ","
                     << "\"launch_ms\":" << level.launch_ms << ","
                     << "\"sync_ms\":" << level.sync_ms << ","
                     << "\"metadata_ms\":" << level.metadata_ms << ","
@@ -1731,11 +1735,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                             ? current_rows.back()
                             : output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_count;
                         auto carry_copy_start = CollectKStageProfile::Clock::now();
+                        bool copied_carry_payload = false;
                         if (!use_pointer_carry_level && !use_derived_carry_alias_level) {
                             CU_CHECK(cuMemcpyDtoD(
                                 carry_output,
                                 current_rows.back(),
                                 sizeof(int64_t) * (use_device_level_counts ? segment_capacity : current_counts.back()) * 2));
+                            copied_carry_payload = true;
                         }
                         if (use_device_level_counts) {
                             if (use_pointer_host_counts_carry_level) {
@@ -1754,6 +1760,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         ++merge_launches;
                         ++profile.carry_copies;
                         ++level_profile.carry_copies;
+                        if (copied_carry_payload) {
+                            ++profile.carry_payload_copies;
+                            ++level_profile.carry_payload_copies;
+                        }
                         next_rows.push_back(carry_output);
                         next_counts.push_back(current_counts.back());
                     }
@@ -1846,6 +1856,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     ++merge_launches;
                     ++profile.carry_copies;
                     ++level_profile.carry_copies;
+                    ++profile.carry_payload_copies;
+                    ++level_profile.carry_payload_copies;
                     next_rows.push_back(carry_output);
                     next_counts.push_back(current_counts.back());
                 }

@@ -4,6 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 API = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
+PROBE = ROOT / "scripts" / "goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py"
 
 
 class Goal1573V154OptixCollectKDerivedCarryAliasDiagnosticTest(unittest.TestCase):
@@ -33,6 +34,15 @@ class Goal1573V154OptixCollectKDerivedCarryAliasDiagnosticTest(unittest.TestCase
         self.assertIn("&& !use_derived_carry_alias_diagnostic", source)
         self.assertIn("use_pointer_device_counts_carry_level", source)
         self.assertIn("use_pointer_host_counts_carry_level", source)
+
+    def test_profiler_distinguishes_topology_carries_from_payload_copies(self) -> None:
+        api = API.read_text(encoding="utf-8")
+        probe = PROBE.read_text(encoding="utf-8")
+        self.assertIn("carry_payload_copies", api)
+        self.assertIn("bool copied_carry_payload = false;", api)
+        self.assertIn("if (copied_carry_payload) {", api)
+        self.assertIn("carry_payload_copies", probe)
+        self.assertIn("if not use_pointer_carry_level and not use_derived_carry_alias_level:", probe)
 
 
 if __name__ == "__main__":
