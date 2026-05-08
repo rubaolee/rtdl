@@ -626,8 +626,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     static_cast<int>(tile_shared_bytes)));
             }
 
-            const size_t first_count = 4096;
-            const size_t second_count = candidate_count - first_count;
+            size_t first_count = 4096;
+            size_t second_count = candidate_count - first_count;
             size_t second_padded_count = 1;
             while (second_padded_count < second_count)
                 second_padded_count <<= 1;
