@@ -19,10 +19,12 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
         self.assertIn("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL", api)
         self.assertIn("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT", api)
         self.assertIn("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS", api)
+        self.assertIn("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS", api)
         self.assertIn("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE", api)
         self.assertIn("collect_k_use_cub_tile_sort", api)
         self.assertIn("collect_k_use_device_prefix_compact", api)
         self.assertIn("collect_k_use_derived_level_descriptors", api)
+        self.assertIn("collect_k_use_device_level_counts", api)
         self.assertIn("collect_k_reuse_workspace", api)
         self.assertIn("if (use_cub_tile_sort)", api)
         self.assertIn("launch_cub_sort_tiles", api)
@@ -30,6 +32,8 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
         self.assertIn("g_collect_k_row_width2_workspace_mutex", api)
         self.assertIn("collect_k_bounded_i64_row_width2_final_prefix_offsets_level", core)
         self.assertIn("collect_k_bounded_i64_row_width2_final_materialize_level_derived", core)
+        self.assertIn("collect_k_bounded_i64_row_width2_final_materialize_level_counts_derived", core)
+        self.assertIn("collect_k_bounded_i64_row_width2_final_mark_counts_level_counts", core)
         self.assertIn("collect_k_bounded_i64_row_width2_final_compact_level_derived", core)
 
     def test_default_bitonic_sort_kernel_remains_available(self) -> None:
@@ -169,6 +173,39 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
         self.assertEqual(topology["tile_count"], 64)
         self.assertEqual(topology["sort_launches"], 1)
         self.assertEqual(topology["merge_launches"], 23)
+
+    def test_device_level_counts_topology_reduces_metadata_downloads(self) -> None:
+        saved = {
+            name: os.environ.get(name)
+            for name in (
+                "RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT",
+                "RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT",
+                "RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL",
+                "RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT",
+                "RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS",
+                "RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS",
+                "RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY",
+            )
+        }
+        os.environ["RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS"] = "1"
+        os.environ.pop("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY", None)
+        try:
+            topology = probe.expected_topology(131072, 2)
+        finally:
+            for name, value in saved.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+
+        self.assertEqual(topology["tile_count"], 64)
+        self.assertEqual(topology["merge_launches"], 23)
+        self.assertEqual(topology["metadata_fields_downloaded"], 131)
 
 
 if __name__ == "__main__":

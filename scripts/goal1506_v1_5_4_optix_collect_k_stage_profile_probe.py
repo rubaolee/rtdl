@@ -151,7 +151,16 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     metadata_fields_downloaded = tile_count * 2
     use_batched_compact_level = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL"))
     use_device_prefix_compact = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT"))
+    use_derived_level_descriptors = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS"))
+    use_device_level_counts = (
+        bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS"))
+        and use_derived_level_descriptors
+        and use_device_prefix_compact
+    )
+    used_device_level_counts = False
     while current_segments > 1:
+        if use_device_level_counts and used_device_level_counts and current_segments == 2:
+            metadata_fields_downloaded += 2
         pair_count = current_segments // 2
         has_carry = (current_segments % 2) != 0
         output_segment_capacity = segment_capacity * 2
@@ -162,9 +171,13 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         ):
             if use_batched_compact_level and current_segments != 2:
                 merge_launches += 4 if use_device_prefix_compact else 3
+                if use_device_level_counts:
+                    used_device_level_counts = True
+                else:
+                    metadata_fields_downloaded += pair_count
             else:
                 merge_launches += pair_count * 3
-            metadata_fields_downloaded += pair_count
+                metadata_fields_downloaded += pair_count
         else:
             merge_launches += 1
             metadata_fields_downloaded += pair_count * 2
