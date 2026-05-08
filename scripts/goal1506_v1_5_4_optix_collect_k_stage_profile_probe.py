@@ -136,8 +136,13 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             "metadata_fields_downloaded": 2,
         }
 
-    tile_size = 2048 if os.environ.get("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT") else 4096
+    use_cub_tile_sort = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT"))
+    tile_size = 2048 if use_cub_tile_sort else 4096
     tile_count = (candidate_count + tile_size - 1) // tile_size
+    compact_min_capacity = int(
+        os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY")
+        or (4096 if use_cub_tile_sort else 65536)
+    )
     current_segments = tile_count
     segment_capacity = tile_size
     merge_levels = 0
@@ -151,7 +156,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         merge_levels += 1
         if (
             os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
-            and output_segment_capacity >= 65536
+            and output_segment_capacity >= compact_min_capacity
         ):
             merge_launches += pair_count * 3
             metadata_fields_downloaded += pair_count
@@ -171,7 +176,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         "carry_copies": carry_copies,
         "final_copies": 0 if (
             os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
-            and segment_capacity >= 65536
+            and segment_capacity >= compact_min_capacity
         ) else 1,
         "metadata_fields_downloaded": metadata_fields_downloaded,
     }

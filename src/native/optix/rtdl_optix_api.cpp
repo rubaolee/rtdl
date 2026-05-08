@@ -628,6 +628,18 @@ static bool collect_k_use_parallel_final_compact()
     return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
 }
 
+static size_t collect_k_parallel_compact_min_capacity(bool use_cub_tile_sort)
+{
+    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY");
+    if (!raw || raw[0] == '\0')
+        return use_cub_tile_sort ? 4096 : 65536;
+    char* end = nullptr;
+    unsigned long long value = std::strtoull(raw, &end, 10);
+    if (end == raw || value == 0)
+        return use_cub_tile_sort ? 4096 : 65536;
+    return static_cast<size_t>(value);
+}
+
 static bool collect_k_use_cub_tile_sort()
 {
     const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT");
@@ -1009,6 +1021,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             bool write_stage_b = true;
             uint64_t merge_launches = 0;
             const bool use_parallel_final_compact = collect_k_use_parallel_final_compact();
+            const size_t parallel_compact_min_capacity =
+                collect_k_parallel_compact_min_capacity(use_cub_tile_sort);
             while (current_rows.size() > 1) {
                 CollectKStageProfile::MergeLevel level_profile;
                 level_profile.input_segments = current_rows.size();
@@ -1020,7 +1034,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 level_profile.output_segments = pair_count + (has_carry ? 1 : 0);
                 level_profile.output_capacity = output_segment_capacity;
 
-                if (use_parallel_final_compact && output_segment_capacity >= 65536) {
+                if (use_parallel_final_compact && output_segment_capacity >= parallel_compact_min_capacity) {
                     auto merge_launch_start = CollectKStageProfile::Clock::now();
                     std::vector<CUdeviceptr> next_rows;
                     std::vector<size_t> next_counts;

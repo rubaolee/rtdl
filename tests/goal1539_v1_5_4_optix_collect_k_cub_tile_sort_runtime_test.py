@@ -49,6 +49,53 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
             else:
                 os.environ["RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT"] = old_value
 
+    def test_parallel_compact_threshold_is_topology_visible(self) -> None:
+        old_compact = os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
+        old_threshold = os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY")
+        os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY"] = "16384"
+        try:
+            topology = probe.expected_topology(131072, 2)
+        finally:
+            if old_compact is None:
+                os.environ.pop("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT", None)
+            else:
+                os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"] = old_compact
+            if old_threshold is None:
+                os.environ.pop("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY", None)
+            else:
+                os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY"] = old_threshold
+
+        self.assertEqual(topology["merge_launches"], 46)
+        self.assertEqual(topology["final_copies"], 0)
+
+    def test_cub_tile_sort_defaults_to_early_parallel_compact(self) -> None:
+        old_cub = os.environ.get("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT")
+        old_compact = os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT")
+        old_threshold = os.environ.get("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY")
+        os.environ["RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT"] = "1"
+        os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"] = "1"
+        os.environ.pop("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY", None)
+        try:
+            topology = probe.expected_topology(131072, 2)
+        finally:
+            if old_cub is None:
+                os.environ.pop("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT", None)
+            else:
+                os.environ["RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT"] = old_cub
+            if old_compact is None:
+                os.environ.pop("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT", None)
+            else:
+                os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"] = old_compact
+            if old_threshold is None:
+                os.environ.pop("RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY", None)
+            else:
+                os.environ["RTDL_OPTIX_COLLECT_K_PARALLEL_COMPACT_MIN_CAPACITY"] = old_threshold
+
+        self.assertEqual(topology["tile_count"], 64)
+        self.assertEqual(topology["merge_launches"], 189)
+        self.assertEqual(topology["metadata_fields_downloaded"], 191)
+
 
 if __name__ == "__main__":
     unittest.main()
