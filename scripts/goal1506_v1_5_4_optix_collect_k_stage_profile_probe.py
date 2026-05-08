@@ -156,10 +156,19 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         and use_derived_level_descriptors
         and use_device_prefix_compact
     )
+    use_device_final_counts = (
+        bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS"))
+        and use_device_level_counts
+    )
     metadata_fields_downloaded = tile_count * (1 if use_device_level_counts else 2)
     used_device_level_counts = False
     while current_segments > 1:
-        if use_device_level_counts and used_device_level_counts and current_segments == 2:
+        if (
+            use_device_level_counts
+            and used_device_level_counts
+            and current_segments == 2
+            and not use_device_final_counts
+        ):
             metadata_fields_downloaded += 2
         pair_count = current_segments // 2
         has_carry = (current_segments % 2) != 0
