@@ -214,15 +214,26 @@ def run_probe(
         all_profile_topologies_match_expected = all(
             case["profile_topology_matches_expected"] for case in cases
         )
+        all_parity_passed = all(
+            case["same_candidate_rows"] and case["same_valid_count"] and case["same_overflowed_flag"]
+            for case in cases
+        )
+        all_profile_records_present = all(
+            case["observed_profile_records"] == case["expected_profile_records"] for case in cases
+        )
+        accepted_goal1506_evidence = (
+            all_parity_passed
+            and all_profile_records_present
+            and all_profile_paths_match_expected
+            and all_profile_topologies_match_expected
+        )
         return {
             "goal": "Goal1506",
             "status": "goal1506_optix_collect_k_stage_profile_probe_recorded",
-            "accepted_goal1506_evidence": (
-                all_profile_paths_match_expected and all_profile_topologies_match_expected
-            ),
+            "accepted_goal1506_evidence": accepted_goal1506_evidence,
             "local_fallback_smoke_only": (
                 allow_local_fallback_smoke
-                and not (all_profile_paths_match_expected and all_profile_topologies_match_expected)
+                and not accepted_goal1506_evidence
             ),
             "git_commit": _git_head(),
             "platform": platform.platform(),
@@ -238,13 +249,8 @@ def run_probe(
                 "plus opt-in native host-side stage timing emitted by the same native call."
             ),
             "cases": cases,
-            "all_parity_passed": all(
-                case["same_candidate_rows"] and case["same_valid_count"] and case["same_overflowed_flag"]
-                for case in cases
-            ),
-            "all_profile_records_present": all(
-                case["observed_profile_records"] == case["expected_profile_records"] for case in cases
-            ),
+            "all_parity_passed": all_parity_passed,
+            "all_profile_records_present": all_profile_records_present,
             "all_profile_paths_match_expected": all_profile_paths_match_expected,
             "all_profile_topologies_match_expected": all_profile_topologies_match_expected,
             "claim_flags": {

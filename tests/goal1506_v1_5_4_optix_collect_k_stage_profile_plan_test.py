@@ -77,6 +77,27 @@ class Goal1506V154OptixCollectKStageProfilePlanTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "profiled call record"):
             probe.validate_probe(payload)
 
+    def test_accepted_evidence_requires_all_core_gates(self) -> None:
+        payload = make_synthetic_probe()
+
+        self.assertTrue(payload["accepted_goal1506_evidence"])
+        for flag in (
+            "all_parity_passed",
+            "all_profile_records_present",
+            "all_profile_paths_match_expected",
+            "all_profile_topologies_match_expected",
+        ):
+            with self.subTest(flag=flag):
+                mutated = make_synthetic_probe()
+                mutated[flag] = False
+                mutated["accepted_goal1506_evidence"] = (
+                    mutated["all_parity_passed"]
+                    and mutated["all_profile_records_present"]
+                    and mutated["all_profile_paths_match_expected"]
+                    and mutated["all_profile_topologies_match_expected"]
+                )
+                self.assertFalse(mutated["accepted_goal1506_evidence"])
+
     def test_probe_validator_rejects_topology_mismatch(self) -> None:
         payload = make_synthetic_probe()
         payload["all_profile_topologies_match_expected"] = False
