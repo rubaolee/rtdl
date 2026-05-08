@@ -71,6 +71,16 @@ The pod-facing probe is:
 
 - `scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py`
 
+The pod-facing runner is:
+
+- `scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh`
+
+The runner builds OptiX, runs the probe, and runs the local Goal1502-Goal1506 evidence/profile guards. If the pod needs a non-default OptiX SDK path, set `OPTIX_PREFIX` before invoking it.
+
+```bash
+OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh
+```
+
 After building `librtdl_optix.so`, run for example:
 
 ```bash

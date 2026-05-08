@@ -7,6 +7,7 @@ from scripts import goal1506_v1_5_4_optix_collect_k_stage_profile_probe as probe
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_MD = ROOT / "docs" / "reports" / "goal1506_v1_5_4_optix_collect_k_stage_profile_plan_2026-05-08.md"
 OPTIX_API_CPP = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
+POD_RUNNER = ROOT / "scripts" / "goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh"
 
 
 class Goal1506V154OptixCollectKStageProfilePlanTest(unittest.TestCase):
@@ -30,6 +31,16 @@ class Goal1506V154OptixCollectKStageProfilePlanTest(unittest.TestCase):
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
+
+    def test_pod_runner_has_exact_profile_flow(self) -> None:
+        text = POD_RUNNER.read_text(encoding="utf-8")
+
+        self.assertIn("make build-optix", text)
+        self.assertIn("goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py", text)
+        self.assertIn("--counts $COUNTS", text)
+        self.assertIn("--repeats \"$REPEATS\"", text)
+        self.assertIn("tests.goal1506_v1_5_4_optix_collect_k_stage_profile_plan_test", text)
+        self.assertIn("goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl", text)
 
     def test_plan_records_current_tiled_topology_for_large_counts(self) -> None:
         text = PLAN_MD.read_text(encoding="utf-8")
