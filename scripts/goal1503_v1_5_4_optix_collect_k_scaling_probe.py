@@ -221,7 +221,7 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
 def _expected_native_path(candidate_count: int, row_width: int) -> str:
     if row_width == 2 and candidate_count <= 4096:
         return "row_width2_parallel_bitonic_sort"
-    if row_width == 2 and candidate_count <= 16384:
+    if row_width == 2 and candidate_count <= 32768:
         return "row_width2_bounded_multi_tile_sort_merge"
     return "dynamic_row_width_single_thread_fallback"
 
@@ -271,7 +271,23 @@ def parse_args() -> argparse.Namespace:
         "--counts",
         nargs="+",
         type=int,
-        default=[8, 32, 128, 512, 1024, 1025, 2048, 2049, 4096, 4097, 8192, 8193, 16384, 16385],
+        default=[
+            8,
+            32,
+            128,
+            512,
+            1024,
+            1025,
+            2048,
+            2049,
+            4096,
+            4097,
+            8192,
+            8193,
+            16384,
+            16385,
+            32768,
+        ],
     )
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--md-out", type=Path, default=DEFAULT_MD_PATH)

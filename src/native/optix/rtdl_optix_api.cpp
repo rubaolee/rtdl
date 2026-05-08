@@ -583,7 +583,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         }
 
         bool row_width2_tiled_supported = false;
-        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 16384) {
+        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 32768) {
             const unsigned tile_shared_bytes = static_cast<unsigned>(
                 sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
             CUdevice current_device = 0;
@@ -628,22 +628,20 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
 
             const size_t tile_size = 4096;
             const size_t tile_count = (candidate_count + tile_size - 1) / tile_size;
-            DevPtr temp_sorted_rows(sizeof(int64_t) * tile_size * 4 * 2);
-            DevPtr temp_merged_rows(sizeof(int64_t) * tile_size * 4 * 2);
-            DevPtr tile_emitted_device(sizeof(size_t) * 4);
-            DevPtr tile_overflowed_device(sizeof(uint32_t) * 4);
-            DevPtr pair_emitted_device(sizeof(size_t) * 2);
-            DevPtr pair_overflowed_device(sizeof(uint32_t) * 2);
+            const size_t max_tiled_candidates = 32768;
+            DevPtr temp_stage_a(sizeof(int64_t) * max_tiled_candidates * 2);
+            DevPtr temp_stage_b(sizeof(int64_t) * max_tiled_candidates * 2);
+            DevPtr tile_emitted_device(sizeof(size_t) * 8);
+            DevPtr tile_overflowed_device(sizeof(uint32_t) * 8);
+            DevPtr merge_emitted_device(sizeof(size_t) * 8);
+            DevPtr merge_overflowed_device(sizeof(uint32_t) * 8);
             DevPtr final_emitted_device(sizeof(size_t));
             DevPtr final_overflowed_device(sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
             CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
 
             auto temp_sorted_tile = [&](size_t tile_index) {
-                return temp_sorted_rows.ptr + sizeof(int64_t) * tile_size * 2 * tile_index;
-            };
-            auto temp_merged_pair = [&](size_t pair_index) {
-                return temp_merged_rows.ptr + sizeof(int64_t) * tile_size * 2 * 2 * pair_index;
+                return temp_stage_a.ptr + sizeof(int64_t) * tile_size * 2 * tile_index;
             };
             auto launch_sort_tile = [&](size_t tile_index) {
                 size_t tile_candidate_count = std::min(tile_size, candidate_count - tile_index * tile_size);
@@ -695,8 +693,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 launch_sort_tile(tile_index);
             CU_CHECK(cuStreamSynchronize(nullptr));
 
-            std::array<size_t, 4> tile_emitted = {};
-            std::array<uint32_t, 4> tile_overflowed = {};
+            std::array<size_t, 8> tile_emitted = {};
+            std::array<uint32_t, 8> tile_overflowed = {};
             download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
             download(tile_overflowed.data(), tile_overflowed_device.ptr, tile_count);
             *d2h_transfers_out += static_cast<uint64_t>(tile_count * 2);
@@ -705,68 +703,82 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     throw std::runtime_error("row_width=2 tile collect unexpectedly overflowed");
             }
 
-            if (tile_count == 2) {
-                launch_merge(
-                    temp_sorted_tile(0), tile_emitted[0],
-                    temp_sorted_tile(1), tile_emitted[1],
-                    rows_out, row_capacity,
-                    final_emitted_device.ptr, final_overflowed_device.ptr);
+            std::vector<CUdeviceptr> current_rows;
+            std::vector<size_t> current_counts;
+            current_rows.reserve(tile_count);
+            current_counts.reserve(tile_count);
+            for (size_t tile_index = 0; tile_index < tile_count; ++tile_index) {
+                current_rows.push_back(temp_sorted_tile(tile_index));
+                current_counts.push_back(tile_emitted[tile_index]);
+            }
+
+            size_t segment_capacity = tile_size;
+            bool write_stage_b = true;
+            uint64_t merge_launches = 0;
+            while (current_rows.size() > 1) {
+                const size_t pair_count = current_rows.size() / 2;
+                const bool has_carry = (current_rows.size() % 2) != 0;
+                const size_t output_segment_capacity = segment_capacity * 2;
+                CUdeviceptr output_base = write_stage_b ? temp_stage_b.ptr : temp_stage_a.ptr;
+
+                for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
+                    CUdeviceptr pair_output = output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index;
+                    CUdeviceptr pair_emitted = merge_emitted_device.ptr + sizeof(size_t) * pair_index;
+                    CUdeviceptr pair_overflowed = merge_overflowed_device.ptr + sizeof(uint32_t) * pair_index;
+                    launch_merge(
+                        current_rows[pair_index * 2], current_counts[pair_index * 2],
+                        current_rows[pair_index * 2 + 1], current_counts[pair_index * 2 + 1],
+                        pair_output, output_segment_capacity,
+                        pair_emitted, pair_overflowed);
+                    ++merge_launches;
+                }
                 CU_CHECK(cuStreamSynchronize(nullptr));
-                download(emitted_count_out, final_emitted_device.ptr, 1);
-                download(overflowed_out, final_overflowed_device.ptr, 1);
-                *d2h_transfers_out += 2;
-                *internal_device_transfers_out += 2;
+
+                std::array<size_t, 8> merge_emitted = {};
+                std::array<uint32_t, 8> merge_overflowed = {};
+                download(merge_emitted.data(), merge_emitted_device.ptr, pair_count);
+                download(merge_overflowed.data(), merge_overflowed_device.ptr, pair_count);
+                *d2h_transfers_out += static_cast<uint64_t>(pair_count * 2);
+
+                std::vector<CUdeviceptr> next_rows;
+                std::vector<size_t> next_counts;
+                next_rows.reserve(pair_count + (has_carry ? 1 : 0));
+                next_counts.reserve(pair_count + (has_carry ? 1 : 0));
+                for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
+                    if (merge_overflowed[pair_index])
+                        throw std::runtime_error("row_width=2 pair collect unexpectedly overflowed");
+                    next_rows.push_back(output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index);
+                    next_counts.push_back(merge_emitted[pair_index]);
+                }
+                if (has_carry) {
+                    CUdeviceptr carry_output =
+                        output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_count;
+                    CU_CHECK(cuMemcpyDtoD(
+                        carry_output,
+                        current_rows.back(),
+                        sizeof(int64_t) * current_counts.back() * 2));
+                    ++merge_launches;
+                    next_rows.push_back(carry_output);
+                    next_counts.push_back(current_counts.back());
+                }
+
+                current_rows = std::move(next_rows);
+                current_counts = std::move(next_counts);
+                segment_capacity = output_segment_capacity;
+                write_stage_b = !write_stage_b;
+            }
+
+            CUdeviceptr final_source = current_rows.front();
+            const size_t final_count = current_counts.front();
+            *emitted_count_out = final_count;
+            *overflowed_out = 0;
+            if (final_count > row_capacity) {
+                *overflowed_out = 1;
+                *internal_device_transfers_out += merge_launches;
                 return;
             }
-
-            size_t pair_count = 0;
-            for (size_t pair_index = 0; pair_index < tile_count / 2; ++pair_index) {
-                CUdeviceptr pair_emitted = pair_emitted_device.ptr + sizeof(size_t) * pair_index;
-                CUdeviceptr pair_overflowed = pair_overflowed_device.ptr + sizeof(uint32_t) * pair_index;
-                launch_merge(
-                    temp_sorted_tile(pair_index * 2), tile_emitted[pair_index * 2],
-                    temp_sorted_tile(pair_index * 2 + 1), tile_emitted[pair_index * 2 + 1],
-                    temp_merged_pair(pair_index), tile_size * 2,
-                    pair_emitted, pair_overflowed);
-                ++pair_count;
-            }
-            CU_CHECK(cuStreamSynchronize(nullptr));
-
-            std::array<size_t, 2> pair_emitted = {};
-            std::array<uint32_t, 2> pair_overflowed = {};
-            download(pair_emitted.data(), pair_emitted_device.ptr, pair_count);
-            download(pair_overflowed.data(), pair_overflowed_device.ptr, pair_count);
-            *d2h_transfers_out += static_cast<uint64_t>(pair_count * 2);
-            for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
-                if (pair_overflowed[pair_index])
-                    throw std::runtime_error("row_width=2 pair collect unexpectedly overflowed");
-            }
-
-            CUdeviceptr final_left_rows = temp_merged_pair(0);
-            size_t final_left_count = pair_emitted[0];
-            CUdeviceptr final_right_rows = 0;
-            size_t final_right_count = 0;
-            if (tile_count == 3) {
-                final_right_rows = temp_sorted_tile(2);
-                final_right_count = tile_emitted[2];
-            } else {
-                final_right_rows = temp_merged_pair(1);
-                final_right_count = pair_emitted[1];
-            }
-            if (final_right_rows == 0)
-                throw std::runtime_error("row_width=2 tile collect unexpectedly overflowed");
-
-            launch_merge(
-                final_left_rows, final_left_count,
-                final_right_rows, final_right_count,
-                rows_out, row_capacity,
-                final_emitted_device.ptr, final_overflowed_device.ptr);
-            CU_CHECK(cuStreamSynchronize(nullptr));
-
-            download(emitted_count_out, final_emitted_device.ptr, 1);
-            download(overflowed_out, final_overflowed_device.ptr, 1);
-            *d2h_transfers_out += 2;
-            *internal_device_transfers_out += static_cast<uint64_t>(tile_count + pair_count + 1);
+            CU_CHECK(cuMemcpyDtoD(rows_out, final_source, sizeof(int64_t) * final_count * 2));
+            *internal_device_transfers_out += merge_launches + 1;
             return;
         }
 
