@@ -8,7 +8,6 @@ import platform
 import statistics
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +26,7 @@ from scripts.goal1500_v1_5_4_optix_device_collect_k_measurement import CudaDrive
 REPORT_STEM = "goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08"
 DEFAULT_JSON_PATH = ROOT / "docs" / "reports" / f"{REPORT_STEM}.json"
 DEFAULT_MD_PATH = ROOT / "docs" / "reports" / f"{REPORT_STEM}.md"
+DEFAULT_JSONL_PATH = ROOT / "docs" / "reports" / f"{REPORT_STEM}.jsonl"
 DEFAULT_LIBRARY_PATH = ROOT / "build" / "librtdl_optix.so"
 DEFAULT_COUNTS = (4097, 65537, 131072)
 STAGE_FIELDS = (
@@ -111,6 +111,59 @@ def _summarize_records(records: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
+    expected_path = _expected_native_path(candidate_count, row_width)
+    if expected_path == "row_width2_parallel_bitonic_sort":
+        return {
+            "native_path": expected_path,
+            "tile_count": 0,
+            "merge_levels": 0,
+            "sort_launches": 1,
+            "merge_launches": 0,
+            "carry_copies": 0,
+            "final_copies": 0,
+            "metadata_fields_downloaded": 2,
+        }
+    if expected_path != "row_width2_bounded_multi_tile_sort_merge":
+        return {
+            "native_path": expected_path,
+            "tile_count": 0,
+            "merge_levels": 0,
+            "sort_launches": 1,
+            "merge_launches": 0,
+            "carry_copies": 0,
+            "final_copies": 0,
+            "metadata_fields_downloaded": 2,
+        }
+
+    tile_size = 4096
+    tile_count = (candidate_count + tile_size - 1) // tile_size
+    current_segments = tile_count
+    merge_levels = 0
+    merge_launches = 0
+    carry_copies = 0
+    metadata_fields_downloaded = tile_count * 2
+    while current_segments > 1:
+        pair_count = current_segments // 2
+        has_carry = (current_segments % 2) != 0
+        merge_levels += 1
+        merge_launches += pair_count
+        metadata_fields_downloaded += pair_count * 2
+        if has_carry:
+            carry_copies += 1
+        current_segments = pair_count + (1 if has_carry else 0)
+    return {
+        "native_path": expected_path,
+        "tile_count": tile_count,
+        "merge_levels": merge_levels,
+        "sort_launches": tile_count,
+        "merge_launches": merge_launches,
+        "carry_copies": carry_copies,
+        "final_copies": 1,
+        "metadata_fields_downloaded": metadata_fields_downloaded,
+    }
+
+
 def _run_profile_case(cuda: CudaDriver, *, candidate_count: int, repeats: int, profile_path: Path) -> dict[str, Any]:
     before_records = len(_load_profile_records(profile_path))
     timing_case = _run_case(cuda, candidate_count=candidate_count, row_width=2, repeats=repeats)
@@ -118,30 +171,30 @@ def _run_profile_case(cuda: CudaDriver, *, candidate_count: int, repeats: int, p
     new_records = after_records[before_records:]
     steady_state_records = new_records[-repeats:]
     expected_path = _expected_native_path(candidate_count, 2)
+    expected_profile_topology = expected_topology(candidate_count, 2)
+    stage_profile = _summarize_records(steady_state_records)
+    observed_topology = stage_profile["topology"]
     return {
         **timing_case,
         "expected_profile_records": repeats + 1,
         "observed_profile_records": len(new_records),
         "steady_state_profile_records": steady_state_records,
-        "stage_profile": _summarize_records(steady_state_records),
+        "stage_profile": stage_profile,
+        "expected_profile_topology": expected_profile_topology,
+        "profile_topology_matches_expected": observed_topology == expected_profile_topology,
         "profile_native_path_matches_expected": all(
             record.get("native_path") == expected_path for record in steady_state_records
         ),
     }
 
 
-def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile_jsonl: Path | None = None) -> dict[str, Any]:
+def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile_jsonl: Path) -> dict[str, Any]:
     os.environ["RTDL_OPTIX_LIB"] = str(library_path)
     cuda = CudaDriver()
-    temp_dir: tempfile.TemporaryDirectory[str] | None = None
     try:
-        if profile_jsonl is None:
-            temp_dir = tempfile.TemporaryDirectory(prefix="rtdl_collect_k_profile_")
-            profile_path = Path(temp_dir.name) / "collect_k_profile.jsonl"
-        else:
-            profile_path = profile_jsonl
-            profile_path.parent.mkdir(parents=True, exist_ok=True)
-            profile_path.write_text("", encoding="utf-8")
+        profile_path = profile_jsonl
+        profile_path.parent.mkdir(parents=True, exist_ok=True)
+        profile_path.write_text("", encoding="utf-8")
         os.environ["RTDL_OPTIX_COLLECT_K_PROFILE_JSONL"] = str(profile_path)
 
         cases = [
@@ -175,6 +228,9 @@ def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile
             "all_profile_paths_match_expected": all(
                 case["profile_native_path_matches_expected"] for case in cases
             ),
+            "all_profile_topologies_match_expected": all(
+                case["profile_topology_matches_expected"] for case in cases
+            ),
             "claim_flags": {
                 "true_zero_copy_authorized": False,
                 "public_speedup_wording_authorized": False,
@@ -193,8 +249,6 @@ def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile
     finally:
         os.environ.pop("RTDL_OPTIX_COLLECT_K_PROFILE_JSONL", None)
         cuda.close()
-        if temp_dir is not None:
-            temp_dir.cleanup()
 
 
 def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
@@ -208,6 +262,8 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Goal1506 requires every profiled call record")
     if probe.get("all_profile_paths_match_expected") is not True:
         raise ValueError("Goal1506 native path records must match expected paths")
+    if probe.get("all_profile_topologies_match_expected") is not True:
+        raise ValueError("Goal1506 native topology records must match expected topology")
     for case in probe.get("cases", []):
         if case.get("row_width") != 2:
             raise ValueError("Goal1506 currently profiles row_width=2 only")
@@ -217,8 +273,11 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
         if profile.get("record_count", 0) <= 0:
             raise ValueError("Goal1506 requires steady-state stage profile records")
         topology = profile.get("topology", {})
+        expected = case.get("expected_profile_topology", {})
         if topology.get("native_path") != case.get("expected_native_path"):
             raise ValueError("Goal1506 profile topology native path mismatch")
+        if topology != expected:
+            raise ValueError("Goal1506 profile topology mismatch")
         for field, value in profile.get("stage_median_ms", {}).items():
             if float(value) < 0.0:
                 raise ValueError(f"Goal1506 stage median must be non-negative: {field}")
@@ -274,7 +333,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--library", type=Path, default=DEFAULT_LIBRARY_PATH)
     parser.add_argument("--counts", nargs="+", type=int, default=list(DEFAULT_COUNTS))
     parser.add_argument("--repeats", type=int, default=5)
-    parser.add_argument("--profile-jsonl", type=Path, default=None)
+    parser.add_argument("--profile-jsonl", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--md-out", type=Path, default=DEFAULT_MD_PATH)
     return parser.parse_args()

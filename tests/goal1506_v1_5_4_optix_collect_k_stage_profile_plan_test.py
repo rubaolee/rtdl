@@ -66,12 +66,60 @@ class Goal1506V154OptixCollectKStageProfilePlanTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "profiled call record"):
             probe.validate_probe(payload)
 
+    def test_probe_validator_rejects_topology_mismatch(self) -> None:
+        payload = make_synthetic_probe()
+        payload["all_profile_topologies_match_expected"] = False
+
+        with self.assertRaisesRegex(ValueError, "topology records"):
+            probe.validate_probe(payload)
+
     def test_probe_validator_rejects_claim_expansion(self) -> None:
         payload = make_synthetic_probe()
         payload["claim_flags"]["public_speedup_wording_authorized"] = True
 
         with self.assertRaisesRegex(ValueError, "public_speedup_wording_authorized"):
             probe.validate_probe(payload)
+
+    def test_expected_topology_matches_known_tiled_shapes(self) -> None:
+        self.assertEqual(
+            probe.expected_topology(4097, 2),
+            {
+                "native_path": "row_width2_bounded_multi_tile_sort_merge",
+                "tile_count": 2,
+                "merge_levels": 1,
+                "sort_launches": 2,
+                "merge_launches": 1,
+                "carry_copies": 0,
+                "final_copies": 1,
+                "metadata_fields_downloaded": 6,
+            },
+        )
+        self.assertEqual(
+            probe.expected_topology(65537, 2),
+            {
+                "native_path": "row_width2_bounded_multi_tile_sort_merge",
+                "tile_count": 17,
+                "merge_levels": 5,
+                "sort_launches": 17,
+                "merge_launches": 16,
+                "carry_copies": 4,
+                "final_copies": 1,
+                "metadata_fields_downloaded": 66,
+            },
+        )
+        self.assertEqual(
+            probe.expected_topology(131072, 2),
+            {
+                "native_path": "row_width2_bounded_multi_tile_sort_merge",
+                "tile_count": 32,
+                "merge_levels": 5,
+                "sort_launches": 32,
+                "merge_launches": 31,
+                "carry_copies": 0,
+                "final_copies": 1,
+                "metadata_fields_downloaded": 126,
+            },
+        )
 
 
 def make_case(candidate_count: int, *, tile_count: int, merge_launches: int, metadata_fields: int) -> dict:
@@ -115,6 +163,8 @@ def make_case(candidate_count: int, *, tile_count: int, merge_launches: int, met
         "observed_profile_records": 6,
         "steady_state_profile_records": [],
         "stage_profile": stage_profile,
+        "expected_profile_topology": stage_profile["topology"],
+        "profile_topology_matches_expected": True,
         "profile_native_path_matches_expected": True,
     }
 
@@ -140,6 +190,7 @@ def make_synthetic_probe() -> dict:
         "all_parity_passed": True,
         "all_profile_records_present": True,
         "all_profile_paths_match_expected": True,
+        "all_profile_topologies_match_expected": True,
         "claim_flags": {
             "true_zero_copy_authorized": False,
             "public_speedup_wording_authorized": False,

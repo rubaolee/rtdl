@@ -77,9 +77,14 @@ After building `librtdl_optix.so`, run for example:
 PYTHONPATH=src:. python3 scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py \
   --library build/librtdl_optix.so \
   --counts 4097 65537 131072 \
-  --repeats 5 \
-  --profile-jsonl docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl
+  --repeats 5
 ```
+
+By default, the probe writes:
+
+- `docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.json`
+- `docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.md`
+- `docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl`
 
 The guarded profiling mode records host-side stage timings around:
 
@@ -96,6 +101,7 @@ The profiling output should be saved as JSON/Markdown artifacts under `docs/repo
 - Repeats at least `5` after one warmup call.
 - Per-stage median/min/max timing.
 - Parity and overflow checks identical to Goal1503/Goal1504.
+- Expected topology checks for native path, tile count, merge levels, sort launches, merge launches, carry copies, final copies, and metadata fields downloaded.
 - Claim flags all false.
 
 ## Optimization Ideas To Test After Profiling
