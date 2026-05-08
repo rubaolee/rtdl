@@ -1,0 +1,104 @@
+{
+  "algorithm_classification": "row_width2_parallel_bitonic_sort_with_bounded_multi_tile_merge_and_dynamic_row_width_o_n2_fallback",
+  "all_parity_passed": true,
+  "cases": [
+    {
+      "all_ms": [
+        1.5864362940192223,
+        1.5836264938116074,
+        1.537814736366272,
+        1.5193140134215355,
+        1.511584036052227
+      ],
+      "candidate_count": 4097,
+      "expected_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "max_ms": 1.5864362940192223,
+      "median_ms": 1.537814736366272,
+      "min_ms": 1.511584036052227,
+      "repeats": 5,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 6,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 2
+      },
+      "unique_count": 2048
+    },
+    {
+      "all_ms": [
+        80.136613920331,
+        80.04501089453697,
+        80.0588820129633,
+        80.06172254681587,
+        80.04360273480415
+      ],
+      "candidate_count": 65537,
+      "expected_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "max_ms": 80.136613920331,
+      "median_ms": 80.0588820129633,
+      "min_ms": 80.04360273480415,
+      "repeats": 5,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 66,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 21
+      },
+      "unique_count": 32768
+    },
+    {
+      "all_ms": [
+        182.008758187294,
+        181.986759416759,
+        181.9923883304,
+        181.99837859719992,
+        181.99010752141476
+      ],
+      "candidate_count": 131072,
+      "expected_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "max_ms": 182.008758187294,
+      "median_ms": 181.9923883304,
+      "min_ms": 181.986759416759,
+      "repeats": 5,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 126,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 32
+      },
+      "unique_count": 65536
+    }
+  ],
+  "claim_boundary": "Goal1503 records scaling observations for the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. It is not a speedup claim, does not prove true zero-copy, and does not authorize whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "claim_flags": {
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_public_primitive_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cuda_driver_version": 13000,
+  "device_name": "NVIDIA RTX PRO 4500 Blackwell",
+  "git_commit": "fd33cad297acaadcb90efd79e240308a81798918",
+  "goal": "Goal1503",
+  "library_path": "/root/rtdl_goal1504/rtdl/build/librtdl_optix.so",
+  "measured_on_real_nvidia": true,
+  "native_symbol": "rtdl_optix_collect_k_bounded_i64_device",
+  "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.39",
+  "python_entry_point": "rtdsl.optix_runtime.collect_k_bounded_i64_device_optix",
+  "status": "goal1503_optix_collect_k_scaling_probe_recorded",
+  "timing_scope": "Python wrapper call around native OptiX/CUDA device-pointer execution, including launch and metadata copy overhead, excluding input setup H2D and output verification D2H."
+}
