@@ -582,8 +582,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             return;
         }
 
-        bool row_width2_two_tile_supported = false;
-        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 8192) {
+        bool row_width2_tiled_supported = false;
+        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 16384) {
             const unsigned tile_shared_bytes = static_cast<unsigned>(
                 sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
             CUdevice current_device = 0;
@@ -592,10 +592,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 &max_optin_shared_bytes,
                 CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK_OPTIN,
                 current_device));
-            row_width2_two_tile_supported =
+            row_width2_tiled_supported =
                 tile_shared_bytes <= static_cast<unsigned>(max_optin_shared_bytes);
         }
-        if (row_width2_two_tile_supported) {
+        if (row_width2_tiled_supported) {
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
                 std::string ptx = compile_to_ptx(
                     kCollectKBoundedI64RowWidth2SortKernelSrc,
@@ -626,91 +626,147 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     static_cast<int>(tile_shared_bytes)));
             }
 
-            size_t first_count = 4096;
-            size_t second_count = candidate_count - first_count;
-            size_t second_padded_count = 1;
-            while (second_padded_count < second_count)
-                second_padded_count <<= 1;
-
-            DevPtr temp_rows(sizeof(int64_t) * 8192 * 2);
-            DevPtr first_emitted_device(sizeof(size_t));
-            DevPtr second_emitted_device(sizeof(size_t));
-            DevPtr first_overflowed_device(sizeof(uint32_t));
-            DevPtr second_overflowed_device(sizeof(uint32_t));
+            const size_t tile_size = 4096;
+            const size_t tile_count = (candidate_count + tile_size - 1) / tile_size;
+            DevPtr temp_sorted_rows(sizeof(int64_t) * tile_size * 4 * 2);
+            DevPtr temp_merged_rows(sizeof(int64_t) * tile_size * 4 * 2);
+            DevPtr tile_emitted_device(sizeof(size_t) * 4);
+            DevPtr tile_overflowed_device(sizeof(uint32_t) * 4);
+            DevPtr pair_emitted_device(sizeof(size_t) * 2);
+            DevPtr pair_overflowed_device(sizeof(uint32_t) * 2);
             DevPtr final_emitted_device(sizeof(size_t));
             DevPtr final_overflowed_device(sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
             CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
-            CUdeviceptr temp_first_rows = temp_rows.ptr;
-            CUdeviceptr temp_second_rows = temp_rows.ptr + sizeof(int64_t) * 4096 * 2;
-            CUdeviceptr candidate_second_rows = candidate_rows + sizeof(int64_t) * first_count * 2;
 
-            size_t first_padded_count = 4096;
-            size_t tile_capacity = 4096;
-            void* first_args[] = {
-                &candidate_rows,
-                &first_count,
-                &first_padded_count,
-                &temp_first_rows,
-                &tile_capacity,
-                &first_emitted_device.ptr,
-                &first_overflowed_device.ptr,
+            auto temp_sorted_tile = [&](size_t tile_index) {
+                return temp_sorted_rows.ptr + sizeof(int64_t) * tile_size * 2 * tile_index;
             };
-            CU_CHECK(cuLaunchKernel(
-                g_collect_k_i64_row_width2_sort.fn,
-                1, 1, 1,
-                1024, 1, 1,
-                tile_shared_bytes, nullptr, first_args, nullptr));
+            auto temp_merged_pair = [&](size_t pair_index) {
+                return temp_merged_rows.ptr + sizeof(int64_t) * tile_size * 2 * 2 * pair_index;
+            };
+            auto launch_sort_tile = [&](size_t tile_index) {
+                size_t tile_candidate_count = std::min(tile_size, candidate_count - tile_index * tile_size);
+                size_t tile_padded_count = 1;
+                while (tile_padded_count < tile_candidate_count)
+                    tile_padded_count <<= 1;
+                CUdeviceptr tile_input = candidate_rows + sizeof(int64_t) * tile_size * 2 * tile_index;
+                CUdeviceptr tile_output = temp_sorted_tile(tile_index);
+                CUdeviceptr tile_emitted = tile_emitted_device.ptr + sizeof(size_t) * tile_index;
+                CUdeviceptr tile_overflowed = tile_overflowed_device.ptr + sizeof(uint32_t) * tile_index;
+                size_t tile_capacity = tile_size;
+                void* sort_args[] = {
+                    &tile_input,
+                    &tile_candidate_count,
+                    &tile_padded_count,
+                    &tile_output,
+                    &tile_capacity,
+                    &tile_emitted,
+                    &tile_overflowed,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_sort.fn,
+                    1, 1, 1,
+                    static_cast<unsigned>(std::min<size_t>(tile_padded_count, 1024)), 1, 1,
+                    tile_shared_bytes, nullptr, sort_args, nullptr));
+            };
+            auto launch_merge = [&](CUdeviceptr first_rows, size_t first_count,
+                                    CUdeviceptr second_rows, size_t second_count,
+                                    CUdeviceptr output_rows, size_t output_capacity,
+                                    CUdeviceptr emitted_device, CUdeviceptr overflowed_device) {
+                void* merge_args[] = {
+                    &first_rows,
+                    &first_count,
+                    &second_rows,
+                    &second_count,
+                    &output_rows,
+                    &output_capacity,
+                    &emitted_device,
+                    &overflowed_device,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_merge_two.fn,
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, nullptr, merge_args, nullptr));
+            };
 
-            void* second_args[] = {
-                &candidate_second_rows,
-                &second_count,
-                &second_padded_count,
-                &temp_second_rows,
-                &tile_capacity,
-                &second_emitted_device.ptr,
-                &second_overflowed_device.ptr,
-            };
-            CU_CHECK(cuLaunchKernel(
-                g_collect_k_i64_row_width2_sort.fn,
-                1, 1, 1,
-                static_cast<unsigned>(std::min<size_t>(second_padded_count, 1024)), 1, 1,
-                tile_shared_bytes, nullptr, second_args, nullptr));
+            for (size_t tile_index = 0; tile_index < tile_count; ++tile_index)
+                launch_sort_tile(tile_index);
             CU_CHECK(cuStreamSynchronize(nullptr));
 
-            size_t first_emitted = 0;
-            size_t second_emitted = 0;
-            uint32_t first_overflowed = 0;
-            uint32_t second_overflowed = 0;
-            download(&first_emitted, first_emitted_device.ptr, 1);
-            download(&second_emitted, second_emitted_device.ptr, 1);
-            download(&first_overflowed, first_overflowed_device.ptr, 1);
-            download(&second_overflowed, second_overflowed_device.ptr, 1);
-            *d2h_transfers_out += 4;
-            if (first_overflowed || second_overflowed)
+            std::array<size_t, 4> tile_emitted = {};
+            std::array<uint32_t, 4> tile_overflowed = {};
+            download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
+            download(tile_overflowed.data(), tile_overflowed_device.ptr, tile_count);
+            *d2h_transfers_out += static_cast<uint64_t>(tile_count * 2);
+            for (size_t tile_index = 0; tile_index < tile_count; ++tile_index) {
+                if (tile_overflowed[tile_index])
+                    throw std::runtime_error("row_width=2 tile collect unexpectedly overflowed");
+            }
+
+            if (tile_count == 2) {
+                launch_merge(
+                    temp_sorted_tile(0), tile_emitted[0],
+                    temp_sorted_tile(1), tile_emitted[1],
+                    rows_out, row_capacity,
+                    final_emitted_device.ptr, final_overflowed_device.ptr);
+                CU_CHECK(cuStreamSynchronize(nullptr));
+                download(emitted_count_out, final_emitted_device.ptr, 1);
+                download(overflowed_out, final_overflowed_device.ptr, 1);
+                *d2h_transfers_out += 2;
+                *internal_device_transfers_out += 2;
+                return;
+            }
+
+            size_t pair_count = 0;
+            for (size_t pair_index = 0; pair_index < tile_count / 2; ++pair_index) {
+                CUdeviceptr pair_emitted = pair_emitted_device.ptr + sizeof(size_t) * pair_index;
+                CUdeviceptr pair_overflowed = pair_overflowed_device.ptr + sizeof(uint32_t) * pair_index;
+                launch_merge(
+                    temp_sorted_tile(pair_index * 2), tile_emitted[pair_index * 2],
+                    temp_sorted_tile(pair_index * 2 + 1), tile_emitted[pair_index * 2 + 1],
+                    temp_merged_pair(pair_index), tile_size * 2,
+                    pair_emitted, pair_overflowed);
+                ++pair_count;
+            }
+            CU_CHECK(cuStreamSynchronize(nullptr));
+
+            std::array<size_t, 2> pair_emitted = {};
+            std::array<uint32_t, 2> pair_overflowed = {};
+            download(pair_emitted.data(), pair_emitted_device.ptr, pair_count);
+            download(pair_overflowed.data(), pair_overflowed_device.ptr, pair_count);
+            *d2h_transfers_out += static_cast<uint64_t>(pair_count * 2);
+            for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
+                if (pair_overflowed[pair_index])
+                    throw std::runtime_error("row_width=2 pair collect unexpectedly overflowed");
+            }
+
+            CUdeviceptr final_left_rows = temp_merged_pair(0);
+            size_t final_left_count = pair_emitted[0];
+            CUdeviceptr final_right_rows = 0;
+            size_t final_right_count = 0;
+            if (tile_count == 3) {
+                final_right_rows = temp_sorted_tile(2);
+                final_right_count = tile_emitted[2];
+            } else {
+                final_right_rows = temp_merged_pair(1);
+                final_right_count = pair_emitted[1];
+            }
+            if (final_right_rows == 0)
                 throw std::runtime_error("row_width=2 tile collect unexpectedly overflowed");
 
-            void* merge_args[] = {
-                &temp_first_rows,
-                &first_emitted,
-                &temp_second_rows,
-                &second_emitted,
-                &rows_out,
-                &row_capacity,
-                &final_emitted_device.ptr,
-                &final_overflowed_device.ptr,
-            };
-            CU_CHECK(cuLaunchKernel(
-                g_collect_k_i64_row_width2_merge_two.fn,
-                1, 1, 1,
-                1, 1, 1,
-                0, nullptr, merge_args, nullptr));
+            launch_merge(
+                final_left_rows, final_left_count,
+                final_right_rows, final_right_count,
+                rows_out, row_capacity,
+                final_emitted_device.ptr, final_overflowed_device.ptr);
             CU_CHECK(cuStreamSynchronize(nullptr));
 
             download(emitted_count_out, final_emitted_device.ptr, 1);
             download(overflowed_out, final_overflowed_device.ptr, 1);
             *d2h_transfers_out += 2;
-            *internal_device_transfers_out += 2;
+            *internal_device_transfers_out += static_cast<uint64_t>(tile_count + pair_count + 1);
             return;
         }
 

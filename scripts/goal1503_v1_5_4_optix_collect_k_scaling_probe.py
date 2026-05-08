@@ -169,7 +169,7 @@ def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...]) -> dict
             "python_entry_point": "rtdsl.optix_runtime.collect_k_bounded_i64_device_optix",
             "native_symbol": optix_runtime.OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL,
             "algorithm_classification": (
-                "row_width2_parallel_bitonic_sort_with_two_tile_merge_and_dynamic_row_width_o_n2_fallback"
+                "row_width2_parallel_bitonic_sort_with_bounded_multi_tile_merge_and_dynamic_row_width_o_n2_fallback"
             ),
             "timing_scope": (
                 "Python wrapper call around native OptiX/CUDA device-pointer execution, "
@@ -221,8 +221,8 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
 def _expected_native_path(candidate_count: int, row_width: int) -> str:
     if row_width == 2 and candidate_count <= 4096:
         return "row_width2_parallel_bitonic_sort"
-    if row_width == 2 and candidate_count <= 8192:
-        return "row_width2_two_tile_sort_merge"
+    if row_width == 2 and candidate_count <= 16384:
+        return "row_width2_bounded_multi_tile_sort_merge"
     return "dynamic_row_width_single_thread_fallback"
 
 
@@ -271,7 +271,7 @@ def parse_args() -> argparse.Namespace:
         "--counts",
         nargs="+",
         type=int,
-        default=[8, 32, 128, 512, 1024, 1025, 2048, 2049, 4096, 4097, 8192, 8193],
+        default=[8, 32, 128, 512, 1024, 1025, 2048, 2049, 4096, 4097, 8192, 8193, 16384, 16385],
     )
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--md-out", type=Path, default=DEFAULT_MD_PATH)
