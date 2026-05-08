@@ -21,14 +21,15 @@ the current public story:
 7. [RTDL Tutorials](tutorials/README.md)
 8. [App And Example Quickstart](app_example_quickstart.md)
 9. [Application Catalog](application_catalog.md)
-10. [v1.5 Release Package](release_reports/v1_5/README.md)
-11. [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
-12. [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
-13. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
-14. [IR And Lowering](rtdl/ir_and_lowering.md)
-15. [Performance Model](performance_model.md)
-16. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
-17. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
+10. [Technical App Notes](technical_app_notes/README.md)
+11. [v1.5 Release Package](release_reports/v1_5/README.md)
+12. [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
+13. [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
+14. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+15. [IR And Lowering](rtdl/ir_and_lowering.md)
+16. [Performance Model](performance_model.md)
+17. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
+18. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -41,7 +42,7 @@ That is the intended public reading path.
 | --- | --- | --- |
 | Front page | [Project Front Page](../README.md), [Public Documentation Map](public_documentation_map.md) | What RTDL is, what the current release is, and what not to overclaim. |
 | Tutorials | [Quick Tutorial](quick_tutorial.md), [RTDL Tutorials](tutorials/README.md) | How to run a first kernel and learn the authoring shape. |
-| Apps and examples | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) | Which apps exist, what RTDL accelerates, and which app phases remain outside. |
+| Apps and examples | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) | Which apps exist, how they are implemented, what RTDL accelerates, and which app phases remain outside. |
 | Architecture/model/IR/performance | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [Performance Model](performance_model.md) | How the runtime is structured, how lowering works, and how to read evidence. |
 
 ## Evaluate RTDL In Ten Minutes
@@ -69,7 +70,7 @@ audited release claims.
 | --- | --- | --- |
 | Front page and project promise | [Project Front Page](../README.md) | [Public Documentation Map](public_documentation_map.md), [Feature Guide](rtdl_feature_guide.md) |
 | Tutorials | [Quick Tutorial](quick_tutorial.md) | [RTDL Tutorials](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
-| Apps and examples | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Release-Facing Examples](release_facing_examples.md), [v0.8 App Building](tutorials/v0_8_app_building.md), [Examples Index](../examples/README.md) |
+| Apps and examples | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [Release-Facing Examples](release_facing_examples.md), [v0.8 App Building](tutorials/v0_8_app_building.md), [Examples Index](../examples/README.md) |
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
