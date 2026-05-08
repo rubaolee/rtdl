@@ -4,17 +4,17 @@
   "cases": [
     {
       "all_ms": [
-        0.11271238327026367,
-        0.04562735557556152,
-        0.03971904516220093,
-        0.04951655864715576,
-        0.0391155481338501
+        0.11363625526428223,
+        0.045008957386016846,
+        0.03976374864578247,
+        0.038661062717437744,
+        0.03807246685028076
       ],
       "candidate_count": 8,
       "expected_native_path": "row_width2_parallel_bitonic_sort",
-      "max_ms": 0.11271238327026367,
-      "median_ms": 0.04562735557556152,
-      "min_ms": 0.0391155481338501,
+      "max_ms": 0.11363625526428223,
+      "median_ms": 0.03976374864578247,
+      "min_ms": 0.03807246685028076,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -30,17 +30,17 @@
     },
     {
       "all_ms": [
-        0.058107078075408936,
-        0.05145370960235596,
-        0.04814565181732178,
-        0.04477798938751221,
-        0.044479966163635254
+        0.0486224889755249,
+        0.05120784044265747,
+        0.13992935419082642,
+        0.04875659942626953,
+        0.045530498027801514
       ],
       "candidate_count": 32,
       "expected_native_path": "row_width2_parallel_bitonic_sort",
-      "max_ms": 0.058107078075408936,
-      "median_ms": 0.04814565181732178,
-      "min_ms": 0.044479966163635254,
+      "max_ms": 0.13992935419082642,
+      "median_ms": 0.04875659942626953,
+      "min_ms": 0.045530498027801514,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -56,17 +56,17 @@
     },
     {
       "all_ms": [
-        0.06650388240814209,
-        0.12209266424179077,
-        0.06774067878723145,
-        0.06411224603652954,
-        0.06438791751861572
+        0.06762146949768066,
+        0.06692111492156982,
+        0.06618350744247437,
+        0.06585568189620972,
+        0.06464123725891113
       ],
       "candidate_count": 128,
       "expected_native_path": "row_width2_parallel_bitonic_sort",
-      "max_ms": 0.12209266424179077,
-      "median_ms": 0.06650388240814209,
-      "min_ms": 0.06411224603652954,
+      "max_ms": 0.06762146949768066,
+      "median_ms": 0.06618350744247437,
+      "min_ms": 0.06464123725891113,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -82,17 +82,17 @@
     },
     {
       "all_ms": [
-        0.1446157693862915,
-        0.14284253120422363,
-        0.14338642358779907,
-        0.14184415340423584,
-        0.1462399959564209
+        0.14537572860717773,
+        0.1491829752922058,
+        0.1437366008758545,
+        0.1433044672012329,
+        0.14232099056243896
       ],
       "candidate_count": 512,
       "expected_native_path": "row_width2_parallel_bitonic_sort",
-      "max_ms": 0.1462399959564209,
-      "median_ms": 0.14338642358779907,
-      "min_ms": 0.14184415340423584,
+      "max_ms": 0.1491829752922058,
+      "median_ms": 0.1437366008758545,
+      "min_ms": 0.14232099056243896,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -108,17 +108,17 @@
     },
     {
       "all_ms": [
-        0.25034695863723755,
-        0.25266408920288086,
-        0.2509802579879761,
-        0.24799257516860962,
-        0.2473965287208557
+        0.2515166997909546,
+        0.24972110986709595,
+        0.2507120370864868,
+        0.24887174367904663,
+        0.2487972378730774
       ],
       "candidate_count": 1024,
       "expected_native_path": "row_width2_parallel_bitonic_sort",
-      "max_ms": 0.25266408920288086,
-      "median_ms": 0.25034695863723755,
-      "min_ms": 0.2473965287208557,
+      "max_ms": 0.2515166997909546,
+      "median_ms": 0.24972110986709595,
+      "min_ms": 0.2487972378730774,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -134,17 +134,17 @@
     },
     {
       "all_ms": [
-        0.2691894769668579,
-        0.26617199182510376,
-        0.2668797969818115,
-        0.26538223028182983,
-        0.26441365480422974
+        0.2695247530937195,
+        0.2673640847206116,
+        0.26769936084747314,
+        0.26684999465942383,
+        0.26626139879226685
       ],
       "candidate_count": 1025,
       "expected_native_path": "row_width2_parallel_bitonic_sort",
-      "max_ms": 0.2691894769668579,
-      "median_ms": 0.26617199182510376,
-      "min_ms": 0.26441365480422974,
+      "max_ms": 0.2695247530937195,
+      "median_ms": 0.2673640847206116,
+      "min_ms": 0.26626139879226685,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -160,17 +160,17 @@
     },
     {
       "all_ms": [
-        0.46738237142562866,
-        0.46578049659729004,
-        0.4644319415092468,
-        0.46324729919433594,
-        0.46493858098983765
+        0.46743452548980713,
+        0.4660412669181824,
+        0.46446919441223145,
+        0.46519190073013306,
+        0.46437233686447144
       ],
       "candidate_count": 2048,
       "expected_native_path": "row_width2_parallel_bitonic_sort",
-      "max_ms": 0.46738237142562866,
-      "median_ms": 0.46493858098983765,
-      "min_ms": 0.46324729919433594,
+      "max_ms": 0.46743452548980713,
+      "median_ms": 0.46519190073013306,
+      "min_ms": 0.46437233686447144,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -186,17 +186,17 @@
     },
     {
       "all_ms": [
-        323.63467663526535,
-        323.4662339091301,
-        323.4899789094925,
-        323.5555738210678,
-        323.5416188836098
+        0.5061179399490356,
+        0.5035325884819031,
+        0.5028694868087769,
+        0.5026012659072876,
+        0.506959855556488
       ],
       "candidate_count": 2049,
-      "expected_native_path": "dynamic_row_width_single_thread_fallback",
-      "max_ms": 323.63467663526535,
-      "median_ms": 323.5416188836098,
-      "min_ms": 323.4662339091301,
+      "expected_native_path": "row_width2_parallel_bitonic_sort",
+      "max_ms": 0.506959855556488,
+      "median_ms": 0.5035325884819031,
+      "min_ms": 0.5026012659072876,
       "repeats": 5,
       "row_width": 2,
       "same_candidate_rows": true,
@@ -209,6 +209,58 @@
         "internal_device_transfers_if_any": 0
       },
       "unique_count": 1024
+    },
+    {
+      "all_ms": [
+        0.9054318070411682,
+        0.9031370282173157,
+        0.902324914932251,
+        0.9016990661621094,
+        0.9015649557113647
+      ],
+      "candidate_count": 4096,
+      "expected_native_path": "row_width2_parallel_bitonic_sort",
+      "max_ms": 0.9054318070411682,
+      "median_ms": 0.902324914932251,
+      "min_ms": 0.9015649557113647,
+      "repeats": 5,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "unique_count": 2048
+    },
+    {
+      "all_ms": [
+        1293.4697940945625,
+        1293.3339625597,
+        1293.1991964578629,
+        1293.1277677416801,
+        1292.9813861846924
+      ],
+      "candidate_count": 4097,
+      "expected_native_path": "dynamic_row_width_single_thread_fallback",
+      "max_ms": 1293.4697940945625,
+      "median_ms": 1293.1991964578629,
+      "min_ms": 1292.9813861846924,
+      "repeats": 5,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "unique_count": 2048
     }
   ],
   "claim_boundary": "Goal1503 records scaling observations for the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. It is not a speedup claim, does not prove true zero-copy, and does not authorize whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
@@ -222,7 +274,7 @@
   },
   "cuda_driver_version": 12040,
   "device_name": "NVIDIA RTX 4000 Ada Generation",
-  "git_commit": "b42ac66332355fc6f3b3e5e957f65a9d8597c54a",
+  "git_commit": "8833badf772b4099ed1477f8a009a76c6999a599",
   "goal": "Goal1503",
   "library_path": "/root/rtdl_goal1498/rtdl/build/librtdl_optix.so",
   "measured_on_real_nvidia": true,
