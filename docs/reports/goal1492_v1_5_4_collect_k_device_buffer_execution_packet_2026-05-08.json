@@ -1,0 +1,88 @@
+{
+  "blocked_by": [
+    "goal1489_current_pod_missing_optix_headers",
+    "goal1489_current_pod_missing_librtdl_optix"
+  ],
+  "candidate_rows": [
+    [
+      2,
+      20
+    ],
+    [
+      1,
+      10
+    ],
+    [
+      2,
+      20
+    ],
+    [
+      3,
+      30
+    ]
+  ],
+  "capacity": 3,
+  "claim_boundary": "Goal1492 prepares a replayable COLLECT_K_BOUNDED device-buffer execution packet only. It does not run OptiX, does not prove true zero-copy, and does not authorize public speedup wording, whole-app claims, partner tensor handoff, or release action.",
+  "device_buffer_execution_required": {
+    "input_descriptor": "rtdl_owned_device_resident_i64_candidate_rows",
+    "must_pass_goal1489_preflight": true,
+    "must_run_on_real_nvidia": true,
+    "output_descriptor": "bounded_rtdl_owned_result_buffer",
+    "required_backend": "optix",
+    "required_symbol": "rtdl_optix_collect_k_bounded_i64"
+  },
+  "expected_reference": {
+    "backend": "python_reference",
+    "candidate_id_rows": [
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        20
+      ],
+      [
+        3,
+        30
+      ]
+    ],
+    "failure_mode": "fail_closed_overflow",
+    "ordering_policy": "stable_lexicographic_by_candidate_id_row",
+    "overflow_policy": "fail_closed_before_result_materialization",
+    "overflowed": false,
+    "valid_count": 3
+  },
+  "first_target_primitive": "COLLECT_K_BOUNDED",
+  "goal": "Goal1492",
+  "native_symbols": {
+    "embree_reference": "rtdl_embree_collect_k_bounded_i64",
+    "optix_target": "rtdl_optix_collect_k_bounded_i64"
+  },
+  "partner_tensor_handoff_authorized": false,
+  "public_speedup_wording_authorized": false,
+  "ready_to_run_on_current_pod": false,
+  "release_action_authorized": false,
+  "required_parity": [
+    "same_valid_count",
+    "same_overflowed_flag",
+    "same_candidate_id_rows",
+    "same_fail_closed_overflow_behavior"
+  ],
+  "required_transfer_accounting": {
+    "allocation_only_transfers_distinguished_from_content_transfers": true,
+    "device_to_host_transfers_after_backend_execution": "must_be_recorded",
+    "host_to_device_transfers_before_backend_execution": "must_be_recorded",
+    "internal_device_transfers_if_any": "must_be_recorded"
+  },
+  "result_placeholders": {
+    "optix_device_buffer_result_json": null,
+    "same_contract_parity_json": null,
+    "transfer_accounting_summary": null
+  },
+  "row_width": 2,
+  "scope": "v1.5.4 COLLECT_K_BOUNDED RTDL-owned device-buffer execution packet",
+  "stable_public_primitive_authorized": false,
+  "true_zero_copy_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
