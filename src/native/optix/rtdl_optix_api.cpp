@@ -583,7 +583,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         }
 
         bool row_width2_tiled_supported = false;
-        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 32768) {
+        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 65536) {
             const unsigned tile_shared_bytes = static_cast<unsigned>(
                 sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
             CUdevice current_device = 0;
@@ -628,13 +628,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
 
             const size_t tile_size = 4096;
             const size_t tile_count = (candidate_count + tile_size - 1) / tile_size;
-            const size_t max_tiled_candidates = 32768;
+            const size_t max_tiled_candidates = 65536;
             DevPtr temp_stage_a(sizeof(int64_t) * max_tiled_candidates * 2);
             DevPtr temp_stage_b(sizeof(int64_t) * max_tiled_candidates * 2);
-            DevPtr tile_emitted_device(sizeof(size_t) * 8);
-            DevPtr tile_overflowed_device(sizeof(uint32_t) * 8);
-            DevPtr merge_emitted_device(sizeof(size_t) * 8);
-            DevPtr merge_overflowed_device(sizeof(uint32_t) * 8);
+            DevPtr tile_emitted_device(sizeof(size_t) * 16);
+            DevPtr tile_overflowed_device(sizeof(uint32_t) * 16);
+            DevPtr merge_emitted_device(sizeof(size_t) * 16);
+            DevPtr merge_overflowed_device(sizeof(uint32_t) * 16);
             DevPtr final_emitted_device(sizeof(size_t));
             DevPtr final_overflowed_device(sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
@@ -693,8 +693,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 launch_sort_tile(tile_index);
             CU_CHECK(cuStreamSynchronize(nullptr));
 
-            std::array<size_t, 8> tile_emitted = {};
-            std::array<uint32_t, 8> tile_overflowed = {};
+            std::array<size_t, 16> tile_emitted = {};
+            std::array<uint32_t, 16> tile_overflowed = {};
             download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
             download(tile_overflowed.data(), tile_overflowed_device.ptr, tile_count);
             *d2h_transfers_out += static_cast<uint64_t>(tile_count * 2);
@@ -734,8 +734,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 }
                 CU_CHECK(cuStreamSynchronize(nullptr));
 
-                std::array<size_t, 8> merge_emitted = {};
-                std::array<uint32_t, 8> merge_overflowed = {};
+                std::array<size_t, 16> merge_emitted = {};
+                std::array<uint32_t, 16> merge_overflowed = {};
                 download(merge_emitted.data(), merge_emitted_device.ptr, pair_count);
                 download(merge_overflowed.data(), merge_overflowed_device.ptr, pair_count);
                 *d2h_transfers_out += static_cast<uint64_t>(pair_count * 2);
