@@ -1,0 +1,102 @@
+{
+  "claim_authorization": {
+    "experimental_public_promotion_authorized": false,
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_public_primitive_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "claim_boundary": "Goal1505 only indexes already committed Goal1502/Goal1503/Goal1504 OptiX COLLECT_K_BOUNDED artifacts. It records that real NVIDIA parity, bounded row_width=2 scaling through 131072 candidates, dynamic-width behavior, INT64_MAX row behavior, and fail-closed overflow behavior have evidence. It does not authorize public speedup wording, true zero-copy wording, whole-app claims, partner tensor handoff, stable primitive promotion, experimental public promotion, release action, or any new GPU claim.",
+  "evidence_scope": {
+    "dynamic_row_width_validated": true,
+    "int64_max_pair_validated": true,
+    "measured_devices": [
+      "NVIDIA RTX 4000 Ada Generation",
+      "NVIDIA RTX PRO 4500 Blackwell"
+    ],
+    "overflow_fail_closed_validated": true,
+    "primitive": "experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge",
+    "row_width2_fast_path_max_candidate_count": 131072
+  },
+  "goal": "Goal1505",
+  "overflow_summary": {
+    "all_fail_closed_passed": true,
+    "candidate_counts": [
+      4097,
+      65537,
+      131072
+    ],
+    "case_count": 3,
+    "device_name": "NVIDIA RTX PRO 4500 Blackwell"
+  },
+  "scaling_summaries": {
+    "ada": {
+      "all_parity_passed": true,
+      "artifact_status": "goal1503_optix_collect_k_scaling_probe_recorded",
+      "case_count": 19,
+      "device_name": "NVIDIA RTX 4000 Ada Generation",
+      "max_candidate_count": 131072,
+      "max_candidate_median_ms": 189.7551491856575,
+      "tiled_case_count": 10
+    },
+    "blackwell": {
+      "all_parity_passed": true,
+      "artifact_status": "goal1503_optix_collect_k_scaling_probe_recorded",
+      "case_count": 3,
+      "device_name": "NVIDIA RTX PRO 4500 Blackwell",
+      "max_candidate_count": 131072,
+      "max_candidate_median_ms": 181.9923883304,
+      "tiled_case_count": 3
+    }
+  },
+  "source_artifacts": [
+    {
+      "device_name": "NVIDIA RTX 4000 Ada Generation",
+      "git_commit": "b42ac66332355fc6f3b3e5e957f65a9d8597c54a",
+      "goal": "Goal1502",
+      "measured_on_real_nvidia": true,
+      "name": "ada_bounds",
+      "path": "docs/reports/goal1502_v1_5_4_python_optix_collect_k_bounds_probe_2026-05-08.json",
+      "status": "goal1502_python_optix_collect_k_bounds_and_dynamic_width_probe_passed"
+    },
+    {
+      "device_name": "NVIDIA RTX PRO 4500 Blackwell",
+      "git_commit": "fd33cad297acaadcb90efd79e240308a81798918",
+      "goal": "Goal1502",
+      "measured_on_real_nvidia": true,
+      "name": "blackwell_bounds",
+      "path": "docs/reports/goal1502_v1_5_4_python_optix_collect_k_bounds_probe_blackwell_2026-05-08.json",
+      "status": "goal1502_python_optix_collect_k_bounds_and_dynamic_width_probe_passed"
+    },
+    {
+      "device_name": "NVIDIA RTX 4000 Ada Generation",
+      "git_commit": "0ef25617af5ee656f9d7933794fc13a750095b9c",
+      "goal": "Goal1503",
+      "measured_on_real_nvidia": true,
+      "name": "ada_scaling",
+      "path": "docs/reports/goal1503_v1_5_4_optix_collect_k_scaling_probe_2026-05-08.json",
+      "status": "goal1503_optix_collect_k_scaling_probe_recorded"
+    },
+    {
+      "device_name": "NVIDIA RTX PRO 4500 Blackwell",
+      "git_commit": "fd33cad297acaadcb90efd79e240308a81798918",
+      "goal": "Goal1503",
+      "measured_on_real_nvidia": true,
+      "name": "blackwell_scaling",
+      "path": "docs/reports/goal1503_v1_5_4_optix_collect_k_scaling_probe_blackwell_2026-05-08.json",
+      "status": "goal1503_optix_collect_k_scaling_probe_recorded"
+    },
+    {
+      "device_name": "NVIDIA RTX PRO 4500 Blackwell",
+      "git_commit": "fd33cad297acaadcb90efd79e240308a81798918",
+      "goal": "Goal1504",
+      "measured_on_real_nvidia": true,
+      "name": "blackwell_overflow",
+      "path": "docs/reports/goal1504_v1_5_4_optix_collect_k_tiled_overflow_probe_2026-05-08.json",
+      "status": "goal1504_optix_collect_k_tiled_overflow_probe_recorded"
+    }
+  ],
+  "status": "goal1505_optix_collect_k_evidence_summary_recorded"
+}
