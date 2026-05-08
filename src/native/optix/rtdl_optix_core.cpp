@@ -2015,42 +2015,20 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_two(
         collect_k_merge_next_pair(
             first_rows, first_count, second_rows, second_count,
             &first_index, &second_index, &value0, &value1);
-        if (!have_last || value0 != last0 || value1 != last1) {
-            ++unique_count;
-            last0 = value0;
-            last1 = value1;
-            have_last = true;
-        }
-    }
-
-    *emitted_count = unique_count;
-    *overflowed = 0u;
-    if (unique_count > row_capacity) {
-        *overflowed = 1u;
-        return;
-    }
-
-    first_index = 0;
-    second_index = 0;
-    have_last = false;
-    last0 = 0;
-    last1 = 0;
-    size_t out_index = 0;
-    while ((first_index < first_count || second_index < second_count) && out_index < unique_count) {
-        int64_t value0 = 0;
-        int64_t value1 = 0;
-        collect_k_merge_next_pair(
-            first_rows, first_count, second_rows, second_count,
-            &first_index, &second_index, &value0, &value1);
         if (have_last && value0 == last0 && value1 == last1)
             continue;
-        rows_out[out_index * 2] = value0;
-        rows_out[out_index * 2 + 1] = value1;
+        if (unique_count < row_capacity) {
+            rows_out[unique_count * 2] = value0;
+            rows_out[unique_count * 2 + 1] = value1;
+        }
         last0 = value0;
         last1 = value1;
         have_last = true;
-        ++out_index;
+        ++unique_count;
     }
+
+    *emitted_count = unique_count;
+    *overflowed = unique_count > row_capacity ? 1u : 0u;
 }
 )CUDA";
 
