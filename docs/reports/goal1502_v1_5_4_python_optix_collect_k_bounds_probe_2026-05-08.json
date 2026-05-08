@@ -1,0 +1,63 @@
+{
+  "claim_boundary": "Goal1502 validates bounds behavior for the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. It does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "claim_flags": {
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_public_primitive_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cuda_driver_version": 12040,
+  "device_name": "NVIDIA RTX 4000 Ada Generation",
+  "git_commit": "4bf53d111faa691fcaf8896cc2bdb822a47bdcfd",
+  "goal": "Goal1502",
+  "library_path": "/root/rtdl_goal1498/rtdl/build/librtdl_optix.so",
+  "measured_on_real_nvidia": true,
+  "native_symbol": "rtdl_optix_collect_k_bounded_i64_device",
+  "overflow_case": {
+    "candidate_rows": [
+      [
+        2,
+        20
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        20
+      ],
+      [
+        3,
+        30
+      ]
+    ],
+    "capacity": 2,
+    "fail_closed_output_preserved": true,
+    "output_flat_after_call": [
+      -777,
+      -777,
+      -777,
+      -777
+    ],
+    "overflowed": true,
+    "row_width": 2,
+    "transfer_accounting": {
+      "allocation_only_transfers_distinguished_from_content_transfers": true,
+      "device_to_host_transfers_after_backend_execution": 2,
+      "host_to_device_transfers_before_backend_execution": 0,
+      "internal_device_transfers_if_any": 0
+    },
+    "valid_count": 3
+  },
+  "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+  "python_entry_point": "rtdsl.optix_runtime.collect_k_bounded_i64_device_optix",
+  "status": "goal1502_python_optix_collect_k_bounds_probe_passed",
+  "unsupported_row_width_case": {
+    "error": "rtdl_optix_collect_k_bounded_i64_device currently supports row_width=2 only",
+    "refused": true,
+    "row_width": 3
+  }
+}
