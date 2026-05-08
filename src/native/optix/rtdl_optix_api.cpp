@@ -548,7 +548,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 &emitted_device.ptr,
                 &overflowed_device.ptr,
             };
-            const unsigned shared_bytes = static_cast<unsigned>(sizeof(int64_t) * padded_count * 2);
+            const unsigned shared_bytes = static_cast<unsigned>(
+                sizeof(int64_t) * padded_count * 2 + sizeof(uint8_t) * padded_count);
             CU_CHECK(cuLaunchKernel(
                 g_collect_k_i64_row_width2_sort.fn,
                 1, 1, 1,

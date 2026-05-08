@@ -1853,6 +1853,7 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
     extern __shared__ int64_t shared[];
     int64_t* first = shared;
     int64_t* second = shared + padded_count;
+    uint8_t* valid = reinterpret_cast<uint8_t*>(shared + padded_count * 2);
     const size_t tid = static_cast<size_t>(threadIdx.x);
     const size_t stride = static_cast<size_t>(blockDim.x);
 
@@ -1860,9 +1861,11 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
         if (index < candidate_count) {
             first[index] = candidate_rows[index * 2];
             second[index] = candidate_rows[index * 2 + 1];
+            valid[index] = 1u;
         } else {
-            first[index] = INT64_MAX;
-            second[index] = INT64_MAX;
+            first[index] = 0;
+            second[index] = 0;
+            valid[index] = 0u;
         }
     }
     __syncthreads();
@@ -1873,15 +1876,23 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
                 const size_t peer = index ^ j;
                 if (peer > index && peer < padded_count) {
                     const bool ascending = (index & k) == 0;
-                    const int cmp = collect_k_pair_compare(first[index], second[index], first[peer], second[peer]);
+                    int cmp = 0;
+                    if (valid[index] != valid[peer]) {
+                        cmp = valid[index] ? -1 : 1;
+                    } else if (valid[index]) {
+                        cmp = collect_k_pair_compare(first[index], second[index], first[peer], second[peer]);
+                    }
                     const bool should_swap = ascending ? (cmp > 0) : (cmp < 0);
                     if (should_swap) {
                         const int64_t tmp_first = first[index];
                         const int64_t tmp_second = second[index];
+                        const uint8_t tmp_valid = valid[index];
                         first[index] = first[peer];
                         second[index] = second[peer];
+                        valid[index] = valid[peer];
                         first[peer] = tmp_first;
                         second[peer] = tmp_second;
+                        valid[peer] = tmp_valid;
                     }
                 }
             }
@@ -1894,7 +1905,7 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
 
     size_t unique_count = 0;
     for (size_t index = 0; index < padded_count; ++index) {
-        if (first[index] == INT64_MAX && second[index] == INT64_MAX)
+        if (!valid[index])
             break;
         if (index == 0 || first[index] != first[index - 1] || second[index] != second[index - 1])
             ++unique_count;
@@ -1908,7 +1919,7 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
 
     size_t out_index = 0;
     for (size_t index = 0; index < padded_count && out_index < unique_count; ++index) {
-        if (first[index] == INT64_MAX && second[index] == INT64_MAX)
+        if (!valid[index])
             break;
         if (index != 0 && first[index] == first[index - 1] && second[index] == second[index - 1])
             continue;
