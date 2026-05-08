@@ -1,5 +1,5 @@
 {
-  "claim_boundary": "Goal1502 validates bounds behavior for the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. It does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "claim_boundary": "Goal1502 validates bounds behavior and dynamic row-width behavior for the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. It does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
   "claim_flags": {
     "partner_tensor_handoff_authorized": false,
     "public_speedup_wording_authorized": false,
@@ -10,7 +10,78 @@
   },
   "cuda_driver_version": 12040,
   "device_name": "NVIDIA RTX 4000 Ada Generation",
-  "git_commit": "4bf53d111faa691fcaf8896cc2bdb822a47bdcfd",
+  "dynamic_row_width_case": {
+    "candidate_id_rows": [
+      [
+        1,
+        10,
+        100
+      ],
+      [
+        2,
+        20,
+        200
+      ],
+      [
+        3,
+        30,
+        300
+      ]
+    ],
+    "candidate_rows": [
+      [
+        2,
+        20,
+        200
+      ],
+      [
+        1,
+        10,
+        100
+      ],
+      [
+        2,
+        20,
+        200
+      ],
+      [
+        3,
+        30,
+        300
+      ]
+    ],
+    "capacity": 3,
+    "expected_rows": [
+      [
+        1,
+        10,
+        100
+      ],
+      [
+        2,
+        20,
+        200
+      ],
+      [
+        3,
+        30,
+        300
+      ]
+    ],
+    "overflowed": false,
+    "row_width": 3,
+    "same_candidate_rows": true,
+    "same_overflowed_flag": true,
+    "same_valid_count": true,
+    "transfer_accounting": {
+      "allocation_only_transfers_distinguished_from_content_transfers": true,
+      "device_to_host_transfers_after_backend_execution": 2,
+      "host_to_device_transfers_before_backend_execution": 0,
+      "internal_device_transfers_if_any": 0
+    },
+    "valid_count": 3
+  },
+  "git_commit": "6119e2f4ae9a43dd0ecdee2b05266630ef8cfb80",
   "goal": "Goal1502",
   "library_path": "/root/rtdl_goal1498/rtdl/build/librtdl_optix.so",
   "measured_on_real_nvidia": true,
@@ -54,10 +125,5 @@
   },
   "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
   "python_entry_point": "rtdsl.optix_runtime.collect_k_bounded_i64_device_optix",
-  "status": "goal1502_python_optix_collect_k_bounds_probe_passed",
-  "unsupported_row_width_case": {
-    "error": "rtdl_optix_collect_k_bounded_i64_device currently supports row_width=2 only",
-    "refused": true,
-    "row_width": 3
-  }
+  "status": "goal1502_python_optix_collect_k_bounds_and_dynamic_width_probe_passed"
 }
