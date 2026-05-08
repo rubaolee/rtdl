@@ -188,7 +188,14 @@ def _run_profile_case(cuda: CudaDriver, *, candidate_count: int, repeats: int, p
     }
 
 
-def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile_jsonl: Path) -> dict[str, Any]:
+def run_probe(
+    library_path: Path,
+    repeats: int,
+    counts: tuple[int, ...],
+    profile_jsonl: Path,
+    *,
+    allow_local_fallback_smoke: bool = False,
+) -> dict[str, Any]:
     os.environ["RTDL_OPTIX_LIB"] = str(library_path)
     cuda = CudaDriver()
     try:
@@ -201,9 +208,22 @@ def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile
             _run_profile_case(cuda, candidate_count=count, repeats=repeats, profile_path=profile_path)
             for count in counts
         ]
+        all_profile_paths_match_expected = all(
+            case["profile_native_path_matches_expected"] for case in cases
+        )
+        all_profile_topologies_match_expected = all(
+            case["profile_topology_matches_expected"] for case in cases
+        )
         return {
             "goal": "Goal1506",
             "status": "goal1506_optix_collect_k_stage_profile_probe_recorded",
+            "accepted_goal1506_evidence": (
+                all_profile_paths_match_expected and all_profile_topologies_match_expected
+            ),
+            "local_fallback_smoke_only": (
+                allow_local_fallback_smoke
+                and not (all_profile_paths_match_expected and all_profile_topologies_match_expected)
+            ),
             "git_commit": _git_head(),
             "platform": platform.platform(),
             "device_name": cuda.device_name(),
@@ -225,12 +245,8 @@ def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile
             "all_profile_records_present": all(
                 case["observed_profile_records"] == case["expected_profile_records"] for case in cases
             ),
-            "all_profile_paths_match_expected": all(
-                case["profile_native_path_matches_expected"] for case in cases
-            ),
-            "all_profile_topologies_match_expected": all(
-                case["profile_topology_matches_expected"] for case in cases
-            ),
+            "all_profile_paths_match_expected": all_profile_paths_match_expected,
+            "all_profile_topologies_match_expected": all_profile_topologies_match_expected,
             "claim_flags": {
                 "true_zero_copy_authorized": False,
                 "public_speedup_wording_authorized": False,
@@ -251,7 +267,7 @@ def run_probe(library_path: Path, repeats: int, counts: tuple[int, ...], profile
         cuda.close()
 
 
-def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
+def validate_probe(probe: dict[str, Any], *, allow_local_fallback_smoke: bool = False) -> dict[str, Any]:
     if probe.get("goal") != "Goal1506":
         raise ValueError("invalid Goal1506 report goal")
     if probe.get("measured_on_real_nvidia") is not True:
@@ -260,10 +276,13 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Goal1506 requires parity for every timing case")
     if probe.get("all_profile_records_present") is not True:
         raise ValueError("Goal1506 requires every profiled call record")
-    if probe.get("all_profile_paths_match_expected") is not True:
+    if probe.get("all_profile_paths_match_expected") is not True and not allow_local_fallback_smoke:
         raise ValueError("Goal1506 native path records must match expected paths")
-    if probe.get("all_profile_topologies_match_expected") is not True:
+    if probe.get("all_profile_topologies_match_expected") is not True and not allow_local_fallback_smoke:
         raise ValueError("Goal1506 native topology records must match expected topology")
+    if allow_local_fallback_smoke and probe.get("accepted_goal1506_evidence") is not True:
+        if probe.get("local_fallback_smoke_only") is not True:
+            raise ValueError("Goal1506 fallback smoke must be explicitly classified as smoke only")
     for case in probe.get("cases", []):
         if case.get("row_width") != 2:
             raise ValueError("Goal1506 currently profiles row_width=2 only")
@@ -274,9 +293,9 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("Goal1506 requires steady-state stage profile records")
         topology = profile.get("topology", {})
         expected = case.get("expected_profile_topology", {})
-        if topology.get("native_path") != case.get("expected_native_path"):
+        if topology.get("native_path") != case.get("expected_native_path") and not allow_local_fallback_smoke:
             raise ValueError("Goal1506 profile topology native path mismatch")
-        if topology != expected:
+        if topology != expected and not allow_local_fallback_smoke:
             raise ValueError("Goal1506 profile topology mismatch")
         for field, value in profile.get("stage_median_ms", {}).items():
             if float(value) < 0.0:
@@ -300,6 +319,8 @@ def to_markdown(probe: dict[str, Any]) -> str:
         f"- Device: `{probe['device_name']}`",
         f"- Git commit: `{probe['git_commit']}`",
         f"- Native profile env: `{probe['native_profile_env']}`",
+        f"- Accepted Goal1506 evidence: `{probe.get('accepted_goal1506_evidence')}`",
+        f"- Local fallback smoke only: `{probe.get('local_fallback_smoke_only')}`",
         f"- Timing scope: {probe['timing_scope']}",
         "",
         "## Cases",
@@ -334,6 +355,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--counts", nargs="+", type=int, default=list(DEFAULT_COUNTS))
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--profile-jsonl", type=Path, default=DEFAULT_JSONL_PATH)
+    parser.add_argument(
+        "--allow-local-fallback-smoke",
+        action="store_true",
+        help=(
+            "Allow local runtime smoke artifacts when the GPU falls back from the expected "
+            "tiled path. These artifacts are explicitly not accepted Goal1506 evidence."
+        ),
+    )
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--md-out", type=Path, default=DEFAULT_MD_PATH)
     return parser.parse_args()
@@ -341,7 +370,16 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    probe = validate_probe(run_probe(args.library, args.repeats, tuple(args.counts), args.profile_jsonl))
+    probe = validate_probe(
+        run_probe(
+            args.library,
+            args.repeats,
+            tuple(args.counts),
+            args.profile_jsonl,
+            allow_local_fallback_smoke=args.allow_local_fallback_smoke,
+        ),
+        allow_local_fallback_smoke=args.allow_local_fallback_smoke,
+    )
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
     args.md_out.parent.mkdir(parents=True, exist_ok=True)
     args.json_out.write_text(json.dumps(probe, indent=2, sort_keys=True) + "\n", encoding="utf-8")

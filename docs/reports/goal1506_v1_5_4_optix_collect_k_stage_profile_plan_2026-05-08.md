@@ -81,6 +81,21 @@ The runner builds OptiX, runs the probe, and runs the local Goal1502-Goal1506 ev
 OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh
 ```
 
+For old local NVIDIA GPUs that do not take the expected tiled path, use the probe's fallback smoke mode only for instrumentation debugging:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py \
+  --library build/librtdl_optix.so \
+  --counts 4097 \
+  --repeats 1 \
+  --allow-local-fallback-smoke \
+  --json-out /tmp/goal1506_smoke.json \
+  --md-out /tmp/goal1506_smoke.md \
+  --profile-jsonl /tmp/goal1506_smoke.jsonl
+```
+
+Fallback-smoke artifacts are explicitly not accepted Goal1506 evidence and should not be committed as performance evidence.
+
 After building `librtdl_optix.so`, run for example:
 
 ```bash

@@ -84,6 +84,20 @@ class Goal1506V154OptixCollectKStageProfilePlanTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "topology records"):
             probe.validate_probe(payload)
 
+    def test_probe_validator_accepts_explicit_local_fallback_smoke(self) -> None:
+        payload = make_synthetic_probe()
+        payload["accepted_goal1506_evidence"] = False
+        payload["local_fallback_smoke_only"] = True
+        payload["all_profile_paths_match_expected"] = False
+        payload["all_profile_topologies_match_expected"] = False
+        payload["cases"][0]["profile_native_path_matches_expected"] = False
+        payload["cases"][0]["profile_topology_matches_expected"] = False
+        payload["cases"][0]["stage_profile"]["topology"] = probe.expected_topology(4097, 3)
+
+        self.assertIs(probe.validate_probe(payload, allow_local_fallback_smoke=True), payload)
+        with self.assertRaisesRegex(ValueError, "expected paths"):
+            probe.validate_probe(payload)
+
     def test_probe_validator_rejects_claim_expansion(self) -> None:
         payload = make_synthetic_probe()
         payload["claim_flags"]["public_speedup_wording_authorized"] = True
@@ -184,6 +198,8 @@ def make_synthetic_probe() -> dict:
     return {
         "goal": "Goal1506",
         "status": "goal1506_optix_collect_k_stage_profile_probe_recorded",
+        "accepted_goal1506_evidence": True,
+        "local_fallback_smoke_only": False,
         "git_commit": "synthetic",
         "platform": "synthetic",
         "device_name": "NVIDIA synthetic",
