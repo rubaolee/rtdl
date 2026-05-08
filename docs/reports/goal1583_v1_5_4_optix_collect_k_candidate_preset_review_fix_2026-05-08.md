@@ -11,12 +11,21 @@ Claude reviewed the Goal1580-Goal1582 candidate-preset work and judged the opt-i
 
 ## Fix
 
-The Goal1579 runner candidate-preset subprocess now explicitly removes both rejected pointer-diagnostic env vars before setting `RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE=1`:
+The first fix made the Goal1579 runner candidate-preset subprocess explicitly remove both rejected pointer-diagnostic env vars before setting `RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE=1`:
 
 - `RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC`
 - `RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC`
 
 This closes the contamination path where a parent shell could accidentally combine the candidate preset with rejected diagnostics.
+
+Pod hostile-env validation then showed the same parent-shell contamination risk also affected normal baseline/alias profiles. The runner now starts every profile subprocess by clearing the full collect-k profile isolation key set, including:
+
+- all positive-bundle individual flags,
+- the one-flag candidate preset,
+- the derived-carry alias diagnostic flag,
+- both rejected pointer-carry diagnostic flags.
+
+After isolation, the runner explicitly opts in only the intended mode: baseline bundle, alias bundle, or candidate preset.
 
 The runner also raises the candidate-preset smoke default from a single repeat to `5` repeats via `--candidate-preset-repeats`.
 

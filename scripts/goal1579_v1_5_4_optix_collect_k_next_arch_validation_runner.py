@@ -44,6 +44,14 @@ CANDIDATE_PRESET_ENV = {
     "RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE": "1",
 }
 
+PROFILE_ISOLATION_ENV_KEYS = [
+    *PROFILE_ENV.keys(),
+    *CANDIDATE_PRESET_ENV.keys(),
+    "RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC",
+    "RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC",
+    "RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC",
+]
+
 
 def _run(cmd: list[str], *, env: dict[str, str] | None = None) -> None:
     print("+ " + " ".join(cmd), flush=True)
@@ -52,19 +60,14 @@ def _run(cmd: list[str], *, env: dict[str, str] | None = None) -> None:
 
 def _profile_env(*, enable_alias: bool, ld_library_path: str | None, use_candidate_preset: bool = False) -> dict[str, str]:
     env = os.environ.copy()
+    for key in PROFILE_ISOLATION_ENV_KEYS:
+        env.pop(key, None)
     if use_candidate_preset:
-        for key in PROFILE_ENV:
-            env.pop(key, None)
-        env.pop("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC", None)
-        env.pop("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC", None)
-        env.pop("RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC", None)
         env.update(CANDIDATE_PRESET_ENV)
     else:
         env.update(PROFILE_ENV)
     if enable_alias and not use_candidate_preset:
         env["RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"] = "1"
-    elif not use_candidate_preset:
-        env.pop("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC", None)
     existing_pythonpath = env.get("PYTHONPATH")
     env["PYTHONPATH"] = f"src{os.pathsep}." + (f"{os.pathsep}{existing_pythonpath}" if existing_pythonpath else "")
     if ld_library_path:
