@@ -496,6 +496,18 @@ extern "C" int rtdl_optix_collect_k_bounded_i64(
 struct CollectKStageProfile {
     using Clock = std::chrono::steady_clock;
 
+    struct MergeLevel {
+        size_t input_segments = 0;
+        size_t pair_count = 0;
+        size_t output_segments = 0;
+        size_t output_capacity = 0;
+        uint64_t carry_copies = 0;
+        double launch_ms = 0.0;
+        double sync_ms = 0.0;
+        double metadata_ms = 0.0;
+        double carry_copy_ms = 0.0;
+    };
+
     bool enabled = false;
     std::string path;
     std::string native_path = "unknown";
@@ -519,6 +531,7 @@ struct CollectKStageProfile {
     double merge_metadata_download_ms = 0.0;
     double carry_copy_ms = 0.0;
     double final_copy_ms = 0.0;
+    std::vector<MergeLevel> merge_level_profile;
     Clock::time_point total_start = Clock::now();
 
     CollectKStageProfile(size_t candidates, size_t width, size_t capacity)
@@ -538,6 +551,11 @@ struct CollectKStageProfile {
     void add_since(double& bucket, Clock::time_point start) {
         if (enabled)
             bucket += elapsed_ms(start);
+    }
+
+    void record_merge_level(const MergeLevel& level) {
+        if (enabled)
+            merge_level_profile.push_back(level);
     }
 
     void append(size_t emitted_count, uint32_t overflowed,
@@ -577,6 +595,25 @@ struct CollectKStageProfile {
                 << "\"merge_metadata_download_ms\":" << merge_metadata_download_ms << ","
                 << "\"carry_copy_ms\":" << carry_copy_ms << ","
                 << "\"final_copy_ms\":" << final_copy_ms << ","
+                << "\"merge_level_profile\":[";
+            for (size_t index = 0; index < merge_level_profile.size(); ++index) {
+                const auto& level = merge_level_profile[index];
+                if (index != 0)
+                    out << ",";
+                out << "{"
+                    << "\"level\":" << index << ","
+                    << "\"input_segments\":" << level.input_segments << ","
+                    << "\"pair_count\":" << level.pair_count << ","
+                    << "\"output_segments\":" << level.output_segments << ","
+                    << "\"output_capacity\":" << level.output_capacity << ","
+                    << "\"carry_copies\":" << level.carry_copies << ","
+                    << "\"launch_ms\":" << level.launch_ms << ","
+                    << "\"sync_ms\":" << level.sync_ms << ","
+                    << "\"metadata_ms\":" << level.metadata_ms << ","
+                    << "\"carry_copy_ms\":" << level.carry_copy_ms
+                    << "}";
+            }
+            out << "],"
                 << "\"total_ms\":" << elapsed_ms(total_start)
                 << "}\n";
         } catch (...) {
@@ -851,10 +888,15 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             bool write_stage_b = true;
             uint64_t merge_launches = 0;
             while (current_rows.size() > 1) {
+                CollectKStageProfile::MergeLevel level_profile;
+                level_profile.input_segments = current_rows.size();
                 const size_t pair_count = current_rows.size() / 2;
                 const bool has_carry = (current_rows.size() % 2) != 0;
                 const size_t output_segment_capacity = segment_capacity * 2;
                 CUdeviceptr output_base = write_stage_b ? temp_stage_b.ptr : temp_stage_a.ptr;
+                level_profile.pair_count = pair_count;
+                level_profile.output_segments = pair_count + (has_carry ? 1 : 0);
+                level_profile.output_capacity = output_segment_capacity;
 
                 auto merge_launch_start = CollectKStageProfile::Clock::now();
                 std::array<uint64_t, 32> merge_first_rows = {};
@@ -878,19 +920,25 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 *h2d_transfers_out += static_cast<uint64_t>(pair_count * 5);
                 launch_merge_level(pair_count, output_segment_capacity);
                 ++merge_launches;
-                profile.add_since(profile.merge_launch_ms, merge_launch_start);
+                level_profile.launch_ms = CollectKStageProfile::elapsed_ms(merge_launch_start);
+                if (profile.enabled)
+                    profile.merge_launch_ms += level_profile.launch_ms;
                 profile.merge_launches += 1;
                 ++profile.merge_levels;
                 auto merge_sync_start = CollectKStageProfile::Clock::now();
                 CU_CHECK(cuStreamSynchronize(nullptr));
-                profile.add_since(profile.merge_sync_ms, merge_sync_start);
+                level_profile.sync_ms = CollectKStageProfile::elapsed_ms(merge_sync_start);
+                if (profile.enabled)
+                    profile.merge_sync_ms += level_profile.sync_ms;
 
                 std::array<size_t, 32> merge_emitted = {};
                 std::array<uint32_t, 32> merge_overflowed = {};
                 auto merge_metadata_start = CollectKStageProfile::Clock::now();
                 download(merge_emitted.data(), merge_emitted_device.ptr, pair_count);
                 download(merge_overflowed.data(), merge_overflowed_device.ptr, pair_count);
-                profile.add_since(profile.merge_metadata_download_ms, merge_metadata_start);
+                level_profile.metadata_ms = CollectKStageProfile::elapsed_ms(merge_metadata_start);
+                if (profile.enabled)
+                    profile.merge_metadata_download_ms += level_profile.metadata_ms;
                 *d2h_transfers_out += static_cast<uint64_t>(pair_count * 2);
                 profile.metadata_fields_downloaded += static_cast<uint64_t>(pair_count * 2);
 
@@ -912,12 +960,16 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         carry_output,
                         current_rows.back(),
                         sizeof(int64_t) * current_counts.back() * 2));
-                    profile.add_since(profile.carry_copy_ms, carry_copy_start);
+                    level_profile.carry_copy_ms = CollectKStageProfile::elapsed_ms(carry_copy_start);
+                    if (profile.enabled)
+                        profile.carry_copy_ms += level_profile.carry_copy_ms;
                     ++merge_launches;
                     ++profile.carry_copies;
+                    ++level_profile.carry_copies;
                     next_rows.push_back(carry_output);
                     next_counts.push_back(current_counts.back());
                 }
+                profile.record_merge_level(level_profile);
 
                 current_rows = std::move(next_rows);
                 current_counts = std::move(next_counts);
