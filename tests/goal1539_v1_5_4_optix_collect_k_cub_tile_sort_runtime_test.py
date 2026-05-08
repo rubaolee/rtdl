@@ -205,7 +205,7 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
 
         self.assertEqual(topology["tile_count"], 64)
         self.assertEqual(topology["merge_launches"], 23)
-        self.assertEqual(topology["metadata_fields_downloaded"], 131)
+        self.assertEqual(topology["metadata_fields_downloaded"], 67)
 
 
 if __name__ == "__main__":

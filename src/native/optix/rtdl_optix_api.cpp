@@ -1362,14 +1362,24 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             CU_CHECK(cuStreamSynchronize(nullptr));
             profile.add_since(profile.sort_sync_ms, sort_sync_start);
 
+            const bool use_parallel_final_compact = collect_k_use_parallel_final_compact();
+            const bool use_batched_compact_level = collect_k_use_batched_compact_level();
+            const bool use_device_prefix_compact = collect_k_use_device_prefix_compact();
+            const bool use_derived_level_descriptors = collect_k_use_derived_level_descriptors();
+            const bool use_device_level_counts =
+                collect_k_use_device_level_counts() && use_derived_level_descriptors && use_device_prefix_compact;
+
             std::array<size_t, 64> tile_emitted = {};
             std::array<uint32_t, 64> tile_overflowed = {};
             auto tile_metadata_start = CollectKStageProfile::Clock::now();
-            download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
+            if (!use_device_level_counts)
+                download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
             download(tile_overflowed.data(), tile_overflowed_device.ptr, tile_count);
             profile.add_since(profile.tile_metadata_download_ms, tile_metadata_start);
-            *d2h_transfers_out += static_cast<uint64_t>(tile_count * 2);
-            profile.metadata_fields_downloaded += static_cast<uint64_t>(tile_count * 2);
+            *d2h_transfers_out += static_cast<uint64_t>(
+                tile_count * (use_device_level_counts ? 1 : 2));
+            profile.metadata_fields_downloaded += static_cast<uint64_t>(
+                tile_count * (use_device_level_counts ? 1 : 2));
             for (size_t tile_index = 0; tile_index < tile_count; ++tile_index) {
                 if (tile_overflowed[tile_index])
                     throw std::runtime_error("row_width=2 tile collect unexpectedly overflowed");
@@ -1381,18 +1391,12 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             current_counts.reserve(tile_count);
             for (size_t tile_index = 0; tile_index < tile_count; ++tile_index) {
                 current_rows.push_back(temp_sorted_tile(tile_index));
-                current_counts.push_back(tile_emitted[tile_index]);
+                current_counts.push_back(use_device_level_counts ? 0 : tile_emitted[tile_index]);
             }
 
             size_t segment_capacity = tile_size;
             bool write_stage_b = true;
             uint64_t merge_launches = 0;
-            const bool use_parallel_final_compact = collect_k_use_parallel_final_compact();
-            const bool use_batched_compact_level = collect_k_use_batched_compact_level();
-            const bool use_device_prefix_compact = collect_k_use_device_prefix_compact();
-            const bool use_derived_level_descriptors = collect_k_use_derived_level_descriptors();
-            const bool use_device_level_counts =
-                collect_k_use_device_level_counts() && use_derived_level_descriptors && use_device_prefix_compact;
             const size_t parallel_compact_min_capacity =
                 collect_k_parallel_compact_min_capacity(use_cub_tile_sort);
             CUdeviceptr current_counts_level_device = tile_emitted_device.ptr;

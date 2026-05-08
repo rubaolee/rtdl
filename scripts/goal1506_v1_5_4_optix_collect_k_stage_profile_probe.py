@@ -148,7 +148,6 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     merge_levels = 0
     merge_launches = 0
     carry_copies = 0
-    metadata_fields_downloaded = tile_count * 2
     use_batched_compact_level = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL"))
     use_device_prefix_compact = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT"))
     use_derived_level_descriptors = bool(os.environ.get("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS"))
@@ -157,6 +156,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         and use_derived_level_descriptors
         and use_device_prefix_compact
     )
+    metadata_fields_downloaded = tile_count * (1 if use_device_level_counts else 2)
     used_device_level_counts = False
     while current_segments > 1:
         if use_device_level_counts and used_device_level_counts and current_segments == 2:
