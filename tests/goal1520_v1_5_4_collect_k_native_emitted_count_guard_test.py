@@ -91,6 +91,8 @@ class Goal1520V154CollectKNativeEmittedCountGuardTest(unittest.TestCase):
         self.assertTrue(REPORT.exists())
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("emitted_count > capacity", text)
+        self.assertIn("typed-host reduced-copy native envelope", text)
+        self.assertIn("run_native_collect_k_bounded_with_typed_host_buffers", text)
         self.assertIn("Ran 23 tests", text)
         self.assertIn("does not authorize stable `COLLECT_K_BOUNDED` promotion", text)
 

@@ -558,6 +558,11 @@ def run_native_collect_k_bounded_with_typed_host_buffers(
             "COLLECT_K_BOUNDED overflowed prepared output capacity "
             f"{prepared['capacity']}; emitted {emitted}; no partial result returned"
         )
+    if emitted > int(prepared["capacity"]):
+        raise RuntimeError(
+            "COLLECT_K_BOUNDED native emitted_count exceeded prepared output "
+            f"capacity {prepared['capacity']}; emitted {emitted}; no partial result returned"
+        )
     rows = tuple(
         tuple(
             int(output_buffer[row_index * prepared["row_width"] + column_index])

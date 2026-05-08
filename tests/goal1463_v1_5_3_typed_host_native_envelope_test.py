@@ -40,6 +40,31 @@ class _TypedHostNativeCollectKSymbol:
         return 0
 
 
+class _LyingTypedHostNativeCollectKSymbol:
+    def __init__(self) -> None:
+        self.argtypes = None
+        self.restype = None
+
+    def __call__(
+        self,
+        _candidate_rows,
+        _candidate_count,
+        _row_width,
+        rows_out,
+        row_capacity,
+        emitted_count_out,
+        overflowed_out,
+        _error,
+        _error_size,
+    ):
+        capacity = int(row_capacity)
+        ctypes.cast(emitted_count_out, ctypes.POINTER(ctypes.c_size_t))[0] = capacity + 1
+        ctypes.cast(overflowed_out, ctypes.POINTER(ctypes.c_uint32))[0] = 0
+        for index in range(capacity):
+            rows_out[index] = 100 + index
+        return 0
+
+
 class Goal1463V153TypedHostNativeEnvelopeTest(unittest.TestCase):
     def test_native_envelope_uses_prepared_input_and_output_buffers(self) -> None:
         symbol = _TypedHostNativeCollectKSymbol()
@@ -88,6 +113,29 @@ class Goal1463V153TypedHostNativeEnvelopeTest(unittest.TestCase):
         library = SimpleNamespace(rtdl_embree_collect_k_bounded_i64=_TypedHostNativeCollectKSymbol())
 
         with self.assertRaisesRegex(ValueError, "row_width mismatch"):
+            rt.run_native_collect_k_bounded_with_typed_host_buffers(
+                input_descriptor,
+                output_descriptor,
+                output_buffer=output_buffer,
+                library=library,
+                symbol_name="rtdl_embree_collect_k_bounded_i64",
+                backend="embree",
+            )
+
+    def test_native_envelope_fails_closed_when_emitted_count_exceeds_capacity(self) -> None:
+        input_descriptor = rt.prepare_collect_k_i64_host_input_buffer(((1,), (2,)), row_width=1)
+        output_descriptor = rt.prepare_collect_k_result_buffer_descriptor(
+            capacity=1,
+            row_width=1,
+            backend="embree",
+            copy_boundary="prepared_host_buffer_reuse",
+        )
+        output_buffer = (ctypes.c_int64 * 1)()
+        library = SimpleNamespace(
+            rtdl_embree_collect_k_bounded_i64=_LyingTypedHostNativeCollectKSymbol()
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "emitted_count exceeded prepared output capacity"):
             rt.run_native_collect_k_bounded_with_typed_host_buffers(
                 input_descriptor,
                 output_descriptor,
