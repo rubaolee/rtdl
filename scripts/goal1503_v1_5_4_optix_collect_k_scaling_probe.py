@@ -132,7 +132,7 @@ def _run_case(
             "row_width": row_width,
             "unique_count": capacity,
             "expected_native_path": (
-                "row_width2_parallel_bitonic_sort" if row_width == 2 and candidate_count <= 2048
+                "row_width2_parallel_bitonic_sort" if row_width == 2 and candidate_count <= 4096
                 else "dynamic_row_width_single_thread_fallback"
             ),
             "repeats": repeats,
@@ -262,7 +262,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Record OptiX collect-k scaling observations.")
     parser.add_argument("--library", type=Path, default=DEFAULT_LIBRARY_PATH)
     parser.add_argument("--repeats", type=int, default=5)
-    parser.add_argument("--counts", nargs="+", type=int, default=[8, 32, 128, 512, 1024, 1025, 2048, 2049])
+    parser.add_argument(
+        "--counts",
+        nargs="+",
+        type=int,
+        default=[8, 32, 128, 512, 1024, 1025, 2048, 2049, 4096, 4097],
+    )
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--md-out", type=Path, default=DEFAULT_MD_PATH)
     return parser.parse_args()
