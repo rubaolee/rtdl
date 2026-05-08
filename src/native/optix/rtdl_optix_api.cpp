@@ -516,10 +516,45 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             throw std::runtime_error("candidate_rows_device_ptr must not be zero when candidate_count is nonzero");
         if (row_capacity != 0 && rows_out_device_ptr == 0)
             throw std::runtime_error("rows_out_device_ptr must not be zero when row_capacity is nonzero");
+        if (row_width != 2)
+            throw std::runtime_error("rtdl_optix_collect_k_bounded_i64_device currently supports row_width=2 only");
+        if (candidate_count == 0)
+            return;
 
-        throw std::runtime_error(
-            "rtdl_optix_collect_k_bounded_i64_device is ABI-reserved but not implemented; "
-            "do not use as Goal1493 device-buffer execution evidence");
+        (void)get_optix_context();
+        std::call_once(g_collect_k_i64_row_width2.init, [&]() {
+            std::string ptx = compile_to_ptx(
+                kCollectKBoundedI64RowWidth2KernelSrc,
+                "collect_k_bounded_i64_row_width2_kernel.cu");
+            CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2.module, ptx.c_str()));
+            CU_CHECK(cuModuleGetFunction(
+                &g_collect_k_i64_row_width2.fn,
+                g_collect_k_i64_row_width2.module,
+                "collect_k_bounded_i64_row_width2"));
+        });
+
+        DevPtr emitted_device(sizeof(size_t));
+        DevPtr overflowed_device(sizeof(uint32_t));
+        CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
+        CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
+        void* args[] = {
+            &candidate_rows,
+            &candidate_count,
+            &rows_out,
+            &row_capacity,
+            &emitted_device.ptr,
+            &overflowed_device.ptr,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_collect_k_i64_row_width2.fn,
+            1, 1, 1,
+            1, 1, 1,
+            0, nullptr, args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+
+        download(emitted_count_out, emitted_device.ptr, 1);
+        download(overflowed_out, overflowed_device.ptr, 1);
+        *d2h_transfers_out += 2;
     }, error_out, error_size);
 }
 

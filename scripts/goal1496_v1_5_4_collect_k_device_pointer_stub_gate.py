@@ -9,6 +9,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 API_PATH = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
+CORE_PATH = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 PRELUDE_PATH = ROOT / "src" / "native" / "optix" / "rtdl_optix_prelude.h"
 REPORT_STEM = "goal1496_v1_5_4_collect_k_device_pointer_stub_gate_2026-05-08"
 DEFAULT_JSON_PATH = ROOT / "docs" / "reports" / f"{REPORT_STEM}.json"
@@ -21,6 +22,8 @@ def _read(path: Path) -> str:
 
 def build_gate() -> dict[str, Any]:
     api = _read(API_PATH)
+    core = _read(CORE_PATH)
+    implementation_text = api + "\n" + core
     prelude = _read(PRELUDE_PATH)
     symbol = "rtdl_optix_collect_k_bounded_i64_device"
     signature_requirements = (
@@ -32,26 +35,33 @@ def build_gate() -> dict[str, Any]:
     )
     signature_present = symbol in prelude and all(required in prelude for required in signature_requirements)
     implementation_present = symbol in api and all(required in api for required in signature_requirements)
-    fail_closed_markers = (
-        "ABI-reserved but not implemented",
-        "do not use as Goal1493 device-buffer execution evidence",
+    implementation_markers = (
+        "row_width != 2",
+        "collect_k_bounded_i64_row_width2",
+        "cuLaunchKernel",
+        "download(emitted_count_out",
+        "unique_count > row_capacity",
+        "*overflowed_out = 1u",
         "*h2d_transfers_out = 0",
         "*d2h_transfers_out = 0",
+        "*d2h_transfers_out += 2",
         "*internal_device_transfers_out = 0",
     )
-    fail_closed_stub_present = all(marker in api for marker in fail_closed_markers)
+    implementation_markers_present = all(marker in implementation_text for marker in implementation_markers)
+    hidden_host_content_buffer_absent = "std::vector<std::vector<int64_t>> rows" not in api.split(symbol, 1)[1]
     return {
         "goal": "Goal1496",
-        "status": "goal1496_collect_k_device_pointer_stub_fail_closed",
+        "status": "goal1496_collect_k_device_pointer_narrow_implementation_guarded",
         "symbol": symbol,
         "api_path": str(API_PATH.relative_to(ROOT)),
         "prelude_path": str(PRELUDE_PATH.relative_to(ROOT)),
         "signature_present": signature_present,
         "implementation_present": implementation_present,
-        "fail_closed_stub_present": fail_closed_stub_present,
+        "implementation_markers_present": implementation_markers_present,
+        "hidden_host_content_buffer_absent": hidden_host_content_buffer_absent,
         "accepted_for_goal1493_device_buffer_execution": False,
-        "native_symbol_implemented": False,
-        "transfer_counters_initialized": fail_closed_stub_present,
+        "native_symbol_implemented_for_row_width_2": implementation_markers_present,
+        "transfer_counters_initialized": implementation_markers_present,
         "claim_flags": {
             "true_zero_copy_authorized": False,
             "public_speedup_wording_authorized": False,
@@ -61,11 +71,13 @@ def build_gate() -> dict[str, Any]:
             "release_action_authorized": False,
         },
         "claim_boundary": (
-            "Goal1496 reserves the proposed OptiX COLLECT_K_BOUNDED device-pointer "
-            "ABI as a fail-closed native stub only. It does not implement device "
-            "execution, does not run OptiX, does not prove true zero-copy, and "
-            "does not authorize public speedup wording, whole-app claims, partner "
-            "tensor handoff, stable primitive promotion, or release action."
+            "Goal1496 guards the narrow row_width=2 OptiX COLLECT_K_BOUNDED "
+            "device-pointer implementation shape. It is not accepted as Goal1493 "
+            "device-buffer execution evidence until measured on an OptiX-ready "
+            "NVIDIA pod and passed through Goal1493 intake. It does not prove "
+            "true zero-copy and does not authorize public speedup wording, "
+            "whole-app claims, partner tensor handoff, stable primitive promotion, "
+            "or release action."
         ),
     }
 
@@ -78,20 +90,22 @@ def validate_gate(gate: dict[str, Any]) -> dict[str, Any]:
     if gate.get("signature_present") is not True:
         raise ValueError("Goal1496 device-pointer signature is missing")
     if gate.get("implementation_present") is not True:
-        raise ValueError("Goal1496 device-pointer stub implementation is missing")
-    if gate.get("fail_closed_stub_present") is not True:
-        raise ValueError("Goal1496 device-pointer symbol must remain fail-closed")
+        raise ValueError("Goal1496 device-pointer implementation is missing")
+    if gate.get("implementation_markers_present") is not True:
+        raise ValueError("Goal1496 device-pointer implementation markers are missing")
+    if gate.get("hidden_host_content_buffer_absent") is not True:
+        raise ValueError("Goal1496 device-pointer implementation must not allocate hidden host content buffers")
     if gate.get("accepted_for_goal1493_device_buffer_execution") is not False:
-        raise ValueError("Goal1496 stub must not be accepted as Goal1493 device-buffer evidence")
-    if gate.get("native_symbol_implemented") is not False:
-        raise ValueError("Goal1496 must not claim the native device symbol is implemented")
+        raise ValueError("Goal1496 implementation must not be accepted as Goal1493 device-buffer evidence")
+    if gate.get("native_symbol_implemented_for_row_width_2") is not True:
+        raise ValueError("Goal1496 must identify the row_width=2 native implementation")
     for flag, value in gate.get("claim_flags", {}).items():
         if value is not False:
             raise ValueError(f"Goal1496 must keep {flag}=False")
     for phrase in (
-        "fail-closed native stub only",
-        "does not implement device execution",
-        "does not run OptiX",
+        "row_width=2",
+        "not accepted as Goal1493 device-buffer execution evidence",
+        "measured on an OptiX-ready NVIDIA pod",
         "does not prove true zero-copy",
         "public speedup wording",
         "partner tensor handoff",
@@ -108,14 +122,15 @@ def to_markdown(gate: dict[str, Any]) -> str:
         "",
         "## Verdict",
         "",
-        "`goal1496_collect_k_device_pointer_stub_fail_closed`",
+        "`goal1496_collect_k_device_pointer_narrow_implementation_guarded`",
         "",
-        "## Stub",
+        "## Implementation Guard",
         "",
         f"- Symbol: `{gate['symbol']}`",
         f"- Signature present: `{gate['signature_present']}`",
         f"- Implementation present: `{gate['implementation_present']}`",
-        f"- Fail-closed stub present: `{gate['fail_closed_stub_present']}`",
+        f"- Implementation markers present: `{gate['implementation_markers_present']}`",
+        f"- Hidden host content buffer absent: `{gate['hidden_host_content_buffer_absent']}`",
         f"- Accepted for Goal1493 device-buffer execution: `{gate['accepted_for_goal1493_device_buffer_execution']}`",
         "",
         "## Claim Boundary",

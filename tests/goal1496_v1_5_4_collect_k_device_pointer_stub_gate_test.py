@@ -16,16 +16,17 @@ def load_gate_module():
 
 
 class Goal1496V154CollectKDevicePointerStubGateTest(unittest.TestCase):
-    def test_device_pointer_stub_is_present_and_fail_closed(self) -> None:
+    def test_device_pointer_implementation_is_present_and_guarded(self) -> None:
         module = load_gate_module()
 
         gate = module.validate_gate(module.build_gate())
 
         self.assertTrue(gate["signature_present"])
         self.assertTrue(gate["implementation_present"])
-        self.assertTrue(gate["fail_closed_stub_present"])
+        self.assertTrue(gate["implementation_markers_present"])
+        self.assertTrue(gate["hidden_host_content_buffer_absent"])
         self.assertFalse(gate["accepted_for_goal1493_device_buffer_execution"])
-        self.assertFalse(gate["native_symbol_implemented"])
+        self.assertTrue(gate["native_symbol_implemented_for_row_width_2"])
 
     def test_rejects_treating_stub_as_accepted_execution(self) -> None:
         module = load_gate_module()
@@ -47,8 +48,8 @@ class Goal1496V154CollectKDevicePointerStubGateTest(unittest.TestCase):
         module = load_gate_module()
         markdown = module.to_markdown(module.validate_gate(module.build_gate()))
 
-        self.assertIn("Fail-closed stub present", markdown)
-        self.assertIn("does not implement device execution", markdown)
+        self.assertIn("Implementation markers present", markdown)
+        self.assertIn("Hidden host content buffer absent", markdown)
         self.assertIn("does not prove true zero-copy", markdown)
 
 

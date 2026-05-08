@@ -2,16 +2,17 @@
 
 ## Verdict
 
-`goal1496_collect_k_device_pointer_stub_fail_closed`
+`goal1496_collect_k_device_pointer_narrow_implementation_guarded`
 
-## Stub
+## Implementation Guard
 
 - Symbol: `rtdl_optix_collect_k_bounded_i64_device`
 - Signature present: `True`
 - Implementation present: `True`
-- Fail-closed stub present: `True`
+- Implementation markers present: `True`
+- Hidden host content buffer absent: `True`
 - Accepted for Goal1493 device-buffer execution: `False`
 
 ## Claim Boundary
 
-Goal1496 reserves the proposed OptiX COLLECT_K_BOUNDED device-pointer ABI as a fail-closed native stub only. It does not implement device execution, does not run OptiX, does not prove true zero-copy, and does not authorize public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.
+Goal1496 guards the narrow row_width=2 OptiX COLLECT_K_BOUNDED device-pointer implementation shape. It is not accepted as Goal1493 device-buffer execution evidence until measured on an OptiX-ready NVIDIA pod and passed through Goal1493 intake. It does not prove true zero-copy and does not authorize public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.

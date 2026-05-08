@@ -1,7 +1,7 @@
 {
   "accepted_for_goal1493_device_buffer_execution": false,
   "api_path": "src\\native\\optix\\rtdl_optix_api.cpp",
-  "claim_boundary": "Goal1496 reserves the proposed OptiX COLLECT_K_BOUNDED device-pointer ABI as a fail-closed native stub only. It does not implement device execution, does not run OptiX, does not prove true zero-copy, and does not authorize public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "claim_boundary": "Goal1496 guards the narrow row_width=2 OptiX COLLECT_K_BOUNDED device-pointer implementation shape. It is not accepted as Goal1493 device-buffer execution evidence until measured on an OptiX-ready NVIDIA pod and passed through Goal1493 intake. It does not prove true zero-copy and does not authorize public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
   "claim_flags": {
     "partner_tensor_handoff_authorized": false,
     "public_speedup_wording_authorized": false,
@@ -10,13 +10,14 @@
     "true_zero_copy_authorized": false,
     "whole_app_speedup_claim_authorized": false
   },
-  "fail_closed_stub_present": true,
   "goal": "Goal1496",
+  "hidden_host_content_buffer_absent": true,
+  "implementation_markers_present": true,
   "implementation_present": true,
-  "native_symbol_implemented": false,
+  "native_symbol_implemented_for_row_width_2": true,
   "prelude_path": "src\\native\\optix\\rtdl_optix_prelude.h",
   "signature_present": true,
-  "status": "goal1496_collect_k_device_pointer_stub_fail_closed",
+  "status": "goal1496_collect_k_device_pointer_narrow_implementation_guarded",
   "symbol": "rtdl_optix_collect_k_bounded_i64_device",
   "transfer_counters_initialized": true
 }

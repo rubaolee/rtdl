@@ -1732,6 +1732,73 @@ extern "C" __global__ void fixed_radius_neighbors(
 }
 )CUDA";
 
+static const char* kCollectKBoundedI64RowWidth2KernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    if (blockIdx.x != 0 || threadIdx.x != 0)
+        return;
+
+    size_t unique_count = 0;
+    for (size_t row_index = 0; row_index < candidate_count; ++row_index) {
+        const int64_t first = candidate_rows[row_index * 2];
+        const int64_t second = candidate_rows[row_index * 2 + 1];
+        bool seen = false;
+        for (size_t prior = 0; prior < row_index; ++prior) {
+            if (candidate_rows[prior * 2] == first && candidate_rows[prior * 2 + 1] == second) {
+                seen = true;
+                break;
+            }
+        }
+        if (!seen)
+            ++unique_count;
+    }
+
+    *emitted_count = unique_count;
+    if (unique_count > row_capacity) {
+        *overflowed = 1u;
+        return;
+    }
+
+    bool have_last = false;
+    int64_t last_first = 0;
+    int64_t last_second = 0;
+    for (size_t out_index = 0; out_index < unique_count; ++out_index) {
+        bool have_best = false;
+        int64_t best_first = 0;
+        int64_t best_second = 0;
+
+        for (size_t row_index = 0; row_index < candidate_count; ++row_index) {
+            const int64_t first = candidate_rows[row_index * 2];
+            const int64_t second = candidate_rows[row_index * 2 + 1];
+            const bool greater_than_last =
+                !have_last || first > last_first || (first == last_first && second > last_second);
+            const bool less_than_best =
+                !have_best || first < best_first || (first == best_first && second < best_second);
+            if (greater_than_last && less_than_best) {
+                best_first = first;
+                best_second = second;
+                have_best = true;
+            }
+        }
+
+        rows_out[out_index * 2] = best_first;
+        rows_out[out_index * 2 + 1] = best_second;
+        last_first = best_first;
+        last_second = best_second;
+        have_last = true;
+    }
+}
+)CUDA";
+
 static const char* kFixedRadiusNeighbors3DKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -2339,6 +2406,7 @@ static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
 static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
+static KnnCuFunction      g_collect_k_i64_row_width2;
 
 // GPU structs for upload
 
