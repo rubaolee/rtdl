@@ -1,0 +1,20 @@
+Fri May  8 18:31:51 UTC 2026
+THRESHOLD=4096
+{
+  "status": "goal1506_optix_collect_k_stage_profile_probe_recorded"
+}
+THRESHOLD=8192
+Traceback (most recent call last):
+  File "/root/rtdl_goal1545_pod/scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py", line 453, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_goal1545_pod/scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py", line 435, in main
+    run_probe(
+  File "/root/rtdl_goal1545_pod/scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py", line 253, in run_probe
+    _run_profile_case(cuda, candidate_count=count, repeats=repeats, profile_path=profile_path)
+  File "/root/rtdl_goal1545_pod/scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py", line 214, in _run_profile_case
+    timing_case = _run_case(cuda, candidate_count=candidate_count, row_width=2, repeats=repeats)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal1545_pod/scripts/goal1503_v1_5_4_optix_collect_k_scaling_probe.py", line 110, in _run_case
+    raise RuntimeError("warmup collect-k parity failed before timing")
+RuntimeError: warmup collect-k parity failed before timing

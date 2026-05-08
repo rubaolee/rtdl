@@ -13,6 +13,7 @@ The only graph direction still worth testing is persistent topology reuse across
 - Goal 1560 control artifact: `docs/reports/goal1560_v1_5_4_optix_collect_k_level_graph_replay_control_2026-05-08.json`
 - Goal 1560 rejected candidate artifact: `docs/reports/goal1560_v1_5_4_optix_collect_k_level_graph_replay_candidate_2026-05-08.json`
 - Goal 1561 background current profile: `docs/reports/goal1561_v1_5_4_optix_collect_k_current_longcase_bg_profile_2026-05-08.json`
+- Claude next-direction review: `docs/reports/goal1561_claude_next_direction_review_2026-05-08.md`
 
 Background pod work kept running while this analysis was written. It reran 13 graph-related guards and a current-stack long-case profile from clean `9fa1e39f`.
 
@@ -61,6 +62,8 @@ Only run a persistent-cache diagnostic if we can model repeated compatible calls
 - Keep the path diagnostic-only unless the repeated-call package beats the accepted current stack.
 
 If the project target remains one-shot collect-k calls, skip persistent graph work and move directly to kernel fusion.
+
+Claude independently reviewed the same graph series and recommended kernel fusion as the cleaner next bet unless a topology-cache hit-rate diagnostic proves highly repetitive repeated-call topology.
 
 ## Stop Conditions
 
