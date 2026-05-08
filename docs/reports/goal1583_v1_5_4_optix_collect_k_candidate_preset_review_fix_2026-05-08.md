@@ -33,6 +33,13 @@ The runner also raises the candidate-preset smoke default from a single repeat t
 
 - Local tests: `$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal1580_v1_5_4_optix_collect_k_fastest_candidate_preset_test tests.goal1579_v1_5_4_optix_collect_k_next_arch_runner_test`
 - Result: `Ran 9 tests`, `OK`.
+- Clean pod hostile-env validation at `cd070a77456473966aa9933f1ab08238dfb9361a`: parent environment included `RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DIAGNOSTIC=1`, `RTDL_OPTIX_COLLECT_K_CARRY_POINTER_DEVICE_COUNTS_DIAGNOSTIC=1`, and `RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE=1`.
+- Pod static tests: `Ran 9 tests`, `OK`.
+- Pod runner static tests: `Ran 17 tests`, `OK`.
+- Pod runner output: `goal1579_next_arch_validation_recorded`.
+- Pod acceptance: baseline accepted/parity/topology `True`, alias accepted/parity/topology `True`, candidate preset accepted/parity/topology `True`.
+- Candidate preset artifact: `/tmp/goal1583_harness_isolation2_candidate_preset.json`.
+- Candidate preset stage medians: `49153=0.211230 ms`, `65536=0.217762 ms`, `65537=0.265763 ms`.
 
 ## Remaining Blockers
 
