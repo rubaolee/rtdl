@@ -2396,6 +2396,49 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_le
     pair_merged_rows[output_index * 2 + 1] = value1;
 }
 
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level_derived(
+        const int64_t* current_base,
+        const size_t* first_counts,
+        const size_t* second_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows = current_base + (pair_index * 2) * segment_capacity * 2;
+    const int64_t* second_rows = current_base + (pair_index * 2 + 1) * segment_capacity * 2;
+    const size_t first_count = first_counts[pair_index];
+    const size_t second_count = second_counts[pair_index];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        pair_merged_rows[output_index * 2] = value0;
+        pair_merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+}
+
 extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts(
         const int64_t* merged_rows,
         size_t total_count,
@@ -2539,6 +2582,46 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact_level(
             static_cast<size_t>(block_offsets[blockIdx.x] + shared_marks[threadIdx.x] - 1u - pair_offsets[pair_index]);
         int64_t* rows_out =
             reinterpret_cast<int64_t*>(static_cast<uintptr_t>(output_row_ptrs[pair_index]));
+        const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+        rows_out[output_index * 2] = pair_merged_rows[local_index * 2];
+        rows_out[output_index * 2 + 1] = pair_merged_rows[local_index * 2 + 1];
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact_level_derived(
+        const int64_t* merged_rows,
+        const uint32_t* marks,
+        const uint32_t* block_offsets,
+        const uint32_t* pair_offsets,
+        int64_t* output_base,
+        size_t output_capacity,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_marks[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    if (local_index >= output_capacity)
+        return;
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t mark = marks[global_index];
+    shared_marks[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned offset = 1; offset < blockDim.x; offset <<= 1) {
+        const uint32_t value = threadIdx.x >= offset ? shared_marks[threadIdx.x - offset] : 0u;
+        __syncthreads();
+        shared_marks[threadIdx.x] += value;
+        __syncthreads();
+    }
+
+    if (mark) {
+        const size_t output_index =
+            static_cast<size_t>(block_offsets[blockIdx.x] + shared_marks[threadIdx.x] - 1u - pair_offsets[pair_index]);
+        int64_t* rows_out = output_base + pair_index * output_capacity * 2;
         const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
         rows_out[output_index * 2] = pair_merged_rows[local_index * 2];
         rows_out[output_index * 2 + 1] = pair_merged_rows[local_index * 2 + 1];
@@ -3189,6 +3272,8 @@ static KnnCuFunction      g_collect_k_i64_row_width2_final_compact;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_derived;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level_derived;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_prefix_offsets_level;
 
 // GPU structs for upload

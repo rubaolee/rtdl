@@ -658,6 +658,12 @@ static bool collect_k_use_device_prefix_compact()
     return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
 }
 
+static bool collect_k_use_derived_level_descriptors()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS");
+    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+}
+
 static bool collect_k_reuse_workspace()
 {
     const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
@@ -906,6 +912,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_materialize_level"));
                 CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_final_materialize_level_derived.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_final_materialize_level_derived"));
+                CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_final_mark_counts_level.fn,
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_mark_counts_level"));
@@ -913,6 +923,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     &g_collect_k_i64_row_width2_final_compact_level.fn,
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_compact_level"));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_final_compact_level_derived"));
                 CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
                     g_collect_k_i64_row_width2_final_materialize.module,
@@ -1151,24 +1165,46 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             auto launch_parallel_compact_level = [&](size_t pair_count, size_t output_capacity,
                                                      size_t blocks_per_pair,
                                                      std::vector<size_t>* pair_counts_out,
-                                                     bool use_device_prefix_compact) {
+                                                     bool use_device_prefix_compact,
+                                                     bool use_derived_level_descriptors,
+                                                     CUdeviceptr current_base,
+                                                     size_t segment_capacity,
+                                                     CUdeviceptr output_base) {
                 const unsigned threads = 256;
                 const unsigned total_blocks = static_cast<unsigned>(pair_count * blocks_per_pair);
-                void* materialize_args[] = {
-                    &merge_first_rows_device.ptr,
-                    &merge_first_counts_device.ptr,
-                    &merge_second_rows_device.ptr,
-                    &merge_second_counts_device.ptr,
-                    &output_capacity,
-                    &final_merged_rows.ptr,
-                    &pair_count,
-                    &blocks_per_pair,
-                };
-                CU_CHECK(cuLaunchKernel(
-                    g_collect_k_i64_row_width2_final_materialize_level.fn,
-                    total_blocks, 1, 1,
-                    threads, 1, 1,
-                    0, nullptr, materialize_args, nullptr));
+                if (use_derived_level_descriptors) {
+                    void* materialize_args[] = {
+                        &current_base,
+                        &merge_first_counts_device.ptr,
+                        &merge_second_counts_device.ptr,
+                        &segment_capacity,
+                        &output_capacity,
+                        &final_merged_rows.ptr,
+                        &pair_count,
+                        &blocks_per_pair,
+                    };
+                    CU_CHECK(cuLaunchKernel(
+                        g_collect_k_i64_row_width2_final_materialize_level_derived.fn,
+                        total_blocks, 1, 1,
+                        threads, 1, 1,
+                        0, nullptr, materialize_args, nullptr));
+                } else {
+                    void* materialize_args[] = {
+                        &merge_first_rows_device.ptr,
+                        &merge_first_counts_device.ptr,
+                        &merge_second_rows_device.ptr,
+                        &merge_second_counts_device.ptr,
+                        &output_capacity,
+                        &final_merged_rows.ptr,
+                        &pair_count,
+                        &blocks_per_pair,
+                    };
+                    CU_CHECK(cuLaunchKernel(
+                        g_collect_k_i64_row_width2_final_materialize_level.fn,
+                        total_blocks, 1, 1,
+                        threads, 1, 1,
+                        0, nullptr, materialize_args, nullptr));
+                }
 
                 void* mark_args[] = {
                     &final_merged_rows.ptr,
@@ -1226,21 +1262,39 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     upload(final_pair_offsets.ptr, pair_offsets.data(), pair_count);
                 }
 
-                void* compact_args[] = {
-                    &final_merged_rows.ptr,
-                    &final_marks.ptr,
-                    &final_block_offsets.ptr,
-                    &final_pair_offsets.ptr,
-                    &merge_output_rows_device.ptr,
-                    &output_capacity,
-                    &pair_count,
-                    &blocks_per_pair,
-                };
-                CU_CHECK(cuLaunchKernel(
-                    g_collect_k_i64_row_width2_final_compact_level.fn,
-                    total_blocks, 1, 1,
-                    threads, 1, 1,
-                    sizeof(uint32_t) * threads, nullptr, compact_args, nullptr));
+                if (use_derived_level_descriptors) {
+                    void* compact_args[] = {
+                        &final_merged_rows.ptr,
+                        &final_marks.ptr,
+                        &final_block_offsets.ptr,
+                        &final_pair_offsets.ptr,
+                        &output_base,
+                        &output_capacity,
+                        &pair_count,
+                        &blocks_per_pair,
+                    };
+                    CU_CHECK(cuLaunchKernel(
+                        g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                        total_blocks, 1, 1,
+                        threads, 1, 1,
+                        sizeof(uint32_t) * threads, nullptr, compact_args, nullptr));
+                } else {
+                    void* compact_args[] = {
+                        &final_merged_rows.ptr,
+                        &final_marks.ptr,
+                        &final_block_offsets.ptr,
+                        &final_pair_offsets.ptr,
+                        &merge_output_rows_device.ptr,
+                        &output_capacity,
+                        &pair_count,
+                        &blocks_per_pair,
+                    };
+                    CU_CHECK(cuLaunchKernel(
+                        g_collect_k_i64_row_width2_final_compact_level.fn,
+                        total_blocks, 1, 1,
+                        threads, 1, 1,
+                        sizeof(uint32_t) * threads, nullptr, compact_args, nullptr));
+                }
             };
 
             auto sort_launch_start = CollectKStageProfile::Clock::now();
@@ -1284,6 +1338,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             const bool use_parallel_final_compact = collect_k_use_parallel_final_compact();
             const bool use_batched_compact_level = collect_k_use_batched_compact_level();
             const bool use_device_prefix_compact = collect_k_use_device_prefix_compact();
+            const bool use_derived_level_descriptors = collect_k_use_derived_level_descriptors();
             const size_t parallel_compact_min_capacity =
                 collect_k_parallel_compact_min_capacity(use_cub_tile_sort);
             while (current_rows.size() > 1) {
@@ -1304,31 +1359,40 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     next_rows.reserve(pair_count + (has_carry ? 1 : 0));
                     next_counts.reserve(pair_count + (has_carry ? 1 : 0));
                     if (use_batched_compact_level && current_rows.size() != 2) {
+                        std::array<size_t, 64> merge_first_counts = {};
+                        std::array<size_t, 64> merge_second_counts = {};
                         std::array<uint64_t, 64> merge_first_rows = {};
                         std::array<uint64_t, 64> merge_second_rows = {};
                         std::array<uint64_t, 64> merge_output_rows = {};
-                        std::array<size_t, 64> merge_first_counts = {};
-                        std::array<size_t, 64> merge_second_counts = {};
                         for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
                             CUdeviceptr pair_output =
                                 output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index;
-                            merge_first_rows[pair_index] = static_cast<uint64_t>(current_rows[pair_index * 2]);
-                            merge_second_rows[pair_index] = static_cast<uint64_t>(current_rows[pair_index * 2 + 1]);
-                            merge_output_rows[pair_index] = static_cast<uint64_t>(pair_output);
+                            if (!use_derived_level_descriptors) {
+                                merge_first_rows[pair_index] = static_cast<uint64_t>(current_rows[pair_index * 2]);
+                                merge_second_rows[pair_index] = static_cast<uint64_t>(current_rows[pair_index * 2 + 1]);
+                                merge_output_rows[pair_index] = static_cast<uint64_t>(pair_output);
+                            }
                             merge_first_counts[pair_index] = current_counts[pair_index * 2];
                             merge_second_counts[pair_index] = current_counts[pair_index * 2 + 1];
                             next_rows.push_back(pair_output);
                         }
-                        upload(merge_first_rows_device.ptr, merge_first_rows.data(), pair_count);
-                        upload(merge_second_rows_device.ptr, merge_second_rows.data(), pair_count);
-                        upload(merge_output_rows_device.ptr, merge_output_rows.data(), pair_count);
+                        if (!use_derived_level_descriptors) {
+                            upload(merge_first_rows_device.ptr, merge_first_rows.data(), pair_count);
+                            upload(merge_second_rows_device.ptr, merge_second_rows.data(), pair_count);
+                            upload(merge_output_rows_device.ptr, merge_output_rows.data(), pair_count);
+                        }
                         upload(merge_first_counts_device.ptr, merge_first_counts.data(), pair_count);
                         upload(merge_second_counts_device.ptr, merge_second_counts.data(), pair_count);
-                        *h2d_transfers_out += static_cast<uint64_t>(pair_count * 5);
+                        *h2d_transfers_out += static_cast<uint64_t>(
+                            pair_count * (use_derived_level_descriptors ? 2 : 5));
                         const size_t blocks_per_pair = (output_segment_capacity + 255) / 256;
                         launch_parallel_compact_level(
                             pair_count, output_segment_capacity, blocks_per_pair, &next_counts,
-                            use_device_prefix_compact);
+                            use_device_prefix_compact,
+                            use_derived_level_descriptors,
+                            current_rows.front(),
+                            segment_capacity,
+                            output_base);
                         merge_launches += use_device_prefix_compact ? 4 : 3;
                         profile.merge_launches += use_device_prefix_compact ? 4 : 3;
                     } else {
