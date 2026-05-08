@@ -26,7 +26,7 @@ class Goal1496V154CollectKDevicePointerStubGateTest(unittest.TestCase):
         self.assertTrue(gate["implementation_markers_present"])
         self.assertTrue(gate["hidden_host_content_buffer_absent"])
         self.assertFalse(gate["accepted_for_goal1493_device_buffer_execution"])
-        self.assertTrue(gate["native_symbol_implemented_for_row_width_2"])
+        self.assertTrue(gate["native_symbol_implemented_for_dynamic_row_width"])
 
     def test_rejects_treating_stub_as_accepted_execution(self) -> None:
         module = load_gate_module()

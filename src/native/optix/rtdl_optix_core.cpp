@@ -1732,13 +1732,44 @@ extern "C" __global__ void fixed_radius_neighbors(
 }
 )CUDA";
 
-static const char* kCollectKBoundedI64RowWidth2KernelSrc = R"CUDA(
+static const char* kCollectKBoundedI64KernelSrc = R"CUDA(
 #include <stdint.h>
 #include <stddef.h>
 
-extern "C" __global__ void collect_k_bounded_i64_row_width2(
+__device__ bool collect_k_rows_equal(
+        const int64_t* rows,
+        size_t lhs,
+        size_t rhs,
+        size_t row_width)
+{
+    for (size_t column = 0; column < row_width; ++column) {
+        if (rows[lhs * row_width + column] != rows[rhs * row_width + column])
+            return false;
+    }
+    return true;
+}
+
+__device__ int collect_k_compare_rows(
+        const int64_t* rows,
+        size_t lhs,
+        size_t rhs,
+        size_t row_width)
+{
+    for (size_t column = 0; column < row_width; ++column) {
+        const int64_t left = rows[lhs * row_width + column];
+        const int64_t right = rows[rhs * row_width + column];
+        if (left < right)
+            return -1;
+        if (left > right)
+            return 1;
+    }
+    return 0;
+}
+
+extern "C" __global__ void collect_k_bounded_i64(
         const int64_t* candidate_rows,
         size_t candidate_count,
+        size_t row_width,
         int64_t* rows_out,
         size_t row_capacity,
         size_t* emitted_count,
@@ -1749,11 +1780,9 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2(
 
     size_t unique_count = 0;
     for (size_t row_index = 0; row_index < candidate_count; ++row_index) {
-        const int64_t first = candidate_rows[row_index * 2];
-        const int64_t second = candidate_rows[row_index * 2 + 1];
         bool seen = false;
         for (size_t prior = 0; prior < row_index; ++prior) {
-            if (candidate_rows[prior * 2] == first && candidate_rows[prior * 2 + 1] == second) {
+            if (collect_k_rows_equal(candidate_rows, row_index, prior, row_width)) {
                 seen = true;
                 break;
             }
@@ -1769,31 +1798,26 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2(
     }
 
     bool have_last = false;
-    int64_t last_first = 0;
-    int64_t last_second = 0;
+    size_t last_index = 0;
     for (size_t out_index = 0; out_index < unique_count; ++out_index) {
         bool have_best = false;
-        int64_t best_first = 0;
-        int64_t best_second = 0;
+        size_t best_index = 0;
 
         for (size_t row_index = 0; row_index < candidate_count; ++row_index) {
-            const int64_t first = candidate_rows[row_index * 2];
-            const int64_t second = candidate_rows[row_index * 2 + 1];
             const bool greater_than_last =
-                !have_last || first > last_first || (first == last_first && second > last_second);
+                !have_last || collect_k_compare_rows(candidate_rows, row_index, last_index, row_width) > 0;
             const bool less_than_best =
-                !have_best || first < best_first || (first == best_first && second < best_second);
+                !have_best || collect_k_compare_rows(candidate_rows, row_index, best_index, row_width) < 0;
             if (greater_than_last && less_than_best) {
-                best_first = first;
-                best_second = second;
+                best_index = row_index;
                 have_best = true;
             }
         }
 
-        rows_out[out_index * 2] = best_first;
-        rows_out[out_index * 2 + 1] = best_second;
-        last_first = best_first;
-        last_second = best_second;
+        for (size_t column = 0; column < row_width; ++column) {
+            rows_out[out_index * row_width + column] = candidate_rows[best_index * row_width + column];
+        }
+        last_index = best_index;
         have_last = true;
     }
 }
@@ -2406,7 +2430,7 @@ static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
 static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
-static KnnCuFunction      g_collect_k_i64_row_width2;
+static KnnCuFunction      g_collect_k_i64;
 
 // GPU structs for upload
 

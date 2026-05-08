@@ -113,24 +113,21 @@ def run_probe(library_path: Path) -> dict[str, Any]:
             row_width=2,
             capacity=2,
         )
-        unsupported_error = ""
-        try:
-            _run_collect(
-                cuda,
-                [(2, 20, 200), (1, 10, 100), (3, 30, 300)],
-                row_width=3,
-                capacity=3,
-            )
-        except RuntimeError as exc:
-            unsupported_error = str(exc)
+        row_width3_case = _run_collect(
+            cuda,
+            [(2, 20, 200), (1, 10, 100), (2, 20, 200), (3, 30, 300)],
+            row_width=3,
+            capacity=3,
+        )
 
         overflow_result = overflow_case["result"]
         overflow_output_flat = overflow_case["output_flat"]
         fail_closed_output_preserved = all(value == -777 for value in overflow_output_flat)
-        unsupported_refused = "row_width=2 only" in unsupported_error
+        row_width3_result = row_width3_case["result"]
+        row_width3_expected = [[1, 10, 100], [2, 20, 200], [3, 30, 300]]
         return {
             "goal": "Goal1502",
-            "status": "goal1502_python_optix_collect_k_bounds_probe_passed",
+            "status": "goal1502_python_optix_collect_k_bounds_and_dynamic_width_probe_passed",
             "git_commit": _git_head(),
             "platform": platform.platform(),
             "device_name": cuda.device_name(),
@@ -149,10 +146,18 @@ def run_probe(library_path: Path) -> dict[str, Any]:
                 "fail_closed_output_preserved": fail_closed_output_preserved,
                 "transfer_accounting": overflow_result["transfer_accounting"],
             },
-            "unsupported_row_width_case": {
+            "dynamic_row_width_case": {
                 "row_width": 3,
-                "refused": unsupported_refused,
-                "error": unsupported_error,
+                "capacity": 3,
+                "candidate_rows": [[2, 20, 200], [1, 10, 100], [2, 20, 200], [3, 30, 300]],
+                "expected_rows": row_width3_expected,
+                "candidate_id_rows": row_width3_case["output_rows"],
+                "valid_count": int(row_width3_result["valid_count"]),
+                "overflowed": bool(row_width3_result["overflowed"]),
+                "same_candidate_rows": row_width3_case["output_rows"] == row_width3_expected,
+                "same_valid_count": int(row_width3_result["valid_count"]) == 3,
+                "same_overflowed_flag": bool(row_width3_result["overflowed"]) is False,
+                "transfer_accounting": row_width3_result["transfer_accounting"],
             },
             "claim_flags": {
                 "true_zero_copy_authorized": False,
@@ -163,8 +168,9 @@ def run_probe(library_path: Path) -> dict[str, Any]:
                 "release_action_authorized": False,
             },
             "claim_boundary": (
-                "Goal1502 validates bounds behavior for the experimental Python OptiX "
-                "COLLECT_K_BOUNDED device-pointer bridge only. It does not authorize "
+                "Goal1502 validates bounds behavior and dynamic row-width behavior for "
+                "the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. "
+                "It does not authorize "
                 "true zero-copy wording, public speedup wording, whole-app claims, "
                 "partner tensor handoff, stable primitive promotion, or release action."
             ),
@@ -185,9 +191,13 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Goal1502 overflow case must set overflowed=True")
     if overflow.get("fail_closed_output_preserved") is not True:
         raise ValueError("Goal1502 overflow case must preserve the output sentinel")
-    unsupported = probe.get("unsupported_row_width_case", {})
-    if unsupported.get("refused") is not True:
-        raise ValueError("Goal1502 unsupported row_width case must refuse")
+    dynamic = probe.get("dynamic_row_width_case", {})
+    if dynamic.get("same_candidate_rows") is not True:
+        raise ValueError("Goal1502 dynamic row_width case candidate rows failed")
+    if dynamic.get("same_valid_count") is not True:
+        raise ValueError("Goal1502 dynamic row_width case valid_count failed")
+    if dynamic.get("same_overflowed_flag") is not True:
+        raise ValueError("Goal1502 dynamic row_width case overflow flag failed")
     for flag, value in probe.get("claim_flags", {}).items():
         if value is not False:
             raise ValueError(f"Goal1502 must keep {flag}=False")
@@ -196,7 +206,7 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
 
 def to_markdown(probe: dict[str, Any]) -> str:
     overflow = probe["overflow_case"]
-    unsupported = probe["unsupported_row_width_case"]
+    dynamic = probe["dynamic_row_width_case"]
     return "\n".join(
         [
             "# Goal 1502: Python OptiX COLLECT_K_BOUNDED Bounds Probe",
@@ -217,7 +227,9 @@ def to_markdown(probe: dict[str, Any]) -> str:
             f"- Overflow valid count: `{overflow['valid_count']}`",
             f"- Overflow flag: `{overflow['overflowed']}`",
             f"- Output sentinel preserved on overflow: `{overflow['fail_closed_output_preserved']}`",
-            f"- Unsupported row_width refused: `{unsupported['refused']}`",
+            f"- Dynamic row_width=3 row parity: `{dynamic['same_candidate_rows']}`",
+            f"- Dynamic row_width=3 valid count parity: `{dynamic['same_valid_count']}`",
+            f"- Dynamic row_width=3 overflow parity: `{dynamic['same_overflowed_flag']}`",
             "",
             "## Claim Boundary",
             "",

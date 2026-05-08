@@ -36,8 +36,9 @@ def build_gate() -> dict[str, Any]:
     signature_present = symbol in prelude and all(required in prelude for required in signature_requirements)
     implementation_present = symbol in api and all(required in api for required in signature_requirements)
     implementation_markers = (
-        "row_width != 2",
-        "collect_k_bounded_i64_row_width2",
+        "collect_k_bounded_i64",
+        "collect_k_compare_rows",
+        "&row_width",
         "cuLaunchKernel",
         "download(emitted_count_out",
         "unique_count > row_capacity",
@@ -51,7 +52,7 @@ def build_gate() -> dict[str, Any]:
     hidden_host_content_buffer_absent = "std::vector<std::vector<int64_t>> rows" not in api.split(symbol, 1)[1]
     return {
         "goal": "Goal1496",
-        "status": "goal1496_collect_k_device_pointer_narrow_implementation_guarded",
+        "status": "goal1496_collect_k_device_pointer_dynamic_row_width_guarded",
         "symbol": symbol,
         "api_path": str(API_PATH.relative_to(ROOT)),
         "prelude_path": str(PRELUDE_PATH.relative_to(ROOT)),
@@ -60,7 +61,7 @@ def build_gate() -> dict[str, Any]:
         "implementation_markers_present": implementation_markers_present,
         "hidden_host_content_buffer_absent": hidden_host_content_buffer_absent,
         "accepted_for_goal1493_device_buffer_execution": False,
-        "native_symbol_implemented_for_row_width_2": implementation_markers_present,
+        "native_symbol_implemented_for_dynamic_row_width": implementation_markers_present,
         "transfer_counters_initialized": implementation_markers_present,
         "claim_flags": {
             "true_zero_copy_authorized": False,
@@ -71,7 +72,7 @@ def build_gate() -> dict[str, Any]:
             "release_action_authorized": False,
         },
         "claim_boundary": (
-            "Goal1496 guards the narrow row_width=2 OptiX COLLECT_K_BOUNDED "
+            "Goal1496 guards the OptiX COLLECT_K_BOUNDED "
             "device-pointer implementation shape. It is not accepted as Goal1493 "
             "device-buffer execution evidence until measured on an OptiX-ready "
             "NVIDIA pod and passed through Goal1493 intake. It does not prove "
@@ -97,13 +98,13 @@ def validate_gate(gate: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Goal1496 device-pointer implementation must not allocate hidden host content buffers")
     if gate.get("accepted_for_goal1493_device_buffer_execution") is not False:
         raise ValueError("Goal1496 implementation must not be accepted as Goal1493 device-buffer evidence")
-    if gate.get("native_symbol_implemented_for_row_width_2") is not True:
-        raise ValueError("Goal1496 must identify the row_width=2 native implementation")
+    if gate.get("native_symbol_implemented_for_dynamic_row_width") is not True:
+        raise ValueError("Goal1496 must identify the dynamic row_width native implementation")
     for flag, value in gate.get("claim_flags", {}).items():
         if value is not False:
             raise ValueError(f"Goal1496 must keep {flag}=False")
     for phrase in (
-        "row_width=2",
+        "COLLECT_K_BOUNDED",
         "not accepted as Goal1493 device-buffer execution evidence",
         "measured on an OptiX-ready NVIDIA pod",
         "does not prove true zero-copy",
@@ -122,7 +123,7 @@ def to_markdown(gate: dict[str, Any]) -> str:
         "",
         "## Verdict",
         "",
-        "`goal1496_collect_k_device_pointer_narrow_implementation_guarded`",
+        "`goal1496_collect_k_device_pointer_dynamic_row_width_guarded`",
         "",
         "## Implementation Guard",
         "",

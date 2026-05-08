@@ -2,7 +2,7 @@
 
 ## Verdict
 
-`goal1496_collect_k_device_pointer_narrow_implementation_guarded`
+`goal1496_collect_k_device_pointer_dynamic_row_width_guarded`
 
 ## Implementation Guard
 
@@ -15,4 +15,4 @@
 
 ## Claim Boundary
 
-Goal1496 guards the narrow row_width=2 OptiX COLLECT_K_BOUNDED device-pointer implementation shape. It is not accepted as Goal1493 device-buffer execution evidence until measured on an OptiX-ready NVIDIA pod and passed through Goal1493 intake. It does not prove true zero-copy and does not authorize public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.
+Goal1496 guards the OptiX COLLECT_K_BOUNDED device-pointer implementation shape. It is not accepted as Goal1493 device-buffer execution evidence until measured on an OptiX-ready NVIDIA pod and passed through Goal1493 intake. It does not prove true zero-copy and does not authorize public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.
