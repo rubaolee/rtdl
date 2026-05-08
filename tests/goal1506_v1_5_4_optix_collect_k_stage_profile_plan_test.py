@@ -40,6 +40,7 @@ class Goal1506V154OptixCollectKStageProfilePlanTest(unittest.TestCase):
         self.assertIn("--counts $COUNTS", text)
         self.assertIn("--repeats \"$REPEATS\"", text)
         self.assertIn("goal1508_v1_5_4_optix_collect_k_tiled_preflight.py", text)
+        self.assertIn("tests.goal1508_v1_5_4_optix_collect_k_tiled_preflight_test", text)
         self.assertIn("tests.goal1506_v1_5_4_optix_collect_k_stage_profile_plan_test", text)
         self.assertIn("goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl", text)
         self.assertIn("goal1508_v1_5_4_optix_collect_k_tiled_preflight_2026-05-08.json", text)

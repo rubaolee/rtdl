@@ -15,6 +15,9 @@ class Goal1507V154NonPodOptixCollectKLocalReadinessTest(unittest.TestCase):
         self.assertIn("local_fallback_smoke_only=true", text)
         self.assertIn("dynamic_row_width_single_thread_fallback", text)
         self.assertIn("row_width2_bounded_multi_tile_sort_merge", text)
+        self.assertIn("49152", text)
+        self.assertIn("69632", text)
+        self.assertIn("accepted_goal1506_profile_candidate=false", text)
         self.assertIn("does not authorize public speedup wording", text)
 
     def test_report_records_exact_next_pod_command(self) -> None:

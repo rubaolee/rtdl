@@ -75,7 +75,7 @@ The pod-facing runner is:
 
 - `scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh`
 
-The runner first runs the Goal1508 tiled shared-memory preflight, then builds OptiX, runs the Goal1506 probe, and runs the local Goal1502-Goal1506 evidence/profile guards. If the pod needs a non-default OptiX SDK path, set `OPTIX_PREFIX` before invoking it.
+The runner first runs the Goal1508 tiled shared-memory preflight, then builds OptiX, runs the Goal1506 probe, and runs the local Goal1502-Goal1508 evidence/profile/preflight guards. If the pod needs a non-default OptiX SDK path, set `OPTIX_PREFIX` before invoking it.
 
 ```bash
 OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh

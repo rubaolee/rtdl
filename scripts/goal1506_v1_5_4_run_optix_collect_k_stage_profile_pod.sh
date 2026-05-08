@@ -31,6 +31,7 @@ PYTHONPATH=src:. python3 scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_p
   --repeats "$REPEATS"
 
 PYTHONPATH=src:. python3 -m unittest \
+  tests.goal1508_v1_5_4_optix_collect_k_tiled_preflight_test \
   tests.goal1506_v1_5_4_optix_collect_k_stage_profile_plan_test \
   tests.goal1505_v1_5_4_optix_collect_k_evidence_summary_test \
   tests.goal1504_v1_5_4_optix_collect_k_tiled_overflow_probe_test \
