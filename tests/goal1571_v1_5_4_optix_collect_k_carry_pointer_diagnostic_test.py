@@ -28,7 +28,7 @@ class Goal1571V154OptixCollectKCarryPointerDiagnosticTest(unittest.TestCase):
     def test_pointer_carry_alias_skips_row_copy_but_keeps_count_copy(self) -> None:
         source = API.read_text(encoding="utf-8")
         self.assertIn("? current_rows.back()", source)
-        self.assertIn("if (!use_pointer_carry_level)", source)
+        self.assertIn("if (!use_pointer_carry_level && !use_derived_carry_alias_level)", source)
         self.assertIn("cuMemcpyDtoD(", source)
         self.assertIn("carry_count_dest", source)
 

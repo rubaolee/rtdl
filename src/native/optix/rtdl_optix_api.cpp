@@ -688,6 +688,12 @@ static bool collect_k_use_carry_pointer_device_counts_diagnostic()
     return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
 }
 
+static bool collect_k_use_derived_carry_alias_diagnostic()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC");
+    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+}
+
 static bool collect_k_reuse_workspace()
 {
     const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
@@ -1510,6 +1516,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 collect_k_use_carry_pointer_diagnostic() && use_device_level_counts;
             const bool use_carry_pointer_device_counts_diagnostic =
                 collect_k_use_carry_pointer_device_counts_diagnostic() && use_device_level_counts;
+            const bool use_derived_carry_alias_diagnostic =
+                collect_k_use_derived_carry_alias_diagnostic() && use_device_level_counts;
 
             std::array<size_t, 64> tile_emitted = {};
             std::array<uint32_t, 64> tile_overflowed = {};
@@ -1550,8 +1558,11 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 const bool has_carry = (current_rows.size() % 2) != 0;
                 const size_t output_segment_capacity = segment_capacity * 2;
                 CUdeviceptr output_base = write_stage_b ? temp_stage_b.ptr : temp_stage_a.ptr;
+                const size_t next_segment_count = pair_count + (has_carry ? 1 : 0);
+                const bool derived_carry_alias_safe_next =
+                    next_segment_count == 2 || (next_segment_count % 2) != 0;
                 level_profile.pair_count = pair_count;
-                level_profile.output_segments = pair_count + (has_carry ? 1 : 0);
+                level_profile.output_segments = next_segment_count;
                 level_profile.output_capacity = output_segment_capacity;
 
                 if (use_device_level_counts && !use_device_final_counts && current_rows.size() == 2) {
@@ -1570,10 +1581,12 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     if (use_batched_compact_level && current_rows.size() != 2) {
                         const bool use_pointer_device_counts_carry_level =
                             use_carry_pointer_device_counts_diagnostic
+                            && !use_derived_carry_alias_diagnostic
                             && has_carry
                             && use_derived_level_descriptors;
                         const bool use_pointer_host_counts_carry_level =
                             use_carry_pointer_diagnostic
+                            && !use_derived_carry_alias_diagnostic
                             && has_carry
                             && use_derived_level_descriptors
                             && !use_pointer_device_counts_carry_level;
@@ -1698,8 +1711,15 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     }
 
                     if (has_carry) {
+                        const bool use_derived_carry_alias_level =
+                            use_derived_carry_alias_diagnostic
+                            && use_batched_compact_level
+                            && current_rows.size() != 2
+                            && use_derived_level_descriptors
+                            && derived_carry_alias_safe_next;
                         const bool use_pointer_carry_level =
                             (use_carry_pointer_diagnostic || use_carry_pointer_device_counts_diagnostic)
+                            && !use_derived_carry_alias_diagnostic
                             && use_batched_compact_level
                             && current_rows.size() != 2
                             && use_derived_level_descriptors;
@@ -1707,11 +1727,11 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                             use_carry_pointer_diagnostic
                             && !use_carry_pointer_device_counts_diagnostic
                             && use_pointer_carry_level;
-                        CUdeviceptr carry_output = use_pointer_carry_level
+                        CUdeviceptr carry_output = (use_pointer_carry_level || use_derived_carry_alias_level)
                             ? current_rows.back()
                             : output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_count;
                         auto carry_copy_start = CollectKStageProfile::Clock::now();
-                        if (!use_pointer_carry_level) {
+                        if (!use_pointer_carry_level && !use_derived_carry_alias_level) {
                             CU_CHECK(cuMemcpyDtoD(
                                 carry_output,
                                 current_rows.back(),
