@@ -136,7 +136,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             "metadata_fields_downloaded": 2,
         }
 
-    tile_size = 4096
+    tile_size = 2048 if os.environ.get("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT") else 4096
     tile_count = (candidate_count + tile_size - 1) // tile_size
     current_segments = tile_count
     segment_capacity = tile_size

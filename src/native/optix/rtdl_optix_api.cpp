@@ -628,6 +628,12 @@ static bool collect_k_use_parallel_final_compact()
     return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
 }
 
+static bool collect_k_use_cub_tile_sort()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT");
+    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+}
+
 extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         uint64_t candidate_rows_device_ptr, size_t candidate_count,
         size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,
@@ -748,6 +754,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         }
         if (row_width2_tiled_supported) {
             profile.native_path = "row_width2_bounded_multi_tile_sort_merge";
+            const bool use_cub_tile_sort = collect_k_use_cub_tile_sort();
             auto module_start = CollectKStageProfile::Clock::now();
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
                 std::string ptx = compile_to_ptx(
@@ -759,6 +766,18 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     g_collect_k_i64_row_width2_sort.module,
                     "collect_k_bounded_i64_row_width2_sort"));
             });
+            if (use_cub_tile_sort) {
+                std::call_once(g_collect_k_i64_row_width2_cub_sort.init, [&]() {
+                    std::string ptx = compile_to_ptx(
+                        kCollectKBoundedI64RowWidth2CubSortKernelSrc,
+                        "collect_k_bounded_i64_row_width2_cub_sort_kernel.cu");
+                    CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_cub_sort.module, ptx.c_str()));
+                    CU_CHECK(cuModuleGetFunction(
+                        &g_collect_k_i64_row_width2_cub_sort.fn,
+                        g_collect_k_i64_row_width2_cub_sort.module,
+                        "collect_k_bounded_i64_row_width2_cub_sort"));
+                });
+            }
             std::call_once(g_collect_k_i64_row_width2_merge_two.init, [&]() {
                 std::string ptx = compile_to_ptx(
                     kCollectKBoundedI64RowWidth2MergeTwoKernelSrc,
@@ -799,8 +818,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             });
             profile.add_since(profile.module_load_ms, module_start);
 
+            const size_t tile_size = use_cub_tile_sort ? 2048 : 4096;
+            const size_t tile_count = (candidate_count + tile_size - 1) / tile_size;
             const unsigned tile_shared_bytes = static_cast<unsigned>(
-                sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
+                sizeof(int64_t) * tile_size * 2 + sizeof(uint8_t) * tile_size);
             if (tile_shared_bytes > 49152u) {
                 CU_CHECK(cuFuncSetAttribute(
                     g_collect_k_i64_row_width2_sort.fn,
@@ -808,22 +829,20 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     static_cast<int>(tile_shared_bytes)));
             }
 
-            const size_t tile_size = 4096;
-            const size_t tile_count = (candidate_count + tile_size - 1) / tile_size;
             const size_t max_tiled_candidates = 131072;
             profile.tile_count = tile_count;
             auto allocation_start = CollectKStageProfile::Clock::now();
             DevPtr temp_stage_a(sizeof(int64_t) * max_tiled_candidates * 2);
             DevPtr temp_stage_b(sizeof(int64_t) * max_tiled_candidates * 2);
-            DevPtr tile_emitted_device(sizeof(size_t) * 32);
-            DevPtr tile_overflowed_device(sizeof(uint32_t) * 32);
-            DevPtr merge_emitted_device(sizeof(size_t) * 32);
-            DevPtr merge_overflowed_device(sizeof(uint32_t) * 32);
-            DevPtr merge_first_rows_device(sizeof(uint64_t) * 32);
-            DevPtr merge_second_rows_device(sizeof(uint64_t) * 32);
-            DevPtr merge_output_rows_device(sizeof(uint64_t) * 32);
-            DevPtr merge_first_counts_device(sizeof(size_t) * 32);
-            DevPtr merge_second_counts_device(sizeof(size_t) * 32);
+            DevPtr tile_emitted_device(sizeof(size_t) * 64);
+            DevPtr tile_overflowed_device(sizeof(uint32_t) * 64);
+            DevPtr merge_emitted_device(sizeof(size_t) * 64);
+            DevPtr merge_overflowed_device(sizeof(uint32_t) * 64);
+            DevPtr merge_first_rows_device(sizeof(uint64_t) * 64);
+            DevPtr merge_second_rows_device(sizeof(uint64_t) * 64);
+            DevPtr merge_output_rows_device(sizeof(uint64_t) * 64);
+            DevPtr merge_first_counts_device(sizeof(size_t) * 64);
+            DevPtr merge_second_counts_device(sizeof(size_t) * 64);
             DevPtr final_merged_rows(sizeof(int64_t) * max_tiled_candidates * 2);
             DevPtr final_marks(sizeof(uint32_t) * max_tiled_candidates);
             DevPtr final_block_counts(sizeof(uint32_t) * 512);
@@ -847,6 +866,22 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 CUdeviceptr tile_emitted = tile_emitted_device.ptr + sizeof(size_t) * tile_index;
                 CUdeviceptr tile_overflowed = tile_overflowed_device.ptr + sizeof(uint32_t) * tile_index;
                 size_t tile_capacity = tile_size;
+                if (use_cub_tile_sort) {
+                    void* cub_sort_args[] = {
+                        &tile_input,
+                        &tile_candidate_count,
+                        &tile_output,
+                        &tile_capacity,
+                        &tile_emitted,
+                        &tile_overflowed,
+                    };
+                    CU_CHECK(cuLaunchKernel(
+                        g_collect_k_i64_row_width2_cub_sort.fn,
+                        1, 1, 1,
+                        256, 1, 1,
+                        0, nullptr, cub_sort_args, nullptr));
+                    return;
+                }
                 void* sort_args[] = {
                     &tile_input,
                     &tile_candidate_count,
@@ -948,8 +983,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             CU_CHECK(cuStreamSynchronize(nullptr));
             profile.add_since(profile.sort_sync_ms, sort_sync_start);
 
-            std::array<size_t, 32> tile_emitted = {};
-            std::array<uint32_t, 32> tile_overflowed = {};
+            std::array<size_t, 64> tile_emitted = {};
+            std::array<uint32_t, 64> tile_overflowed = {};
             auto tile_metadata_start = CollectKStageProfile::Clock::now();
             download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
             download(tile_overflowed.data(), tile_overflowed_device.ptr, tile_count);
@@ -1061,11 +1096,11 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 }
 
                 auto merge_launch_start = CollectKStageProfile::Clock::now();
-                std::array<uint64_t, 32> merge_first_rows = {};
-                std::array<uint64_t, 32> merge_second_rows = {};
-                std::array<uint64_t, 32> merge_output_rows = {};
-                std::array<size_t, 32> merge_first_counts = {};
-                std::array<size_t, 32> merge_second_counts = {};
+                std::array<uint64_t, 64> merge_first_rows = {};
+                std::array<uint64_t, 64> merge_second_rows = {};
+                std::array<uint64_t, 64> merge_output_rows = {};
+                std::array<size_t, 64> merge_first_counts = {};
+                std::array<size_t, 64> merge_second_counts = {};
                 for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
                     CUdeviceptr pair_output = output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index;
                     merge_first_rows[pair_index] = static_cast<uint64_t>(current_rows[pair_index * 2]);
@@ -1093,8 +1128,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 if (profile.enabled)
                     profile.merge_sync_ms += level_profile.sync_ms;
 
-                std::array<size_t, 32> merge_emitted = {};
-                std::array<uint32_t, 32> merge_overflowed = {};
+                std::array<size_t, 64> merge_emitted = {};
+                std::array<uint32_t, 64> merge_overflowed = {};
                 auto merge_metadata_start = CollectKStageProfile::Clock::now();
                 download(merge_emitted.data(), merge_emitted_device.ptr, pair_count);
                 download(merge_overflowed.data(), merge_overflowed_device.ptr, pair_count);

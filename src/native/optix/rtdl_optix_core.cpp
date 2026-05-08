@@ -1932,6 +1932,72 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
 }
 )CUDA";
 
+static const char* kCollectKBoundedI64RowWidth2CubSortKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+#include <cub/block/block_merge_sort.cuh>
+
+struct CollectKRow2 {
+    int64_t first;
+    int64_t second;
+};
+
+struct CollectKRow2Less {
+    __device__ bool operator()(const CollectKRow2& lhs, const CollectKRow2& rhs) const
+    {
+        if (lhs.first != rhs.first)
+            return lhs.first < rhs.first;
+        return lhs.second < rhs.second;
+    }
+};
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_cub_sort(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    constexpr int block_threads = 256;
+    constexpr int items_per_thread = 8;
+    constexpr size_t tile_capacity = static_cast<size_t>(block_threads * items_per_thread);
+    using BlockSort = cub::BlockMergeSort<CollectKRow2, block_threads, items_per_thread>;
+
+    __shared__ typename BlockSort::TempStorage temp_storage;
+    CollectKRow2 rows[items_per_thread];
+
+    const size_t tid = static_cast<size_t>(threadIdx.x);
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < candidate_count) {
+            rows[item].first = candidate_rows[index * 2];
+            rows[item].second = candidate_rows[index * 2 + 1];
+        } else {
+            rows[item].first = INT64_MAX;
+            rows[item].second = INT64_MAX;
+        }
+    }
+
+    BlockSort(temp_storage).Sort(rows, CollectKRow2Less());
+
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < candidate_count && index < row_capacity) {
+            rows_out[index * 2] = rows[item].first;
+            rows_out[index * 2 + 1] = rows[item].second;
+        }
+    }
+
+    if (threadIdx.x == 0) {
+        *emitted_count = candidate_count < tile_capacity ? candidate_count : tile_capacity;
+        *overflowed = candidate_count > row_capacity ? 1u : 0u;
+    }
+}
+)CUDA";
+
 static const char* kCollectKBoundedI64RowWidth2MergeTwoKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <stddef.h>
@@ -2905,6 +2971,7 @@ static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;
 static KnnCuFunction      g_collect_k_i64_row_width2_sort;
+static KnnCuFunction      g_collect_k_i64_row_width2_cub_sort;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_two;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize;
