@@ -37,6 +37,8 @@ def build_gate() -> dict[str, Any]:
     implementation_present = symbol in api and all(required in api for required in signature_requirements)
     implementation_markers = (
         "collect_k_bounded_i64",
+        "collect_k_bounded_i64_row_width2_sort",
+        "padded_count",
         "collect_k_compare_rows",
         "&row_width",
         "cuLaunchKernel",

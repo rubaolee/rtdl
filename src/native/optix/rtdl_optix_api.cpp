@@ -520,6 +520,48 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             return;
 
         (void)get_optix_context();
+        if (row_width == 2 && candidate_count <= 1024) {
+            std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
+                std::string ptx = compile_to_ptx(
+                    kCollectKBoundedI64RowWidth2SortKernelSrc,
+                    "collect_k_bounded_i64_row_width2_sort_kernel.cu");
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_sort.module, ptx.c_str()));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_sort.fn,
+                    g_collect_k_i64_row_width2_sort.module,
+                    "collect_k_bounded_i64_row_width2_sort"));
+            });
+
+            size_t padded_count = 1;
+            while (padded_count < candidate_count)
+                padded_count <<= 1;
+            DevPtr emitted_device(sizeof(size_t));
+            DevPtr overflowed_device(sizeof(uint32_t));
+            CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
+            CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
+            void* args[] = {
+                &candidate_rows,
+                &candidate_count,
+                &padded_count,
+                &rows_out,
+                &row_capacity,
+                &emitted_device.ptr,
+                &overflowed_device.ptr,
+            };
+            const unsigned shared_bytes = static_cast<unsigned>(sizeof(int64_t) * padded_count * 2);
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_sort.fn,
+                1, 1, 1,
+                static_cast<unsigned>(padded_count), 1, 1,
+                shared_bytes, nullptr, args, nullptr));
+            CU_CHECK(cuStreamSynchronize(nullptr));
+
+            download(emitted_count_out, emitted_device.ptr, 1);
+            download(overflowed_out, overflowed_device.ptr, 1);
+            *d2h_transfers_out += 2;
+            return;
+        }
+
         std::call_once(g_collect_k_i64.init, [&]() {
             std::string ptx = compile_to_ptx(
                 kCollectKBoundedI64KernelSrc,

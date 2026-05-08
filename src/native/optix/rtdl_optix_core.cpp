@@ -1823,6 +1823,99 @@ extern "C" __global__ void collect_k_bounded_i64(
 }
 )CUDA";
 
+static const char* kCollectKBoundedI64RowWidth2SortKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+#include <limits.h>
+
+__device__ int collect_k_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        size_t padded_count,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    extern __shared__ int64_t shared[];
+    int64_t* first = shared;
+    int64_t* second = shared + padded_count;
+    const size_t tid = static_cast<size_t>(threadIdx.x);
+
+    if (tid < padded_count) {
+        if (tid < candidate_count) {
+            first[tid] = candidate_rows[tid * 2];
+            second[tid] = candidate_rows[tid * 2 + 1];
+        } else {
+            first[tid] = INT64_MAX;
+            second[tid] = INT64_MAX;
+        }
+    }
+    __syncthreads();
+
+    for (size_t k = 2; k <= padded_count; k <<= 1) {
+        for (size_t j = k >> 1; j > 0; j >>= 1) {
+            const size_t peer = tid ^ j;
+            if (peer > tid && peer < padded_count) {
+                const bool ascending = (tid & k) == 0;
+                const int cmp = collect_k_pair_compare(first[tid], second[tid], first[peer], second[peer]);
+                const bool should_swap = ascending ? (cmp > 0) : (cmp < 0);
+                if (should_swap) {
+                    const int64_t tmp_first = first[tid];
+                    const int64_t tmp_second = second[tid];
+                    first[tid] = first[peer];
+                    second[tid] = second[peer];
+                    first[peer] = tmp_first;
+                    second[peer] = tmp_second;
+                }
+            }
+            __syncthreads();
+        }
+    }
+
+    if (tid != 0)
+        return;
+
+    size_t unique_count = 0;
+    for (size_t index = 0; index < padded_count; ++index) {
+        if (first[index] == INT64_MAX && second[index] == INT64_MAX)
+            break;
+        if (index == 0 || first[index] != first[index - 1] || second[index] != second[index - 1])
+            ++unique_count;
+    }
+
+    *emitted_count = unique_count;
+    if (unique_count > row_capacity) {
+        *overflowed = 1u;
+        return;
+    }
+
+    size_t out_index = 0;
+    for (size_t index = 0; index < padded_count && out_index < unique_count; ++index) {
+        if (first[index] == INT64_MAX && second[index] == INT64_MAX)
+            break;
+        if (index != 0 && first[index] == first[index - 1] && second[index] == second[index - 1])
+            continue;
+        rows_out[out_index * 2] = first[index];
+        rows_out[out_index * 2 + 1] = second[index];
+        ++out_index;
+    }
+}
+)CUDA";
+
 static const char* kFixedRadiusNeighbors3DKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -2431,6 +2524,7 @@ static FrnCuFunction      g_frn3d;
 static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;
+static KnnCuFunction      g_collect_k_i64_row_width2_sort;
 
 // GPU structs for upload
 

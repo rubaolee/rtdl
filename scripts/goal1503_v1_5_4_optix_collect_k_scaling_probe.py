@@ -167,7 +167,9 @@ def run_probe(library_path: Path, repeats: int) -> dict[str, Any]:
             "measured_on_real_nvidia": True,
             "python_entry_point": "rtdsl.optix_runtime.collect_k_bounded_i64_device_optix",
             "native_symbol": optix_runtime.OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL,
-            "algorithm_classification": "correctness_first_single_thread_device_kernel_o_n2_times_row_width",
+            "algorithm_classification": (
+                "row_width2_parallel_bitonic_sort_single_thread_compaction_with_dynamic_row_width_o_n2_fallback"
+            ),
             "timing_scope": (
                 "Python wrapper call around native OptiX/CUDA device-pointer execution, "
                 "including launch and metadata copy overhead, excluding input setup H2D "
