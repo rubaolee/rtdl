@@ -19,6 +19,8 @@ DEFAULT_PACKET_PATH = (
 )
 DEFAULT_JSON_PATH = ROOT / "docs" / "reports" / f"{REPORT_STEM}.json"
 DEFAULT_MD_PATH = ROOT / "docs" / "reports" / f"{REPORT_STEM}.md"
+GOAL1493_REQUIRED_DEVICE_SYMBOL = "rtdl_optix_collect_k_bounded_i64_device"
+GOAL1493_LEGACY_HOST_SYMBOL = "rtdl_optix_collect_k_bounded_i64"
 
 
 def _rows(value: Any) -> tuple[tuple[int, ...], ...]:
@@ -49,7 +51,8 @@ def pending_intake(packet: dict[str, Any]) -> dict[str, Any]:
         "source_packet_goal": packet["goal"],
         "primitive": packet["first_target_primitive"],
         "required_backend": "optix",
-        "required_symbol": packet["device_buffer_execution_required"]["required_symbol"],
+        "required_symbol": GOAL1493_REQUIRED_DEVICE_SYMBOL,
+        "legacy_packet_symbol_rejected_for_device_execution": packet["device_buffer_execution_required"]["required_symbol"],
         "expected_reference": packet["expected_reference"],
         "blocked_by": packet["blocked_by"],
         "acceptance_requirements": (
@@ -89,8 +92,12 @@ def validate_execution_intake(packet: dict[str, Any], execution: dict[str, Any])
         raise ValueError("Goal1493 execution evidence must target COLLECT_K_BOUNDED")
     if execution.get("backend") != "optix":
         raise ValueError("Goal1493 execution evidence must use backend=optix")
-    if execution.get("native_symbol") != required["required_symbol"]:
-        raise ValueError("Goal1493 execution evidence used the wrong native symbol")
+    if required["required_symbol"] != GOAL1493_LEGACY_HOST_SYMBOL:
+        raise ValueError("Goal1493 packet basis no longer matches the expected legacy host symbol")
+    if execution.get("native_symbol") == GOAL1493_LEGACY_HOST_SYMBOL:
+        raise ValueError("Goal1493 execution evidence must not use the legacy host-pointer symbol")
+    if execution.get("native_symbol") != GOAL1493_REQUIRED_DEVICE_SYMBOL:
+        raise ValueError("Goal1493 execution evidence used the wrong device native symbol")
     if execution.get("measured_on_real_nvidia") is not True:
         raise ValueError("Goal1493 execution evidence must be measured on real NVIDIA hardware")
     if execution.get("goal1489_preflight_green") is not True:

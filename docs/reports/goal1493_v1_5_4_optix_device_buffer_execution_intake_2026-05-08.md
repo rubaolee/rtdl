@@ -8,7 +8,7 @@
 
 - Primitive: `COLLECT_K_BOUNDED`
 - Backend: `optix`
-- Symbol: `rtdl_optix_collect_k_bounded_i64`
+- Symbol: `rtdl_optix_collect_k_bounded_i64_device`
 
 ## Claim Boundary
 

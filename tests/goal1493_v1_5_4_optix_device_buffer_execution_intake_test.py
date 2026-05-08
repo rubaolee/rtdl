@@ -22,7 +22,7 @@ def accepted_execution_fixture(packet):
         "source_packet_goal": packet["goal"],
         "primitive": packet["first_target_primitive"],
         "backend": "optix",
-        "native_symbol": packet["device_buffer_execution_required"]["required_symbol"],
+        "native_symbol": "rtdl_optix_collect_k_bounded_i64_device",
         "measured_on_real_nvidia": True,
         "goal1489_preflight_green": True,
         "git_commit": "future-optix-ready-commit",
@@ -63,6 +63,11 @@ class Goal1493V154OptixDeviceBufferExecutionIntakeTest(unittest.TestCase):
 
         self.assertEqual(intake["status"], "goal1493_pending_measured_optix_execution")
         self.assertIn("goal1489_current_pod_missing_optix_headers", intake["blocked_by"])
+        self.assertEqual(intake["required_symbol"], "rtdl_optix_collect_k_bounded_i64_device")
+        self.assertEqual(
+            intake["legacy_packet_symbol_rejected_for_device_execution"],
+            "rtdl_optix_collect_k_bounded_i64",
+        )
         self.assertFalse(intake["true_zero_copy_authorized"])
         self.assertFalse(intake["public_speedup_wording_authorized"])
 
@@ -83,6 +88,15 @@ class Goal1493V154OptixDeviceBufferExecutionIntakeTest(unittest.TestCase):
         execution["result"]["candidate_id_rows"] = [(1, 10), (3, 30)]
 
         with self.assertRaisesRegex(ValueError, "candidate row parity failed"):
+            module.validate_execution_intake(packet, execution)
+
+    def test_rejects_legacy_host_pointer_symbol(self) -> None:
+        module = load_intake_module()
+        packet = module.load_json(PACKET_PATH)
+        execution = accepted_execution_fixture(packet)
+        execution["native_symbol"] = "rtdl_optix_collect_k_bounded_i64"
+
+        with self.assertRaisesRegex(ValueError, "legacy host-pointer symbol"):
             module.validate_execution_intake(packet, execution)
 
     def test_rejects_claim_expansion(self) -> None:
