@@ -1,0 +1,134 @@
+{
+  "algorithm_classification": "correctness_first_single_thread_device_kernel_o_n2_times_row_width",
+  "all_parity_passed": true,
+  "cases": [
+    {
+      "all_ms": [
+        0.12623518705368042,
+        0.050514936447143555,
+        0.04441291093826294,
+        0.04338473081588745,
+        0.043042004108428955,
+        0.0426173210144043,
+        0.042945146560668945
+      ],
+      "candidate_count": 8,
+      "max_ms": 0.12623518705368042,
+      "median_ms": 0.04338473081588745,
+      "min_ms": 0.0426173210144043,
+      "repeats": 7,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "unique_count": 4
+    },
+    {
+      "all_ms": [
+        0.13571232557296753,
+        0.12823939323425293,
+        0.12674182653427124,
+        0.12586265802383423,
+        0.12581795454025269,
+        0.13091415166854858,
+        0.12984126806259155
+      ],
+      "candidate_count": 32,
+      "max_ms": 0.13571232557296753,
+      "median_ms": 0.12823939323425293,
+      "min_ms": 0.12581795454025269,
+      "repeats": 7,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "unique_count": 16
+    },
+    {
+      "all_ms": [
+        1.4208778738975525,
+        1.4198720455169678,
+        1.4196932315826416,
+        1.419171690940857,
+        1.4181062579154968,
+        1.4184117317199707,
+        1.4189556241035461
+      ],
+      "candidate_count": 128,
+      "max_ms": 1.4208778738975525,
+      "median_ms": 1.419171690940857,
+      "min_ms": 1.4181062579154968,
+      "repeats": 7,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "unique_count": 64
+    },
+    {
+      "all_ms": [
+        21.912112832069397,
+        21.913625299930573,
+        21.911725401878357,
+        21.91038429737091,
+        21.9108983874321,
+        21.90849930047989,
+        21.91278338432312
+      ],
+      "candidate_count": 512,
+      "max_ms": 21.913625299930573,
+      "median_ms": 21.911725401878357,
+      "min_ms": 21.90849930047989,
+      "repeats": 7,
+      "row_width": 2,
+      "same_candidate_rows": true,
+      "same_overflowed_flag": true,
+      "same_valid_count": true,
+      "transfer_accounting": {
+        "allocation_only_transfers_distinguished_from_content_transfers": true,
+        "device_to_host_transfers_after_backend_execution": 2,
+        "host_to_device_transfers_before_backend_execution": 0,
+        "internal_device_transfers_if_any": 0
+      },
+      "unique_count": 256
+    }
+  ],
+  "claim_boundary": "Goal1503 records scaling observations for the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. It is not a speedup claim, does not prove true zero-copy, and does not authorize whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "claim_flags": {
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_public_primitive_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cuda_driver_version": 12040,
+  "device_name": "NVIDIA RTX 4000 Ada Generation",
+  "git_commit": "0b975f469ccdef52b508866281a21fa569fd29fe",
+  "goal": "Goal1503",
+  "library_path": "/root/rtdl_goal1498/rtdl/build/librtdl_optix.so",
+  "measured_on_real_nvidia": true,
+  "native_symbol": "rtdl_optix_collect_k_bounded_i64_device",
+  "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+  "python_entry_point": "rtdsl.optix_runtime.collect_k_bounded_i64_device_optix",
+  "status": "goal1503_optix_collect_k_scaling_probe_recorded",
+  "timing_scope": "Python wrapper call around native OptiX/CUDA device-pointer execution, including launch and metadata copy overhead, excluding input setup H2D and output verification D2H."
+}
