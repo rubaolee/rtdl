@@ -34,13 +34,21 @@ Local focused tests passed:
 - `$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal1580_v1_5_4_optix_collect_k_fastest_candidate_preset_test tests.goal1579_v1_5_4_optix_collect_k_next_arch_runner_test tests.goal1573_v1_5_4_optix_collect_k_derived_carry_alias_diagnostic_test tests.goal1572_v1_5_4_optix_collect_k_carry_pointer_device_counts_diagnostic_test tests.goal1571_v1_5_4_optix_collect_k_carry_pointer_diagnostic_test tests.goal1570_v1_5_4_optix_collect_k_carry_alias_implementation_preflight_test`
 - Result: `Ran 26 tests`, `OK`.
 
-NVIDIA pod smoke passed on `NVIDIA RTX 4000 Ada Generation`:
+NVIDIA pod smoke passed on `NVIDIA RTX 4000 Ada Generation`.
+
+Pre-commit file-copy smoke:
 
 - Static tests: `Ran 9 tests`, `OK`.
 - Native build: `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk` succeeded.
 - Runner smoke: `scripts/goal1579_v1_5_4_optix_collect_k_next_arch_validation_runner.py --repeats 1 --skip-targeted --candidate-preset-smoke` completed with `goal1579_next_arch_validation_recorded`.
 - Candidate preset JSON: `/tmp/goal1580_candidate_smoke2_candidate_preset.json`.
 - Candidate preset outcome: `accepted_goal1506_evidence=True`, `all_parity_passed=True`, `all_profile_topologies_match_expected=True`.
+
+Clean committed-state smoke at `80a394e6d6b0bd48224cd8720e52ab0c9d28ee10`:
+
+- Pod command reset the checkout to `origin/main`, rebuilt `build/librtdl_optix.so`, and reran the same `--candidate-preset-smoke` runner slice.
+- Runner smoke completed with `goal1579_next_arch_validation_recorded`.
+- Candidate preset JSON: `/tmp/goal1580_clean_candidate_smoke_candidate_preset.json`.
 
 ## Claim Boundary
 
