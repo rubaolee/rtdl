@@ -38,10 +38,10 @@ partner handoff, stable primitive, or release claims.
 
 When NVIDIA hardware is available again, the next useful pod-backed work is:
 
-- run a dedicated overflow/fail-closed probe for the tiled row_width=2 path;
+- run the prepared dedicated overflow/fail-closed probe for the tiled row_width=2 path:
+  `scripts/goal1504_v1_5_4_optix_collect_k_tiled_overflow_probe.py`;
 - decide whether to extend the same bounded merge-tree path beyond `131072`;
 - measure any extension from an exact git commit and commit the generated
   evidence artifacts;
 - request external review before changing the experimental status or public
   wording.
-
