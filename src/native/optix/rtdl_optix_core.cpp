@@ -1792,6 +1792,7 @@ extern "C" __global__ void collect_k_bounded_i64(
     }
 
     *emitted_count = unique_count;
+    *overflowed = 0u;
     if (unique_count > row_capacity) {
         *overflowed = 1u;
         return;
@@ -1912,6 +1913,7 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
     }
 
     *emitted_count = unique_count;
+    *overflowed = 0u;
     if (unique_count > row_capacity) {
         *overflowed = 1u;
         return;
@@ -1925,6 +1927,128 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
             continue;
         rows_out[out_index * 2] = first[index];
         rows_out[out_index * 2 + 1] = second[index];
+        ++out_index;
+    }
+}
+)CUDA";
+
+static const char* kCollectKBoundedI64RowWidth2MergeTwoKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+__device__ int collect_k_merge_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+__device__ void collect_k_merge_next_pair(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t* first_index,
+        size_t* second_index,
+        int64_t* value0,
+        int64_t* value1)
+{
+    if (*second_index >= second_count) {
+        *value0 = first_rows[*first_index * 2];
+        *value1 = first_rows[*first_index * 2 + 1];
+        ++(*first_index);
+        return;
+    }
+    if (*first_index >= first_count) {
+        *value0 = second_rows[*second_index * 2];
+        *value1 = second_rows[*second_index * 2 + 1];
+        ++(*second_index);
+        return;
+    }
+
+    const int64_t first0 = first_rows[*first_index * 2];
+    const int64_t first1 = first_rows[*first_index * 2 + 1];
+    const int64_t second0 = second_rows[*second_index * 2];
+    const int64_t second1 = second_rows[*second_index * 2 + 1];
+    const int cmp = collect_k_merge_pair_compare(first0, first1, second0, second1);
+    if (cmp <= 0) {
+        *value0 = first0;
+        *value1 = first1;
+        ++(*first_index);
+        if (cmp == 0)
+            ++(*second_index);
+    } else {
+        *value0 = second0;
+        *value1 = second1;
+        ++(*second_index);
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_two(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    if (blockIdx.x != 0 || threadIdx.x != 0)
+        return;
+
+    size_t first_index = 0;
+    size_t second_index = 0;
+    size_t unique_count = 0;
+    bool have_last = false;
+    int64_t last0 = 0;
+    int64_t last1 = 0;
+    while (first_index < first_count || second_index < second_count) {
+        int64_t value0 = 0;
+        int64_t value1 = 0;
+        collect_k_merge_next_pair(
+            first_rows, first_count, second_rows, second_count,
+            &first_index, &second_index, &value0, &value1);
+        if (!have_last || value0 != last0 || value1 != last1) {
+            ++unique_count;
+            last0 = value0;
+            last1 = value1;
+            have_last = true;
+        }
+    }
+
+    *emitted_count = unique_count;
+    *overflowed = 0u;
+    if (unique_count > row_capacity) {
+        *overflowed = 1u;
+        return;
+    }
+
+    first_index = 0;
+    second_index = 0;
+    have_last = false;
+    last0 = 0;
+    last1 = 0;
+    size_t out_index = 0;
+    while ((first_index < first_count || second_index < second_count) && out_index < unique_count) {
+        int64_t value0 = 0;
+        int64_t value1 = 0;
+        collect_k_merge_next_pair(
+            first_rows, first_count, second_rows, second_count,
+            &first_index, &second_index, &value0, &value1);
+        if (have_last && value0 == last0 && value1 == last1)
+            continue;
+        rows_out[out_index * 2] = value0;
+        rows_out[out_index * 2 + 1] = value1;
+        last0 = value0;
+        last1 = value1;
+        have_last = true;
         ++out_index;
     }
 }
@@ -2539,6 +2663,7 @@ static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;
 static KnnCuFunction      g_collect_k_i64_row_width2_sort;
+static KnnCuFunction      g_collect_k_i64_row_width2_merge_two;
 
 // GPU structs for upload
 

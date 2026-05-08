@@ -582,6 +582,138 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             return;
         }
 
+        bool row_width2_two_tile_supported = false;
+        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 8192) {
+            const unsigned tile_shared_bytes = static_cast<unsigned>(
+                sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
+            CUdevice current_device = 0;
+            CU_CHECK(cuCtxGetDevice(&current_device));
+            CU_CHECK(cuDeviceGetAttribute(
+                &max_optin_shared_bytes,
+                CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK_OPTIN,
+                current_device));
+            row_width2_two_tile_supported =
+                tile_shared_bytes <= static_cast<unsigned>(max_optin_shared_bytes);
+        }
+        if (row_width2_two_tile_supported) {
+            std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
+                std::string ptx = compile_to_ptx(
+                    kCollectKBoundedI64RowWidth2SortKernelSrc,
+                    "collect_k_bounded_i64_row_width2_sort_kernel.cu");
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_sort.module, ptx.c_str()));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_sort.fn,
+                    g_collect_k_i64_row_width2_sort.module,
+                    "collect_k_bounded_i64_row_width2_sort"));
+            });
+            std::call_once(g_collect_k_i64_row_width2_merge_two.init, [&]() {
+                std::string ptx = compile_to_ptx(
+                    kCollectKBoundedI64RowWidth2MergeTwoKernelSrc,
+                    "collect_k_bounded_i64_row_width2_merge_two_kernel.cu");
+                CU_CHECK(cuModuleLoadData(&g_collect_k_i64_row_width2_merge_two.module, ptx.c_str()));
+                CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_merge_two.fn,
+                    g_collect_k_i64_row_width2_merge_two.module,
+                    "collect_k_bounded_i64_row_width2_merge_two"));
+            });
+
+            const unsigned tile_shared_bytes = static_cast<unsigned>(
+                sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
+            if (tile_shared_bytes > 49152u) {
+                CU_CHECK(cuFuncSetAttribute(
+                    g_collect_k_i64_row_width2_sort.fn,
+                    CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES,
+                    static_cast<int>(tile_shared_bytes)));
+            }
+
+            const size_t first_count = 4096;
+            const size_t second_count = candidate_count - first_count;
+            size_t second_padded_count = 1;
+            while (second_padded_count < second_count)
+                second_padded_count <<= 1;
+
+            DevPtr temp_rows(sizeof(int64_t) * 8192 * 2);
+            DevPtr first_emitted_device(sizeof(size_t));
+            DevPtr second_emitted_device(sizeof(size_t));
+            DevPtr first_overflowed_device(sizeof(uint32_t));
+            DevPtr second_overflowed_device(sizeof(uint32_t));
+            DevPtr final_emitted_device(sizeof(size_t));
+            DevPtr final_overflowed_device(sizeof(uint32_t));
+            CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
+            CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
+            CUdeviceptr temp_first_rows = temp_rows.ptr;
+            CUdeviceptr temp_second_rows = temp_rows.ptr + sizeof(int64_t) * 4096 * 2;
+            CUdeviceptr candidate_second_rows = candidate_rows + sizeof(int64_t) * first_count * 2;
+
+            size_t first_padded_count = 4096;
+            size_t tile_capacity = 4096;
+            void* first_args[] = {
+                &candidate_rows,
+                &first_count,
+                &first_padded_count,
+                &temp_first_rows,
+                &tile_capacity,
+                &first_emitted_device.ptr,
+                &first_overflowed_device.ptr,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_sort.fn,
+                1, 1, 1,
+                1024, 1, 1,
+                tile_shared_bytes, nullptr, first_args, nullptr));
+
+            void* second_args[] = {
+                &candidate_second_rows,
+                &second_count,
+                &second_padded_count,
+                &temp_second_rows,
+                &tile_capacity,
+                &second_emitted_device.ptr,
+                &second_overflowed_device.ptr,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_sort.fn,
+                1, 1, 1,
+                static_cast<unsigned>(std::min<size_t>(second_padded_count, 1024)), 1, 1,
+                tile_shared_bytes, nullptr, second_args, nullptr));
+            CU_CHECK(cuStreamSynchronize(nullptr));
+
+            size_t first_emitted = 0;
+            size_t second_emitted = 0;
+            uint32_t first_overflowed = 0;
+            uint32_t second_overflowed = 0;
+            download(&first_emitted, first_emitted_device.ptr, 1);
+            download(&second_emitted, second_emitted_device.ptr, 1);
+            download(&first_overflowed, first_overflowed_device.ptr, 1);
+            download(&second_overflowed, second_overflowed_device.ptr, 1);
+            *d2h_transfers_out += 4;
+            if (first_overflowed || second_overflowed)
+                throw std::runtime_error("row_width=2 tile collect unexpectedly overflowed");
+
+            void* merge_args[] = {
+                &temp_first_rows,
+                &first_emitted,
+                &temp_second_rows,
+                &second_emitted,
+                &rows_out,
+                &row_capacity,
+                &final_emitted_device.ptr,
+                &final_overflowed_device.ptr,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_merge_two.fn,
+                1, 1, 1,
+                1, 1, 1,
+                0, nullptr, merge_args, nullptr));
+            CU_CHECK(cuStreamSynchronize(nullptr));
+
+            download(emitted_count_out, final_emitted_device.ptr, 1);
+            download(overflowed_out, final_overflowed_device.ptr, 1);
+            *d2h_transfers_out += 2;
+            *internal_device_transfers_out += 2;
+            return;
+        }
+
         std::call_once(g_collect_k_i64.init, [&]() {
             std::string ptx = compile_to_ptx(
                 kCollectKBoundedI64KernelSrc,
