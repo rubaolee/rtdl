@@ -61,7 +61,27 @@ This note intentionally says "likely cost buckets" rather than assigning blame. 
 
 ## Proposed Pod Instrumentation
 
-Add a temporary or guarded profiling mode that records CUDA event timings around:
+The repo now has a guarded profiling mode controlled by:
+
+- `RTDL_OPTIX_COLLECT_K_PROFILE_JSONL`
+
+When this environment variable is set, `rtdl_optix_collect_k_bounded_i64_device(...)` appends one JSONL record per native call. When it is unset, the normal ABI and runtime behavior are unchanged.
+
+The pod-facing probe is:
+
+- `scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py`
+
+After building `librtdl_optix.so`, run for example:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1506_v1_5_4_optix_collect_k_stage_profile_probe.py \
+  --library build/librtdl_optix.so \
+  --counts 4097 65537 131072 \
+  --repeats 5 \
+  --profile-jsonl docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl
+```
+
+The guarded profiling mode records host-side stage timings around:
 
 - All tile sort launches plus the following synchronization.
 - Each merge level's launches plus the following synchronization.
@@ -69,7 +89,7 @@ Add a temporary or guarded profiling mode that records CUDA event timings around
 - Final device-to-device copy.
 - Total native function duration after modules are already loaded.
 
-The profiling output should be saved as a JSON artifact under `docs/reports/` with:
+The profiling output should be saved as JSON/Markdown artifacts under `docs/reports/` with:
 
 - GPU name, driver, OptiX SDK tag, git commit, and library path.
 - Candidate counts at least `4097`, `65537`, and `131072`.

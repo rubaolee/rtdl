@@ -493,6 +493,98 @@ extern "C" int rtdl_optix_collect_k_bounded_i64(
     }, error_out, error_size);
 }
 
+struct CollectKStageProfile {
+    using Clock = std::chrono::steady_clock;
+
+    bool enabled = false;
+    std::string path;
+    std::string native_path = "unknown";
+    size_t candidate_count = 0;
+    size_t row_width = 0;
+    size_t row_capacity = 0;
+    size_t tile_count = 0;
+    size_t merge_levels = 0;
+    uint64_t sort_launches = 0;
+    uint64_t merge_launches = 0;
+    uint64_t carry_copies = 0;
+    uint64_t final_copies = 0;
+    uint64_t metadata_fields_downloaded = 0;
+    double module_load_ms = 0.0;
+    double allocation_ms = 0.0;
+    double sort_launch_ms = 0.0;
+    double sort_sync_ms = 0.0;
+    double tile_metadata_download_ms = 0.0;
+    double merge_launch_ms = 0.0;
+    double merge_sync_ms = 0.0;
+    double merge_metadata_download_ms = 0.0;
+    double carry_copy_ms = 0.0;
+    double final_copy_ms = 0.0;
+    Clock::time_point total_start = Clock::now();
+
+    CollectKStageProfile(size_t candidates, size_t width, size_t capacity)
+        : candidate_count(candidates), row_width(width), row_capacity(capacity) {
+        const char* raw_path = std::getenv("RTDL_OPTIX_COLLECT_K_PROFILE_JSONL");
+        if (raw_path && raw_path[0] != '\0') {
+            enabled = true;
+            path = raw_path;
+            total_start = Clock::now();
+        }
+    }
+
+    static double elapsed_ms(Clock::time_point start) {
+        return std::chrono::duration<double, std::milli>(Clock::now() - start).count();
+    }
+
+    void add_since(double& bucket, Clock::time_point start) {
+        if (enabled)
+            bucket += elapsed_ms(start);
+    }
+
+    void append(size_t emitted_count, uint32_t overflowed,
+                uint64_t h2d_transfers, uint64_t d2h_transfers,
+                uint64_t internal_device_transfers) const {
+        if (!enabled)
+            return;
+        try {
+            std::ofstream out(path, std::ios::app);
+            if (!out)
+                return;
+            out << "{"
+                << "\"event\":\"collect_k_bounded_i64_device_stage_profile\","
+                << "\"candidate_count\":" << candidate_count << ","
+                << "\"row_width\":" << row_width << ","
+                << "\"row_capacity\":" << row_capacity << ","
+                << "\"native_path\":\"" << native_path << "\","
+                << "\"tile_count\":" << tile_count << ","
+                << "\"merge_levels\":" << merge_levels << ","
+                << "\"sort_launches\":" << sort_launches << ","
+                << "\"merge_launches\":" << merge_launches << ","
+                << "\"carry_copies\":" << carry_copies << ","
+                << "\"final_copies\":" << final_copies << ","
+                << "\"metadata_fields_downloaded\":" << metadata_fields_downloaded << ","
+                << "\"emitted_count\":" << emitted_count << ","
+                << "\"overflowed\":" << static_cast<unsigned>(overflowed) << ","
+                << "\"h2d_transfers\":" << h2d_transfers << ","
+                << "\"d2h_transfers\":" << d2h_transfers << ","
+                << "\"internal_device_transfers\":" << internal_device_transfers << ","
+                << "\"module_load_ms\":" << module_load_ms << ","
+                << "\"allocation_ms\":" << allocation_ms << ","
+                << "\"sort_launch_ms\":" << sort_launch_ms << ","
+                << "\"sort_sync_ms\":" << sort_sync_ms << ","
+                << "\"tile_metadata_download_ms\":" << tile_metadata_download_ms << ","
+                << "\"merge_launch_ms\":" << merge_launch_ms << ","
+                << "\"merge_sync_ms\":" << merge_sync_ms << ","
+                << "\"merge_metadata_download_ms\":" << merge_metadata_download_ms << ","
+                << "\"carry_copy_ms\":" << carry_copy_ms << ","
+                << "\"final_copy_ms\":" << final_copy_ms << ","
+                << "\"total_ms\":" << elapsed_ms(total_start)
+                << "}\n";
+        } catch (...) {
+            // Profiling must never change runtime behavior.
+        }
+    }
+};
+
 extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         uint64_t candidate_rows_device_ptr, size_t candidate_count,
         size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,
@@ -519,6 +611,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         if (candidate_count == 0)
             return;
 
+        CollectKStageProfile profile(candidate_count, row_width, row_capacity);
         (void)get_optix_context();
         size_t padded_count = 1;
         unsigned row_width2_shared_bytes = 0;
@@ -539,6 +632,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 row_width2_shared_bytes <= static_cast<unsigned>(max_optin_shared_bytes);
         }
         if (row_width2_fast_supported) {
+            profile.native_path = "row_width2_parallel_bitonic_sort";
+            auto module_start = CollectKStageProfile::Clock::now();
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
                 std::string ptx = compile_to_ptx(
                     kCollectKBoundedI64RowWidth2SortKernelSrc,
@@ -549,11 +644,14 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     g_collect_k_i64_row_width2_sort.module,
                     "collect_k_bounded_i64_row_width2_sort"));
             });
+            profile.add_since(profile.module_load_ms, module_start);
 
+            auto allocation_start = CollectKStageProfile::Clock::now();
             DevPtr emitted_device(sizeof(size_t));
             DevPtr overflowed_device(sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
             CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
+            profile.add_since(profile.allocation_ms, allocation_start);
             void* args[] = {
                 &candidate_rows,
                 &candidate_count,
@@ -569,16 +667,26 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES,
                     static_cast<int>(row_width2_shared_bytes)));
             }
+            auto sort_launch_start = CollectKStageProfile::Clock::now();
             CU_CHECK(cuLaunchKernel(
                 g_collect_k_i64_row_width2_sort.fn,
                 1, 1, 1,
                 static_cast<unsigned>(std::min<size_t>(padded_count, 1024)), 1, 1,
                 row_width2_shared_bytes, nullptr, args, nullptr));
+            profile.add_since(profile.sort_launch_ms, sort_launch_start);
+            profile.sort_launches = 1;
+            auto sort_sync_start = CollectKStageProfile::Clock::now();
             CU_CHECK(cuStreamSynchronize(nullptr));
+            profile.add_since(profile.sort_sync_ms, sort_sync_start);
 
+            auto metadata_start = CollectKStageProfile::Clock::now();
             download(emitted_count_out, emitted_device.ptr, 1);
             download(overflowed_out, overflowed_device.ptr, 1);
+            profile.add_since(profile.tile_metadata_download_ms, metadata_start);
             *d2h_transfers_out += 2;
+            profile.metadata_fields_downloaded += 2;
+            profile.append(*emitted_count_out, *overflowed_out, *h2d_transfers_out,
+                           *d2h_transfers_out, *internal_device_transfers_out);
             return;
         }
 
@@ -596,6 +704,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 tile_shared_bytes <= static_cast<unsigned>(max_optin_shared_bytes);
         }
         if (row_width2_tiled_supported) {
+            profile.native_path = "row_width2_bounded_multi_tile_sort_merge";
+            auto module_start = CollectKStageProfile::Clock::now();
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
                 std::string ptx = compile_to_ptx(
                     kCollectKBoundedI64RowWidth2SortKernelSrc,
@@ -616,6 +726,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     g_collect_k_i64_row_width2_merge_two.module,
                     "collect_k_bounded_i64_row_width2_merge_two"));
             });
+            profile.add_since(profile.module_load_ms, module_start);
 
             const unsigned tile_shared_bytes = static_cast<unsigned>(
                 sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
@@ -629,6 +740,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             const size_t tile_size = 4096;
             const size_t tile_count = (candidate_count + tile_size - 1) / tile_size;
             const size_t max_tiled_candidates = 131072;
+            profile.tile_count = tile_count;
+            auto allocation_start = CollectKStageProfile::Clock::now();
             DevPtr temp_stage_a(sizeof(int64_t) * max_tiled_candidates * 2);
             DevPtr temp_stage_b(sizeof(int64_t) * max_tiled_candidates * 2);
             DevPtr tile_emitted_device(sizeof(size_t) * 32);
@@ -639,6 +752,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             DevPtr final_overflowed_device(sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
             CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
+            profile.add_since(profile.allocation_ms, allocation_start);
 
             auto temp_sorted_tile = [&](size_t tile_index) {
                 return temp_stage_a.ptr + sizeof(int64_t) * tile_size * 2 * tile_index;
@@ -689,15 +803,23 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     0, nullptr, merge_args, nullptr));
             };
 
+            auto sort_launch_start = CollectKStageProfile::Clock::now();
             for (size_t tile_index = 0; tile_index < tile_count; ++tile_index)
                 launch_sort_tile(tile_index);
+            profile.add_since(profile.sort_launch_ms, sort_launch_start);
+            profile.sort_launches += tile_count;
+            auto sort_sync_start = CollectKStageProfile::Clock::now();
             CU_CHECK(cuStreamSynchronize(nullptr));
+            profile.add_since(profile.sort_sync_ms, sort_sync_start);
 
             std::array<size_t, 32> tile_emitted = {};
             std::array<uint32_t, 32> tile_overflowed = {};
+            auto tile_metadata_start = CollectKStageProfile::Clock::now();
             download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
             download(tile_overflowed.data(), tile_overflowed_device.ptr, tile_count);
+            profile.add_since(profile.tile_metadata_download_ms, tile_metadata_start);
             *d2h_transfers_out += static_cast<uint64_t>(tile_count * 2);
+            profile.metadata_fields_downloaded += static_cast<uint64_t>(tile_count * 2);
             for (size_t tile_index = 0; tile_index < tile_count; ++tile_index) {
                 if (tile_overflowed[tile_index])
                     throw std::runtime_error("row_width=2 tile collect unexpectedly overflowed");
@@ -721,6 +843,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 const size_t output_segment_capacity = segment_capacity * 2;
                 CUdeviceptr output_base = write_stage_b ? temp_stage_b.ptr : temp_stage_a.ptr;
 
+                auto merge_launch_start = CollectKStageProfile::Clock::now();
                 for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
                     CUdeviceptr pair_output = output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index;
                     CUdeviceptr pair_emitted = merge_emitted_device.ptr + sizeof(size_t) * pair_index;
@@ -732,13 +855,21 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         pair_emitted, pair_overflowed);
                     ++merge_launches;
                 }
+                profile.add_since(profile.merge_launch_ms, merge_launch_start);
+                profile.merge_launches += pair_count;
+                ++profile.merge_levels;
+                auto merge_sync_start = CollectKStageProfile::Clock::now();
                 CU_CHECK(cuStreamSynchronize(nullptr));
+                profile.add_since(profile.merge_sync_ms, merge_sync_start);
 
                 std::array<size_t, 32> merge_emitted = {};
                 std::array<uint32_t, 32> merge_overflowed = {};
+                auto merge_metadata_start = CollectKStageProfile::Clock::now();
                 download(merge_emitted.data(), merge_emitted_device.ptr, pair_count);
                 download(merge_overflowed.data(), merge_overflowed_device.ptr, pair_count);
+                profile.add_since(profile.merge_metadata_download_ms, merge_metadata_start);
                 *d2h_transfers_out += static_cast<uint64_t>(pair_count * 2);
+                profile.metadata_fields_downloaded += static_cast<uint64_t>(pair_count * 2);
 
                 std::vector<CUdeviceptr> next_rows;
                 std::vector<size_t> next_counts;
@@ -753,11 +884,14 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 if (has_carry) {
                     CUdeviceptr carry_output =
                         output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_count;
+                    auto carry_copy_start = CollectKStageProfile::Clock::now();
                     CU_CHECK(cuMemcpyDtoD(
                         carry_output,
                         current_rows.back(),
                         sizeof(int64_t) * current_counts.back() * 2));
+                    profile.add_since(profile.carry_copy_ms, carry_copy_start);
                     ++merge_launches;
+                    ++profile.carry_copies;
                     next_rows.push_back(carry_output);
                     next_counts.push_back(current_counts.back());
                 }
@@ -775,13 +909,22 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             if (final_count > row_capacity) {
                 *overflowed_out = 1;
                 *internal_device_transfers_out += merge_launches;
+                profile.append(*emitted_count_out, *overflowed_out, *h2d_transfers_out,
+                               *d2h_transfers_out, *internal_device_transfers_out);
                 return;
             }
+            auto final_copy_start = CollectKStageProfile::Clock::now();
             CU_CHECK(cuMemcpyDtoD(rows_out, final_source, sizeof(int64_t) * final_count * 2));
+            profile.add_since(profile.final_copy_ms, final_copy_start);
+            ++profile.final_copies;
             *internal_device_transfers_out += merge_launches + 1;
+            profile.append(*emitted_count_out, *overflowed_out, *h2d_transfers_out,
+                           *d2h_transfers_out, *internal_device_transfers_out);
             return;
         }
 
+        profile.native_path = "dynamic_row_width_single_thread_fallback";
+        auto module_start = CollectKStageProfile::Clock::now();
         std::call_once(g_collect_k_i64.init, [&]() {
             std::string ptx = compile_to_ptx(
                 kCollectKBoundedI64KernelSrc,
@@ -792,11 +935,14 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 g_collect_k_i64.module,
                 "collect_k_bounded_i64"));
         });
+        profile.add_since(profile.module_load_ms, module_start);
 
+        auto allocation_start = CollectKStageProfile::Clock::now();
         DevPtr emitted_device(sizeof(size_t));
         DevPtr overflowed_device(sizeof(uint32_t));
         CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
         CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
+        profile.add_since(profile.allocation_ms, allocation_start);
         void* args[] = {
             &candidate_rows,
             &candidate_count,
@@ -806,16 +952,26 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             &emitted_device.ptr,
             &overflowed_device.ptr,
         };
+        auto sort_launch_start = CollectKStageProfile::Clock::now();
         CU_CHECK(cuLaunchKernel(
             g_collect_k_i64.fn,
             1, 1, 1,
             1, 1, 1,
             0, nullptr, args, nullptr));
+        profile.add_since(profile.sort_launch_ms, sort_launch_start);
+        profile.sort_launches = 1;
+        auto sort_sync_start = CollectKStageProfile::Clock::now();
         CU_CHECK(cuStreamSynchronize(nullptr));
+        profile.add_since(profile.sort_sync_ms, sort_sync_start);
 
+        auto metadata_start = CollectKStageProfile::Clock::now();
         download(emitted_count_out, emitted_device.ptr, 1);
         download(overflowed_out, overflowed_device.ptr, 1);
+        profile.add_since(profile.tile_metadata_download_ms, metadata_start);
         *d2h_transfers_out += 2;
+        profile.metadata_fields_downloaded += 2;
+        profile.append(*emitted_count_out, *overflowed_out, *h2d_transfers_out,
+                       *d2h_transfers_out, *internal_device_transfers_out);
     }, error_out, error_size);
 }
 
