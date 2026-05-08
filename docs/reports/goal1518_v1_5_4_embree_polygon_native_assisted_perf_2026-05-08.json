@@ -1,0 +1,202 @@
+{
+  "claim_boundary": "Goal1518 records CPU Embree native-assisted polygon app timing for exact measured modes only. It does not authorize public speedup wording, broad polygon/GIS claims, broad RTX wording, whole-app claims, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, or release action.",
+  "claim_flags": {
+    "broad_polygon_or_gis_claim_authorized": false,
+    "broad_rtx_wording_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_collect_k_promotion_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "git_commit": "1ed76168c535a24f1480021258d869d2380e819f",
+  "goal": "Goal1518",
+  "polygon_pair_overlap_area_rows": {
+    "app": "polygon_pair_overlap_area_rows",
+    "backend": "embree",
+    "boundary": "Summary mode omits full overlap rows from the JSON payload. Embree uses native LSI/PIP positive candidate discovery, then CPU/Python exact grid-cell area refinement.",
+    "cases": [
+      {
+        "copies": 256,
+        "rows": {
+          "backend": "embree",
+          "copies": 256,
+          "json_bytes_median": 68488,
+          "left_polygon_count": 512,
+          "max_seconds": 0.06271980502060615,
+          "median_seconds": 0.050687148002907634,
+          "min_seconds": 0.042876798019278795,
+          "output_mode": "rows",
+          "repeats": 3,
+          "right_polygon_count": 768
+        },
+        "summary": {
+          "backend": "embree",
+          "copies": 256,
+          "json_bytes_median": 3915,
+          "json_reduction_vs_rows": 17.49374201787995,
+          "left_polygon_count": 512,
+          "max_seconds": 0.057022396998945624,
+          "median_seconds": 0.05521027999930084,
+          "min_seconds": 0.0516844840021804,
+          "output_mode": "summary",
+          "repeats": 3,
+          "right_polygon_count": 768,
+          "speedup_vs_rows": 0.9180744601104996
+        }
+      },
+      {
+        "copies": 1024,
+        "rows": {
+          "backend": "embree",
+          "copies": 1024,
+          "json_bytes_median": 267502,
+          "left_polygon_count": 2048,
+          "max_seconds": 0.2555774029751774,
+          "median_seconds": 0.2535636519896798,
+          "min_seconds": 0.25252485601231456,
+          "output_mode": "rows",
+          "repeats": 3,
+          "right_polygon_count": 3072
+        },
+        "summary": {
+          "backend": "embree",
+          "copies": 1024,
+          "json_bytes_median": 3923,
+          "json_reduction_vs_rows": 68.18812133571247,
+          "left_polygon_count": 2048,
+          "max_seconds": 0.2588369370205328,
+          "median_seconds": 0.2539015299989842,
+          "min_seconds": 0.24729779502376914,
+          "output_mode": "summary",
+          "repeats": 3,
+          "right_polygon_count": 3072,
+          "speedup_vs_rows": 0.9986692557177353
+        }
+      },
+      {
+        "copies": 4096,
+        "rows": {
+          "backend": "embree",
+          "copies": 4096,
+          "json_bytes_median": 1075441,
+          "left_polygon_count": 8192,
+          "max_seconds": 2.5597236860194243,
+          "median_seconds": 2.500900162005564,
+          "min_seconds": 2.4607408280135132,
+          "output_mode": "rows",
+          "repeats": 3,
+          "right_polygon_count": 12288
+        },
+        "summary": {
+          "backend": "embree",
+          "copies": 4096,
+          "json_bytes_median": 3926,
+          "json_reduction_vs_rows": 273.9279164544065,
+          "left_polygon_count": 8192,
+          "max_seconds": 1.3953853749844711,
+          "median_seconds": 1.3941118140064646,
+          "min_seconds": 1.3779755870054942,
+          "output_mode": "summary",
+          "repeats": 3,
+          "right_polygon_count": 12288,
+          "speedup_vs_rows": 1.7939021367435075
+        }
+      }
+    ],
+    "goal": 732,
+    "measurement": "run_case plus json.dumps wall-clock seconds",
+    "repeats": 3
+  },
+  "polygon_set_jaccard": {
+    "app": "polygon_set_jaccard",
+    "boundary": "This characterizes scalable polygon-set Jaccard fixtures. Embree uses native LSI/PIP positive candidate discovery; exact grid-cell set-area refinement remains CPU/Python-owned.",
+    "cases": [
+      {
+        "copies": 64,
+        "cpu_python_reference": {
+          "backend": "cpu_python_reference",
+          "copies": 64,
+          "json_bytes_median": 3354,
+          "left_polygon_count": 128,
+          "max_seconds": 0.006524909986183047,
+          "median_seconds": 0.0063951219781301916,
+          "min_seconds": 0.006357723992550746,
+          "repeats": 3,
+          "right_polygon_count": 128
+        },
+        "embree": {
+          "backend": "embree",
+          "copies": 64,
+          "json_bytes_median": 9661,
+          "left_polygon_count": 128,
+          "max_seconds": 0.010021748021245003,
+          "median_seconds": 0.00995929300552234,
+          "min_seconds": 0.009840651007834822,
+          "repeats": 3,
+          "right_polygon_count": 128,
+          "speedup_vs_cpu_python_reference": 0.6421261001743952
+        }
+      },
+      {
+        "copies": 256,
+        "cpu_python_reference": {
+          "backend": "cpu_python_reference",
+          "copies": 256,
+          "json_bytes_median": 3359,
+          "left_polygon_count": 512,
+          "max_seconds": 0.02550390499527566,
+          "median_seconds": 0.025120759004494175,
+          "min_seconds": 0.025061466003535315,
+          "repeats": 3,
+          "right_polygon_count": 512
+        },
+        "embree": {
+          "backend": "embree",
+          "copies": 256,
+          "json_bytes_median": 18668,
+          "left_polygon_count": 512,
+          "max_seconds": 0.11064266102039255,
+          "median_seconds": 0.11002542500500567,
+          "min_seconds": 0.10922615599702112,
+          "repeats": 3,
+          "right_polygon_count": 512,
+          "speedup_vs_cpu_python_reference": 0.22831776385641128
+        }
+      },
+      {
+        "copies": 1024,
+        "cpu_python_reference": {
+          "backend": "cpu_python_reference",
+          "copies": 1024,
+          "json_bytes_median": 3367,
+          "left_polygon_count": 2048,
+          "max_seconds": 0.10975082899676636,
+          "median_seconds": 0.10950605297693983,
+          "min_seconds": 0.10107580298790708,
+          "repeats": 3,
+          "right_polygon_count": 2048
+        },
+        "embree": {
+          "backend": "embree",
+          "copies": 1024,
+          "json_bytes_median": 55701,
+          "left_polygon_count": 2048,
+          "max_seconds": 1.604947809013538,
+          "median_seconds": 1.6036005249770824,
+          "min_seconds": 1.5976396660262253,
+          "repeats": 3,
+          "right_polygon_count": 2048,
+          "speedup_vs_cpu_python_reference": 0.06828761357415047
+        }
+      }
+    ],
+    "goal": 733,
+    "measurement": "run_case plus json.dumps wall-clock seconds",
+    "repeats": 3
+  },
+  "repeats": 3,
+  "status": "goal1518_embree_polygon_native_assisted_perf_recorded",
+  "timing_scope": "Python app run_case plus json.dumps timing for selected polygon app modes. Embree uses native-assisted candidate discovery; exact polygon/set refinement and JSON serialization remain in the measured Python app envelope.",
+  "valid": true
+}

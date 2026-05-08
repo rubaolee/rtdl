@@ -86,14 +86,28 @@ class Goal1518EmbreePolygonNativeAssistedPerfTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "requires polygon pair and Jaccard"):
             goal1518.validate_payload(payload)
 
-    def test_measured_artifacts_are_valid_when_present(self):
-        if not REPORT_JSON.exists() or not REPORT_MD.exists():
-            self.skipTest("Goal1518 measured artifacts are not present yet")
+    def test_measured_artifacts_are_valid(self):
+        self.assertTrue(REPORT_JSON.exists(), "Goal1518 measured JSON artifact must be tracked")
+        self.assertTrue(REPORT_MD.exists(), "Goal1518 measured Markdown artifact must be tracked")
         import json
 
         payload = json.loads(REPORT_JSON.read_text(encoding="utf-8"))
         goal1518.validate_payload(payload)
         self.assertTrue(payload["valid"])
+        self.assertGreaterEqual(len(payload["polygon_pair_overlap_area_rows"]["cases"]), 3)
+        self.assertGreaterEqual(len(payload["polygon_set_jaccard"]["cases"]), 3)
+        pair_ratios = [
+            case["summary"]["speedup_vs_rows"]
+            for case in payload["polygon_pair_overlap_area_rows"]["cases"]
+        ]
+        jaccard_ratios = [
+            case["embree"]["speedup_vs_cpu_python_reference"]
+            for case in payload["polygon_set_jaccard"]["cases"]
+        ]
+        self.assertTrue(any(ratio > 1.0 for ratio in pair_ratios))
+        self.assertTrue(any(ratio < 1.0 for ratio in jaccard_ratios))
+        for value in payload["claim_flags"].values():
+            self.assertFalse(value)
         markdown = REPORT_MD.read_text(encoding="utf-8")
         self.assertIn("polygon/GIS claims", markdown)
         self.assertIn("does not authorize public speedup wording", markdown)
