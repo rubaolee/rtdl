@@ -61,13 +61,41 @@ Output rows:
 `group_by` can be a field name, a tuple/list of field names, `None`, or an
 empty tuple. Groups are emitted in first-seen input order.
 
+## v1.5 Scalar Reduction Primitives
+
+For app-name-free scalar summaries, use
+`rt.run_generic_scalar_reduction(...)`. This helper standardizes the stable
+v1.5 scalar primitive names and result layouts:
+
+| Primitive | `value_field` required? | Result layout |
+| --- | --- | --- |
+| `COUNT_HITS` | no | `scalar_int64_hit_count` |
+| `REDUCE_INT(COUNT)` | no | `scalar_int64_count` |
+| `REDUCE_INT(SUM)` | yes | `scalar_int64_sum` |
+| `REDUCE_FLOAT(MIN)` | yes | `scalar_float64_min` |
+| `REDUCE_FLOAT(MAX)` | yes | `scalar_float64_max` |
+| `REDUCE_FLOAT(SUM)` | yes | `scalar_float64_sum` |
+
+Example:
+
+```python
+summary = rt.run_generic_scalar_reduction(
+    rows,
+    summary_primitive="REDUCE_FLOAT(SUM)",
+    value_field="intersection_area",
+)
+```
+
+Empty-input identities are intentionally narrow: count and sum return zero,
+while float min/max raise because they have no identity for empty input.
+
 ## Boundary
 
-This helper runs in Python over rows that have already been emitted by RTDL.
-It is useful because it removes repeated app boilerplate and keeps ITRE as
+These helpers run in Python over rows that have already been emitted by RTDL.
+They are useful because they remove repeated app boilerplate and keep ITRE as
 `input -> traverse -> refine -> emit -> reduce`.
 
-It is not a native RT backend reduction and must not be described as OptiX,
+They are not native RT backend reductions and must not be described as OptiX,
 Embree, Vulkan, HIPRT, or Apple RT acceleration. Native reductions should only
 be added later if repeated measurements show Python-side row reduction is the
 bottleneck.

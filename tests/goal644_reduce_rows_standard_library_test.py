@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 import rtdsl as rt
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal644ReduceRowsStandardLibraryTest(unittest.TestCase):
@@ -94,6 +98,18 @@ class Goal644ReduceRowsStandardLibraryTest(unittest.TestCase):
                 {"pose_id": 200, "pose_blocked": 0},
             ),
         )
+
+    def test_feature_doc_records_v1_5_scalar_reduction_boundary(self) -> None:
+        text = (ROOT / "docs" / "features" / "reduce_rows" / "README.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("v1.5 Scalar Reduction Primitives", text)
+        self.assertIn("rt.run_generic_scalar_reduction", text)
+        self.assertIn("COUNT_HITS", text)
+        self.assertIn("REDUCE_FLOAT(SUM)", text)
+        self.assertIn("scalar_float64_sum", text)
+        self.assertIn("not native RT backend reductions", text)
 
 
 if __name__ == "__main__":

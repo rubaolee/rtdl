@@ -27,9 +27,9 @@ the current public story:
 13. [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
 14. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
 15. [IR And Lowering](rtdl/ir_and_lowering.md)
-16. [Performance Model](performance_model.md)
-17. [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
-18. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
+16. Performance and backend status: [Performance Model](performance_model.md),
+    [v1.1 OptiX/Embree Status](v1_1_optix_status.md), and
+    [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
