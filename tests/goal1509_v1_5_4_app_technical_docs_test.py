@@ -64,6 +64,13 @@ class Goal1509AppTechnicalDocsTest(unittest.TestCase):
         ]:
             self.assertIn(phrase, text)
 
+    def test_matrix_has_comparison_table(self):
+        text = MATRIX.read_text(encoding="utf-8")
+        self.assertIn("## Comparison Table", text)
+        self.assertIn("| App | v1.0 implementation style | Current main/v1.5.x direction | Copy/reduction change | Goal1408 measured status |", text)
+        self.assertIn("| Database analytics |", text)
+        self.assertIn("| Barnes-Hut force app |", text)
+
     def test_matrix_explains_v1_0_current_and_copy_for_every_app(self):
         text = MATRIX.read_text(encoding="utf-8")
         sections = [part for part in text.split("\n### ") if part.startswith((

@@ -32,6 +32,27 @@ summaries are sufficient, keeping more reduction work in native code, and
 making staging/copy behavior measurable. That is reduced-copy or reduced
 materialization, not true zero-copy.
 
+## Comparison Table
+
+| App | v1.0 implementation style | Current main/v1.5.x direction | Copy/reduction change | Goal1408 measured status |
+| --- | --- | --- | --- | --- |
+| Database analytics | Python DB fixtures plus app-specific compact DB summary continuation. | Move summary-producing subpaths toward generic int/float reductions where traversal plus aggregation fits. | Avoid SQL-style row materialization when compact summaries are requested. | Embree slower `0.696x`; OptiX roughly equal `0.980x`. |
+| Graph analytics | Python graph fixtures plus graph-native summary continuations for selected subpaths. | Isolate graph work as RTDL traversal plus count/reduction, not a full graph engine. | Omit large discovery/triangle rows in summary modes. | OptiX faster `1.292x`; no cited Embree row in Goal1408 local summary. |
+| Service coverage gaps | Fixed-radius household-clinic traversal with app-specific gap summary modes. | Map prepared gap summaries to generic count/threshold reductions. | Return covered/uncovered counts instead of household/clinic/distance rows. | Embree faster `1.594x`; no cited OptiX row. |
+| Event hotspot screening | Radius self-join traversal plus app-specific hotspot count/flag summaries. | Express prepared hotspot mode as integer count/threshold reduction. | Return scalar hotspot counts instead of neighbor-pair rows. | Embree faster `1.401x`; no cited OptiX row. |
+| Facility KNN assignment | KNN rows plus app-specific coverage-threshold prepared mode. | Keep KNN row modes separate; express coverage decision as fixed-radius reduction. | Avoid ranked KNN rows when only service coverage is requested. | Embree faster `1.451x`; OptiX slower `0.875x`. |
+| Road hazard screening | Segment/polygon traversal plus compact hazard summary continuation. | Map hit counts to generic count reductions while Python keeps priority policy. | Avoid full per-road or pair-row payloads in summary modes. | Embree faster `1.163x`; OptiX faster `1.068x`. |
+| Segment/polygon hitcount | Direct segment/polygon join with native hit-count continuation. | Express as generic `COUNT_HITS`. | Return counts without pair witnesses when pair IDs are not requested. | Embree slower `0.865x`; OptiX roughly equal `0.981x`. |
+| Segment/polygon any-hit rows | App-specific bounded pair-row and compact segment output paths. | Segment flags/counts fit any-hit/count reductions; pair rows wait on bounded collection promotion. | Compact modes omit polygon IDs and pair rows. | Excluded because `COLLECT_K_BOUNDED` was deferred. |
+| Polygon-pair overlap area rows | RT-assisted positive candidate discovery plus native exact-area continuation. | Move aggregate count/area summaries toward generic int/float reductions where possible. | Summary mode returns aggregate overlap count/area instead of per-pair rows. | Embree roughly equal `1.031x`; OptiX roughly equal `1.016x`. |
+| Polygon-set Jaccard | Bounded overlap candidate discovery plus set-area/Jaccard continuation. | Wait on bounded collection promotion before stable generic row-producing claims. | Compact summaries depend on safe bounded candidate collection. | Excluded because `COLLECT_K_BOUNDED` was deferred. |
+| Hausdorff distance | KNN/radius traversal plus Python or native directed-summary reduction. | Threshold decisions map to fixed-radius any-hit/count; exact directed summary remains reduction-heavy. | Directed summaries avoid full KNN rows; threshold decisions avoid witness rows. | Embree faster `1.087x`; OptiX roughly equal `0.969x`. |
+| ANN candidate search | Fixed-radius/KNN candidate traversal; Python owns ranking and app policy. | Coverage decision maps to any-hit or threshold reduction. | Avoid candidate rows when only coverage is requested. | Embree slower `0.735x`; OptiX roughly equal `0.998x`. |
+| Outlier detection | Radius-neighbor traversal plus Python thresholding or density summaries. | Density/outlier counts map to generic integer reductions. | Scalar modes avoid per-point labels and neighbor rows. | Embree faster `1.175x`; no cited OptiX row. |
+| DBSCAN clustering | Radius-neighbor traversal; Python owns cluster expansion and labels. | Core counts/flags move toward count/threshold reductions. | Core-count mode avoids full neighbor rows. | Embree slower `0.777x`; no cited OptiX row. |
+| Robot collision screening | Ray/triangle any-hit traversal plus app-specific pose/count continuations. | Pose flags and hit counts fit `ANY_HIT`/`COUNT_HITS`; witness rows remain separate. | Prepared modes avoid per-ray witness row materialization. | Embree slower `0.901x`; OptiX roughly equal `1.028x`. |
+| Barnes-Hut force app | Fixed-radius candidate generation plus native candidate summaries. | Node-coverage decisions map to any-hit/count; opening rule and force reduction stay in Python unless separately implemented. | Candidate summaries avoid large candidate-row output. | Embree slower `0.914x`; OptiX roughly equal `1.022x`. |
+
 ## App Notes
 
 ### Database Analytics
@@ -359,4 +380,3 @@ materialization, not true zero-copy.
   materialization.
 - Performance must be reported per exact app mode, backend, machine, scale, and
   command. Whole-app or broad RTX claims require separate reviewed evidence.
-
