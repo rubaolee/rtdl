@@ -1996,6 +1996,60 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_cub_sort(
         *overflowed = candidate_count > row_capacity ? 1u : 0u;
     }
 }
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_cub_sort_tiles(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        int64_t* rows_out,
+        size_t* emitted_counts,
+        uint32_t* overflowed_flags)
+{
+    constexpr int block_threads = 256;
+    constexpr int items_per_thread = 8;
+    constexpr size_t tile_capacity = static_cast<size_t>(block_threads * items_per_thread);
+    using BlockSort = cub::BlockMergeSort<CollectKRow2, block_threads, items_per_thread>;
+
+    __shared__ typename BlockSort::TempStorage temp_storage;
+    CollectKRow2 rows[items_per_thread];
+
+    const size_t tile_index = static_cast<size_t>(blockIdx.x);
+    const size_t tile_offset = tile_index * tile_capacity;
+    if (tile_offset >= candidate_count)
+        return;
+    const size_t tile_candidate_count =
+        candidate_count - tile_offset < tile_capacity ? candidate_count - tile_offset : tile_capacity;
+    const size_t tid = static_cast<size_t>(threadIdx.x);
+
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < tile_candidate_count) {
+            const size_t input_index = tile_offset + index;
+            rows[item].first = candidate_rows[input_index * 2];
+            rows[item].second = candidate_rows[input_index * 2 + 1];
+        } else {
+            rows[item].first = INT64_MAX;
+            rows[item].second = INT64_MAX;
+        }
+    }
+
+    BlockSort(temp_storage).Sort(rows, CollectKRow2Less());
+
+    int64_t* tile_rows_out = rows_out + tile_index * tile_capacity * 2;
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < tile_candidate_count) {
+            tile_rows_out[index * 2] = rows[item].first;
+            tile_rows_out[index * 2 + 1] = rows[item].second;
+        }
+    }
+
+    if (threadIdx.x == 0) {
+        emitted_counts[tile_index] = tile_candidate_count;
+        overflowed_flags[tile_index] = 0u;
+    }
+}
 )CUDA";
 
 static const char* kCollectKBoundedI64RowWidth2MergeTwoKernelSrc = R"CUDA(
@@ -2972,6 +3026,7 @@ static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;
 static KnnCuFunction      g_collect_k_i64_row_width2_sort;
 static KnnCuFunction      g_collect_k_i64_row_width2_cub_sort;
+static KnnCuFunction      g_collect_k_i64_row_width2_cub_sort_tiles;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_two;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize;

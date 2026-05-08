@@ -788,6 +788,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         &g_collect_k_i64_row_width2_cub_sort.fn,
                         g_collect_k_i64_row_width2_cub_sort.module,
                         "collect_k_bounded_i64_row_width2_cub_sort"));
+                    CU_CHECK(cuModuleGetFunction(
+                        &g_collect_k_i64_row_width2_cub_sort_tiles.fn,
+                        g_collect_k_i64_row_width2_cub_sort.module,
+                        "collect_k_bounded_i64_row_width2_cub_sort_tiles"));
                 });
             }
             std::call_once(g_collect_k_i64_row_width2_merge_two.init, [&]() {
@@ -867,6 +871,20 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
 
             auto temp_sorted_tile = [&](size_t tile_index) {
                 return temp_stage_a.ptr + sizeof(int64_t) * tile_size * 2 * tile_index;
+            };
+            auto launch_cub_sort_tiles = [&]() {
+                void* cub_sort_args[] = {
+                    &candidate_rows,
+                    &candidate_count,
+                    &temp_stage_a.ptr,
+                    &tile_emitted_device.ptr,
+                    &tile_overflowed_device.ptr,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_cub_sort_tiles.fn,
+                    static_cast<unsigned>(tile_count), 1, 1,
+                    256, 1, 1,
+                    0, nullptr, cub_sort_args, nullptr));
             };
             auto launch_sort_tile = [&](size_t tile_index) {
                 size_t tile_candidate_count = std::min(tile_size, candidate_count - tile_index * tile_size);
@@ -987,10 +1005,14 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             };
 
             auto sort_launch_start = CollectKStageProfile::Clock::now();
-            for (size_t tile_index = 0; tile_index < tile_count; ++tile_index)
-                launch_sort_tile(tile_index);
+            if (use_cub_tile_sort) {
+                launch_cub_sort_tiles();
+            } else {
+                for (size_t tile_index = 0; tile_index < tile_count; ++tile_index)
+                    launch_sort_tile(tile_index);
+            }
             profile.add_since(profile.sort_launch_ms, sort_launch_start);
-            profile.sort_launches += tile_count;
+            profile.sort_launches += use_cub_tile_sort ? 1 : tile_count;
             auto sort_sync_start = CollectKStageProfile::Clock::now();
             CU_CHECK(cuStreamSynchronize(nullptr));
             profile.add_since(profile.sort_sync_ms, sort_sync_start);

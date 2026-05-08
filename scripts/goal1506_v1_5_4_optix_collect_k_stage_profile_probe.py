@@ -171,7 +171,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         "native_path": expected_path,
         "tile_count": tile_count,
         "merge_levels": merge_levels,
-        "sort_launches": tile_count,
+        "sort_launches": 1 if use_cub_tile_sort else tile_count,
         "merge_launches": merge_launches,
         "carry_copies": carry_copies,
         "final_copies": 0 if (
