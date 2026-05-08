@@ -6,6 +6,8 @@ from scripts import goal1516_v1_5_4_embree_materialization_summary_perf as goal1
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal1516_v1_5_4_embree_materialization_summary_perf.py"
+REPORT_JSON = ROOT / "docs" / "reports" / "goal1516_v1_5_4_embree_materialization_summary_perf_2026-05-08.json"
+REPORT_MD = ROOT / "docs" / "reports" / "goal1516_v1_5_4_embree_materialization_summary_perf_2026-05-08.md"
 
 
 def _case(app: str) -> dict:
@@ -92,6 +94,29 @@ class Goal1516EmbreeMaterializationSummaryPerfTest(unittest.TestCase):
         payload["cases"][0]["parity_passed"] = False
         with self.assertRaisesRegex(ValueError, "aggregate parity"):
             goal1516.validate_payload(payload)
+
+    def test_measured_artifacts_are_valid_when_present(self):
+        self.assertTrue(REPORT_JSON.exists())
+        self.assertTrue(REPORT_MD.exists())
+        import json
+
+        payload = json.loads(REPORT_JSON.read_text(encoding="utf-8"))
+        goal1516.validate_payload(payload)
+        self.assertTrue(payload["valid"])
+        self.assertTrue(payload["all_parity_passed"])
+        self.assertEqual("lx1", payload["host"])
+        self.assertEqual([256, 1024, 4096], payload["copies"])
+        self.assertEqual(6, len(payload["cases"]))
+        self.assertGreater(
+            sum(int(case["materialized_rows_avoided"]) for case in payload["cases"]),
+            0,
+        )
+
+        markdown = REPORT_MD.read_text(encoding="utf-8")
+        self.assertIn("Goal 1516", markdown)
+        self.assertIn("event_hotspot_screening", markdown)
+        self.assertIn("service_coverage_gaps", markdown)
+        self.assertIn("does not authorize public speedup wording", markdown)
 
 
 if __name__ == "__main__":

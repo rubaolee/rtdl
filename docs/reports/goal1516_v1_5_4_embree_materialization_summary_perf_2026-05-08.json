@@ -1,0 +1,187 @@
+{
+  "all_parity_passed": true,
+  "cases": [
+    {
+      "app": "event_hotspot_screening",
+      "copies": 256,
+      "event_count": 1536,
+      "materialized_rows_avoided": 4602,
+      "parity_passed": true,
+      "row_mode": {
+        "max_sec": 0.013587863999418914,
+        "median_sec": 0.012274669017642736,
+        "min_sec": 0.011558648984646425,
+        "row_count": 4602,
+        "summary_row_count": 0
+      },
+      "summary_mode": {
+        "max_sec": 0.011517956998432055,
+        "median_sec": 0.00963515299372375,
+        "min_sec": 0.009405659977346659,
+        "name": "count_summary",
+        "native_continuation_active": true,
+        "row_count": 0,
+        "summary_row_count": 1536
+      },
+      "summary_speedup_vs_rows": 1.273946456858375
+    },
+    {
+      "app": "service_coverage_gaps",
+      "clinic_count": 768,
+      "copies": 256,
+      "household_count": 1024,
+      "materialized_rows_avoided": 1278,
+      "parity_passed": true,
+      "row_mode": {
+        "max_sec": 0.0067567009828053415,
+        "median_sec": 0.0064487380150239915,
+        "min_sec": 0.006379770988132805,
+        "row_count": 1278,
+        "summary_row_count": 0
+      },
+      "summary_mode": {
+        "max_sec": 0.006311376026133075,
+        "median_sec": 0.0062603749975096434,
+        "min_sec": 0.00612541101872921,
+        "name": "gap_summary",
+        "native_continuation_active": true,
+        "row_count": 0,
+        "summary_row_count": 1024
+      },
+      "summary_speedup_vs_rows": 1.0300881365076817
+    },
+    {
+      "app": "event_hotspot_screening",
+      "copies": 1024,
+      "event_count": 6144,
+      "materialized_rows_avoided": 18426,
+      "parity_passed": true,
+      "row_mode": {
+        "max_sec": 0.059372330986661837,
+        "median_sec": 0.049917918018763885,
+        "min_sec": 0.04171600300469436,
+        "row_count": 18426,
+        "summary_row_count": 0
+      },
+      "summary_mode": {
+        "max_sec": 0.04486262000864372,
+        "median_sec": 0.03730798899778165,
+        "min_sec": 0.0371314010117203,
+        "name": "count_summary",
+        "native_continuation_active": true,
+        "row_count": 0,
+        "summary_row_count": 6144
+      },
+      "summary_speedup_vs_rows": 1.3379954095550963
+    },
+    {
+      "app": "service_coverage_gaps",
+      "clinic_count": 3072,
+      "copies": 1024,
+      "household_count": 4096,
+      "materialized_rows_avoided": 5118,
+      "parity_passed": true,
+      "row_mode": {
+        "max_sec": 0.029479209013516083,
+        "median_sec": 0.024416622996795923,
+        "min_sec": 0.017765527009032667,
+        "row_count": 5118,
+        "summary_row_count": 0
+      },
+      "summary_mode": {
+        "max_sec": 0.022506125998916104,
+        "median_sec": 0.022034071997040883,
+        "min_sec": 0.02145400899462402,
+        "name": "gap_summary",
+        "native_continuation_active": true,
+        "row_count": 0,
+        "summary_row_count": 4096
+      },
+      "summary_speedup_vs_rows": 1.1081303083730965
+    },
+    {
+      "app": "event_hotspot_screening",
+      "copies": 4096,
+      "event_count": 24576,
+      "materialized_rows_avoided": 73722,
+      "parity_passed": true,
+      "row_mode": {
+        "max_sec": 0.22485832197708078,
+        "median_sec": 0.20580307699856348,
+        "min_sec": 0.18076015001861379,
+        "row_count": 73722,
+        "summary_row_count": 0
+      },
+      "summary_mode": {
+        "max_sec": 0.18608234499697573,
+        "median_sec": 0.18067722898558713,
+        "min_sec": 0.17488907801453024,
+        "name": "count_summary",
+        "native_continuation_active": true,
+        "row_count": 0,
+        "summary_row_count": 24576
+      },
+      "summary_speedup_vs_rows": 1.1390648293315406
+    },
+    {
+      "app": "service_coverage_gaps",
+      "clinic_count": 12288,
+      "copies": 4096,
+      "household_count": 16384,
+      "materialized_rows_avoided": 20478,
+      "parity_passed": true,
+      "row_mode": {
+        "max_sec": 0.11067718101548962,
+        "median_sec": 0.09037737699691206,
+        "min_sec": 0.06995346501935273,
+        "row_count": 20478,
+        "summary_row_count": 0
+      },
+      "summary_mode": {
+        "max_sec": 0.10018997598672286,
+        "median_sec": 0.10007058799965307,
+        "min_sec": 0.09878000701428391,
+        "name": "gap_summary",
+        "native_continuation_active": true,
+        "row_count": 0,
+        "summary_row_count": 16384
+      },
+      "summary_speedup_vs_rows": 0.9031362641461184
+    }
+  ],
+  "claim_boundary": "Goal1516 is CPU Embree materialization evidence for selected app modes only. It does not authorize public speedup wording, broad RTX wording, whole-app claims, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, or release action.",
+  "claim_flags": {
+    "broad_rtx_wording_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_collect_k_promotion_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "copies": [
+    256,
+    1024,
+    4096
+  ],
+  "embree_threads": {
+    "auto": true,
+    "effective_threads": 8,
+    "requested": "auto",
+    "source": "default"
+  },
+  "embree_version": [
+    4,
+    3,
+    0
+  ],
+  "git_commit": "ef7890b6f95240c07bdccd05b275cf111d371333",
+  "goal": "Goal1516",
+  "host": "lx1",
+  "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "repeats": 3,
+  "status": "goal1516_embree_materialization_summary_perf_recorded",
+  "timing_scope": "Python app function timing for Embree row mode versus Embree compact summary mode. This includes Python app orchestration and excludes CLI JSON printing.",
+  "valid": true,
+  "warmups": 1
+}
