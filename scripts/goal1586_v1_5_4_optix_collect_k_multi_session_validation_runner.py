@@ -30,6 +30,51 @@ def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _run_text(cmd: list[str]) -> str:
+    try:
+        completed = subprocess.run(
+            cmd,
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    except FileNotFoundError:
+        return "unavailable"
+    if completed.returncode != 0:
+        return "unavailable"
+    return completed.stdout.strip()
+
+
+def _gpu_metadata(device_label: str | None) -> dict[str, Any]:
+    query = _run_text(
+        [
+            "nvidia-smi",
+            "--query-gpu=name,driver_version,cuda_version,compute_cap",
+            "--format=csv,noheader",
+        ]
+    )
+    devices = []
+    if query != "unavailable":
+        for line in query.splitlines():
+            parts = [part.strip() for part in line.split(",")]
+            if len(parts) == 4:
+                devices.append(
+                    {
+                        "name": parts[0],
+                        "driver_version": parts[1],
+                        "cuda_version": parts[2],
+                        "compute_capability": parts[3],
+                    }
+                )
+    return {
+        "device_label": device_label,
+        "nvidia_smi_query": query,
+        "devices": devices,
+    }
+
+
 def _case_map(data: dict[str, Any]) -> dict[int, dict[str, Any]]:
     return {int(case["candidate_count"]): case for case in data.get("cases", [])}
 
@@ -105,6 +150,8 @@ def _write_markdown(aggregate: dict[str, Any], md_path: Path) -> None:
         f"- Commit: `{aggregate['commit']}`",
         f"- Sessions: `{aggregate['session_count']}`",
         f"- Output prefix: `{aggregate['output_prefix']}`",
+        f"- Device label: `{aggregate['gpu_metadata'].get('device_label')}`",
+        f"- GPU query: `{aggregate['gpu_metadata'].get('nvidia_smi_query')}`",
         "",
         "## Targeted Reruns",
         "",
@@ -141,6 +188,7 @@ def main() -> int:
     parser.add_argument("--repeats", type=int, default=5, help="Sweep repeats per session")
     parser.add_argument("--targeted-repeats", type=int, default=9, help="Targeted rerun repeats per session")
     parser.add_argument("--candidate-preset-repeats", type=int, default=5, help="Candidate preset repeats per session")
+    parser.add_argument("--device-label", default=None, help="Optional human label for the GPU/architecture under test")
     parser.add_argument(
         "--ld-library-path",
         default=os.environ.get("LD_LIBRARY_PATH"),
@@ -191,6 +239,7 @@ def main() -> int:
     aggregate = {
         "status": "goal1586_multi_session_validation_recorded",
         "commit": git_commit,
+        "gpu_metadata": _gpu_metadata(args.device_label),
         "session_count": args.sessions,
         "output_prefix": str(output_prefix),
         "sessions": sessions,

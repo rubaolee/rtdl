@@ -13,11 +13,14 @@ class Goal1586V154OptixCollectKMultiSessionRunnerTest(unittest.TestCase):
         self.assertIn('f"{output_prefix.name}_session{session_index}"', source)
         self.assertIn("--candidate-preset-smoke", source)
         self.assertIn("--candidate-preset-repeats", source)
+        self.assertIn("--device-label", source)
 
     def test_runner_aggregates_targeted_counts_and_claim_boundary(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
         self.assertIn("TARGET_COUNTS = (49153, 65536, 65537)", source)
         self.assertIn("goal1586_multi_session_validation_recorded", source)
+        self.assertIn("gpu_metadata", source)
+        self.assertIn("--query-gpu=name,driver_version,cuda_version,compute_cap", source)
         self.assertIn("does not authorize public speedup wording", source)
         self.assertIn("stable primitive promotion", source)
 

@@ -4,6 +4,8 @@
 
 Added a reusable multi-session validation runner for the OptiX `COLLECT_K_BOUNDED` candidate preset. The runner prevents manual output-prefix mistakes by creating explicit per-session prefixes and aggregating the targeted baseline, alias, and candidate-preset results into compact JSON and Markdown summaries.
 
+The runner now also captures `nvidia-smi` GPU metadata and accepts `--device-label`, so future non-Ada evidence can be identified directly in the artifact.
+
 ## Files
 
 - Runner: `scripts/goal1586_v1_5_4_optix_collect_k_multi_session_validation_runner.py`
@@ -40,6 +42,7 @@ python3 scripts/goal1586_v1_5_4_optix_collect_k_multi_session_validation_runner.
   --repeats 5 \
   --targeted-repeats 9 \
   --candidate-preset-repeats 5 \
+  --device-label non_ada_validation \
   --ld-library-path /usr/local/cuda-12.8/compat:/usr/local/cuda-12.8/lib64
 ```
 
