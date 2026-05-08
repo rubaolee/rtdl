@@ -1,0 +1,59 @@
+{
+  "claim_boundary": "Goal1501 validates the Python opt-in wrapper for the measured OptiX COLLECT_K_BOUNDED device-pointer symbol only. It does not authorize true zero-copy wording, public speedup wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "claim_flags": {
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_public_primitive_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "default_python_surface_refuses_without_opt_in": true,
+  "device_name": "NVIDIA RTX 4000 Ada Generation",
+  "device_symbol": "rtdl_optix_collect_k_bounded_i64_device",
+  "expected_rows": [
+    [
+      1,
+      10
+    ],
+    [
+      2,
+      20
+    ],
+    [
+      3,
+      30
+    ]
+  ],
+  "goal": "Goal1501",
+  "measured_on_real_nvidia": true,
+  "native_evidence_commit": "6f953c4434147abd29b9c88dda1f72f14b23b233",
+  "opt_in_argument": "allow_experimental=True",
+  "pod_checkout": "/root/rtdl_goal1498/rtdl",
+  "pod_ssh": "root@213.173.108.6 -p 17339",
+  "result": {
+    "candidate_id_rows": [
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        20
+      ],
+      [
+        3,
+        30
+      ]
+    ],
+    "overflowed": false,
+    "valid_count": 3
+  },
+  "status": "goal1501_python_optix_device_collect_k_bridge_validated",
+  "transfer_accounting": {
+    "allocation_only_transfers_distinguished_from_content_transfers": true,
+    "device_to_host_transfers_after_backend_execution": 2,
+    "host_to_device_transfers_before_backend_execution": 0,
+    "internal_device_transfers_if_any": 0
+  }
+}

@@ -36,7 +36,7 @@ def build_report() -> dict[str, Any]:
         refusal = str(exc)
     return {
         "goal": "Goal1497",
-        "status": "goal1497_optix_device_pointer_runtime_refuses_unimplemented_execution",
+        "status": "goal1497_optix_device_pointer_runtime_refuses_without_explicit_experimental_opt_in",
         "device_symbol": optix_runtime.OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL,
         "host_symbol": optix_runtime.OPTIX_COLLECT_K_BOUNDED_I64_HOST_SYMBOL,
         "runtime_refused_execution": refused,
@@ -51,12 +51,12 @@ def build_report() -> dict[str, Any]:
             "release_action_authorized": False,
         },
         "claim_boundary": (
-            "Goal1497 wires Python runtime awareness of the reserved OptiX "
-            "COLLECT_K_BOUNDED device-pointer symbol, but refuses execution "
-            "until a measured native implementation exists. It does not run "
-            "OptiX, does not prove true zero-copy, and does not authorize public "
-            "speedup wording, whole-app claims, partner tensor handoff, stable "
-            "primitive promotion, or release action."
+            "Goal1497 wires Python runtime awareness of the measured OptiX "
+            "COLLECT_K_BOUNDED device-pointer symbol, but refuses default "
+            "execution unless the caller explicitly enables the experimental "
+            "surface. It does not prove true zero-copy and does not authorize "
+            "public speedup wording, whole-app claims, partner tensor handoff, "
+            "stable primitive promotion, or release action."
         ),
     }
 
@@ -69,9 +69,9 @@ def validate_report(report: dict[str, Any]) -> dict[str, Any]:
     if report.get("host_symbol") != "rtdl_optix_collect_k_bounded_i64":
         raise ValueError("Goal1497 must preserve the current host symbol name")
     if report.get("runtime_refused_execution") is not True:
-        raise ValueError("Goal1497 runtime must refuse unimplemented device execution")
-    if "reserved but not implemented" not in report.get("runtime_refusal_message", ""):
-        raise ValueError("Goal1497 refusal message must identify reserved unimplemented status")
+        raise ValueError("Goal1497 runtime must refuse default device execution")
+    if "remains experimental" not in report.get("runtime_refusal_message", ""):
+        raise ValueError("Goal1497 refusal message must identify experimental opt-in status")
     if report.get("accepted_for_goal1493_device_buffer_execution") is not False:
         raise ValueError("Goal1497 must not be accepted as Goal1493 evidence")
     for flag, value in report.get("claim_flags", {}).items():
@@ -79,8 +79,8 @@ def validate_report(report: dict[str, Any]) -> dict[str, Any]:
             raise ValueError(f"Goal1497 must keep {flag}=False")
     for phrase in (
         "runtime awareness",
-        "refuses execution",
-        "does not run OptiX",
+        "refuses default",
+        "experimental",
         "does not prove true zero-copy",
         "public speedup wording",
         "partner tensor handoff",
@@ -97,7 +97,7 @@ def to_markdown(report: dict[str, Any]) -> str:
         "",
         "## Verdict",
         "",
-        "`goal1497_optix_device_pointer_runtime_refuses_unimplemented_execution`",
+        "`goal1497_optix_device_pointer_runtime_refuses_without_explicit_experimental_opt_in`",
         "",
         "## Runtime Surface",
         "",

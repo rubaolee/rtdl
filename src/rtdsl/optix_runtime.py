@@ -110,8 +110,9 @@ def collect_k_bounded_i64_device_optix(
     row_width: int,
     rows_out_device_ptr: int,
     row_capacity: int,
+    allow_experimental: bool = False,
 ) -> dict[str, object]:
-    """Reserved Python entry point for the future OptiX device-pointer ABI."""
+    """Experimental Python entry point for the measured OptiX device-pointer ABI."""
     if row_width <= 0:
         raise ValueError("row_width must be positive")
     if candidate_count < 0 or row_capacity < 0:
@@ -120,10 +121,53 @@ def collect_k_bounded_i64_device_optix(
         raise ValueError("candidate_rows_device_ptr must be nonzero when candidate_count is nonzero")
     if row_capacity and int(rows_out_device_ptr) == 0:
         raise ValueError("rows_out_device_ptr must be nonzero when row_capacity is nonzero")
-    raise RuntimeError(
-        f"{OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL} is reserved but not implemented; "
-        "do not use it as Goal1493 device-buffer execution evidence"
+    if not allow_experimental:
+        raise RuntimeError(
+            f"{OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL} is measured natively but remains experimental; "
+            "pass allow_experimental=True only for controlled Goal1500-style device-buffer validation"
+        )
+
+    lib = _load_optix_library()
+    symbol = _require_backend_symbol(lib, OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL)
+    emitted_count = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
+    h2d_transfers = ctypes.c_uint64()
+    d2h_transfers = ctypes.c_uint64()
+    internal_device_transfers = ctypes.c_uint64()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        ctypes.c_uint64(int(candidate_rows_device_ptr)),
+        ctypes.c_size_t(int(candidate_count)),
+        ctypes.c_size_t(int(row_width)),
+        ctypes.c_uint64(int(rows_out_device_ptr)),
+        ctypes.c_size_t(int(row_capacity)),
+        ctypes.byref(emitted_count),
+        ctypes.byref(overflowed),
+        ctypes.byref(h2d_transfers),
+        ctypes.byref(d2h_transfers),
+        ctypes.byref(internal_device_transfers),
+        error,
+        len(error),
     )
+    _check_status(status, error)
+    return {
+        "valid_count": int(emitted_count.value),
+        "overflowed": bool(overflowed.value),
+        "transfer_accounting": {
+            "host_to_device_transfers_before_backend_execution": int(h2d_transfers.value),
+            "device_to_host_transfers_after_backend_execution": int(d2h_transfers.value),
+            "internal_device_transfers_if_any": int(internal_device_transfers.value),
+            "allocation_only_transfers_distinguished_from_content_transfers": True,
+        },
+        "claim_flags": {
+            "true_zero_copy_authorized": False,
+            "public_speedup_wording_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "stable_public_primitive_authorized": False,
+            "partner_tensor_handoff_authorized": False,
+            "release_action_authorized": False,
+        },
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -4001,6 +4045,24 @@ def _register_argtypes(lib) -> None:
     if symbol is not None:
         symbol.argtypes = [ctypes.POINTER(_RtdlDbCompactSummaryResult), ctypes.c_size_t]
         symbol.restype = None
+
+    symbol = _find_optional_backend_symbol(lib, OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL)
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
 
 
 def _require_backend_symbol(lib, symbol_name: str):
