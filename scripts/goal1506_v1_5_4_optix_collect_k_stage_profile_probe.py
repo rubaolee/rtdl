@@ -147,7 +147,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         pair_count = current_segments // 2
         has_carry = (current_segments % 2) != 0
         merge_levels += 1
-        merge_launches += pair_count
+        merge_launches += 1
         metadata_fields_downloaded += pair_count * 2
         if has_carry:
             carry_copies += 1

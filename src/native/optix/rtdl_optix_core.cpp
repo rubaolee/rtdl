@@ -2032,6 +2032,117 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_two(
 }
 )CUDA";
 
+static const char* kCollectKBoundedI64RowWidth2MergeLevelKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+__device__ int collect_k_merge_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+__device__ void collect_k_merge_next_pair(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t* first_index,
+        size_t* second_index,
+        int64_t* value0,
+        int64_t* value1)
+{
+    if (*second_index >= second_count) {
+        *value0 = first_rows[*first_index * 2];
+        *value1 = first_rows[*first_index * 2 + 1];
+        ++(*first_index);
+        return;
+    }
+    if (*first_index >= first_count) {
+        *value0 = second_rows[*second_index * 2];
+        *value1 = second_rows[*second_index * 2 + 1];
+        ++(*second_index);
+        return;
+    }
+
+    const int64_t first0 = first_rows[*first_index * 2];
+    const int64_t first1 = first_rows[*first_index * 2 + 1];
+    const int64_t second0 = second_rows[*second_index * 2];
+    const int64_t second1 = second_rows[*second_index * 2 + 1];
+    const int cmp = collect_k_merge_pair_compare(first0, first1, second0, second1);
+    if (cmp <= 0) {
+        *value0 = first0;
+        *value1 = first1;
+        ++(*first_index);
+        if (cmp == 0)
+            ++(*second_index);
+    } else {
+        *value0 = second0;
+        *value1 = second1;
+        ++(*second_index);
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_level(
+        const uint64_t* first_row_ptrs,
+        const size_t* first_counts,
+        const uint64_t* second_row_ptrs,
+        const size_t* second_counts,
+        const uint64_t* output_row_ptrs,
+        size_t output_capacity,
+        size_t* emitted_counts,
+        uint32_t* overflowed,
+        size_t pair_count)
+{
+    const size_t pair_index = blockIdx.x;
+    if (pair_index >= pair_count || threadIdx.x != 0)
+        return;
+
+    const int64_t* first_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(first_row_ptrs[pair_index]));
+    const int64_t* second_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(second_row_ptrs[pair_index]));
+    int64_t* rows_out =
+        reinterpret_cast<int64_t*>(static_cast<uintptr_t>(output_row_ptrs[pair_index]));
+    const size_t first_count = first_counts[pair_index];
+    const size_t second_count = second_counts[pair_index];
+
+    size_t first_index = 0;
+    size_t second_index = 0;
+    size_t unique_count = 0;
+    bool have_last = false;
+    int64_t last0 = 0;
+    int64_t last1 = 0;
+    while (first_index < first_count || second_index < second_count) {
+        int64_t value0 = 0;
+        int64_t value1 = 0;
+        collect_k_merge_next_pair(
+            first_rows, first_count, second_rows, second_count,
+            &first_index, &second_index, &value0, &value1);
+        if (have_last && value0 == last0 && value1 == last1)
+            continue;
+        if (unique_count < output_capacity) {
+            rows_out[unique_count * 2] = value0;
+            rows_out[unique_count * 2 + 1] = value1;
+        }
+        last0 = value0;
+        last1 = value1;
+        have_last = true;
+        ++unique_count;
+    }
+
+    emitted_counts[pair_index] = unique_count;
+    overflowed[pair_index] = unique_count > output_capacity ? 1u : 0u;
+}
+)CUDA";
+
 static const char* kFixedRadiusNeighbors3DKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -2642,6 +2753,7 @@ static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;
 static KnnCuFunction      g_collect_k_i64_row_width2_sort;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_two;
+static KnnCuFunction      g_collect_k_i64_row_width2_merge_level;
 
 // GPU structs for upload
 
