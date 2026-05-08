@@ -2441,3 +2441,91 @@ extern "C" int rtdl_optix_db_dataset_compact_summary_batch(
 extern "C" void rtdl_optix_free_rows(void* rows) {
     std::free(rows);
 }
+
+extern "C" int rtdl_optix_cuda_graph_replay_probe(
+        size_t repeats,
+        size_t commands_per_replay,
+        double* direct_ms_out,
+        double* graph_ms_out,
+        uint32_t* final_value_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!direct_ms_out || !graph_ms_out || !final_value_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        if (repeats == 0) {
+            repeats = 1;
+        }
+        if (commands_per_replay == 0) {
+            commands_per_replay = 1;
+        }
+
+        CUdeviceptr device_value = 0;
+        CUstream stream = nullptr;
+        CUgraph graph = nullptr;
+        CUgraphExec graph_exec = nullptr;
+        try {
+            (void)get_optix_context();
+            CU_CHECK(cuMemAlloc(&device_value, sizeof(uint32_t)));
+            CU_CHECK(cuStreamCreate(&stream, CU_STREAM_NON_BLOCKING));
+
+            auto direct_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index) {
+                for (size_t command = 0; command < commands_per_replay; ++command) {
+                    CU_CHECK(cuMemsetD32Async(
+                        device_value,
+                        static_cast<unsigned int>(
+                            0x12340000u
+                            + static_cast<uint32_t>(
+                                ((index * commands_per_replay) + command) & 0xffffu)),
+                        1,
+                        stream));
+                }
+            }
+            CU_CHECK(cuStreamSynchronize(stream));
+            *direct_ms_out = CollectKStageProfile::elapsed_ms(direct_start);
+
+            CU_CHECK(cuStreamBeginCapture(stream, CU_STREAM_CAPTURE_MODE_GLOBAL));
+            for (size_t command = 0; command < commands_per_replay; ++command) {
+                CU_CHECK(cuMemsetD32Async(
+                    device_value,
+                    static_cast<unsigned int>(
+                        0x5a5aa500u + static_cast<uint32_t>(command & 0xffu)),
+                    1,
+                    stream));
+            }
+            CU_CHECK(cuStreamEndCapture(stream, &graph));
+            CU_CHECK(cuGraphInstantiate(&graph_exec, graph, 0));
+
+            auto graph_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index) {
+                CU_CHECK(cuGraphLaunch(graph_exec, stream));
+            }
+            CU_CHECK(cuStreamSynchronize(stream));
+            *graph_ms_out = CollectKStageProfile::elapsed_ms(graph_start);
+
+            CU_CHECK(cuMemcpyDtoH(final_value_out, device_value, sizeof(uint32_t)));
+        } catch (...) {
+            if (graph_exec)
+                cuGraphExecDestroy(graph_exec);
+            if (graph)
+                cuGraphDestroy(graph);
+            if (stream)
+                cuStreamDestroy(stream);
+            if (device_value)
+                cuMemFree(device_value);
+            throw;
+        }
+
+        if (graph_exec)
+            CU_CHECK(cuGraphExecDestroy(graph_exec));
+        if (graph)
+            CU_CHECK(cuGraphDestroy(graph));
+        if (stream)
+            CU_CHECK(cuStreamDestroy(stream));
+        if (device_value)
+            CU_CHECK(cuMemFree(device_value));
+    }, error_out, error_size);
+}

@@ -1,0 +1,68 @@
+{
+  "cases": [
+    {
+      "claim_boundary": "CUDA graph replay feasibility only; not a COLLECT_K_BOUNDED measurement and does not authorize a collect-k speedup claim.",
+      "commands_per_replay": 1,
+      "direct_ms": 33.549103,
+      "direct_over_graph_speedup": 0.8023699461060844,
+      "direct_per_command_us": 1.6774551500000001,
+      "direct_per_replay_us": 1.6774551500000001,
+      "final_value_hex": "0x5a5aa500",
+      "graph_ms": 41.812512,
+      "graph_per_command_us": 2.0906255999999996,
+      "graph_per_replay_us": 2.0906255999999996,
+      "library": "build/librtdl_optix.so",
+      "probe": "goal1555_v1_5_4_optix_cuda_graph_replay_probe",
+      "repeats": 20000
+    },
+    {
+      "claim_boundary": "CUDA graph replay feasibility only; not a COLLECT_K_BOUNDED measurement and does not authorize a collect-k speedup claim.",
+      "commands_per_replay": 4,
+      "direct_ms": 136.524054,
+      "direct_over_graph_speedup": 1.0813233331795196,
+      "direct_per_command_us": 1.7065506750000001,
+      "direct_per_replay_us": 6.8262027000000005,
+      "final_value_hex": "0x5a5aa503",
+      "graph_ms": 126.256458,
+      "graph_per_command_us": 1.578205725,
+      "graph_per_replay_us": 6.3128229,
+      "library": "build/librtdl_optix.so",
+      "probe": "goal1555_v1_5_4_optix_cuda_graph_replay_probe",
+      "repeats": 20000
+    },
+    {
+      "claim_boundary": "CUDA graph replay feasibility only; not a COLLECT_K_BOUNDED measurement and does not authorize a collect-k speedup claim.",
+      "commands_per_replay": 8,
+      "direct_ms": 269.166945,
+      "direct_over_graph_speedup": 1.1148845738413349,
+      "direct_per_command_us": 1.6822934062500001,
+      "direct_per_replay_us": 13.458347250000001,
+      "final_value_hex": "0x5a5aa507",
+      "graph_ms": 241.430325,
+      "graph_per_command_us": 1.50893953125,
+      "graph_per_replay_us": 12.07151625,
+      "library": "build/librtdl_optix.so",
+      "probe": "goal1555_v1_5_4_optix_cuda_graph_replay_probe",
+      "repeats": 20000
+    },
+    {
+      "claim_boundary": "CUDA graph replay feasibility only; not a COLLECT_K_BOUNDED measurement and does not authorize a collect-k speedup claim.",
+      "commands_per_replay": 16,
+      "direct_ms": 538.77742,
+      "direct_over_graph_speedup": 1.1525039612887558,
+      "direct_per_command_us": 1.6836794375000002,
+      "direct_per_replay_us": 26.938871000000002,
+      "final_value_hex": "0x5a5aa50f",
+      "graph_ms": 467.484224,
+      "graph_per_command_us": 1.4608881999999999,
+      "graph_per_replay_us": 23.374211199999998,
+      "library": "build/librtdl_optix.so",
+      "probe": "goal1555_v1_5_4_optix_cuda_graph_replay_probe",
+      "repeats": 20000
+    }
+  ],
+  "claim_boundary": "CUDA graph replay feasibility only; not a COLLECT_K_BOUNDED measurement and does not authorize a collect-k speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1555_v1_5_4_optix_cuda_graph_replay_probe",
+  "repeats": 20000
+}
