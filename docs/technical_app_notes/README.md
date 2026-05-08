@@ -24,10 +24,12 @@ bounded collection, and reduced-copy mechanisms.
 
 1. Read `app_implementation_matrix.md` for the per-app architecture and
    v1.0-to-current transition.
-2. Read `docs/application_catalog.md` for public-facing app names, commands,
+2. Read `app_primitive_classification.md` for reduction, split-contract,
+   candidate-refinement, and bounded-collection planning groups.
+3. Read `docs/application_catalog.md` for public-facing app names, commands,
    and supported summary modes.
-3. Read `docs/app_engine_support_matrix.md` for backend support status.
-4. Read the relevant performance reports only as measured evidence for their
+4. Read `docs/app_engine_support_matrix.md` for backend support status.
+5. Read the relevant performance reports only as measured evidence for their
    exact command scope.
 
 ## Shared Architecture Terms
@@ -45,4 +47,3 @@ bounded collection, and reduced-copy mechanisms.
   complete.
 - Reduced-copy means avoiding unnecessary intermediate materialization or
   reusing staging buffers. It is not the same claim as true zero-copy.
-
