@@ -16,9 +16,13 @@ class Goal1539V154OptixCollectKCubTileSortRuntimeTest(unittest.TestCase):
 
         self.assertIn("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT", api)
         self.assertIn("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL", api)
+        self.assertIn("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE", api)
         self.assertIn("collect_k_use_cub_tile_sort", api)
+        self.assertIn("collect_k_reuse_workspace", api)
         self.assertIn("if (use_cub_tile_sort)", api)
         self.assertIn("launch_cub_sort_tiles", api)
+        self.assertIn("CollectKRowWidth2Workspace", api)
+        self.assertIn("g_collect_k_row_width2_workspace_mutex", api)
 
     def test_default_bitonic_sort_kernel_remains_available(self) -> None:
         source = CORE_CPP.read_text(encoding="utf-8")

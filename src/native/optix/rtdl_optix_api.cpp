@@ -652,6 +652,64 @@ static bool collect_k_use_batched_compact_level()
     return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
 }
 
+static bool collect_k_reuse_workspace()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
+    return raw && raw[0] != '\0' && std::strcmp(raw, "0") != 0;
+}
+
+struct CollectKRowWidth2Workspace {
+    size_t max_tiled_candidates = 0;
+    CUdeviceptr temp_stage_a = 0;
+    CUdeviceptr temp_stage_b = 0;
+    CUdeviceptr tile_emitted_device = 0;
+    CUdeviceptr tile_overflowed_device = 0;
+    CUdeviceptr merge_emitted_device = 0;
+    CUdeviceptr merge_overflowed_device = 0;
+    CUdeviceptr merge_first_rows_device = 0;
+    CUdeviceptr merge_second_rows_device = 0;
+    CUdeviceptr merge_output_rows_device = 0;
+    CUdeviceptr merge_first_counts_device = 0;
+    CUdeviceptr merge_second_counts_device = 0;
+    CUdeviceptr final_merged_rows = 0;
+    CUdeviceptr final_marks = 0;
+    CUdeviceptr final_block_counts = 0;
+    CUdeviceptr final_block_offsets = 0;
+    CUdeviceptr final_pair_offsets = 0;
+    CUdeviceptr final_emitted_device = 0;
+    CUdeviceptr final_overflowed_device = 0;
+
+    void ensure(size_t requested_max_tiled_candidates)
+    {
+        if (max_tiled_candidates >= requested_max_tiled_candidates)
+            return;
+        if (max_tiled_candidates != 0)
+            throw std::runtime_error("COLLECT_K_BOUNDED reusable workspace does not support growth yet");
+        max_tiled_candidates = requested_max_tiled_candidates;
+        CU_CHECK(cuMemAlloc(&temp_stage_a, sizeof(int64_t) * max_tiled_candidates * 2));
+        CU_CHECK(cuMemAlloc(&temp_stage_b, sizeof(int64_t) * max_tiled_candidates * 2));
+        CU_CHECK(cuMemAlloc(&tile_emitted_device, sizeof(size_t) * 64));
+        CU_CHECK(cuMemAlloc(&tile_overflowed_device, sizeof(uint32_t) * 64));
+        CU_CHECK(cuMemAlloc(&merge_emitted_device, sizeof(size_t) * 64));
+        CU_CHECK(cuMemAlloc(&merge_overflowed_device, sizeof(uint32_t) * 64));
+        CU_CHECK(cuMemAlloc(&merge_first_rows_device, sizeof(uint64_t) * 64));
+        CU_CHECK(cuMemAlloc(&merge_second_rows_device, sizeof(uint64_t) * 64));
+        CU_CHECK(cuMemAlloc(&merge_output_rows_device, sizeof(uint64_t) * 64));
+        CU_CHECK(cuMemAlloc(&merge_first_counts_device, sizeof(size_t) * 64));
+        CU_CHECK(cuMemAlloc(&merge_second_counts_device, sizeof(size_t) * 64));
+        CU_CHECK(cuMemAlloc(&final_merged_rows, sizeof(int64_t) * max_tiled_candidates * 2));
+        CU_CHECK(cuMemAlloc(&final_marks, sizeof(uint32_t) * max_tiled_candidates));
+        CU_CHECK(cuMemAlloc(&final_block_counts, sizeof(uint32_t) * 512));
+        CU_CHECK(cuMemAlloc(&final_block_offsets, sizeof(uint32_t) * 512));
+        CU_CHECK(cuMemAlloc(&final_pair_offsets, sizeof(uint32_t) * 64));
+        CU_CHECK(cuMemAlloc(&final_emitted_device, sizeof(size_t)));
+        CU_CHECK(cuMemAlloc(&final_overflowed_device, sizeof(uint32_t)));
+    }
+};
+
+static std::mutex g_collect_k_row_width2_workspace_mutex;
+static CollectKRowWidth2Workspace g_collect_k_row_width2_workspace;
+
 extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         uint64_t candidate_rows_device_ptr, size_t candidate_count,
         size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,
@@ -866,24 +924,82 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             const size_t max_tiled_candidates = 131072;
             profile.tile_count = tile_count;
             auto allocation_start = CollectKStageProfile::Clock::now();
-            DevPtr temp_stage_a(sizeof(int64_t) * max_tiled_candidates * 2);
-            DevPtr temp_stage_b(sizeof(int64_t) * max_tiled_candidates * 2);
-            DevPtr tile_emitted_device(sizeof(size_t) * 64);
-            DevPtr tile_overflowed_device(sizeof(uint32_t) * 64);
-            DevPtr merge_emitted_device(sizeof(size_t) * 64);
-            DevPtr merge_overflowed_device(sizeof(uint32_t) * 64);
-            DevPtr merge_first_rows_device(sizeof(uint64_t) * 64);
-            DevPtr merge_second_rows_device(sizeof(uint64_t) * 64);
-            DevPtr merge_output_rows_device(sizeof(uint64_t) * 64);
-            DevPtr merge_first_counts_device(sizeof(size_t) * 64);
-            DevPtr merge_second_counts_device(sizeof(size_t) * 64);
-            DevPtr final_merged_rows(sizeof(int64_t) * max_tiled_candidates * 2);
-            DevPtr final_marks(sizeof(uint32_t) * max_tiled_candidates);
-            DevPtr final_block_counts(sizeof(uint32_t) * 512);
-            DevPtr final_block_offsets(sizeof(uint32_t) * 512);
-            DevPtr final_pair_offsets(sizeof(uint32_t) * 64);
-            DevPtr final_emitted_device(sizeof(size_t));
-            DevPtr final_overflowed_device(sizeof(uint32_t));
+            struct DeviceSlot {
+                CUdeviceptr ptr = 0;
+            };
+            std::vector<std::unique_ptr<DevPtr>> local_allocations;
+            local_allocations.reserve(18);
+            std::unique_lock<std::mutex> reusable_workspace_lock;
+            const bool use_reusable_workspace = collect_k_reuse_workspace();
+            if (use_reusable_workspace) {
+                reusable_workspace_lock = std::unique_lock<std::mutex>(
+                    g_collect_k_row_width2_workspace_mutex);
+                g_collect_k_row_width2_workspace.ensure(max_tiled_candidates);
+            }
+            auto make_slot = [&](CUdeviceptr reusable_ptr, size_t bytes) {
+                DeviceSlot slot;
+                if (use_reusable_workspace) {
+                    slot.ptr = reusable_ptr;
+                    return slot;
+                }
+                local_allocations.push_back(std::make_unique<DevPtr>(bytes));
+                slot.ptr = local_allocations.back()->ptr;
+                return slot;
+            };
+            DeviceSlot temp_stage_a = make_slot(
+                g_collect_k_row_width2_workspace.temp_stage_a,
+                sizeof(int64_t) * max_tiled_candidates * 2);
+            DeviceSlot temp_stage_b = make_slot(
+                g_collect_k_row_width2_workspace.temp_stage_b,
+                sizeof(int64_t) * max_tiled_candidates * 2);
+            DeviceSlot tile_emitted_device = make_slot(
+                g_collect_k_row_width2_workspace.tile_emitted_device,
+                sizeof(size_t) * 64);
+            DeviceSlot tile_overflowed_device = make_slot(
+                g_collect_k_row_width2_workspace.tile_overflowed_device,
+                sizeof(uint32_t) * 64);
+            DeviceSlot merge_emitted_device = make_slot(
+                g_collect_k_row_width2_workspace.merge_emitted_device,
+                sizeof(size_t) * 64);
+            DeviceSlot merge_overflowed_device = make_slot(
+                g_collect_k_row_width2_workspace.merge_overflowed_device,
+                sizeof(uint32_t) * 64);
+            DeviceSlot merge_first_rows_device = make_slot(
+                g_collect_k_row_width2_workspace.merge_first_rows_device,
+                sizeof(uint64_t) * 64);
+            DeviceSlot merge_second_rows_device = make_slot(
+                g_collect_k_row_width2_workspace.merge_second_rows_device,
+                sizeof(uint64_t) * 64);
+            DeviceSlot merge_output_rows_device = make_slot(
+                g_collect_k_row_width2_workspace.merge_output_rows_device,
+                sizeof(uint64_t) * 64);
+            DeviceSlot merge_first_counts_device = make_slot(
+                g_collect_k_row_width2_workspace.merge_first_counts_device,
+                sizeof(size_t) * 64);
+            DeviceSlot merge_second_counts_device = make_slot(
+                g_collect_k_row_width2_workspace.merge_second_counts_device,
+                sizeof(size_t) * 64);
+            DeviceSlot final_merged_rows = make_slot(
+                g_collect_k_row_width2_workspace.final_merged_rows,
+                sizeof(int64_t) * max_tiled_candidates * 2);
+            DeviceSlot final_marks = make_slot(
+                g_collect_k_row_width2_workspace.final_marks,
+                sizeof(uint32_t) * max_tiled_candidates);
+            DeviceSlot final_block_counts = make_slot(
+                g_collect_k_row_width2_workspace.final_block_counts,
+                sizeof(uint32_t) * 512);
+            DeviceSlot final_block_offsets = make_slot(
+                g_collect_k_row_width2_workspace.final_block_offsets,
+                sizeof(uint32_t) * 512);
+            DeviceSlot final_pair_offsets = make_slot(
+                g_collect_k_row_width2_workspace.final_pair_offsets,
+                sizeof(uint32_t) * 64);
+            DeviceSlot final_emitted_device = make_slot(
+                g_collect_k_row_width2_workspace.final_emitted_device,
+                sizeof(size_t));
+            DeviceSlot final_overflowed_device = make_slot(
+                g_collect_k_row_width2_workspace.final_overflowed_device,
+                sizeof(uint32_t));
             CUdeviceptr candidate_rows = static_cast<CUdeviceptr>(candidate_rows_device_ptr);
             CUdeviceptr rows_out = static_cast<CUdeviceptr>(rows_out_device_ptr);
             profile.add_since(profile.allocation_ms, allocation_start);
