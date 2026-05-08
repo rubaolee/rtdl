@@ -20,7 +20,8 @@ class Goal1586V154OptixCollectKMultiSessionRunnerTest(unittest.TestCase):
         self.assertIn("TARGET_COUNTS = (49153, 65536, 65537)", source)
         self.assertIn("goal1586_multi_session_validation_recorded", source)
         self.assertIn("gpu_metadata", source)
-        self.assertIn("--query-gpu=name,driver_version,cuda_version,compute_cap", source)
+        self.assertIn("--query-gpu=name,driver_version", source)
+        self.assertIn("nvidia_smi_cuda_version", source)
         self.assertIn("does not authorize public speedup wording", source)
         self.assertIn("stable primitive promotion", source)
 

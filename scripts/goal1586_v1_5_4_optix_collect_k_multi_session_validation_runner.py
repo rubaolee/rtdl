@@ -51,26 +51,31 @@ def _gpu_metadata(device_label: str | None) -> dict[str, Any]:
     query = _run_text(
         [
             "nvidia-smi",
-            "--query-gpu=name,driver_version,cuda_version,compute_cap",
+            "--query-gpu=name,driver_version",
             "--format=csv,noheader",
         ]
     )
+    smi_banner = _run_text(["nvidia-smi"])
+    cuda_version = "unavailable"
+    marker = "CUDA Version:"
+    if marker in smi_banner:
+        cuda_version = smi_banner.split(marker, 1)[1].split("|", 1)[0].strip()
     devices = []
     if query != "unavailable":
         for line in query.splitlines():
             parts = [part.strip() for part in line.split(",")]
-            if len(parts) == 4:
+            if len(parts) == 2:
                 devices.append(
                     {
                         "name": parts[0],
                         "driver_version": parts[1],
-                        "cuda_version": parts[2],
-                        "compute_capability": parts[3],
+                        "cuda_version": cuda_version,
                     }
                 )
     return {
         "device_label": device_label,
         "nvidia_smi_query": query,
+        "nvidia_smi_cuda_version": cuda_version,
         "devices": devices,
     }
 
