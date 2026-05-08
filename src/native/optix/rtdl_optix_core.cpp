@@ -2428,6 +2428,50 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_le
     pair_merged_rows[output_index * 2 + 1] = value1;
 }
 
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level_counts_pointers(
+        const uint64_t* first_row_ptrs,
+        const uint64_t* second_row_ptrs,
+        const size_t* current_counts,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(first_row_ptrs[pair_index]));
+    const int64_t* second_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(second_row_ptrs[pair_index]));
+    const size_t first_count = current_counts[pair_index * 2];
+    const size_t second_count = current_counts[pair_index * 2 + 1];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        pair_merged_rows[output_index * 2] = value0;
+        pair_merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+}
+
 extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level_derived(
         const int64_t* current_base,
         const size_t* first_counts,
@@ -2625,6 +2669,49 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_le
 }
 
 extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_level_counts(
+        const int64_t* merged_rows,
+        const size_t* current_counts,
+        size_t output_capacity,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (pair_index < pair_count) {
+        const size_t total = current_counts[pair_index * 2] + current_counts[pair_index * 2 + 1];
+        if (local_index < total) {
+            const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+            if (local_index == 0) {
+                mark = 1;
+            } else {
+                const int64_t value0 = pair_merged_rows[local_index * 2];
+                const int64_t value1 = pair_merged_rows[local_index * 2 + 1];
+                const int64_t prev0 = pair_merged_rows[(local_index - 1) * 2];
+                const int64_t prev1 = pair_merged_rows[(local_index - 1) * 2 + 1];
+                mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+            }
+        }
+    }
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    marks[global_index] = mark;
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_level_counts_pointers(
         const int64_t* merged_rows,
         const size_t* current_counts,
         size_t output_capacity,
@@ -3674,7 +3761,9 @@ static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_derived;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_counts_derived;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_counts_pointers;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level_counts_pointers;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_mark_counts_level_counts;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level_derived;
