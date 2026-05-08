@@ -5,6 +5,9 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_JSON = ROOT / "docs" / "reports" / "goal1503_v1_5_4_optix_collect_k_scaling_probe_2026-05-08.json"
+BLACKWELL_REPORT_JSON = (
+    ROOT / "docs" / "reports" / "goal1503_v1_5_4_optix_collect_k_scaling_probe_blackwell_2026-05-08.json"
+)
 
 
 class Goal1503V154OptixCollectKScalingEvidenceTest(unittest.TestCase):
@@ -65,6 +68,28 @@ class Goal1503V154OptixCollectKScalingEvidenceTest(unittest.TestCase):
         # tiled artifact should stay far below that shape for these sizes.
         self.assertLess(cases[65537]["median_ms"], 1000.0)
         self.assertLess(cases[131072]["median_ms"], 1000.0)
+
+    def test_blackwell_scaling_subset_is_parity_clean_and_claim_conservative(self) -> None:
+        report = json.loads(BLACKWELL_REPORT_JSON.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["goal"], "Goal1503")
+        self.assertTrue(report["measured_on_real_nvidia"])
+        self.assertTrue(report["all_parity_passed"])
+        self.assertIn("Blackwell", report["device_name"])
+        for flag, value in report["claim_flags"].items():
+            with self.subTest(flag=flag):
+                self.assertFalse(value)
+
+        cases = {case["candidate_count"]: case for case in report["cases"]}
+        self.assertEqual(set(cases), {4097, 65537, 131072})
+        for count in (4097, 65537, 131072):
+            with self.subTest(count=count):
+                case = cases[count]
+                self.assertEqual(case["expected_native_path"], "row_width2_bounded_multi_tile_sort_merge")
+                self.assertTrue(case["same_candidate_rows"])
+                self.assertTrue(case["same_valid_count"])
+                self.assertTrue(case["same_overflowed_flag"])
+                self.assertLess(case["median_ms"], 1000.0)
 
 
 if __name__ == "__main__":

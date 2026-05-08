@@ -1,6 +1,14 @@
+import json
+from pathlib import Path
 import unittest
 
 from scripts import goal1504_v1_5_4_optix_collect_k_tiled_overflow_probe as probe
+
+
+ROOT = Path(__file__).resolve().parents[1]
+BLACKWELL_REPORT_JSON = (
+    ROOT / "docs" / "reports" / "goal1504_v1_5_4_optix_collect_k_tiled_overflow_probe_2026-05-08.json"
+)
 
 
 def make_case(candidate_count: int) -> dict:
@@ -80,6 +88,22 @@ class Goal1504V154OptixCollectKTiledOverflowProbeTest(unittest.TestCase):
         payload["claim_flags"]["public_speedup_wording_authorized"] = True
         with self.assertRaisesRegex(ValueError, "public_speedup_wording_authorized"):
             probe.validate_probe(payload)
+
+    def test_blackwell_overflow_artifact_is_fail_closed(self) -> None:
+        payload = json.loads(BLACKWELL_REPORT_JSON.read_text(encoding="utf-8"))
+        probe.validate_probe(payload)
+
+        self.assertIn("Blackwell", payload["device_name"])
+        cases = {case["candidate_count"]: case for case in payload["cases"]}
+        self.assertEqual(set(cases), set(probe.DEFAULT_COUNTS))
+        for count in probe.DEFAULT_COUNTS:
+            with self.subTest(count=count):
+                case = cases[count]
+                self.assertEqual(case["expected_native_path"], "row_width2_bounded_multi_tile_sort_merge")
+                self.assertEqual(case["capacity"], case["unique_count"] - 1)
+                self.assertTrue(case["overflowed"])
+                self.assertTrue(case["fail_closed_output_preserved"])
+                self.assertEqual(case["valid_count"], case["unique_count"])
 
 
 if __name__ == "__main__":
