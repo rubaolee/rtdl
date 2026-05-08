@@ -1,0 +1,42 @@
+{
+  "status": "goal1545_device_prefix_compact_comparison_recorded",
+  "accepted_candidate_by_runner_rule": true,
+  "control_json": "/root/rtdl_goal1545_pod/docs/reports/goal1545_v1_5_4_optix_collect_k_device_prefix_compact_pod_runner_2026-05-08_control_goal1543.json",
+  "candidate_json": "/root/rtdl_goal1545_pod/docs/reports/goal1545_v1_5_4_optix_collect_k_device_prefix_compact_pod_runner_2026-05-08_candidate_device_prefix.json",
+  "rows": [
+    {
+      "candidate_count": 4097,
+      "control_total_ms": 0.15334,
+      "candidate_total_ms": 0.157087,
+      "total_speedup": 0.9761469758796081,
+      "control_merge_launch_ms": 0.070914,
+      "candidate_merge_launch_ms": 0.064322,
+      "control_merge_launches": 6,
+      "candidate_merge_launches": 7,
+      "candidate_parity": true
+    },
+    {
+      "candidate_count": 65537,
+      "control_total_ms": 0.448761,
+      "candidate_total_ms": 0.429634,
+      "total_speedup": 1.0445192885106858,
+      "control_merge_launch_ms": 0.30551,
+      "candidate_merge_launch_ms": 0.284809,
+      "control_merge_launches": 18,
+      "candidate_merge_launches": 23,
+      "candidate_parity": true
+    },
+    {
+      "candidate_count": 131072,
+      "control_total_ms": 0.491491,
+      "candidate_total_ms": 0.48039,
+      "total_speedup": 1.0231083078332188,
+      "control_merge_launch_ms": 0.333593,
+      "candidate_merge_launch_ms": 0.322764,
+      "control_merge_launches": 18,
+      "candidate_merge_launches": 23,
+      "candidate_parity": true
+    }
+  ],
+  "claim_boundary": "Runner output is measurement input only; public claims still require review and consensus."
+}
