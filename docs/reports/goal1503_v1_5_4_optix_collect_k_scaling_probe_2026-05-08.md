@@ -7,22 +7,24 @@
 ## Scope
 
 - Device: `NVIDIA RTX 4000 Ada Generation`
-- Git commit: `efa93835baa4a8d706d8b369408768d8789faf42`
-- Algorithm classification: `row_width2_parallel_bitonic_sort_single_thread_compaction_with_dynamic_row_width_o_n2_fallback`
+- Git commit: `5b13b4612b2a67172780c80c71b095bbb3e95c76`
+- Algorithm classification: `row_width2_parallel_bitonic_sort_with_two_tile_merge_and_dynamic_row_width_o_n2_fallback`
 - Timing scope: Python wrapper call around native OptiX/CUDA device-pointer execution, including launch and metadata copy overhead, excluding input setup H2D and output verification D2H.
 
 ## Cases
 
-- candidates=`8`, unique=`4`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.038892`, parity=`True`
-- candidates=`32`, unique=`16`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.049390`, parity=`True`
-- candidates=`128`, unique=`64`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.066184`, parity=`True`
-- candidates=`512`, unique=`256`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.143491`, parity=`True`
-- candidates=`1024`, unique=`512`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.249051`, parity=`True`
-- candidates=`1025`, unique=`512`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.266112`, parity=`True`
-- candidates=`2048`, unique=`1024`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.464499`, parity=`True`
-- candidates=`2049`, unique=`1024`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.501886`, parity=`True`
-- candidates=`4096`, unique=`2048`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.900216`, parity=`True`
-- candidates=`4097`, unique=`2048`, row_width=`2`, path=`dynamic_row_width_single_thread_fallback`, median_ms=`1293.445349`, parity=`True`
+- candidates=`8`, unique=`4`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.041693`, parity=`True`
+- candidates=`32`, unique=`16`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.047289`, parity=`True`
+- candidates=`128`, unique=`64`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.066191`, parity=`True`
+- candidates=`512`, unique=`256`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.143334`, parity=`True`
+- candidates=`1024`, unique=`512`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.249431`, parity=`True`
+- candidates=`1025`, unique=`512`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.267252`, parity=`True`
+- candidates=`2048`, unique=`1024`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.465140`, parity=`True`
+- candidates=`2049`, unique=`1024`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.503011`, parity=`True`
+- candidates=`4096`, unique=`2048`, row_width=`2`, path=`row_width2_parallel_bitonic_sort`, median_ms=`0.902392`, parity=`True`
+- candidates=`4097`, unique=`2048`, row_width=`2`, path=`row_width2_two_tile_sort_merge`, median_ms=`1.287527`, parity=`True`
+- candidates=`8192`, unique=`4096`, row_width=`2`, path=`row_width2_two_tile_sort_merge`, median_ms=`3.128603`, parity=`True`
+- candidates=`8193`, unique=`4096`, row_width=`2`, path=`dynamic_row_width_single_thread_fallback`, median_ms=`6797.954947`, parity=`True`
 
 ## Claim Boundary
 
