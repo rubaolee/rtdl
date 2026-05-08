@@ -1,0 +1,56 @@
+{
+  "all_requested_counts_are_goal1506_profile_candidates": true,
+  "cases": [
+    {
+      "accepted_goal1506_profile_candidate": true,
+      "candidate_count": 4097,
+      "expected_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "max_optin_shared_memory_per_block_bytes": 101376,
+      "predicted_profile_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "required_shared_memory_bytes": 69632,
+      "row_width": 2,
+      "shared_memory_sufficient_for_expected_path": true
+    },
+    {
+      "accepted_goal1506_profile_candidate": true,
+      "candidate_count": 65537,
+      "expected_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "max_optin_shared_memory_per_block_bytes": 101376,
+      "predicted_profile_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "required_shared_memory_bytes": 69632,
+      "row_width": 2,
+      "shared_memory_sufficient_for_expected_path": true
+    },
+    {
+      "accepted_goal1506_profile_candidate": true,
+      "candidate_count": 131072,
+      "expected_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "max_optin_shared_memory_per_block_bytes": 101376,
+      "predicted_profile_native_path": "row_width2_bounded_multi_tile_sort_merge",
+      "required_shared_memory_bytes": 69632,
+      "row_width": 2,
+      "shared_memory_sufficient_for_expected_path": true
+    }
+  ],
+  "claim_boundary": "Goal1508 is a CUDA shared-memory preflight for the experimental OptiX COLLECT_K_BOUNDED stage-profile path only. It does not authorize public speedup wording, true zero-copy wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.",
+  "claim_flags": {
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_public_primitive_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cuda_attribute": {
+    "max_optin_shared_memory_per_block_bytes": 101376,
+    "name": "CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK_OPTIN",
+    "value": 97
+  },
+  "cuda_driver_version": 12080,
+  "device_name": "NVIDIA RTX 2000 Ada Generation",
+  "git_commit": "0274ca32d3dd76d7dfc3f4214375db93b8838908",
+  "goal": "Goal1508",
+  "platform": "Linux-6.8.0-65-generic-x86_64-with-glibc2.35",
+  "row_width2_tile_shared_memory_bytes": 69632,
+  "status": "goal1508_optix_collect_k_tiled_preflight_recorded"
+}

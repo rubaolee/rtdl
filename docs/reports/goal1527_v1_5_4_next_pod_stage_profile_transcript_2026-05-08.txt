@@ -1,0 +1,35 @@
+== Goal1527 accepted stage profile rerun transcript ==
+2026-05-08T12:32:55+00:00
+abee052ecf5d
+Linux abee052ecf5d 6.8.0-65-generic #68~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 15 18:06:34 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+NVIDIA RTX 2000 Ada Generation, driver 570.172.08, CUDA 12.8
+RTDL commit: 0274ca32d3dd76d7dfc3f4214375db93b8838908
+OptiX SDK commit: bef93afb12dbd00e5b8311bc9b320dd487d8cc1f (v8.0.0)
+Command:
+OPTIX_PREFIX=/root/vendor/optix-sdk COUNTS="4097 65537 131072" REPEATS=5 bash scripts/goal1506_v1_5_4_run_optix_collect_k_stage_profile_pod.sh
+== RTDL Goal1506 OptiX collect-k stage profile pod runner ==
+repo: /root/rtdl
+commit: 0274ca32d3dd76d7dfc3f4214375db93b8838908
+counts: 4097 65537 131072
+repeats: 5
+NVIDIA RTX 2000 Ada Generation, 570.172.08
+{
+  "status": "goal1508_optix_collect_k_tiled_preflight_recorded"
+}
+mkdir -p build
+/usr/local/cuda/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-sdk/include -I/usr/local/cuda/include -DRTDL_OPTIX_INCLUDE_DIR=\"/root/vendor/optix-sdk/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC src/native/rtdl_optix.cpp -L/usr/local/cuda/lib64 -lcuda -lnvrtc -o build/librtdl_optix.so
+{
+  "status": "goal1506_optix_collect_k_stage_profile_probe_recorded"
+}
+.................................
+----------------------------------------------------------------------
+Ran 33 tests in 0.004s
+
+OK
+Goal1506 stage profile artifacts:
+  docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.json
+  docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.md
+  docs/reports/goal1506_v1_5_4_optix_collect_k_stage_profile_probe_2026-05-08.jsonl
+Goal1508 tiled preflight artifacts:
+  docs/reports/goal1508_v1_5_4_optix_collect_k_tiled_preflight_2026-05-08.json
+  docs/reports/goal1508_v1_5_4_optix_collect_k_tiled_preflight_2026-05-08.md
