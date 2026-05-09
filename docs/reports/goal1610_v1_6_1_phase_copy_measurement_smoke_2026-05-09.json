@@ -1,0 +1,150 @@
+{
+  "accepted": true,
+  "claim_boundary": "Goal1610 defines local phase/copy measurement schema and smoke execution only. It does not authorize public speedup wording, whole-app speedup claims, broad RTX wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, partner tensor handoff, package install claims, release tags, or release action.",
+  "claim_flags": {
+    "broad_rtx_wording_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_tensor_handoff_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_collect_k_promotion_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1610",
+  "manifest": {
+    "cases": {
+      "hausdorff_cpu_reference_smoke": {
+        "backend": "cpu_python_reference",
+        "command": [
+          "C:\\Python311\\python.exe",
+          "examples/rtdl_hausdorff_distance_app.py",
+          "--backend",
+          "cpu_python_reference"
+        ],
+        "description": "Portable local CPU-reference smoke case with app-reported run_phases.",
+        "mode": "compatibility_rows",
+        "output_contract": "dict_json_with_run_phases",
+        "requires_optix": false,
+        "requires_pod": false
+      }
+    },
+    "claim_boundary": "Goal1610 defines local phase/copy measurement schema and smoke execution only. It does not authorize public speedup wording, whole-app speedup claims, broad RTX wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, partner tensor handoff, package install claims, release tags, or release action.",
+    "claim_flags": {
+      "broad_rtx_wording_authorized": false,
+      "package_install_claim_authorized": false,
+      "partner_tensor_handoff_authorized": false,
+      "public_speedup_wording_authorized": false,
+      "release_action_authorized": false,
+      "stable_collect_k_promotion_authorized": false,
+      "true_zero_copy_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "copy_count_fields": [
+      "input_materialization_count",
+      "output_materialization_count",
+      "host_to_device_copy_count",
+      "device_to_host_copy_count",
+      "python_row_count",
+      "thin_view_count",
+      "prepared_buffer_reuse_count"
+    ],
+    "goal": "Goal1610",
+    "phase_fields": [
+      "input_construction_sec",
+      "scene_preparation_sec",
+      "probe_packing_sec",
+      "host_to_device_transfer_sec",
+      "launch_sec",
+      "traversal_sec",
+      "device_to_host_transfer_sec",
+      "output_materialization_sec",
+      "validation_sec",
+      "python_continuation_sec",
+      "query_and_materialize_sec",
+      "total_wrapper_sec"
+    ],
+    "purpose": "phase/copy measurement foundation before v1.6.x performance tuning",
+    "required_metadata_fields": [
+      "case_id",
+      "backend",
+      "mode",
+      "output_contract",
+      "command",
+      "git_commit",
+      "host",
+      "platform",
+      "python",
+      "claim_flags",
+      "status",
+      "phase_times_sec",
+      "copy_counts"
+    ],
+    "version_slot": "v1.6.1"
+  },
+  "records": [
+    {
+      "backend": "cpu_python_reference",
+      "case_id": "hausdorff_cpu_reference_smoke",
+      "claim_flags": {
+        "broad_rtx_wording_authorized": false,
+        "package_install_claim_authorized": false,
+        "partner_tensor_handoff_authorized": false,
+        "public_speedup_wording_authorized": false,
+        "release_action_authorized": false,
+        "stable_collect_k_promotion_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "copy_counts": {
+        "device_to_host_copy_count": null,
+        "host_to_device_copy_count": null,
+        "input_materialization_count": 4,
+        "output_materialization_count": 4,
+        "prepared_buffer_reuse_count": null,
+        "python_row_count": 4,
+        "thin_view_count": null
+      },
+      "git_commit": "31e095653e2b0b0eb8ca2e702471a1f402e4bfe6",
+      "host": "Li-1",
+      "mode": "compatibility_rows",
+      "output_contract": "dict_json_with_run_phases",
+      "parsed_app_status": {
+        "json_detected": true,
+        "matches_oracle": true,
+        "native_continuation_active": false,
+        "rt_core_accelerated": false
+      },
+      "phase_times_sec": {
+        "device_to_host_transfer_sec": null,
+        "host_to_device_transfer_sec": null,
+        "input_construction_sec": 4.3599982745945454e-05,
+        "launch_sec": null,
+        "output_materialization_sec": null,
+        "probe_packing_sec": null,
+        "python_continuation_sec": null,
+        "query_and_materialize_sec": 0.00030699995113536716,
+        "scene_preparation_sec": null,
+        "total_wrapper_sec": 0.5744976000278257,
+        "traversal_sec": null,
+        "validation_sec": 8.630001684650779e-05
+      },
+      "platform": "Windows-10-10.0.19045-SP0",
+      "python": "3.11.9",
+      "requires_optix": false,
+      "requires_pod": false,
+      "returncode": 0,
+      "status": "pass",
+      "stderr_excerpt": "Could not find platform independent libraries <prefix>\n",
+      "stdout_excerpt": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"cpu_python_reference\",\n  \"copies\": 1,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"embree_result_mode\": null,\n  \"hausdorff_distance\": 0.30000000000000004,\n  \"hausdorff_threshold\": null,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": false,\n  \"native_continuation_backend\": \"none\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold"
+    }
+  ],
+  "status": "accepted_local_measurement_foundation",
+  "version_slot": "v1.6.1"
+}
