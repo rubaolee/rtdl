@@ -1,8 +1,7 @@
 # RTDL v1.6 Release Statement
 
-Status: proposed final release statement. Do not publish until final 3-AI
-release consensus is accepted and explicit release/tag authorization is
-confirmed.
+Status: released release statement. The `v1.6` annotated tag was published
+after final 3-AI release consensus and explicit release/tag authorization.
 
 Proposed release statement:
 

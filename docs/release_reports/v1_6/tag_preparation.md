@@ -1,8 +1,7 @@
 # RTDL v1.6 Tag Preparation
 
-Status: proposed tag preparation. Do not create or push the tag until final
-3-AI release consensus is accepted and explicit release/tag authorization is
-confirmed.
+Status: completed. The `v1.6` annotated tag was published after final 3-AI
+release consensus and explicit release/tag authorization.
 
 ## Candidate Tag
 
@@ -20,15 +19,15 @@ ae92aa8eabc969da856ea730c7b82e19345ca3a3
 
 ## Tag Target Commit
 
-The final tag target must be the final reviewed commit that contains:
+The final tag target is the reviewed release commit that contains:
 
 - this `docs/release_reports/v1_6/` package;
 - the final 3-AI release consensus;
 - no uncommitted release-package changes.
 
-Because this release package and final consensus are committed after Goal 1605,
-the Goal 1605 validation commit above is evidence provenance, not the final tag
-target.
+Because this release package and final consensus were committed after Goal
+1605, the Goal 1605 validation commit above is evidence provenance, not the
+final tag target.
 
 ## Required Preconditions
 
@@ -63,7 +62,8 @@ PYTHONPATH=src:. python -m unittest \
 
 ## Tag Command Shape
 
-Only after the required preconditions are complete:
+The tag action used this command shape after the required preconditions were
+complete:
 
 ```sh
 git tag -a v1.6 -m "RTDL v1.6"

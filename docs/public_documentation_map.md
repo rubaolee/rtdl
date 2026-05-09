@@ -11,12 +11,12 @@ goal archive.
 | --- | --- | --- |
 | Front page and project promise | [Project Front Page](../README.md) | [Feature Guide](rtdl_feature_guide.md), [Capability Boundaries](capability_boundaries.md) |
 | Tutorials | [Quick Tutorial](quick_tutorial.md) | [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
-| Apps | [v1.5 Release Package](release_reports/v1_5/README.md) | [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [App Engine Support Matrix](app_engine_support_matrix.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
+| Apps | [v1.6 Release Package](release_reports/v1_6/README.md) | [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [App Engine Support Matrix](app_engine_support_matrix.md), [v1.5 Release Package](release_reports/v1_5/README.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
 | Examples | [App And Example Quickstart](app_example_quickstart.md) | [Release-Facing Examples](release_facing_examples.md), [Examples Index](../examples/README.md), [v0.8 App Building](tutorials/v0_8_app_building.md) |
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
-| Performance | [Performance Model](performance_model.md) | [v1.5 Release Package](release_reports/v1_5/README.md), [v1.1 OptiX/Embree Status](v1_1_optix_status.md), [v1.0 RTX App Status](v1_0_rtx_app_status.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
+| Performance | [Performance Model](performance_model.md) | [v1.6 Release Package](release_reports/v1_6/README.md), [v1.5 Release Package](release_reports/v1_5/README.md), [v1.1 OptiX/Embree Status](v1_1_optix_status.md), [v1.0 RTX App Status](v1_0_rtx_app_status.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | v1.5.1 candidate surface | [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md) | Documented experimental public-candidate only; not stable primitive promotion, no public speedup wording, no zero-copy wording, no whole-app claims, and no release tag action. |
 
 ## Current Public Surfaces
@@ -30,12 +30,12 @@ The public docs are organized around four surfaces. Use this table before openin
 | Apps and examples | Show what each app does, how app implementation is structured, what RTDL accelerates, and what remains outside | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
 | Architecture, model, IR, and performance | Explain how the system is built and how to read performance evidence | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [Performance Model](performance_model.md) |
 
-## Current v1.5 Story
+## Current v1.6 Story
 
-v1.5 is the current public release. It completes the standalone Embree+OptiX
-language/runtime surface for the supported contracts: app-name-free stable
-traversal-plus-reduction primitives, 14 included app contracts, 4 excluded
-rows, and explicit release boundaries.
+v1.6 is the current public release. It is the first Python+RTDL architecture
+milestone: Python remains the app/control layer, RTDL owns the supported
+RT-shaped primitive contract and bridge, and Embree/OptiX execute the validated
+stable primitive subpaths.
 
 v1.0 remains the foundation proof line for useful application-shaped workloads
 through a Python-hosted ray-tracing DSL. It is preserved for history and
@@ -44,19 +44,20 @@ evidence, but it is no longer the current release.
 The honest public message is:
 
 - RTDL can already reduce authoring burden for supported RT-style workloads.
-- v1.5 stabilizes the supported Embree+OptiX language/runtime surface.
+- v1.6 closes the first Python+RTDL architecture track.
+- v1.5 remains the standalone Embree+OptiX language/runtime completion history.
 - Some bounded prepared/native sub-paths have reviewed RTX speedup wording.
 - Whole-app performance depends on whether non-RT continuation work is native
   or still Python-owned.
 - `--backend optix` is not by itself an NVIDIA RT-core speedup claim.
-- v1.5 is not a whole-app speedup release and not a zero-app-knowledge
-  native-engine release.
-- v1.5.1 is the `COLLECT_K_BOUNDED` promotion track.
+- v1.6 is not a whole-app speedup release, not a package-install release, not a
+  true zero-copy release, and not a zero-app-knowledge native-engine release.
+- `COLLECT_K_BOUNDED` remains experimental and is not stable in v1.6.
 - v1.5.1 `COLLECT_K_BOUNDED` candidate docs are now discoverable as a
   documented experimental public-candidate surface, but they do not authorize
   stable promotion, public speedup wording, zero-copy wording, whole-app claims,
   or release tag action.
-- v2.0 is the broader performance target, where RTDL should interoperate
+- v1.7-v2.0 are the Python+partner+RTDL track, where RTDL should interoperate
   cleanly with partner tools for non-RT phases.
 
 ## Public Doc Layers
@@ -79,6 +80,7 @@ release-audit history.
 Use [App And Example Quickstart](app_example_quickstart.md),
 [Application Catalog](application_catalog.md),
 [Technical App Notes](technical_app_notes/README.md),
+[v1.6 Release Package](release_reports/v1_6/README.md),
 [v1.5 Release Package](release_reports/v1_5/README.md),
 [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), and
 [Examples Index](../examples/README.md) to understand supported app demos.

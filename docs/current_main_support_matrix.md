@@ -1,10 +1,10 @@
 # RTDL Current Main Support Matrix
 
-Status: live support matrix for the released `v1.5` tag and current `main`.
+Status: live support matrix for the released `v1.6` tag and current `main`.
 
 This page is intentionally separate from the
-[v1.5 release support matrix](release_reports/v1_5/support_matrix.md).
-The released `v1.5` tag is the current public release boundary. Users who
+[v1.6 release support matrix](release_reports/v1_6/support_matrix.md).
+The released `v1.6` tag is the current public release boundary. Users who
 build from the latest source should read this page together with the release
 matrix because stale local backend libraries may not contain the newest native
 symbols until rebuilt.
@@ -17,8 +17,8 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
 
 ## Boundary
 
-- Current public release: `v1.5`.
-- Current `main`: released `v1.5` surface plus any later untagged local work.
+- Current public release: `v1.6`.
+- Current `main`: released `v1.6` surface plus any later untagged local work.
 - The `v0.9.6` release boundary includes the native/native-assisted any-hit work
   and prepared repeated-query visibility/count optimizations from Goals650-681.
 - The `v0.9.8` release boundary added bounded RTX app evidence and public wording
@@ -29,7 +29,9 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
   language/runtime completion for the supported surface: app-name-free stable
   traversal-plus-reduction primitive contracts, 14 included app contracts, 4
   excluded rows, and explicit `COLLECT_K_BOUNDED` deferral to v1.5.1.
-- The `v1.5` release is not a whole-app speedup claim and not a
+- The `v1.6` release boundary packages the first Python+RTDL architecture
+  milestone for the supported Embree+OptiX primitive surface.
+- The `v1.6` release is not a whole-app speedup claim and not a
   zero-app-knowledge native-engine release; some native Embree/OptiX entry
   points remain workload-shaped compatibility/proof surfaces.
 - Backend libraries must be rebuilt from current source before current-main
@@ -146,6 +148,7 @@ Current-main any-hit backend evidence is recorded in:
 For the public release boundary, use:
 
 - [v1.5 Release Package](release_reports/v1_5/README.md)
+- [v1.6 Release Package](release_reports/v1_6/README.md)
 - [v1.5 Support Matrix](release_reports/v1_5/support_matrix.md)
 - [v1.5 Audit Report](release_reports/v1_5/audit_report.md)
 - [v1.0 Release Package](release_reports/v1_0/README.md)

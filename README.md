@@ -7,7 +7,7 @@ database-style summaries.
 The core idea: write app-shaped Python code, lower the traversal-heavy part to
 an RT-capable backend, and keep the remaining app logic explicit.
 
-The current released version is `v1.5`.
+The current released version is `v1.6`.
 
 ## Start Fast
 
@@ -16,7 +16,7 @@ PYTHONPATH=src:. python examples/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend embree
 ```
 
-RTDL v1.5 is used directly from the source tree. Keep `PYTHONPATH=src:.` in
+RTDL v1.6 is used directly from the source tree. Keep `PYTHONPATH=src:.` in
 front of example and test commands unless a later packaged release adds
 installation metadata.
 
@@ -28,6 +28,7 @@ installation metadata.
 - [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Application Catalog](docs/application_catalog.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
+- [v1.6 Release Package](docs/release_reports/v1_6/README.md)
 - [v1.5 Release Package](docs/release_reports/v1_5/README.md)
 - [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](docs/release_reports/v1_5_1/README.md)
 - [v1.5.2 Prepared Host-Output Candidate Docs](docs/release_reports/v1_5_2/README.md)
@@ -41,12 +42,13 @@ installation metadata.
 
 | Area | State |
 | --- | --- |
-| Release | current released version: `v1.5` |
+| Release | current released version: `v1.6` |
+| v1.6 | released first Python+RTDL architecture milestone for the supported Embree+OptiX primitive surface |
 | v1.5 | released standalone Embree+OptiX language/runtime completion for the supported surface |
 | v1.5.1 candidate docs | `COLLECT_K_BOUNDED` documented experimental public-candidate; not stable primitive promotion, no public speedup wording, no zero-copy wording, no whole-app claims, and no release tag action |
 | v1.5.2 candidate docs | v1.5.2 candidate docs record reviewed prepared host-output evidence for COLLECT_K_BOUNDED; still no prepared-buffer reuse claim, no public speedup wording, no zero-copy wording, no whole-app claims, no stable primitive promotion, and no release tag action |
 | v1.0 | released app-shaped RTDL proof, documentation, and bounded evidence |
-| Current main | post-v1.5 integration branch; do not infer broader claims than the v1.5 release package allows |
+| Current main | v1.6 release branch; do not infer broader claims than the v1.6 release package allows |
 | v1.1 OptiX evidence | `polygon_pair_overlap_area_rows` has bounded 3-AI-reviewed positive wording |
 | Still not public speedup-ready | whole-app graph/DB/polygon claims, Jaccard speedup wording, and non-RT continuations such as ranking, clustering, graph analytics, SQL-style materialization, and force reduction |
 
@@ -69,8 +71,14 @@ the supported surface. It covers 14 included app contracts, 4 excluded rows,
 and stable generic traversal-plus-reduction primitives. It is not a whole-app
 speedup claim and not a zero-app-knowledge native-engine release: some native
 Embree/OptiX entry points remain workload-shaped compatibility/proof surfaces.
-v1.5.1 is the `COLLECT_K_BOUNDED` promotion track; v2.0 targets broader
-end-to-end performance through explicit partner mechanisms for non-RT phases.
+v1.6 is the released first Python+RTDL architecture milestone. Python remains
+the app/control layer, RTDL owns the supported RT-shaped primitive contract and
+bridge, and Embree/OptiX execute the validated stable primitive subpaths.
+v1.6 is not a performance freeze: NVIDIA RT-core performance,
+`COLLECT_K_BOUNDED`, reduced-copy/zero-copy investigation, and OptiX work remain
+top priorities for follow-up releases.
+v1.7-v2.0 target broader end-to-end performance through explicit partner
+mechanisms for non-RT phases.
 
 The practical v1.0 rule: RT traversal can be fast while the full app is still
 limited by Python continuation, exact refinement, ranking, clustering,
@@ -88,7 +96,7 @@ Front-page rules:
 - Do not count Python post-processing, exact polygon refinement, SQL/DBMS
   behavior, ANN ranking, DBSCAN expansion, graph-system analytics, or
   Barnes-Hut force reduction unless a later review explicitly authorizes it.
-- Treat the v1.5 release package/support matrix as the current release
+- Treat the v1.6 release package/support matrix as the current release
   authority, with the v1.0 inventory preserved for app-boundary history.
 - Reviewed rows are bounded public sub-path wording, not automatic public speedup claims; each line is not a whole-app, default-mode, Python-postprocess, or broad RT-core acceleration claim.
 
@@ -106,7 +114,7 @@ Detailed evidence and review trail:
 | --- | --- |
 | Geometry rows | `knn_rows`, `bounded_knn_rows`, `fixed_radius_neighbors`, closest-hit paths |
 | Any-hit traversal | `ray_triangle_any_hit`, `visibility_rows`, prepared repeated-query visibility/count helpers |
-| Reductions | `reduce_rows` in Python plus v1.5 stable app-name-free summary/reduction primitives where documented |
+| Reductions | `reduce_rows` in Python plus v1.6 stable primitive/reduction contracts where documented |
 | IR and lowering | `CompiledKernel` lowers to `RTExecutionPlan` |
 | Backends | CPU reference, Embree, OptiX, HIPRT, Vulkan, Apple RT/MPS RT where documented |
 | Apps | Hausdorff, ANN candidate search, outlier detection, DBSCAN, robot screening, Barnes-Hut, graph visibility, DB summaries, road hazard, segment/polygon summaries |

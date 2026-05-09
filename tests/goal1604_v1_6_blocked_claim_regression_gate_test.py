@@ -119,8 +119,8 @@ class Goal1604V16BlockedClaimRegressionGateTest(unittest.TestCase):
 
     def test_architecture_docs_preserve_track_split(self):
         text = _flat(CURRENT_ARCHITECTURE)
-        self.assertIn("v1.6 is the planned first Python+RTDL architecture closure milestone", text)
-        self.assertIn("not a performance freeze", text)
+        self.assertIn("v1.6 is the current release line and the first Python+RTDL architecture milestone", text)
+        self.assertIn("v1.6 is an architecture anchor, not a performance freeze", text)
         self.assertIn("v1.7-v2.0 are the staged Python+partner+RTDL mechanism track", text)
         self.assertNotIn("v1.6-v2.0 are the staged partner-mechanism track", text)
 

@@ -37,28 +37,20 @@ def _text(path: Path) -> str:
 
 
 class Goal1602V16PublicDocsOverclaimAuditTest(unittest.TestCase):
-    def test_current_architecture_uses_accepted_v1_6_roadmap(self):
+    def test_current_architecture_uses_accepted_v1_6_release_boundary(self):
         text = _text(CURRENT_ARCHITECTURE)
-        self.assertIn("v1.6 is the planned first Python+RTDL architecture closure milestone", text)
-        self.assertIn("not a performance freeze", text)
+        self.assertIn("v1.6 is the current release line and the first Python+RTDL architecture milestone", text)
+        self.assertIn("v1.6 is an architecture anchor, not a performance freeze", text)
         self.assertIn("v1.7-v2.0 are the staged Python+partner+RTDL mechanism track", text)
         self.assertNotIn("v1.6-v2.0 are the staged partner-mechanism track", text)
 
-    def test_front_door_docs_do_not_publish_v1_6(self):
+    def test_front_door_docs_publish_only_bounded_v1_6(self):
         joined = "\n".join(_text(path) for path in CURRENT_USER_DOCS)
-        for forbidden in [
-            "v1.6 is released",
-            "v1.6 is now available",
-            "v1.6 is stable",
-            "v1.6 ships",
-            "v1.6 has shipped",
-            "current released version is `v1.6`",
-            "v1.6 release tag action is authorized",
-            "publish `v1.6` now",
-            "v1.6 public release is authorized",
-            "v1.6 release is authorized",
-        ]:
-            self.assertNotIn(forbidden, joined)
+        self.assertIn("current released version is `v1.6`", joined)
+        self.assertIn("first Python+RTDL architecture milestone", joined)
+        self.assertIn("not a whole-app speedup release", joined)
+        self.assertNotIn("v1.6 release tag action is authorized", joined)
+        self.assertNotIn("v1.6 public release is authorized", joined)
 
     def test_current_user_docs_do_not_authorize_blocked_claims(self):
         joined = "\n".join(_text(path) for path in CURRENT_USER_DOCS)

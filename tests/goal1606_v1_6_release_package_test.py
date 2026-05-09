@@ -94,10 +94,10 @@ class Goal1606V16ReleasePackageTest(unittest.TestCase):
             "Windows source-tree validation | pass",
             "Linux source-tree validation | pass",
             "Real NVIDIA OptiX validation | pass",
-            "Final 3-AI release consensus | pending",
-            "Explicit release/tag authorization | pending",
+            "Final 3-AI release consensus | pass",
+            "Explicit release/tag authorization | pass",
             "ae92aa8eabc969da856ea730c7b82e19345ca3a3",
-            "Do not publish or tag `v1.6`",
+            "`v1.6` tag has been published",
         ]:
             self.assertIn(phrase, text)
 
@@ -108,7 +108,7 @@ class Goal1606V16ReleasePackageTest(unittest.TestCase):
             "v1.6",
             "Validation Commit",
             "Tag Target Commit",
-            "final reviewed commit that contains",
+            "reviewed release commit that contains",
             "Final 3-AI release consensus accepted",
             "Explicit release/tag authorization is confirmed",
             "git tag -a v1.6",

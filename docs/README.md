@@ -5,7 +5,7 @@ history. If you are new to RTDL, do not browse everything here first. Start with
 the live path below, then branch into tutorials, apps, architecture, IR, or
 performance.
 
-The current released version is `v1.5`.
+The current released version is `v1.6`.
 
 ## New User Path
 
@@ -22,12 +22,13 @@ the current public story:
 8. [App And Example Quickstart](app_example_quickstart.md)
 9. [Application Catalog](application_catalog.md)
 10. [Technical App Notes](technical_app_notes/README.md)
-11. [v1.5 Release Package](release_reports/v1_5/README.md)
-12. [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
-13. [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
-14. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
-15. [IR And Lowering](rtdl/ir_and_lowering.md)
-16. Performance and backend status: [Performance Model](performance_model.md),
+11. [v1.6 Release Package](release_reports/v1_6/README.md)
+12. [v1.5 Release Package](release_reports/v1_5/README.md)
+13. [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
+14. [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
+15. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+16. [IR And Lowering](rtdl/ir_and_lowering.md)
+17. Performance and backend status: [Performance Model](performance_model.md),
     [v1.1 OptiX/Embree Status](v1_1_optix_status.md), and
     [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 
@@ -53,7 +54,7 @@ write?", use this path:
 1. Read [Current Architecture](current_architecture.md) for the user contract.
 2. Run [Quick Tutorial](quick_tutorial.md).
 3. Choose one runnable app from [App And Example Quickstart](app_example_quickstart.md).
-4. Check the [v1.5 Release Package](release_reports/v1_5/README.md) for the
+4. Check the [v1.6 Release Package](release_reports/v1_6/README.md) for the
    current release boundary.
 5. Check [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
    before interpreting historical app performance boundaries.
@@ -79,11 +80,12 @@ audited release claims.
 
 ## Current Boundary
 
-v1.5 is the current release line. It packages standalone Embree+OptiX
-language/runtime completion for the supported surface: app-name-free stable
-traversal-plus-reduction primitives, 14 included app contracts, 4 excluded
-rows, and explicit release boundaries. It is not a whole-app speedup release
-and not a zero-app-knowledge native-engine release.
+v1.6 is the current release line. It is the first Python+RTDL architecture
+milestone: Python remains the app/control layer, RTDL owns the supported
+RT-shaped primitive contract and bridge, and Embree/OptiX execute the validated
+stable primitive subpaths. It is not a whole-app speedup release, not a
+package-install release, not a true zero-copy release, and not a fully
+app-agnostic native-engine release.
 
 v1.0 remains the foundation proof release for real app-shaped ray-tracing
 workloads from Python. It is preserved as evidence and history, but it is no
@@ -98,8 +100,10 @@ Important public-claim rules:
   OptiX correctness issue; use post-fix Goal748 or later robot evidence.
 - Whole-app outputs may include Python continuation work such as ranking,
   clustering, force reduction, SQL-style output assembly, or graph reductions.
-- The released v1.5 surface has 14 included app contracts and 4 excluded rows;
-  `COLLECT_K_BOUNDED` remains experimental and moves to v1.5.1.
+- The released v1.6 surface is the Python+RTDL architecture milestone for
+  `ANY_HIT`, `COUNT_HITS`, `REDUCE_FLOAT(MIN|MAX|SUM)`, and
+  `REDUCE_INT(COUNT|SUM)`.
+- `COLLECT_K_BOUNDED` remains experimental and is not stable in v1.6.
 - The v1.5.1 `COLLECT_K_BOUNDED` candidate docs are a documented experimental
   public-candidate surface only: not stable primitive promotion, no public
   speedup wording, no zero-copy wording, no whole-app claims, and no release
@@ -108,8 +112,10 @@ Important public-claim rules:
   COLLECT_K_BOUNDED; still no prepared-buffer reuse claim, no public speedup
   wording, no zero-copy wording, no whole-app claims, no stable primitive
   promotion, and no release tag action.
-- v1.5 does not claim whole-app speedups or app-free native-engine internals.
-- v2.0 is the broader end-to-end performance target.
+- v1.6 does not claim whole-app speedups, true zero-copy, package-install
+  support, partner tensor handoff, or app-free native-engine internals.
+- v1.7-v2.0 are the Python+partner+RTDL track and broader end-to-end
+  performance target.
 
 Current released feature terms you will see in the docs include
 `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`. OptiX, Embree,
@@ -131,6 +137,7 @@ specific backend path says so.
 Use these for audit trails and exact release boundaries:
 
 - [v1.5 Release Package](release_reports/v1_5/README.md)
+- [v1.6 Release Package](release_reports/v1_6/README.md)
 - [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md)
 - [v1.5.2 Prepared Host-Output Candidate Docs](release_reports/v1_5_2/README.md)
 - [v1.0 Release Package](release_reports/v1_0/README.md)

@@ -1,8 +1,7 @@
 # RTDL v1.6 Support Matrix
 
-Status: proposed final v1.6 support matrix. Do not publish until final 3-AI
-release consensus is accepted and explicit release/tag authorization is
-confirmed.
+Status: released v1.6 support matrix. The `v1.6` annotated tag was published
+after final 3-AI release consensus and explicit release/tag authorization.
 
 This matrix records the v1.6 Python+RTDL architecture closure surface. It is
 narrower than the general current-main feature set and intentionally excludes

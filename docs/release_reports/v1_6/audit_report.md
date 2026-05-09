@@ -1,8 +1,8 @@
 # RTDL v1.6 Release Audit Report
 
-Status: final release-candidate audit. Do not publish or tag until final 3-AI
-release consensus is accepted and explicit release/tag authorization is
-confirmed.
+Status: all v1.6 release gates passed, and the `v1.6` annotated tag was
+published after final 3-AI release consensus and explicit release/tag
+authorization.
 
 ## Gate Summary
 
@@ -17,9 +17,10 @@ confirmed.
 | Windows source-tree validation | pass | Goal 1605, 38-test slice |
 | Linux source-tree validation | pass | Goal 1605, 38-test slice |
 | Real NVIDIA OptiX validation | pass | Goal 1605, 33-test GTX 1070 slice |
-| Final release package | pending final review | this package |
-| Final 3-AI release consensus | pending | required before publish/tag |
-| Explicit release/tag authorization | pending | required before publish/tag |
+| Final release package | pass | this package, Claude/Gemini review |
+| Final 3-AI release consensus | pass | Goal 1607 |
+| Public front-door docs update | pass | README/docs updated to current release v1.6 |
+| Explicit release/tag authorization | pass | user requested completion of v1.6 |
 
 ## Release Boundary
 
@@ -93,8 +94,6 @@ ae92aa8eabc969da856ea730c7b82e19345ca3a3
 
 ## Result
 
-The final v1.6 release package is ready for final external review and final
-3-AI release consensus.
-
-Do not publish or tag `v1.6` until final consensus is accepted and explicit
-release/tag authorization is confirmed.
+The v1.6 release is complete from the gate perspective and the `v1.6` tag has
+been published. This audit does not authorize moving `v1.6`, moving `v1.5`, or
+broadening the public claims listed above.

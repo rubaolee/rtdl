@@ -6,19 +6,23 @@ the released `v0.7.0` design, the released `v0.8.0` app-building layer, the
 released `v0.9.0` HIPRT / closest-hit expansion, the released `v0.9.1`
 Apple RT closest-hit slice, the released `v0.9.4` Apple RT consolidation, the
 released `v0.9.5` any-hit / visibility-row / emitted-row reduction layer, the
-released `v1.0` app-shaped proof release, and the released `v1.5` standalone
-Embree+OptiX language/runtime completion.
+released `v1.0` app-shaped proof release, the released `v1.5` standalone
+Embree+OptiX language/runtime completion, and the released `v1.6` Python+RTDL
+architecture milestone.
 
 For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
 [RTDL Capability Boundaries](capability_boundaries.md).
 
-## v1.5 Lens
+## v1.6 Lens
 
-Read the current architecture through this v1.5 lens:
+Read the current architecture through this v1.6 lens:
 
-- v1.5 is the current release line for the supported standalone Embree+OptiX
-  language/runtime surface.
+- v1.6 is the current release line and the first Python+RTDL architecture
+  milestone.
+- Python remains the app/control layer; RTDL owns the supported RT-shaped
+  primitive contract and bridge.
+- Embree and OptiX execute the validated stable primitive subpaths.
 - v1.0 remains the proof line for a Python-hosted RT DSL on real app-shaped
   workloads.
 - Some app paths use app-specific native continuations so the proof apps are
@@ -26,19 +30,15 @@ Read the current architecture through this v1.5 lens:
 - Those continuations are intentionally documented in
   [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md); they
   are not the final engine architecture.
-- v1.5 stabilizes app-name-free traversal-plus-reduction primitive contracts
-  for the included surface, but it is not yet a zero-app-knowledge native
-  engine release; some Embree/OptiX entry points remain workload-shaped
-  compatibility/proof surfaces.
-- v1.5 is not a whole-app speedup claim.
-- v1.5.1-v1.5.x are the `COLLECT_K_BOUNDED`, reduced-copy, device-memory, and
-  Python+RTDL hardening track.
-- v1.6 is the planned first Python+RTDL architecture closure milestone, not a
-  performance freeze.
+- v1.6 stabilizes the public Python+RTDL primitive-contract boundary, but it is
+  not yet a zero-app-knowledge native engine release; some Embree/OptiX entry
+  points remain workload-shaped compatibility/proof surfaces.
+- v1.6 is not a whole-app speedup claim.
+- v1.6 is an architecture anchor, not a performance freeze.
 - v1.7-v2.0 are the staged Python+partner+RTDL mechanism track for non-RT
   phases that should not stay in Python hot loops.
-- v2.0 is the broader end-to-end performance target after the v1.6
-  Python+RTDL anchor and the partner-mechanism milestones.
+- v2.0 is the broader end-to-end performance target after the partner-mechanism
+  milestones.
 
 ## The User Contract
 
@@ -139,13 +139,10 @@ kernels and native backend paths, not in Python loops.
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 Native backend code follows the modular layout used by Embree, OptiX, and
-Vulkan. Root files under `/Users/rl2025/rtdl_python_only/src/native/` are thin
-build wrappers; backend-specific implementation chunks live under
-`/Users/rl2025/rtdl_python_only/src/native/embree/`,
-`/Users/rl2025/rtdl_python_only/src/native/optix/`,
-`/Users/rl2025/rtdl_python_only/src/native/vulkan/`,
-`/Users/rl2025/rtdl_python_only/src/native/hiprt/`, and
-`/Users/rl2025/rtdl_python_only/src/native/apple_rt/`.
+Vulkan. Root files under `src/native/` are thin build wrappers;
+backend-specific implementation chunks live under `src/native/embree/`,
+`src/native/optix/`, `src/native/vulkan/`, `src/native/hiprt/`, and
+`src/native/apple_rt/`.
 
 ## Workload Families
 

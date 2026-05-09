@@ -1,8 +1,7 @@
 # RTDL v1.6 Release Package
 
-Status: final release-candidate package. Do not publish or tag until final
-3-AI release consensus is accepted and explicit release/tag authorization is
-confirmed.
+Status: released. The `v1.6` annotated tag was published after final 3-AI
+release consensus and explicit release/tag authorization.
 
 RTDL v1.6 is the planned first Python+RTDL architecture closure milestone. It
 closes the first architecture track by making the supported public story
@@ -75,8 +74,5 @@ app-leakage audit, blocked-claim regression, Windows source-tree validation,
 Linux source-tree validation, and real NVIDIA OptiX validation for the scoped
 surface.
 
-Remaining before public release/tag action:
-
-- final release package review;
-- final 3-AI release consensus;
-- explicit release/tag authorization.
+The final release package review, final 3-AI release consensus, public
+front-door docs update, and explicit release/tag authorization are complete.
