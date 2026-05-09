@@ -34,6 +34,8 @@ class Goal1616CollectKRtxPacketPlanTest(unittest.TestCase):
         self.assertIn("tests.goal1615_v1_6_4_collect_k_reduced_copy_benchmark_test", text)
         self.assertIn("make build-optix", text)
         self.assertIn("RTDL_OPTIX_LIB", text)
+        self.assertIn("goal1618_v1_6_4_collect_k_packet_runner.py", text)
+        self.assertIn("representative_rtx_required_backend_packet", text)
 
     def test_imported_linux_rehearsal_artifacts_are_all_backend_accepted(self) -> None:
         for path in (GOAL1614_LINUX_JSON, GOAL1615_LINUX_JSON):

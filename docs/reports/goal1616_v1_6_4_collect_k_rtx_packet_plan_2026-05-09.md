@@ -110,6 +110,17 @@ python3 scripts/goal1615_v1_6_4_collect_k_reduced_copy_benchmark.py \
   --md-out docs/reports/goal1615_v1_6_4_rtx_required_backend_reduced_copy_benchmark_$(date +%Y-%m-%d).md
 ```
 
+Preferred single-runner command after Goal1618:
+
+```bash
+python3 scripts/goal1618_v1_6_4_collect_k_packet_runner.py \
+  --environment-label representative_rtx_required_backend_packet \
+  --backends fake_native embree optix \
+  --required-backends fake_native embree optix \
+  --json-out docs/reports/goal1618_v1_6_4_rtx_required_backend_packet_$(date +%Y-%m-%d).json \
+  --md-out docs/reports/goal1618_v1_6_4_rtx_required_backend_packet_$(date +%Y-%m-%d).md
+```
+
 Acceptance rule:
 
 - All required backends must pass: `fake_native`, `embree`, and `optix`.

@@ -1,0 +1,556 @@
+{
+  "accepted": true,
+  "backends": [
+    "fake_native"
+  ],
+  "broad_rtx_wording_authorized": false,
+  "claim_boundary": "Goal1618 is a collect-k packet runner that executes Goal1614 bounds stress and Goal1615 reduced-copy/materialization-count benchmark commands under one artifact. It is packet-execution evidence only. Timing remains diagnostic only and this runner does not authorize public speedup wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, broad RTX/GPU wording, release tags, or release action.",
+  "environment_label": "local_packet_runner_smoke",
+  "failed_subpackages": [],
+  "git_commit": "5e237310b3c327fe92e0ded2e47c3319693ae773",
+  "goal": "Goal1618",
+  "host": "Li-1",
+  "manifest": {
+    "broad_rtx_wording_authorized": false,
+    "claim_boundary": "Goal1618 is a collect-k packet runner that executes Goal1614 bounds stress and Goal1615 reduced-copy/materialization-count benchmark commands under one artifact. It is packet-execution evidence only. Timing remains diagnostic only and this runner does not authorize public speedup wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, broad RTX/GPU wording, release tags, or release action.",
+    "goal": "Goal1618",
+    "public_speedup_wording_authorized": false,
+    "purpose": "single collect-k packet runner for local rehearsal and future RTX pod execution",
+    "release_action_authorized": false,
+    "representative_rtx_performance_evidence_authorized": false,
+    "stable_collect_k_promotion_authorized": false,
+    "subgoals": [
+      "Goal1614",
+      "Goal1615"
+    ],
+    "true_zero_copy_wording_authorized": false,
+    "version_slot": "v1.6.4_packet_runner"
+  },
+  "nvidia_smi": "",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "public_speedup_wording_authorized": false,
+  "python": "3.11.9",
+  "release_action_authorized": false,
+  "representative_rtx_performance_evidence_authorized": false,
+  "required_backends": [
+    "fake_native"
+  ],
+  "stable_collect_k_promotion_authorized": false,
+  "status": "accepted_packet_execution",
+  "subpackages": {
+    "goal1614_bounds_stress": {
+      "accepted": true,
+      "backends": [
+        "fake_native"
+      ],
+      "broad_rtx_wording_authorized": false,
+      "case_count": 9,
+      "claim_boundary": "Goal1614 stress-tests prepared host-output COLLECT_K_BOUNDED bounds semantics. It is correctness evidence only and does not authorize stable promotion, public speedup wording, true zero-copy wording, whole-app speedup claims, broad RTX/GPU wording, release tags, or release action.",
+      "failed": [],
+      "git_commit": "5e237310b3c327fe92e0ded2e47c3319693ae773",
+      "goal": "Goal1614",
+      "host": "Li-1",
+      "platform": "Windows-10-10.0.19045-SP0",
+      "primitive": "COLLECT_K_BOUNDED",
+      "public_speedup_wording_authorized": false,
+      "python": "3.11.9",
+      "records": [
+        {
+          "backend": "fake_native",
+          "capacity": 0,
+          "case": "empty_zero_capacity",
+          "elapsed_sec": 0.0004412999842315912,
+          "expected_rows": [],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 0
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 3,
+          "case": "exact_fit_unsorted_duplicates",
+          "elapsed_sec": 0.0003964999923482537,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 3
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "duplicate_compression_avoids_overflow",
+          "elapsed_sec": 0.00030610000248998404,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "k_plus_one_overflow_preserves_output",
+          "elapsed_sec": 0.00012360000982880592,
+          "expected_status": "overflow",
+          "expected_unique_count": 3,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 0,
+          "case": "zero_capacity_positive_overflow",
+          "elapsed_sec": 0.00011879997327923775,
+          "expected_status": "overflow",
+          "expected_unique_count": 1,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "row_width_one_exact",
+          "elapsed_sec": 0.0002763999509625137,
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 1,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "row_width_three_exact",
+          "elapsed_sec": 0.00023449998116120696,
+          "expected_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 3,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 1,
+          "case": "row_width_mismatch_rejected",
+          "elapsed_sec": 7.569999434053898e-05,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: COLLECT_K_BOUNDED candidate row width mismatch: expected 2, got 3",
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "fake_native",
+          "capacity": -1,
+          "case": "negative_capacity_rejected",
+          "elapsed_sec": 2.4100008886307478e-05,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: collect result buffer descriptor has invalid dimensions",
+          "row_width": 2,
+          "status": "pass"
+        }
+      ],
+      "release_action_authorized": false,
+      "required_backends": [
+        "fake_native"
+      ],
+      "scope": "prepared_host_output_exact_bounds_stress",
+      "skipped_required": [],
+      "stable_collect_k_promotion_authorized": false,
+      "status": "accepted_local_bounds_stress",
+      "true_zero_copy_wording_authorized": false,
+      "version_slot": "v1.6.4_bounds_stress_addendum",
+      "whole_app_speedup_claim_authorized": false
+    },
+    "goal1615_reduced_copy_benchmark": {
+      "accepted": true,
+      "backends": [
+        "fake_native"
+      ],
+      "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+      "claim_flags": {
+        "broad_rtx_wording_authorized": false,
+        "package_install_claim_authorized": false,
+        "partner_tensor_handoff_authorized": false,
+        "public_speedup_wording_authorized": false,
+        "release_action_authorized": false,
+        "stable_collect_k_promotion_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "failed": [],
+      "goal": "Goal1615",
+      "manifest": {
+        "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+        "claim_flags": {
+          "broad_rtx_wording_authorized": false,
+          "package_install_claim_authorized": false,
+          "partner_tensor_handoff_authorized": false,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "stable_collect_k_promotion_authorized": false,
+          "true_zero_copy_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "copy_count_fields": [
+          "input_materialization_count",
+          "output_materialization_count",
+          "host_to_device_copy_count",
+          "device_to_host_copy_count",
+          "python_row_count",
+          "thin_view_count",
+          "prepared_buffer_reuse_count"
+        ],
+        "goal": "Goal1615",
+        "phase_fields": [
+          "input_construction_sec",
+          "scene_preparation_sec",
+          "probe_packing_sec",
+          "host_to_device_transfer_sec",
+          "launch_sec",
+          "traversal_sec",
+          "device_to_host_transfer_sec",
+          "output_materialization_sec",
+          "validation_sec",
+          "python_continuation_sec",
+          "query_and_materialize_sec",
+          "total_wrapper_sec"
+        ],
+        "purpose": "collect-k reduced-copy/prepared-output benchmark evidence",
+        "required_metadata_fields": [
+          "case_id",
+          "status",
+          "backend",
+          "mode",
+          "output_contract",
+          "git_commit",
+          "host",
+          "platform",
+          "python",
+          "phase_times_sec",
+          "copy_counts",
+          "claim_flags"
+        ],
+        "supported_backends": [
+          "fake_native",
+          "embree",
+          "optix"
+        ],
+        "version_slot": "v1.6.4_reduced_copy_benchmark_addendum"
+      },
+      "primitive": "COLLECT_K_BOUNDED",
+      "records": [
+        {
+          "backend": "fake_native",
+          "candidate_row_count": 128,
+          "case_id": "collect_k_fake_native_32_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 128,
+            "thin_view_count": 0
+          },
+          "git_commit": "5e237310b3c327fe92e0ded2e47c3319693ae773",
+          "host": "Li-1",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_fake_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.0017035499622579664,
+            "baseline_elapsed_total_s": 0.00644479994662106,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.0011381999938748777,
+            "prepared_elapsed_total_s": 0.004576199979055673,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 1855660261424,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 4.379998426884413e-05,
+            "launch_sec": 0.004576199979055673,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.00644479994662106,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.011020999925676733,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Windows-10-10.0.19045-SP0",
+          "python": "3.11.9",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 32
+        },
+        {
+          "backend": "fake_native",
+          "candidate_row_count": 512,
+          "case_id": "collect_k_fake_native_128_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 512,
+            "thin_view_count": 0
+          },
+          "git_commit": "5e237310b3c327fe92e0ded2e47c3319693ae773",
+          "host": "Li-1",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_fake_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.0043521499610506,
+            "baseline_elapsed_total_s": 0.018020099902059883,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.002462600008584559,
+            "prepared_elapsed_total_s": 0.010221600066870451,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 1855619121312,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 0.00015169999096542597,
+            "launch_sec": 0.010221600066870451,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.018020099902059883,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.028241699968930334,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Windows-10-10.0.19045-SP0",
+          "python": "3.11.9",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 128
+        },
+        {
+          "backend": "fake_native",
+          "candidate_row_count": 1024,
+          "case_id": "collect_k_fake_native_512_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 1024,
+            "thin_view_count": 0
+          },
+          "git_commit": "5e237310b3c327fe92e0ded2e47c3319693ae773",
+          "host": "Li-1",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_fake_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.009149800025625154,
+            "baseline_elapsed_total_s": 0.036359300022013485,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.006066500034648925,
+            "prepared_elapsed_total_s": 0.02395610010717064,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 1855648645280,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 0.000242499983869493,
+            "launch_sec": 0.02395610010717064,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.036359300022013485,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.06031540012918413,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Windows-10-10.0.19045-SP0",
+          "python": "3.11.9",
+          "repeats": 2,
+          "status": "pass",
+          "unique_rows": 512
+        }
+      ],
+      "required_backends": [
+        "fake_native"
+      ],
+      "scale_count": 3,
+      "scope": "same_contract_input_materialization_delta_with_prepared_host_output",
+      "skipped_required": [],
+      "status": "accepted_reduced_copy_benchmark_evidence",
+      "version_slot": "v1.6.4_reduced_copy_benchmark_addendum"
+    }
+  },
+  "true_zero_copy_wording_authorized": false,
+  "version_slot": "v1.6.4_packet_runner"
+}
