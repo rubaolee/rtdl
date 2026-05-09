@@ -1,0 +1,4 @@
+﻿- `Verdict`: acceptable
+- `Findings`: No concrete issues found. The C++ implementation correctly matches the documented `baseline_carry_payload_copies >= candidate_carry_payload_copies + 4` threshold. The testing explicitly verifies the threshold logic. The experimental policy is strictly opt-in behind `RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE` and preserves default behavior.
+- `Recommendation`: Stop GPU pod cycling for this micro-goal. The cross-architecture results (RTX 3090 and RTX 4090) are consistent and demonstrate the threshold-4 rule isolates the strongest wins. Move to broader architecture/release work.
+- `Claim Boundary`: The claim boundary is sufficiently conservative and clear. It explicitly states that this work does not authorize public speedup wording, true zero-copy wording, whole-app claims, partner tensor handoff, stable primitive promotion, or a release.
