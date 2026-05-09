@@ -1,0 +1,110 @@
+{
+  "artifact_prefix": "docs/reports/goal1626_v1_6_x_optix_collect_k_midcount_micro_probe",
+  "baseline_env": {
+    "RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL": "1",
+    "RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT": "1",
+    "RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS": "1",
+    "RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS": "1",
+    "RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS": "1",
+    "RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT": "1",
+    "RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT": "1",
+    "RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE": "1"
+  },
+  "claim_boundary": "Goal1625 is internal same-host OptiX collect-k threshold-4 diagnostic evidence only. It does not authorize public speedup wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, broad RTX/GPU wording, whole-app speedup claims, release tags, or release action.",
+  "claim_flags": {
+    "broad_rtx_gpu_wording_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "release_action_authorized": false,
+    "stable_collect_k_promotion_authorized": false,
+    "true_zero_copy_wording_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "counts": [
+    65537,
+    98305,
+    131072
+  ],
+  "gated_env": {
+    "RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE": "1"
+  },
+  "git_commit": "d659bf0e80725128715e5758bb0ec1a3c8fc66ce",
+  "goal": "Goal1625",
+  "gpu_summary": "NVIDIA RTX A4500, 550.127.05, 20470 MiB",
+  "repeats": 1,
+  "round_artifacts": [
+    {
+      "baseline": "docs/reports/goal1626_v1_6_x_optix_collect_k_midcount_micro_probe_baseline_round1.json",
+      "gated": "docs/reports/goal1626_v1_6_x_optix_collect_k_midcount_micro_probe_gated_round1.json"
+    }
+  ],
+  "round_count": 1,
+  "rows": [
+    {
+      "all_parity": true,
+      "avg_delta_ms": -0.03247,
+      "baseline_payload_copies": 5,
+      "candidate_count": 65537,
+      "faster_rounds": 1,
+      "gated_payload_copies": 0,
+      "median_delta_ms": -0.03247,
+      "round_count": 1,
+      "rounds": [
+        {
+          "baseline_parity": true,
+          "baseline_payload_copies": 5,
+          "baseline_total_ms": 0.382622,
+          "delta_ms": -0.03247,
+          "gated_parity": true,
+          "gated_payload_copies": 0,
+          "gated_total_ms": 0.350152,
+          "round": 1
+        }
+      ]
+    },
+    {
+      "all_parity": true,
+      "avg_delta_ms": -0.0006900000000000239,
+      "baseline_payload_copies": 4,
+      "candidate_count": 98305,
+      "faster_rounds": 1,
+      "gated_payload_copies": 4,
+      "median_delta_ms": -0.0006900000000000239,
+      "round_count": 1,
+      "rounds": [
+        {
+          "baseline_parity": true,
+          "baseline_payload_copies": 4,
+          "baseline_total_ms": 0.358881,
+          "delta_ms": -0.0006900000000000239,
+          "gated_parity": true,
+          "gated_payload_copies": 4,
+          "gated_total_ms": 0.358191,
+          "round": 1
+        }
+      ]
+    },
+    {
+      "all_parity": true,
+      "avg_delta_ms": -0.00380999999999998,
+      "baseline_payload_copies": 0,
+      "candidate_count": 131072,
+      "faster_rounds": 1,
+      "gated_payload_copies": 0,
+      "median_delta_ms": -0.00380999999999998,
+      "round_count": 1,
+      "rounds": [
+        {
+          "baseline_parity": true,
+          "baseline_payload_copies": 0,
+          "baseline_total_ms": 0.367112,
+          "delta_ms": -0.00380999999999998,
+          "gated_parity": true,
+          "gated_payload_copies": 0,
+          "gated_total_ms": 0.363302,
+          "round": 1
+        }
+      ]
+    }
+  ],
+  "status": "internal_threshold4_a4500_probe_recorded"
+}
