@@ -1,4 +1,5 @@
 import unittest
+import os
 from pathlib import Path
 
 from scripts import goal1508_v1_5_4_optix_collect_k_tiled_preflight as preflight
@@ -19,10 +20,18 @@ class Goal1629OptixCollectKLargeCountGuardrailTest(unittest.TestCase):
         self.assertIn("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC", text)
 
     def test_preflight_rejects_counts_above_current_tiled_profile_boundary(self) -> None:
-        case = preflight._case_for_count(
-            131073,
-            preflight.ROW_WIDTH2_TILE_SHARED_BYTES,
-        )
+        original = os.environ.get("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC")
+        try:
+            os.environ.pop("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC", None)
+            case = preflight._case_for_count(
+                131073,
+                preflight.ROW_WIDTH2_TILE_SHARED_BYTES,
+            )
+        finally:
+            if original is None:
+                os.environ.pop("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC", None)
+            else:
+                os.environ["RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC"] = original
 
         self.assertEqual(case["expected_native_path"], "dynamic_row_width_single_thread_fallback")
         self.assertEqual(case["predicted_profile_native_path"], "dynamic_row_width_single_thread_fallback")
