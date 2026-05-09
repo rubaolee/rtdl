@@ -31,11 +31,14 @@ Read the current architecture through this v1.5 lens:
   engine release; some Embree/OptiX entry points remain workload-shaped
   compatibility/proof surfaces.
 - v1.5 is not a whole-app speedup claim.
-- v1.5.1 is the `COLLECT_K_BOUNDED` promotion track, and v1.6-v2.0 are the
-  staged partner-mechanism track for non-RT phases that should not stay in
-  Python hot loops.
-- v2.0 is the broader end-to-end performance target after v1.5.1 and the
-  partner-mechanism milestones.
+- v1.5.1-v1.5.x are the `COLLECT_K_BOUNDED`, reduced-copy, device-memory, and
+  Python+RTDL hardening track.
+- v1.6 is the planned first Python+RTDL architecture closure milestone, not a
+  performance freeze.
+- v1.7-v2.0 are the staged Python+partner+RTDL mechanism track for non-RT
+  phases that should not stay in Python hot loops.
+- v2.0 is the broader end-to-end performance target after the v1.6
+  Python+RTDL anchor and the partner-mechanism milestones.
 
 ## The User Contract
 
