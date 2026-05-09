@@ -1,0 +1,139 @@
+# Goal1628 collect-k defer-merge-sync focused RTX test sweep transcript
+Sat May  9 18:28:31 UTC 2026
+git_commit 450fce48631d1ab1c16d6e9a48999f1cadc63801
+NVIDIA RTX A4500, 550.127.05, 20470 MiB
+build: make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
+mkdir -p build
+/usr/local/cuda/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-sdk/include -I/usr/local/cuda/include  -DRTDL_OPTIX_INCLUDE_DIR=\"/root/vendor/optix-sdk/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC \
+	src/native/rtdl_optix.cpp \
+	-L/usr/local/cuda/lib64 -lcuda -lnvrtc -lgeos_c \
+	-o build/librtdl_optix.so
+collect_k_test_module_count 105
+tests.goal1310_v1_5_jaccard_collect_k_bounded_contract_test
+tests.goal1399_collect_k_bounded_resolution_test
+tests.goal1409_v1_5_1_collect_k_bounded_contract_test
+tests.goal1410_v1_5_1_native_collect_k_row_buffer_surface_test
+tests.goal1411_v1_5_1_polygon_collect_k_helper_bridge_test
+tests.goal1413_v1_5_1_collect_k_result_validator_test
+tests.goal1415_v1_5_1_native_collect_k_zero_capacity_test
+tests.goal1416_v1_5_1_collect_k_native_parity_test
+tests.goal1417_v1_5_1_collect_k_benchmark_test
+tests.goal1418_v1_5_1_collect_k_readiness_gate_test
+tests.goal1419_v1_5_1_collect_k_release_surface_proposal_test
+tests.goal1420_v1_5_1_collect_k_release_surface_gate_test
+tests.goal1421_v1_5_1_collect_k_public_doc_link_test
+tests.goal1422_v1_5_1_collect_k_post_link_gate_alignment_test
+tests.goal1423_v1_5_1_collect_k_whole_app_phrase_gate_test
+tests.goal1424_v1_5_1_collect_k_native_app_generic_audit_test
+tests.goal1425_v1_5_1_collect_k_native_generic_abi_contract_test
+tests.goal1426_v1_5_1_collect_k_native_i64_source_test
+tests.goal1427_v1_5_1_collect_k_python_i64_adapter_route_test
+tests.goal1428_v1_5_1_collect_k_adapter_parity_rerun_test
+tests.goal1429_v1_5_1_collect_k_adapter_parity_optix_closure_test
+tests.goal1430_v1_5_1_collect_k_generic_i64_binary_validation_test
+tests.goal1431_v1_5_1_collect_k_generic_i64_abi_parity_test
+tests.goal1432_v1_5_1_collect_k_production_wrapper_generic_symbol_test
+tests.goal1435_v1_5_1_collect_k_readiness_evidence_registry_test
+tests.goal1436_v1_5_1_collect_k_release_surface_proposal_false_flags_test
+tests.goal1492_v1_5_4_collect_k_device_buffer_execution_packet_test
+tests.goal1494_v1_5_4_collect_k_optix_abi_classification_test
+tests.goal1495_v1_5_4_collect_k_device_pointer_abi_contract_test
+tests.goal1496_v1_5_4_collect_k_device_pointer_stub_gate_test
+tests.goal1502_v1_5_4_optix_collect_k_blackwell_bounds_evidence_test
+tests.goal1503_v1_5_4_optix_collect_k_scaling_evidence_test
+tests.goal1504_v1_5_4_optix_collect_k_tiled_overflow_probe_test
+tests.goal1505_v1_5_4_optix_collect_k_evidence_summary_test
+tests.goal1506_v1_5_4_optix_collect_k_stage_profile_plan_test
+tests.goal1507_v1_5_4_non_pod_optix_collect_k_local_readiness_test
+tests.goal1508_v1_5_4_optix_collect_k_tiled_preflight_test
+tests.goal1512_v1_5_4_collect_k_pod_intake_failure_taxonomy_test
+tests.goal1520_v1_5_4_collect_k_native_emitted_count_guard_test
+tests.goal1529_v1_5_4_optix_collect_k_one_pass_merge_intake_test
+tests.goal1530_v1_5_4_optix_collect_k_batched_merge_level_intake_test
+tests.goal1531_v1_5_4_optix_collect_k_merge_level_profile_intake_test
+tests.goal1531_v1_5_4_optix_collect_k_merge_level_profile_test
+tests.goal1532_v1_5_4_optix_collect_k_parallel_merge_compact_plan_test
+tests.goal1533_v1_5_4_optix_collect_k_final_union_rank_negative_result_test
+tests.goal1534_v1_5_4_optix_collect_k_parallel_compact_reference_test
+tests.goal1535_v1_5_4_optix_collect_k_parallel_final_compact_intake_test
+tests.goal1535_v1_5_4_optix_collect_k_parallel_final_compact_test
+tests.goal1536_v1_5_4_optix_collect_k_late_level_compact_intake_test
+tests.goal1537_v1_5_4_optix_collect_k_parallel_tile_sort_test
+tests.goal1538_v1_5_4_optix_collect_k_cub_tile_sort_feasibility_test
+tests.goal1539_v1_5_4_optix_collect_k_cub_tile_sort_intake_test
+tests.goal1539_v1_5_4_optix_collect_k_cub_tile_sort_runtime_test
+tests.goal1540_v1_5_4_optix_collect_k_cub_early_compact_intake_test
+tests.goal1541_v1_5_4_optix_collect_k_batched_cub_sort_intake_test
+tests.goal1542_v1_5_4_optix_collect_k_batched_compact_level_intake_test
+tests.goal1543_v1_5_4_optix_collect_k_reuse_workspace_intake_test
+tests.goal1544_v1_5_4_optix_collect_k_launch_orchestration_negative_results_test
+tests.goal1545_v1_5_4_optix_collect_k_device_prefix_compact_intake_test
+tests.goal1545_v1_5_4_optix_collect_k_device_prefix_pod_runner_test
+tests.goal1545_v1_5_4_optix_collect_k_device_segmented_compact_pod_prep_test
+tests.goal1546_v1_5_4_optix_collect_k_final_device_prefix_negative_result_test
+tests.goal1547_v1_5_4_optix_collect_k_device_prefix_min_pair_gate_negative_result_test
+tests.goal1548_v1_5_4_optix_collect_k_derived_descriptors_intake_test
+tests.goal1549_v1_5_4_optix_collect_k_device_level_counts_intake_test
+tests.goal1550_v1_5_4_optix_collect_k_skip_tile_count_download_intake_test
+tests.goal1551_v1_5_4_optix_collect_k_cumulative_status_test
+tests.goal1552_v1_5_4_optix_collect_k_device_final_counts_intake_test
+tests.goal1553_v1_5_4_optix_collect_k_cumulative_status_test
+tests.goal1554_v1_5_4_optix_collect_k_device_final_prefix_negative_result_test
+tests.goal1556_v1_5_4_optix_collect_k_graph_capture_target_analysis_test
+tests.goal1557_v1_5_4_optix_collect_k_level_graph_probe_test
+tests.goal1558_v1_5_4_optix_collect_k_graph_parameter_update_plan_test
+tests.goal1559_v1_5_4_optix_collect_k_level_graph_update_probe_test
+tests.goal1560_v1_5_4_optix_collect_k_level_graph_replay_negative_result_test
+tests.goal1561_v1_5_4_optix_collect_k_graph_break_even_direction_test
+tests.goal1562_v1_5_4_optix_collect_k_parallel_compact_threshold_negative_result_test
+tests.goal1563_v1_5_4_optix_collect_k_fusion_feasibility_test
+tests.goal1564_v1_5_4_optix_collect_k_fusion_block_count_correction_test
+tests.goal1565_v1_5_4_optix_collect_k_fused_materialize_mark_probe_test
+tests.goal1566_v1_5_4_optix_collect_k_output_indexed_merge_path_design_test
+tests.goal1567_v1_5_4_optix_collect_k_output_indexed_fused_probe_test
+tests.goal1568_v1_5_4_optix_collect_k_post_fusion_bottleneck_direction_test
+tests.goal1569_v1_5_4_optix_collect_k_carry_alias_design_test
+tests.goal1570_v1_5_4_optix_collect_k_carry_alias_implementation_preflight_test
+tests.goal1571_v1_5_4_optix_collect_k_carry_pointer_diagnostic_test
+tests.goal1572_v1_5_4_optix_collect_k_carry_pointer_device_counts_diagnostic_test
+tests.goal1573_v1_5_4_optix_collect_k_derived_carry_alias_diagnostic_test
+tests.goal1579_v1_5_4_optix_collect_k_next_arch_runner_test
+tests.goal1580_v1_5_4_optix_collect_k_fastest_candidate_preset_test
+tests.goal1586_v1_5_4_optix_collect_k_multi_session_runner_test
+tests.goal1593_v1_5_4_optix_collect_k_gated_candidate_test
+tests.goal1613_v1_6_4_collect_k_bounded_promotion_gate_test
+tests.goal1614_v1_6_4_collect_k_bounds_stress_test
+tests.goal1615_v1_6_4_collect_k_reduced_copy_benchmark_test
+tests.goal1616_v1_6_4_collect_k_rtx_packet_plan_test
+tests.goal1617_v1_6_4_collect_k_evidence_ledger_test
+tests.goal1618_v1_6_4_collect_k_packet_runner_test
+tests.goal1620_v1_6_4_rtx_a4500_collect_k_packet_evidence_test
+tests.goal1621_v1_6_4_collect_k_evidence_ledger_after_rtx_test
+tests.goal1623_v1_6_4_rtx_a4500_collect_k_test_sweep_test
+tests.goal1624_v1_6_4_collect_k_stable_promotion_decision_test
+tests.goal1625_v1_6_5_optix_collect_k_threshold4_a4500_probe_test
+tests.goal1627_v1_6_x_optix_collect_k_defer_merge_sync_diagnostic_test
+tests.goal862_spatial_rtx_collection_packet_test
+env RTDL_OPTIX_COLLECT_K_DEFER_MERGE_SYNC_DIAGNOSTIC=1
+running unittest collect-k module sweep with timeout 600s
+..........................................................................................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 410 tests in 1.764s
+
+OK
+{
+  "decision": "defer_stable_promotion_keep_experimental",
+  "accepted_as_gate": true
+}
+{
+  "status": "accepted_local_bounds_stress",
+  "accepted": true
+}
+{
+  "status": "accepted_reduced_copy_benchmark_evidence",
+  "accepted": true
+}
+{
+  "status": "accepted_packet_execution",
+  "accepted": true
+}
