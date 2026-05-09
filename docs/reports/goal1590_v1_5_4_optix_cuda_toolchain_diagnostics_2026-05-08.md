@@ -11,6 +11,7 @@ RTDL now fails earlier and more clearly for CUDA driver/toolkit mismatches that 
 - The Goal1586 multi-session validation runner now performs a CUDA driver/toolkit preflight before timing.
 - The preflight records `cuda_preflight` in the aggregate JSON/Markdown artifact.
 - The preflight fails early when the visible `nvcc` CUDA version is newer than the CUDA version reported by `nvidia-smi` and no CUDA compat path is present in `LD_LIBRARY_PATH`.
+- The preflight also fails early when a CUDA compat directory is present even though the installed driver already supports the selected toolkit version, because that can shadow the real host `libcuda` and produce `cuInit` driver-mismatch failures.
 - The runner accepts `--cuda-prefix` and `--skip-cuda-toolchain-preflight`.
 
 ## User Guidance
@@ -19,6 +20,7 @@ For accepted OptiX measurements, use one of these configurations:
 
 - A CUDA toolkit/NVRTC version supported by the installed NVIDIA driver.
 - A newer CUDA toolkit with the correct driver CUDA compat library directory first in `LD_LIBRARY_PATH`.
+- No CUDA compat directory when the installed driver already supports the selected toolkit; use the toolkit `lib64` path but let the process load the host driver's `libcuda`.
 - A diagnostic run with `--skip-cuda-toolchain-preflight`, only when intentionally investigating an environment issue.
 
 If PTX architecture selection is needed, set:

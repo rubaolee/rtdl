@@ -127,6 +127,13 @@ def _preflight_cuda_toolchain(*, cuda_prefix: str | None, ld_library_path: str |
             "Use a driver-compatible CUDA toolkit, add the appropriate CUDA compat library path first in "
             "LD_LIBRARY_PATH, or pass --skip-cuda-toolchain-preflight only for diagnostic runs."
         )
+    if has_compat and toolkit_cuda <= driver_cuda:
+        raise RuntimeError(
+            "RTDL OptiX CUDA preflight failed: LD_LIBRARY_PATH contains a CUDA compat directory, "
+            f"but nvidia-smi reports driver CUDA {driver_cuda[0]}.{driver_cuda[1]} and nvcc reports CUDA "
+            f"{toolkit_cuda[0]}.{toolkit_cuda[1]}. Remove the compat directory so RTDL loads the installed "
+            "driver's libcuda, or pass --skip-cuda-toolchain-preflight only for diagnostic runs."
+        )
     return result
 
 

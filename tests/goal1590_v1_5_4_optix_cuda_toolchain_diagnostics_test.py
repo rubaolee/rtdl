@@ -27,6 +27,7 @@ class Goal1590V154OptixCudaToolchainDiagnosticsTest(unittest.TestCase):
         self.assertIn("_preflight_cuda_toolchain", source)
         self.assertIn("has_cuda_compat_path", source)
         self.assertIn("Use a driver-compatible CUDA toolkit", source)
+        self.assertIn("Remove the compat directory", source)
 
 
 if __name__ == "__main__":

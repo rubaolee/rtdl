@@ -24,6 +24,7 @@ class Goal1586V154OptixCollectKMultiSessionRunnerTest(unittest.TestCase):
         self.assertIn("gpu_metadata", source)
         self.assertIn("cuda_preflight", source)
         self.assertIn("RTDL OptiX CUDA preflight failed", source)
+        self.assertIn("Remove the compat directory", source)
         self.assertIn("--query-gpu=name,driver_version", source)
         self.assertIn("nvidia_smi_cuda_version", source)
         self.assertIn("does not authorize public speedup wording", source)
