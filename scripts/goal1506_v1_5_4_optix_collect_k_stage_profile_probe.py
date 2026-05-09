@@ -40,6 +40,10 @@ STAGE_FIELDS = (
     "merge_metadata_download_ms",
     "carry_copy_ms",
     "final_copy_ms",
+    "final_pair_materialize_launch_ms",
+    "final_pair_mark_sync_ms",
+    "final_pair_prefix_host_ms",
+    "final_pair_compact_launch_ms",
     "total_ms",
 )
 
@@ -143,15 +147,15 @@ def _summarize_records(records: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "record_count": len(records),
         "stage_median_ms": {
-            field: _median([float(record[field]) for record in records])
+            field: _median([float(record.get(field, 0.0)) for record in records])
             for field in STAGE_FIELDS
         },
         "stage_min_ms": {
-            field: min(float(record[field]) for record in records) if records else 0.0
+            field: min(float(record.get(field, 0.0)) for record in records) if records else 0.0
             for field in STAGE_FIELDS
         },
         "stage_max_ms": {
-            field: max(float(record[field]) for record in records) if records else 0.0
+            field: max(float(record.get(field, 0.0)) for record in records) if records else 0.0
             for field in STAGE_FIELDS
         },
         "topology": {
