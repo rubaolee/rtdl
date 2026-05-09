@@ -755,6 +755,11 @@ static bool collect_k_reuse_workspace()
     return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
 }
 
+static bool collect_k_defer_merge_sync_diagnostic()
+{
+    return collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEFER_MERGE_SYNC_DIAGNOSTIC");
+}
+
 struct CollectKRowWidth2Workspace {
     size_t max_tiled_candidates = 0;
     CUdeviceptr temp_stage_a = 0;
@@ -1764,11 +1769,22 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         profile.merge_launch_ms += level_profile.launch_ms;
                     ++profile.merge_levels;
 
-                    auto merge_sync_start = CollectKStageProfile::Clock::now();
-                    CU_CHECK(cuStreamSynchronize(nullptr));
-                    level_profile.sync_ms = CollectKStageProfile::elapsed_ms(merge_sync_start);
-                    if (profile.enabled)
-                        profile.merge_sync_ms += level_profile.sync_ms;
+                    const bool can_defer_merge_sync =
+                        collect_k_defer_merge_sync_diagnostic()
+                        && use_batched_compact_level
+                        && current_rows.size() != 2
+                        // Deferral is only safe while per-level counts and
+                        // offsets remain device-resident; otherwise the host
+                        // needs this synchronization before reading metadata.
+                        && use_device_prefix_compact
+                        && use_device_level_counts;
+                    if (!can_defer_merge_sync) {
+                        auto merge_sync_start = CollectKStageProfile::Clock::now();
+                        CU_CHECK(cuStreamSynchronize(nullptr));
+                        level_profile.sync_ms = CollectKStageProfile::elapsed_ms(merge_sync_start);
+                        if (profile.enabled)
+                            profile.merge_sync_ms += level_profile.sync_ms;
+                    }
 
                     if (!use_batched_compact_level || current_rows.size() == 2)
                         *h2d_transfers_out += static_cast<uint64_t>(pair_count);
