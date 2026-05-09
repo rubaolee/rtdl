@@ -49,6 +49,56 @@ def _collect_k_env_enabled(name: str) -> bool:
     return bool(raw and raw != "0")
 
 
+def _predicted_carry_payload_copies(
+    *,
+    candidate_count: int,
+    tile_size: int,
+    use_batched_compact_level: bool,
+    use_derived_level_descriptors: bool,
+    use_derived_carry_alias_diagnostic: bool,
+) -> int:
+    current_segments = (candidate_count + tile_size - 1) // tile_size
+    carry_payload_copies = 0
+    while current_segments > 1:
+        pair_count = current_segments // 2
+        has_carry = (current_segments % 2) != 0
+        next_segment_count = pair_count + (1 if has_carry else 0)
+        derived_carry_alias_safe_next = next_segment_count == 2 or (next_segment_count % 2) != 0
+        if has_carry:
+            use_derived_carry_alias_level = (
+                use_derived_carry_alias_diagnostic
+                and use_batched_compact_level
+                and current_segments != 2
+                and use_derived_level_descriptors
+                and derived_carry_alias_safe_next
+            )
+            if not use_derived_carry_alias_level:
+                carry_payload_copies += 1
+        current_segments = next_segment_count
+    return carry_payload_copies
+
+
+def _collect_k_gated_candidate_enabled(candidate_count: int) -> bool:
+    if not _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE"):
+        return False
+    tile_size = 2048
+    baseline_copies = _predicted_carry_payload_copies(
+        candidate_count=candidate_count,
+        tile_size=tile_size,
+        use_batched_compact_level=True,
+        use_derived_level_descriptors=True,
+        use_derived_carry_alias_diagnostic=False,
+    )
+    candidate_copies = _predicted_carry_payload_copies(
+        candidate_count=candidate_count,
+        tile_size=tile_size,
+        use_batched_compact_level=True,
+        use_derived_level_descriptors=True,
+        use_derived_carry_alias_diagnostic=True,
+    )
+    return candidate_copies < baseline_copies
+
+
 def _run_command(command: list[str]) -> dict[str, Any]:
     try:
         completed = subprocess.run(
@@ -144,7 +194,9 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             "metadata_fields_downloaded": 2,
         }
 
-    use_fastest_candidate = _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE")
+    use_fastest_candidate = _collect_k_env_enabled(
+        "RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE"
+    ) or _collect_k_gated_candidate_enabled(candidate_count)
     use_cub_tile_sort = use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT")
     tile_size = 2048 if use_cub_tile_sort else 4096
     tile_count = (candidate_count + tile_size - 1) // tile_size
