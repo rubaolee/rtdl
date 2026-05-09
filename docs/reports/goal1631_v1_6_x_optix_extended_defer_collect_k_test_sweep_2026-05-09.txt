@@ -1,0 +1,35 @@
+# Goal1631 collect-k extended+defer focused RTX test sweep transcript
+Sat May  9 18:52:27 UTC 2026
+git_commit 5adc806790ab09e9554e3f66c85cbf51a492db2e
+NVIDIA RTX A4500, 550.127.05, 20470 MiB
+build: make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
+mkdir -p build
+/usr/local/cuda/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-sdk/include -I/usr/local/cuda/include  -DRTDL_OPTIX_INCLUDE_DIR=\"/root/vendor/optix-sdk/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC \
+	src/native/rtdl_optix.cpp \
+	-L/usr/local/cuda/lib64 -lcuda -lnvrtc -lgeos_c \
+	-o build/librtdl_optix.so
+collect_k_test_module_count 108
+env RTDL_OPTIX_COLLECT_K_DEFER_MERGE_SYNC_DIAGNOSTIC=1
+env RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC=1
+running unittest collect-k module sweep with timeout 600s
+....................................................................................................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 420 tests in 1.696s
+
+OK
+{
+  "decision": "defer_stable_promotion_keep_experimental",
+  "accepted_as_gate": true
+}
+{
+  "status": "accepted_local_bounds_stress",
+  "accepted": true
+}
+{
+  "status": "accepted_reduced_copy_benchmark_evidence",
+  "accepted": true
+}
+{
+  "status": "accepted_packet_execution",
+  "accepted": true
+}
