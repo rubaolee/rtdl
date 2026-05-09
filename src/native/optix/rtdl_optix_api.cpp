@@ -671,7 +671,7 @@ static bool collect_k_use_gated_fastest_candidate(size_t candidate_count)
 {
     if (!collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE"))
         return false;
-    constexpr uint64_t min_payload_copy_reduction = 3;
+    constexpr uint64_t min_payload_copy_reduction = 4;
     constexpr size_t tile_size = 2048;
     const uint64_t baseline_copies = collect_k_predicted_carry_payload_copies(
         candidate_count,

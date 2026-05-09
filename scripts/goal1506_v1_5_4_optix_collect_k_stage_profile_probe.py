@@ -81,7 +81,7 @@ def _predicted_carry_payload_copies(
 def _collect_k_gated_candidate_enabled(candidate_count: int) -> bool:
     if not _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE"):
         return False
-    min_payload_copy_reduction = 3
+    min_payload_copy_reduction = 4
     tile_size = 2048
     baseline_copies = _predicted_carry_payload_copies(
         candidate_count=candidate_count,
