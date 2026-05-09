@@ -131,6 +131,11 @@ static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
         "-allow-unsupported-compiler",
         "-O3",
     };
+    std::string configured_arch;
+    if (const char* arch = std::getenv("RTDL_OPTIX_PTX_ARCH"); arch && arch[0] != '\0') {
+        configured_arch = std::string("-arch=") + arch;
+        argv_storage.push_back(configured_arch);
+    }
     for (const std::string& include_opt : include_opts) {
         argv_storage.push_back(include_opt);
     }
@@ -236,10 +241,17 @@ std::string compile_to_ptx(const char* cuda_src,
         return compile_to_ptx_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
     }
 
+    std::vector<std::string> option_storage;
+    if (const char* arch = std::getenv("RTDL_OPTIX_PTX_ARCH"); arch && arch[0] != '\0') {
+        option_storage.push_back(std::string("--gpu-architecture=") + arch);
+    }
     std::vector<const char*> opts;
     opts.reserve(nvrtc_include_opts.size() + extra_opts.size() + 3);
     for (const std::string& include_opt : nvrtc_include_opts) {
         opts.push_back(include_opt.c_str());
+    }
+    for (const std::string& stored_opt : option_storage) {
+        opts.push_back(stored_opt.c_str());
     }
     opts.push_back("--std=c++14");
 #if defined(__linux__) && defined(__x86_64__)
