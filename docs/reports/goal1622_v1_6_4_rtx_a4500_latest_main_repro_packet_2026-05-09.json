@@ -1,0 +1,1356 @@
+{
+  "accepted": true,
+  "backends": [
+    "fake_native",
+    "embree",
+    "optix"
+  ],
+  "broad_rtx_wording_authorized": false,
+  "claim_boundary": "Goal1618 is a collect-k packet runner that executes Goal1614 bounds stress and Goal1615 reduced-copy/materialization-count benchmark commands under one artifact. It is packet-execution evidence only. Timing remains diagnostic only and this runner does not authorize public speedup wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, broad RTX/GPU wording, release tags, or release action.",
+  "environment_label": "representative_rtx_a4500_latest_main_repro_packet",
+  "failed_subpackages": [],
+  "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+  "goal": "Goal1618",
+  "host": "20935c812199",
+  "manifest": {
+    "broad_rtx_wording_authorized": false,
+    "claim_boundary": "Goal1618 is a collect-k packet runner that executes Goal1614 bounds stress and Goal1615 reduced-copy/materialization-count benchmark commands under one artifact. It is packet-execution evidence only. Timing remains diagnostic only and this runner does not authorize public speedup wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, broad RTX/GPU wording, release tags, or release action.",
+    "goal": "Goal1618",
+    "public_speedup_wording_authorized": false,
+    "purpose": "single collect-k packet runner for local rehearsal and future RTX pod execution",
+    "release_action_authorized": false,
+    "representative_rtx_performance_evidence_authorized": false,
+    "stable_collect_k_promotion_authorized": false,
+    "subgoals": [
+      "Goal1614",
+      "Goal1615"
+    ],
+    "true_zero_copy_wording_authorized": false,
+    "version_slot": "v1.6.4_packet_runner"
+  },
+  "nvidia_smi": "NVIDIA RTX A4500, 550.127.05, 20470 MiB",
+  "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+  "public_speedup_wording_authorized": false,
+  "python": "3.11.10",
+  "release_action_authorized": false,
+  "representative_rtx_performance_evidence_authorized": false,
+  "required_backends": [
+    "fake_native",
+    "embree",
+    "optix"
+  ],
+  "stable_collect_k_promotion_authorized": false,
+  "status": "accepted_packet_execution",
+  "subpackages": {
+    "goal1614_bounds_stress": {
+      "accepted": true,
+      "backends": [
+        "fake_native",
+        "embree",
+        "optix"
+      ],
+      "broad_rtx_wording_authorized": false,
+      "case_count": 9,
+      "claim_boundary": "Goal1614 stress-tests prepared host-output COLLECT_K_BOUNDED bounds semantics. It is correctness evidence only and does not authorize stable promotion, public speedup wording, true zero-copy wording, whole-app speedup claims, broad RTX/GPU wording, release tags, or release action.",
+      "failed": [],
+      "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+      "goal": "Goal1614",
+      "host": "20935c812199",
+      "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+      "primitive": "COLLECT_K_BOUNDED",
+      "public_speedup_wording_authorized": false,
+      "python": "3.11.10",
+      "records": [
+        {
+          "backend": "fake_native",
+          "capacity": 0,
+          "case": "empty_zero_capacity",
+          "elapsed_sec": 0.0001881420612335205,
+          "expected_rows": [],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 0
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 3,
+          "case": "exact_fit_unsorted_duplicates",
+          "elapsed_sec": 0.00016654282808303833,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 3
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "duplicate_compression_avoids_overflow",
+          "elapsed_sec": 0.00012918561697006226,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "k_plus_one_overflow_preserves_output",
+          "elapsed_sec": 4.8063695430755615e-05,
+          "expected_status": "overflow",
+          "expected_unique_count": 3,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 0,
+          "case": "zero_capacity_positive_overflow",
+          "elapsed_sec": 4.4658780097961426e-05,
+          "expected_status": "overflow",
+          "expected_unique_count": 1,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "row_width_one_exact",
+          "elapsed_sec": 0.00011696666479110718,
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 1,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 2,
+          "case": "row_width_three_exact",
+          "elapsed_sec": 9.235739707946777e-05,
+          "expected_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 3,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "fake_native",
+          "capacity": 1,
+          "case": "row_width_mismatch_rejected",
+          "elapsed_sec": 3.0294060707092285e-05,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: COLLECT_K_BOUNDED candidate row width mismatch: expected 2, got 3",
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "fake_native",
+          "capacity": -1,
+          "case": "negative_capacity_rejected",
+          "elapsed_sec": 9.544193744659424e-06,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: collect result buffer descriptor has invalid dimensions",
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "embree",
+          "capacity": 0,
+          "case": "empty_zero_capacity",
+          "elapsed_sec": 0.014194831252098083,
+          "expected_rows": [],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 0
+        },
+        {
+          "backend": "embree",
+          "capacity": 3,
+          "case": "exact_fit_unsorted_duplicates",
+          "elapsed_sec": 0.00014294683933258057,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 3
+        },
+        {
+          "backend": "embree",
+          "capacity": 2,
+          "case": "duplicate_compression_avoids_overflow",
+          "elapsed_sec": 0.00010778754949569702,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "embree",
+          "capacity": 2,
+          "case": "k_plus_one_overflow_preserves_output",
+          "elapsed_sec": 4.009157419204712e-05,
+          "expected_status": "overflow",
+          "expected_unique_count": 3,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "embree",
+          "capacity": 0,
+          "case": "zero_capacity_positive_overflow",
+          "elapsed_sec": 4.495680332183838e-05,
+          "expected_status": "overflow",
+          "expected_unique_count": 1,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "embree",
+          "capacity": 2,
+          "case": "row_width_one_exact",
+          "elapsed_sec": 9.11131501197815e-05,
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 1,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "embree",
+          "capacity": 2,
+          "case": "row_width_three_exact",
+          "elapsed_sec": 8.80807638168335e-05,
+          "expected_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 3,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "embree",
+          "capacity": 1,
+          "case": "row_width_mismatch_rejected",
+          "elapsed_sec": 3.063678741455078e-05,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: COLLECT_K_BOUNDED candidate row width mismatch: expected 2, got 3",
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "embree",
+          "capacity": -1,
+          "case": "negative_capacity_rejected",
+          "elapsed_sec": 9.24617052078247e-06,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: collect result buffer descriptor has invalid dimensions",
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "optix",
+          "capacity": 0,
+          "case": "empty_zero_capacity",
+          "elapsed_sec": 0.005387790501117706,
+          "expected_rows": [],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 0
+        },
+        {
+          "backend": "optix",
+          "capacity": 3,
+          "case": "exact_fit_unsorted_duplicates",
+          "elapsed_sec": 0.00013440102338790894,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 3
+        },
+        {
+          "backend": "optix",
+          "capacity": 2,
+          "case": "duplicate_compression_avoids_overflow",
+          "elapsed_sec": 9.588897228240967e-05,
+          "expected_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 2,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "optix",
+          "capacity": 2,
+          "case": "k_plus_one_overflow_preserves_output",
+          "elapsed_sec": 9.571760892868042e-05,
+          "expected_status": "overflow",
+          "expected_unique_count": 3,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "optix",
+          "capacity": 0,
+          "case": "zero_capacity_positive_overflow",
+          "elapsed_sec": 3.851950168609619e-05,
+          "expected_status": "overflow",
+          "expected_unique_count": 1,
+          "output_buffer_preserved": true,
+          "overflow_fail_closed": true,
+          "partial_result_returned": false,
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "optix",
+          "capacity": 2,
+          "case": "row_width_one_exact",
+          "elapsed_sec": 8.937716484069824e-05,
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              5
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 1,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "optix",
+          "capacity": 2,
+          "case": "row_width_three_exact",
+          "elapsed_sec": 8.838623762130737e-05,
+          "expected_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "expected_status": "pass",
+          "mismatches": [],
+          "observed_rows": [
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "prepared_output_buffer_reused": true,
+          "row_width": 3,
+          "status": "pass",
+          "valid_count": 2
+        },
+        {
+          "backend": "optix",
+          "capacity": 1,
+          "case": "row_width_mismatch_rejected",
+          "elapsed_sec": 2.896040678024292e-05,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: COLLECT_K_BOUNDED candidate row width mismatch: expected 2, got 3",
+          "row_width": 2,
+          "status": "pass"
+        },
+        {
+          "backend": "optix",
+          "capacity": -1,
+          "case": "negative_capacity_rejected",
+          "elapsed_sec": 9.112060070037842e-06,
+          "expected_status": "value_error",
+          "observed_error": "ValueError: collect result buffer descriptor has invalid dimensions",
+          "row_width": 2,
+          "status": "pass"
+        }
+      ],
+      "release_action_authorized": false,
+      "required_backends": [
+        "fake_native",
+        "embree",
+        "optix"
+      ],
+      "scope": "prepared_host_output_exact_bounds_stress",
+      "skipped_required": [],
+      "stable_collect_k_promotion_authorized": false,
+      "status": "accepted_local_bounds_stress",
+      "true_zero_copy_wording_authorized": false,
+      "version_slot": "v1.6.4_bounds_stress_addendum",
+      "whole_app_speedup_claim_authorized": false
+    },
+    "goal1615_reduced_copy_benchmark": {
+      "accepted": true,
+      "backends": [
+        "fake_native",
+        "embree",
+        "optix"
+      ],
+      "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+      "claim_flags": {
+        "broad_rtx_wording_authorized": false,
+        "package_install_claim_authorized": false,
+        "partner_tensor_handoff_authorized": false,
+        "public_speedup_wording_authorized": false,
+        "release_action_authorized": false,
+        "stable_collect_k_promotion_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "failed": [],
+      "goal": "Goal1615",
+      "manifest": {
+        "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+        "claim_flags": {
+          "broad_rtx_wording_authorized": false,
+          "package_install_claim_authorized": false,
+          "partner_tensor_handoff_authorized": false,
+          "public_speedup_wording_authorized": false,
+          "release_action_authorized": false,
+          "stable_collect_k_promotion_authorized": false,
+          "true_zero_copy_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "copy_count_fields": [
+          "input_materialization_count",
+          "output_materialization_count",
+          "host_to_device_copy_count",
+          "device_to_host_copy_count",
+          "python_row_count",
+          "thin_view_count",
+          "prepared_buffer_reuse_count"
+        ],
+        "goal": "Goal1615",
+        "phase_fields": [
+          "input_construction_sec",
+          "scene_preparation_sec",
+          "probe_packing_sec",
+          "host_to_device_transfer_sec",
+          "launch_sec",
+          "traversal_sec",
+          "device_to_host_transfer_sec",
+          "output_materialization_sec",
+          "validation_sec",
+          "python_continuation_sec",
+          "query_and_materialize_sec",
+          "total_wrapper_sec"
+        ],
+        "purpose": "collect-k reduced-copy/prepared-output benchmark evidence",
+        "required_metadata_fields": [
+          "case_id",
+          "status",
+          "backend",
+          "mode",
+          "output_contract",
+          "git_commit",
+          "host",
+          "platform",
+          "python",
+          "phase_times_sec",
+          "copy_counts",
+          "claim_flags"
+        ],
+        "supported_backends": [
+          "fake_native",
+          "embree",
+          "optix"
+        ],
+        "version_slot": "v1.6.4_reduced_copy_benchmark_addendum"
+      },
+      "primitive": "COLLECT_K_BOUNDED",
+      "records": [
+        {
+          "backend": "fake_native",
+          "candidate_row_count": 128,
+          "case_id": "collect_k_fake_native_32_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 128,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_fake_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.00039025023579597473,
+            "baseline_elapsed_total_s": 0.0015635788440704346,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.00021716952323913574,
+            "prepared_elapsed_total_s": 0.0008737370371818542,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 139219113372720,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 4.486739635467529e-05,
+            "launch_sec": 0.0008737370371818542,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.0015635788440704346,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.002437315881252289,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 32
+        },
+        {
+          "backend": "fake_native",
+          "candidate_row_count": 512,
+          "case_id": "collect_k_fake_native_128_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 512,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_fake_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.0012347325682640076,
+            "baseline_elapsed_total_s": 0.0050854310393333435,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.0006938055157661438,
+            "prepared_elapsed_total_s": 0.002779364585876465,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 33288576,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 7.140636444091797e-05,
+            "launch_sec": 0.002779364585876465,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.0050854310393333435,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.007864795625209808,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 128
+        },
+        {
+          "backend": "fake_native",
+          "candidate_row_count": 1024,
+          "case_id": "collect_k_fake_native_512_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 1024,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_fake_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.0030817873775959015,
+            "baseline_elapsed_total_s": 0.012423098087310791,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.0019209422171115875,
+            "prepared_elapsed_total_s": 0.007700100541114807,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 33355792,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 0.0002149045467376709,
+            "launch_sec": 0.007700100541114807,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.012423098087310791,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.020123198628425598,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 2,
+          "status": "pass",
+          "unique_rows": 512
+        },
+        {
+          "backend": "embree",
+          "candidate_row_count": 128,
+          "case_id": "collect_k_embree_32_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 128,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_embree_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.0002382323145866394,
+            "baseline_elapsed_total_s": 0.001005806028842926,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 9.951740503311157e-05,
+            "prepared_elapsed_total_s": 0.0004152953624725342,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 139219113372720,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 1.583993434906006e-05,
+            "launch_sec": 0.0004152953624725342,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.001005806028842926,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.0014211013913154602,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 32
+        },
+        {
+          "backend": "embree",
+          "candidate_row_count": 512,
+          "case_id": "collect_k_embree_128_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 512,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_embree_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.0007784254848957062,
+            "baseline_elapsed_total_s": 0.0031996890902519226,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.0002653487026691437,
+            "prepared_elapsed_total_s": 0.0010656341910362244,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 33345216,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 7.465481758117676e-05,
+            "launch_sec": 0.0010656341910362244,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.0031996890902519226,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.004265323281288147,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 128
+        },
+        {
+          "backend": "embree",
+          "candidate_row_count": 1024,
+          "case_id": "collect_k_embree_512_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 1024,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_embree_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.002055935561656952,
+            "baseline_elapsed_total_s": 0.008308358490467072,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.0009171590209007263,
+            "prepared_elapsed_total_s": 0.0036682039499282837,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 33420288,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 0.00011467933654785156,
+            "launch_sec": 0.0036682039499282837,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.008308358490467072,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.011976562440395355,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 2,
+          "status": "pass",
+          "unique_rows": 512
+        },
+        {
+          "backend": "optix",
+          "candidate_row_count": 128,
+          "case_id": "collect_k_optix_32_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 128,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_optix_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.00023122131824493408,
+            "baseline_elapsed_total_s": 0.0009928569197654724,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.00010122731328010559,
+            "prepared_elapsed_total_s": 0.0004121139645576477,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 139219113372720,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 1.5795230865478516e-05,
+            "launch_sec": 0.0004121139645576477,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.0009928569197654724,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.0014049708843231201,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 32
+        },
+        {
+          "backend": "optix",
+          "candidate_row_count": 512,
+          "case_id": "collect_k_optix_128_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 512,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_optix_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.000775504857301712,
+            "baseline_elapsed_total_s": 0.0036506280303001404,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.00026688352227211,
+            "prepared_elapsed_total_s": 0.001102648675441742,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 33364000,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 8.270889520645142e-05,
+            "launch_sec": 0.001102648675441742,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.0036506280303001404,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.004753276705741882,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 4,
+          "status": "pass",
+          "unique_rows": 128
+        },
+        {
+          "backend": "optix",
+          "candidate_row_count": 1024,
+          "case_id": "collect_k_optix_512_rows_reduced_copy_benchmark",
+          "claim_boundary": "Goal1615 is a collect-k reduced-copy/prepared-output benchmark evidence package. The accepted evidence is copy/materialization-count reduction under the measured same-contract wrapper paths. Timing is diagnostic only and does not authorize public speedup wording, whole-app speedup claims, broad RTX/GPU wording, true zero-copy wording, stable COLLECT_K_BOUNDED promotion, release tags, or release action.",
+          "claim_flags": {
+            "broad_rtx_wording_authorized": false,
+            "package_install_claim_authorized": false,
+            "partner_tensor_handoff_authorized": false,
+            "public_speedup_wording_authorized": false,
+            "release_action_authorized": false,
+            "stable_collect_k_promotion_authorized": false,
+            "true_zero_copy_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "copy_counts": {
+            "device_to_host_copy_count": 0,
+            "host_to_device_copy_count": 0,
+            "input_materialization_count": 4,
+            "output_materialization_count": 4,
+            "prepared_buffer_reuse_count": 4,
+            "python_row_count": 1024,
+            "thin_view_count": 0
+          },
+          "git_commit": "6fde3868de2525414d9902afcbc9d24b64831113",
+          "host": "20935c812199",
+          "iterations": 4,
+          "mode": "collect_k_reduced_copy_prepared_output_benchmark",
+          "output_contract": "goal1610_phase_copy_record",
+          "path_comparison": {
+            "accepted_metric": "input_materialization_count_delta",
+            "backend_symbol_name": "rtdl_optix_collect_k_bounded_i64",
+            "baseline_elapsed_median_s": 0.002089235931634903,
+            "baseline_elapsed_total_s": 0.008358553051948547,
+            "baseline_input_materialization_count": 4,
+            "baseline_path": "python_wrapper_materializes_ctypes_input_each_call",
+            "input_materialization_count_delta": 3,
+            "prepared_elapsed_median_s": 0.0009219273924827576,
+            "prepared_elapsed_total_s": 0.008948363363742828,
+            "prepared_host_output_buffer_reused": true,
+            "prepared_input_materialization_count": 1,
+            "prepared_output_buffer_address": 33447952,
+            "prepared_path": "typed_contiguous_host_input_buffer_reused_across_calls",
+            "stable_typed_input_buffer_address": true,
+            "timing_recorded_for_diagnostics_only": true
+          },
+          "phase_times_sec": {
+            "device_to_host_transfer_sec": null,
+            "host_to_device_transfer_sec": null,
+            "input_construction_sec": 8.969008922576904e-05,
+            "launch_sec": 0.008948363363742828,
+            "output_materialization_sec": 0.0,
+            "probe_packing_sec": 0.008358553051948547,
+            "python_continuation_sec": null,
+            "query_and_materialize_sec": null,
+            "scene_preparation_sec": null,
+            "total_wrapper_sec": 0.017306916415691376,
+            "traversal_sec": null,
+            "validation_sec": 0.0
+          },
+          "platform": "Linux-6.8.0-45-generic-x86_64-with-glibc2.35",
+          "python": "3.11.10",
+          "repeats": 2,
+          "status": "pass",
+          "unique_rows": 512
+        }
+      ],
+      "required_backends": [
+        "fake_native",
+        "embree",
+        "optix"
+      ],
+      "scale_count": 3,
+      "scope": "same_contract_input_materialization_delta_with_prepared_host_output",
+      "skipped_required": [],
+      "status": "accepted_reduced_copy_benchmark_evidence",
+      "version_slot": "v1.6.4_reduced_copy_benchmark_addendum"
+    }
+  },
+  "true_zero_copy_wording_authorized": false,
+  "version_slot": "v1.6.4_packet_runner"
+}
