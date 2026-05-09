@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "first_pair_count": 131072,
+      "fused_ms": 14.004391,
+      "fused_per_replay_us": 140.04390999999998,
+      "mismatch_count": 0,
+      "pair_count": 1,
+      "reference_ms": 11.460419,
+      "reference_over_fused_speedup": 0.8183446891764161,
+      "reference_per_replay_us": 114.60419,
+      "repeats": 100,
+      "segment_capacity": 131072
+    },
+    {
+      "first_pair_count": 131072,
+      "fused_ms": 21.471151,
+      "fused_per_replay_us": 214.71150999999998,
+      "mismatch_count": 0,
+      "pair_count": 2,
+      "reference_ms": 17.491944,
+      "reference_over_fused_speedup": 0.8146719288593331,
+      "reference_per_replay_us": 174.91944,
+      "repeats": 100,
+      "segment_capacity": 131072
+    },
+    {
+      "first_pair_count": 131072,
+      "fused_ms": 34.075617,
+      "fused_per_replay_us": 340.75617,
+      "mismatch_count": 0,
+      "pair_count": 4,
+      "reference_ms": 30.391259,
+      "reference_over_fused_speedup": 0.8918769981479719,
+      "reference_per_replay_us": 303.91259,
+      "repeats": 100,
+      "segment_capacity": 131072
+    }
+  ],
+  "claim_boundary": "Diagnostic fused materialize+mark probe only; not a production COLLECT_K_BOUNDED optimization and not a public speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1565_v1_5_4_optix_collect_k_fused_materialize_mark_probe",
+  "repeats": 100
+}
