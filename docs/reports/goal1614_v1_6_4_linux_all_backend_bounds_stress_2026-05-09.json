@@ -1,0 +1,622 @@
+{
+  "accepted": true,
+  "backends": [
+    "fake_native",
+    "embree",
+    "optix"
+  ],
+  "broad_rtx_wording_authorized": false,
+  "case_count": 9,
+  "claim_boundary": "Goal1614 stress-tests prepared host-output COLLECT_K_BOUNDED bounds semantics. It is correctness evidence only and does not authorize stable promotion, public speedup wording, true zero-copy wording, whole-app speedup claims, broad RTX/GPU wording, release tags, or release action.",
+  "failed": [],
+  "git_commit": "6b15aee44962c473bf3da7cebbbf7dcfb12a8c50",
+  "goal": "Goal1614",
+  "host": "lx1",
+  "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+  "primitive": "COLLECT_K_BOUNDED",
+  "public_speedup_wording_authorized": false,
+  "python": "3.12.3",
+  "records": [
+    {
+      "backend": "fake_native",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.00020095199579373002,
+      "expected_rows": [],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 0
+    },
+    {
+      "backend": "fake_native",
+      "capacity": 3,
+      "case": "exact_fit_unsorted_duplicates",
+      "elapsed_sec": 0.0002639339945744723,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 3
+    },
+    {
+      "backend": "fake_native",
+      "capacity": 2,
+      "case": "duplicate_compression_avoids_overflow",
+      "elapsed_sec": 0.00012360099935904145,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "fake_native",
+      "capacity": 2,
+      "case": "k_plus_one_overflow_preserves_output",
+      "elapsed_sec": 5.061100819148123e-05,
+      "expected_status": "overflow",
+      "expected_unique_count": 3,
+      "output_buffer_preserved": true,
+      "overflow_fail_closed": true,
+      "partial_result_returned": false,
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "fake_native",
+      "capacity": 0,
+      "case": "zero_capacity_positive_overflow",
+      "elapsed_sec": 5.5446987971663475e-05,
+      "expected_status": "overflow",
+      "expected_unique_count": 1,
+      "output_buffer_preserved": true,
+      "overflow_fail_closed": true,
+      "partial_result_returned": false,
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "fake_native",
+      "capacity": 2,
+      "case": "row_width_one_exact",
+      "elapsed_sec": 0.00011760700726881623,
+      "expected_rows": [
+        [
+          1
+        ],
+        [
+          5
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1
+        ],
+        [
+          5
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 1,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "fake_native",
+      "capacity": 2,
+      "case": "row_width_three_exact",
+      "elapsed_sec": 9.167299140244722e-05,
+      "expected_rows": [
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 3,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "fake_native",
+      "capacity": 1,
+      "case": "row_width_mismatch_rejected",
+      "elapsed_sec": 2.9237999115139246e-05,
+      "expected_status": "value_error",
+      "observed_error": "ValueError: COLLECT_K_BOUNDED candidate row width mismatch: expected 2, got 3",
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "fake_native",
+      "capacity": -1,
+      "case": "negative_capacity_rejected",
+      "elapsed_sec": 1.2142001651227474e-05,
+      "expected_status": "value_error",
+      "observed_error": "ValueError: collect result buffer descriptor has invalid dimensions",
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "embree",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.010090775991557166,
+      "expected_rows": [],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 0
+    },
+    {
+      "backend": "embree",
+      "capacity": 3,
+      "case": "exact_fit_unsorted_duplicates",
+      "elapsed_sec": 0.00012036901898682117,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 3
+    },
+    {
+      "backend": "embree",
+      "capacity": 2,
+      "case": "duplicate_compression_avoids_overflow",
+      "elapsed_sec": 0.00011648301733657718,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "embree",
+      "capacity": 2,
+      "case": "k_plus_one_overflow_preserves_output",
+      "elapsed_sec": 4.878599429503083e-05,
+      "expected_status": "overflow",
+      "expected_unique_count": 3,
+      "output_buffer_preserved": true,
+      "overflow_fail_closed": true,
+      "partial_result_returned": false,
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "embree",
+      "capacity": 0,
+      "case": "zero_capacity_positive_overflow",
+      "elapsed_sec": 5.263101775199175e-05,
+      "expected_status": "overflow",
+      "expected_unique_count": 1,
+      "output_buffer_preserved": true,
+      "overflow_fail_closed": true,
+      "partial_result_returned": false,
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "embree",
+      "capacity": 2,
+      "case": "row_width_one_exact",
+      "elapsed_sec": 0.00010507399565540254,
+      "expected_rows": [
+        [
+          1
+        ],
+        [
+          5
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1
+        ],
+        [
+          5
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 1,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "embree",
+      "capacity": 2,
+      "case": "row_width_three_exact",
+      "elapsed_sec": 8.920300751924515e-05,
+      "expected_rows": [
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 3,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "embree",
+      "capacity": 1,
+      "case": "row_width_mismatch_rejected",
+      "elapsed_sec": 2.8039008611813188e-05,
+      "expected_status": "value_error",
+      "observed_error": "ValueError: COLLECT_K_BOUNDED candidate row width mismatch: expected 2, got 3",
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "embree",
+      "capacity": -1,
+      "case": "negative_capacity_rejected",
+      "elapsed_sec": 9.882991435006261e-06,
+      "expected_status": "value_error",
+      "observed_error": "ValueError: collect result buffer descriptor has invalid dimensions",
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "empty_zero_capacity",
+      "elapsed_sec": 0.004362353996839374,
+      "expected_rows": [],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 0
+    },
+    {
+      "backend": "optix",
+      "capacity": 3,
+      "case": "exact_fit_unsorted_duplicates",
+      "elapsed_sec": 0.0001355490239802748,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 3
+    },
+    {
+      "backend": "optix",
+      "capacity": 2,
+      "case": "duplicate_compression_avoids_overflow",
+      "elapsed_sec": 0.0001132320030592382,
+      "expected_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 2,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "optix",
+      "capacity": 2,
+      "case": "k_plus_one_overflow_preserves_output",
+      "elapsed_sec": 4.9663009122014046e-05,
+      "expected_status": "overflow",
+      "expected_unique_count": 3,
+      "output_buffer_preserved": true,
+      "overflow_fail_closed": true,
+      "partial_result_returned": false,
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "optix",
+      "capacity": 0,
+      "case": "zero_capacity_positive_overflow",
+      "elapsed_sec": 5.268500535748899e-05,
+      "expected_status": "overflow",
+      "expected_unique_count": 1,
+      "output_buffer_preserved": true,
+      "overflow_fail_closed": true,
+      "partial_result_returned": false,
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "optix",
+      "capacity": 2,
+      "case": "row_width_one_exact",
+      "elapsed_sec": 0.00011118300608359277,
+      "expected_rows": [
+        [
+          1
+        ],
+        [
+          5
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          1
+        ],
+        [
+          5
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 1,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "optix",
+      "capacity": 2,
+      "case": "row_width_three_exact",
+      "elapsed_sec": 8.90340015757829e-05,
+      "expected_rows": [
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "expected_status": "pass",
+      "mismatches": [],
+      "observed_rows": [
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "prepared_output_buffer_reused": true,
+      "row_width": 3,
+      "status": "pass",
+      "valid_count": 2
+    },
+    {
+      "backend": "optix",
+      "capacity": 1,
+      "case": "row_width_mismatch_rejected",
+      "elapsed_sec": 2.9533024644479156e-05,
+      "expected_status": "value_error",
+      "observed_error": "ValueError: COLLECT_K_BOUNDED candidate row width mismatch: expected 2, got 3",
+      "row_width": 2,
+      "status": "pass"
+    },
+    {
+      "backend": "optix",
+      "capacity": -1,
+      "case": "negative_capacity_rejected",
+      "elapsed_sec": 9.940005838871002e-06,
+      "expected_status": "value_error",
+      "observed_error": "ValueError: collect result buffer descriptor has invalid dimensions",
+      "row_width": 2,
+      "status": "pass"
+    }
+  ],
+  "release_action_authorized": false,
+  "required_backends": [
+    "fake_native",
+    "embree",
+    "optix"
+  ],
+  "scope": "prepared_host_output_exact_bounds_stress",
+  "skipped_required": [],
+  "stable_collect_k_promotion_authorized": false,
+  "status": "accepted_local_bounds_stress",
+  "true_zero_copy_wording_authorized": false,
+  "version_slot": "v1.6.4_bounds_stress_addendum",
+  "whole_app_speedup_claim_authorized": false
+}
