@@ -760,8 +760,22 @@ static bool collect_k_defer_merge_sync_diagnostic()
     return collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEFER_MERGE_SYNC_DIAGNOSTIC");
 }
 
+static bool collect_k_extended_128_tile_diagnostic()
+{
+    return collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC");
+}
+
+static constexpr size_t kCollectKRowWidth2BaseMaxTiledCandidates = 131072;
+static constexpr size_t kCollectKRowWidth2ExtendedMaxTiledCandidates = 262144;
+static constexpr size_t kCollectKRowWidth2BaseMaxTileSegments = 64;
+static constexpr size_t kCollectKRowWidth2ExtendedMaxTileSegments = 128;
+static constexpr size_t kCollectKRowWidth2BaseMaxPrefixBlocks = 512;
+static constexpr size_t kCollectKRowWidth2ExtendedMaxPrefixBlocks = 1024;
+
 struct CollectKRowWidth2Workspace {
     size_t max_tiled_candidates = 0;
+    size_t max_tile_segments = 0;
+    size_t max_prefix_blocks = 0;
     CUdeviceptr temp_stage_a = 0;
     CUdeviceptr temp_stage_b = 0;
     CUdeviceptr tile_emitted_device = 0;
@@ -781,29 +795,59 @@ struct CollectKRowWidth2Workspace {
     CUdeviceptr final_emitted_device = 0;
     CUdeviceptr final_overflowed_device = 0;
 
-    void ensure(size_t requested_max_tiled_candidates)
+    void release()
     {
-        if (max_tiled_candidates >= requested_max_tiled_candidates)
+        if (final_overflowed_device) cuMemFree(final_overflowed_device);
+        if (final_emitted_device) cuMemFree(final_emitted_device);
+        if (final_pair_offsets) cuMemFree(final_pair_offsets);
+        if (final_block_offsets) cuMemFree(final_block_offsets);
+        if (final_block_counts) cuMemFree(final_block_counts);
+        if (final_marks) cuMemFree(final_marks);
+        if (final_merged_rows) cuMemFree(final_merged_rows);
+        if (merge_second_counts_device) cuMemFree(merge_second_counts_device);
+        if (merge_first_counts_device) cuMemFree(merge_first_counts_device);
+        if (merge_output_rows_device) cuMemFree(merge_output_rows_device);
+        if (merge_second_rows_device) cuMemFree(merge_second_rows_device);
+        if (merge_first_rows_device) cuMemFree(merge_first_rows_device);
+        if (merge_overflowed_device) cuMemFree(merge_overflowed_device);
+        if (merge_emitted_device) cuMemFree(merge_emitted_device);
+        if (tile_overflowed_device) cuMemFree(tile_overflowed_device);
+        if (tile_emitted_device) cuMemFree(tile_emitted_device);
+        if (temp_stage_b) cuMemFree(temp_stage_b);
+        if (temp_stage_a) cuMemFree(temp_stage_a);
+        *this = CollectKRowWidth2Workspace{};
+    }
+
+    void ensure(
+        size_t requested_max_tiled_candidates,
+        size_t requested_max_tile_segments,
+        size_t requested_max_prefix_blocks)
+    {
+        if (max_tiled_candidates >= requested_max_tiled_candidates
+            && max_tile_segments >= requested_max_tile_segments
+            && max_prefix_blocks >= requested_max_prefix_blocks)
             return;
         if (max_tiled_candidates != 0)
-            throw std::runtime_error("COLLECT_K_BOUNDED reusable workspace does not support growth yet");
+            release();
         max_tiled_candidates = requested_max_tiled_candidates;
+        max_tile_segments = requested_max_tile_segments;
+        max_prefix_blocks = requested_max_prefix_blocks;
         CU_CHECK(cuMemAlloc(&temp_stage_a, sizeof(int64_t) * max_tiled_candidates * 2));
         CU_CHECK(cuMemAlloc(&temp_stage_b, sizeof(int64_t) * max_tiled_candidates * 2));
-        CU_CHECK(cuMemAlloc(&tile_emitted_device, sizeof(size_t) * 64));
-        CU_CHECK(cuMemAlloc(&tile_overflowed_device, sizeof(uint32_t) * 64));
-        CU_CHECK(cuMemAlloc(&merge_emitted_device, sizeof(size_t) * 64));
-        CU_CHECK(cuMemAlloc(&merge_overflowed_device, sizeof(uint32_t) * 64));
-        CU_CHECK(cuMemAlloc(&merge_first_rows_device, sizeof(uint64_t) * 64));
-        CU_CHECK(cuMemAlloc(&merge_second_rows_device, sizeof(uint64_t) * 64));
-        CU_CHECK(cuMemAlloc(&merge_output_rows_device, sizeof(uint64_t) * 64));
-        CU_CHECK(cuMemAlloc(&merge_first_counts_device, sizeof(size_t) * 64));
-        CU_CHECK(cuMemAlloc(&merge_second_counts_device, sizeof(size_t) * 64));
+        CU_CHECK(cuMemAlloc(&tile_emitted_device, sizeof(size_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&tile_overflowed_device, sizeof(uint32_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&merge_emitted_device, sizeof(size_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&merge_overflowed_device, sizeof(uint32_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&merge_first_rows_device, sizeof(uint64_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&merge_second_rows_device, sizeof(uint64_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&merge_output_rows_device, sizeof(uint64_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&merge_first_counts_device, sizeof(size_t) * max_tile_segments));
+        CU_CHECK(cuMemAlloc(&merge_second_counts_device, sizeof(size_t) * max_tile_segments));
         CU_CHECK(cuMemAlloc(&final_merged_rows, sizeof(int64_t) * max_tiled_candidates * 2));
         CU_CHECK(cuMemAlloc(&final_marks, sizeof(uint32_t) * max_tiled_candidates));
-        CU_CHECK(cuMemAlloc(&final_block_counts, sizeof(uint32_t) * 512));
-        CU_CHECK(cuMemAlloc(&final_block_offsets, sizeof(uint32_t) * 512));
-        CU_CHECK(cuMemAlloc(&final_pair_offsets, sizeof(uint32_t) * 64));
+        CU_CHECK(cuMemAlloc(&final_block_counts, sizeof(uint32_t) * max_prefix_blocks));
+        CU_CHECK(cuMemAlloc(&final_block_offsets, sizeof(uint32_t) * max_prefix_blocks));
+        CU_CHECK(cuMemAlloc(&final_pair_offsets, sizeof(uint32_t) * max_tile_segments));
         CU_CHECK(cuMemAlloc(&final_emitted_device, sizeof(size_t)));
         CU_CHECK(cuMemAlloc(&final_overflowed_device, sizeof(uint32_t)));
     }
@@ -918,7 +962,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         }
 
         bool row_width2_tiled_supported = false;
-        if (row_width == 2 && candidate_count > 4096 && candidate_count <= 131072) {
+        const bool use_extended_128_tile_diagnostic =
+            collect_k_extended_128_tile_diagnostic();
+        const size_t row_width2_max_tiled_candidates =
+            use_extended_128_tile_diagnostic
+                ? kCollectKRowWidth2ExtendedMaxTiledCandidates
+                : kCollectKRowWidth2BaseMaxTiledCandidates;
+        if (row_width == 2 && candidate_count > 4096 && candidate_count <= row_width2_max_tiled_candidates) {
             const unsigned tile_shared_bytes = static_cast<unsigned>(
                 sizeof(int64_t) * 4096 * 2 + sizeof(uint8_t) * 4096);
             CUdevice current_device = 0;
@@ -1081,8 +1131,16 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     static_cast<int>(tile_shared_bytes)));
             }
 
-            const size_t max_tiled_candidates = 131072;
+            const size_t max_tiled_candidates = row_width2_max_tiled_candidates;
+            const size_t max_tile_segments = use_extended_128_tile_diagnostic
+                ? kCollectKRowWidth2ExtendedMaxTileSegments
+                : kCollectKRowWidth2BaseMaxTileSegments;
+            const size_t max_prefix_blocks = use_extended_128_tile_diagnostic
+                ? kCollectKRowWidth2ExtendedMaxPrefixBlocks
+                : kCollectKRowWidth2BaseMaxPrefixBlocks;
             profile.tile_count = tile_count;
+            if (tile_count > max_tile_segments)
+                throw std::runtime_error("COLLECT_K_BOUNDED tile descriptor capacity exceeded");
             auto allocation_start = CollectKStageProfile::Clock::now();
             struct DeviceSlot {
                 CUdeviceptr ptr = 0;
@@ -1095,7 +1153,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             if (use_reusable_workspace) {
                 reusable_workspace_lock = std::unique_lock<std::mutex>(
                     g_collect_k_row_width2_workspace_mutex);
-                g_collect_k_row_width2_workspace.ensure(max_tiled_candidates);
+                g_collect_k_row_width2_workspace.ensure(
+                    max_tiled_candidates,
+                    max_tile_segments,
+                    max_prefix_blocks);
             }
             auto make_slot = [&](CUdeviceptr reusable_ptr, size_t bytes) {
                 DeviceSlot slot;
@@ -1115,31 +1176,31 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 sizeof(int64_t) * max_tiled_candidates * 2);
             DeviceSlot tile_emitted_device = make_slot(
                 g_collect_k_row_width2_workspace.tile_emitted_device,
-                sizeof(size_t) * 64);
+                sizeof(size_t) * max_tile_segments);
             DeviceSlot tile_overflowed_device = make_slot(
                 g_collect_k_row_width2_workspace.tile_overflowed_device,
-                sizeof(uint32_t) * 64);
+                sizeof(uint32_t) * max_tile_segments);
             DeviceSlot merge_emitted_device = make_slot(
                 g_collect_k_row_width2_workspace.merge_emitted_device,
-                sizeof(size_t) * 64);
+                sizeof(size_t) * max_tile_segments);
             DeviceSlot merge_overflowed_device = make_slot(
                 g_collect_k_row_width2_workspace.merge_overflowed_device,
-                sizeof(uint32_t) * 64);
+                sizeof(uint32_t) * max_tile_segments);
             DeviceSlot merge_first_rows_device = make_slot(
                 g_collect_k_row_width2_workspace.merge_first_rows_device,
-                sizeof(uint64_t) * 64);
+                sizeof(uint64_t) * max_tile_segments);
             DeviceSlot merge_second_rows_device = make_slot(
                 g_collect_k_row_width2_workspace.merge_second_rows_device,
-                sizeof(uint64_t) * 64);
+                sizeof(uint64_t) * max_tile_segments);
             DeviceSlot merge_output_rows_device = make_slot(
                 g_collect_k_row_width2_workspace.merge_output_rows_device,
-                sizeof(uint64_t) * 64);
+                sizeof(uint64_t) * max_tile_segments);
             DeviceSlot merge_first_counts_device = make_slot(
                 g_collect_k_row_width2_workspace.merge_first_counts_device,
-                sizeof(size_t) * 64);
+                sizeof(size_t) * max_tile_segments);
             DeviceSlot merge_second_counts_device = make_slot(
                 g_collect_k_row_width2_workspace.merge_second_counts_device,
-                sizeof(size_t) * 64);
+                sizeof(size_t) * max_tile_segments);
             DeviceSlot final_merged_rows = make_slot(
                 g_collect_k_row_width2_workspace.final_merged_rows,
                 sizeof(int64_t) * max_tiled_candidates * 2);
@@ -1148,13 +1209,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 sizeof(uint32_t) * max_tiled_candidates);
             DeviceSlot final_block_counts = make_slot(
                 g_collect_k_row_width2_workspace.final_block_counts,
-                sizeof(uint32_t) * 512);
+                sizeof(uint32_t) * max_prefix_blocks);
             DeviceSlot final_block_offsets = make_slot(
                 g_collect_k_row_width2_workspace.final_block_offsets,
-                sizeof(uint32_t) * 512);
+                sizeof(uint32_t) * max_prefix_blocks);
             DeviceSlot final_pair_offsets = make_slot(
                 g_collect_k_row_width2_workspace.final_pair_offsets,
-                sizeof(uint32_t) * 64);
+                sizeof(uint32_t) * max_tile_segments);
             DeviceSlot final_emitted_device = make_slot(
                 g_collect_k_row_width2_workspace.final_emitted_device,
                 sizeof(size_t));
@@ -1248,6 +1309,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 size_t total = first_count + second_count;
                 const unsigned threads = 256;
                 const unsigned blocks = static_cast<unsigned>((total + threads - 1) / threads);
+                if (blocks > max_prefix_blocks)
+                    throw std::runtime_error("COLLECT_K_BOUNDED final compact block capacity exceeded");
                 void* materialize_args[] = {
                     &first_rows,
                     &first_count,
@@ -1274,8 +1337,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     sizeof(uint32_t) * threads, nullptr, mark_args, nullptr));
                 CU_CHECK(cuStreamSynchronize(nullptr));
 
-                std::array<uint32_t, 512> block_counts = {};
-                std::array<uint32_t, 512> block_offsets = {};
+                std::vector<uint32_t> block_counts(max_prefix_blocks);
+                std::vector<uint32_t> block_offsets(max_prefix_blocks);
                 download(block_counts.data(), final_block_counts.ptr, blocks);
                 uint32_t running_total = 0;
                 for (unsigned block_index = 0; block_index < blocks; ++block_index) {
@@ -1308,6 +1371,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                                                            size_t* final_count_out) {
                 const unsigned threads = 256;
                 const unsigned blocks = static_cast<unsigned>((scan_capacity + threads - 1) / threads);
+                if (blocks > max_prefix_blocks)
+                    throw std::runtime_error("COLLECT_K_BOUNDED final compact block capacity exceeded");
                 void* materialize_args[] = {
                     &first_rows,
                     &second_rows,
@@ -1333,8 +1398,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     sizeof(uint32_t) * threads, nullptr, mark_args, nullptr));
                 CU_CHECK(cuStreamSynchronize(nullptr));
 
-                std::array<uint32_t, 512> block_counts = {};
-                std::array<uint32_t, 512> block_offsets = {};
+                std::vector<uint32_t> block_counts(max_prefix_blocks);
+                std::vector<uint32_t> block_offsets(max_prefix_blocks);
                 download(block_counts.data(), final_block_counts.ptr, blocks);
                 uint32_t running_total = 0;
                 for (unsigned block_index = 0; block_index < blocks; ++block_index) {
@@ -1372,6 +1437,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                                                      CUdeviceptr output_base) {
                 const unsigned threads = 256;
                 const unsigned total_blocks = static_cast<unsigned>(pair_count * blocks_per_pair);
+                if (pair_count > max_tile_segments || total_blocks > max_prefix_blocks)
+                    throw std::runtime_error("COLLECT_K_BOUNDED compact-level descriptor capacity exceeded");
                 if (use_pointer_device_counts) {
                     void* materialize_args[] = {
                         &merge_first_rows_device.ptr,
@@ -1507,9 +1574,9 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 } else {
                     CU_CHECK(cuStreamSynchronize(nullptr));
 
-                    std::array<uint32_t, 512> block_counts = {};
-                    std::array<uint32_t, 512> block_offsets = {};
-                    std::array<uint32_t, 64> pair_offsets = {};
+                    std::vector<uint32_t> block_counts(max_prefix_blocks);
+                    std::vector<uint32_t> block_offsets(max_prefix_blocks);
+                    std::vector<uint32_t> pair_offsets(max_tile_segments);
                     download(block_counts.data(), final_block_counts.ptr, total_blocks);
                     uint32_t running_total = 0;
                     for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
@@ -1598,8 +1665,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 (use_candidate_bundle_for_case || collect_k_use_derived_carry_alias_diagnostic())
                 && use_device_level_counts;
 
-            std::array<size_t, 64> tile_emitted = {};
-            std::array<uint32_t, 64> tile_overflowed = {};
+            std::vector<size_t> tile_emitted(max_tile_segments);
+            std::vector<uint32_t> tile_overflowed(max_tile_segments);
             auto tile_metadata_start = CollectKStageProfile::Clock::now();
             if (!use_device_level_counts)
                 download(tile_emitted.data(), tile_emitted_device.ptr, tile_count);
@@ -1678,11 +1745,11 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                             use_derived_level_descriptors && !use_pointer_carry_level;
                         const bool level_use_pointer_device_counts =
                             use_pointer_device_counts_carry_level;
-                        std::array<size_t, 64> merge_first_counts = {};
-                        std::array<size_t, 64> merge_second_counts = {};
-                        std::array<uint64_t, 64> merge_first_rows = {};
-                        std::array<uint64_t, 64> merge_second_rows = {};
-                        std::array<uint64_t, 64> merge_output_rows = {};
+                        std::vector<size_t> merge_first_counts(max_tile_segments);
+                        std::vector<size_t> merge_second_counts(max_tile_segments);
+                        std::vector<uint64_t> merge_first_rows(max_tile_segments);
+                        std::vector<uint64_t> merge_second_rows(max_tile_segments);
+                        std::vector<uint64_t> merge_output_rows(max_tile_segments);
                         if (use_pointer_host_counts_carry_level) {
                             current_counts.resize(current_rows.size());
                             auto count_download_start = CollectKStageProfile::Clock::now();
@@ -1875,11 +1942,11 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 }
 
                 auto merge_launch_start = CollectKStageProfile::Clock::now();
-                std::array<uint64_t, 64> merge_first_rows = {};
-                std::array<uint64_t, 64> merge_second_rows = {};
-                std::array<uint64_t, 64> merge_output_rows = {};
-                std::array<size_t, 64> merge_first_counts = {};
-                std::array<size_t, 64> merge_second_counts = {};
+                std::vector<uint64_t> merge_first_rows(max_tile_segments);
+                std::vector<uint64_t> merge_second_rows(max_tile_segments);
+                std::vector<uint64_t> merge_output_rows(max_tile_segments);
+                std::vector<size_t> merge_first_counts(max_tile_segments);
+                std::vector<size_t> merge_second_counts(max_tile_segments);
                 for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
                     CUdeviceptr pair_output = output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index;
                     merge_first_rows[pair_index] = static_cast<uint64_t>(current_rows[pair_index * 2]);
@@ -1907,8 +1974,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 if (profile.enabled)
                     profile.merge_sync_ms += level_profile.sync_ms;
 
-                std::array<size_t, 64> merge_emitted = {};
-                std::array<uint32_t, 64> merge_overflowed = {};
+                std::vector<size_t> merge_emitted(max_tile_segments);
+                std::vector<uint32_t> merge_overflowed(max_tile_segments);
                 auto merge_metadata_start = CollectKStageProfile::Clock::now();
                 download(merge_emitted.data(), merge_emitted_device.ptr, pair_count);
                 download(merge_overflowed.data(), merge_overflowed_device.ptr, pair_count);

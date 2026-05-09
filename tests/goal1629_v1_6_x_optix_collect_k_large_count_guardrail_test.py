@@ -13,10 +13,10 @@ class Goal1629OptixCollectKLargeCountGuardrailTest(unittest.TestCase):
     def test_source_keeps_current_tiled_path_bounded_to_131072_candidates(self) -> None:
         text = API_CPP.read_text(encoding="utf-8")
 
-        self.assertIn("candidate_count > 4096 && candidate_count <= 131072", text)
-        self.assertIn("const size_t max_tiled_candidates = 131072", text)
-        self.assertIn("sizeof(size_t) * 64", text)
-        self.assertIn("sizeof(uint32_t) * 64", text)
+        self.assertIn("kCollectKRowWidth2BaseMaxTiledCandidates = 131072", text)
+        self.assertIn("kCollectKRowWidth2BaseMaxTileSegments = 64", text)
+        self.assertIn("kCollectKRowWidth2BaseMaxPrefixBlocks = 512", text)
+        self.assertIn("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC", text)
 
     def test_preflight_rejects_counts_above_current_tiled_profile_boundary(self) -> None:
         case = preflight._case_for_count(

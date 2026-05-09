@@ -221,7 +221,13 @@ def validate_probe(probe: dict[str, Any]) -> dict[str, Any]:
 def _expected_native_path(candidate_count: int, row_width: int) -> str:
     if row_width == 2 and candidate_count <= 4096:
         return "row_width2_parallel_bitonic_sort"
-    if row_width == 2 and candidate_count <= 131072:
+    row_width2_tiled_limit = (
+        262144
+        if os.environ.get("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC")
+        not in (None, "", "0")
+        else 131072
+    )
+    if row_width == 2 and candidate_count <= row_width2_tiled_limit:
         return "row_width2_bounded_multi_tile_sort_merge"
     return "dynamic_row_width_single_thread_fallback"
 
