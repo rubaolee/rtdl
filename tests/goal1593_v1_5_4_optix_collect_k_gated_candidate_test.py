@@ -16,20 +16,28 @@ class Goal1593V154OptixCollectKGatedCandidateTest(unittest.TestCase):
 
         self.assertIn("RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE", source)
         self.assertIn("collect_k_use_gated_fastest_candidate(candidate_count)", source)
-        self.assertIn("candidate_copies < baseline_copies", source)
+        self.assertIn("min_payload_copy_reduction = 3", source)
+        self.assertIn("baseline_copies >= candidate_copies + min_payload_copy_reduction", source)
 
-    def test_probe_gated_candidate_enables_only_predicted_copy_reduction(self) -> None:
+    def test_probe_gated_candidate_requires_large_predicted_copy_reduction(self) -> None:
         with patch.dict(os.environ, {"RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE": "1"}, clear=True):
+            topology_49153 = probe.expected_topology(49153, 2)
             topology_65535 = probe.expected_topology(65535, 2)
             topology_65537 = probe.expected_topology(65537, 2)
+            topology_69633 = probe.expected_topology(69633, 2)
 
+        self.assertEqual(topology_49153["carry_payload_copies"], 3)
+        self.assertEqual(topology_49153["tile_count"], 25)
+        self.assertEqual(topology_49153["sort_launches"], 1)
         self.assertEqual(topology_65535["carry_payload_copies"], 0)
         self.assertEqual(topology_65535["tile_count"], 32)
         self.assertEqual(topology_65535["sort_launches"], 1)
-
         self.assertEqual(topology_65537["carry_payload_copies"], 0)
         self.assertEqual(topology_65537["tile_count"], 33)
         self.assertEqual(topology_65537["sort_launches"], 1)
+        self.assertEqual(topology_69633["carry_payload_copies"], 1)
+        self.assertEqual(topology_69633["tile_count"], 35)
+        self.assertEqual(topology_69633["sort_launches"], 1)
 
     def test_probe_gated_candidate_preserves_default_without_env(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
