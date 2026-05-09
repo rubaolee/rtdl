@@ -926,10 +926,17 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
         }
         if (row_width2_tiled_supported) {
             profile.native_path = "row_width2_bounded_multi_tile_sort_merge";
-            const bool use_fastest_candidate_for_case =
-                collect_k_use_fastest_candidate() || collect_k_use_gated_fastest_candidate(candidate_count);
+            const bool use_gated_candidate_mode =
+                collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE");
+            const bool use_fastest_candidate_for_case = collect_k_use_fastest_candidate();
+            const bool use_gated_fastest_candidate_for_case =
+                collect_k_use_gated_fastest_candidate(candidate_count);
+            const bool use_candidate_bundle_for_case =
+                use_fastest_candidate_for_case || use_gated_fastest_candidate_for_case;
+            const bool use_gated_or_candidate_bundle =
+                use_gated_candidate_mode || use_candidate_bundle_for_case;
             const bool use_cub_tile_sort =
-                use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT");
+                use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT");
             auto module_start = CollectKStageProfile::Clock::now();
             std::call_once(g_collect_k_i64_row_width2_sort.init, [&]() {
                 std::string ptx = compile_to_ptx(
@@ -1078,7 +1085,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             local_allocations.reserve(18);
             std::unique_lock<std::mutex> reusable_workspace_lock;
             const bool use_reusable_workspace =
-                use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
+                use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_REUSE_WORKSPACE");
             if (use_reusable_workspace) {
                 reusable_workspace_lock = std::unique_lock<std::mutex>(
                     g_collect_k_row_width2_workspace_mutex);
@@ -1563,26 +1570,26 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             profile.add_since(profile.sort_sync_ms, sort_sync_start);
 
             const bool use_parallel_final_compact =
-                use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT");
+                use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT");
             const bool use_batched_compact_level =
-                use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL");
+                use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL");
             const bool use_device_prefix_compact =
-                use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT");
+                use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT");
             const bool use_derived_level_descriptors =
-                use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS");
+                use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS");
             const bool use_device_level_counts =
-                (use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS"))
+                (use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS"))
                 && use_derived_level_descriptors
                 && use_device_prefix_compact;
             const bool use_device_final_counts =
-                (use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS"))
+                (use_gated_or_candidate_bundle || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS"))
                 && use_device_level_counts;
             const bool use_carry_pointer_diagnostic =
                 collect_k_use_carry_pointer_diagnostic() && use_device_level_counts;
             const bool use_carry_pointer_device_counts_diagnostic =
                 collect_k_use_carry_pointer_device_counts_diagnostic() && use_device_level_counts;
             const bool use_derived_carry_alias_diagnostic =
-                (use_fastest_candidate_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"))
+                (use_candidate_bundle_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"))
                 && use_device_level_counts;
 
             std::array<size_t, 64> tile_emitted = {};

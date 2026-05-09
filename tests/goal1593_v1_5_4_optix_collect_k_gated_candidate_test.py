@@ -24,8 +24,8 @@ class Goal1593V154OptixCollectKGatedCandidateTest(unittest.TestCase):
             topology_65537 = probe.expected_topology(65537, 2)
 
         self.assertEqual(topology_65535["carry_payload_copies"], 0)
-        self.assertEqual(topology_65535["tile_count"], 16)
-        self.assertEqual(topology_65535["sort_launches"], 16)
+        self.assertEqual(topology_65535["tile_count"], 32)
+        self.assertEqual(topology_65535["sort_launches"], 1)
 
         self.assertEqual(topology_65537["carry_payload_copies"], 0)
         self.assertEqual(topology_65537["tile_count"], 33)

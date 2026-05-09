@@ -194,10 +194,12 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
             "metadata_fields_downloaded": 2,
         }
 
-    use_fastest_candidate = _collect_k_env_enabled(
+    use_gated_candidate_mode = _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_GATED_CANDIDATE")
+    use_candidate_bundle = _collect_k_env_enabled(
         "RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE"
     ) or _collect_k_gated_candidate_enabled(candidate_count)
-    use_cub_tile_sort = use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT")
+    use_gated_or_candidate_bundle = use_gated_candidate_mode or use_candidate_bundle
+    use_cub_tile_sort = use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT")
     tile_size = 2048 if use_cub_tile_sort else 4096
     tile_count = (candidate_count + tile_size - 1) // tile_size
     compact_min_capacity = int(
@@ -210,16 +212,16 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
     merge_launches = 0
     carry_copies = 0
     carry_payload_copies = 0
-    use_batched_compact_level = use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL")
-    use_device_prefix_compact = use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT")
-    use_derived_level_descriptors = use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS")
+    use_batched_compact_level = use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_BATCH_COMPACT_LEVEL")
+    use_device_prefix_compact = use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_PREFIX_COMPACT")
+    use_derived_level_descriptors = use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_LEVEL_DESCRIPTORS")
     use_device_level_counts = (
-        (use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS"))
+        (use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_LEVEL_COUNTS"))
         and use_derived_level_descriptors
         and use_device_prefix_compact
     )
     use_device_final_counts = (
-        (use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS"))
+        (use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS"))
         and use_device_level_counts
     )
     use_carry_pointer_diagnostic = (
@@ -231,7 +233,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         and use_device_level_counts
     )
     use_derived_carry_alias_diagnostic = (
-        (use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"))
+        (use_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"))
         and use_device_level_counts
     )
     metadata_fields_downloaded = tile_count * (1 if use_device_level_counts else 2)
@@ -251,7 +253,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         derived_carry_alias_safe_next = next_segment_count == 2 or (next_segment_count % 2) != 0
         merge_levels += 1
         if (
-            (use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"))
+            (use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"))
             and output_segment_capacity >= compact_min_capacity
         ):
             if use_batched_compact_level and current_segments != 2:
@@ -295,7 +297,7 @@ def expected_topology(candidate_count: int, row_width: int) -> dict[str, Any]:
         "carry_copies": carry_copies,
         "carry_payload_copies": carry_payload_copies,
         "final_copies": 0 if (
-            (use_fastest_candidate or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"))
+            (use_gated_or_candidate_bundle or _collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_PARALLEL_FINAL_COMPACT"))
             and segment_capacity >= compact_min_capacity
         ) else 1,
         "metadata_fields_downloaded": metadata_fields_downloaded,

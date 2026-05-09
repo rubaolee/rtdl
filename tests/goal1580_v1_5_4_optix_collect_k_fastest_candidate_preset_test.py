@@ -53,8 +53,8 @@ class Goal1580V154OptixCollectKFastestCandidatePresetTest(unittest.TestCase):
     def test_stage_profile_probe_understands_single_flag_preset(self) -> None:
         source = PROBE.read_text(encoding="utf-8")
         self.assertIn("RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE", source)
-        self.assertIn("use_fastest_candidate or _collect_k_env_enabled(\"RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT\")", source)
-        self.assertIn("use_fastest_candidate or _collect_k_env_enabled(\"RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC\")", source)
+        self.assertIn("use_gated_or_candidate_bundle or _collect_k_env_enabled(\"RTDL_OPTIX_COLLECT_K_CUB_TILE_SORT\")", source)
+        self.assertIn("use_candidate_bundle or _collect_k_env_enabled(\"RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC\")", source)
 
     def test_report_preserves_claim_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
