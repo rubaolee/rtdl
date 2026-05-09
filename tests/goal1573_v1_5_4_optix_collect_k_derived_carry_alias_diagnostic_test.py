@@ -12,7 +12,8 @@ class Goal1573V154OptixCollectKDerivedCarryAliasDiagnosticTest(unittest.TestCase
         source = API.read_text(encoding="utf-8")
         self.assertIn("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC", source)
         self.assertIn("collect_k_use_derived_carry_alias_diagnostic", source)
-        self.assertIn("collect_k_use_derived_carry_alias_diagnostic() && use_device_level_counts", source)
+        self.assertIn("(use_candidate_bundle_for_case || collect_k_use_derived_carry_alias_diagnostic())", source)
+        self.assertIn("&& use_device_level_counts", source)
 
     def test_alias_is_limited_to_topologies_where_carry_stays_unpaired(self) -> None:
         source = API.read_text(encoding="utf-8")

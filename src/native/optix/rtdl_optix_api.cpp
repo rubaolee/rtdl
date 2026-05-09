@@ -1590,7 +1590,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             const bool use_carry_pointer_device_counts_diagnostic =
                 collect_k_use_carry_pointer_device_counts_diagnostic() && use_device_level_counts;
             const bool use_derived_carry_alias_diagnostic =
-                (use_candidate_bundle_for_case || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DERIVED_CARRY_ALIAS_DIAGNOSTIC"))
+                (use_candidate_bundle_for_case || collect_k_use_derived_carry_alias_diagnostic())
                 && use_device_level_counts;
 
             std::array<size_t, 64> tile_emitted = {};
