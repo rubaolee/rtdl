@@ -8,6 +8,10 @@ This page separates three different claims that are easy to confuse:
 
 RTDL should not describe every implemented backend as optimized.
 
+Current release: `v1.6`. This page describes backend maturity for the current
+Python+RTDL architecture milestone; it does not authorize broader speedup
+claims than the v1.6 release package and support matrices allow.
+
 For developer-facing feature selection, the stricter rule is recorded in
 [Engine Feature Support Contract](features/engine_support_matrix.md): each
 public feature must have an explicit status on each engine. The allowed statuses

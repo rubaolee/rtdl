@@ -1,6 +1,7 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for current `main` after Goal970.
+Status: public app-level support map for the current `v1.6` release line and
+current `main`.
 
 This matrix answers which engines each public app entry point exposes today. It is intentionally app-level, not just feature-level: an underlying RTDL primitive may support an engine while a particular app CLI does not expose that engine yet.
 
@@ -225,7 +226,7 @@ claim.
 
 ## RT-Core App Maturity Contract
 
-Status: v1.0 direction contract.
+Status: current v1.6 public direction contract for NVIDIA RT-core app claims.
 
 The machine-readable source of truth is
 `rtdsl.rt_core_app_maturity_matrix()`.

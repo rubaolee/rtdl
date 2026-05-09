@@ -6,6 +6,11 @@ It answers two practical questions for users:
 - Which complete app-shaped examples exist today?
 - Which examples are spatial joins or spatial-join-like workloads?
 
+Current release: `v1.6`. Read this page as the app catalog for the first
+Python+RTDL architecture milestone: Python remains the app/control layer, RTDL
+owns the supported RT-shaped kernel contract, and performance claims remain
+bounded to reviewed sub-paths.
+
 The boundary is important: RTDL owns traversal, candidate discovery,
 refinement, and row emission. Python owns application orchestration,
 post-processing, policy decisions, and presentation. These examples are not

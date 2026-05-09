@@ -14,6 +14,10 @@ PUBLIC_SURFACE_DOCS = (
     ROOT / "docs" / "release_facing_examples.md",
     ROOT / "docs" / "rtdl_feature_guide.md",
     ROOT / "docs" / "performance_model.md",
+    ROOT / "docs" / "application_catalog.md",
+    ROOT / "docs" / "app_engine_support_matrix.md",
+    ROOT / "docs" / "backend_maturity.md",
+    ROOT / "docs" / "capability_boundaries.md",
     ROOT / "examples" / "README.md",
 )
 REVIEW_FILES = (
@@ -54,6 +58,8 @@ class Goal1608V16PublicSurfaceConsistencyTest(unittest.TestCase):
             "v1.5 is the current release line",
             "current released state is `v1.5`",
             "current released version is `v1.5`",
+            "Status: public app-level support map for current `main` after Goal970",
+            "Status: v1.0 direction contract",
         ]:
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, joined)

@@ -58,11 +58,12 @@ Current public RTX wording is governed by:
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - `rtdsl.rtx_public_wording_matrix()`
 
-## v1.5 App Performance Reality
+## v1.6 App Performance Reality
 
-v1.5 is the current standalone Embree+OptiX language/runtime release for the
-supported surface. It keeps the v1.0 app-shaped proof history, so performance
-is still mixed by design:
+v1.6 is the current Python+RTDL architecture release for the supported
+Embree+OptiX primitive surface. It keeps the v1.0 app-shaped proof history and
+the v1.5 standalone Embree+OptiX language/runtime completion history, so
+performance is still mixed by design:
 
 - RT traversal-heavy sub-paths can be fast.
 - Full apps may still be slow when Python owns ranking, clustering, exact
