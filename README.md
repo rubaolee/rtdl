@@ -11,14 +11,30 @@ The current released version is `v1.6`.
 
 ## Start Fast
 
+Run from the repository root. RTDL v1.6 is used directly from the source tree;
+keep `PYTHONPATH=src:.` in front of example and test commands unless a later
+packaged release adds installation metadata.
+
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend embree
 ```
 
-RTDL v1.6 is used directly from the source tree. Keep `PYTHONPATH=src:.` in
-front of example and test commands unless a later packaged release adds
-installation metadata.
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_hello_world.py
+python examples\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python examples/rtdl_hello_world.py
+python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+```
 
 ## Read Next
 

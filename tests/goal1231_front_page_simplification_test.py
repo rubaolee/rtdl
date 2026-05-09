@@ -26,7 +26,7 @@ class Goal1231FrontPageSimplificationTest(unittest.TestCase):
 
         self.assertIn("not, by itself, a public claim that NVIDIA RT cores accelerated the app", compact)
         self.assertIn("not a whole-app, default-mode, Python-postprocess", compact)
-        self.assertIn("v1.5 release package/support matrix as the current release authority", compact)
+        self.assertIn("v1.6 release package/support matrix as the current release authority", compact)
         self.assertIn("v1.0 inventory preserved for app-boundary history", compact)
         self.assertIn("Detailed evidence and review trail", text)
 

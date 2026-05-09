@@ -1,6 +1,6 @@
 # RTDL Performance Model
 
-This page explains how to read RTDL performance claims in the current v1.5
+This page explains how to read RTDL performance claims in the current v1.6
 release line. It is intentionally stricter than marketing language: a
 backend flag, a native code path, and a public speedup claim are different
 things.
@@ -16,10 +16,11 @@ The current public performance model is:
 
 - Python is the authoring/control plane.
 - Backend/native code should own traversal and candidate discovery.
-- v1.5 keeps the v1.0 app-shaped proof history but publishes standalone
-  Embree+OptiX language/runtime completion for the supported surface.
+- v1.6 keeps the v1.0 app-shaped proof history and publishes the first
+  Python+RTDL architecture milestone for the supported Embree+OptiX primitive
+  surface.
 - Some native entry points remain workload-shaped compatibility/proof surfaces;
-  v1.5 is not a zero-app-knowledge native-engine release.
+  v1.6 is not a zero-app-knowledge native-engine release.
 - Python convenience row output is useful for development but can dominate
   runtime.
 - Raw/prepared/native summary paths are the serious performance path.
@@ -119,13 +120,13 @@ Use slower-than-Embree results to decide the next architecture step:
 - if parity or same-contract timing is incomplete, the result stays
   `baseline_contract_incomplete`;
 - if the app needs reductions, grouping, ranking, graph analytics, or SQL-style
-  materialization outside traversal, that is v1.5.1/v2.0 design input rather
+  materialization outside traversal, that is v1.6.x/v2.0 design input rather
   than a failed OptiX proof.
 
-## What v1.5 Publishes
+## What v1.6 Publishes
 
-The released v1.5 package has pod-verified standalone Embree+OptiX subpaths for
-the supported migration inventory. Those subpaths express more app
+The released v1.6 package has Windows, Linux, and OptiX validation evidence for
+the supported Python+RTDL architecture boundary. Those subpaths express more app
 continuations through reviewed backend primitives instead of hardcoded app
 logic:
 
@@ -134,17 +135,18 @@ logic:
 - `REDUCE_FLOAT(MIN|MAX|SUM)`
 - `REDUCE_INT(COUNT|SUM)`
 
-`COLLECT_K_BOUNDED` remains experimental and is deferred to v1.5.1. v1.5 is
+`COLLECT_K_BOUNDED` remains experimental and is deferred to follow-up
+performance work. v1.6 is
 not a claim that every app is automatically fast. App-level continuations such
 as ranking, clustering, graph analytics, SQL-style materialization,
 exact-distance rows, and force-vector reduction remain outside the verified
-v1.5 subpath boundary unless a later report explicitly moves them.
+v1.6 subpath boundary unless a later report explicitly moves them.
 
-## What v2.0 Should Fix
+## What v1.7-v2.0 Should Fix
 
-v2.0 is the broader performance target. It should preserve the Python-facing
-DSL while removing Python from hot data movement and heavy non-RT continuation
-work:
+v1.7-v2.0 are the broader partner-interoperability performance track. They
+should preserve the Python-facing DSL while removing Python from hot data
+movement and heavy non-RT continuation work:
 
 - stable compiled plans
 - flat native-ready buffers
@@ -154,9 +156,9 @@ work:
 - explicit boundaries between RT traversal, compute reductions, and Python
   presentation
 
-Until that architecture exists, public docs should say v1.5 provides standalone
-Embree+OptiX support for the bounded release surface and selected sub-path
-evidence, not universal whole-app speedup.
+Until that architecture exists, public docs should say v1.6 provides the first
+Python+RTDL architecture milestone for the bounded release surface and selected
+sub-path evidence, not universal whole-app speedup.
 
 ## Public Wording Rule
 

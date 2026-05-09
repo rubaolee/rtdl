@@ -36,25 +36,26 @@ class Goal1244PublicDocSpineTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
-    def test_architecture_and_app_quickstart_explain_v1_5_customization_boundary(self) -> None:
+    def test_architecture_and_app_quickstart_explain_v1_6_customization_boundary(self) -> None:
         arch = (ROOT / "docs" / "current_architecture.md").read_text(encoding="utf-8")
         quickstart = (ROOT / "docs" / "app_example_quickstart.md").read_text(encoding="utf-8")
 
         for phrase in (
-            "## v1.5 Lens",
-            "v1.5 is the current release line",
+            "## v1.6 Lens",
+            "v1.6 is the current release line",
             "Some app paths use app-specific native continuations",
             "not the final engine architecture",
             "not yet a zero-app-knowledge native",
-            "v2.0 is the broader end-to-end performance target",
+            "v1.7-v2.0 are the broader end-to-end performance target",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, arch)
 
         for phrase in (
             "## Engine Customization Boundary",
-            "v1.0 includes app-specific native continuations",
+            "Some app paths still inherit v1.0-era app-specific native continuations",
             "intentional proof machinery",
+            "v1.6 is the current Python+RTDL architecture milestone",
             "the authoritative per-app list",
             "whether public RTX wording is reviewed, blocked, not reviewed, or not a NVIDIA target",
         ):

@@ -1,6 +1,7 @@
 # RTDL Quick Tutorial
 
-RTDL is a geometric-query language that runs inside Python.
+RTDL is a Python-hosted ray-tracing DSL/runtime for non-graphical workloads.
+The current released version is `v1.6`.
 
 You write a kernel, a small function that describes what query to run, then call
 an RTDL runner to execute it. Python owns the surrounding program: data loading,
@@ -228,9 +229,12 @@ NVIDIA RT-core claim note:
   new public RTX speedup wording.
 
 Current released feature terms you will see in public docs include
-`ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`. `reduce_rows` is a
-Python helper over emitted rows, not a native backend reduction. OptiX, Embree,
-and HIPRT have released native early-exit any-hit coverage. Vulkan and Apple RT
+`ray_triangle_any_hit`, `visibility_rows`, `reduce_rows`, and the v1.6 stable
+primitive/reduction contract names `ANY_HIT`, `COUNT_HITS`,
+`REDUCE_FLOAT(MIN|MAX|SUM)`, and `REDUCE_INT(COUNT|SUM)`. The public
+`reduce_rows` helper is a deterministic Python helper over emitted rows; do not
+read it as a blanket native-backend reduction speedup claim. OptiX, Embree, and
+HIPRT have released native early-exit any-hit coverage. Vulkan and Apple RT
 also have released bounded paths, but backend support varies by predicate and
 platform.
 

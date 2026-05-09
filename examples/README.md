@@ -6,13 +6,18 @@ detailed inventory when you need a specific app or backend boundary.
 
 ## Short Path
 
+Current release: `v1.6`. Use the examples from the repository root with
+`PYTHONPATH=src:.`; Windows users can set `PYTHONPATH` once in the shell and
+then run the same `python ...` commands.
+
 | Step | Run or read | Purpose |
 | --- | --- | --- |
 | 1 | `PYTHONPATH=src:. python examples/rtdl_hello_world.py` | prove the checkout imports and runs |
 | 2 | `PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference` | see backend selection without performance claims |
 | 3 | [App And Example Quickstart](../docs/app_example_quickstart.md) | choose one app by job instead of scanning the directory |
-| 4 | [v1.0 App Acceleration Inventory](../docs/v1_0_app_acceleration_inventory.md) | check what RTDL accelerates and what remains outside |
-| 5 | [Performance Model](../docs/performance_model.md) | interpret any timing or speedup wording safely |
+| 4 | [v1.6 Release Package](../docs/release_reports/v1_6/README.md) | check the current release boundary |
+| 5 | [v1.0 App Acceleration Inventory](../docs/v1_0_app_acceleration_inventory.md) | check what RTDL accelerates and what remains outside in historical app evidence |
+| 6 | [Performance Model](../docs/performance_model.md) | interpret any timing or speedup wording safely |
 
 The quick rule: examples show runnable RTDL shapes; public speedup wording comes only from the support matrix and reviewed evidence for an exact bounded sub-path.
 
@@ -121,6 +126,19 @@ For release-facing examples and commands, prefer the docs entry points:
 - `../docs/quick_tutorial.md`
 - `../docs/tutorials/README.md`
 - `../docs/release_facing_examples.md`
+
+Current v1.6 example boundary:
+
+- RTDL v1.6 is the current public release and the first Python+RTDL
+  architecture milestone
+- examples are source-tree examples, not package-install examples
+- portable first-run examples should use `cpu_python_reference`
+- Embree and OptiX are the active v1.6 closure backends for the supported
+  stable primitive surface
+- Vulkan, HIPRT, and Apple RT examples remain preserved bounded backend
+  surfaces, but they are not the active v1.6 optimization target
+- `COLLECT_K_BOUNDED` is not a stable v1.6 primitive
+- `--backend optix` is not by itself a public NVIDIA RT-core speedup claim
 
 Current DB example boundary:
 

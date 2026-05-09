@@ -37,8 +37,8 @@ Read the current architecture through this v1.6 lens:
 - v1.6 is an architecture anchor, not a performance freeze.
 - v1.7-v2.0 are the staged Python+partner+RTDL mechanism track for non-RT
   phases that should not stay in Python hot loops.
-- v2.0 is the broader end-to-end performance target after the partner-mechanism
-  milestones.
+- v1.7-v2.0 are the broader end-to-end performance target after the first
+  Python+RTDL closure.
 
 ## The User Contract
 

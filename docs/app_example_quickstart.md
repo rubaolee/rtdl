@@ -4,6 +4,10 @@ This page is the short public route into RTDL apps and examples. Use it when
 you want to run something quickly and understand what it proves without reading
 the full catalog first.
 
+The current released version is `v1.6`. This page starts with portable
+source-tree commands, then explains which app phases belong to RTDL and which
+phases remain Python-owned or historical proof machinery.
+
 ## First Three Commands
 
 Run these from the repo root:
@@ -52,10 +56,15 @@ technical implementation notes rather than tutorials, read
 
 ## Engine Customization Boundary
 
-v1.0 includes app-specific native continuations for some apps. This is
+v1.6 is the current Python+RTDL architecture milestone. Python remains the
+app/control layer, RTDL owns the supported RT-shaped primitive contract and
+bridge, and Embree/OptiX execute validated stable primitive subpaths.
+
+Some app paths still inherit v1.0-era app-specific native continuations. This is
 intentional proof machinery: it lets RTDL avoid excessive row materialization
-and demonstrate useful prepared/native sub-paths before the generic v1.5
-primitive ABI exists.
+and demonstrate useful prepared/native sub-paths while the generic primitive and
+collection surface matures. Do not read those continuations as a claim that the
+native engine internals are fully app-free.
 
 Use [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) for
 the authoritative per-app list of:
@@ -90,9 +99,9 @@ mode is documented and reviewed.
 If an app returns full rows, Python labels, force vectors, ranked assignments,
 or cluster labels, that output may include Python-owned continuation work. Only claim the exact prepared/native sub-path that the support matrix and review reports authorize.
 
-## Recommended v1.0 Demo Path
+## Recommended v1.6 Demo Path
 
-For a short v1.0 demonstration sequence:
+For a short v1.6 demonstration sequence:
 
 1. Run `examples/rtdl_hello_world.py`.
 2. Run `examples/rtdl_feature_quickstart_cookbook.py`.
@@ -102,4 +111,6 @@ For a short v1.0 demonstration sequence:
 6. Read [App Engine Support Matrix](app_engine_support_matrix.md) before using
    `--backend optix` or `--require-rt-core`.
 
-This sequence demonstrates the v1.0 promise: RTDL can express real app-shaped RT workloads from Python, while the docs keep performance and claim boundaries explicit.
+This sequence demonstrates the v1.6 promise: RTDL can express real
+app-shaped RT workloads from Python, while the docs keep performance and claim
+boundaries explicit.

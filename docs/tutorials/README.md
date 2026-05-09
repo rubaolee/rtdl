@@ -17,6 +17,10 @@ small workload kernel once, keep application logic in Python, and avoid
 hand-maintaining separate ray-tracing backend implementations for every modern
 RT stack.
 
+The current released version is `v1.6`. The ladder below teaches the stable
+Python+RTDL authoring path first, then points to older feature-family tutorials
+as historical building blocks.
+
 ---
 
 ## Tutorial Ladder
@@ -27,11 +31,11 @@ RT stack.
 | 1 | [Hello World](hello_world.md) | Full kernel walkthrough, line-by-line |
 | 2 | [Sorting Demo](sorting_demo.md) | RTDL inside a compact Python program |
 | 3 | [Feature Quickstart Cookbook](feature_quickstart_cookbook.md) | One compact recipe per current public feature |
-| 4 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Released `v0.2.0` workload families |
-| 5 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Released `v0.4.0` nearest-neighbor workloads |
-| 6 | [Graph Workloads](graph_workloads.md) | Released `v0.6.1` RT graph workloads |
-| 7 | [Database Workloads](db_workloads.md) | Released `v0.7.0` bounded DB kernels |
-| 8 | [v0.8 App Building](v0_8_app_building.md) | Build apps from existing RTDL rows plus Python orchestration |
+| 4 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Segment/polygon feature family and boundaries |
+| 5 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius and KNN row workloads |
+| 6 | [Graph Workloads](graph_workloads.md) | RT graph workload shapes and limits |
+| 7 | [Database Workloads](db_workloads.md) | Bounded DB-style kernel examples |
+| 8 | [v0.8 App Building](v0_8_app_building.md) | Historical app-building tutorial over RTDL rows plus Python orchestration |
 | 9 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
 | 10 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | See the prepared 3D path for the released v0.9 HIPRT surface |
 | 11 | [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py) | See Apple RT closest-hit and visibility-count scenarios from one demo entry point |
@@ -75,7 +79,11 @@ Learn the released workload families, what they emit, and when to choose each.
   - `conjunctive_scan`
   - `grouped_count`
   - `grouped_sum`
-- v0.9.5/v0.9.6 standard helpers and repeated-query paths:
+- v1.6 stable primitive/reduction terms and older helper names:
+  - `ANY_HIT`
+  - `COUNT_HITS`
+  - `REDUCE_FLOAT(MIN|MAX|SUM)`
+  - `REDUCE_INT(COUNT|SUM)`
   - `ray_triangle_any_hit`
   - `visibility_rows`
   - `reduce_rows`
