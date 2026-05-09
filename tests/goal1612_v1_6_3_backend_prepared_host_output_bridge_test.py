@@ -13,6 +13,18 @@ FOUNDATION_REPORT = (
     / "reports"
     / "goal1612_v1_6_3_backend_prepared_host_output_bridge_foundation_2026-05-09.md"
 )
+LINUX_EVIDENCE_REPORT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal1612_v1_6_3_linux_backend_bridge_evidence_2026-05-09.md"
+)
+LINUX_EVIDENCE_JSON = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal1612_v1_6_3_linux_backend_prepared_host_output_bridge_2026-05-09.json"
+)
 CLAUDE_REVIEW = (
     ROOT
     / "docs"
@@ -30,6 +42,24 @@ CONSENSUS_REVIEW = (
     / "docs"
     / "reviews"
     / "goal1612_v1_6_3_backend_prepared_host_output_bridge_3ai_consensus_2026-05-09.md"
+)
+LINUX_CLAUDE_REVIEW = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "goal1612_v1_6_3_linux_backend_bridge_evidence_claude_review_2026-05-09.md"
+)
+LINUX_GEMINI_REVIEW = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "goal1612_v1_6_3_linux_backend_bridge_evidence_gemini_review_2026-05-09.md"
+)
+LINUX_CONSENSUS_REVIEW = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "goal1612_v1_6_3_linux_backend_bridge_evidence_3ai_consensus_2026-05-09.md"
 )
 
 
@@ -178,15 +208,48 @@ class Goal1612BackendPreparedHostOutputBridgeTest(unittest.TestCase):
         self.assertIn("Real backends may skip locally", text)
         self.assertIn("does not authorize", text)
 
+    def test_linux_backend_bridge_artifact_accepts_all_required_backends(self):
+        payload = json.loads(LINUX_EVIDENCE_JSON.read_text(encoding="utf-8"))
+
+        self.assertTrue(payload["accepted"])
+        self.assertEqual(payload["status"], "accepted_backend_bridge")
+        self.assertEqual(tuple(payload["required_backends"]), ("fake_native", "embree", "optix"))
+        self.assertEqual(payload["skipped_required"], [])
+        self.assertEqual(payload["failed"], [])
+        by_backend = {record["backend"]: record for record in payload["records"]}
+        self.assertEqual(set(by_backend), {"fake_native", "embree", "optix"})
+        for backend, record in by_backend.items():
+            with self.subTest(backend=backend):
+                self.assertEqual(record["status"], "pass")
+                self.assertEqual(record["candidate_row_count"], 256)
+                self.assertEqual(record["path_comparison"]["baseline_input_materialization_count"], 5)
+                self.assertEqual(record["path_comparison"]["prepared_input_materialization_count"], 1)
+                self.assertEqual(record["path_comparison"]["input_materialization_count_delta"], 4)
+                self.assertTrue(record["path_comparison"]["prepared_host_output_buffer_reused"])
+                self.assertTrue(record["path_comparison"]["timing_recorded_for_diagnostics_only"])
+                for flag, value in record["claim_flags"].items():
+                    self.assertIs(value, False, flag)
+
+        report = LINUX_EVIDENCE_REPORT.read_text(encoding="utf-8")
+        self.assertIn("GTX 1070 host is a smoke/behavior environment only", report)
+        self.assertIn("not RTX performance evidence", report)
+
     def test_external_review_artifacts_record_acceptance(self):
         claude = CLAUDE_REVIEW.read_text(encoding="utf-8")
         gemini = GEMINI_REVIEW.read_text(encoding="utf-8")
         consensus = CONSENSUS_REVIEW.read_text(encoding="utf-8")
+        linux_claude = LINUX_CLAUDE_REVIEW.read_text(encoding="utf-8")
+        linux_gemini = LINUX_GEMINI_REVIEW.read_text(encoding="utf-8")
+        linux_consensus = LINUX_CONSENSUS_REVIEW.read_text(encoding="utf-8")
 
         self.assertIn("ACCEPTED", claude)
         self.assertIn("ACCEPTED", gemini)
         self.assertIn("ACCEPTED as backend bridge evidence", consensus)
         self.assertIn("does not authorize performance claims", consensus)
+        self.assertIn("ACCEPTED", linux_claude)
+        self.assertIn("ACCEPTED", linux_gemini)
+        self.assertIn("ACCEPTED as Linux backend bridge evidence", linux_consensus)
+        self.assertIn("does not authorize performance claims", linux_consensus)
 
 
 if __name__ == "__main__":
