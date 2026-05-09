@@ -16,14 +16,25 @@ void set_error(const std::string& msg, T* buf, size_t sz) {
                                      cudaGetErrorString(_e));                   \
     } while (0)
 
+inline std::string cuda_driver_error_message(CUresult result) {
+    const char* raw = nullptr;
+    cuGetErrorString(result, &raw);
+    std::string message = std::string("CUDA driver error: ") + (raw ? raw : "unknown");
+    if (raw && std::string(raw).find("unsupported toolchain") != std::string::npos) {
+        message +=
+            ". RTDL generated PTX that this CUDA driver cannot load. "
+            "Use a CUDA toolkit/NVRTC version supported by the installed driver, "
+            "put the driver's CUDA compat libraries first in LD_LIBRARY_PATH when required, "
+            "or set RTDL_OPTIX_PTX_ARCH=compute_XX for the target GPU before rerunning.";
+    }
+    return message;
+}
+
 #define CU_CHECK(call)                                                          \
     do {                                                                        \
         CUresult _r = (call);                                                   \
         if (_r != CUDA_SUCCESS) {                                               \
-            const char* _s = nullptr;                                           \
-            cuGetErrorString(_r, &_s);                                          \
-            throw std::runtime_error(std::string("CUDA driver error: ") +      \
-                                     (_s ? _s : "unknown"));                    \
+            throw std::runtime_error(cuda_driver_error_message(_r));            \
         }                                                                       \
     } while (0)
 

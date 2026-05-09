@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 from typing import Any
@@ -78,6 +79,55 @@ def _gpu_metadata(device_label: str | None) -> dict[str, Any]:
         "nvidia_smi_cuda_version": cuda_version,
         "devices": devices,
     }
+
+
+def _parse_cuda_version(text: str) -> tuple[int, int] | None:
+    match = re.search(r"(\d+)\.(\d+)", text)
+    if not match:
+        return None
+    return int(match.group(1)), int(match.group(2))
+
+
+def _toolkit_version(cuda_prefix: str | None) -> tuple[str, tuple[int, int] | None]:
+    candidates: list[Path] = []
+    if cuda_prefix:
+        candidates.append(Path(cuda_prefix) / "bin" / "nvcc")
+    candidates.extend([Path("/usr/local/cuda/bin/nvcc"), Path("/usr/bin/nvcc")])
+    for nvcc in candidates:
+        if not nvcc.exists():
+            continue
+        output = _run_text([str(nvcc), "--version"])
+        parsed = _parse_cuda_version(output)
+        if parsed:
+            return str(nvcc), parsed
+    return "unavailable", None
+
+
+def _preflight_cuda_toolchain(*, cuda_prefix: str | None, ld_library_path: str | None, skip: bool) -> dict[str, Any]:
+    metadata = _gpu_metadata(None)
+    driver_cuda = _parse_cuda_version(metadata.get("nvidia_smi_cuda_version", ""))
+    nvcc_path, toolkit_cuda = _toolkit_version(cuda_prefix)
+    ld_path = ld_library_path or os.environ.get("LD_LIBRARY_PATH", "")
+    has_compat = any("compat" in part for part in ld_path.split(os.pathsep))
+    result = {
+        "driver_cuda": driver_cuda,
+        "nvcc_path": nvcc_path,
+        "toolkit_cuda": toolkit_cuda,
+        "ld_library_path": ld_path,
+        "has_cuda_compat_path": has_compat,
+        "skipped": skip,
+    }
+    if skip or not driver_cuda or not toolkit_cuda:
+        return result
+    if toolkit_cuda > driver_cuda and not has_compat:
+        raise RuntimeError(
+            "RTDL OptiX CUDA preflight failed: nvcc reports CUDA "
+            f"{toolkit_cuda[0]}.{toolkit_cuda[1]}, but nvidia-smi reports driver CUDA "
+            f"{driver_cuda[0]}.{driver_cuda[1]} and LD_LIBRARY_PATH has no CUDA compat directory. "
+            "Use a driver-compatible CUDA toolkit, add the appropriate CUDA compat library path first in "
+            "LD_LIBRARY_PATH, or pass --skip-cuda-toolchain-preflight only for diagnostic runs."
+        )
+    return result
 
 
 def _case_map(data: dict[str, Any]) -> dict[int, dict[str, Any]]:
@@ -157,6 +207,7 @@ def _write_markdown(aggregate: dict[str, Any], md_path: Path) -> None:
         f"- Output prefix: `{aggregate['output_prefix']}`",
         f"- Device label: `{aggregate['gpu_metadata'].get('device_label')}`",
         f"- GPU query: `{aggregate['gpu_metadata'].get('nvidia_smi_query')}`",
+        f"- CUDA preflight: `{aggregate['cuda_preflight']}`",
         "",
         "## Targeted Reruns",
         "",
@@ -194,6 +245,12 @@ def main() -> int:
     parser.add_argument("--targeted-repeats", type=int, default=9, help="Targeted rerun repeats per session")
     parser.add_argument("--candidate-preset-repeats", type=int, default=5, help="Candidate preset repeats per session")
     parser.add_argument("--device-label", default=None, help="Optional human label for the GPU/architecture under test")
+    parser.add_argument("--cuda-prefix", default=os.environ.get("CUDA_PREFIX"), help="CUDA toolkit prefix used for preflight")
+    parser.add_argument(
+        "--skip-cuda-toolchain-preflight",
+        action="store_true",
+        help="Skip CUDA driver/toolkit compatibility preflight for diagnostic runs",
+    )
     parser.add_argument(
         "--ld-library-path",
         default=os.environ.get("LD_LIBRARY_PATH"),
@@ -203,6 +260,11 @@ def main() -> int:
 
     output_prefix = Path(args.output_prefix)
     output_prefix.parent.mkdir(parents=True, exist_ok=True)
+    cuda_preflight = _preflight_cuda_toolchain(
+        cuda_prefix=args.cuda_prefix,
+        ld_library_path=args.ld_library_path,
+        skip=args.skip_cuda_toolchain_preflight,
+    )
 
     env = os.environ.copy()
     env["PYTHONPATH"] = f"src{os.pathsep}."
@@ -245,6 +307,7 @@ def main() -> int:
         "status": "goal1586_multi_session_validation_recorded",
         "commit": git_commit,
         "gpu_metadata": _gpu_metadata(args.device_label),
+        "cuda_preflight": cuda_preflight,
         "session_count": args.sessions,
         "output_prefix": str(output_prefix),
         "sessions": sessions,

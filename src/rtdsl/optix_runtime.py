@@ -4113,6 +4113,14 @@ def _check_status(status: int, error=None) -> None:
         msg = error.value.decode("utf-8", errors="replace").strip()
     if not msg:
         msg = f"OptiX backend call failed with status {status}"
+    if "unsupported toolchain" in msg:
+        msg += (
+            " RTDL could not load generated PTX with the installed CUDA driver. "
+            "Check that the CUDA toolkit/NVRTC used to build/run RTDL is supported by the driver; "
+            "if using a newer toolkit with an older datacenter driver, put the CUDA compat library path first in "
+            "LD_LIBRARY_PATH or rebuild/run with a compatible CUDA toolkit. You may also set "
+            "RTDL_OPTIX_PTX_ARCH=compute_XX to target the GPU architecture explicitly."
+        )
     raise RuntimeError(msg)
 
 

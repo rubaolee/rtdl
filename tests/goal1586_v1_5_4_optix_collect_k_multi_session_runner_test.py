@@ -14,12 +14,16 @@ class Goal1586V154OptixCollectKMultiSessionRunnerTest(unittest.TestCase):
         self.assertIn("--candidate-preset-smoke", source)
         self.assertIn("--candidate-preset-repeats", source)
         self.assertIn("--device-label", source)
+        self.assertIn("--cuda-prefix", source)
+        self.assertIn("--skip-cuda-toolchain-preflight", source)
 
     def test_runner_aggregates_targeted_counts_and_claim_boundary(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
         self.assertIn("TARGET_COUNTS = (49153, 65536, 65537)", source)
         self.assertIn("goal1586_multi_session_validation_recorded", source)
         self.assertIn("gpu_metadata", source)
+        self.assertIn("cuda_preflight", source)
+        self.assertIn("RTDL OptiX CUDA preflight failed", source)
         self.assertIn("--query-gpu=name,driver_version", source)
         self.assertIn("nvidia_smi_cuda_version", source)
         self.assertIn("does not authorize public speedup wording", source)

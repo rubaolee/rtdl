@@ -6,6 +6,8 @@ Added a reusable multi-session validation runner for the OptiX `COLLECT_K_BOUNDE
 
 The runner now also captures robust `nvidia-smi` GPU metadata and accepts `--device-label`, so future non-Ada evidence can be identified directly in the artifact.
 
+The runner also performs a CUDA driver/toolkit preflight before timing. If `nvcc` reports a CUDA toolkit version newer than the CUDA version advertised by `nvidia-smi` and no CUDA compat path is present in `LD_LIBRARY_PATH`, the runner fails before launching long measurements with a clear configuration error.
+
 ## Files
 
 - Runner: `scripts/goal1586_v1_5_4_optix_collect_k_multi_session_validation_runner.py`
@@ -43,6 +45,7 @@ python3 scripts/goal1586_v1_5_4_optix_collect_k_multi_session_validation_runner.
   --targeted-repeats 9 \
   --candidate-preset-repeats 5 \
   --device-label non_ada_validation \
+  --cuda-prefix /usr/local/cuda-12.8 \
   --ld-library-path /usr/local/cuda-12.8/compat:/usr/local/cuda-12.8/lib64
 ```
 
