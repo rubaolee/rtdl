@@ -42,6 +42,8 @@ STAGE_FIELDS = (
     "final_copy_ms",
     "final_pair_materialize_launch_ms",
     "final_pair_mark_sync_ms",
+    "final_pair_mark_event_ms",
+    "final_pair_mark_host_wait_ms",
     "final_pair_prefix_host_ms",
     "final_pair_compact_launch_ms",
     "total_ms",

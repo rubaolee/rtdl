@@ -535,6 +535,8 @@ struct CollectKStageProfile {
     double final_copy_ms = 0.0;
     double final_pair_materialize_launch_ms = 0.0;
     double final_pair_mark_sync_ms = 0.0;
+    double final_pair_mark_event_ms = 0.0;
+    double final_pair_mark_host_wait_ms = 0.0;
     double final_pair_prefix_host_ms = 0.0;
     double final_pair_compact_launch_ms = 0.0;
     std::vector<MergeLevel> merge_level_profile;
@@ -604,6 +606,8 @@ struct CollectKStageProfile {
                 << "\"final_copy_ms\":" << final_copy_ms << ","
                 << "\"final_pair_materialize_launch_ms\":" << final_pair_materialize_launch_ms << ","
                 << "\"final_pair_mark_sync_ms\":" << final_pair_mark_sync_ms << ","
+                << "\"final_pair_mark_event_ms\":" << final_pair_mark_event_ms << ","
+                << "\"final_pair_mark_host_wait_ms\":" << final_pair_mark_host_wait_ms << ","
                 << "\"final_pair_prefix_host_ms\":" << final_pair_prefix_host_ms << ","
                 << "\"final_pair_compact_launch_ms\":" << final_pair_compact_launch_ms << ","
                 << "\"merge_level_profile\":[";
@@ -741,6 +745,11 @@ static bool collect_k_use_device_level_counts()
 static bool collect_k_use_device_final_counts()
 {
     return collect_k_use_fastest_candidate() || collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_DEVICE_FINAL_COUNTS");
+}
+
+static bool collect_k_use_final_pair_mark_event_diagnostic()
+{
+    return collect_k_env_enabled("RTDL_OPTIX_COLLECT_K_FINAL_PAIR_MARK_EVENT_DIAGNOSTIC");
 }
 
 static bool collect_k_use_carry_pointer_diagnostic()
@@ -1338,6 +1347,17 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         CollectKStageProfile::elapsed_ms(final_pair_stage_start);
 
                 final_pair_stage_start = CollectKStageProfile::Clock::now();
+                const bool use_final_pair_mark_event =
+                    profile.enabled
+                    && is_final_output
+                    && collect_k_use_final_pair_mark_event_diagnostic();
+                CUevent mark_event_start = nullptr;
+                CUevent mark_event_stop = nullptr;
+                if (use_final_pair_mark_event) {
+                    CU_CHECK(cuEventCreate(&mark_event_start, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventCreate(&mark_event_stop, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventRecord(mark_event_start, nullptr));
+                }
                 void* mark_args[] = {
                     &final_merged_rows.ptr,
                     &total,
@@ -1349,10 +1369,24 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     blocks, 1, 1,
                     threads, 1, 1,
                     sizeof(uint32_t) * threads, nullptr, mark_args, nullptr));
+                if (use_final_pair_mark_event)
+                    CU_CHECK(cuEventRecord(mark_event_stop, nullptr));
                 CU_CHECK(cuStreamSynchronize(nullptr));
-                if (profile.enabled && is_final_output)
-                    profile.final_pair_mark_sync_ms +=
-                        CollectKStageProfile::elapsed_ms(final_pair_stage_start);
+                if (profile.enabled && is_final_output) {
+                    const double mark_sync_ms = CollectKStageProfile::elapsed_ms(final_pair_stage_start);
+                    profile.final_pair_mark_sync_ms += mark_sync_ms;
+                    if (use_final_pair_mark_event) {
+                        float mark_event_ms = 0.0f;
+                        CU_CHECK(cuEventElapsedTime(&mark_event_ms, mark_event_start, mark_event_stop));
+                        profile.final_pair_mark_event_ms += static_cast<double>(mark_event_ms);
+                        profile.final_pair_mark_host_wait_ms +=
+                            std::max(0.0, mark_sync_ms - static_cast<double>(mark_event_ms));
+                    }
+                }
+                if (mark_event_start)
+                    CU_CHECK(cuEventDestroy(mark_event_start));
+                if (mark_event_stop)
+                    CU_CHECK(cuEventDestroy(mark_event_stop));
 
                 final_pair_stage_start = CollectKStageProfile::Clock::now();
                 std::vector<uint32_t> block_counts(max_prefix_blocks);
@@ -1416,6 +1450,17 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         CollectKStageProfile::elapsed_ms(final_pair_stage_start);
 
                 final_pair_stage_start = CollectKStageProfile::Clock::now();
+                const bool use_final_pair_mark_event =
+                    profile.enabled
+                    && is_final_output
+                    && collect_k_use_final_pair_mark_event_diagnostic();
+                CUevent mark_event_start = nullptr;
+                CUevent mark_event_stop = nullptr;
+                if (use_final_pair_mark_event) {
+                    CU_CHECK(cuEventCreate(&mark_event_start, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventCreate(&mark_event_stop, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventRecord(mark_event_start, nullptr));
+                }
                 void* mark_args[] = {
                     &final_merged_rows.ptr,
                     &counts_device,
@@ -1427,10 +1472,24 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     blocks, 1, 1,
                     threads, 1, 1,
                     sizeof(uint32_t) * threads, nullptr, mark_args, nullptr));
+                if (use_final_pair_mark_event)
+                    CU_CHECK(cuEventRecord(mark_event_stop, nullptr));
                 CU_CHECK(cuStreamSynchronize(nullptr));
-                if (profile.enabled && is_final_output)
-                    profile.final_pair_mark_sync_ms +=
-                        CollectKStageProfile::elapsed_ms(final_pair_stage_start);
+                if (profile.enabled && is_final_output) {
+                    const double mark_sync_ms = CollectKStageProfile::elapsed_ms(final_pair_stage_start);
+                    profile.final_pair_mark_sync_ms += mark_sync_ms;
+                    if (use_final_pair_mark_event) {
+                        float mark_event_ms = 0.0f;
+                        CU_CHECK(cuEventElapsedTime(&mark_event_ms, mark_event_start, mark_event_stop));
+                        profile.final_pair_mark_event_ms += static_cast<double>(mark_event_ms);
+                        profile.final_pair_mark_host_wait_ms +=
+                            std::max(0.0, mark_sync_ms - static_cast<double>(mark_event_ms));
+                    }
+                }
+                if (mark_event_start)
+                    CU_CHECK(cuEventDestroy(mark_event_start));
+                if (mark_event_stop)
+                    CU_CHECK(cuEventDestroy(mark_event_stop));
 
                 final_pair_stage_start = CollectKStageProfile::Clock::now();
                 std::vector<uint32_t> block_counts(max_prefix_blocks);
