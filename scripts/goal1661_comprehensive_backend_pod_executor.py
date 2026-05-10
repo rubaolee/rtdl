@@ -219,6 +219,27 @@ def _copy_artifact(artifact: Path | None, target_dir: Path, label: str) -> str |
     return str(target)
 
 
+def _without_backend_flag(command: list[str]) -> list[str]:
+    converted = list(command)
+    if "--backend" not in converted:
+        return converted
+    index = converted.index("--backend")
+    del converted[index : min(index + 2, len(converted))]
+    return converted
+
+
+def _baseline_command_status(command: list[str], mode: str) -> tuple[str, list[str] | None, str | None]:
+    if mode == "embree_1t" or mode == "embree_auto":
+        return (
+            "unsupported",
+            None,
+            "v1.0 profiler command has no stable Embree selector for this app; do not treat the current --backend embree label as a real v1.0 Embree command",
+        )
+    if mode == "optix":
+        return "run", _without_backend_flag(command), None
+    return "run", command, None
+
+
 def _engine_modes(row: dict[str, Any]) -> list[dict[str, Any]]:
     if row["engine"] == "embree":
         return [
@@ -270,17 +291,36 @@ def _execute_rows(
             command = row[command_key]
             for mode in modes:
                 label = _safe_label(version_label, row["app"], mode["mode"])
+                actual_command = list(command)
+                if version_label == BASELINE_LABEL and row["app"] != "database_analytics":
+                    command_status, adapted_command, reason = _baseline_command_status(command, mode["mode"])
+                    if command_status == "unsupported":
+                        records.append(
+                            {
+                                "app": row["app"],
+                                "engine": row["engine"],
+                                "mode": mode["mode"],
+                                "reason": reason,
+                                "source_status": row["status"],
+                                "status": "unsupported",
+                                "version": version_label,
+                            }
+                        )
+                        continue
+                    if adapted_command is not None:
+                        actual_command = adapted_command
                 env = dict(base_env)
                 env.update(mode["env"])
                 log_path = output_dir / "logs" / f"{label}.log"
-                run = _run_logged(command, cwd=checkout, env=env, log_path=log_path, timeout=row_timeout)
-                artifact = _artifact_from_command(command, checkout)
+                run = _run_logged(actual_command, cwd=checkout, env=env, log_path=log_path, timeout=row_timeout)
+                artifact = _artifact_from_command(actual_command, checkout)
                 copied = _copy_artifact(artifact, output_dir / "artifacts", label)
                 records.append(
                     {
                         "app": row["app"],
                         "artifact": copied,
-                        "command": command,
+                        "command": actual_command,
+                        "manifest_command": command,
                         "elapsed_sec": run["elapsed_sec"],
                         "engine": row["engine"],
                         "log": run["log"],
