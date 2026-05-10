@@ -46,15 +46,19 @@ def _path_exists_at_ref(ref: str, path: str) -> bool:
 
 
 def _engine_selector(command: list[str]) -> str | None:
-    for flag in ("--backend", "--mode"):
-        if flag in command:
-            return flag
+    if "--backend" in command:
+        return "--backend"
     return None
 
 
 def _script_is_optix_specific(command: list[str]) -> bool:
     script = _script_path(command)
-    return bool(script and "optix" in Path(script).name.lower())
+    if script and "optix" in Path(script).name.lower():
+        return True
+    if "--mode" in command:
+        index = command.index("--mode") + 1
+        return index < len(command) and command[index] == "optix"
+    return False
 
 
 def _switch_engine(command: list[str], engine: str) -> list[str]:
@@ -256,8 +260,8 @@ def validate_manifest(payload: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Goal1660 app count mismatch")
     if payload["row_count"] != len(rt.public_apps()) * 2:
         raise ValueError("Goal1660 requires one Embree and one OptiX row per app")
-    if payload["planned_row_count"] < 24:
-        raise ValueError("Goal1660 should have broad comparable coverage")
+    if payload["planned_row_count"] < 16:
+        raise ValueError("Goal1660 should have broad OptiX cross-version coverage")
     if not payload["blocked_or_excluded_row_count"]:
         raise ValueError("Goal1660 should explicitly classify frozen/unsupported rows")
     for flag in ("release_authorized", "tag_authorized", "public_claim_authorized"):
@@ -287,6 +291,26 @@ def validate_manifest(payload: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Graph Embree row must be excluded unless a real engine selector exists")
     if by_pair[("graph_analytics", "optix")]["status"] != "planned":
         raise ValueError("Graph OptiX row should remain planned through its OptiX-specific script")
+    if by_pair[("database_analytics", "embree")]["status"] != "planned":
+        raise ValueError("Database Embree row should remain planned through its backend selector")
+    for app in (
+        "service_coverage_gaps",
+        "event_hotspot_screening",
+        "facility_knn_assignment",
+        "road_hazard_screening",
+        "segment_polygon_hitcount",
+        "segment_polygon_anyhit_rows",
+        "polygon_pair_overlap_area_rows",
+        "polygon_set_jaccard",
+        "hausdorff_distance",
+        "ann_candidate_search",
+        "robot_collision_screening",
+        "barnes_hut_force_app",
+    ):
+        if by_pair[(app, "embree")]["status"] != "excluded":
+            raise ValueError(f"{app} Embree row must be excluded unless a real backend selector exists")
+        if by_pair[(app, "optix")]["status"] != "planned":
+            raise ValueError(f"{app} OptiX row should remain planned through its OptiX-specific script")
     if by_pair[("outlier_detection", "embree")]["status"] != "excluded":
         raise ValueError("Outlier Embree row must be excluded unless a real engine selector exists")
     if by_pair[("outlier_detection", "optix")]["status"] != "planned":
