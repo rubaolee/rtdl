@@ -1,0 +1,185 @@
+{
+  "goal": "Goal1656",
+  "status": "kway_merge_plan_recorded",
+  "candidate_count": 262144,
+  "tile_count": 128,
+  "segment_capacity": 2048,
+  "topologies": {
+    "binary_current": {
+      "fan_in": 2,
+      "input_segments": 128,
+      "segment_chain": [
+        128,
+        64,
+        32,
+        16,
+        8,
+        4,
+        2,
+        1
+      ],
+      "merge_levels": 7,
+      "non_final_levels": 6,
+      "final_levels": 1,
+      "estimated_kernel_launches": 27,
+      "final_segment_capacity": 262144
+    },
+    "four_way_candidate": {
+      "fan_in": 4,
+      "input_segments": 128,
+      "segment_chain": [
+        128,
+        32,
+        8,
+        2,
+        1
+      ],
+      "merge_levels": 4,
+      "non_final_levels": 3,
+      "final_levels": 1,
+      "estimated_kernel_launches": 15,
+      "final_segment_capacity": 524288
+    },
+    "eight_way_reference_only": {
+      "fan_in": 8,
+      "input_segments": 128,
+      "segment_chain": [
+        128,
+        16,
+        2,
+        1
+      ],
+      "merge_levels": 3,
+      "non_final_levels": 2,
+      "final_levels": 1,
+      "estimated_kernel_launches": 11,
+      "final_segment_capacity": 1048576
+    }
+  },
+  "reference_sample": {
+    "segments": [
+      [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          4,
+          40
+        ]
+      ],
+      [
+        [
+          1,
+          10
+        ],
+        [
+          3,
+          30
+        ],
+        [
+          7,
+          70
+        ]
+      ],
+      [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          40
+        ],
+        [
+          8,
+          80
+        ]
+      ],
+      [
+        [
+          2,
+          20
+        ],
+        [
+          5,
+          50
+        ],
+        [
+          9,
+          90
+        ]
+      ]
+    ],
+    "unbounded": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        20
+      ],
+      [
+        3,
+        30
+      ],
+      [
+        4,
+        40
+      ],
+      [
+        5,
+        50
+      ],
+      [
+        7,
+        70
+      ],
+      [
+        8,
+        80
+      ],
+      [
+        9,
+        90
+      ]
+    ],
+    "capacity_5": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        20
+      ],
+      [
+        3,
+        30
+      ],
+      [
+        4,
+        40
+      ]
+    ]
+  },
+  "claim_boundary": {
+    "gpu_timing_recorded": false,
+    "public_speedup_wording_authorized": false,
+    "stable_collect_k_promotion_authorized": false,
+    "release_action_authorized": false
+  }
+}
