@@ -2137,6 +2137,14 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 std::vector<uint64_t> merge_output_rows(max_tile_segments);
                 std::vector<size_t> merge_first_counts(max_tile_segments);
                 std::vector<size_t> merge_second_counts(max_tile_segments);
+                if (use_device_level_counts) {
+                    current_counts.resize(current_rows.size());
+                    auto count_download_start = CollectKStageProfile::Clock::now();
+                    download(current_counts.data(), current_counts_level_device, current_rows.size());
+                    level_profile.metadata_ms += CollectKStageProfile::elapsed_ms(count_download_start);
+                    *d2h_transfers_out += static_cast<uint64_t>(current_rows.size());
+                    profile.metadata_fields_downloaded += static_cast<uint64_t>(current_rows.size());
+                }
                 for (size_t pair_index = 0; pair_index < pair_count; ++pair_index) {
                     CUdeviceptr pair_output = output_base + sizeof(int64_t) * output_segment_capacity * 2 * pair_index;
                     merge_first_rows[pair_index] = static_cast<uint64_t>(current_rows[pair_index * 2]);
@@ -2205,6 +2213,11 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     next_counts.push_back(current_counts.back());
                 }
                 profile.record_merge_level(level_profile);
+                if (use_device_level_counts) {
+                    upload(next_counts_level_device, next_counts.data(), next_counts.size());
+                    *h2d_transfers_out += static_cast<uint64_t>(next_counts.size());
+                    std::swap(current_counts_level_device, next_counts_level_device);
+                }
 
                 current_rows = std::move(next_rows);
                 current_counts = std::move(next_counts);
