@@ -4,13 +4,11 @@ This page is the short public route into RTDL apps and examples. Use it when
 you want to run something quickly and understand what it proves without reading
 the full catalog first.
 
-The current released version is `v1.6`. This page starts with portable
-source-tree commands, then explains which app phases belong to RTDL and which
-phases remain Python-owned or historical proof machinery.
+Run source-tree examples from the repository root with `PYTHONPATH=src:.`.
+Start with the portable `cpu_python_reference` backend; try native backends only
+after the basic examples work.
 
 ## First Three Commands
-
-Run these from the repo root:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world.py
@@ -21,7 +19,7 @@ PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_py
 What this shows:
 
 - the checkout imports and runs
-- a single RTDL kernel can be executed through a selected backend surface
+- one RTDL kernel can execute through a selected runtime backend
 - RTDL rows can be used inside a Python app
 
 What this does not show:
@@ -32,15 +30,16 @@ What this does not show:
 
 ## Choose An App
 
-| If you want to see... | Run first | What RTDL accelerates or models | Do not claim |
+| If you want to see... | Run first | What RTDL handles | Do not claim |
 | --- | --- | --- | --- |
-| First working command | `examples/rtdl_hello_world.py` | package/import smoke path | performance |
-| Backend selection | `examples/rtdl_hello_world_backends.py` | same app idea through selected backend runners | backend speedup |
+| First working command | `examples/rtdl_hello_world.py` | import and output smoke path | performance |
+| Backend selection | `examples/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
+| Feature recipes | `examples/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
 | Geometry/spatial joins | `examples/rtdl_segment_polygon_hitcount.py` | segment/polygon candidate traversal and refinement | full GIS engine |
 | Spatial coverage app | `examples/rtdl_service_coverage_gaps.py` | fixed-radius household/clinic join | full service optimization |
 | Hotspot app | `examples/rtdl_event_hotspot_screening.py` | fixed-radius event neighbor counts | full analytics pipeline |
 | Facility coverage decision | `examples/rtdl_facility_knn_assignment.py` | KNN rows or prepared coverage-threshold decision | ranked assignment speedup |
-| Hausdorff app | `examples/rtdl_hausdorff_distance_app.py` | KNN rows or prepared threshold-decision traversal | exact-distance RTX speedup unless reviewed mode is used |
+| Hausdorff app | `examples/rtdl_hausdorff_distance_app.py` | KNN rows or prepared threshold-decision traversal | exact-distance RTX speedup unless using a reviewed mode |
 | ANN candidate app | `examples/rtdl_ann_candidate_app.py` | KNN over a Python-selected candidate subset | full ANN index/ranking speedup |
 | Outlier app | `examples/rtdl_outlier_detection_app.py` | fixed-radius density rows or scalar density count | production anomaly system |
 | DBSCAN app | `examples/rtdl_dbscan_clustering_app.py` | fixed-radius core-count/core-flag phases | full cluster expansion speedup |
@@ -48,31 +47,26 @@ What this does not show:
 | Barnes-Hut app | `examples/rtdl_barnes_hut_force_app.py` | node-candidate discovery or node-coverage decision | force-vector/opening-rule speedup |
 | DB analytics app | `examples/rtdl_database_analytics_app.py` | bounded DB-style compact summaries | SQL engine or DBMS behavior |
 | Graph analytics app | `examples/rtdl_graph_analytics_app.py` | bounded graph rows and native summaries | graph database/distributed analytics |
+| Visual demo | `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py` | ray/triangle primary and shadow queries | RTDL renderer or graphics engine |
 
-For the full inventory, read [Application Catalog](application_catalog.md) and
-[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md). For
-technical implementation notes rather than tutorials, read
-[Technical App Notes](technical_app_notes/README.md).
+For the full app inventory, read [Application Catalog](application_catalog.md).
+For backend support, read [App Engine Support Matrix](app_engine_support_matrix.md).
+For implementation notes and historical evidence, use
+[Technical App Notes](technical_app_notes/README.md) and
+[History Index](history/README.md).
 
-## Engine Customization Boundary
+## Backend Names
 
-v1.6 is the current Python+RTDL architecture milestone. Python remains the
-app/control layer, RTDL owns the supported RT-shaped primitive contract and
-bridge, and Embree/OptiX execute validated stable primitive subpaths.
+RTDL uses the word "backend" in two places:
 
-Some app paths still inherit v1.0-era app-specific native continuations. This is
-intentional proof machinery: it lets RTDL avoid excessive row materialization
-and demonstrate useful prepared/native sub-paths while the generic primitive and
-collection surface matures. Do not read those continuations as a claim that the
-native engine internals are fully app-free.
+| Place | Meaning |
+| --- | --- |
+| `@rt.kernel(backend="rtdl")` | The kernel is written for the RTDL language/lowering contract. New kernels should use this spelling. |
+| `--backend cpu_python_reference`, `embree`, `optix`, ... | The runtime execution engine selected by an app or example. |
 
-Use [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) for
-the authoritative per-app list of:
-
-- the RT-accelerated traversal or candidate-generation phase
-- the v1.0 native continuation used today
-- the app phases that remain Python-owned or outside public speedup wording
-- whether public RTX wording is reviewed, blocked, not reviewed, or not a NVIDIA target
+Use `cpu_python_reference` first when learning. Use `cpu`, Embree, OptiX, HIPRT,
+Vulkan, or Apple RT only when you intentionally want that runtime path and have
+the needed local dependencies.
 
 ## Choose An Example Type
 
@@ -80,13 +74,12 @@ the authoritative per-app list of:
 | --- | --- | --- |
 | Tutorial examples | [Quick Tutorial](quick_tutorial.md) | shortest path to the kernel shape |
 | Feature recipes | `examples/rtdl_feature_quickstart_cookbook.py` | one runnable recipe per feature |
-| Release-facing examples | [Release-Facing Examples](release_facing_examples.md) | canonical command list and setup notes |
-| All examples | [Examples Index](../examples/README.md) | full directory inventory |
-| App boundaries | [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) | what RTDL accelerates and what remains outside |
-| Technical app notes | [Technical App Notes](technical_app_notes/README.md) | v1.0/current implementation, primitive groups, and copy/reduction boundaries |
-| RTX wording | [v1.0 RTX App Status](v1_0_rtx_app_status.md) | public NVIDIA wording state |
+| App catalog | [Application Catalog](application_catalog.md) | current app inventory and boundaries |
+| All examples | [Examples Index](../examples/README.md) | compact directory inventory |
+| Command archive | [Release-Facing Examples](release_facing_examples.md) | large evidence-oriented command list |
+| Technical app notes | [Technical App Notes](technical_app_notes/README.md) | implementation boundaries and primitive groups |
 
-## RTX Rule For App Runs
+## OptiX Rule For App Runs
 
 Use this rule before publishing any performance wording:
 
@@ -97,11 +90,11 @@ mode is documented and reviewed.
 ```
 
 If an app returns full rows, Python labels, force vectors, ranked assignments,
-or cluster labels, that output may include Python-owned continuation work. Only claim the exact prepared/native sub-path that the support matrix and review reports authorize.
+or cluster labels, that output may include Python-owned continuation work. Only
+claim the exact prepared/native sub-path that the support matrix and review
+reports authorize.
 
-## Recommended v1.6 Demo Path
-
-For a short v1.6 demonstration sequence:
+## Recommended Demo Path
 
 1. Run `examples/rtdl_hello_world.py`.
 2. Run `examples/rtdl_feature_quickstart_cookbook.py`.
@@ -111,6 +104,6 @@ For a short v1.6 demonstration sequence:
 6. Read [App Engine Support Matrix](app_engine_support_matrix.md) before using
    `--backend optix` or `--require-rt-core`.
 
-This sequence demonstrates the v1.6 promise: RTDL can express real
-app-shaped RT workloads from Python, while the docs keep performance and claim
-boundaries explicit.
+This sequence demonstrates the RTDL user model: Python remains the app layer,
+RTDL expresses the RT-shaped kernel, and backend-specific claims require exact
+evidence.

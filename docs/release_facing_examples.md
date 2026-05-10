@@ -1,14 +1,22 @@
-# Release-Facing Examples
+# Release-Facing Example Command Archive
 
-This page is the canonical example index for the release-facing `examples/`
-surface.
+This page is a command and evidence archive for the release-facing `examples/`
+surface. It is intentionally more detailed than the beginner tutorials.
 
-Current release: `v1.6`. The first-run path is source-tree execution with
-`PYTHONPATH=src:.`, portable `cpu_python_reference` examples first, and optional
-native backends only after their local dependencies are built or available.
+If you are learning RTDL for the first time, start with:
 
-It currently covers the v1.6 public example surface plus the older feature
-families that v1.6 preserves:
+- [Quick Tutorial](quick_tutorial.md)
+- [Tutorial Ladder](tutorials/README.md)
+- [App And Example Quickstart](app_example_quickstart.md)
+- [Examples Index](../examples/README.md)
+
+Use this archive when you need a larger command list, backend claim boundary,
+or evidence trail. Run examples from the repository root with `PYTHONPATH=src:.`.
+Start with portable `cpu_python_reference` examples, then use optional native
+backends only after their local dependencies are built or available.
+
+This archive includes current examples plus older release evidence for feature
+families that remain present in the source tree:
 
 - the released `v0.2.0` geometry workloads
 - the released `v0.4.0` nearest-neighbor line
@@ -32,14 +40,13 @@ families that v1.6 preserves:
   evidence for visibility/count-style apps; the fastest paths require stable
   build-side data and, for OptiX/Vulkan, prepacked probe-side rays
 
-Use these first if you want the examples that best match the current accepted
-live workload/package story:
+For current support boundaries, use:
 
-- [Quick Tutorial](quick_tutorial.md)
-- [App And Example Quickstart](app_example_quickstart.md)
-- [Examples Index](../examples/README.md)
-- [v1.6 Release Package](release_reports/v1_6/README.md)
+- [Application Catalog](application_catalog.md)
+- [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Current Main Support Matrix](current_main_support_matrix.md)
+- [Performance Model](performance_model.md)
+- [History Index](history/README.md)
 
 ## OptiX Versus NVIDIA RT-Core Claims
 

@@ -15,9 +15,10 @@ class Goal1245ExamplesTutorialEntryTest(unittest.TestCase):
             "## Short Path",
             "prove the checkout imports and runs",
             "choose one app by job instead of scanning the directory",
-            "check what RTDL accelerates and what remains outside",
+            "history, old release boundaries, and evidence trails",
             "public speedup wording comes only from the support matrix and reviewed evidence",
             "## Directory Contents",
+            "## Learning Boundaries",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)

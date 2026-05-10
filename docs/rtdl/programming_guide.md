@@ -29,6 +29,11 @@ Current rules:
 - current lowering accepts only `precision="float_approx"`
 - kernel functions take no Python arguments
 
+Do not confuse this kernel header with runtime backend selection. The kernel
+header says "this function is an RTDL kernel"; runtime calls such as
+`rt.run_cpu_python_reference(...)`, `rt.run_embree(...)`, or an app
+`--backend optix` flag choose the execution engine.
+
 ## 2. Declare Inputs Clearly
 
 Declare inputs first and use meaningful domain names:
@@ -92,6 +97,12 @@ Important boundaries:
 
 ## 5. Choose The Right Execution Path
 
+| If you are... | Start with | Why |
+| --- | --- | --- |
+| learning RTDL | `rt.run_cpu_python_reference(...)` or `--backend cpu_python_reference` | portable, no native SDK or compiler setup |
+| validating native CPU behavior | `rt.run_cpu(...)` or `--backend cpu` | native/oracle path for correctness work |
+| measuring a configured native backend | `rt.run_embree(...)`, `rt.run_optix(...)`, or the matching app flag | backend-specific behavior with dependency and claim boundaries |
+
 ### Oracle
 
 Use `rt.run_cpu(...)` when:
@@ -128,6 +139,10 @@ Current trusted GPU path:
 
 - bounded, correctness-checked runs
 - PTX generation depends on a working local CUDA and `nvcc` toolchain
+
+Selecting OptiX is not automatically a NVIDIA RT-core speedup claim. Public
+performance wording must name the app, mode, hardware, command, and reviewed
+artifact.
 
 ### Vulkan
 
@@ -216,6 +231,27 @@ Why this matters:
   shape
 - if you are unsure, start from the nearest public example and copy its input
   style before generalizing
+
+## 6.6 Row Reductions
+
+`rt.reduce_rows(...)` is a deterministic helper over rows that have already
+been emitted by an RTDL kernel or app helper. Treat it as Python-side summary
+logic unless a specific backend summary contract says otherwise.
+
+Example:
+
+```python
+directed_distance = rt.reduce_rows(
+    nearest_rows,
+    op="max",
+    value="distance",
+    output_field="directed_distance",
+)
+```
+
+This is useful in apps such as Hausdorff distance, where RTDL emits nearest
+neighbor rows and the app needs a max-distance summary. It is not a blanket
+native-backend reduction speedup claim.
 
 ## 7. Current Authoring Boundaries
 

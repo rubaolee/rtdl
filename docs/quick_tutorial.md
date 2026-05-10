@@ -44,6 +44,15 @@ Windows users should create the same virtual environment with `py -3 -m venv
 commands. If `python3 -m venv` fails on Debian/Ubuntu because `ensurepip` is
 missing, install `python3-venv` first.
 
+Windows PowerShell setup:
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
 ## Step 1: First Run
 
 Run this from the repository root:
@@ -100,6 +109,20 @@ rows = rt.run_cpu_python_reference(my_kernel, probe_name=(...), build_name=(...)
 ```
 
 `rows` is a tuple of dicts, one per output row.
+
+## Backend Names In Two Places
+
+RTDL uses the word "backend" in two related but different places:
+
+| Place | Meaning |
+| --- | --- |
+| `@rt.kernel(backend="rtdl")` | The kernel is authored for the RTDL language and lowering contract. Use this spelling for new kernels. |
+| `--backend cpu_python_reference`, `embree`, `optix`, ... | The runtime execution engine selected by an example or app. |
+
+For learning, start with `cpu_python_reference`; it is the portable learning
+backend and avoids native build or GPU setup. Use `cpu` when you intentionally
+want the native CPU validation path, and use Embree/OptiX/HIPRT/Vulkan/Apple RT
+only after checking backend support and local dependencies.
 
 ## Step 3: Same Kernel, Different Backend
 
@@ -224,7 +247,7 @@ NVIDIA RT-core claim note:
 - Start from [Application Catalog](application_catalog.md) and
   [App Engine Support Matrix](app_engine_support_matrix.md) before benchmarking
   or publishing RTX claims.
-Current released feature terms you will see in public docs include
+Current feature terms you will see in public docs include
 `ray_triangle_any_hit`, `visibility_rows`, `reduce_rows`, and stable
 primitive/reduction contract names `ANY_HIT`, `COUNT_HITS`,
 `REDUCE_FLOAT(MIN|MAX|SUM)`, and `REDUCE_INT(COUNT|SUM)`. The public
@@ -239,3 +262,12 @@ platform.
 - The kernel describes the query; Python runs the surrounding program.
 - `rt.run_cpu_python_reference(...)` is the easiest runner to start with.
 - Switching backends changes execution, not the public kernel shape.
+
+## Common First-Run Problems
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| `ModuleNotFoundError: No module named 'rtdsl'` | `PYTHONPATH` is not set from the repository root | Set `PYTHONPATH=src:.` on Bash/zsh or `$env:PYTHONPATH = "src;."` in PowerShell |
+| Native or GPU backend fails to load | Backend library, SDK, driver, or compiler is not configured | Rerun with `--backend cpu_python_reference`, then check backend-specific setup docs |
+| Kernel compiles but runtime input fails | Host-side Python data shape does not match the `rt.input(...)` names and geometry fields | Copy the input shape from the closest public example before generalizing |
+| Windows prints `Could not find platform independent libraries <prefix>` but output is correct | Local Python installation noise | Treat RTDL as passing if the expected example output appears; fix Python installation only if imports fail |

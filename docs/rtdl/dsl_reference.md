@@ -90,6 +90,9 @@ Current accepted values:
 - `backend="rtdl"`
 - `precision="float_approx"`
 
+`backend="rayjoin"` is accepted only for compatibility with older authored
+kernels. New code should use `backend="rtdl"`.
+
 ### `rt.input(name, geometry, layout=None, role=None)`
 
 Declares one geometry input.
@@ -116,6 +119,14 @@ Declares the exact or approximate refinement stage for the candidate set.
 ### `rt.emit(source, fields=[...])`
 
 Declares the output record schema.
+
+### Runtime Backend Selection Is Separate
+
+The `backend="rtdl"` decorator value is part of the kernel authoring contract.
+It does not select Embree, OptiX, Vulkan, HIPRT, Apple RT, or the CPU reference
+runner. Runtime backend selection happens in calls such as
+`rt.run_cpu_python_reference(...)`, `rt.run_embree(...)`, `rt.run_optix(...)`,
+or in app command-line flags such as `--backend embree`.
 
 ## Geometry Types
 
