@@ -1,0 +1,19 @@
+{
+  "cases": [
+    {
+      "direct_ms": 55.43716,
+      "direct_over_graph_speedup": 1.0409795924498824,
+      "direct_per_replay_us": 55.43716,
+      "first_pair_count": 131072,
+      "graph_ms": 53.2548,
+      "graph_per_replay_us": 53.2548,
+      "pair_count": 1,
+      "repeats": 1000,
+      "segment_capacity": 65536
+    }
+  ],
+  "claim_boundary": "Diagnostic collect-k compact-level graph replay only; not a production COLLECT_K_BOUNDED optimization and not a public speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1557_v1_5_4_optix_collect_k_level_graph_probe",
+  "repeats": 1000
+}
