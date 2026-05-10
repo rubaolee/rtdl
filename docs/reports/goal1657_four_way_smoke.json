@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "first_group_count": 2048,
+      "four_way_ms": 2.64812,
+      "four_way_per_replay_us": 26.481199999999998,
+      "group_count": 1,
+      "mismatch_count": 0,
+      "reference_ms": 2.831436,
+      "reference_over_four_way_speedup": 1.069224959593976,
+      "reference_per_replay_us": 28.31436,
+      "repeats": 100,
+      "segment_capacity": 2048
+    },
+    {
+      "first_group_count": 2048,
+      "four_way_ms": 3.251166,
+      "four_way_per_replay_us": 32.51166,
+      "group_count": 4,
+      "mismatch_count": 0,
+      "reference_ms": 3.213676,
+      "reference_over_four_way_speedup": 0.9884687524414317,
+      "reference_per_replay_us": 32.13676,
+      "repeats": 100,
+      "segment_capacity": 2048
+    },
+    {
+      "first_group_count": 2048,
+      "four_way_ms": 6.768,
+      "four_way_per_replay_us": 67.68,
+      "group_count": 16,
+      "mismatch_count": 0,
+      "reference_ms": 5.328762,
+      "reference_over_four_way_speedup": 0.7873466312056738,
+      "reference_per_replay_us": 53.287620000000004,
+      "repeats": 100,
+      "segment_capacity": 2048
+    }
+  ],
+  "claim_boundary": "Diagnostic four-way collect-k merge probe only; not a production COLLECT_K_BOUNDED optimization and not a public speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1657_v1_6_x_optix_collect_k_four_way_merge_probe",
+  "repeats": 100
+}

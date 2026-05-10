@@ -1,0 +1,56 @@
+{
+  "cases": [
+    {
+      "first_group_count": 2048,
+      "four_way_ms": 26.291391,
+      "four_way_per_replay_us": 26.291391,
+      "group_count": 1,
+      "mismatch_count": 0,
+      "reference_ms": 28.10575,
+      "reference_over_four_way_speedup": 1.0690096237205555,
+      "reference_per_replay_us": 28.10575,
+      "repeats": 1000,
+      "segment_capacity": 2048
+    },
+    {
+      "first_group_count": 2048,
+      "four_way_ms": 32.567389,
+      "four_way_per_replay_us": 32.567389,
+      "group_count": 4,
+      "mismatch_count": 0,
+      "reference_ms": 32.21482,
+      "reference_over_four_way_speedup": 0.9891741705176306,
+      "reference_per_replay_us": 32.21482,
+      "repeats": 1000,
+      "segment_capacity": 2048
+    },
+    {
+      "first_group_count": 2048,
+      "four_way_ms": 60.102464,
+      "four_way_per_replay_us": 60.102464,
+      "group_count": 16,
+      "mismatch_count": 0,
+      "reference_ms": 53.450896,
+      "reference_over_four_way_speedup": 0.8893295289857002,
+      "reference_per_replay_us": 53.450896,
+      "repeats": 1000,
+      "segment_capacity": 2048
+    },
+    {
+      "first_group_count": 2048,
+      "four_way_ms": 103.894742,
+      "four_way_per_replay_us": 103.894742,
+      "group_count": 32,
+      "mismatch_count": 0,
+      "reference_ms": 76.026628,
+      "reference_over_four_way_speedup": 0.731765886670184,
+      "reference_per_replay_us": 76.026628,
+      "repeats": 1000,
+      "segment_capacity": 2048
+    }
+  ],
+  "claim_boundary": "Diagnostic four-way collect-k merge probe only; not a production COLLECT_K_BOUNDED optimization and not a public speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1657_v1_6_x_optix_collect_k_four_way_merge_probe",
+  "repeats": 1000
+}

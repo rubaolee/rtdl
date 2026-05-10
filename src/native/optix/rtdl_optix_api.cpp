@@ -1241,6 +1241,10 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts"));
                 CU_CHECK(cuModuleGetFunction(
+                    &g_collect_k_i64_row_width2_four_way_materialize_mark_counts_derived.fn,
+                    g_collect_k_i64_row_width2_final_materialize.module,
+                    "collect_k_bounded_i64_row_width2_four_way_materialize_mark_counts_derived"));
+                CU_CHECK(cuModuleGetFunction(
                     &g_collect_k_i64_row_width2_final_compact_level.fn,
                     g_collect_k_i64_row_width2_final_materialize.module,
                     "collect_k_bounded_i64_row_width2_final_compact_level"));
@@ -3123,6 +3127,10 @@ static void ensure_collect_k_row_width2_final_compact_kernels()
             g_collect_k_i64_row_width2_final_materialize.module,
             "collect_k_bounded_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts"));
         CU_CHECK(cuModuleGetFunction(
+            &g_collect_k_i64_row_width2_four_way_materialize_mark_counts_derived.fn,
+            g_collect_k_i64_row_width2_final_materialize.module,
+            "collect_k_bounded_i64_row_width2_four_way_materialize_mark_counts_derived"));
+        CU_CHECK(cuModuleGetFunction(
             &g_collect_k_i64_row_width2_final_compact_level.fn,
             g_collect_k_i64_row_width2_final_materialize.module,
             "collect_k_bounded_i64_row_width2_final_compact_level"));
@@ -4251,6 +4259,334 @@ extern "C" int rtdl_optix_collect_k_output_indexed_fused_materialize_mark_probe(
             }
             *mismatch_count_out = mismatches;
             *first_pair_count_out = pair_count > 0 ? static_cast<uint64_t>(ref_counts[0]) : 0u;
+        } catch (...) {
+            cleanup();
+            throw;
+        }
+
+        cleanup();
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_k_four_way_merge_probe(
+        size_t repeats,
+        size_t group_count,
+        size_t segment_capacity,
+        double* reference_ms_out,
+        double* four_way_ms_out,
+        uint64_t* mismatch_count_out,
+        uint64_t* first_group_count_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!reference_ms_out || !four_way_ms_out || !mismatch_count_out || !first_group_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        if (repeats == 0)
+            repeats = 1;
+        if (group_count == 0)
+            group_count = 1;
+        if (segment_capacity == 0)
+            segment_capacity = 2048;
+
+        (void)get_optix_context();
+        ensure_collect_k_row_width2_final_compact_kernels();
+
+        const unsigned threads = 256;
+        const size_t input_segments = group_count * 4;
+        const size_t two_way_group_count = group_count * 2;
+        const size_t two_way_output_capacity = segment_capacity * 2;
+        const size_t four_way_output_capacity = segment_capacity * 4;
+        const size_t input_values = input_segments * segment_capacity * 2;
+        const size_t mid_values = two_way_group_count * two_way_output_capacity * 2;
+        const size_t output_values = group_count * four_way_output_capacity * 2;
+        const size_t two_way_blocks_per_group = (two_way_output_capacity + threads - 1) / threads;
+        const size_t four_way_blocks_per_group = (four_way_output_capacity + threads - 1) / threads;
+        const unsigned two_way_total_blocks = static_cast<unsigned>(two_way_group_count * two_way_blocks_per_group);
+        const unsigned four_way_total_blocks = static_cast<unsigned>(group_count * four_way_blocks_per_group);
+        if (two_way_total_blocks == 0 || four_way_total_blocks == 0
+                || two_way_total_blocks > 4096 || four_way_total_blocks > 4096) {
+            throw std::runtime_error("collect-k four-way merge probe total block count must be in 1..4096");
+        }
+
+        std::vector<int64_t> host_rows(input_values);
+        std::vector<size_t> host_counts(input_segments, segment_capacity);
+        for (size_t segment = 0; segment < input_segments; ++segment) {
+            int64_t* rows = host_rows.data() + segment * segment_capacity * 2;
+            for (size_t index = 0; index < segment_capacity; ++index) {
+                rows[index * 2] = static_cast<int64_t>(index);
+                rows[index * 2 + 1] = static_cast<int64_t>(index % 7);
+            }
+        }
+
+        CUdeviceptr current_base = 0;
+        CUdeviceptr current_counts = 0;
+        CUdeviceptr ref_mid_merged_rows = 0;
+        CUdeviceptr ref_mid_output_rows = 0;
+        CUdeviceptr ref_mid_marks = 0;
+        CUdeviceptr ref_mid_block_counts = 0;
+        CUdeviceptr ref_mid_block_offsets = 0;
+        CUdeviceptr ref_mid_pair_offsets = 0;
+        CUdeviceptr ref_mid_counts = 0;
+        CUdeviceptr ref_final_merged_rows = 0;
+        CUdeviceptr ref_output_rows = 0;
+        CUdeviceptr ref_final_marks = 0;
+        CUdeviceptr ref_final_block_counts = 0;
+        CUdeviceptr ref_final_block_offsets = 0;
+        CUdeviceptr ref_final_pair_offsets = 0;
+        CUdeviceptr ref_final_counts = 0;
+        CUdeviceptr four_merged_rows = 0;
+        CUdeviceptr four_marks = 0;
+        CUdeviceptr four_block_counts = 0;
+        CUdeviceptr four_block_offsets = 0;
+        CUdeviceptr four_pair_offsets = 0;
+        CUdeviceptr four_counts = 0;
+        CUdeviceptr four_output_rows = 0;
+        CUstream stream = nullptr;
+
+        auto cleanup = [&]() {
+            if (stream)
+                cuStreamDestroy(stream);
+            if (four_output_rows)
+                cuMemFree(four_output_rows);
+            if (four_counts)
+                cuMemFree(four_counts);
+            if (four_pair_offsets)
+                cuMemFree(four_pair_offsets);
+            if (four_block_offsets)
+                cuMemFree(four_block_offsets);
+            if (four_block_counts)
+                cuMemFree(four_block_counts);
+            if (four_marks)
+                cuMemFree(four_marks);
+            if (four_merged_rows)
+                cuMemFree(four_merged_rows);
+            if (ref_final_counts)
+                cuMemFree(ref_final_counts);
+            if (ref_final_pair_offsets)
+                cuMemFree(ref_final_pair_offsets);
+            if (ref_final_block_offsets)
+                cuMemFree(ref_final_block_offsets);
+            if (ref_final_block_counts)
+                cuMemFree(ref_final_block_counts);
+            if (ref_final_marks)
+                cuMemFree(ref_final_marks);
+            if (ref_output_rows)
+                cuMemFree(ref_output_rows);
+            if (ref_mid_counts)
+                cuMemFree(ref_mid_counts);
+            if (ref_mid_pair_offsets)
+                cuMemFree(ref_mid_pair_offsets);
+            if (ref_mid_block_offsets)
+                cuMemFree(ref_mid_block_offsets);
+            if (ref_mid_block_counts)
+                cuMemFree(ref_mid_block_counts);
+            if (ref_mid_marks)
+                cuMemFree(ref_mid_marks);
+            if (ref_final_merged_rows)
+                cuMemFree(ref_final_merged_rows);
+            if (ref_mid_output_rows)
+                cuMemFree(ref_mid_output_rows);
+            if (ref_mid_merged_rows)
+                cuMemFree(ref_mid_merged_rows);
+            if (current_counts)
+                cuMemFree(current_counts);
+            if (current_base)
+                cuMemFree(current_base);
+        };
+
+        auto launch_binary_level = [&](CUdeviceptr base,
+                                       CUdeviceptr counts,
+                                       size_t active_group_count,
+                                       size_t active_segment_capacity,
+                                       size_t output_capacity,
+                                       CUdeviceptr merged_rows,
+                                       CUdeviceptr marks,
+                                       CUdeviceptr block_counts,
+                                       CUdeviceptr block_offsets,
+                                       CUdeviceptr pair_offsets,
+                                       CUdeviceptr pair_counts,
+                                       CUdeviceptr output_rows) {
+            size_t active_group_count_arg = active_group_count;
+            size_t active_segment_capacity_arg = active_segment_capacity;
+            size_t output_capacity_arg = output_capacity;
+            size_t blocks_per_group_arg = (output_capacity + threads - 1) / threads;
+            const unsigned total_blocks = static_cast<unsigned>(active_group_count * blocks_per_group_arg);
+            void* materialize_args[] = {
+                &base, &counts, &active_segment_capacity_arg, &output_capacity_arg,
+                &merged_rows, &active_group_count_arg, &blocks_per_group_arg,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_final_materialize_level_counts_derived.fn,
+                total_blocks, 1, 1, threads, 1, 1, 0, stream, materialize_args, nullptr));
+
+            void* mark_args[] = {
+                &merged_rows, &counts, &output_capacity_arg, &active_group_count_arg,
+                &marks, &block_counts, &blocks_per_group_arg,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_final_mark_counts_level_counts.fn,
+                total_blocks, 1, 1, threads, 1, 1,
+                sizeof(uint32_t) * threads, stream, mark_args, nullptr));
+
+            void* prefix_args[] = {
+                &block_counts, &active_group_count_arg, &blocks_per_group_arg,
+                &block_offsets, &pair_offsets, &pair_counts,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                static_cast<unsigned>(active_group_count), 1, 1,
+                1, 1, 1, 0, stream, prefix_args, nullptr));
+
+            void* compact_args[] = {
+                &merged_rows, &marks, &block_offsets, &pair_offsets,
+                &output_rows, &output_capacity_arg, &active_group_count_arg, &blocks_per_group_arg,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                total_blocks, 1, 1, threads, 1, 1,
+                sizeof(uint32_t) * threads, stream, compact_args, nullptr));
+        };
+
+        try {
+            CU_CHECK(cuMemAlloc(&current_base, sizeof(int64_t) * input_values));
+            CU_CHECK(cuMemAlloc(&current_counts, sizeof(size_t) * input_segments));
+            CU_CHECK(cuMemAlloc(&ref_mid_merged_rows, sizeof(int64_t) * mid_values));
+            CU_CHECK(cuMemAlloc(&ref_mid_output_rows, sizeof(int64_t) * mid_values));
+            CU_CHECK(cuMemAlloc(&ref_mid_marks, sizeof(uint32_t) * two_way_total_blocks * threads));
+            CU_CHECK(cuMemAlloc(&ref_mid_block_counts, sizeof(uint32_t) * two_way_total_blocks));
+            CU_CHECK(cuMemAlloc(&ref_mid_block_offsets, sizeof(uint32_t) * two_way_total_blocks));
+            CU_CHECK(cuMemAlloc(&ref_mid_pair_offsets, sizeof(uint32_t) * two_way_group_count));
+            CU_CHECK(cuMemAlloc(&ref_mid_counts, sizeof(size_t) * two_way_group_count));
+            CU_CHECK(cuMemAlloc(&ref_final_merged_rows, sizeof(int64_t) * output_values));
+            CU_CHECK(cuMemAlloc(&ref_output_rows, sizeof(int64_t) * output_values));
+            CU_CHECK(cuMemAlloc(&ref_final_marks, sizeof(uint32_t) * four_way_total_blocks * threads));
+            CU_CHECK(cuMemAlloc(&ref_final_block_counts, sizeof(uint32_t) * four_way_total_blocks));
+            CU_CHECK(cuMemAlloc(&ref_final_block_offsets, sizeof(uint32_t) * four_way_total_blocks));
+            CU_CHECK(cuMemAlloc(&ref_final_pair_offsets, sizeof(uint32_t) * group_count));
+            CU_CHECK(cuMemAlloc(&ref_final_counts, sizeof(size_t) * group_count));
+            CU_CHECK(cuMemAlloc(&four_merged_rows, sizeof(int64_t) * output_values));
+            CU_CHECK(cuMemAlloc(&four_marks, sizeof(uint32_t) * four_way_total_blocks * threads));
+            CU_CHECK(cuMemAlloc(&four_block_counts, sizeof(uint32_t) * four_way_total_blocks));
+            CU_CHECK(cuMemAlloc(&four_block_offsets, sizeof(uint32_t) * four_way_total_blocks));
+            CU_CHECK(cuMemAlloc(&four_pair_offsets, sizeof(uint32_t) * group_count));
+            CU_CHECK(cuMemAlloc(&four_counts, sizeof(size_t) * group_count));
+            CU_CHECK(cuMemAlloc(&four_output_rows, sizeof(int64_t) * output_values));
+            CU_CHECK(cuMemcpyHtoD(current_base, host_rows.data(), sizeof(int64_t) * host_rows.size()));
+            CU_CHECK(cuMemcpyHtoD(current_counts, host_counts.data(), sizeof(size_t) * host_counts.size()));
+            CU_CHECK(cuStreamCreate(&stream, CU_STREAM_NON_BLOCKING));
+
+            auto launch_reference = [&]() {
+                launch_binary_level(
+                    current_base, current_counts, two_way_group_count,
+                    segment_capacity, two_way_output_capacity,
+                    ref_mid_merged_rows, ref_mid_marks, ref_mid_block_counts,
+                    ref_mid_block_offsets, ref_mid_pair_offsets, ref_mid_counts,
+                    ref_mid_output_rows);
+                launch_binary_level(
+                    ref_mid_output_rows, ref_mid_counts, group_count,
+                    two_way_output_capacity, four_way_output_capacity,
+                    ref_final_merged_rows, ref_final_marks, ref_final_block_counts,
+                    ref_final_block_offsets, ref_final_pair_offsets, ref_final_counts,
+                    ref_output_rows);
+            };
+
+            auto launch_four_way = [&]() {
+                CU_CHECK(cuMemsetD32Async(four_marks, 0, four_way_total_blocks * threads, stream));
+                CU_CHECK(cuMemsetD32Async(four_block_counts, 0, four_way_total_blocks, stream));
+                size_t four_way_output_capacity_arg = four_way_output_capacity;
+                size_t group_count_arg = group_count;
+                size_t segment_capacity_arg = segment_capacity;
+                size_t four_way_blocks_per_group_arg = four_way_blocks_per_group;
+                void* four_args[] = {
+                    &current_base,
+                    &current_counts,
+                    &segment_capacity_arg,
+                    &four_way_output_capacity_arg,
+                    &four_merged_rows,
+                    &group_count_arg,
+                    &four_marks,
+                    &four_block_counts,
+                    &four_way_blocks_per_group_arg,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_four_way_materialize_mark_counts_derived.fn,
+                    four_way_total_blocks, 1, 1,
+                    threads, 1, 1,
+                    0, stream, four_args, nullptr));
+
+                void* prefix_args[] = {
+                    &four_block_counts,
+                    &group_count_arg,
+                    &four_way_blocks_per_group_arg,
+                    &four_block_offsets,
+                    &four_pair_offsets,
+                    &four_counts,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_prefix_offsets_level.fn,
+                    static_cast<unsigned>(group_count), 1, 1,
+                    1, 1, 1, 0, stream, prefix_args, nullptr));
+
+                void* compact_args[] = {
+                    &four_merged_rows,
+                    &four_marks,
+                    &four_block_offsets,
+                    &four_pair_offsets,
+                    &four_output_rows,
+                    &four_way_output_capacity_arg,
+                    &group_count_arg,
+                    &four_way_blocks_per_group_arg,
+                };
+                CU_CHECK(cuLaunchKernel(
+                    g_collect_k_i64_row_width2_final_compact_level_derived.fn,
+                    four_way_total_blocks, 1, 1,
+                    threads, 1, 1,
+                    sizeof(uint32_t) * threads, stream, compact_args, nullptr));
+            };
+
+            auto reference_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index)
+                launch_reference();
+            CU_CHECK(cuStreamSynchronize(stream));
+            *reference_ms_out = CollectKStageProfile::elapsed_ms(reference_start);
+
+            auto four_way_start = CollectKStageProfile::Clock::now();
+            for (size_t index = 0; index < repeats; ++index)
+                launch_four_way();
+            CU_CHECK(cuStreamSynchronize(stream));
+            *four_way_ms_out = CollectKStageProfile::elapsed_ms(four_way_start);
+
+            launch_reference();
+            launch_four_way();
+            CU_CHECK(cuStreamSynchronize(stream));
+
+            std::vector<size_t> ref_counts(group_count);
+            std::vector<size_t> four_counts_host(group_count);
+            std::vector<int64_t> ref_rows(output_values);
+            std::vector<int64_t> four_rows(output_values);
+            CU_CHECK(cuMemcpyDtoH(ref_counts.data(), ref_final_counts, sizeof(size_t) * group_count));
+            CU_CHECK(cuMemcpyDtoH(four_counts_host.data(), four_counts, sizeof(size_t) * group_count));
+            CU_CHECK(cuMemcpyDtoH(ref_rows.data(), ref_output_rows, sizeof(int64_t) * output_values));
+            CU_CHECK(cuMemcpyDtoH(four_rows.data(), four_output_rows, sizeof(int64_t) * output_values));
+
+            uint64_t mismatches = 0;
+            for (size_t group = 0; group < group_count; ++group) {
+                if (ref_counts[group] != four_counts_host[group])
+                    ++mismatches;
+                const size_t compare_rows = std::min(ref_counts[group], four_counts_host[group]);
+                const size_t base = group * four_way_output_capacity * 2;
+                for (size_t row = 0; row < compare_rows; ++row) {
+                    if (ref_rows[base + row * 2] != four_rows[base + row * 2] ||
+                        ref_rows[base + row * 2 + 1] != four_rows[base + row * 2 + 1]) {
+                        ++mismatches;
+                    }
+                }
+            }
+
+            *mismatch_count_out = mismatches;
+            *first_group_count_out = group_count > 0 ? static_cast<uint64_t>(ref_counts[0]) : 0u;
         } catch (...) {
             cleanup();
             throw;

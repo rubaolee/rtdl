@@ -3008,6 +3008,78 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_final_output_indexed
         block_counts[blockIdx.x] = shared_counts[0];
 }
 
+extern "C" __global__ void collect_k_bounded_i64_row_width2_four_way_materialize_mark_counts_derived(
+        const int64_t* current_base,
+        const size_t* current_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t group_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_group)
+{
+    const size_t group_index = blockIdx.x / blocks_per_group;
+    if (group_index >= group_count)
+        return;
+
+    const size_t local_block = blockIdx.x - group_index * blocks_per_group;
+    const size_t raw_index = local_block * blockDim.x + threadIdx.x;
+    const size_t segment_slot = raw_index / segment_capacity;
+    if (segment_slot >= 4)
+        return;
+
+    const size_t local_index = raw_index - segment_slot * segment_capacity;
+    const size_t segment_base = group_index * 4;
+    const size_t own_count = current_counts[segment_base + segment_slot];
+    if (local_index >= own_count)
+        return;
+
+    const int64_t* own_rows =
+        current_base + (segment_base + segment_slot) * segment_capacity * 2;
+    const int64_t value0 = own_rows[local_index * 2];
+    const int64_t value1 = own_rows[local_index * 2 + 1];
+
+    size_t output_index = local_index;
+    bool has_prior_duplicate = false;
+    if (local_index > 0) {
+        const int64_t prev0 = own_rows[(local_index - 1) * 2];
+        const int64_t prev1 = own_rows[(local_index - 1) * 2 + 1];
+        has_prior_duplicate = (prev0 == value0 && prev1 == value1);
+    }
+
+    for (size_t peer_slot = 0; peer_slot < 4; ++peer_slot) {
+        if (peer_slot == segment_slot)
+            continue;
+        const int64_t* peer_rows =
+            current_base + (segment_base + peer_slot) * segment_capacity * 2;
+        const size_t peer_count = current_counts[segment_base + peer_slot];
+        const size_t lower =
+            collect_k_final_lower_bound(peer_rows, peer_count, value0, value1);
+        const size_t upper =
+            collect_k_final_upper_bound(peer_rows, peer_count, value0, value1);
+        output_index += peer_slot < segment_slot ? upper : lower;
+        if (peer_slot < segment_slot && lower < upper)
+            has_prior_duplicate = true;
+    }
+
+    if (output_index >= output_capacity)
+        return;
+
+    int64_t* group_merged_rows =
+        merged_rows + group_index * output_capacity * 2;
+    group_merged_rows[output_index * 2] = value0;
+    group_merged_rows[output_index * 2 + 1] = value1;
+
+    const uint32_t mark = has_prior_duplicate ? 0u : 1u;
+    const size_t output_block = output_index / blockDim.x;
+    const size_t global_output_index =
+        (group_index * blocks_per_group + output_block) * blockDim.x + (output_index % blockDim.x);
+    marks[global_output_index] = mark;
+    if (mark)
+        atomicAdd(&block_counts[group_index * blocks_per_group + output_block], 1u);
+}
+
 extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact(
         const int64_t* merged_rows,
         const uint32_t* marks,
@@ -3807,6 +3879,7 @@ static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level_cou
 static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level_counts_pointers;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_mark_counts_level_counts;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_four_way_materialize_mark_counts_derived;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level_derived;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_prefix_offsets_level;
 
