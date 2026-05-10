@@ -504,6 +504,7 @@ struct CollectKStageProfile {
         uint64_t carry_copies = 0;
         uint64_t carry_payload_copies = 0;
         double launch_ms = 0.0;
+        double event_ms = 0.0;
         double sync_ms = 0.0;
         double metadata_ms = 0.0;
         double carry_copy_ms = 0.0;
@@ -529,6 +530,7 @@ struct CollectKStageProfile {
     double sort_sync_ms = 0.0;
     double tile_metadata_download_ms = 0.0;
     double merge_launch_ms = 0.0;
+    double merge_event_ms = 0.0;
     double merge_sync_ms = 0.0;
     double merge_metadata_download_ms = 0.0;
     double carry_copy_ms = 0.0;
@@ -602,6 +604,7 @@ struct CollectKStageProfile {
                 << "\"sort_sync_ms\":" << sort_sync_ms << ","
                 << "\"tile_metadata_download_ms\":" << tile_metadata_download_ms << ","
                 << "\"merge_launch_ms\":" << merge_launch_ms << ","
+                << "\"merge_event_ms\":" << merge_event_ms << ","
                 << "\"merge_sync_ms\":" << merge_sync_ms << ","
                 << "\"merge_metadata_download_ms\":" << merge_metadata_download_ms << ","
                 << "\"carry_copy_ms\":" << carry_copy_ms << ","
@@ -628,6 +631,7 @@ struct CollectKStageProfile {
                     << "\"carry_copies\":" << level.carry_copies << ","
                     << "\"carry_payload_copies\":" << level.carry_payload_copies << ","
                     << "\"launch_ms\":" << level.launch_ms << ","
+                    << "\"event_ms\":" << level.event_ms << ","
                     << "\"sync_ms\":" << level.sync_ms << ","
                     << "\"metadata_ms\":" << level.metadata_ms << ","
                     << "\"carry_copy_ms\":" << level.carry_copy_ms
@@ -1323,6 +1327,27 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     1, 1, 1,
                     0, nullptr, merge_args, nullptr));
             };
+            struct PendingMergeEvent {
+                CUevent start = nullptr;
+                CUevent stop = nullptr;
+                size_t level_index = 0;
+            };
+            std::vector<PendingMergeEvent> pending_merge_events;
+            auto resolve_pending_merge_events = [&]() {
+                for (PendingMergeEvent& event : pending_merge_events) {
+                    if (event.start && event.stop && event.level_index < profile.merge_level_profile.size()) {
+                        float elapsed_ms = 0.0f;
+                        CU_CHECK(cuEventElapsedTime(&elapsed_ms, event.start, event.stop));
+                        profile.merge_level_profile[event.level_index].event_ms = static_cast<double>(elapsed_ms);
+                        profile.merge_event_ms += static_cast<double>(elapsed_ms);
+                    }
+                    if (event.start)
+                        CU_CHECK(cuEventDestroy(event.start));
+                    if (event.stop)
+                        CU_CHECK(cuEventDestroy(event.stop));
+                }
+                pending_merge_events.clear();
+            };
             auto launch_parallel_compact_pair = [&](CUdeviceptr first_rows, size_t first_count,
                                                     CUdeviceptr second_rows, size_t second_count,
                                                     CUdeviceptr output_rows, size_t output_capacity,
@@ -1385,6 +1410,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 if (use_final_pair_mark_event)
                     CU_CHECK(cuEventRecord(mark_event_stop, nullptr));
                 CU_CHECK(cuStreamSynchronize(nullptr));
+                resolve_pending_merge_events();
                 if (profile.enabled && is_final_output) {
                     const double mark_sync_ms = CollectKStageProfile::elapsed_ms(final_pair_stage_start);
                     profile.final_pair_mark_sync_ms += mark_sync_ms;
@@ -1508,6 +1534,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 if (use_final_pair_mark_event)
                     CU_CHECK(cuEventRecord(mark_event_stop, nullptr));
                 CU_CHECK(cuStreamSynchronize(nullptr));
+                resolve_pending_merge_events();
                 if (profile.enabled && is_final_output) {
                     const double mark_sync_ms = CollectKStageProfile::elapsed_ms(final_pair_stage_start);
                     profile.final_pair_mark_sync_ms += mark_sync_ms;
@@ -1844,6 +1871,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
             CUdeviceptr next_counts_level_device = merge_emitted_device.ptr;
             while (current_rows.size() > 1) {
                 CollectKStageProfile::MergeLevel level_profile;
+                CUevent merge_event_start = nullptr;
+                CUevent merge_event_stop = nullptr;
                 level_profile.input_segments = current_rows.size();
                 const size_t pair_count = current_rows.size() / 2;
                 const bool has_carry = (current_rows.size() % 2) != 0;
@@ -1933,6 +1962,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                             : (level_use_device_level_counts ? 0 : (level_use_derived_level_descriptors ? 2 : 5));
                         *h2d_transfers_out += static_cast<uint64_t>(pair_count * descriptor_fields_uploaded);
                         const size_t blocks_per_pair = (output_segment_capacity + 255) / 256;
+                        const bool use_merge_event =
+                            profile.enabled && collect_k_use_final_pair_mark_event_diagnostic();
+                        if (use_merge_event) {
+                            CU_CHECK(cuEventCreate(&merge_event_start, CU_EVENT_DEFAULT));
+                            CU_CHECK(cuEventCreate(&merge_event_stop, CU_EVENT_DEFAULT));
+                            CU_CHECK(cuEventRecord(merge_event_start, nullptr));
+                        }
                         launch_parallel_compact_level(
                             pair_count, output_segment_capacity, blocks_per_pair, &next_counts,
                             use_device_prefix_compact,
@@ -1944,6 +1980,8 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                             next_counts_level_device,
                             segment_capacity,
                             output_base);
+                        if (use_merge_event)
+                            CU_CHECK(cuEventRecord(merge_event_stop, nullptr));
                         merge_launches += use_device_prefix_compact ? 4 : 3;
                         profile.merge_launches += use_device_prefix_compact ? 4 : 3;
                     } else {
@@ -2066,6 +2104,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                         next_counts.push_back(current_counts.back());
                     }
                     profile.record_merge_level(level_profile);
+                    if (profile.enabled && merge_event_start && merge_event_stop) {
+                        pending_merge_events.push_back({
+                            merge_event_start,
+                            merge_event_stop,
+                            profile.merge_level_profile.size() - 1,
+                        });
+                    }
 
                     if (current_rows.size() == 2) {
                         const size_t final_count = next_counts.front();

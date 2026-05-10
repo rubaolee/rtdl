@@ -17,6 +17,8 @@ class Goal1641OptixCollectKFinalPairEventBreakdownTest(unittest.TestCase):
 
         self.assertIn("final_pair_materialize_event_ms", text)
         self.assertIn("final_pair_pre_mark_wait_ms", text)
+        self.assertIn("merge_event_ms", text)
+        self.assertIn("pending_merge_events", text)
         self.assertIn("materialize_event_start", text)
         self.assertIn("cuEventElapsedTime(&materialize_event_ms", text)
         self.assertIn("RTDL_OPTIX_COLLECT_K_FINAL_PAIR_MARK_EVENT_DIAGNOSTIC", text)
@@ -30,6 +32,7 @@ class Goal1641OptixCollectKFinalPairEventBreakdownTest(unittest.TestCase):
     def test_stage_profile_probe_summarizes_new_fields(self) -> None:
         self.assertIn("final_pair_materialize_event_ms", probe.STAGE_FIELDS)
         self.assertIn("final_pair_pre_mark_wait_ms", probe.STAGE_FIELDS)
+        self.assertIn("merge_event_ms", probe.STAGE_FIELDS)
 
     def test_a4500_artifact_shows_pre_mark_wait_dominates(self) -> None:
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))

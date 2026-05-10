@@ -36,6 +36,7 @@ STAGE_FIELDS = (
     "sort_sync_ms",
     "tile_metadata_download_ms",
     "merge_launch_ms",
+    "merge_event_ms",
     "merge_sync_ms",
     "merge_metadata_download_ms",
     "carry_copy_ms",
