@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {
+      "direct_ms": 119.258329,
+      "direct_over_graph_update_speedup": 1.0241968478616452,
+      "direct_per_replay_us": 119.258329,
+      "first_pair_count": 262144,
+      "graph_update_ms": 116.440828,
+      "graph_update_per_replay_us": 116.440828,
+      "initial_pair_count": 1,
+      "kernel_node_count": 4,
+      "repeats": 1000,
+      "segment_capacity": 131072,
+      "target_pair_count": 1
+    }
+  ],
+  "claim_boundary": "Diagnostic collect-k graph executable parameter update only; not a production COLLECT_K_BOUNDED optimization and not a public speedup claim.",
+  "library": "build/librtdl_optix.so",
+  "probe": "goal1559_v1_5_4_optix_collect_k_level_graph_update_probe",
+  "repeats": 1000
+}

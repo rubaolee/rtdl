@@ -3044,8 +3044,8 @@ extern "C" int rtdl_optix_collect_k_level_graph_replay_probe(
         const unsigned threads = 256;
         size_t blocks_per_pair = (output_capacity + threads - 1) / threads;
         const unsigned total_blocks = static_cast<unsigned>(pair_count * blocks_per_pair);
-        if (total_blocks == 0 || total_blocks > 512) {
-            throw std::runtime_error("collect-k graph replay probe total block count must be in 1..512");
+        if (total_blocks == 0 || total_blocks > 4096) {
+            throw std::runtime_error("collect-k graph replay probe total block count must be in 1..4096");
         }
 
         const size_t input_segments = pair_count * 2;
@@ -3245,8 +3245,8 @@ extern "C" int rtdl_optix_collect_k_level_graph_update_probe(
         size_t blocks_per_pair = (output_capacity + threads - 1) / threads;
         const size_t max_pair_count = std::max(initial_pair_count, target_pair_count);
         const unsigned max_total_blocks = static_cast<unsigned>(max_pair_count * blocks_per_pair);
-        if (max_total_blocks == 0 || max_total_blocks > 512) {
-            throw std::runtime_error("collect-k graph update probe total block count must be in 1..512");
+        if (max_total_blocks == 0 || max_total_blocks > 4096) {
+            throw std::runtime_error("collect-k graph update probe total block count must be in 1..4096");
         }
 
         const size_t input_segments = max_pair_count * 2;
