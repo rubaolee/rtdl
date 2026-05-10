@@ -1,7 +1,6 @@
 # RTDL Quick Tutorial
 
 RTDL is a Python-hosted ray-tracing DSL/runtime for non-graphical workloads.
-The current released version is `v1.6`.
 
 You write a kernel, a small function that describes what query to run, then call
 an RTDL runner to execute it. Python owns the surrounding program: data loading,
@@ -16,14 +15,14 @@ RTDL compresses that into one kernel shape:
 input -> traverse -> refine -> emit
 ```
 
-The "10x reduction" goal is about authoring burden: fewer backend files, less
+The productivity win is about authoring burden: fewer backend files, less
 duplicated traversal code, and a thinner Python app around optimized kernels. It
-is not a promise that every backend is always 10x faster.
+is not a promise that every backend is always faster.
 
 For the boundary between "RTDL can do this" and "RTDL is not this whole
 system", read [Capability Boundaries](capability_boundaries.md). For exact
 current backend support, read
-[RTDL Current Main Support Matrix](current_main_support_matrix.md) and
+[RTDL Support Matrix](current_main_support_matrix.md) and
 [App Engine Support Matrix](app_engine_support_matrix.md).
 
 ## Setup
@@ -225,11 +224,8 @@ NVIDIA RT-core claim note:
 - Start from [Application Catalog](application_catalog.md) and
   [App Engine Support Matrix](app_engine_support_matrix.md) before benchmarking
   or publishing RTX claims.
-- Goal1177 and Goal1184 are external-review input only; they do not authorize
-  new public RTX speedup wording.
-
 Current released feature terms you will see in public docs include
-`ray_triangle_any_hit`, `visibility_rows`, `reduce_rows`, and the v1.6 stable
+`ray_triangle_any_hit`, `visibility_rows`, `reduce_rows`, and stable
 primitive/reduction contract names `ANY_HIT`, `COUNT_HITS`,
 `REDUCE_FLOAT(MIN|MAX|SUM)`, and `REDUCE_INT(COUNT|SUM)`. The public
 `reduce_rows` helper is a deterministic Python helper over emitted rows; do not

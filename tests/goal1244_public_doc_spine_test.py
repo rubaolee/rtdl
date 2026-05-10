@@ -8,59 +8,50 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1244PublicDocSpineTest(unittest.TestCase):
-    def test_public_doc_map_names_the_four_current_surfaces(self) -> None:
+    def test_public_doc_map_names_current_layers(self) -> None:
         text = (ROOT / "docs" / "public_documentation_map.md").read_text(encoding="utf-8")
 
         for phrase in (
-            "Current Public Surfaces",
+            "Public Doc Layers",
             "Front page",
             "Tutorials",
             "Apps and examples",
-            "Architecture, model, IR, and performance",
-            "Use this table before opening historical reports",
+            "Architecture and language",
+            "Performance and boundaries",
+            "History and evidence",
             "Technical App Notes",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
-    def test_docs_index_routes_by_surface(self) -> None:
+    def test_docs_index_routes_by_current_user_task(self) -> None:
         text = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
 
         for phrase in (
-            "Public Surfaces",
-            "What RTDL is, what the current release is, and what not to overclaim.",
-            "How to run a first kernel and learn the authoring shape.",
-            "Which apps exist, how they are implemented, what RTDL accelerates, and which app phases remain outside.",
-            "How the runtime is structured, how lowering works, and how to read evidence.",
+            "## New User Path",
+            "## Read By Task",
+            "Run the first example",
+            "Learn the kernel shape",
+            "Pick an app demo",
+            "Understand features",
+            "Choose a backend",
+            "Interpret benchmark results",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
-    def test_architecture_and_app_quickstart_explain_v1_6_customization_boundary(self) -> None:
-        arch = (ROOT / "docs" / "current_architecture.md").read_text(encoding="utf-8")
-        quickstart = (ROOT / "docs" / "app_example_quickstart.md").read_text(encoding="utf-8")
+    def test_history_index_exists_and_sets_boundary(self) -> None:
+        text = (ROOT / "docs" / "history" / "README.md").read_text(encoding="utf-8")
 
         for phrase in (
-            "## v1.6 Lens",
-            "v1.6 is the current release line",
-            "Some app paths use app-specific native continuations",
-            "not the final engine architecture",
-            "not yet a zero-app-knowledge native",
-            "v1.7-v2.0 are the broader end-to-end performance target",
+            "RTDL History Index",
+            "The main docs intentionally describe RTDL as the current product",
+            "What Belongs Here",
+            "Current Documentation Rule",
+            "should not embed project-evolution narratives",
         ):
             with self.subTest(phrase=phrase):
-                self.assertIn(phrase, arch)
-
-        for phrase in (
-            "## Engine Customization Boundary",
-            "Some app paths still inherit v1.0-era app-specific native continuations",
-            "intentional proof machinery",
-            "v1.6 is the current Python+RTDL architecture milestone",
-            "the authoritative per-app list",
-            "whether public RTX wording is reviewed, blocked, not reviewed, or not a NVIDIA target",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, quickstart)
+                self.assertIn(phrase, text)
 
 
 if __name__ == "__main__":

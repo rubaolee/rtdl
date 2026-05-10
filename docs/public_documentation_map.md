@@ -1,121 +1,54 @@
 # RTDL Public Documentation Map
 
-This page is the current public map for the documentation that should matter to
-new users, reviewers, and app builders. It separates front-door material from
-historical reports so readers do not have to infer the project story from the
-goal archive.
+This page maps the current RTDL documentation for users, reviewers, and app
+builders. It keeps the front-door reading path separate from historical reports
+and audit records.
 
 ## Read By Question
 
 | If you care about... | Read first | Then read |
 | --- | --- | --- |
-| Front page and project promise | [Project Front Page](../README.md) | [Feature Guide](rtdl_feature_guide.md), [Capability Boundaries](capability_boundaries.md) |
-| Tutorials | [Quick Tutorial](quick_tutorial.md) | [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
-| Apps | [v1.6 Release Package](release_reports/v1_6/README.md) | [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [App Engine Support Matrix](app_engine_support_matrix.md), [v1.5 Release Package](release_reports/v1_5/README.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
-| Examples | [App And Example Quickstart](app_example_quickstart.md) | [Release-Facing Examples](release_facing_examples.md), [Examples Index](../examples/README.md), [v0.8 App Building](tutorials/v0_8_app_building.md) |
+| What RTDL is | [Project Front Page](../README.md) | [Feature Guide](rtdl_feature_guide.md), [Capability Boundaries](capability_boundaries.md) |
+| First program | [Quick Tutorial](quick_tutorial.md) | [Tutorial Ladder](tutorials/README.md), [Hello World](tutorials/hello_world.md) |
+| Workload recipes | [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) | [Workload Cookbook](rtdl/workload_cookbook.md), [Features Index](features/README.md) |
+| Apps and examples | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Examples Index](../examples/README.md), [Technical App Notes](technical_app_notes/README.md) |
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
-| Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
-| IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
-| Performance | [Performance Model](performance_model.md) | [v1.6 Release Package](release_reports/v1_6/README.md), [v1.5 Release Package](release_reports/v1_5/README.md), [v1.1 OptiX/Embree Status](v1_1_optix_status.md), [v1.0 RTX App Status](v1_0_rtx_app_status.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
-| v1.5.1 candidate surface | [v1.5.1 COLLECT_K_BOUNDED Candidate Docs](release_reports/v1_5_1/README.md) | Documented experimental public-candidate only; not stable primitive promotion, no public speedup wording, no zero-copy wording, no whole-app claims, and no release tag action. |
-
-## Current Public Surfaces
-
-The public docs are organized around four surfaces. Use this table before opening historical reports:
-
-| Surface | Purpose | Primary pages |
-| --- | --- | --- |
-| Front page | Short project promise and current public boundary | [Project Front Page](../README.md), [Docs Index](README.md) |
-| Tutorials | Teach the kernel shape and first app runs | [Quick Tutorial](quick_tutorial.md), [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
-| Apps and examples | Show what each app does, how app implementation is structured, what RTDL accelerates, and what remains outside | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md), [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) |
-| Architecture, model, IR, and performance | Explain how the system is built and how to read performance evidence | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [Performance Model](performance_model.md) |
-
-## Current v1.6 Story
-
-v1.6 is the current public release. It is the first Python+RTDL architecture
-milestone: Python remains the app/control layer, RTDL owns the supported
-RT-shaped primitive contract and bridge, and Embree/OptiX execute the validated
-stable primitive subpaths.
-
-v1.0 remains the foundation proof line for useful application-shaped workloads
-through a Python-hosted ray-tracing DSL. It is preserved for history and
-evidence, but it is no longer the current release.
-
-The honest public message is:
-
-- RTDL can already reduce authoring burden for supported RT-style workloads.
-- v1.6 closes the first Python+RTDL architecture track.
-- v1.5 remains the standalone Embree+OptiX language/runtime completion history.
-- Some bounded prepared/native sub-paths have reviewed RTX speedup wording.
-- Whole-app performance depends on whether non-RT continuation work is native
-  or still Python-owned.
-- `--backend optix` is not by itself an NVIDIA RT-core speedup claim.
-- v1.6 is not a whole-app speedup release, not a package-install release, not a
-  true zero-copy release, and not a zero-app-knowledge native-engine release.
-- `COLLECT_K_BOUNDED` remains experimental and is not stable in v1.6.
-- v1.5.1 `COLLECT_K_BOUNDED` candidate docs are now discoverable as a
-  documented experimental public-candidate surface, but they do not authorize
-  stable promotion, public speedup wording, zero-copy wording, whole-app claims,
-  or release tag action.
-- v1.7-v2.0 are the Python+partner+RTDL track, where RTDL should interoperate
-  cleanly with partner tools for non-RT phases.
+| Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [DSL Reference](rtdl/dsl_reference.md) |
+| IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
+| Performance | [Performance Model](performance_model.md) | [Dual-GPU Performance Report](reports/goal1662_v1_6_11_dual_gpu_perf_release_report_2026-05-10.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
+| History or audits | [History Index](history/README.md) | [Release Reports](release_reports/), [Benchmark And Audit Reports](reports/) |
 
 ## Public Doc Layers
 
-### 1. Front Door
+| Layer | Purpose | Primary pages |
+| --- | --- | --- |
+| Front page | Short project promise and current public boundary | [Project Front Page](../README.md), [Docs Index](README.md) |
+| Tutorials | Teach the kernel shape and first app runs | [Quick Tutorial](quick_tutorial.md), [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
+| Apps and examples | Show what each app does and where RTDL fits | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md), [Technical App Notes](technical_app_notes/README.md) |
+| Architecture and language | Explain the runtime, IR, lowering, and app model | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [DSL Reference](rtdl/dsl_reference.md) |
+| Performance and boundaries | Explain how to interpret backend results | [Performance Model](performance_model.md), [Capability Boundaries](capability_boundaries.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
+| History and evidence | Preserve project evolution and review records | [History Index](history/README.md), [Release Reports](release_reports/), [Benchmark And Audit Reports](reports/) |
 
-Use the root [README](../README.md) as the compact public landing page. It
-should stay short and should link out to detailed docs instead of embedding
-goal history.
+## Current User Message
 
-### 2. Tutorial Path
+RTDL lets a Python application describe RT-shaped query work once, then run the
+supported kernel through the appropriate backend. Python remains the app and
+control layer. RTDL owns the kernel contract, traversal/refinement shape, and
+backend bridge for supported primitive paths.
 
-Use [Quick Tutorial](quick_tutorial.md) and the
-[Tutorial Ladder](tutorials/README.md) for first-run learning. Tutorials should
-teach how to author and run RTDL programs; they should not be overloaded with
-release-audit history.
+The honest public message is:
 
-### 3. Apps And Examples
+- RTDL reduces backend-specific authoring burden for supported RT-style workloads.
+- Backend support varies by feature and platform.
+- `--backend optix` selects an OptiX path; it is not automatically a public
+  speedup claim.
+- Performance claims should name the exact workload, backend, hardware, command
+  shape, and artifact.
+- Whole-application performance depends on the non-RT work around the RTDL kernel.
 
-Use [App And Example Quickstart](app_example_quickstart.md),
-[Application Catalog](application_catalog.md),
-[Technical App Notes](technical_app_notes/README.md),
-[v1.6 Release Package](release_reports/v1_6/README.md),
-[v1.5 Release Package](release_reports/v1_5/README.md),
-[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), and
-[Examples Index](../examples/README.md) to understand supported app demos.
-These docs should say what each app does, which part is RT-accelerated, which
-part remains Python-owned or app-specific native continuation, how the v1.0
-app model maps to current reduction/collection planning, and what public
-wording is allowed.
+## History Boundary
 
-### 4. Architecture, Model, And IR
-
-Use [Current Architecture](current_architecture.md) for system shape,
-[ITRE App Programming Model](rtdl/itre_app_model.md) for the app model, and
-[IR And Lowering](rtdl/ir_and_lowering.md) for the compiler/runtime plan model.
-These pages should make clear that v1.0 lowerings were partly workload-specific
-and that v1.5 moves the supported Embree+OptiX surface toward app-name-free
-primitive/reduction contracts without claiming app-free native-engine internals
-or whole-app performance.
-
-### 5. Performance And Claims
-
-Use [Performance Model](performance_model.md) for how to read performance
-evidence. Use [v1.1 OptiX/Embree Status](v1_1_optix_status.md),
-[v1.0 RTX App Status](v1_0_rtx_app_status.md), and
-[App Engine Support Matrix](app_engine_support_matrix.md) as the authority for
-public RTX wording. Performance docs must separate:
-
-- backend ran
-- native traversal ran
-- RT-core hardware was plausibly required
-- same-contract evidence supports public speedup wording
-- whole-app speedup is actually authorized
-
-## Historical Material
-
-Historical architecture, goal, release, and review files are preserved for
-auditability. They are not the recommended first path for users. Start from
-this map, the root README, or `docs/README.md`; only enter `docs/reports/` or
-older release packages when you need evidence details.
+The pages above are the user path. They should explain RTDL as it is now, not
+how the project arrived here. Use [History Index](history/README.md) only when
+you need release evidence, review trails, archived reports, or project
+evolution details.

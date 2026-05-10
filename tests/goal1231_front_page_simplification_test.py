@@ -8,27 +8,49 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1231FrontPageSimplificationTest(unittest.TestCase):
-    def test_root_readme_is_a_landing_page_not_a_report_dump(self) -> None:
+    def test_root_readme_is_a_product_landing_page(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
-        lines = text.splitlines()
 
-        self.assertLessEqual(len(lines), 260)
-        self.assertIn("## Start Fast", text)
-        self.assertIn("## Current Status", text)
-        self.assertIn("## NVIDIA RT-Core Claim Boundary", text)
-        self.assertIn("[Docs Index](docs/README.md)", text)
-        self.assertIn("[v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)", text)
-        self.assertLessEqual(text.count("Goal"), 20)
+        self.assertLessEqual(len(text.splitlines()), 180)
+        for phrase in (
+            "## Start Fast",
+            "## What You Write",
+            "## What RTDL Contains",
+            "## Performance Boundary",
+            "## Read Next",
+            "## History And Audit Trail",
+            "[Public Documentation Map](docs/public_documentation_map.md)",
+            "[Docs Index](docs/README.md)",
+            "[Quick Tutorial](docs/quick_tutorial.md)",
+            "[Performance Model](docs/performance_model.md)",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
 
-    def test_front_page_keeps_claim_boundary_without_embedding_full_history(self) -> None:
+    def test_front_page_does_not_embed_project_evolution(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
-        compact = " ".join(text.split())
+        forbidden = (
+            "v1.0 is for proving",
+            "v1.1 through",
+            "v1.5 is the released",
+            "v1.7-v2.0",
+            "Goal748",
+            "Goal1177",
+            "candidate docs",
+            "roadmap boundary",
+            "foundation proof",
+        )
+        for phrase in forbidden:
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase, text)
 
-        self.assertIn("not, by itself, a public claim that NVIDIA RT cores accelerated the app", compact)
-        self.assertIn("not a whole-app, default-mode, Python-postprocess", compact)
-        self.assertIn("v1.6 release package/support matrix as the current release authority", compact)
-        self.assertIn("v1.0 inventory preserved for app-boundary history", compact)
-        self.assertIn("Detailed evidence and review trail", text)
+    def test_front_page_keeps_claim_boundary(self) -> None:
+        compact = " ".join((ROOT / "README.md").read_text(encoding="utf-8").split())
+
+        self.assertIn("`--backend optix` means the OptiX backend is selected", compact)
+        self.assertIn("not by itself a claim that every app", compact)
+        self.assertIn("selected long RT-heavy workloads", compact)
+        self.assertIn("Use exact benchmark artifacts before publishing performance wording", compact)
 
 
 if __name__ == "__main__":

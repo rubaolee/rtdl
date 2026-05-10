@@ -20,10 +20,12 @@ PUBLIC_SURFACE_DOCS = (
     ROOT / "docs" / "capability_boundaries.md",
     ROOT / "examples" / "README.md",
 )
-REVIEW_FILES = (
-    ROOT / "docs" / "reviews" / "goal1608_v1_6_public_surface_polish_claude_review_2026-05-09.md",
-    ROOT / "docs" / "reviews" / "goal1608_v1_6_public_surface_polish_gemini_review_2026-05-09.md",
-    ROOT / "docs" / "reviews" / "goal1608_v1_6_public_surface_polish_3ai_consensus_2026-05-09.md",
+ENTRY_DOCS = (
+    ROOT / "README.md",
+    ROOT / "docs" / "README.md",
+    ROOT / "docs" / "public_documentation_map.md",
+    ROOT / "docs" / "quick_tutorial.md",
+    ROOT / "docs" / "tutorials" / "README.md",
 )
 
 
@@ -31,12 +33,7 @@ def _text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-class Goal1608V16PublicSurfaceConsistencyTest(unittest.TestCase):
-    def test_front_page_tutorial_docs_and_examples_name_v1_6(self):
-        for path in PUBLIC_SURFACE_DOCS:
-            with self.subTest(path=path):
-                self.assertIn("v1.6", _text(path))
-
+class Goal1608PublicSurfaceConsistencyTest(unittest.TestCase):
     def test_start_here_docs_keep_source_tree_commands(self):
         for path in [
             ROOT / "README.md",
@@ -50,15 +47,15 @@ class Goal1608V16PublicSurfaceConsistencyTest(unittest.TestCase):
                 self.assertIn("PYTHONPATH=src:.", text)
                 self.assertNotIn("pip install -e .", text)
 
-    def test_public_surface_does_not_present_v1_0_or_v1_5_as_current(self):
-        joined = "\n".join(_text(path) for path in PUBLIC_SURFACE_DOCS)
+    def test_entry_docs_do_not_present_history_as_user_path(self):
+        joined = "\n".join(_text(path) for path in ENTRY_DOCS)
         for forbidden in [
+            "v1.0 remains the foundation proof line",
+            "v1.5 remains the standalone",
+            "v1.7-v2.0 are",
+            "Goal748",
+            "Goal1177",
             "Recommended v1.0 Demo Path",
-            "v1.5 is the current public release",
-            "v1.5 is the current release line",
-            "current released state is `v1.5`",
-            "current released version is `v1.5`",
-            "Status: public app-level support map for current `main` after Goal970",
             "Status: v1.0 direction contract",
         ]:
             with self.subTest(forbidden=forbidden):
@@ -66,30 +63,22 @@ class Goal1608V16PublicSurfaceConsistencyTest(unittest.TestCase):
 
     def test_boundary_phrases_remain_visible(self):
         joined = "\n".join(_text(path) for path in PUBLIC_SURFACE_DOCS)
+        normalized = " ".join(joined.split())
         for phrase in [
-            "first Python+RTDL architecture milestone",
             "`--backend optix` is not",
-            "whole-app speedup",
-            "`COLLECT_K_BOUNDED` remains experimental",
+            "whole-app",
             "source tree",
+            "Performance Model",
         ]:
             with self.subTest(phrase=phrase):
-                self.assertIn(phrase, joined)
+                self.assertIn(phrase, normalized)
 
-    def test_external_review_consensus_exists(self):
-        for path in REVIEW_FILES:
+    def test_history_index_is_the_only_entry_history_route(self):
+        for path in ENTRY_DOCS:
             with self.subTest(path=path):
-                self.assertTrue(path.exists(), path)
-        consensus = _text(REVIEW_FILES[-1])
-        for phrase in [
-            "Codex Verdict",
-            "Claude Verdict",
-            "Gemini Verdict",
-            "ACCEPT",
-            "does not authorize a new release tag",
-        ]:
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, consensus)
+                text = _text(path)
+                if "History" in text:
+                    self.assertIn("history/README.md", text)
 
 
 if __name__ == "__main__":
