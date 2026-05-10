@@ -2286,6 +2286,23 @@ extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_level(
 }
 )CUDA";
 
+static const char* kCollectKCooperativeLaunchSmokeKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <cooperative_groups.h>
+
+namespace cg = cooperative_groups;
+
+extern "C" __global__ void collect_k_cooperative_launch_smoke(uint32_t* observed)
+{
+    cg::grid_group grid = cg::this_grid();
+    if (threadIdx.x == 0)
+        atomicAdd(&observed[0], 1u);
+    grid.sync();
+    if (grid.thread_rank() == 0)
+        observed[1] = observed[0];
+}
+)CUDA";
+
 static const char* kCollectKBoundedI64RowWidth2FinalCompactKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <stddef.h>
@@ -3773,6 +3790,7 @@ static KnnCuFunction      g_collect_k_i64_row_width2_cub_sort;
 static KnnCuFunction      g_collect_k_i64_row_width2_cub_sort_tiles;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_two;
 static KnnCuFunction      g_collect_k_i64_row_width2_merge_level;
+static KnnCuFunction      g_collect_k_cooperative_launch_smoke;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_counts;
 static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts;

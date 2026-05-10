@@ -425,6 +425,11 @@ int  rtdl_optix_collect_k_cooperative_launch_capability(
          int* max_threads_per_block_out,
          int* max_shared_memory_per_block_optin_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_collect_k_cooperative_launch_smoke(
+         int requested_blocks, int requested_threads,
+         int* observed_blocks_out,
+         int* sync_observed_blocks_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_collect_polygon_pair_candidates_bounded(
          const RtdlPolygonRef* left_polygons, size_t left_count,
          const double* left_vertices_xy,      size_t left_vertex_xy_count,

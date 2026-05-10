@@ -36,6 +36,26 @@ Artifacts:
 - `docs/reports/goal1647_linux_local_cooperative_capability_2026-05-09.json`
 - `docs/reports/goal1647_linux_local_cooperative_capability_2026-05-09.md`
 
+## Pod A4500 Validation
+
+On 2026-05-10, pod `213.173.98.25:17374` was validated from commit `8403a85d06cfbef10d9e249159bac749b42b24e0` with:
+
+- GPU: `NVIDIA RTX A4500, 570.195.03, 20470 MiB`
+- CUDA toolkit: `/usr/local/cuda`, release `12.4`
+- OptiX SDK: `/root/vendor/optix-sdk`, tag `v8.0.0`
+
+The Goal1647 capability probe passed and reported `next_probe_allowed: true`:
+
+- `docs/reports/goal1647_pod_a4500_cooperative_capability_2026-05-10.json`
+- `docs/reports/goal1647_pod_a4500_cooperative_capability_2026-05-10.md`
+
+Goal1648 then launched a real cooperative CUDA kernel with `cooperative_groups::this_grid().sync()` through `cuLaunchCooperativeKernel`; the smoke probe passed with `16` requested blocks and `64` threads:
+
+- `docs/reports/goal1648_pod_a4500_cooperative_launch_smoke_2026-05-10.json`
+- `docs/reports/goal1648_pod_a4500_cooperative_launch_smoke_2026-05-10.md`
+
+This proves cooperative-launch readiness on the A4500 pod only. It is not collect-k performance evidence.
+
 ## Pod Run Plan
 
 1. Fetch/reset a clean pod checkout to `origin/main`.

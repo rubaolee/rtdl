@@ -55,6 +55,67 @@ extern "C" int rtdl_optix_collect_k_cooperative_launch_capability(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_collect_k_cooperative_launch_smoke(
+        int requested_blocks, int requested_threads,
+        int* observed_blocks_out,
+        int* sync_observed_blocks_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!observed_blocks_out || !sync_observed_blocks_out)
+            throw std::runtime_error("smoke output pointers must not be null");
+        if (requested_blocks <= 0 || requested_threads <= 0)
+            throw std::runtime_error("requested blocks and threads must be positive");
+        *observed_blocks_out = 0;
+        *sync_observed_blocks_out = 0;
+
+        int cooperative_launch_supported = 0;
+        CU_CHECK(cuInit(0));
+        CUdevice device = 0;
+        CU_CHECK(cuDeviceGet(&device, 0));
+        CU_CHECK(cuDeviceGetAttribute(
+            &cooperative_launch_supported,
+            CU_DEVICE_ATTRIBUTE_COOPERATIVE_LAUNCH,
+            device));
+        if (!cooperative_launch_supported)
+            throw std::runtime_error("CUDA device does not support cooperative launch");
+
+        (void)get_optix_context();
+
+        std::call_once(g_collect_k_cooperative_launch_smoke.init, [&]() {
+            const std::string ptx = compile_to_ptx(
+                kCollectKCooperativeLaunchSmokeKernelSrc,
+                "collect_k_cooperative_launch_smoke_kernel.cu",
+                {"--relocatable-device-code=true"});
+            CU_CHECK(cuModuleLoadData(&g_collect_k_cooperative_launch_smoke.module, ptx.c_str()));
+            CU_CHECK(cuModuleGetFunction(
+                &g_collect_k_cooperative_launch_smoke.fn,
+                g_collect_k_cooperative_launch_smoke.module,
+                "collect_k_cooperative_launch_smoke"));
+        });
+
+        DevPtr observed(sizeof(uint32_t) * 2);
+        const uint32_t zeros[2] = {0u, 0u};
+        upload(observed.ptr, zeros, 2);
+        void* args[] = {&observed.ptr};
+        CU_CHECK(cuLaunchCooperativeKernel(
+            g_collect_k_cooperative_launch_smoke.fn,
+            static_cast<unsigned int>(requested_blocks), 1, 1,
+            static_cast<unsigned int>(requested_threads), 1, 1,
+            0, nullptr, args));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+
+        uint32_t host_observed[2] = {0u, 0u};
+        download(host_observed, observed.ptr, 2);
+        if (host_observed[0] != static_cast<uint32_t>(requested_blocks)
+                || host_observed[1] != static_cast<uint32_t>(requested_blocks)) {
+            throw std::runtime_error("cooperative launch smoke returned unexpected block counts");
+        }
+        *observed_blocks_out = static_cast<int>(host_observed[0]);
+        *sync_observed_blocks_out = static_cast<int>(host_observed[1]);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_lsi(
         const RtdlSegment* left,  size_t left_count,
         const RtdlSegment* right, size_t right_count,

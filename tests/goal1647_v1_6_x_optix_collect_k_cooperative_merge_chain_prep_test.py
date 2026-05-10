@@ -9,6 +9,8 @@ SCRIPT = ROOT / "scripts" / "goal1647_v1_6_x_optix_collect_k_cooperative_capabil
 REPORT = ROOT / "docs" / "reports" / "goal1647_v1_6_x_optix_collect_k_cooperative_merge_chain_prep_2026-05-09.md"
 LINUX_CAPABILITY_MD = ROOT / "docs" / "reports" / "goal1647_linux_local_cooperative_capability_2026-05-09.md"
 LINUX_CAPABILITY_JSON = ROOT / "docs" / "reports" / "goal1647_linux_local_cooperative_capability_2026-05-09.json"
+POD_CAPABILITY_MD = ROOT / "docs" / "reports" / "goal1647_pod_a4500_cooperative_capability_2026-05-10.md"
+POD_CAPABILITY_JSON = ROOT / "docs" / "reports" / "goal1647_pod_a4500_cooperative_capability_2026-05-10.json"
 CLAUDE = ROOT / "docs" / "reviews" / "claude_goal1647_collect_k_cooperative_merge_chain_prep_review_2026-05-09.md"
 GEMINI = ROOT / "docs" / "reviews" / "gemini_goal1647_collect_k_cooperative_merge_chain_prep_review_2026-05-09.md"
 CONSENSUS = ROOT / "docs" / "reviews" / "goal1647_v1_6_x_optix_collect_k_cooperative_merge_chain_prep_3ai_consensus_2026-05-09.md"
@@ -53,6 +55,16 @@ class Goal1647OptixCollectKCooperativeMergeChainPrepTest(unittest.TestCase):
         payload = LINUX_CAPABILITY_JSON.read_text(encoding="utf-8")
 
         self.assertIn("NVIDIA GeForce GTX 1070", md)
+        self.assertIn("Next cooperative merge-chain probe allowed: `True`", md)
+        self.assertIn("It is not performance evidence", md)
+        self.assertIn('"next_probe_allowed": true', payload)
+        self.assertIn('"performance_evidence_authorized": false', payload)
+
+    def test_pod_a4500_capability_smoke_is_recorded(self) -> None:
+        md = POD_CAPABILITY_MD.read_text(encoding="utf-8")
+        payload = POD_CAPABILITY_JSON.read_text(encoding="utf-8")
+
+        self.assertIn("NVIDIA RTX A4500", md)
         self.assertIn("Next cooperative merge-chain probe allowed: `True`", md)
         self.assertIn("It is not performance evidence", md)
         self.assertIn('"next_probe_allowed": true', payload)
