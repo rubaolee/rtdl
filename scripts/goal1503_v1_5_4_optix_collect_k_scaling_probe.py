@@ -223,8 +223,12 @@ def _expected_native_path(candidate_count: int, row_width: int) -> str:
         return "row_width2_parallel_bitonic_sort"
     row_width2_tiled_limit = (
         262144
-        if os.environ.get("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC")
-        not in (None, "", "0")
+        if (
+            os.environ.get("RTDL_OPTIX_COLLECT_K_FASTEST_CANDIDATE")
+            not in (None, "", "0")
+            or os.environ.get("RTDL_OPTIX_COLLECT_K_EXTENDED_128_TILE_DIAGNOSTIC")
+            not in (None, "", "0")
+        )
         else 131072
     )
     if row_width == 2 and candidate_count <= row_width2_tiled_limit:

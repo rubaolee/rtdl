@@ -1,0 +1,22 @@
+# Goal 1506: OptiX COLLECT_K_BOUNDED Stage Profile Probe
+
+## Verdict
+
+`goal1506_optix_collect_k_stage_profile_probe_recorded`
+
+## Scope
+
+- Device: `NVIDIA RTX A4500`
+- Git commit: `f5af8d17391e59a5ebecc75b71dffa9e7152af29`
+- Native profile env: `RTDL_OPTIX_COLLECT_K_PROFILE_JSONL`
+- Accepted Goal1506 evidence: `True`
+- Local fallback smoke only: `False`
+- Timing scope: Python wrapper call around native OptiX/CUDA device-pointer execution, plus opt-in native host-side stage timing emitted by the same native call.
+
+## Cases
+
+- candidates=`196608`, path=`row_width2_bounded_multi_tile_sort_merge`, total_ms=`0.553565`, sort_sync_ms=`0.082582`, merge_sync_ms=`0.231468`, metadata_ms=`0.011220`, sort_launches=`1`, merge_launches=`27`, carry_copies=`1`
+
+## Claim Boundary
+
+Goal1506 records opt-in host-side stage timing for the experimental Python OptiX COLLECT_K_BOUNDED device-pointer bridge only. It does not authorize public speedup wording, true zero-copy wording, whole-app claims, partner tensor handoff, stable primitive promotion, or release action.

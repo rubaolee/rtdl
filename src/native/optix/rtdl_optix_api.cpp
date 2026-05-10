@@ -1098,7 +1098,7 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
 
         bool row_width2_tiled_supported = false;
         const bool use_extended_128_tile_diagnostic =
-            collect_k_extended_128_tile_diagnostic();
+            collect_k_use_fastest_candidate() || collect_k_extended_128_tile_diagnostic();
         const size_t row_width2_max_tiled_candidates =
             use_extended_128_tile_diagnostic
                 ? kCollectKRowWidth2ExtendedMaxTiledCandidates
