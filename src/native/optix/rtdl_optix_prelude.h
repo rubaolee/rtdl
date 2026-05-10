@@ -418,6 +418,13 @@ int  rtdl_optix_collect_k_bounded_i64_device(
          uint64_t* h2d_transfers_out, uint64_t* d2h_transfers_out,
          uint64_t* internal_device_transfers_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_collect_k_cooperative_launch_capability(
+         int* cooperative_launch_supported_out,
+         int* cooperative_multi_device_launch_supported_out,
+         int* multiprocessor_count_out,
+         int* max_threads_per_block_out,
+         int* max_shared_memory_per_block_optin_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_collect_polygon_pair_candidates_bounded(
          const RtdlPolygonRef* left_polygons, size_t left_count,
          const double* left_vertices_xy,      size_t left_vertex_xy_count,

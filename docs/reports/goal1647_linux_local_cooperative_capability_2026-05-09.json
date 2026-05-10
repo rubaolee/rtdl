@@ -1,0 +1,26 @@
+{
+  "broad_rtx_wording_authorized": false,
+  "capability": {
+    "cooperative_launch_supported": true,
+    "cooperative_multi_device_launch_supported": true,
+    "cuda_device_index": 0,
+    "max_shared_memory_per_block_optin": 49152,
+    "max_threads_per_block": 1024,
+    "multiprocessor_count": 16
+  },
+  "claim_boundary": "Goal1647 records cooperative-launch readiness for a future opt-in collect-k merge-chain diagnostic. It is not performance evidence, does not change fastest-candidate behavior, and does not authorize public speedup wording, stable COLLECT_K_BOUNDED promotion, broad RTX/GPU wording, release tags, or release action.",
+  "fastest_candidate_behavior_changed": false,
+  "git_commit": "1bbf095293a180ccee0687858ae2c306be3b0b63",
+  "goal": "Goal1647",
+  "host": "lx1",
+  "library": "build/librtdl_optix.so",
+  "next_probe_allowed": true,
+  "nvidia_smi": "NVIDIA GeForce GTX 1070, 580.126.09, 8192 MiB",
+  "performance_evidence_authorized": false,
+  "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+  "public_speedup_wording_authorized": false,
+  "python": "3.12.3",
+  "release_action_authorized": false,
+  "stable_collect_k_promotion_authorized": false,
+  "status": "cooperative_launch_capability_recorded"
+}

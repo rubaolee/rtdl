@@ -6,6 +6,55 @@ extern "C" int rtdl_optix_get_version(int* major_out, int* minor_out, int* patch
     return 0;
 }
 
+extern "C" int rtdl_optix_collect_k_cooperative_launch_capability(
+        int* cooperative_launch_supported_out,
+        int* cooperative_multi_device_launch_supported_out,
+        int* multiprocessor_count_out,
+        int* max_threads_per_block_out,
+        int* max_shared_memory_per_block_optin_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!cooperative_launch_supported_out
+                || !cooperative_multi_device_launch_supported_out
+                || !multiprocessor_count_out
+                || !max_threads_per_block_out
+                || !max_shared_memory_per_block_optin_out) {
+            throw std::runtime_error("capability output pointers must not be null");
+        }
+
+        *cooperative_launch_supported_out = 0;
+        *cooperative_multi_device_launch_supported_out = 0;
+        *multiprocessor_count_out = 0;
+        *max_threads_per_block_out = 0;
+        *max_shared_memory_per_block_optin_out = 0;
+
+        CU_CHECK(cuInit(0));
+        CUdevice device = 0;
+        CU_CHECK(cuDeviceGet(&device, 0));
+        CU_CHECK(cuDeviceGetAttribute(
+            cooperative_launch_supported_out,
+            CU_DEVICE_ATTRIBUTE_COOPERATIVE_LAUNCH,
+            device));
+        CU_CHECK(cuDeviceGetAttribute(
+            cooperative_multi_device_launch_supported_out,
+            CU_DEVICE_ATTRIBUTE_COOPERATIVE_MULTI_DEVICE_LAUNCH,
+            device));
+        CU_CHECK(cuDeviceGetAttribute(
+            multiprocessor_count_out,
+            CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,
+            device));
+        CU_CHECK(cuDeviceGetAttribute(
+            max_threads_per_block_out,
+            CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
+            device));
+        CU_CHECK(cuDeviceGetAttribute(
+            max_shared_memory_per_block_optin_out,
+            CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK_OPTIN,
+            device));
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_lsi(
         const RtdlSegment* left,  size_t left_count,
         const RtdlSegment* right, size_t right_count,
