@@ -11,17 +11,17 @@
     "python_partner_rtdl",
     "v1_6_11_release_tag_action"
   ],
-  "blocked_or_excluded_row_count": 20,
+  "blocked_or_excluded_row_count": 8,
   "boundary": "This manifest prepares the v1.6.11 versus v1.0 performance comparison. It does not publish v1.6.11, authorize a tag, or authorize public speedup wording. Final evidence needs a pod because OptiX/NVIDIA RT rows require real NVIDIA RT hardware.",
   "comparison": "v1.6.11_vs_v1.0_by_app_and_engine",
-  "current_head": "95079da3f2d608a44194a67c247a68ffc3e27ba6",
+  "current_head": "b1ad37ff5827033166a85c226c126e351d093223",
   "current_version": "v1.6.11",
   "engines": [
     "embree",
     "optix"
   ],
   "goal": "Goal1660",
-  "planned_row_count": 16,
+  "planned_row_count": 28,
   "pod_needed_after_local_preflight": true,
   "pod_run_contract": {
     "build_policy": "Build Embree and OptiX separately in each checkout from that checkout's source. Record commit, GPU, driver, CUDA, OptiX SDK, and build command.",
@@ -230,16 +230,6 @@
       "status": "excluded"
     },
     {
-      "app": "service_coverage_gaps",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal811_spatial_optix_summary_phase_profiler.py",
-      "status": "excluded"
-    },
-    {
       "acceptance": [
         "same app",
         "same engine",
@@ -253,8 +243,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
       "reason": null,
       "scope": "prepared fixed-radius gap-summary decision",
@@ -272,7 +262,9 @@
         "--copies",
         "20000",
         "--output-json",
-        "docs/reports/goal1660_v1_0_service_coverage_gaps_optix.json"
+        "docs/reports/goal1660_v1_0_service_coverage_gaps_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -284,18 +276,62 @@
         "--copies",
         "20000",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_service_coverage_gaps_optix.json"
+        "docs/reports/goal1660_v1_6_11_service_coverage_gaps_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "event_hotspot_screening",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "service_coverage_gaps",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "pure_python_rtdl_ready",
+      "reason": null,
+      "scope": "prepared fixed-radius gap-summary decision",
+      "script_exists_in_v1_0": true,
       "script_path": "scripts/goal811_spatial_optix_summary_phase_profiler.py",
-      "status": "excluded"
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "service_coverage_gaps",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_service_coverage_gaps_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "service_coverage_gaps",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_service_coverage_gaps_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -311,8 +347,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
       "reason": null,
       "scope": "prepared fixed-radius hotspot count-summary",
@@ -330,7 +366,9 @@
         "--copies",
         "20000",
         "--output-json",
-        "docs/reports/goal1660_v1_0_event_hotspot_screening_optix.json"
+        "docs/reports/goal1660_v1_0_event_hotspot_screening_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -342,18 +380,62 @@
         "--copies",
         "20000",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_event_hotspot_screening_optix.json"
+        "docs/reports/goal1660_v1_6_11_event_hotspot_screening_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "facility_knn_assignment",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
-      "status": "excluded"
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "event_hotspot_screening",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "pure_python_rtdl_ready",
+      "reason": null,
+      "scope": "prepared fixed-radius hotspot count-summary",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "event_hotspot_screening",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_event_hotspot_screening_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "event_hotspot_screening",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_event_hotspot_screening_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -369,8 +451,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
       "reason": null,
       "scope": "coverage-threshold prepared decision only",
@@ -393,7 +475,9 @@
         "1.0",
         "--skip-validation",
         "--output-json",
-        "docs/reports/goal1660_v1_0_facility_knn_assignment_optix.json"
+        "docs/reports/goal1660_v1_0_facility_knn_assignment_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -410,18 +494,72 @@
         "1.0",
         "--skip-validation",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_facility_knn_assignment_optix.json"
+        "docs/reports/goal1660_v1_6_11_facility_knn_assignment_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "road_hazard_screening",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
-      "status": "excluded"
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "facility_knn_assignment",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "pure_python_rtdl_ready",
+      "reason": null,
+      "scope": "coverage-threshold prepared decision only",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "1.0",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_facility_knn_assignment_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "1.0",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_facility_knn_assignment_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -437,8 +575,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
       "reason": null,
       "scope": "prepared segment/polygon compact road-hazard summary",
@@ -458,7 +596,9 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_0_road_hazard_screening_optix.json"
+        "docs/reports/goal1660_v1_0_road_hazard_screening_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -472,18 +612,66 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_road_hazard_screening_optix.json"
+        "docs/reports/goal1660_v1_6_11_road_hazard_screening_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "segment_polygon_hitcount",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "road_hazard_screening",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "legacy_engine_customized",
+      "reason": null,
+      "scope": "prepared segment/polygon compact road-hazard summary",
+      "script_exists_in_v1_0": true,
       "script_path": "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
-      "status": "excluded"
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--scenario",
+        "road_hazard_prepared_summary",
+        "--copies",
+        "20000",
+        "--iterations",
+        "5",
+        "--mode",
+        "run",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_road_hazard_screening_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--scenario",
+        "road_hazard_prepared_summary",
+        "--copies",
+        "20000",
+        "--iterations",
+        "5",
+        "--mode",
+        "run",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_road_hazard_screening_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -499,8 +687,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
       "reason": null,
       "scope": "prepared segment/polygon hit-count summary",
@@ -520,7 +708,9 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_0_segment_polygon_hitcount_optix.json"
+        "docs/reports/goal1660_v1_0_segment_polygon_hitcount_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -534,18 +724,66 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_segment_polygon_hitcount_optix.json"
+        "docs/reports/goal1660_v1_6_11_segment_polygon_hitcount_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "segment_polygon_anyhit_rows",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
-      "status": "excluded"
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "segment_polygon_hitcount",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "legacy_engine_customized",
+      "reason": null,
+      "scope": "prepared segment/polygon hit-count summary",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--scenario",
+        "segment_polygon_hitcount_prepared",
+        "--copies",
+        "256",
+        "--iterations",
+        "5",
+        "--mode",
+        "run",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_segment_polygon_hitcount_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--scenario",
+        "segment_polygon_hitcount_prepared",
+        "--copies",
+        "256",
+        "--iterations",
+        "5",
+        "--mode",
+        "run",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_segment_polygon_hitcount_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -561,8 +799,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "experimental_primitive_blocked",
       "reason": null,
       "scope": "bounded pair-row output with overflow metadata",
@@ -582,7 +820,9 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_0_segment_polygon_anyhit_rows_optix.json"
+        "docs/reports/goal1660_v1_0_segment_polygon_anyhit_rows_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -596,18 +836,66 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_segment_polygon_anyhit_rows_optix.json"
+        "docs/reports/goal1660_v1_6_11_segment_polygon_anyhit_rows_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "polygon_pair_overlap_area_rows",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
-      "status": "excluded"
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "segment_polygon_anyhit_rows",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "experimental_primitive_blocked",
+      "reason": null,
+      "scope": "bounded pair-row output with overflow metadata",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+        "--copies",
+        "256",
+        "--iterations",
+        "5",
+        "--output-capacity",
+        "4096",
+        "--mode",
+        "run",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_segment_polygon_anyhit_rows_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+        "--copies",
+        "256",
+        "--iterations",
+        "5",
+        "--output-capacity",
+        "4096",
+        "--mode",
+        "run",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_segment_polygon_anyhit_rows_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -623,8 +911,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
       "reason": null,
       "scope": "native-assisted LSI/PIP candidate discovery plus exact-area continuation",
@@ -648,7 +936,9 @@
         "--chunk-copies",
         "100",
         "--output-json",
-        "docs/reports/goal1660_v1_0_polygon_pair_overlap_area_rows_optix.json"
+        "docs/reports/goal1660_v1_0_polygon_pair_overlap_area_rows_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -666,18 +956,74 @@
         "--chunk-copies",
         "100",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_polygon_pair_overlap_area_rows_optix.json"
+        "docs/reports/goal1660_v1_6_11_polygon_pair_overlap_area_rows_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "polygon_set_jaccard",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "polygon_pair_overlap_area_rows",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "legacy_engine_customized",
+      "reason": null,
+      "scope": "native-assisted LSI/PIP candidate discovery plus exact-area continuation",
+      "script_exists_in_v1_0": true,
       "script_path": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
-      "status": "excluded"
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "pair_overlap",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "100",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_polygon_pair_overlap_area_rows_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "pair_overlap",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "100",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_polygon_pair_overlap_area_rows_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -693,8 +1039,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "experimental_primitive_blocked",
       "reason": null,
       "scope": "bounded candidate discovery plus exact Jaccard summary",
@@ -718,7 +1064,9 @@
         "--chunk-copies",
         "20",
         "--output-json",
-        "docs/reports/goal1660_v1_0_polygon_set_jaccard_optix.json"
+        "docs/reports/goal1660_v1_0_polygon_set_jaccard_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -736,18 +1084,74 @@
         "--chunk-copies",
         "20",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_polygon_set_jaccard_optix.json"
+        "docs/reports/goal1660_v1_6_11_polygon_set_jaccard_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "hausdorff_distance",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
-      "status": "excluded"
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "polygon_set_jaccard",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "experimental_primitive_blocked",
+      "reason": null,
+      "scope": "bounded candidate discovery plus exact Jaccard summary",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "jaccard",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "20",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_polygon_set_jaccard_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "jaccard",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "20",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_polygon_set_jaccard_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -763,8 +1167,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
       "reason": null,
       "scope": "directed threshold decision only",
@@ -786,7 +1190,9 @@
         "--radius",
         "0.4",
         "--output-json",
-        "docs/reports/goal1660_v1_0_hausdorff_distance_optix.json"
+        "docs/reports/goal1660_v1_0_hausdorff_distance_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -802,18 +1208,70 @@
         "--radius",
         "0.4",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_hausdorff_distance_optix.json"
+        "docs/reports/goal1660_v1_6_11_hausdorff_distance_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "ann_candidate_search",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "hausdorff_distance",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "pure_python_rtdl_ready",
+      "reason": null,
+      "scope": "directed threshold decision only",
+      "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
-      "status": "excluded"
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "hausdorff_threshold",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "0.4",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_hausdorff_distance_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "hausdorff_threshold",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "0.4",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_hausdorff_distance_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -829,8 +1287,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
       "reason": null,
       "scope": "candidate-coverage threshold decision only",
@@ -852,7 +1310,9 @@
         "--radius",
         "0.2",
         "--output-json",
-        "docs/reports/goal1660_v1_0_ann_candidate_search_optix.json"
+        "docs/reports/goal1660_v1_0_ann_candidate_search_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -868,7 +1328,69 @@
         "--radius",
         "0.2",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_ann_candidate_search_optix.json"
+        "docs/reports/goal1660_v1_6_11_ann_candidate_search_embree.json",
+        "--backend",
+        "embree"
+      ]
+    },
+    {
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "ann_candidate_search",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "pure_python_rtdl_ready",
+      "reason": null,
+      "scope": "candidate-coverage threshold decision only",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "ann_candidate_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "0.2",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_ann_candidate_search_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "ann_candidate_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "0.2",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_ann_candidate_search_optix.json",
+        "--backend",
+        "optix"
       ]
     },
     {
@@ -988,16 +1510,6 @@
       ]
     },
     {
-      "app": "robot_collision_screening",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
-      "status": "excluded"
-    },
-    {
       "acceptance": [
         "same app",
         "same engine",
@@ -1011,8 +1523,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
       "reason": null,
       "scope": "prepared ray/triangle any-hit pose-count summary",
@@ -1037,7 +1549,9 @@
         "pose_count",
         "--skip-validation",
         "--output-json",
-        "docs/reports/goal1660_v1_0_robot_collision_screening_optix.json"
+        "docs/reports/goal1660_v1_0_robot_collision_screening_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -1056,18 +1570,76 @@
         "pose_count",
         "--skip-validation",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_robot_collision_screening_optix.json"
+        "docs/reports/goal1660_v1_6_11_robot_collision_screening_embree.json",
+        "--backend",
+        "embree"
       ]
     },
     {
-      "app": "barnes_hut_force_app",
-      "compare_current": false,
-      "compare_v1_0": false,
-      "engine": "embree",
-      "engine_selector": "none",
-      "reason": "source command has no --backend/--mode selector; this row would be a decorative engine label rather than a real engine comparison",
-      "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
-      "status": "excluded"
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "robot_collision_screening",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "legacy_engine_customized",
+      "reason": null,
+      "scope": "prepared ray/triangle any-hit pose-count summary",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--mode",
+        "optix",
+        "--pose-count",
+        "200000",
+        "--obstacle-count",
+        "1024",
+        "--iterations",
+        "10",
+        "--input-mode",
+        "packed_arrays",
+        "--result-mode",
+        "pose_count",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_robot_collision_screening_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--mode",
+        "optix",
+        "--pose-count",
+        "200000",
+        "--obstacle-count",
+        "1024",
+        "--iterations",
+        "10",
+        "--input-mode",
+        "packed_arrays",
+        "--result-mode",
+        "pose_count",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_robot_collision_screening_optix.json",
+        "--backend",
+        "optix"
+      ]
     },
     {
       "acceptance": [
@@ -1083,8 +1655,8 @@
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
       "compare_v1_0": true,
-      "engine": "optix",
-      "engine_selector": "optix_specific_script",
+      "engine": "embree",
+      "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
       "reason": null,
       "scope": "node-coverage threshold decision only",
@@ -1106,7 +1678,9 @@
         "--radius",
         "10.0",
         "--output-json",
-        "docs/reports/goal1660_v1_0_barnes_hut_force_app_optix.json"
+        "docs/reports/goal1660_v1_0_barnes_hut_force_app_embree.json",
+        "--backend",
+        "embree"
       ],
       "v1_6_11_command": [
         "python3",
@@ -1122,7 +1696,69 @@
         "--radius",
         "10.0",
         "--output-json",
-        "docs/reports/goal1660_v1_6_11_barnes_hut_force_app_optix.json"
+        "docs/reports/goal1660_v1_6_11_barnes_hut_force_app_embree.json",
+        "--backend",
+        "embree"
+      ]
+    },
+    {
+      "acceptance": [
+        "same app",
+        "same engine",
+        "same command shape",
+        "same scale where supported",
+        "same artifact schema or explicit schema-drift note",
+        "strict parity/status before timing comparison"
+      ],
+      "app": "barnes_hut_force_app",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
+      "compare_current": true,
+      "compare_v1_0": true,
+      "engine": "optix",
+      "engine_selector": "insert--backend",
+      "purity_status": "pure_python_rtdl_ready",
+      "reason": null,
+      "scope": "node-coverage threshold decision only",
+      "script_exists_in_v1_0": true,
+      "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "shared_primitive_canonical": null,
+      "status": "planned",
+      "v1_0_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "200000",
+        "--iterations",
+        "10",
+        "--radius",
+        "10.0",
+        "--output-json",
+        "docs/reports/goal1660_v1_0_barnes_hut_force_app_optix.json",
+        "--backend",
+        "optix"
+      ],
+      "v1_6_11_command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "200000",
+        "--iterations",
+        "10",
+        "--radius",
+        "10.0",
+        "--output-json",
+        "docs/reports/goal1660_v1_6_11_barnes_hut_force_app_optix.json",
+        "--backend",
+        "optix"
       ]
     },
     {

@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
+from examples.reference.rtdl_release_reference import segment_polygon_anyhit_rows_reference
 from rtdsl.baseline_runner import load_representative_case
 from rtdsl.reference import segment_polygon_anyhit_rows_cpu
 
@@ -96,6 +97,7 @@ def run_profile(
     iterations: int,
     output_capacity: int,
     mode: str,
+    backend: str,
     skip_validation: bool,
 ) -> dict[str, object]:
     if copies <= 0:
@@ -106,6 +108,8 @@ def run_profile(
         raise ValueError("output_capacity must be positive")
     if mode not in {"dry-run", "run"}:
         raise ValueError("mode must be 'dry-run' or 'run'")
+    if backend not in {"embree", "optix"}:
+        raise ValueError("backend must be 'embree' or 'optix'")
 
     dataset = rt.segment_polygon_large_dataset_name(copies=copies)
     case, input_sec = _time_call(lambda: load_representative_case("segment_polygon_anyhit_rows", dataset))
@@ -128,6 +132,7 @@ def run_profile(
             "host": _host(),
             "scenario": "segment_polygon_anyhit_rows_prepared_bounded",
             "mode": mode,
+            "backend": backend,
             "dataset": dataset,
             "iterations": iterations,
             "output_capacity": output_capacity,
@@ -151,6 +156,70 @@ def run_profile(
             "boundary": (
                 "Dry-run validates the bounded-output contract and CPU reference only; "
                 "it is not RTX execution evidence."
+            ),
+        }
+
+    if backend == "embree":
+        query_samples: list[float] = []
+        postprocess_samples: list[float] = []
+        validation_samples: list[float] = []
+        actual_digest: dict[str, object] = {"row_count": 0, "segment_id_sum": 0, "polygon_id_sum": 0}
+        copied_count = 0
+        overflowed = False
+        for _ in range(iterations):
+            rows, query_sec = _time_call(lambda: rt.run_embree(segment_polygon_anyhit_rows_reference, **case.inputs))
+            query_samples.append(query_sec)
+            actual_digest, postprocess_sec = _time_call(lambda: _digest(tuple(rows)))
+            postprocess_samples.append(postprocess_sec)
+            copied_count = min(len(rows), output_capacity)
+            overflowed = len(rows) > output_capacity
+        matches_oracle = None
+        if not skip_validation:
+            _, validation_sec = _time_call(lambda: actual_digest == expected_digest)
+            validation_samples.append(validation_sec)
+            matches_oracle = actual_digest == expected_digest
+            if matches_oracle is not True:
+                strict_failures.append("Embree pair rows did not match CPU reference digest")
+        if overflowed:
+            strict_failures.append(f"Embree pair rows overflowed output capacity {output_capacity}")
+        return {
+            "goal": GOAL,
+            "date": DATE,
+            "schema_version": SCHEMA_VERSION,
+            "generated_at": datetime.now().isoformat(timespec="seconds"),
+            "host": _host(),
+            "scenario": "segment_polygon_anyhit_rows_prepared_bounded",
+            "mode": mode,
+            "backend": backend,
+            "dataset": dataset,
+            "iterations": iterations,
+            "output_capacity": output_capacity,
+            "cloud_claim_contract": _cloud_claim_contract(),
+            "timings_sec": {
+                "input_build_sec": input_sec,
+                "cpu_reference_total_sec": cpu_reference_sec,
+                "backend_prepare_sec": 0.0,
+                "backend_query_sec": _stats(query_samples),
+                "python_postprocess_sec": _stats(postprocess_samples),
+                "validation_sec": _stats(validation_samples),
+                "backend_close_sec": 0.0,
+            },
+            "result": {
+                "segment_count": len(segments),
+                "polygon_count": len(polygons),
+                "expected_digest": expected_digest,
+                "actual_digest": actual_digest,
+                "matches_oracle": matches_oracle,
+                "emitted_count": actual_digest["row_count"],
+                "copied_count": copied_count,
+                "overflowed": overflowed,
+            },
+            "strict_failures": strict_failures,
+            "strict_pass": not strict_failures,
+            "status": "pass" if not strict_failures else "fail",
+            "boundary": (
+                "Embree mode runs the same segment/polygon row primitive through RTDL's Embree backend. "
+                "It is a same-contract backend baseline, not an OptiX prepared-object measurement."
             ),
         }
 
@@ -199,6 +268,7 @@ def run_profile(
         "host": _host(),
         "scenario": "segment_polygon_anyhit_rows_prepared_bounded",
         "mode": mode,
+        "backend": backend,
         "dataset": dataset,
         "iterations": iterations,
         "output_capacity": output_capacity,
@@ -239,6 +309,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--iterations", type=int, default=5)
     parser.add_argument("--output-capacity", type=int, default=4096)
     parser.add_argument("--mode", choices=("dry-run", "run"), default="dry-run")
+    parser.add_argument("--backend", choices=("embree", "optix"), default="optix")
     parser.add_argument("--skip-validation", action="store_true")
     parser.add_argument("--output-json", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -247,6 +318,7 @@ def main(argv: list[str] | None = None) -> int:
         iterations=args.iterations,
         output_capacity=args.output_capacity,
         mode=args.mode,
+        backend=args.backend,
         skip_validation=args.skip_validation,
     )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)

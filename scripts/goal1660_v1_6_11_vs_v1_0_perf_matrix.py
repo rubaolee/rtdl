@@ -24,6 +24,15 @@ BASELINE_REF = "v1.0"
 REPORT_STEM = "goal1660_v1_6_11_vs_v1_0_perf_matrix_2026-05-10"
 DEFAULT_JSON = ROOT / "docs" / "reports" / f"{REPORT_STEM}.json"
 DEFAULT_MD = ROOT / "docs" / "reports" / f"{REPORT_STEM}.md"
+BACKEND_AWARE_SCRIPTS = {
+    "goal756_db_prepared_session_perf.py",
+    "goal760_optix_robot_pose_flags_phase_profiler.py",
+    "goal811_spatial_optix_summary_phase_profiler.py",
+    "goal877_polygon_overlap_optix_phase_profiler.py",
+    "goal887_prepared_decision_phase_profiler.py",
+    "goal933_prepared_segment_polygon_optix_profiler.py",
+    "goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+}
 
 
 def _git(*args: str) -> subprocess.CompletedProcess[str]:
@@ -48,6 +57,9 @@ def _path_exists_at_ref(ref: str, path: str) -> bool:
 def _engine_selector(command: list[str]) -> str | None:
     if "--backend" in command:
         return "--backend"
+    script = _script_path(command)
+    if script and Path(script).name in BACKEND_AWARE_SCRIPTS:
+        return "insert--backend"
     return None
 
 
@@ -66,6 +78,9 @@ def _switch_engine(command: list[str], engine: str) -> list[str]:
     flag = _engine_selector(converted)
     if flag is None:
         raise ValueError("command has no --backend/--mode engine selector")
+    if flag == "insert--backend":
+        converted.extend(["--backend", engine])
+        return converted
     index = converted.index(flag) + 1
     if index >= len(converted):
         raise ValueError(f"command has {flag} but no engine value")
@@ -307,12 +322,11 @@ def validate_manifest(payload: dict[str, Any]) -> dict[str, Any]:
         "robot_collision_screening",
         "barnes_hut_force_app",
     ):
-        if by_pair[(app, "embree")]["status"] != "excluded":
-            raise ValueError(f"{app} Embree row must be excluded unless a real backend selector exists")
-        if by_pair[(app, "optix")]["status"] != "planned":
-            raise ValueError(f"{app} OptiX row should remain planned through its OptiX-specific script")
+        for engine in ("embree", "optix"):
+            if by_pair[(app, engine)]["status"] != "planned":
+                raise ValueError(f"{app} {engine} row should be planned through the standardized backend selector")
     if by_pair[("outlier_detection", "embree")]["status"] != "excluded":
-        raise ValueError("Outlier Embree row must be excluded unless a real engine selector exists")
+        raise ValueError("Outlier Embree row must be excluded until Goal757 exposes an independent backend selector")
     if by_pair[("outlier_detection", "optix")]["status"] != "planned":
         raise ValueError("Outlier OptiX row should remain planned through its OptiX-specific script")
     if by_pair[("dbscan_clustering", "embree")]["status"] != "excluded":

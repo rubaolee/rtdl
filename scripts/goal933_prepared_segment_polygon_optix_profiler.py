@@ -86,7 +86,7 @@ def _cloud_claim_contract(scenario: str) -> dict[str, object]:
     }
 
 
-def _profile_segment_hitcount(*, copies: int, iterations: int, mode: str, skip_validation: bool) -> dict[str, object]:
+def _profile_segment_hitcount(*, copies: int, iterations: int, mode: str, backend: str, skip_validation: bool) -> dict[str, object]:
     dataset = rt.segment_polygon_large_dataset_name(copies=copies)
     case, input_sec = _time_call(lambda: load_representative_case("segment_polygon_hitcount", dataset))
     segments = case.inputs["segments"]
@@ -107,6 +107,47 @@ def _profile_segment_hitcount(*, copies: int, iterations: int, mode: str, skip_v
                 "segment_count": len(segments),
                 "polygon_count": len(polygons),
                 "reference_digest": _digest(tuple(expected)),
+            },
+        }
+
+    if backend == "embree":
+        query_samples: list[float] = []
+        postprocess_samples: list[float] = []
+        validation_samples: list[float] = []
+        last_digest: dict[str, object] = {"row_count": 0, "hit_sum": 0, "positive_count": 0}
+        for _ in range(iterations):
+            rows, query_sec = _time_call(lambda: rt.run_embree(segment_polygon_hitcount_reference, **case.inputs))
+            query_samples.append(query_sec)
+            last_digest, postprocess_sec = _time_call(lambda: _digest(tuple(rows)))
+            postprocess_samples.append(postprocess_sec)
+        expected_digest = None
+        matches_oracle = None
+        if not skip_validation:
+            expected, validation_sec = _time_call(
+                lambda: rt.run_cpu_python_reference(segment_polygon_hitcount_reference, **case.inputs)
+            )
+            validation_samples.append(validation_sec)
+            expected_digest = _digest(tuple(expected))
+            matches_oracle = last_digest == expected_digest
+        return {
+            "scenario": "segment_polygon_hitcount_prepared",
+            "mode": backend,
+            "dataset": dataset,
+            "iterations": iterations,
+            "timings_sec": {
+                "input_build_sec": input_sec,
+                "backend_prepare_sec": 0.0,
+                "backend_query_sec": _stats(query_samples),
+                "python_postprocess_sec": _stats(postprocess_samples),
+                "validation_sec": _stats(validation_samples),
+                "backend_close_sec": 0.0,
+            },
+            "result": {
+                "segment_count": len(segments),
+                "polygon_count": len(polygons),
+                "actual_digest": last_digest,
+                "expected_digest": expected_digest,
+                "matches_oracle": matches_oracle,
             },
         }
 
@@ -156,7 +197,7 @@ def _profile_segment_hitcount(*, copies: int, iterations: int, mode: str, skip_v
     }
 
 
-def _profile_road_hazard(*, copies: int, iterations: int, mode: str, skip_validation: bool) -> dict[str, object]:
+def _profile_road_hazard(*, copies: int, iterations: int, mode: str, backend: str, skip_validation: bool) -> dict[str, object]:
     case, input_sec = _time_call(lambda: road_app.make_demo_case(copies=copies))
     roads = case["roads"]
     hazards = case["hazards"]
@@ -178,6 +219,53 @@ def _profile_road_hazard(*, copies: int, iterations: int, mode: str, skip_valida
                 "hazard_count": len(hazards),
                 "priority_segment_count": sum(1 for row in expected if int(row["hit_count"]) >= 2),
                 "reference_digest": digest,
+            },
+        }
+
+    if backend == "embree":
+        query_samples: list[float] = []
+        postprocess_samples: list[float] = []
+        validation_samples: list[float] = []
+        last_priority_count = 0
+        for _ in range(iterations):
+            rows, query_sec = _time_call(lambda: rt.run_embree(road_app.road_hazard_hitcount, **case))
+            query_samples.append(query_sec)
+            last_priority_count, postprocess_sec = _time_call(
+                lambda: sum(1 for row in rows if int(row["hit_count"]) >= 2)
+            )
+            postprocess_samples.append(postprocess_sec)
+        expected_digest = None
+        expected_priority_count = None
+        matches_oracle = None
+        if not skip_validation:
+            expected, validation_sec = _time_call(
+                lambda: rt.run_cpu_python_reference(road_app.road_hazard_hitcount, **case)
+            )
+            validation_samples.append(validation_sec)
+            expected_digest = _digest(tuple(expected))
+            expected_priority_count = sum(1 for row in expected if int(row["hit_count"]) >= 2)
+            matches_oracle = last_priority_count == expected_priority_count
+        return {
+            "scenario": "road_hazard_prepared_summary",
+            "mode": backend,
+            "copies": copies,
+            "iterations": iterations,
+            "timings_sec": {
+                "input_build_sec": input_sec,
+                "backend_prepare_sec": 0.0,
+                "backend_query_sec": _stats(query_samples),
+                "python_postprocess_sec": _stats(postprocess_samples),
+                "validation_sec": _stats(validation_samples),
+                "backend_close_sec": 0.0,
+            },
+            "result": {
+                "road_count": len(roads),
+                "hazard_count": len(hazards),
+                "priority_segment_count": last_priority_count,
+                "actual_digest": None,
+                "expected_digest": expected_digest,
+                "expected_priority_segment_count": expected_priority_count,
+                "matches_oracle": matches_oracle,
             },
         }
 
@@ -237,6 +325,7 @@ def run_profile(
     copies: int,
     iterations: int,
     mode: str,
+    backend: str,
     skip_validation: bool,
 ) -> dict[str, object]:
     if scenario not in {"segment_polygon_hitcount_prepared", "road_hazard_prepared_summary"}:
@@ -247,10 +336,12 @@ def run_profile(
         raise ValueError("iterations must be positive")
     if mode not in {"dry-run", "run"}:
         raise ValueError("mode must be 'dry-run' or 'run'")
+    if backend not in {"embree", "optix"}:
+        raise ValueError("backend must be 'embree' or 'optix'")
     profile = (
-        _profile_segment_hitcount(copies=copies, iterations=iterations, mode=mode, skip_validation=skip_validation)
+        _profile_segment_hitcount(copies=copies, iterations=iterations, mode=mode, backend=backend, skip_validation=skip_validation)
         if scenario == "segment_polygon_hitcount_prepared"
-        else _profile_road_hazard(copies=copies, iterations=iterations, mode=mode, skip_validation=skip_validation)
+        else _profile_road_hazard(copies=copies, iterations=iterations, mode=mode, backend=backend, skip_validation=skip_validation)
     )
     result = profile.get("result", {})
     strict_failures: list[str] = []
@@ -285,6 +376,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--copies", type=int, default=64)
     parser.add_argument("--iterations", type=int, default=5)
     parser.add_argument("--mode", choices=("dry-run", "run"), default="dry-run")
+    parser.add_argument("--backend", choices=("embree", "optix"), default="optix")
     parser.add_argument("--skip-validation", action="store_true")
     parser.add_argument("--output-json", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -293,6 +385,7 @@ def main(argv: list[str] | None = None) -> int:
         copies=args.copies,
         iterations=args.iterations,
         mode=args.mode,
+        backend=args.backend,
         skip_validation=args.skip_validation,
     )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)

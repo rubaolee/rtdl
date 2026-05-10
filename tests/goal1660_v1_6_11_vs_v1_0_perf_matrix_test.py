@@ -80,18 +80,19 @@ class Goal1660V1611VsV10PerfMatrixTest(unittest.TestCase):
                 self.assertIn(engine, row["v1_0_command"])
                 self.assertTrue(row["script_exists_in_v1_0"])
 
-    def test_optix_specific_scripts_keep_their_original_mode(self) -> None:
+    def test_backend_aware_scripts_get_real_backend_rows(self) -> None:
         payload = validate_manifest(build_manifest())
         by_pair = {(row["app"], row["engine"]): row for row in payload["rows"]}
         for app in ["robot_collision_screening", "polygon_set_jaccard", "road_hazard_screening"]:
-            with self.subTest(app=app):
-                embree = by_pair[(app, "embree")]
-                optix = by_pair[(app, "optix")]
-                self.assertEqual(embree["status"], "excluded")
-                self.assertEqual(optix["status"], "planned")
-                self.assertEqual(optix["engine_selector"], "optix_specific_script")
+            for engine in ["embree", "optix"]:
+                with self.subTest(app=app, engine=engine):
+                    row = by_pair[(app, engine)]
+                    self.assertEqual(row["status"], "planned")
+                    self.assertEqual(row["engine_selector"], "insert--backend")
+                    self.assertIn("--backend", row["v1_6_11_command"])
+                    self.assertIn(engine, row["v1_6_11_command"])
                 if app == "road_hazard_screening":
-                    self.assertIn("run", optix["v1_6_11_command"])
+                    self.assertIn("run", by_pair[(app, "optix")]["v1_6_11_command"])
 
     def test_no_engine_selector_rows_are_not_decorative_engine_claims(self) -> None:
         payload = validate_manifest(build_manifest())

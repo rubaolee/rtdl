@@ -58,6 +58,25 @@ def _time_call(fn):
     return value, time.perf_counter() - start
 
 
+def _prepare_fixed_radius(backend: str, search_points, *, max_radius: float):
+    if backend == "optix":
+        return service_app.rt.prepare_optix_fixed_radius_count_threshold_2d(
+            search_points,
+            max_radius=max_radius,
+        )
+    if backend == "embree":
+        return service_app.rt.prepare_embree_fixed_radius_count_threshold_2d(search_points)
+    raise ValueError("backend must be 'embree' or 'optix'")
+
+
+def _count_threshold_reached(prepared, query_points, *, radius: float, threshold: int) -> int:
+    count_threshold = getattr(prepared, "count_threshold_reached", None)
+    if callable(count_threshold):
+        return int(count_threshold(query_points, radius=radius, threshold=threshold))
+    rows = prepared.run(query_points, radius=radius, threshold=threshold)
+    return sum(1 for row in rows if int(row["threshold_reached"]) != 0)
+
+
 def _service_summary_from_count_rows(case: dict[str, tuple[object, ...]], count_rows) -> dict[str, object]:
     household_ids = tuple(int(point.id) for point in case["households"])
     covered = {
@@ -115,15 +134,11 @@ def _run_service(*, mode: str, copies: int) -> dict[str, object]:
             },
         }
 
-    prepared, prepare_sec = _time_call(
-        lambda: service_app.rt.prepare_optix_fixed_radius_count_threshold_2d(
-            case["clinics"],
-            max_radius=service_app.RADIUS,
-        )
-    )
+    prepared, prepare_sec = _time_call(lambda: _prepare_fixed_radius(mode, case["clinics"], max_radius=service_app.RADIUS))
     try:
         covered_count, query_sec = _time_call(
-            lambda: prepared.count_threshold_reached(
+            lambda: _count_threshold_reached(
+                prepared,
                 case["households"],
                 radius=service_app.RADIUS,
                 threshold=1,
@@ -148,8 +163,10 @@ def _run_service(*, mode: str, copies: int) -> dict[str, object]:
         "mode": mode,
         "timings_sec": {
             "input_build": input_sec,
-            "optix_prepare": prepare_sec,
-            "optix_query": query_sec,
+            "backend_prepare": prepare_sec,
+            "backend_query": query_sec,
+            f"{mode}_prepare": prepare_sec,
+            f"{mode}_query": query_sec,
             "python_postprocess": postprocess_sec,
         },
         "result": result,
@@ -174,15 +191,11 @@ def _run_event(*, mode: str, copies: int) -> dict[str, object]:
             },
         }
 
-    prepared, prepare_sec = _time_call(
-        lambda: event_app.rt.prepare_optix_fixed_radius_count_threshold_2d(
-            case["events"],
-            max_radius=event_app.RADIUS,
-        )
-    )
+    prepared, prepare_sec = _time_call(lambda: _prepare_fixed_radius(mode, case["events"], max_radius=event_app.RADIUS))
     try:
         hotspot_count, query_sec = _time_call(
-            lambda: prepared.count_threshold_reached(
+            lambda: _count_threshold_reached(
+                prepared,
                 case["events"],
                 radius=event_app.RADIUS,
                 threshold=event_app.HOTSPOT_THRESHOLD + 1,
@@ -206,8 +219,10 @@ def _run_event(*, mode: str, copies: int) -> dict[str, object]:
         "mode": mode,
         "timings_sec": {
             "input_build": input_sec,
-            "optix_prepare": prepare_sec,
-            "optix_query": query_sec,
+            "backend_prepare": prepare_sec,
+            "backend_query": query_sec,
+            f"{mode}_prepare": prepare_sec,
+            f"{mode}_query": query_sec,
             "python_postprocess": postprocess_sec,
         },
         "result": result,
@@ -250,19 +265,21 @@ def main(argv: list[str] | None = None) -> int:
         choices=("service_coverage_gaps", "event_hotspot_screening"),
         required=True,
     )
-    parser.add_argument("--mode", choices=("dry-run", "optix"), default="dry-run")
+    parser.add_argument("--mode", choices=("dry-run", "embree", "optix"), default="dry-run")
+    parser.add_argument("--backend", choices=("embree", "optix"), help="Preferred engine selector; overrides --mode when provided.")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--output-json", type=Path, required=True)
     args = parser.parse_args(argv)
 
-    payload = run_profile(scenario=args.scenario, mode=args.mode, copies=args.copies)
+    mode = args.backend if args.backend is not None else args.mode
+    payload = run_profile(scenario=args.scenario, mode=mode, copies=args.copies)
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {
                 "scenario": args.scenario,
-                "mode": args.mode,
+                "mode": mode,
                 "output_json": str(args.output_json),
             },
             sort_keys=True,

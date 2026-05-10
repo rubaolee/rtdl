@@ -139,6 +139,22 @@ def _pack(points: tuple[rt.Point, ...]) -> Any:
     return rt.pack_points(records=points, dimension=2)
 
 
+def _prepare_fixed_radius_backend(backend: str, search_points, *, max_radius: float):
+    if backend == "optix":
+        return rt.prepare_optix_fixed_radius_count_threshold_2d(search_points, max_radius=max_radius)
+    if backend == "embree":
+        return rt.prepare_embree_fixed_radius_count_threshold_2d(search_points)
+    raise ValueError("backend must be 'embree' or 'optix'")
+
+
+def _count_threshold_reached_backend(prepared, query_points, *, radius: float, threshold: int) -> int:
+    count_threshold = getattr(prepared, "count_threshold_reached", None)
+    if callable(count_threshold):
+        return int(count_threshold(query_points, radius=radius, threshold=threshold))
+    rows = prepared.run(query_points, radius=radius, threshold=threshold)
+    return sum(1 for row in rows if int(row["threshold_reached"]) != 0)
+
+
 def _profile_hausdorff(*, mode: str, copies: int, iterations: int, radius: float, skip_validation: bool) -> dict[str, Any]:
     case, input_sec = _time_call(lambda: hausdorff_app.make_authored_point_sets(copies=copies))
     points_a = case["points_a"]
@@ -159,12 +175,12 @@ def _profile_hausdorff(*, mode: str, copies: int, iterations: int, radius: float
 
     packed_a, pack_a_sec = _time_call(lambda: _pack(points_a))
     packed_b, pack_b_sec = _time_call(lambda: _pack(points_b))
-    prepared_b, prepare_b_sec = _time_call(
-        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(packed_b, max_radius=radius)
-    )
-    prepared_a, prepare_a_sec = _time_call(
-        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(packed_a, max_radius=radius)
-    )
+    build_b = packed_b if mode == "optix" else points_b
+    build_a = packed_a if mode == "optix" else points_a
+    query_a = packed_a if mode == "optix" else points_a
+    query_b = packed_b if mode == "optix" else points_b
+    prepared_b, prepare_b_sec = _time_call(lambda: _prepare_fixed_radius_backend(mode, build_b, max_radius=radius))
+    prepared_a, prepare_a_sec = _time_call(lambda: _prepare_fixed_radius_backend(mode, build_a, max_radius=radius))
     query_samples: list[float] = []
     postprocess_samples: list[float] = []
     validation_samples: list[float] = []
@@ -172,10 +188,10 @@ def _profile_hausdorff(*, mode: str, copies: int, iterations: int, radius: float
     try:
         for _ in range(iterations):
             count_ab, sec_ab = _time_call(
-                lambda: prepared_b.count_threshold_reached(packed_a, radius=radius, threshold=1)
+                lambda: _count_threshold_reached_backend(prepared_b, query_a, radius=radius, threshold=1)
             )
             count_ba, sec_ba = _time_call(
-                lambda: prepared_a.count_threshold_reached(packed_b, radius=radius, threshold=1)
+                lambda: _count_threshold_reached_backend(prepared_a, query_b, radius=radius, threshold=1)
             )
             query_samples.append(sec_ab + sec_ba)
             within, postprocess_sec = _time_call(lambda: int(count_ab) == len(points_a) and int(count_ba) == len(points_b))
@@ -204,11 +220,14 @@ def _profile_hausdorff(*, mode: str, copies: int, iterations: int, radius: float
         "timings_sec": {
             "input_build_sec": input_sec,
             "point_pack_sec": pack_a_sec + pack_b_sec,
-            "optix_prepare_sec": prepare_a_sec + prepare_b_sec,
-            "optix_query_sec": _stats(query_samples),
+            "backend_prepare_sec": prepare_a_sec + prepare_b_sec,
+            "backend_query_sec": _stats(query_samples),
+            f"{mode}_prepare_sec": prepare_a_sec + prepare_b_sec,
+            f"{mode}_query_sec": _stats(query_samples),
             "python_postprocess_sec": _stats(postprocess_samples),
             "validation_sec": _stats(validation_samples),
-            "optix_close_sec": close_a_sec + close_b_sec,
+            "backend_close_sec": close_a_sec + close_b_sec,
+            f"{mode}_close_sec": close_a_sec + close_b_sec,
         },
         "result": last,
     }
@@ -228,6 +247,7 @@ def _profile_ann(*, mode: str, copies: int, iterations: int, radius: float, skip
         }
     return _profile_single_threshold(
         scenario="ann_candidate_coverage",
+        backend=mode,
         input_sec=input_sec,
         build_points=candidates,
         query_points=queries,
@@ -254,6 +274,7 @@ def _profile_facility(*, mode: str, copies: int, iterations: int, radius: float,
         }
     return _profile_single_threshold(
         scenario="facility_service_coverage",
+        backend=mode,
         input_sec=input_sec,
         build_points=depots,
         query_points=customers,
@@ -308,6 +329,7 @@ def _profile_facility_recentered(
         }
     payload = _profile_single_threshold(
         scenario="facility_service_coverage_recentered",
+        backend=mode,
         input_sec=input_sec,
         build_points=depots,
         query_points=customers,
@@ -355,6 +377,7 @@ def _profile_barnes(
         }
     return _profile_single_threshold(
         scenario="barnes_hut_node_coverage",
+        backend=mode,
         input_sec=input_sec,
         build_points=node_points,
         query_points=body_points,
@@ -371,6 +394,7 @@ def _profile_barnes(
 def _profile_single_threshold(
     *,
     scenario: str,
+    backend: str,
     input_sec: float,
     build_points: tuple[rt.Point, ...],
     query_points: tuple[rt.Point, ...],
@@ -384,8 +408,10 @@ def _profile_single_threshold(
 ) -> dict[str, Any]:
     packed_build, pack_build_sec = _time_call(lambda: _pack(build_points))
     packed_query, pack_query_sec = _time_call(lambda: _pack(query_points))
+    build_payload = packed_build if backend == "optix" else build_points
+    query_payload = packed_query if backend == "optix" else query_points
     prepared, prepare_sec = _time_call(
-        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(packed_build, max_radius=radius)
+        lambda: _prepare_fixed_radius_backend(backend, build_payload, max_radius=radius)
     )
     query_samples: list[float] = []
     postprocess_samples: list[float] = []
@@ -394,7 +420,7 @@ def _profile_single_threshold(
     try:
         for _ in range(iterations):
             reached_count, query_sec = _time_call(
-                lambda: prepared.count_threshold_reached(packed_query, radius=radius, threshold=hit_threshold)
+                lambda: _count_threshold_reached_backend(prepared, query_payload, radius=radius, threshold=hit_threshold)
             )
             query_samples.append(query_sec)
             all_covered, postprocess_sec = _time_call(lambda: int(reached_count) == len(query_points))
@@ -419,15 +445,18 @@ def _profile_single_threshold(
         _, close_sec = _time_call(prepared.close)
     return {
         "scenario": scenario,
-        "mode": "optix",
+        "mode": backend,
         "timings_sec": {
             "input_build_sec": input_sec,
             "point_pack_sec": pack_build_sec + pack_query_sec,
-            "optix_prepare_sec": prepare_sec,
-            "optix_query_sec": _stats(query_samples),
+            "backend_prepare_sec": prepare_sec,
+            "backend_query_sec": _stats(query_samples),
+            f"{backend}_prepare_sec": prepare_sec,
+            f"{backend}_query_sec": _stats(query_samples),
             "python_postprocess_sec": _stats(postprocess_samples),
             "validation_sec": _stats(validation_samples),
-            "optix_close_sec": close_sec,
+            "backend_close_sec": close_sec,
+            f"{backend}_close_sec": close_sec,
         },
         "result": last,
     }
@@ -542,7 +571,8 @@ def main(argv: list[str] | None = None) -> int:
         ),
         required=True,
     )
-    parser.add_argument("--mode", choices=("dry-run", "optix"), default="dry-run")
+    parser.add_argument("--mode", choices=("dry-run", "embree", "optix"), default="dry-run")
+    parser.add_argument("--backend", choices=("embree", "optix"), help="Preferred engine selector; overrides --mode when provided.")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--body-count", type=int, default=1000)
     parser.add_argument("--iterations", type=int, default=3)
@@ -553,9 +583,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-json", type=Path, required=True)
     args = parser.parse_args(argv)
 
+    mode = args.backend if args.backend is not None else args.mode
     payload = run_profile(
         scenario=args.scenario,
-        mode=args.mode,
+        mode=mode,
         copies=args.copies,
         body_count=args.body_count,
         iterations=args.iterations,
@@ -566,7 +597,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"scenario": args.scenario, "mode": args.mode, "output_json": str(args.output_json)}, sort_keys=True))
+    print(json.dumps({"scenario": args.scenario, "mode": mode, "output_json": str(args.output_json)}, sort_keys=True))
     return 0
 
 

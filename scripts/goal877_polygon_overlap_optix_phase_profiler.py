@@ -83,6 +83,8 @@ def _canonical(value: Any) -> Any:
                 "generic_jaccard_summary",
                 "primitive_contract",
                 "run_phases",
+                "left_polygon_count",
+                "right_polygon_count",
             }
         }
     if isinstance(value, list) or isinstance(value, tuple):
@@ -260,8 +262,8 @@ def run_profile(
 ) -> dict[str, Any]:
     if app not in {"pair_overlap", "jaccard"}:
         raise ValueError("app must be 'pair_overlap' or 'jaccard'")
-    if mode not in {"dry-run", "optix"}:
-        raise ValueError("mode must be 'dry-run' or 'optix'")
+    if mode not in {"dry-run", "embree", "optix"}:
+        raise ValueError("mode must be 'dry-run', 'embree', or 'optix'")
     if copies < 1:
         raise ValueError("copies must be >= 1")
     if output_mode not in {"rows", "summary"}:
@@ -292,7 +294,31 @@ def run_profile(
 
     optix_payload = None
     error = None
-    if mode == "optix":
+    if mode == "embree":
+        try:
+            start = time.perf_counter()
+            if app == "pair_overlap":
+                optix_payload = pair_app.run_case("embree", copies=copies, output_mode=output_mode)
+            else:
+                optix_payload = jaccard_app.run_case(
+                    "embree",
+                    copies=copies,
+                    output_mode=output_mode,
+                    collection_capacity=4 * copies,
+                )
+            phases["embree_total_sec"] = time.perf_counter() - start
+            phases["optix_candidate_discovery_sec"] = None
+            phases["cpu_exact_refinement_sec"] = None
+            phases["native_exact_continuation_sec"] = optix_payload.get("run_phases", {}).get(
+                "native_exact_continuation_sec"
+            )
+        except Exception as exc:  # noqa: BLE001 - optional backend profiler records absence.
+            error = {"type": type(exc).__name__, "message": str(exc)}
+            phases.setdefault("embree_total_sec", None)
+            phases.setdefault("optix_candidate_discovery_sec", None)
+            phases.setdefault("cpu_exact_refinement_sec", None)
+            phases.setdefault("native_exact_continuation_sec", None)
+    elif mode == "optix":
         try:
             start = time.perf_counter()
             if output_mode == "summary":
@@ -448,7 +474,7 @@ def run_profile(
                 "rt_core_candidate_discovery_active": bool(optix_payload["rt_core_candidate_discovery_active"]),
                 "native_continuation_active": bool(optix_payload.get("native_continuation_active", False)),
                 "native_continuation_backend": optix_payload.get("native_continuation_backend"),
-                "backend_mode": str(optix_payload["backend_mode"]),
+            "backend_mode": str(optix_payload["backend_mode"]),
             }
             if optix_payload is not None
             else None
@@ -494,7 +520,8 @@ def run_profile(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Profile polygon overlap/Jaccard OptiX native-assisted phases.")
     parser.add_argument("--app", choices=("pair_overlap", "jaccard"), required=True)
-    parser.add_argument("--mode", choices=("dry-run", "optix"), default="dry-run")
+    parser.add_argument("--mode", choices=("dry-run", "embree", "optix"), default="dry-run")
+    parser.add_argument("--backend", choices=("embree", "optix"), help="Preferred engine selector; overrides --mode when provided.")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
     parser.add_argument(
@@ -516,7 +543,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     payload = run_profile(
         app=args.app,
-        mode=args.mode,
+        mode=args.backend if args.backend is not None else args.mode,
         copies=args.copies,
         output_mode=args.output_mode,
         validation_mode=args.validation_mode,

@@ -192,18 +192,18 @@ def run_suite(
     input_mode: str = "python_objects",
     result_mode: str = "pose_flags",
 ) -> dict[str, Any]:
-    if mode not in {"optix", "dry-run"}:
-        raise ValueError("mode must be 'optix' or 'dry-run'")
+    if mode not in {"embree", "optix", "dry-run"}:
+        raise ValueError("mode must be 'embree', 'optix', or 'dry-run'")
     if input_mode not in {"python_objects", "packed_arrays"}:
         raise ValueError("input_mode must be 'python_objects' or 'packed_arrays'")
     if result_mode not in {"pose_flags", "pose_count"}:
         raise ValueError("result_mode must be 'pose_flags' or 'pose_count'")
-    if input_mode == "packed_arrays" and mode != "optix":
-        raise ValueError("packed_arrays input mode is only supported with mode='optix'")
+    if input_mode == "packed_arrays" and mode not in {"embree", "optix"}:
+        raise ValueError("packed_arrays input mode is only supported with mode='embree' or mode='optix'")
     if input_mode == "packed_arrays" and validate:
         raise ValueError("packed_arrays input mode requires --skip-validation; run python_objects mode for oracle checks")
-    if result_mode == "pose_count" and mode != "optix":
-        raise ValueError("pose_count result mode is only supported with mode='optix'")
+    if result_mode == "pose_count" and mode not in {"embree", "optix"}:
+        raise ValueError("pose_count result mode is only supported with mode='embree' or mode='optix'")
     if result_mode == "pose_count" and input_mode != "packed_arrays":
         raise ValueError("pose_count result mode requires input_mode='packed_arrays'")
     if result_mode == "pose_count" and validate:
@@ -248,6 +248,26 @@ def run_suite(
                 lambda: _cpu_pose_flags(edge_rays, obstacle_triangles, poses, ray_metadata)
             )
             run_samples.append(elapsed)
+    elif mode == "embree":
+        for _ in range(iterations):
+            rows, elapsed = _time_call(
+                lambda: rt.run_embree(
+                    robot_app.robot_edge_any_hit_kernel,
+                    edge_rays=edge_rays,
+                    obstacle_triangles=obstacle_triangles,
+                )
+            )
+            run_samples.append(elapsed)
+            if input_mode == "packed_arrays":
+                flags = [False] * len(poses)
+                for row_index, row in enumerate(rows):
+                    if int(row["any_hit"]) != 0:
+                        flags[int(pose_indices[row_index])] = True
+                last_pose_flags = tuple(flags)
+            else:
+                summary = robot_app._summarize_collisions(rows, poses, ray_metadata)
+                last_pose_flags = tuple(bool(row["collides"]) for row in summary["pose_collision_flags"])
+            last_colliding_pose_count = sum(1 for flag in last_pose_flags if flag)
     else:
         prepared_scene, prepare_scene_sec = _time_call(
             lambda: rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles)
@@ -363,7 +383,8 @@ def run_suite(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal760 OptiX robot pose-flags phase profiler.")
-    parser.add_argument("--mode", choices=("optix", "dry-run"), default="dry-run")
+    parser.add_argument("--mode", choices=("embree", "optix", "dry-run"), default="dry-run")
+    parser.add_argument("--backend", choices=("embree", "optix"), help="Preferred engine selector; overrides --mode when provided.")
     parser.add_argument("--pose-count", type=int, default=1024)
     parser.add_argument("--obstacle-count", type=int, default=64)
     parser.add_argument("--iterations", type=int, default=3)
@@ -374,7 +395,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     payload = run_suite(
-        mode=args.mode,
+        mode=args.backend if args.backend is not None else args.mode,
         pose_count=args.pose_count,
         obstacle_count=args.obstacle_count,
         iterations=args.iterations,
