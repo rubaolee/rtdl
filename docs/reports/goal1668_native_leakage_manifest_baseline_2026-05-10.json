@@ -1,0 +1,1517 @@
+{
+    "generated":  "2026-05-10",
+    "source":  "Goal1668 Phase 1 strict native leakage audit",
+    "scope":  "src/native/**/*.cpp,*.h,*.cu,*.mm",
+    "terms":  [
+                  "db",
+                  "pip",
+                  "bfs",
+                  "robot",
+                  "pose",
+                  "polygon",
+                  "knn",
+                  "hausdorff",
+                  "jaccard"
+              ],
+    "unique_symbol_count":  96,
+    "hit_occurrence_count":  187,
+    "note":  "This is a dirty-baseline manifest. It documents current app/domain/workload leakage; it is not an allowlist for future releases.",
+    "hits":  [
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  258,
+                     "symbol":  "rtdl_apple_rt_run_bfs_discover_compute",
+                     "matched_term":  "bfs",
+                     "backend":  "apple_rt",
+                     "text":  "extern \"C\" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute("
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  274,
+                     "symbol":  "rtdl_apple_rt_run_bfs_discover_compute",
+                     "matched_term":  "bfs",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null output passed to rtdl_apple_rt_run_bfs_discover_compute\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  284,
+                     "symbol":  "rtdl_apple_rt_run_bfs_discover_compute",
+                     "matched_term":  "bfs",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null input passed to rtdl_apple_rt_run_bfs_discover_compute\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  1,
+                     "symbol":  "rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute",
+                     "matched_term":  "db",
+                     "backend":  "apple_rt",
+                     "text":  "extern \"C\" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute("
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  13,
+                     "symbol":  "rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute",
+                     "matched_term":  "db",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null output passed to rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  22,
+                     "symbol":  "rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute",
+                     "matched_term":  "db",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null input passed to rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_mps_geometry.mm",
+                     "line":  1800,
+                     "symbol":  "rtdl_apple_rt_run_point_polygon_candidates_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "apple_rt",
+                     "text":  "extern \"C\" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2d("
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_mps_geometry.mm",
+                     "line":  1810,
+                     "symbol":  "rtdl_apple_rt_run_point_polygon_candidates_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null output passed to rtdl_apple_rt_run_point_polygon_candidates_2d\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_mps_geometry.mm",
+                     "line":  1816,
+                     "symbol":  "rtdl_apple_rt_run_point_polygon_candidates_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null input passed to rtdl_apple_rt_run_point_polygon_candidates_2d\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_mps_geometry.mm",
+                     "line":  2036,
+                     "symbol":  "rtdl_apple_rt_run_segment_polygon_candidates_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "apple_rt",
+                     "text":  "extern \"C\" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_segment_polygon_candidates_2d("
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_mps_geometry.mm",
+                     "line":  2046,
+                     "symbol":  "rtdl_apple_rt_run_segment_polygon_candidates_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null output passed to rtdl_apple_rt_run_segment_polygon_candidates_2d\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_mps_geometry.mm",
+                     "line":  2052,
+                     "symbol":  "rtdl_apple_rt_run_segment_polygon_candidates_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "apple_rt",
+                     "text":  "set_message(error_out, error_size, \"null input passed to rtdl_apple_rt_run_segment_polygon_candidates_2d\");"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  344,
+                     "symbol":  "rtdl_bfs_discover",
+                     "matched_term":  "bfs",
+                     "backend":  "apple_rt",
+                     "text":  "\"kernel void rtdl_bfs_discover(device const uint* row_offsets [[buffer(0)]],\\n\""
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  380,
+                     "symbol":  "rtdl_bfs_discover",
+                     "matched_term":  "bfs",
+                     "backend":  "apple_rt",
+                     "text":  "id\u003cMTLFunction\u003e function = [library newFunctionWithName:@\"rtdl_bfs_discover\"];"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  76,
+                     "symbol":  "rtdl_db_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "apple_rt",
+                     "text":  "\"kernel void rtdl_db_conjunctive_scan(device const uint* row_ids [[buffer(0)]],\\n\""
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  103,
+                     "symbol":  "rtdl_db_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "apple_rt",
+                     "text":  "id\u003cMTLFunction\u003e function = [library newFunctionWithName:@\"rtdl_db_conjunctive_scan\"];"
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  68,
+                     "symbol":  "rtdl_db_match",
+                     "matched_term":  "db",
+                     "backend":  "apple_rt",
+                     "text":  "\"static bool rtdl_db_match(float lhs, RtdlAppleDbNumericClause clause) {\\n\""
+                 },
+                 {
+                     "file":  "src/native/apple_rt/rtdl_apple_rt_metal_compute.mm",
+                     "line":  87,
+                     "symbol":  "rtdl_db_match",
+                     "matched_term":  "db",
+                     "backend":  "apple_rt",
+                     "text":  "\"        if (!rtdl_db_match(lhs, clause)) { matched = false; break; }\\n\""
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  1317,
+                     "symbol":  "rtdl_embree_collect_polygon_pair_candidates_bounded",
+                     "matched_term":  "polygon",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_collect_polygon_pair_candidates_bounded("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  413,
+                     "symbol":  "rtdl_embree_collect_polygon_pair_candidates_bounded",
+                     "matched_term":  "polygon",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_collect_polygon_pair_candidates_bounded("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2910,
+                     "symbol":  "rtdl_embree_db_dataset_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_conjunctive_scan("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  616,
+                     "symbol":  "rtdl_embree_db_dataset_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_db_dataset_conjunctive_scan("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2783,
+                     "symbol":  "rtdl_embree_db_dataset_create",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  596,
+                     "symbol":  "rtdl_embree_db_dataset_create",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_db_dataset_create("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2845,
+                     "symbol":  "rtdl_embree_db_dataset_create_columnar",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create_columnar("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  606,
+                     "symbol":  "rtdl_embree_db_dataset_create_columnar",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_db_dataset_create_columnar("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2906,
+                     "symbol":  "rtdl_embree_db_dataset_destroy",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT void rtdl_embree_db_dataset_destroy(RtdlEmbreeDbDataset* dataset) {"
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  615,
+                     "symbol":  "rtdl_embree_db_dataset_destroy",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "void rtdl_embree_db_dataset_destroy(RtdlEmbreeDbDataset* dataset);"
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2960,
+                     "symbol":  "rtdl_embree_db_dataset_grouped_count",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_count("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  624,
+                     "symbol":  "rtdl_embree_db_dataset_grouped_count",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_db_dataset_grouped_count("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  3023,
+                     "symbol":  "rtdl_embree_db_dataset_grouped_sum",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_sum("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  633,
+                     "symbol":  "rtdl_embree_db_dataset_grouped_sum",
+                     "matched_term":  "db",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_db_dataset_grouped_sum("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  1852,
+                     "symbol":  "rtdl_embree_knn_rows_2d_create",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_knn_rows_2d_create("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  488,
+                     "symbol":  "rtdl_embree_knn_rows_2d_create",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_knn_rows_2d_create("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  1947,
+                     "symbol":  "rtdl_embree_knn_rows_2d_destroy",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT void rtdl_embree_knn_rows_2d_destroy("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  503,
+                     "symbol":  "rtdl_embree_knn_rows_2d_destroy",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "void rtdl_embree_knn_rows_2d_destroy("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  1873,
+                     "symbol":  "rtdl_embree_knn_rows_2d_run",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_knn_rows_2d_run("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  494,
+                     "symbol":  "rtdl_embree_knn_rows_2d_run",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_knn_rows_2d_run("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2224,
+                     "symbol":  "rtdl_embree_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  533,
+                     "symbol":  "rtdl_embree_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2129,
+                     "symbol":  "rtdl_embree_run_directed_hausdorff_2d",
+                     "matched_term":  "hausdorff",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_run_directed_hausdorff_2d("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  525,
+                     "symbol":  "rtdl_embree_run_directed_hausdorff_2d",
+                     "matched_term":  "hausdorff",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_run_directed_hausdorff_2d("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  1953,
+                     "symbol":  "rtdl_embree_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  505,
+                     "symbol":  "rtdl_embree_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  2041,
+                     "symbol":  "rtdl_embree_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  515,
+                     "symbol":  "rtdl_embree_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  669,
+                     "symbol":  "rtdl_embree_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_run_pip("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  311,
+                     "symbol":  "rtdl_embree_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_run_pip("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  1242,
+                     "symbol":  "rtdl_embree_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  392,
+                     "symbol":  "rtdl_embree_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_api.cpp",
+                     "line":  1163,
+                     "symbol":  "rtdl_embree_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "embree",
+                     "text":  "RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/embree/rtdl_embree_prelude.h",
+                     "line":  381,
+                     "symbol":  "rtdl_embree_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "embree",
+                     "text":  "int rtdl_embree_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_core.cpp",
+                     "line":  2372,
+                     "symbol":  "rtdl_hiprt_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "hiprt",
+                     "text":  "\"rtdl_hiprt_bfs_expand.cu\","
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_core.cpp",
+                     "line":  2495,
+                     "symbol":  "rtdl_hiprt_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "hiprt",
+                     "text":  "\"rtdl_hiprt_bfs_expand.cu\","
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_core.cpp",
+                     "line":  3186,
+                     "symbol":  "rtdl_hiprt_db_match",
+                     "matched_term":  "db",
+                     "backend":  "hiprt",
+                     "text":  "\"rtdl_hiprt_db_match.cu\","
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_core.cpp",
+                     "line":  2998,
+                     "symbol":  "rtdl_hiprt_db_match_prepared",
+                     "matched_term":  "db",
+                     "backend":  "hiprt",
+                     "text":  "\"rtdl_hiprt_db_match_prepared.cu\","
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_api.cpp",
+                     "line":  971,
+                     "symbol":  "rtdl_hiprt_destroy_prepared_db_table",
+                     "matched_term":  "db",
+                     "backend":  "hiprt",
+                     "text":  "extern \"C\" void rtdl_hiprt_destroy_prepared_db_table(void* prepared) {"
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_core.cpp",
+                     "line":  1996,
+                     "symbol":  "rtdl_hiprt_pip_2d",
+                     "matched_term":  "pip",
+                     "backend":  "hiprt",
+                     "text":  "\"rtdl_hiprt_pip_2d.cu\","
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_api.cpp",
+                     "line":  953,
+                     "symbol":  "rtdl_hiprt_prepare_db_table",
+                     "matched_term":  "db",
+                     "backend":  "hiprt",
+                     "text":  "extern \"C\" int rtdl_hiprt_prepare_db_table("
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_api.cpp",
+                     "line":  705,
+                     "symbol":  "rtdl_hiprt_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "hiprt",
+                     "text":  "extern \"C\" int rtdl_hiprt_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_api.cpp",
+                     "line":  574,
+                     "symbol":  "rtdl_hiprt_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "hiprt",
+                     "text":  "extern \"C\" int rtdl_hiprt_run_pip("
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_api.cpp",
+                     "line":  765,
+                     "symbol":  "rtdl_hiprt_run_prepared_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "hiprt",
+                     "text":  "extern \"C\" int rtdl_hiprt_run_prepared_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_api.cpp",
+                     "line":  676,
+                     "symbol":  "rtdl_hiprt_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "hiprt",
+                     "text":  "extern \"C\" int rtdl_hiprt_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_api.cpp",
+                     "line":  647,
+                     "symbol":  "rtdl_hiprt_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "hiprt",
+                     "text":  "extern \"C\" int rtdl_hiprt_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_core.cpp",
+                     "line":  1593,
+                     "symbol":  "rtdl_hiprt_segment_polygon_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "hiprt",
+                     "text":  "\"rtdl_hiprt_segment_polygon_2d.cu\","
+                 },
+                 {
+                     "file":  "src/native/hiprt/rtdl_hiprt_core.cpp",
+                     "line":  1636,
+                     "symbol":  "rtdl_hiprt_segment_polygon_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "hiprt",
+                     "text":  "\"rtdl_hiprt_segment_polygon_2d.cu\","
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  338,
+                     "symbol":  "rtdl_native_reduce_polygon_pair_exact_area_summary",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_native_reduce_polygon_pair_exact_area_summary("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  781,
+                     "symbol":  "rtdl_native_reduce_polygon_pair_exact_area_summary",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_native_reduce_polygon_pair_exact_area_summary("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  466,
+                     "symbol":  "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  387,
+                     "symbol":  "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  536,
+                     "symbol":  "rtdl_optix_collect_polygon_pair_candidates_bounded",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_collect_polygon_pair_candidates_bounded("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  433,
+                     "symbol":  "rtdl_optix_collect_polygon_pair_candidates_bounded",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_collect_polygon_pair_candidates_bounded("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  365,
+                     "symbol":  "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  356,
+                     "symbol":  "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  452,
+                     "symbol":  "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  381,
+                     "symbol":  "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2951,
+                     "symbol":  "rtdl_optix_db_compact_summary_results_destroy",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" void rtdl_optix_db_compact_summary_results_destroy("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  591,
+                     "symbol":  "rtdl_optix_db_compact_summary_results_destroy",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "void rtdl_optix_db_compact_summary_results_destroy("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2965,
+                     "symbol":  "rtdl_optix_db_dataset_compact_summary_batch",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_dataset_compact_summary_batch("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  584,
+                     "symbol":  "rtdl_optix_db_dataset_compact_summary_batch",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_dataset_compact_summary_batch("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2860,
+                     "symbol":  "rtdl_optix_db_dataset_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_dataset_conjunctive_scan("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  561,
+                     "symbol":  "rtdl_optix_db_dataset_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_dataset_conjunctive_scan("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2879,
+                     "symbol":  "rtdl_optix_db_dataset_conjunctive_scan_count",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_dataset_conjunctive_scan_count("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  566,
+                     "symbol":  "rtdl_optix_db_dataset_conjunctive_scan_count",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_dataset_conjunctive_scan_count("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2815,
+                     "symbol":  "rtdl_optix_db_dataset_create",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_dataset_create("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  548,
+                     "symbol":  "rtdl_optix_db_dataset_create",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_dataset_create("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2835,
+                     "symbol":  "rtdl_optix_db_dataset_create_columnar",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_dataset_create_columnar("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  554,
+                     "symbol":  "rtdl_optix_db_dataset_create_columnar",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_dataset_create_columnar("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2855,
+                     "symbol":  "rtdl_optix_db_dataset_destroy",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" void rtdl_optix_db_dataset_destroy(RtdlOptixDbDataset* dataset)"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  560,
+                     "symbol":  "rtdl_optix_db_dataset_destroy",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "void rtdl_optix_db_dataset_destroy(RtdlOptixDbDataset* dataset);"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2897,
+                     "symbol":  "rtdl_optix_db_dataset_grouped_count",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_dataset_grouped_count("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  571,
+                     "symbol":  "rtdl_optix_db_dataset_grouped_count",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_dataset_grouped_count("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2918,
+                     "symbol":  "rtdl_optix_db_dataset_grouped_sum",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_dataset_grouped_sum("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  577,
+                     "symbol":  "rtdl_optix_db_dataset_grouped_sum",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_dataset_grouped_sum("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  594,
+                     "symbol":  "rtdl_optix_db_get_last_phase_timings",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_db_get_last_phase_timings("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_workloads.cpp",
+                     "line":  73,
+                     "symbol":  "rtdl_optix_db_get_last_phase_timings",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_db_get_last_phase_timings("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  389,
+                     "symbol":  "rtdl_optix_destroy_prepared_pose_indices_2d",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" void rtdl_optix_destroy_prepared_pose_indices_2d(void* prepared_pose_indices)"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  363,
+                     "symbol":  "rtdl_optix_destroy_prepared_pose_indices_2d",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "void rtdl_optix_destroy_prepared_pose_indices_2d(void* prepared_pose_indices);"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2451,
+                     "symbol":  "rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" void rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d(void* prepared)"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  452,
+                     "symbol":  "rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "void rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d(void* prepared);"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  483,
+                     "symbol":  "rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" void rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d(void* prepared)"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  395,
+                     "symbol":  "rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "void rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d(void* prepared);"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2941,
+                     "symbol":  "rtdl_optix_fill_db_compact_summary_phase",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "static void rtdl_optix_fill_db_compact_summary_phase(RtdlDbCompactSummaryResult\u0026 result)"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2999,
+                     "symbol":  "rtdl_optix_fill_db_compact_summary_phase",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "rtdl_optix_fill_db_compact_summary_phase(result);"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  3011,
+                     "symbol":  "rtdl_optix_fill_db_compact_summary_phase",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "rtdl_optix_fill_db_compact_summary_phase(result);"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  3024,
+                     "symbol":  "rtdl_optix_fill_db_compact_summary_phase",
+                     "matched_term":  "db",
+                     "backend":  "optix",
+                     "text":  "rtdl_optix_fill_db_compact_summary_phase(result);"
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  305,
+                     "symbol":  "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  336,
+                     "symbol":  "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  343,
+                     "symbol":  "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  349,
+                     "symbol":  "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  327,
+                     "symbol":  "rtdl_optix_prepare_pose_indices_2d",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_prepare_pose_indices_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  344,
+                     "symbol":  "rtdl_optix_prepare_pose_indices_2d",
+                     "matched_term":  "pose",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_prepare_pose_indices_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2415,
+                     "symbol":  "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_prepare_segment_polygon_anyhit_rows_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  441,
+                     "symbol":  "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_prepare_segment_polygon_anyhit_rows_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  418,
+                     "symbol":  "rtdl_optix_prepare_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_prepare_segment_polygon_hitcount_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  371,
+                     "symbol":  "rtdl_optix_prepare_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_prepare_segment_polygon_hitcount_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2676,
+                     "symbol":  "rtdl_optix_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  511,
+                     "symbol":  "rtdl_optix_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2620,
+                     "symbol":  "rtdl_optix_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  499,
+                     "symbol":  "rtdl_optix_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2648,
+                     "symbol":  "rtdl_optix_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  505,
+                     "symbol":  "rtdl_optix_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  134,
+                     "symbol":  "rtdl_optix_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_pip("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  283,
+                     "symbol":  "rtdl_optix_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_pip("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  2436,
+                     "symbol":  "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  446,
+                     "symbol":  "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  439,
+                     "symbol":  "rtdl_optix_run_prepared_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_prepared_segment_polygon_hitcount_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  376,
+                     "symbol":  "rtdl_optix_run_prepared_segment_polygon_hitcount_2d",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_prepared_segment_polygon_hitcount_2d("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  488,
+                     "symbol":  "rtdl_optix_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  396,
+                     "symbol":  "rtdl_optix_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  506,
+                     "symbol":  "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  402,
+                     "symbol":  "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_api.cpp",
+                     "line":  399,
+                     "symbol":  "rtdl_optix_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "extern \"C\" int rtdl_optix_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/optix/rtdl_optix_prelude.h",
+                     "line":  365,
+                     "symbol":  "rtdl_optix_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "optix",
+                     "text":  "int  rtdl_optix_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/rtdl_oracle.cpp",
+                     "line":  2,
+                     "symbol":  "rtdl_oracle_polygon",
+                     "matched_term":  "polygon",
+                     "backend":  "root",
+                     "text":  "#include \"oracle/rtdl_oracle_polygon.cpp\""
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  308,
+                     "symbol":  "rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  634,
+                     "symbol":  "rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  323,
+                     "symbol":  "rtdl_oracle_refine_polygon_set_jaccard_for_pairs",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_refine_polygon_set_jaccard_for_pairs("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  705,
+                     "symbol":  "rtdl_oracle_refine_polygon_set_jaccard_for_pairs",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_set_jaccard_for_pairs("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  439,
+                     "symbol":  "rtdl_oracle_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  1358,
+                     "symbol":  "rtdl_oracle_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  410,
+                     "symbol":  "rtdl_oracle_run_bounded_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_bounded_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  1189,
+                     "symbol":  "rtdl_oracle_run_bounded_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  421,
+                     "symbol":  "rtdl_oracle_run_bounded_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_bounded_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  1254,
+                     "symbol":  "rtdl_oracle_run_bounded_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  390,
+                     "symbol":  "rtdl_oracle_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  1066,
+                     "symbol":  "rtdl_oracle_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  400,
+                     "symbol":  "rtdl_oracle_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  1127,
+                     "symbol":  "rtdl_oracle_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  226,
+                     "symbol":  "rtdl_oracle_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_pip("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  204,
+                     "symbol":  "rtdl_oracle_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_pip("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  282,
+                     "symbol":  "rtdl_oracle_run_polygon_pair_overlap_area_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_polygon_pair_overlap_area_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  496,
+                     "symbol":  "rtdl_oracle_run_polygon_pair_overlap_area_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_pair_overlap_area_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  295,
+                     "symbol":  "rtdl_oracle_run_polygon_set_jaccard",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_polygon_set_jaccard("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  594,
+                     "symbol":  "rtdl_oracle_run_polygon_set_jaccard",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_set_jaccard("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  271,
+                     "symbol":  "rtdl_oracle_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  423,
+                     "symbol":  "rtdl_oracle_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  260,
+                     "symbol":  "rtdl_oracle_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  347,
+                     "symbol":  "rtdl_oracle_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  466,
+                     "symbol":  "rtdl_oracle_summarize_bfs_rows",
+                     "matched_term":  "bfs",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_summarize_bfs_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  1577,
+                     "symbol":  "rtdl_oracle_summarize_bfs_rows",
+                     "matched_term":  "bfs",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_bfs_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_abi.h",
+                     "line":  432,
+                     "symbol":  "rtdl_oracle_summarize_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "int rtdl_oracle_summarize_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/oracle/rtdl_oracle_api.cpp",
+                     "line":  1320,
+                     "symbol":  "rtdl_oracle_summarize_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "oracle",
+                     "text":  "RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  428,
+                     "symbol":  "rtdl_vulkan_db_dataset_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_db_dataset_conjunctive_scan("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  256,
+                     "symbol":  "rtdl_vulkan_db_dataset_conjunctive_scan",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_db_dataset_conjunctive_scan("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  383,
+                     "symbol":  "rtdl_vulkan_db_dataset_create",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_db_dataset_create("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  243,
+                     "symbol":  "rtdl_vulkan_db_dataset_create",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_db_dataset_create("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  403,
+                     "symbol":  "rtdl_vulkan_db_dataset_create_columnar",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_db_dataset_create_columnar("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  249,
+                     "symbol":  "rtdl_vulkan_db_dataset_create_columnar",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_db_dataset_create_columnar("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  423,
+                     "symbol":  "rtdl_vulkan_db_dataset_destroy",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "void rtdl_vulkan_db_dataset_destroy(RtdlVulkanDbDataset* dataset)"
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  255,
+                     "symbol":  "rtdl_vulkan_db_dataset_destroy",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "void rtdl_vulkan_db_dataset_destroy(RtdlVulkanDbDataset* dataset);"
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  447,
+                     "symbol":  "rtdl_vulkan_db_dataset_grouped_count",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_db_dataset_grouped_count("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  261,
+                     "symbol":  "rtdl_vulkan_db_dataset_grouped_count",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_db_dataset_grouped_count("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  468,
+                     "symbol":  "rtdl_vulkan_db_dataset_grouped_sum",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_db_dataset_grouped_sum("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  267,
+                     "symbol":  "rtdl_vulkan_db_dataset_grouped_sum",
+                     "matched_term":  "db",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_db_dataset_grouped_sum("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  286,
+                     "symbol":  "rtdl_vulkan_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  206,
+                     "symbol":  "rtdl_vulkan_run_bfs_expand",
+                     "matched_term":  "bfs",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_run_bfs_expand("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  232,
+                     "symbol":  "rtdl_vulkan_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  194,
+                     "symbol":  "rtdl_vulkan_run_knn_rows",
+                     "matched_term":  "knn",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_run_knn_rows("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  259,
+                     "symbol":  "rtdl_vulkan_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  200,
+                     "symbol":  "rtdl_vulkan_run_knn_rows_3d",
+                     "matched_term":  "knn",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_run_knn_rows_3d("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  25,
+                     "symbol":  "rtdl_vulkan_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_run_pip("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  119,
+                     "symbol":  "rtdl_vulkan_run_pip",
+                     "matched_term":  "pip",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_run_pip("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  147,
+                     "symbol":  "rtdl_vulkan_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  169,
+                     "symbol":  "rtdl_vulkan_run_segment_polygon_anyhit_rows",
+                     "matched_term":  "polygon",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_run_segment_polygon_anyhit_rows("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_api.cpp",
+                     "line":  133,
+                     "symbol":  "rtdl_vulkan_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "vulkan",
+                     "text":  "int rtdl_vulkan_run_segment_polygon_hitcount("
+                 },
+                 {
+                     "file":  "src/native/vulkan/rtdl_vulkan_prelude.h",
+                     "line":  163,
+                     "symbol":  "rtdl_vulkan_run_segment_polygon_hitcount",
+                     "matched_term":  "polygon",
+                     "backend":  "vulkan",
+                     "text":  "int  rtdl_vulkan_run_segment_polygon_hitcount("
+                 }
+             ]
+}
