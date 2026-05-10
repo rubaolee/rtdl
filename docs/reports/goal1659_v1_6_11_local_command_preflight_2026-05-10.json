@@ -1,0 +1,193 @@
+{
+  "accepted": true,
+  "check": "local_help_command_preflight",
+  "goal": "Goal1659",
+  "rows": [
+    {
+      "app": "database_analytics",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "graph_analytics",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal889_graph_visibility_optix_gate.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "apple_rt_demo",
+      "reason": "no local command",
+      "status": "skipped"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "road_hazard_screening",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "hausdorff_distance",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "ann_candidate_search",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "outlier_detection",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "dbscan_clustering",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "robot_collision_screening",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "status": "ok",
+      "stderr_tail": "Could not find platform independent libraries <prefix>\n"
+    },
+    {
+      "app": "hiprt_ray_triangle_hitcount",
+      "reason": "no local command",
+      "status": "skipped"
+    }
+  ]
+}
