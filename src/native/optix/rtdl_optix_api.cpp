@@ -534,9 +534,11 @@ struct CollectKStageProfile {
     double carry_copy_ms = 0.0;
     double final_copy_ms = 0.0;
     double final_pair_materialize_launch_ms = 0.0;
+    double final_pair_materialize_event_ms = 0.0;
     double final_pair_mark_sync_ms = 0.0;
     double final_pair_mark_event_ms = 0.0;
     double final_pair_mark_host_wait_ms = 0.0;
+    double final_pair_pre_mark_wait_ms = 0.0;
     double final_pair_prefix_host_ms = 0.0;
     double final_pair_compact_launch_ms = 0.0;
     std::vector<MergeLevel> merge_level_profile;
@@ -605,9 +607,11 @@ struct CollectKStageProfile {
                 << "\"carry_copy_ms\":" << carry_copy_ms << ","
                 << "\"final_copy_ms\":" << final_copy_ms << ","
                 << "\"final_pair_materialize_launch_ms\":" << final_pair_materialize_launch_ms << ","
+                << "\"final_pair_materialize_event_ms\":" << final_pair_materialize_event_ms << ","
                 << "\"final_pair_mark_sync_ms\":" << final_pair_mark_sync_ms << ","
                 << "\"final_pair_mark_event_ms\":" << final_pair_mark_event_ms << ","
                 << "\"final_pair_mark_host_wait_ms\":" << final_pair_mark_host_wait_ms << ","
+                << "\"final_pair_pre_mark_wait_ms\":" << final_pair_pre_mark_wait_ms << ","
                 << "\"final_pair_prefix_host_ms\":" << final_pair_prefix_host_ms << ","
                 << "\"final_pair_compact_launch_ms\":" << final_pair_compact_launch_ms << ","
                 << "\"merge_level_profile\":[";
@@ -1329,6 +1333,17 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 const unsigned blocks = static_cast<unsigned>((total + threads - 1) / threads);
                 if (blocks > max_prefix_blocks)
                     throw std::runtime_error("COLLECT_K_BOUNDED final compact block capacity exceeded");
+                const bool use_final_pair_mark_event =
+                    profile.enabled
+                    && is_final_output
+                    && collect_k_use_final_pair_mark_event_diagnostic();
+                CUevent materialize_event_start = nullptr;
+                CUevent materialize_event_stop = nullptr;
+                if (use_final_pair_mark_event) {
+                    CU_CHECK(cuEventCreate(&materialize_event_start, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventCreate(&materialize_event_stop, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventRecord(materialize_event_start, nullptr));
+                }
                 auto final_pair_stage_start = CollectKStageProfile::Clock::now();
                 void* materialize_args[] = {
                     &first_rows,
@@ -1342,15 +1357,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     blocks, 1, 1,
                     threads, 1, 1,
                     0, nullptr, materialize_args, nullptr));
+                if (use_final_pair_mark_event)
+                    CU_CHECK(cuEventRecord(materialize_event_stop, nullptr));
                 if (profile.enabled && is_final_output)
                     profile.final_pair_materialize_launch_ms +=
                         CollectKStageProfile::elapsed_ms(final_pair_stage_start);
 
                 final_pair_stage_start = CollectKStageProfile::Clock::now();
-                const bool use_final_pair_mark_event =
-                    profile.enabled
-                    && is_final_output
-                    && collect_k_use_final_pair_mark_event_diagnostic();
                 CUevent mark_event_start = nullptr;
                 CUevent mark_event_stop = nullptr;
                 if (use_final_pair_mark_event) {
@@ -1376,13 +1389,24 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     const double mark_sync_ms = CollectKStageProfile::elapsed_ms(final_pair_stage_start);
                     profile.final_pair_mark_sync_ms += mark_sync_ms;
                     if (use_final_pair_mark_event) {
+                        float materialize_event_ms = 0.0f;
                         float mark_event_ms = 0.0f;
+                        CU_CHECK(cuEventElapsedTime(&materialize_event_ms, materialize_event_start, materialize_event_stop));
                         CU_CHECK(cuEventElapsedTime(&mark_event_ms, mark_event_start, mark_event_stop));
+                        profile.final_pair_materialize_event_ms += static_cast<double>(materialize_event_ms);
                         profile.final_pair_mark_event_ms += static_cast<double>(mark_event_ms);
                         profile.final_pair_mark_host_wait_ms +=
                             std::max(0.0, mark_sync_ms - static_cast<double>(mark_event_ms));
+                        profile.final_pair_pre_mark_wait_ms +=
+                            std::max(0.0, mark_sync_ms
+                                - static_cast<double>(materialize_event_ms)
+                                - static_cast<double>(mark_event_ms));
                     }
                 }
+                if (materialize_event_start)
+                    CU_CHECK(cuEventDestroy(materialize_event_start));
+                if (materialize_event_stop)
+                    CU_CHECK(cuEventDestroy(materialize_event_stop));
                 if (mark_event_start)
                     CU_CHECK(cuEventDestroy(mark_event_start));
                 if (mark_event_stop)
@@ -1433,6 +1457,17 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                 const unsigned blocks = static_cast<unsigned>((scan_capacity + threads - 1) / threads);
                 if (blocks > max_prefix_blocks)
                     throw std::runtime_error("COLLECT_K_BOUNDED final compact block capacity exceeded");
+                const bool use_final_pair_mark_event =
+                    profile.enabled
+                    && is_final_output
+                    && collect_k_use_final_pair_mark_event_diagnostic();
+                CUevent materialize_event_start = nullptr;
+                CUevent materialize_event_stop = nullptr;
+                if (use_final_pair_mark_event) {
+                    CU_CHECK(cuEventCreate(&materialize_event_start, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventCreate(&materialize_event_stop, CU_EVENT_DEFAULT));
+                    CU_CHECK(cuEventRecord(materialize_event_start, nullptr));
+                }
                 auto final_pair_stage_start = CollectKStageProfile::Clock::now();
                 void* materialize_args[] = {
                     &first_rows,
@@ -1445,15 +1480,13 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     blocks, 1, 1,
                     threads, 1, 1,
                     0, nullptr, materialize_args, nullptr));
+                if (use_final_pair_mark_event)
+                    CU_CHECK(cuEventRecord(materialize_event_stop, nullptr));
                 if (profile.enabled && is_final_output)
                     profile.final_pair_materialize_launch_ms +=
                         CollectKStageProfile::elapsed_ms(final_pair_stage_start);
 
                 final_pair_stage_start = CollectKStageProfile::Clock::now();
-                const bool use_final_pair_mark_event =
-                    profile.enabled
-                    && is_final_output
-                    && collect_k_use_final_pair_mark_event_diagnostic();
                 CUevent mark_event_start = nullptr;
                 CUevent mark_event_stop = nullptr;
                 if (use_final_pair_mark_event) {
@@ -1479,13 +1512,24 @@ extern "C" int rtdl_optix_collect_k_bounded_i64_device(
                     const double mark_sync_ms = CollectKStageProfile::elapsed_ms(final_pair_stage_start);
                     profile.final_pair_mark_sync_ms += mark_sync_ms;
                     if (use_final_pair_mark_event) {
+                        float materialize_event_ms = 0.0f;
                         float mark_event_ms = 0.0f;
+                        CU_CHECK(cuEventElapsedTime(&materialize_event_ms, materialize_event_start, materialize_event_stop));
                         CU_CHECK(cuEventElapsedTime(&mark_event_ms, mark_event_start, mark_event_stop));
+                        profile.final_pair_materialize_event_ms += static_cast<double>(materialize_event_ms);
                         profile.final_pair_mark_event_ms += static_cast<double>(mark_event_ms);
                         profile.final_pair_mark_host_wait_ms +=
                             std::max(0.0, mark_sync_ms - static_cast<double>(mark_event_ms));
+                        profile.final_pair_pre_mark_wait_ms +=
+                            std::max(0.0, mark_sync_ms
+                                - static_cast<double>(materialize_event_ms)
+                                - static_cast<double>(mark_event_ms));
                     }
                 }
+                if (materialize_event_start)
+                    CU_CHECK(cuEventDestroy(materialize_event_start));
+                if (materialize_event_stop)
+                    CU_CHECK(cuEventDestroy(materialize_event_stop));
                 if (mark_event_start)
                     CU_CHECK(cuEventDestroy(mark_event_start));
                 if (mark_event_stop)

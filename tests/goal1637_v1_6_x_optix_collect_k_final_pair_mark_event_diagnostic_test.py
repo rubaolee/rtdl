@@ -19,8 +19,10 @@ class Goal1637OptixCollectKFinalPairMarkEventDiagnosticTest(unittest.TestCase):
         self.assertIn("cuEventRecord(mark_event_start, nullptr)", text)
         self.assertIn("cuEventRecord(mark_event_stop, nullptr)", text)
         self.assertIn("cuEventElapsedTime(&mark_event_ms", text)
+        self.assertIn("final_pair_materialize_event_ms", text)
         self.assertIn("final_pair_mark_event_ms", text)
         self.assertIn("final_pair_mark_host_wait_ms", text)
+        self.assertIn("final_pair_pre_mark_wait_ms", text)
 
         event_fn = text[
             text.index("static bool collect_k_use_final_pair_mark_event_diagnostic()"):
@@ -31,6 +33,8 @@ class Goal1637OptixCollectKFinalPairMarkEventDiagnosticTest(unittest.TestCase):
     def test_stage_profile_probe_summarizes_event_fields_and_old_records(self) -> None:
         self.assertIn("final_pair_mark_event_ms", probe.STAGE_FIELDS)
         self.assertIn("final_pair_mark_host_wait_ms", probe.STAGE_FIELDS)
+        self.assertIn("final_pair_materialize_event_ms", probe.STAGE_FIELDS)
+        self.assertIn("final_pair_pre_mark_wait_ms", probe.STAGE_FIELDS)
 
         summary = probe._summarize_records(
             [
@@ -65,6 +69,8 @@ class Goal1637OptixCollectKFinalPairMarkEventDiagnosticTest(unittest.TestCase):
 
         self.assertEqual(summary["stage_median_ms"]["final_pair_mark_event_ms"], 0.0)
         self.assertEqual(summary["stage_median_ms"]["final_pair_mark_host_wait_ms"], 0.0)
+        self.assertEqual(summary["stage_median_ms"]["final_pair_materialize_event_ms"], 0.0)
+        self.assertEqual(summary["stage_median_ms"]["final_pair_pre_mark_wait_ms"], 0.0)
 
     def test_a4500_event_artifact_shows_wait_not_kernel_time(self) -> None:
         import json
