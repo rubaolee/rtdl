@@ -1,0 +1,38 @@
+{
+  "example_cupy-cuda_optix": {
+    "hit_count": 1,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "cupy"
+    ],
+    "transfer_mode": "host_stage",
+    "true_zero_copy_authorized": false
+  },
+  "example_numpy_optix": {
+    "hit_count": 1,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cpu:0"
+    ],
+    "source_protocols": [
+      "numpy"
+    ],
+    "transfer_mode": "host_stage",
+    "true_zero_copy_authorized": false
+  },
+  "example_torch-cuda_optix": {
+    "hit_count": 1,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "torch"
+    ],
+    "transfer_mode": "host_stage",
+    "true_zero_copy_authorized": false
+  }
+}
