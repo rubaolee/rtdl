@@ -82,6 +82,8 @@ The app-agnostic gate is paired with:
 - [Goal1679 Pod Full-Suite Triage](../reports/goal1679_pod_full_suite_triage_2026-05-10.md)
 - [Goal1777 v2.0 Partner Protocol Baseline](../reports/goal1777_v2_0_partner_protocol_baseline_2026-05-12.md)
 - [Goal1780 3-AI Consensus for Goal1777](../reviews/goal1780_3ai_consensus_goal1777_v2_0_partner_protocol_baseline_2026-05-12.md)
+- [Goal1781 Real-Framework Partner Availability Gate](../reports/goal1781_real_framework_partner_availability_gate_2026-05-12.md)
+- [Goal1782 Gemini Review of Goal1781](../reviews/goal1782_gemini_review_goal1781_real_framework_partner_availability_2026-05-12.md)
 
 ## Claim Boundary
 
