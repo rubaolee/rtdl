@@ -233,19 +233,40 @@ def _segments_from_curve(curve: tuple[Point, ...]) -> tuple[Segment, ...]:
 
 def _expanded_segment_boxes(segments: tuple[Segment, ...], radius: float) -> tuple[Polygon, ...]:
     pad = max(float(radius), 1.0e-12)
-    boxes = []
+    tubes = []
     for index, segment in enumerate(segments):
-        min_x = min(segment.x0, segment.x1) - pad
-        max_x = max(segment.x0, segment.x1) + pad
-        min_y = min(segment.y0, segment.y1) - pad
-        max_y = max(segment.y0, segment.y1) + pad
-        boxes.append(
+        dx = segment.x1 - segment.x0
+        dy = segment.y1 - segment.y0
+        length = math.hypot(dx, dy)
+        if length <= 1.0e-12:
+            vertices = (
+                (segment.x0 - pad, segment.y0 - pad),
+                (segment.x0 + pad, segment.y0 - pad),
+                (segment.x0 + pad, segment.y0 + pad),
+                (segment.x0 - pad, segment.y0 + pad),
+            )
+        else:
+            ux = dx / length
+            uy = dy / length
+            nx = -uy
+            ny = ux
+            sx = segment.x0 - ux * pad
+            sy = segment.y0 - uy * pad
+            ex = segment.x1 + ux * pad
+            ey = segment.y1 + uy * pad
+            vertices = (
+                (sx + nx * pad, sy + ny * pad),
+                (ex + nx * pad, ey + ny * pad),
+                (ex - nx * pad, ey - ny * pad),
+                (sx - nx * pad, sy - ny * pad),
+            )
+        tubes.append(
             Polygon(
                 id=index + 1,
-                vertices=((min_x, min_y), (max_x, min_y), (max_x, max_y), (min_x, max_y)),
+                vertices=vertices,
             )
         )
-    return tuple(boxes)
+    return tuple(tubes)
 
 
 def _run_broadphase_rows(
