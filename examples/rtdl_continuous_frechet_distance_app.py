@@ -524,10 +524,12 @@ def continuous_frechet_distance_estimate(
     }
 
 
-def run_app(
+def run_curves_app(
+    curve_p: tuple[Point, ...],
+    curve_q: tuple[Point, ...],
     backend: str = "cpu_python_reference",
     *,
-    copies: int = 1,
+    copies: int | None = None,
     candidate_mode: str = "all_cells",
     continuation: str = "python",
     iterations: int = 24,
@@ -536,6 +538,8 @@ def run_app(
     output_capacity: int = 1_000_000,
     min_prune_ratio: float = 0.25,
 ) -> dict[str, object]:
+    if len(curve_p) < 2 or len(curve_q) < 2:
+        raise ValueError("continuous Frechet distance requires two curves with at least two points each")
     if candidate_mode not in {"all_cells", "rtdl_broadphase"}:
         raise ValueError("candidate_mode must be 'all_cells' or 'rtdl_broadphase'")
     if continuation not in {"python", "cpp"}:
@@ -544,9 +548,6 @@ def run_app(
         raise ValueError("iterations must be positive")
     if not 0.0 <= min_prune_ratio <= 1.0:
         raise ValueError("min_prune_ratio must be between 0 and 1")
-    case = make_authored_curves(copies=copies)
-    curve_p = case["curve_p"]
-    curve_q = case["curve_q"]
     p_segments = _segments_from_curve(curve_p)
     q_segments = _segments_from_curve(curve_q)
     all_cells = frozenset((i, j) for i in range(len(p_segments)) for j in range(len(q_segments)))
@@ -666,6 +667,42 @@ def run_app(
         "broadphase_stats": broadphase_stats,
         "run_phases": phases,
     }
+
+
+def run_app(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    candidate_mode: str = "all_cells",
+    continuation: str = "python",
+    iterations: int = 24,
+    decision_radius: float | None = None,
+    require_rt_core: bool = False,
+    output_capacity: int = 1_000_000,
+    min_prune_ratio: float = 0.25,
+) -> dict[str, object]:
+    if candidate_mode not in {"all_cells", "rtdl_broadphase"}:
+        raise ValueError("candidate_mode must be 'all_cells' or 'rtdl_broadphase'")
+    if continuation not in {"python", "cpp"}:
+        raise ValueError("continuation must be 'python' or 'cpp'")
+    if iterations <= 0:
+        raise ValueError("iterations must be positive")
+    if not 0.0 <= min_prune_ratio <= 1.0:
+        raise ValueError("min_prune_ratio must be between 0 and 1")
+    case = make_authored_curves(copies=copies)
+    return run_curves_app(
+        case["curve_p"],
+        case["curve_q"],
+        backend,
+        copies=copies,
+        candidate_mode=candidate_mode,
+        continuation=continuation,
+        iterations=iterations,
+        decision_radius=decision_radius,
+        require_rt_core=require_rt_core,
+        output_capacity=output_capacity,
+        min_prune_ratio=min_prune_ratio,
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
