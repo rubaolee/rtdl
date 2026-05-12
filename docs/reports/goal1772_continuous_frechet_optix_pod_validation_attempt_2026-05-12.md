@@ -178,6 +178,35 @@ Key output:
 }
 ```
 
+## Performance Snapshot
+
+The same pod was used for a small whole-program comparison after an OptiX warmup
+run. Each row uses 8 distance-search iterations and reports the median of 5
+process-internal repeats from `run_app(...)`.
+
+The comparison is intentionally conservative: both paths still compute the
+Python oracle inside `run_app(...)` so the JSON can report `matches_oracle`.
+Production-style timing without oracle verification would need a separate app
+mode.
+
+| Curve copies | Free-space cells | Non-RT CPU all-cells median wall (s) | RT OptiX broadphase median wall (s) | Whole-program speedup | RT candidate cells |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 9 | 0.000512 | 0.008398 | 0.061x | 7 |
+| 4 | 225 | 0.009097 | 0.015779 | 0.577x | 43 |
+| 16 | 3,969 | 0.191201 | 0.145886 | 1.311x | 187 |
+| 64 | 65,025 | 2.581656 | 1.995704 | 1.294x | 763 |
+
+Interpretation:
+
+- Tiny cases lose badly on OptiX because launch/runtime overhead is larger than
+  the Python all-cells free-space decision.
+- The RT path starts to win once the all-cells free-space grid grows and the
+  RTDL broadphase prunes most cells.
+- At 64 copies, the app checks 65,025 possible free-space cells but the OptiX
+  broadphase reports 763 candidate cells for the decision radius.
+- This is a whole-program measurement with oracle validation included, not an
+  isolated RT-core kernel microbenchmark.
+
 ## Verdict
 
 The continuous Frechet learner app now has pod-side OptiX execution evidence on
