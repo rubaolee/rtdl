@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
+import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -26,6 +29,170 @@ def frechet_cell_broadphase_kernel():
 
 
 Interval = tuple[float, float] | None
+
+CPP_CONTINUATION_SOURCE = r"""
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <optional>
+#include <utility>
+#include <vector>
+
+struct Point {
+    double x;
+    double y;
+};
+
+using Interval = std::optional<std::pair<double, double>>;
+
+static double distance(Point a, Point b) {
+    return std::hypot(a.x - b.x, a.y - b.y);
+}
+
+static Interval clip_interval(Interval interval, double start) {
+    if (!interval) return std::nullopt;
+    auto [lo, hi] = *interval;
+    lo = std::max(lo, start);
+    if (lo > hi + 1.0e-12) return std::nullopt;
+    return std::make_pair(lo, hi);
+}
+
+static bool contains(Interval interval, double value) {
+    return interval && interval->first <= value && value <= interval->second;
+}
+
+static Interval union_single_interval(Interval a, Interval b) {
+    if (!a) return b;
+    if (!b) return a;
+    return std::make_pair(std::min(a->first, b->first), std::max(a->second, b->second));
+}
+
+static Interval point_segment_free_interval(Point a, Point b, Point p, double radius) {
+    const double vx = b.x - a.x;
+    const double vy = b.y - a.y;
+    const double wx = a.x - p.x;
+    const double wy = a.y - p.y;
+    const double qa = vx * vx + vy * vy;
+    const double qb = 2.0 * (vx * wx + vy * wy);
+    const double qc = wx * wx + wy * wy - radius * radius;
+    if (qa == 0.0) {
+        return qc <= 1.0e-12 ? Interval(std::make_pair(0.0, 1.0)) : std::nullopt;
+    }
+    double disc = qb * qb - 4.0 * qa * qc;
+    if (disc < -1.0e-12) return std::nullopt;
+    disc = std::max(0.0, disc);
+    const double root = std::sqrt(disc);
+    double lo = (-qb - root) / (2.0 * qa);
+    double hi = (-qb + root) / (2.0 * qa);
+    lo = std::max(0.0, lo);
+    hi = std::min(1.0, hi);
+    if (lo > hi + 1.0e-12) return std::nullopt;
+    return std::make_pair(lo, hi);
+}
+
+static bool decision(const std::vector<Point>& p, const std::vector<Point>& q, double radius) {
+    if (p.size() < 2 || q.size() < 2) return false;
+    if (radius < 0.0) return false;
+    if (distance(p.front(), q.front()) > radius + 1.0e-12) return false;
+    if (distance(p.back(), q.back()) > radius + 1.0e-12) return false;
+
+    const size_t p_count = p.size() - 1;
+    const size_t q_count = q.size() - 1;
+    std::vector<Interval> reach_top(p_count * q_count);
+    std::vector<Interval> reach_right(p_count * q_count);
+    auto cell = [q_count](std::vector<Interval>& values, size_t i, size_t j) -> Interval& {
+        return values[i * q_count + j];
+    };
+
+    for (size_t i = 0; i < p_count; ++i) {
+        for (size_t j = 0; j < q_count; ++j) {
+            const Point p0 = p[i];
+            const Point p1 = p[i + 1];
+            const Point q0 = q[j];
+            const Point q1 = q[j + 1];
+            const Interval bottom_free = point_segment_free_interval(p0, p1, q0, radius);
+            const Interval top_free = point_segment_free_interval(p0, p1, q1, radius);
+            const Interval left_free = point_segment_free_interval(q0, q1, p0, radius);
+            const Interval right_free = point_segment_free_interval(q0, q1, p1, radius);
+
+            Interval bottom_reach;
+            Interval left_reach;
+            if (j > 0) {
+                bottom_reach = cell(reach_top, i, j - 1);
+            } else if (i == 0) {
+                bottom_reach = contains(bottom_free, 0.0) ? clip_interval(bottom_free, 0.0) : Interval{};
+            } else if (contains(cell(reach_right, i - 1, j), 0.0)) {
+                bottom_reach = clip_interval(bottom_free, 0.0);
+            }
+
+            if (i > 0) {
+                left_reach = cell(reach_right, i - 1, j);
+            } else if (j == 0) {
+                left_reach = contains(left_free, 0.0) ? clip_interval(left_free, 0.0) : Interval{};
+            } else if (contains(cell(reach_top, i, j - 1), 0.0)) {
+                left_reach = clip_interval(left_free, 0.0);
+            }
+
+            const Interval top_from_bottom = bottom_reach ? clip_interval(top_free, bottom_reach->first) : Interval{};
+            const Interval top_from_left = left_reach ? top_free : Interval{};
+            const Interval right_from_bottom = bottom_reach ? right_free : Interval{};
+            const Interval right_from_left = left_reach ? clip_interval(right_free, left_reach->first) : Interval{};
+            cell(reach_top, i, j) = union_single_interval(top_from_bottom, top_from_left);
+            cell(reach_right, i, j) = union_single_interval(right_from_bottom, right_from_left);
+        }
+    }
+    return contains(cell(reach_top, p_count - 1, q_count - 1), 1.0) ||
+           contains(cell(reach_right, p_count - 1, q_count - 1), 1.0);
+}
+
+static double upper_bound(const std::vector<Point>& p, const std::vector<Point>& q) {
+    double result = 0.0;
+    for (const Point& a : p) {
+        for (const Point& b : q) {
+            result = std::max(result, distance(a, b));
+        }
+    }
+    return result + 1.0;
+}
+
+int main(int argc, char** argv) {
+    if (argc != 3) {
+        std::cerr << "usage: rtdl_frechet_cpp_continuation curves.txt iterations\n";
+        return 2;
+    }
+    std::ifstream input(argv[1]);
+    const int iterations = std::stoi(argv[2]);
+    size_t p_size = 0;
+    size_t q_size = 0;
+    input >> p_size >> q_size;
+    std::vector<Point> p(p_size);
+    std::vector<Point> q(q_size);
+    for (Point& point : p) input >> point.x >> point.y;
+    for (Point& point : q) input >> point.x >> point.y;
+
+    const auto start = std::chrono::steady_clock::now();
+    double lo = 0.0;
+    double hi = upper_bound(p, q);
+    for (int step = 0; step < iterations; ++step) {
+        const double mid = (lo + hi) * 0.5;
+        if (decision(p, q, mid)) {
+            hi = mid;
+        } else {
+            lo = mid;
+        }
+    }
+    const auto stop = std::chrono::steady_clock::now();
+    const double sec = std::chrono::duration<double>(stop - start).count();
+    std::cout << "{\"distance_estimate\":" << hi
+              << ",\"lower_bound\":" << lo
+              << ",\"upper_bound\":" << hi
+              << ",\"wall_sec\":" << sec
+              << "}\n";
+    return 0;
+}
+"""
 
 
 def make_authored_curves(copies: int = 1) -> dict[str, tuple[Point, ...]]:
@@ -184,6 +351,81 @@ def _distance(a: Point, b: Point) -> float:
     return math.hypot(a.x - b.x, a.y - b.y)
 
 
+def _cpp_continuation_cache_dir() -> Path:
+    root = Path(os.environ.get("RTDL_FRECHET_CPP_CACHE", ROOT / "build" / "frechet_cpp"))
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _build_cpp_continuation() -> Path:
+    cache = _cpp_continuation_cache_dir()
+    digest = hashlib.sha256(CPP_CONTINUATION_SOURCE.encode("utf-8")).hexdigest()[:16]
+    suffix = ".exe" if sys.platform.startswith("win") else ""
+    exe = cache / f"rtdl_frechet_cpp_continuation_{digest}{suffix}"
+    if exe.exists():
+        return exe
+    source = cache / f"rtdl_frechet_cpp_continuation_{digest}.cpp"
+    source.write_text(CPP_CONTINUATION_SOURCE, encoding="utf-8")
+    compiler = os.environ.get("CXX", "g++")
+    completed = subprocess.run(
+        [compiler, "-O3", "-std=c++17", str(source), "-o", str(exe)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(
+            "failed to build the C++ Frechet continuation with "
+            f"{compiler}: {completed.stderr.strip()}"
+        )
+    return exe
+
+
+def _write_cpp_curve_file(curve_p: tuple[Point, ...], curve_q: tuple[Point, ...]) -> Path:
+    cache = _cpp_continuation_cache_dir()
+    digest = hashlib.sha256(
+        json.dumps(
+            {
+                "p": [(point.x, point.y) for point in curve_p],
+                "q": [(point.x, point.y) for point in curve_q],
+            },
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()[:16]
+    path = cache / f"curves_{digest}.txt"
+    with path.open("w", encoding="utf-8") as fh:
+        fh.write(f"{len(curve_p)} {len(curve_q)}\n")
+        for point in curve_p:
+            fh.write(f"{point.x:.17g} {point.y:.17g}\n")
+        for point in curve_q:
+            fh.write(f"{point.x:.17g} {point.y:.17g}\n")
+    return path
+
+
+def continuous_frechet_distance_estimate_cpp(
+    curve_p: tuple[Point, ...],
+    curve_q: tuple[Point, ...],
+    *,
+    iterations: int,
+) -> dict[str, object]:
+    exe = _build_cpp_continuation()
+    curve_file = _write_cpp_curve_file(curve_p, curve_q)
+    start = time.perf_counter()
+    completed = subprocess.run(
+        [str(exe), str(curve_file), str(iterations)],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    outer_wall = time.perf_counter() - start
+    payload = json.loads(completed.stdout)
+    payload["iterations"] = iterations
+    payload["outer_wall_sec"] = outer_wall
+    payload["continuation"] = "cpp_all_cells"
+    return payload
+
+
 def continuous_frechet_decision(
     curve_p: tuple[Point, ...],
     curve_q: tuple[Point, ...],
@@ -287,15 +529,21 @@ def run_app(
     *,
     copies: int = 1,
     candidate_mode: str = "all_cells",
+    continuation: str = "python",
     iterations: int = 24,
     decision_radius: float | None = None,
     require_rt_core: bool = False,
     output_capacity: int = 1_000_000,
+    min_prune_ratio: float = 0.25,
 ) -> dict[str, object]:
     if candidate_mode not in {"all_cells", "rtdl_broadphase"}:
         raise ValueError("candidate_mode must be 'all_cells' or 'rtdl_broadphase'")
+    if continuation not in {"python", "cpp"}:
+        raise ValueError("continuation must be 'python' or 'cpp'")
     if iterations <= 0:
         raise ValueError("iterations must be positive")
+    if not 0.0 <= min_prune_ratio <= 1.0:
+        raise ValueError("min_prune_ratio must be between 0 and 1")
     case = make_authored_curves(copies=copies)
     curve_p = case["curve_p"]
     curve_q = case["curve_q"]
@@ -303,6 +551,14 @@ def run_app(
     q_segments = _segments_from_curve(curve_q)
     all_cells = frozenset((i, j) for i in range(len(p_segments)) for j in range(len(q_segments)))
     phases: dict[str, float] = {}
+
+    broadphase_stats: dict[str, object] = {
+        "used_as_filter": False,
+        "fallback_reason": None,
+        "last_candidate_cell_count": None,
+        "last_broadphase_row_count": None,
+        "last_prune_ratio": None,
+    }
 
     def candidate_provider(radius: float):
         if candidate_mode == "all_cells":
@@ -319,15 +575,37 @@ def run_app(
         cells = _candidate_cells_from_rows(rows)
         # The start and end cells are required by the continuous Frechet boundary condition.
         cells = frozenset(set(cells) | {(0, 0), (len(p_segments) - 1, len(q_segments) - 1)})
+        prune_ratio = 1.0 - (len(cells) / max(1, len(all_cells)))
+        broadphase_stats["last_candidate_cell_count"] = len(cells)
+        broadphase_stats["last_broadphase_row_count"] = len(rows)
+        broadphase_stats["last_prune_ratio"] = prune_ratio
+        if prune_ratio < min_prune_ratio:
+            broadphase_stats["fallback_reason"] = (
+                "RTDL broadphase was not selective enough for safe candidate filtering; "
+                "using all free-space cells for the Frechet continuation."
+            )
+            return None, len(rows)
+        broadphase_stats["used_as_filter"] = True
+        broadphase_stats["fallback_reason"] = None
         return cells, len(rows)
 
     distance_start = time.perf_counter()
-    estimate = continuous_frechet_distance_estimate(
-        curve_p,
-        curve_q,
-        iterations=iterations,
-        candidate_provider=candidate_provider,
-    )
+    if continuation == "cpp":
+        if candidate_mode == "rtdl_broadphase":
+            _, row_count = candidate_provider(_upper_bound(curve_p, curve_q))
+            broadphase_stats["warmup_broadphase_row_count"] = row_count
+        estimate = continuous_frechet_distance_estimate_cpp(
+            curve_p,
+            curve_q,
+            iterations=iterations,
+        )
+    else:
+        estimate = continuous_frechet_distance_estimate(
+            curve_p,
+            curve_q,
+            iterations=iterations,
+            candidate_provider=candidate_provider,
+        )
     phases["distance_search_sec"] = time.perf_counter() - distance_start
     oracle_start = time.perf_counter()
     oracle = continuous_frechet_distance_estimate(
@@ -345,12 +623,14 @@ def run_app(
             "within_radius": continuous_frechet_decision(curve_p, curve_q, decision_radius, candidate_cells=cells),
             "candidate_cell_count": len(cells) if cells is not None else len(all_cells),
             "broadphase_row_count": row_count,
+            "candidate_filter_used": cells is not None,
         }
 
     return {
         "app": "continuous_frechet_distance",
         "backend": backend,
         "candidate_mode": candidate_mode,
+        "continuation": continuation,
         "copies": copies,
         "curve_p_point_count": len(curve_p),
         "curve_q_point_count": len(curve_q),
@@ -366,8 +646,9 @@ def run_app(
         "decision": decision,
         "rtdl_role": (
             "RTDL is used as a generic segment-vs-expanded-shape broadphase over "
-            "free-space cells. Python owns the continuous Frechet free-space "
-            "reachability algorithm and distance search."
+            "free-space cells. The continuous Frechet free-space reachability "
+            "algorithm and distance search stay outside the app-agnostic RTDL "
+            "engine, in either Python or the optional learner-owned C++ continuation."
         ),
         "rt_core_accelerated": bool(backend == "optix" and candidate_mode == "rtdl_broadphase" and require_rt_core),
         "nvidia_rt_core_path": (
@@ -379,8 +660,10 @@ def run_app(
             "This is a v1.8 Python+RTDL learner app. It demonstrates how a new "
             "continuous Frechet application can route RT-shaped broadphase work "
             "through RTDL/OptiX, but it is not a universal speedup claim and the "
-            "exact free-space dynamic program remains Python-owned."
+            "exact free-space dynamic program remains outside the app-agnostic "
+            "native engine."
         ),
+        "broadphase_stats": broadphase_stats,
         "run_phases": phases,
     }
 
@@ -398,6 +681,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--iterations", type=int, default=24)
     parser.add_argument("--decision-radius", type=float, default=None)
     parser.add_argument(
+        "--continuation",
+        choices=("python", "cpp"),
+        default="python",
+        help="Run the Frechet continuation in Python or a learner-owned compiled C++ helper.",
+    )
+    parser.add_argument(
         "--candidate-mode",
         choices=("all_cells", "rtdl_broadphase"),
         default="all_cells",
@@ -408,6 +697,12 @@ def main(argv: list[str] | None = None) -> int:
         help="Fail unless the Frechet cell broadphase uses the explicit native OptiX pair-row path.",
     )
     parser.add_argument("--output-capacity", type=int, default=1_000_000)
+    parser.add_argument(
+        "--min-prune-ratio",
+        type=float,
+        default=0.25,
+        help="Use RTDL candidates as a Frechet filter only when they prune at least this fraction of cells.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -415,10 +710,12 @@ def main(argv: list[str] | None = None) -> int:
                 args.backend,
                 copies=args.copies,
                 candidate_mode=args.candidate_mode,
+                continuation=args.continuation,
                 iterations=args.iterations,
                 decision_radius=args.decision_radius,
                 require_rt_core=args.require_rt_core,
                 output_capacity=args.output_capacity,
+                min_prune_ratio=args.min_prune_ratio,
             ),
             indent=2,
             sort_keys=True,
