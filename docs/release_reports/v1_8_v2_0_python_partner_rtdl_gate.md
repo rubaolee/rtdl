@@ -105,6 +105,8 @@ The app-agnostic gate is paired with:
 - [Goal1801 v2.0 Embree Partner Linux Closure](../reports/goal1801_v2_0_embree_partner_linux_closure_2026-05-12.md)
 - [Goal1802 Partner Any-Hit Learner Docs And Example](../reports/goal1802_partner_anyhit_learner_docs_example_2026-05-12.md)
 - [Goal1803 Gemini Review of Goal1802](../reviews/goal1803_gemini_review_goal1802_partner_anyhit_learner_docs_2026-05-12.md)
+- [Goal1804 v2.0 Partner OptiX Pod Packet](../reports/goal1804_v2_partner_optix_pod_packet_2026-05-12.md)
+- [Goal1805 Gemini Review of Goal1804](../reviews/goal1805_gemini_review_goal1804_v2_partner_optix_pod_packet_2026-05-12.md)
 
 ## Claim Boundary
 
