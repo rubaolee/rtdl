@@ -80,6 +80,9 @@ right primitive for every distance or dynamic-programming problem.
 The Frechet lab suggests future engine or standard-library primitives that are
 generic enough to consider later, but only after v2.0:
 
+These are candidate primitive names for planning discussion, not v3.0 delivery
+commitments and not a finalized ABI specification.
+
 | Possible primitive | Why it matters | App-agnostic wording |
 | --- | --- | --- |
 | Segment-segment distance threshold | Frechet cells depend on whether two segments can come within radius, not only on segment/shape crossing. | `segment_pair_distance_threshold` |
@@ -118,6 +121,9 @@ Extension = typed device payload contract
 
 Shader injection alone is not enough.
 
+This is a proposed mental model for future architecture work, not a finalized
+v3.0 extension specification.
+
 ## v2.0 Boundary
 
 This lab should not distract from v2.0.
@@ -143,6 +149,7 @@ Do not claim:
 - generic segment/shape any-hit is sufficient for Frechet acceleration;
 - v1.8 automatically unlocks shader plug-ins;
 - v3.0 should move ahead of v2.0.
+- the candidate primitive names in this note are confirmed v3.0 deliverables.
 
 Claim instead:
 
