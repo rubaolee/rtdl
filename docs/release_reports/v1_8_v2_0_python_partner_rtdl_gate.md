@@ -92,6 +92,8 @@ The app-agnostic gate is paired with:
 - [Goal1788 Claude Review of Goal1787](../reviews/goal1788_claude_review_goal1787_optix_partner_anyhit_host_stage_2026-05-12.md)
 - [Goal1789 Gemini Review of Goal1787](../reviews/goal1789_gemini_review_goal1787_optix_partner_anyhit_host_stage_2026-05-12.md)
 - [Goal1790 3-AI Consensus for Goal1787](../reviews/goal1790_3ai_consensus_goal1787_optix_partner_anyhit_host_stage_2026-05-12.md)
+- [Goal1791 Partner Handoff Phase Timing](../reports/goal1791_partner_handoff_phase_timing_2026-05-12.md)
+- [Goal1792 Gemini Review of Goal1791](../reviews/goal1792_gemini_review_goal1791_partner_handoff_phase_timing_2026-05-12.md)
 
 ## Claim Boundary
 

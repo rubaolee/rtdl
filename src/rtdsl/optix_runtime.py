@@ -32,6 +32,7 @@ import ctypes.util
 import functools
 import os
 import platform
+import time
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
@@ -2360,25 +2361,35 @@ def _partner_column_to_host_array(value, *, column_name: str):
     except ImportError:  # pragma: no cover
         raise RuntimeError("partner OptiX host staging requires numpy")
 
+    descriptor_start = time.perf_counter()
     ctx = _partner.auto(value)
     descriptor = ctx.tensor(value, access="read")
     if len(descriptor.shape) != 1:
         raise ValueError(f"partner column {column_name!r} must be one-dimensional")
+    descriptor_seconds = time.perf_counter() - descriptor_start
+
+    staging_start = time.perf_counter()
     if descriptor.source_protocol == "torch":
         tensor = value.detach() if callable(getattr(value, "detach", None)) else value
         tensor = tensor.cpu() if callable(getattr(tensor, "cpu", None)) else tensor
         if not callable(getattr(tensor, "numpy", None)):
             raise TypeError(f"PyTorch partner column {column_name!r} cannot be converted to a host NumPy array")
-        return tensor.numpy(), descriptor
-    if descriptor.source_protocol == "cupy":
+        host_array = tensor.numpy()
+    elif descriptor.source_protocol == "cupy":
         cupy = __import__("cupy")
-        return cupy.asnumpy(value), descriptor
-    if descriptor.device_type != "cpu":
-        raise TypeError(
-            f"partner column {column_name!r} uses device {descriptor.device_type}:{descriptor.device_id}; "
-            "only torch/cupy CUDA columns have a defined first-wave host staging path"
-        )
-    return _np.asarray(value), descriptor
+        host_array = cupy.asnumpy(value)
+    else:
+        if descriptor.device_type != "cpu":
+            raise TypeError(
+                f"partner column {column_name!r} uses device {descriptor.device_type}:{descriptor.device_id}; "
+                "only torch/cupy CUDA columns have a defined first-wave host staging path"
+            )
+        host_array = _np.asarray(value)
+    staging_seconds = time.perf_counter() - staging_start
+    return host_array, descriptor, {
+        "descriptor_validation_s": descriptor_seconds,
+        "framework_to_host_staging_s": staging_seconds,
+    }
 
 
 def _partner_host_stage_columns(columns: dict, required: tuple[str, ...], *, label: str):
@@ -2390,9 +2401,18 @@ def _partner_host_stage_columns(columns: dict, required: tuple[str, ...], *, lab
         raise ValueError(f"unexpected {label} partner columns: {', '.join(unexpected)}")
     arrays = {}
     descriptors = {}
+    timings = {
+        "descriptor_validation_s": 0.0,
+        "framework_to_host_staging_s": 0.0,
+    }
     for name in required:
-        arrays[name], descriptors[name] = _partner_column_to_host_array(columns[name], column_name=f"{label}.{name}")
-    return arrays, descriptors
+        arrays[name], descriptors[name], column_timings = _partner_column_to_host_array(
+            columns[name],
+            column_name=f"{label}.{name}",
+        )
+        for timing_name, seconds in column_timings.items():
+            timings[timing_name] += float(seconds)
+    return arrays, descriptors, timings
 
 
 def pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns: dict, triangle_columns: dict) -> dict[str, object]:
@@ -2401,12 +2421,17 @@ def pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns: dict, triangl
     This is the first v2.0 partner execution bridge. It intentionally reports
     `host_stage` transfer behavior and does not claim zero-copy.
     """
-    ray_arrays, ray_descriptors = _partner_host_stage_columns(ray_columns, _PARTNER_RAY_2D_COLUMNS, label="rays")
-    triangle_arrays, triangle_descriptors = _partner_host_stage_columns(
+    ray_arrays, ray_descriptors, ray_timings = _partner_host_stage_columns(
+        ray_columns,
+        _PARTNER_RAY_2D_COLUMNS,
+        label="rays",
+    )
+    triangle_arrays, triangle_descriptors, triangle_timings = _partner_host_stage_columns(
         triangle_columns,
         _PARTNER_TRIANGLE_2D_COLUMNS,
         label="triangles",
     )
+    packet_start = time.perf_counter()
     packed_rays = pack_rays_2d_from_arrays(
         ray_arrays["ids"],
         ray_arrays["ox"],
@@ -2424,6 +2449,7 @@ def pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns: dict, triangl
         triangle_arrays["x2"],
         triangle_arrays["y2"],
     )
+    packet_packing_seconds = time.perf_counter() - packet_start
     source_protocols = tuple(
         sorted(
             {
@@ -2452,6 +2478,15 @@ def pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns: dict, triangl
             "true_zero_copy_authorized": False,
             "partner_tensor_handoff_authorized": True,
             "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": {
+                "descriptor_validation": float(
+                    ray_timings["descriptor_validation_s"] + triangle_timings["descriptor_validation_s"]
+                ),
+                "framework_to_host_staging": float(
+                    ray_timings["framework_to_host_staging_s"] + triangle_timings["framework_to_host_staging_s"]
+                ),
+                "packet_packing": float(packet_packing_seconds),
+            },
         },
     }
 
@@ -2464,15 +2499,26 @@ def run_optix_partner_ray_triangle_any_hit_2d(ray_columns: dict, triangle_column
     packed through the existing app-agnostic OptiX ABI, and then executed.
     """
     prepared_inputs = pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns, triangle_columns)
+    prepare_start = time.perf_counter()
     scene = prepare_optix_ray_triangle_any_hit_2d(prepared_inputs["triangles"])
+    optix_prepare_seconds = time.perf_counter() - prepare_start
+    optix_count_seconds = 0.0
     try:
+        count_start = time.perf_counter()
         hit_count = scene.count(prepared_inputs["rays"])
+        optix_count_seconds = time.perf_counter() - count_start
     finally:
         scene.close()
     timings = get_last_phase_timings()
+    partner_timings = dict(prepared_inputs["metadata"]["partner_phase_timings_s"])
+    partner_timings.update({
+        "optix_prepare": float(optix_prepare_seconds),
+        "optix_count_and_scalar_copyback": float(optix_count_seconds),
+    })
     return {
         **prepared_inputs["metadata"],
         "hit_count": int(hit_count),
+        "partner_phase_timings_s": partner_timings,
         "phase_timings": timings,
     }
 
