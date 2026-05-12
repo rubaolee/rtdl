@@ -140,6 +140,21 @@ release evidence, review records, and goal archives live separately:
 
 ## Demo
 
+The video is a visual tour of the RTDL idea, not a separate product surface.
+It shows a Python-hosted application driving RT-shaped query work while RTDL
+keeps the backend engine generic. The goal is to make the design easy to see:
+Python owns scene setup and presentation, RTDL owns the traversal/refinement
+kernel boundary, and backend choice stays a runtime decision.
+
+Why this demo exists: RTDL is easiest to understand when you can watch the
+application layer and kernel layer cooperate. The animation gives a quick
+mental model before you dive into the source-tree examples and docs.
+
+How to reproduce the demo locally: run the primary visual demo from the
+repository root with the source tree on `PYTHONPATH`. The script lives under
+`examples/visual_demo/`; if optional video dependencies are unavailable, use the
+other examples first and treat the linked 4K video as the reference recording.
+
 - [Watch the public 4K demo video](https://www.youtube.com/watch?v=d3yJB7AmCLM)
 - [Short 4K demo URL](https://youtu.be/d3yJB7AmCLM)
 - Primary visual demo: `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py`

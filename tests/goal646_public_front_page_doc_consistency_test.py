@@ -61,6 +61,17 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
         self.assertIn("RTDL is used directly from the source", text)
         self.assertIn("PYTHONPATH=src:. python examples/rtdl_hello_world.py", text)
 
+    def test_video_demo_has_what_why_how_intro(self) -> None:
+        text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        demo = text.split("## Demo", 1)[1].split("## Repository Layout", 1)[0]
+
+        self.assertIn("The video is a visual tour of the RTDL idea", demo)
+        self.assertIn("Why this demo exists", demo)
+        self.assertIn("How to reproduce the demo locally", demo)
+        self.assertIn("Python owns scene setup and presentation", demo)
+        self.assertIn("RTDL owns the traversal/refinement", demo)
+        self.assertIn("examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py", demo)
+
     def test_docs_new_user_path_is_concise(self) -> None:
         text = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         section = text.split("## New User Path", 1)[1].split("## Read By Task", 1)[0]
