@@ -88,16 +88,27 @@ The fastest way to learn the design is:
 5. Read [Current Architecture](docs/current_architecture.md) only after you can
    explain `input -> traverse -> refine -> emit`.
 
-## What RTDL Contains
+## What RTDL Provides
 
-| Capability | Public shape |
+RTDL is an embedded Python DSL, so it is not a fixed box of apps. You write the
+Python program around it. RTDL provides the kernel language, runtime contract,
+and backend bridge for the RT-shaped part of that program.
+
+In v1.8, the public building blocks include:
+
+| Building block | What it lets you express |
 | --- | --- |
-| Geometry rows | `knn_rows`, `bounded_knn_rows`, `fixed_radius_neighbors`, closest-hit paths |
-| Any-hit traversal | `ray_triangle_any_hit`, `visibility_rows`, prepared visibility/count helpers |
-| Reductions | `reduce_rows` in Python plus documented backend reduction contracts where supported |
-| IR and lowering | `CompiledKernel` lowers to `RTExecutionPlan` |
-| Backends | CPU reference, native CPU, Embree, OptiX, HIPRT, Vulkan, Apple RT/MPS RT where documented |
-| Apps | Hausdorff, ANN candidate search, outlier detection, DBSCAN, robot screening, Barnes-Hut, graph visibility, DB summaries, road hazard, segment/polygon summaries |
+| Kernel shape | `input -> traverse -> refine -> emit` |
+| Spatial rows | nearest-neighbor rows, fixed-radius rows, closest-hit rows, any-hit rows, visibility rows |
+| Reductions | Python `reduce_rows` plus documented backend reduction contracts where supported |
+| IR and lowering | `CompiledKernel` lowering into `RTExecutionPlan` |
+| Backend selection | CPU reference, native CPU, Embree, OptiX, HIPRT, Vulkan, Apple RT/MPS RT where documented |
+
+The examples show what users have built with those blocks: Hausdorff distance,
+ANN candidate search, outlier detection, DBSCAN, robot screening, Barnes-Hut,
+graph visibility, bounded DB-style summaries, road hazard screening, and
+segment/polygon summaries. That list is a teaching catalog, not the capacity of
+the language.
 
 Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the

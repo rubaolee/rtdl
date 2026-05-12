@@ -17,6 +17,10 @@ class Goal1763V18PublicDocsAndLearnerPathReadinessTest(unittest.TestCase):
         self.assertIn("RTDL engine layer", text)
         self.assertIn("native engine must stay app-agnostic", text)
         self.assertIn("input -> traverse -> refine -> emit", text)
+        self.assertIn("RTDL is an embedded Python DSL", text)
+        self.assertIn("not a fixed box of apps", text)
+        self.assertIn("That list is a teaching catalog, not the capacity of", text)
+        self.assertNotIn("## What RTDL Contains", text)
 
     def test_docs_index_tutorial_and_examples_teach_generic_engine_boundary(self) -> None:
         joined = "\n".join(
