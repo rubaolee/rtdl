@@ -66,6 +66,8 @@ not part of the v2.0 partner track.
 The v2.0 path should move in narrow, auditable slices:
 
 1. Freeze the partner vocabulary and claim boundary.
+   - First implementation baseline: [Goal1777 v2.0 Partner Protocol
+     Baseline](goal1777_v2_0_partner_protocol_baseline_2026-05-12.md).
 2. Extend `RtdlTensorDescriptor` and `RtdlOutputSpec` only where v2.0 evidence
    requires it, not for speculative v3.0 shader injection.
 3. Make PyTorch the reference adapter with real framework tests:

@@ -18,8 +18,11 @@ from . import partner
 from .partner import PartnerContext
 from .partner import CuPyAdapter
 from .partner import PyTorchAdapter
+from .partner import RtdlPartnerProtocolContract
 from .partner import RtdlOutputSpec
 from .partner import RtdlTensorDescriptor
+from .partner import validate_v2_0_partner_protocol_contract
+from .partner import v2_0_partner_protocol_contract
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -908,8 +911,11 @@ __all__ = [
     "PartnerContext",
     "CuPyAdapter",
     "PyTorchAdapter",
+    "RtdlPartnerProtocolContract",
     "RtdlOutputSpec",
     "RtdlTensorDescriptor",
+    "validate_v2_0_partner_protocol_contract",
+    "v2_0_partner_protocol_contract",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",

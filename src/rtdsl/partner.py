@@ -5,6 +5,11 @@ import importlib
 from typing import Any, Protocol
 
 
+V2_0_PARTNER_PROTOCOL_VERSION = "rtdl.partner.v2.0"
+V2_0_PARTNER_REFERENCE_PARTNER = "torch"
+V2_0_PARTNER_CONFORMANCE_PARTNER = "cupy"
+V2_0_PARTNER_PROTOCOL_ORDER = ("protocol", "torch", "cupy")
+V2_0_PARTNER_ENGINE_BOUNDARY = "python-adapter-only"
 FALLBACK_MODES = ("error", "copy", "host_stage")
 DEVICE_TYPES = ("cpu", "cuda")
 ACCESS_MODES = ("read", "write", "readwrite")
@@ -56,6 +61,20 @@ class RtdlOutputSpec:
             raise ValueError("output spec shape dimensions must be non-negative")
         if self.required_alignment_bytes <= 0:
             raise ValueError("required_alignment_bytes must be positive")
+
+
+@dataclass(frozen=True)
+class RtdlPartnerProtocolContract:
+    version: str = V2_0_PARTNER_PROTOCOL_VERSION
+    selection_order: tuple[str, ...] = V2_0_PARTNER_PROTOCOL_ORDER
+    reference_partner: str = V2_0_PARTNER_REFERENCE_PARTNER
+    conformance_partner: str = V2_0_PARTNER_CONFORMANCE_PARTNER
+    descriptor_type: str = "RtdlTensorDescriptor"
+    output_spec_type: str = "RtdlOutputSpec"
+    engine_boundary: str = V2_0_PARTNER_ENGINE_BOUNDARY
+    fallback_modes: tuple[str, ...] = FALLBACK_MODES
+    stream_policy: str = "stream_handle_reserved_zero"
+    zero_copy_claim: str = "measured_evidence_required"
 
 
 class PartnerAdapter(Protocol):
@@ -145,7 +164,8 @@ class PyTorchAdapter(GenericDLPackAdapter):
             raise ValueError("v1.7 partner descriptors reserve stream_handle; expected 0")
         torch = importlib.import_module("torch")
         dtype = getattr(torch, spec.dtype, spec.dtype)
-        return torch.empty(spec.shape, dtype=dtype, device=f"{spec.device_type}:{spec.device_id}")
+        device = spec.device_type if spec.device_type == "cpu" else f"{spec.device_type}:{spec.device_id}"
+        return torch.empty(spec.shape, dtype=dtype, device=device)
 
 
 class CuPyAdapter(GenericDLPackAdapter):
@@ -167,8 +187,13 @@ class CuPyAdapter(GenericDLPackAdapter):
     def allocate_output(self, spec: RtdlOutputSpec, *, stream: int | None = None) -> Any:
         if stream not in (None, 0):
             raise ValueError("v1.7 partner descriptors reserve stream_handle; expected 0")
+        if spec.device_type != "cuda":
+            raise ValueError("CuPy partner outputs require device_type='cuda'")
         cupy = importlib.import_module("cupy")
-        return cupy.empty(spec.shape, dtype=spec.dtype)
+        if spec.device_id == 0:
+            return cupy.empty(spec.shape, dtype=spec.dtype)
+        with cupy.cuda.Device(spec.device_id):
+            return cupy.empty(spec.shape, dtype=spec.dtype)
 
 
 class PartnerContext:
@@ -234,6 +259,39 @@ def auto(obj: Any, *, fallback: str = "error") -> PartnerContext:
     if _GENERIC_DLPACK.can_export(obj):
         return PartnerContext(_GENERIC_DLPACK, fallback=fallback)
     raise TypeError("no registered partner adapter can export object")
+
+
+def v2_0_partner_protocol_contract() -> RtdlPartnerProtocolContract:
+    return RtdlPartnerProtocolContract()
+
+
+def validate_v2_0_partner_protocol_contract(contract: RtdlPartnerProtocolContract | None = None) -> dict[str, Any]:
+    contract = v2_0_partner_protocol_contract() if contract is None else contract
+    errors: list[str] = []
+    if contract.version != V2_0_PARTNER_PROTOCOL_VERSION:
+        errors.append("unexpected v2.0 partner protocol version")
+    if contract.selection_order != V2_0_PARTNER_PROTOCOL_ORDER:
+        errors.append("partner selection order must be protocol first, PyTorch reference first, CuPy conformance alongside it")
+    if contract.reference_partner != "torch":
+        errors.append("PyTorch must be the v2.0 reference partner")
+    if contract.conformance_partner != "cupy":
+        errors.append("CuPy must be the v2.0 conformance partner")
+    if contract.engine_boundary != "python-adapter-only":
+        errors.append("partner protocol must not enter app-agnostic native engine internals")
+    if tuple(contract.fallback_modes) != FALLBACK_MODES:
+        errors.append("fallback modes must remain explicit and ordered")
+    if contract.stream_policy != "stream_handle_reserved_zero":
+        errors.append("stream handles remain reserved until v2.0 stream evidence exists")
+    if contract.zero_copy_claim != "measured_evidence_required":
+        errors.append("zero-copy claims require measured evidence")
+    return {
+        "status": "accept" if not errors else "reject",
+        "version": contract.version,
+        "reference_partner": contract.reference_partner,
+        "conformance_partner": contract.conformance_partner,
+        "engine_boundary": contract.engine_boundary,
+        "errors": tuple(errors),
+    }
 
 
 def _normalize_name(name: str) -> str:
