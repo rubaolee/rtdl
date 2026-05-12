@@ -40,6 +40,7 @@ What this does not show:
 | Hotspot app | `examples/rtdl_event_hotspot_screening.py` | fixed-radius event neighbor counts | full analytics pipeline |
 | Facility coverage decision | `examples/rtdl_facility_knn_assignment.py` | KNN rows or prepared coverage-threshold decision | ranked assignment speedup |
 | Hausdorff app | `examples/rtdl_hausdorff_distance_app.py` | KNN rows or prepared threshold-decision traversal | exact-distance RTX speedup unless using a reviewed mode |
+| Continuous Frechet learner app | `examples/rtdl_continuous_frechet_distance_app.py` | segment/expanded-shape broadphase over free-space cells | whole-algorithm RTX speedup |
 | ANN candidate app | `examples/rtdl_ann_candidate_app.py` | KNN over a Python-selected candidate subset | full ANN index/ranking speedup |
 | Outlier app | `examples/rtdl_outlier_detection_app.py` | fixed-radius density rows or scalar density count | production anomaly system |
 | DBSCAN app | `examples/rtdl_dbscan_clustering_app.py` | fixed-radius core-count/core-flag phases | full cluster expansion speedup |

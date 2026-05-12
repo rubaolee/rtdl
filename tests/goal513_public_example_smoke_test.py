@@ -44,6 +44,7 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
             ("examples/rtdl_db_grouped_count.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_db_grouped_sum.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference"),
+            ("examples/rtdl_continuous_frechet_distance_app.py", "--backend", "cpu_python_reference", "--iterations", "12"),
             ("examples/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference"),
@@ -58,6 +59,13 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
 
     def test_front_page_v08_examples_report_oracle_or_boundary(self) -> None:
         hausdorff = run_json_example("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference")
+        frechet = run_json_example(
+            "examples/rtdl_continuous_frechet_distance_app.py",
+            "--backend",
+            "cpu_python_reference",
+            "--iterations",
+            "12",
+        )
         ann = run_json_example("examples/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference")
         outlier = run_json_example("examples/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference")
         dbscan = run_json_example("examples/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference")
@@ -65,6 +73,8 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
         barnes = run_json_example("examples/rtdl_barnes_hut_force_app.py", "--backend", "cpu_python_reference")
 
         self.assertTrue(hausdorff["matches_oracle"])
+        self.assertTrue(frechet["matches_oracle"])
+        self.assertIn("Python owns the continuous Frechet", frechet["rtdl_role"])
         self.assertAlmostEqual(float(ann["recall_at_1"]), 2.0 / 3.0)
         self.assertTrue(outlier["matches_oracle"])
         self.assertTrue(dbscan["matches_oracle"])

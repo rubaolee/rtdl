@@ -60,6 +60,7 @@ path.
 | nearest-neighbor search | `rtdl_fixed_radius_neighbors.py` | points/queries become neighbor rows |
 | KNN rows | `rtdl_knn_rows.py` | query points become ranked neighbor rows |
 | app-level Hausdorff distance | `rtdl_hausdorff_distance_app.py` | two point sets become directed nearest-neighbor rows and one distance |
+| continuous Frechet distance learner app | `rtdl_continuous_frechet_distance_app.py` | two polylines become a distance estimate and optional threshold decision |
 | app-level ANN candidate search | `rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become approximate nearest rows |
 | app-level outlier detection | `rtdl_outlier_detection_app.py` | points become fixed-radius neighbor rows and outlier labels |
 | app-level DBSCAN clustering | `rtdl_dbscan_clustering_app.py` | points become fixed-radius neighbor rows and density-cluster labels |
@@ -90,6 +91,7 @@ path.
 - `rtdl_fixed_radius_neighbors.py`
 - `rtdl_knn_rows.py`
 - `rtdl_hausdorff_distance_app.py`
+- `rtdl_continuous_frechet_distance_app.py`
 - `rtdl_ann_candidate_app.py`
 - `rtdl_outlier_detection_app.py`
 - `rtdl_dbscan_clustering_app.py`
