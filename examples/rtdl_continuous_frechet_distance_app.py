@@ -92,7 +92,12 @@ static Interval point_segment_free_interval(Point a, Point b, Point p, double ra
     return std::make_pair(lo, hi);
 }
 
-static bool decision(const std::vector<Point>& p, const std::vector<Point>& q, double radius) {
+static bool decision(
+    const std::vector<Point>& p,
+    const std::vector<Point>& q,
+    double radius,
+    const std::vector<unsigned char>* candidate_mask = nullptr
+) {
     if (p.size() < 2 || q.size() < 2) return false;
     if (radius < 0.0) return false;
     if (distance(p.front(), q.front()) > radius + 1.0e-12) return false;
@@ -108,6 +113,7 @@ static bool decision(const std::vector<Point>& p, const std::vector<Point>& q, d
 
     for (size_t i = 0; i < p_count; ++i) {
         for (size_t j = 0; j < q_count; ++j) {
+            if (candidate_mask && !(*candidate_mask)[i * q_count + j]) continue;
             const Point p0 = p[i];
             const Point p1 = p[i + 1];
             const Point q0 = q[j];
@@ -157,9 +163,25 @@ static double upper_bound(const std::vector<Point>& p, const std::vector<Point>&
     return result + 1.0;
 }
 
+static std::vector<unsigned char> read_mask(const char* path, size_t p_count, size_t q_count) {
+    std::vector<unsigned char> mask(p_count * q_count, 0);
+    std::ifstream input(path);
+    size_t count = 0;
+    input >> count;
+    for (size_t row = 0; row < count; ++row) {
+        size_t i = 0;
+        size_t j = 0;
+        input >> i >> j;
+        if (i < p_count && j < q_count) {
+            mask[i * q_count + j] = 1;
+        }
+    }
+    return mask;
+}
+
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        std::cerr << "usage: rtdl_frechet_cpp_continuation curves.txt iterations\n";
+    if (argc != 3 && argc != 4 && argc != 5) {
+        std::cerr << "usage: rtdl_frechet_cpp_continuation curves.txt iterations [decision_radius [mask.txt]]\n";
         return 2;
     }
     std::ifstream input(argv[1]);
@@ -173,6 +195,22 @@ int main(int argc, char** argv) {
     for (Point& point : q) input >> point.x >> point.y;
 
     const auto start = std::chrono::steady_clock::now();
+    if (argc >= 4) {
+        const double radius = std::stod(argv[3]);
+        std::vector<unsigned char> mask;
+        const std::vector<unsigned char>* mask_ptr = nullptr;
+        if (argc == 5) {
+            mask = read_mask(argv[4], p.size() - 1, q.size() - 1);
+            mask_ptr = &mask;
+        }
+        const bool ok = decision(p, q, radius, mask_ptr);
+        const auto stop = std::chrono::steady_clock::now();
+        const double sec = std::chrono::duration<double>(stop - start).count();
+        std::cout << "{\"within_radius\":" << (ok ? "true" : "false")
+                  << ",\"wall_sec\":" << sec
+                  << "}\n";
+        return 0;
+    }
     double lo = 0.0;
     double hi = upper_bound(p, q);
     for (int step = 0; step < iterations; ++step) {
@@ -445,6 +483,35 @@ def _write_cpp_curve_file(curve_p: tuple[Point, ...], curve_q: tuple[Point, ...]
     return path
 
 
+def _write_cpp_mask_file(
+    candidate_cells: frozenset[tuple[int, int]],
+    *,
+    radius: float,
+    p_count: int,
+    q_count: int,
+) -> Path:
+    cache = _cpp_continuation_cache_dir()
+    digest = hashlib.sha256(
+        json.dumps(
+            {
+                "radius": radius,
+                "p_count": p_count,
+                "q_count": q_count,
+                "cells": sorted(candidate_cells),
+            },
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()[:16]
+    path = cache / f"mask_{digest}.txt"
+    if path.exists():
+        return path
+    with path.open("w", encoding="utf-8") as fh:
+        fh.write(f"{len(candidate_cells)}\n")
+        for i, j in sorted(candidate_cells):
+            fh.write(f"{i} {j}\n")
+    return path
+
+
 def continuous_frechet_distance_estimate_cpp(
     curve_p: tuple[Point, ...],
     curve_q: tuple[Point, ...],
@@ -467,6 +534,82 @@ def continuous_frechet_distance_estimate_cpp(
     payload["outer_wall_sec"] = outer_wall
     payload["continuation"] = "cpp_all_cells"
     return payload
+
+
+def continuous_frechet_decision_cpp(
+    curve_p: tuple[Point, ...],
+    curve_q: tuple[Point, ...],
+    radius: float,
+    *,
+    candidate_cells: frozenset[tuple[int, int]] | None = None,
+) -> dict[str, object]:
+    exe = _build_cpp_continuation()
+    curve_file = _write_cpp_curve_file(curve_p, curve_q)
+    args = [str(exe), str(curve_file), "1", f"{radius:.17g}"]
+    if candidate_cells is not None:
+        args.append(
+            str(
+                _write_cpp_mask_file(
+                    candidate_cells,
+                    radius=radius,
+                    p_count=len(curve_p) - 1,
+                    q_count=len(curve_q) - 1,
+                )
+            )
+        )
+    start = time.perf_counter()
+    completed = subprocess.run(
+        args,
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    outer_wall = time.perf_counter() - start
+    payload = json.loads(completed.stdout)
+    payload["outer_wall_sec"] = outer_wall
+    payload["candidate_filter_used"] = candidate_cells is not None
+    return payload
+
+
+def continuous_frechet_distance_estimate_cpp_masked(
+    curve_p: tuple[Point, ...],
+    curve_q: tuple[Point, ...],
+    *,
+    iterations: int,
+    candidate_provider,
+) -> dict[str, object]:
+    lo = 0.0
+    hi = _upper_bound(curve_p, curve_q)
+    candidate_cell_count = None
+    broadphase_row_count = None
+    decision_wall_sec = 0.0
+    for _ in range(iterations):
+        mid = (lo + hi) * 0.5
+        candidate_cells, row_count = candidate_provider(mid)
+        candidate_cell_count = len(candidate_cells) if candidate_cells is not None else None
+        broadphase_row_count = row_count
+        decision = continuous_frechet_decision_cpp(
+            curve_p,
+            curve_q,
+            mid,
+            candidate_cells=candidate_cells,
+        )
+        decision_wall_sec += float(decision["outer_wall_sec"])
+        if decision["within_radius"]:
+            hi = mid
+        else:
+            lo = mid
+    return {
+        "distance_estimate": hi,
+        "lower_bound": lo,
+        "upper_bound": hi,
+        "iterations": iterations,
+        "last_candidate_cell_count": candidate_cell_count,
+        "last_broadphase_row_count": broadphase_row_count,
+        "cpp_decision_wall_sec": decision_wall_sec,
+        "continuation": "cpp_masked_decision",
+    }
 
 
 def continuous_frechet_decision(
@@ -647,13 +790,18 @@ def run_curves_app(
     distance_start = time.perf_counter()
     if continuation == "cpp":
         if candidate_mode == "rtdl_broadphase":
-            _, row_count = candidate_provider(_upper_bound(curve_p, curve_q))
-            broadphase_stats["warmup_broadphase_row_count"] = row_count
-        estimate = continuous_frechet_distance_estimate_cpp(
-            curve_p,
-            curve_q,
-            iterations=iterations,
-        )
+            estimate = continuous_frechet_distance_estimate_cpp_masked(
+                curve_p,
+                curve_q,
+                iterations=iterations,
+                candidate_provider=candidate_provider,
+            )
+        else:
+            estimate = continuous_frechet_distance_estimate_cpp(
+                curve_p,
+                curve_q,
+                iterations=iterations,
+            )
     else:
         estimate = continuous_frechet_distance_estimate(
             curve_p,

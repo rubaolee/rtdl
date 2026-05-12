@@ -90,6 +90,7 @@ class Goal1771ContinuousFrechetPythonRtdlLearnerAppTest(unittest.TestCase):
         text = EXAMPLE.read_text(encoding="utf-8")
         self.assertIn("segment_polygon_anyhit_rows_native_bounded_optix", text)
         self.assertIn("learner-owned C++ continuation", text)
+        self.assertIn("cpp_masked_decision", text)
         self.assertIn("verify_oracle", text)
         self.assertIn("min_prune_ratio", text)
         self.assertIn("candidate_expansion", text)
