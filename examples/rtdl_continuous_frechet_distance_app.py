@@ -537,6 +537,7 @@ def run_curves_app(
     require_rt_core: bool = False,
     output_capacity: int = 1_000_000,
     min_prune_ratio: float = 0.25,
+    verify_oracle: bool = True,
 ) -> dict[str, object]:
     if len(curve_p) < 2 or len(curve_q) < 2:
         raise ValueError("continuous Frechet distance requires two curves with at least two points each")
@@ -608,14 +609,16 @@ def run_curves_app(
             candidate_provider=candidate_provider,
         )
     phases["distance_search_sec"] = time.perf_counter() - distance_start
-    oracle_start = time.perf_counter()
-    oracle = continuous_frechet_distance_estimate(
-        curve_p,
-        curve_q,
-        iterations=iterations,
-        candidate_provider=lambda radius: (None, None),
-    )
-    phases["oracle_search_sec"] = time.perf_counter() - oracle_start
+    oracle = None
+    if verify_oracle:
+        oracle_start = time.perf_counter()
+        oracle = continuous_frechet_distance_estimate(
+            curve_p,
+            curve_q,
+            iterations=iterations,
+            candidate_provider=lambda radius: (None, None),
+        )
+        phases["oracle_search_sec"] = time.perf_counter() - oracle_start
     decision = None
     if decision_radius is not None:
         cells, row_count = candidate_provider(decision_radius)
@@ -637,13 +640,18 @@ def run_curves_app(
         "curve_q_point_count": len(curve_q),
         "free_space_cell_count": len(all_cells),
         "distance_estimate": estimate["distance_estimate"],
-        "oracle_distance_estimate": oracle["distance_estimate"],
-        "matches_oracle": math.isclose(
-            float(estimate["distance_estimate"]),
-            float(oracle["distance_estimate"]),
-            rel_tol=1.0e-5,
-            abs_tol=1.0e-5,
+        "oracle_distance_estimate": oracle["distance_estimate"] if oracle is not None else None,
+        "matches_oracle": (
+            math.isclose(
+                float(estimate["distance_estimate"]),
+                float(oracle["distance_estimate"]),
+                rel_tol=1.0e-5,
+                abs_tol=1.0e-5,
+            )
+            if oracle is not None
+            else None
         ),
+        "oracle_verified": oracle is not None,
         "decision": decision,
         "rtdl_role": (
             "RTDL is used as a generic segment-vs-expanded-shape broadphase over "
@@ -680,6 +688,7 @@ def run_app(
     require_rt_core: bool = False,
     output_capacity: int = 1_000_000,
     min_prune_ratio: float = 0.25,
+    verify_oracle: bool = True,
 ) -> dict[str, object]:
     if candidate_mode not in {"all_cells", "rtdl_broadphase"}:
         raise ValueError("candidate_mode must be 'all_cells' or 'rtdl_broadphase'")
@@ -702,6 +711,7 @@ def run_app(
         require_rt_core=require_rt_core,
         output_capacity=output_capacity,
         min_prune_ratio=min_prune_ratio,
+        verify_oracle=verify_oracle,
     )
 
 
@@ -740,6 +750,11 @@ def main(argv: list[str] | None = None) -> int:
         default=0.25,
         help="Use RTDL candidates as a Frechet filter only when they prune at least this fraction of cells.",
     )
+    parser.add_argument(
+        "--no-oracle",
+        action="store_true",
+        help="Skip the Python all-cells oracle pass for performance-oriented runs.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -753,6 +768,7 @@ def main(argv: list[str] | None = None) -> int:
                 require_rt_core=args.require_rt_core,
                 output_capacity=args.output_capacity,
                 min_prune_ratio=args.min_prune_ratio,
+                verify_oracle=not args.no_oracle,
             ),
             indent=2,
             sort_keys=True,

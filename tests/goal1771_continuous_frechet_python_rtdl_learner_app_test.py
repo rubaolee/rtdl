@@ -30,6 +30,7 @@ class Goal1771ContinuousFrechetPythonRtdlLearnerAppTest(unittest.TestCase):
         self.assertEqual(payload["app"], "continuous_frechet_distance")
         self.assertEqual(payload["candidate_mode"], "all_cells")
         self.assertTrue(payload["matches_oracle"])
+        self.assertTrue(payload["oracle_verified"])
         self.assertGreater(float(payload["distance_estimate"]), 0.0)
         self.assertIn("continuous Frechet free-space", payload["rtdl_role"])
         self.assertFalse(payload["rt_core_accelerated"])
@@ -51,6 +52,20 @@ class Goal1771ContinuousFrechetPythonRtdlLearnerAppTest(unittest.TestCase):
         self.assertIn("continuous Frechet free-space", payload["rtdl_role"])
         self.assertIn("not a universal speedup claim", payload["claim_boundary"])
         self.assertIn("broadphase_stats", payload)
+
+    def test_no_oracle_mode_skips_python_verification_for_perf_runs(self) -> None:
+        payload = run_example(
+            "--backend",
+            "cpu_python_reference",
+            "--continuation",
+            "python",
+            "--iterations",
+            "8",
+            "--no-oracle",
+        )
+        self.assertIsNone(payload["matches_oracle"])
+        self.assertFalse(payload["oracle_verified"])
+        self.assertIsNone(payload["oracle_distance_estimate"])
 
     def test_require_rt_core_is_reserved_for_optix_broadphase(self) -> None:
         completed = subprocess.run(
@@ -75,6 +90,7 @@ class Goal1771ContinuousFrechetPythonRtdlLearnerAppTest(unittest.TestCase):
         text = EXAMPLE.read_text(encoding="utf-8")
         self.assertIn("segment_polygon_anyhit_rows_native_bounded_optix", text)
         self.assertIn("learner-owned C++ continuation", text)
+        self.assertIn("verify_oracle", text)
         self.assertIn("min_prune_ratio", text)
         self.assertIn("not a universal speedup claim", text)
 
