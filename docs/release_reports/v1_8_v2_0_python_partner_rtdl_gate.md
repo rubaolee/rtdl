@@ -103,6 +103,8 @@ The app-agnostic gate is paired with:
 - [Goal1799 Partner Any-Hit Public Dispatch](../reports/goal1799_partner_anyhit_public_dispatch_2026-05-12.md)
 - [Goal1800 Gemini Review of Goal1799](../reviews/goal1800_gemini_review_goal1799_partner_anyhit_public_dispatch_2026-05-12.md)
 - [Goal1801 v2.0 Embree Partner Linux Closure](../reports/goal1801_v2_0_embree_partner_linux_closure_2026-05-12.md)
+- [Goal1802 Partner Any-Hit Learner Docs And Example](../reports/goal1802_partner_anyhit_learner_docs_example_2026-05-12.md)
+- [Goal1803 Gemini Review of Goal1802](../reviews/goal1803_gemini_review_goal1802_partner_anyhit_learner_docs_2026-05-12.md)
 
 ## Claim Boundary
 

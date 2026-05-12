@@ -11,9 +11,10 @@ Run source-tree examples from the repository root with `PYTHONPATH=src:.`.
 | --- | --- | --- |
 | 1 | `PYTHONPATH=src:. python examples/rtdl_hello_world.py` | prove the checkout imports and runs |
 | 2 | `PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference` | see backend selection without performance claims |
-| 3 | `PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py` | see one compact recipe per public feature |
-| 4 | [App And Example Quickstart](../docs/app_example_quickstart.md) | choose one app by job instead of scanning the directory |
-| 5 | [Performance Model](../docs/performance_model.md) | interpret any timing or speedup wording safely |
+| 3 | `PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree` | see the first Python+partner host-stage path |
+| 4 | `PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py` | see one compact recipe per public feature |
+| 5 | [App And Example Quickstart](../docs/app_example_quickstart.md) | choose one app by job instead of scanning the directory |
+| 6 | [Performance Model](../docs/performance_model.md) | interpret any timing or speedup wording safely |
 
 The quick rule: examples show runnable RTDL shapes; public speedup wording comes only from the support matrix and reviewed evidence for an exact bounded sub-path.
 
@@ -66,6 +67,7 @@ path.
 | app-level DBSCAN clustering | `rtdl_dbscan_clustering_app.py` | points become fixed-radius neighbor rows and density-cluster labels |
 | app-level robot collision screening | `rtdl_robot_collision_screening_app.py` | link edge rays become any-hit rows and reduced pose collision flags |
 | bounded any-hit ray queries | `rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `any_hit` rows |
+| Python+partner any-hit dispatch | `rtdl_partner_anyhit.py` | partner-owned columns become a host-staged any-hit count through Embree or OptiX |
 | visibility / line-of-sight rows | `rtdl_visibility_rows.py` | observers, targets, and blockers become visibility rows |
 | emitted-row reductions | `rtdl_reduce_rows.py` | emitted rows become grouped app summary rows |
 | app-level Barnes-Hut force approximation | `rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become force-candidate rows |
@@ -97,6 +99,7 @@ path.
 - `rtdl_dbscan_clustering_app.py`
 - `rtdl_robot_collision_screening_app.py`
 - `rtdl_ray_triangle_any_hit.py`
+- `rtdl_partner_anyhit.py`
 - `rtdl_visibility_rows.py`
 - `rtdl_reduce_rows.py`
 - `rtdl_barnes_hut_force_app.py`

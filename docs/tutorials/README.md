@@ -32,8 +32,9 @@ hand-maintaining separate ray-tracing backend implementations.
 | 9 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | Prepared 3D ray/triangle path |
 | 10 | [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py) | Apple RT closest-hit and visibility-count scenarios |
 | 11 | [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py) | Bounded any-hit row primitive |
-| 12 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | Observer-target line-of-sight rows |
-| 13 | [Reduce Rows Example](../../examples/rtdl_reduce_rows.py) | Deterministic Python standard-library reductions over emitted RTDL rows |
+| 12 | [Python Partner Any-Hit](partner_anyhit.md) | First v2.0 partner-owned column path with Embree as CPU RT fallback |
+| 13 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | Observer-target line-of-sight rows |
+| 14 | [Reduce Rows Example](../../examples/rtdl_reduce_rows.py) | Deterministic Python standard-library reductions over emitted RTDL rows |
 
 ## Three Learning Tracks
 
@@ -74,6 +75,7 @@ Python application.
 - [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
 - [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py)
 - [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py)
+- [Python Partner Any-Hit](partner_anyhit.md)
 - [Visibility Rows Example](../../examples/rtdl_visibility_rows.py)
 - [Reduce Rows Example](../../examples/rtdl_reduce_rows.py)
 
