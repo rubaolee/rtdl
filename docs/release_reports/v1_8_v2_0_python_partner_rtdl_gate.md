@@ -84,6 +84,8 @@ The app-agnostic gate is paired with:
 - [Goal1780 3-AI Consensus for Goal1777](../reviews/goal1780_3ai_consensus_goal1777_v2_0_partner_protocol_baseline_2026-05-12.md)
 - [Goal1781 Real-Framework Partner Availability Gate](../reports/goal1781_real_framework_partner_availability_gate_2026-05-12.md)
 - [Goal1782 Gemini Review of Goal1781](../reviews/goal1782_gemini_review_goal1781_real_framework_partner_availability_2026-05-12.md)
+- [Goal1783 NumPy CPU Partner Adapter](../reports/goal1783_numpy_cpu_partner_adapter_2026-05-12.md)
+- [Goal1784 Gemini Review of Goal1783](../reviews/goal1784_gemini_review_goal1783_numpy_cpu_partner_adapter_2026-05-12.md)
 
 ## Claim Boundary
 

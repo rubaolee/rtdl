@@ -96,6 +96,7 @@ class Goal1777V20PartnerProtocolBaselineTest(unittest.TestCase):
         self.assertEqual(contract.selection_order, ("protocol", "torch", "cupy"))
         self.assertEqual(contract.reference_partner, "torch")
         self.assertEqual(contract.conformance_partner, "cupy")
+        self.assertEqual(contract.cpu_reference_partner, "numpy")
         self.assertEqual(contract.engine_boundary, "python-adapter-only")
         self.assertEqual(contract.stream_policy, "stream_handle_reserved_zero")
         self.assertEqual(contract.zero_copy_claim, "measured_evidence_required")
@@ -106,12 +107,14 @@ class Goal1777V20PartnerProtocolBaselineTest(unittest.TestCase):
             selection_order=("protocol", "cupy", "torch"),
             reference_partner="cupy",
             conformance_partner="torch",
+            cpu_reference_partner="arrow",
             engine_boundary="native-framework-link",
         )
         result = rt.validate_v2_0_partner_protocol_contract(bad)
         self.assertEqual(result["status"], "reject")
         self.assertTrue(any("PyTorch" in error for error in result["errors"]))
         self.assertTrue(any("native engine" in error for error in result["errors"]))
+        self.assertTrue(any("NumPy" in error for error in result["errors"]))
 
     def test_torch_reference_output_allocation_uses_framework_device_spelling(self) -> None:
         fake_torch = _FakeTorch()

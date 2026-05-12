@@ -8,6 +8,7 @@ from typing import Any, Protocol
 V2_0_PARTNER_PROTOCOL_VERSION = "rtdl.partner.v2.0"
 V2_0_PARTNER_REFERENCE_PARTNER = "torch"
 V2_0_PARTNER_CONFORMANCE_PARTNER = "cupy"
+V2_0_PARTNER_CPU_REFERENCE_PARTNER = "numpy"
 V2_0_PARTNER_PROTOCOL_ORDER = ("protocol", "torch", "cupy")
 V2_0_PARTNER_ENGINE_BOUNDARY = "python-adapter-only"
 FALLBACK_MODES = ("error", "copy", "host_stage")
@@ -69,6 +70,7 @@ class RtdlPartnerProtocolContract:
     selection_order: tuple[str, ...] = V2_0_PARTNER_PROTOCOL_ORDER
     reference_partner: str = V2_0_PARTNER_REFERENCE_PARTNER
     conformance_partner: str = V2_0_PARTNER_CONFORMANCE_PARTNER
+    cpu_reference_partner: str = V2_0_PARTNER_CPU_REFERENCE_PARTNER
     descriptor_type: str = "RtdlTensorDescriptor"
     output_spec_type: str = "RtdlOutputSpec"
     engine_boundary: str = V2_0_PARTNER_ENGINE_BOUNDARY
@@ -196,6 +198,49 @@ class CuPyAdapter(GenericDLPackAdapter):
             return cupy.empty(spec.shape, dtype=spec.dtype)
 
 
+class NumPyAdapter(GenericDLPackAdapter):
+    name = "numpy"
+
+    def can_export(self, obj: Any) -> bool:
+        return _module_root(obj) == "numpy" and (
+            super().can_export(obj) or isinstance(getattr(obj, "__array_interface__", None), dict)
+        )
+
+    def export_tensor(
+        self,
+        obj: Any,
+        *,
+        access: str = "read",
+        stream: int | None = None,
+    ) -> RtdlTensorDescriptor:
+        _validate_access_mode(access)
+        if stream not in (None, 0):
+            raise ValueError("v1.7 partner descriptors reserve stream_handle; expected 0")
+        if not self.can_export(obj):
+            raise TypeError("object does not implement NumPy host array export")
+        descriptor = RtdlTensorDescriptor(
+            data_ptr=_data_ptr(obj),
+            device_type="cpu",
+            device_id=0,
+            dtype=_dtype_name(obj),
+            shape=_shape_tuple(obj),
+            strides=_strides_tuple(obj),
+            access_mode=access,
+            stream_handle=0,
+            owner=obj,
+            source_protocol="numpy",
+        )
+        return descriptor
+
+    def allocate_output(self, spec: RtdlOutputSpec, *, stream: int | None = None) -> Any:
+        if stream not in (None, 0):
+            raise ValueError("v1.7 partner descriptors reserve stream_handle; expected 0")
+        if spec.device_type != "cpu":
+            raise ValueError("NumPy partner outputs require device_type='cpu'")
+        numpy = importlib.import_module("numpy")
+        return numpy.empty(spec.shape, dtype=spec.dtype)
+
+
 class PartnerContext:
     def __init__(self, adapter: PartnerAdapter | None, *, fallback: str = "error") -> None:
         _validate_fallback_policy(fallback)
@@ -276,6 +321,8 @@ def validate_v2_0_partner_protocol_contract(contract: RtdlPartnerProtocolContrac
         errors.append("PyTorch must be the v2.0 reference partner")
     if contract.conformance_partner != "cupy":
         errors.append("CuPy must be the v2.0 conformance partner")
+    if contract.cpu_reference_partner != "numpy":
+        errors.append("NumPy must be the v2.0 CPU/Embree reference partner")
     if contract.engine_boundary != "python-adapter-only":
         errors.append("partner protocol must not enter app-agnostic native engine internals")
     if tuple(contract.fallback_modes) != FALLBACK_MODES:
@@ -400,4 +447,5 @@ def _data_ptr(obj: Any) -> int | None:
 _ADAPTERS: dict[str, PartnerAdapter] = {}
 register(PyTorchAdapter())
 register(CuPyAdapter())
+register(NumPyAdapter())
 _GENERIC_DLPACK = register(GenericDLPackAdapter())

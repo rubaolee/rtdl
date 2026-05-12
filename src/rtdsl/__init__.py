@@ -17,6 +17,7 @@ from .api import point_in_polygon
 from . import partner
 from .partner import PartnerContext
 from .partner import CuPyAdapter
+from .partner import NumPyAdapter
 from .partner import PyTorchAdapter
 from .partner import RtdlPartnerProtocolContract
 from .partner import RtdlOutputSpec
@@ -910,6 +911,7 @@ __all__ = [
     "partner",
     "PartnerContext",
     "CuPyAdapter",
+    "NumPyAdapter",
     "PyTorchAdapter",
     "RtdlPartnerProtocolContract",
     "RtdlOutputSpec",
