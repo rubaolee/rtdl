@@ -88,6 +88,10 @@ The app-agnostic gate is paired with:
 - [Goal1784 Gemini Review of Goal1783](../reviews/goal1784_gemini_review_goal1783_numpy_cpu_partner_adapter_2026-05-12.md)
 - [Goal1785 Linux PyTorch and CuPy Partner Validation](../reports/goal1785_linux_pytorch_cupy_partner_validation_2026-05-12.md)
 - [Goal1786 Gemini Review of Goal1785](../reviews/goal1786_gemini_review_goal1785_linux_pytorch_cupy_partner_validation_2026-05-12.md)
+- [Goal1787 OptiX Partner Any-Hit Host-Stage Execution](../reports/goal1787_optix_partner_anyhit_host_stage_2026-05-12.md)
+- [Goal1788 Claude Review of Goal1787](../reviews/goal1788_claude_review_goal1787_optix_partner_anyhit_host_stage_2026-05-12.md)
+- [Goal1789 Gemini Review of Goal1787](../reviews/goal1789_gemini_review_goal1787_optix_partner_anyhit_host_stage_2026-05-12.md)
+- [Goal1790 3-AI Consensus for Goal1787](../reviews/goal1790_3ai_consensus_goal1787_optix_partner_anyhit_host_stage_2026-05-12.md)
 
 ## Claim Boundary
 

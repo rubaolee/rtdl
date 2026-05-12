@@ -94,6 +94,7 @@ from .graph_reference import FrontierVertex
 from .graph_reference import normalize_edge_set
 from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
+from . import partner as _partner
 
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
@@ -2347,6 +2348,133 @@ def pack_triangles_2d_from_arrays(
 
     arr = (_RtdlTriangle * n).from_buffer_copy(buf)
     return PackedTriangles(records=arr, count=n, dimension=2)
+
+
+_PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
+_PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
+
+
+def _partner_column_to_host_array(value, *, column_name: str):
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        raise RuntimeError("partner OptiX host staging requires numpy")
+
+    ctx = _partner.auto(value)
+    descriptor = ctx.tensor(value, access="read")
+    if len(descriptor.shape) != 1:
+        raise ValueError(f"partner column {column_name!r} must be one-dimensional")
+    if descriptor.source_protocol == "torch":
+        tensor = value.detach() if callable(getattr(value, "detach", None)) else value
+        tensor = tensor.cpu() if callable(getattr(tensor, "cpu", None)) else tensor
+        if not callable(getattr(tensor, "numpy", None)):
+            raise TypeError(f"PyTorch partner column {column_name!r} cannot be converted to a host NumPy array")
+        return tensor.numpy(), descriptor
+    if descriptor.source_protocol == "cupy":
+        cupy = __import__("cupy")
+        return cupy.asnumpy(value), descriptor
+    if descriptor.device_type != "cpu":
+        raise TypeError(
+            f"partner column {column_name!r} uses device {descriptor.device_type}:{descriptor.device_id}; "
+            "only torch/cupy CUDA columns have a defined first-wave host staging path"
+        )
+    return _np.asarray(value), descriptor
+
+
+def _partner_host_stage_columns(columns: dict, required: tuple[str, ...], *, label: str):
+    missing = [name for name in required if name not in columns]
+    unexpected = [name for name in columns if name not in required]
+    if missing:
+        raise ValueError(f"missing {label} partner columns: {', '.join(missing)}")
+    if unexpected:
+        raise ValueError(f"unexpected {label} partner columns: {', '.join(unexpected)}")
+    arrays = {}
+    descriptors = {}
+    for name in required:
+        arrays[name], descriptors[name] = _partner_column_to_host_array(columns[name], column_name=f"{label}.{name}")
+    return arrays, descriptors
+
+
+def pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns: dict, triangle_columns: dict) -> dict[str, object]:
+    """Host-stage partner-owned ray/triangle columns into existing OptiX packets.
+
+    This is the first v2.0 partner execution bridge. It intentionally reports
+    `host_stage` transfer behavior and does not claim zero-copy.
+    """
+    ray_arrays, ray_descriptors = _partner_host_stage_columns(ray_columns, _PARTNER_RAY_2D_COLUMNS, label="rays")
+    triangle_arrays, triangle_descriptors = _partner_host_stage_columns(
+        triangle_columns,
+        _PARTNER_TRIANGLE_2D_COLUMNS,
+        label="triangles",
+    )
+    packed_rays = pack_rays_2d_from_arrays(
+        ray_arrays["ids"],
+        ray_arrays["ox"],
+        ray_arrays["oy"],
+        ray_arrays["dx"],
+        ray_arrays["dy"],
+        ray_arrays["tmax"],
+    )
+    packed_triangles = pack_triangles_2d_from_arrays(
+        triangle_arrays["ids"],
+        triangle_arrays["x0"],
+        triangle_arrays["y0"],
+        triangle_arrays["x1"],
+        triangle_arrays["y1"],
+        triangle_arrays["x2"],
+        triangle_arrays["y2"],
+    )
+    source_protocols = tuple(
+        sorted(
+            {
+                descriptor.source_protocol
+                for descriptor in (*ray_descriptors.values(), *triangle_descriptors.values())
+            }
+        )
+    )
+    source_devices = tuple(
+        sorted(
+            {
+                f"{descriptor.device_type}:{descriptor.device_id}"
+                for descriptor in (*ray_descriptors.values(), *triangle_descriptors.values())
+            }
+        )
+    )
+    return {
+        "rays": packed_rays,
+        "triangles": packed_triangles,
+        "metadata": {
+            "transfer_mode": "host_stage",
+            "source_protocols": source_protocols,
+            "source_devices": source_devices,
+            "ray_count": int(packed_rays.count),
+            "triangle_count": int(packed_triangles.count),
+            "true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+        },
+    }
+
+
+def run_optix_partner_ray_triangle_any_hit_2d(ray_columns: dict, triangle_columns: dict) -> dict[str, object]:
+    """Run prepared OptiX any-hit count from partner-owned 2-D column tensors.
+
+    First-wave v2.0 behavior is explicit host staging: partner tensors are
+    validated through `RtdlTensorDescriptor`, copied to host arrays as needed,
+    packed through the existing app-agnostic OptiX ABI, and then executed.
+    """
+    prepared_inputs = pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns, triangle_columns)
+    scene = prepare_optix_ray_triangle_any_hit_2d(prepared_inputs["triangles"])
+    try:
+        hit_count = scene.count(prepared_inputs["rays"])
+    finally:
+        scene.close()
+    timings = get_last_phase_timings()
+    return {
+        **prepared_inputs["metadata"],
+        "hit_count": int(hit_count),
+        "phase_timings": timings,
+    }
 
 
 def pack_rays(
