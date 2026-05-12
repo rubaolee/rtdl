@@ -514,12 +514,12 @@ extern "C" int rtdl_hiprt_run_fixed_radius_neighbors_2d(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_lsi(
+extern "C" int rtdl_hiprt_run_segment_pair_intersection(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
     size_t right_count,
-    RtdlLsiRow** rows_out,
+    RtdlSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -529,7 +529,7 @@ extern "C" int rtdl_hiprt_run_lsi(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_lsi_2d(left, left_count, right, right_count, rows_out, row_count_out);
+        run_segment_pair_intersection_2d(left, left_count, right, right_count, rows_out, row_count_out);
     }, error_out, error_size);
 }
 
@@ -571,7 +571,7 @@ extern "C" int rtdl_hiprt_run_ray_anyhit_2d(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_pip(
+extern "C" int rtdl_hiprt_run_point_primitive_anyhit_packet(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlPolygonRef* polygons,
@@ -592,7 +592,7 @@ extern "C" int rtdl_hiprt_run_pip(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_overlay(
+extern "C" int rtdl_hiprt_run_shape_pair_relation_flags(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -601,7 +601,7 @@ extern "C" int rtdl_hiprt_run_overlay(
     size_t right_count,
     const double* right_vertices_xy,
     size_t right_vertex_xy_count,
-    RtdlOverlayRow** rows_out,
+    RtdlShapePairRelationRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -611,7 +611,7 @@ extern "C" int rtdl_hiprt_run_overlay(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_overlay_2d(
+        run_shape_pair_relation_flags_2d(
             left_polygons,
             left_count,
             left_vertices_xy,
@@ -644,7 +644,7 @@ extern "C" int rtdl_hiprt_run_point_nearest_segment(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_segment_polygon_hitcount(
+extern "C" int rtdl_hiprt_run_segment_shape_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -673,7 +673,7 @@ extern "C" int rtdl_hiprt_run_segment_polygon_hitcount(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_segment_polygon_anyhit_rows(
+extern "C" int rtdl_hiprt_run_segment_shape_anyhit_rows(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -702,7 +702,7 @@ extern "C" int rtdl_hiprt_run_segment_polygon_anyhit_rows(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_bfs_expand(
+extern "C" int rtdl_hiprt_run_frontier_edge_traversal_packet(
     const RtdlFrontierVertex* frontier,
     size_t frontier_count,
     const uint32_t* row_offsets,
@@ -762,7 +762,7 @@ extern "C" void rtdl_hiprt_destroy_prepared_graph_csr(void* prepared) {
     delete reinterpret_cast<PreparedGraphCSR*>(prepared);
 }
 
-extern "C" int rtdl_hiprt_run_prepared_bfs_expand(
+extern "C" int rtdl_hiprt_run_prepared_frontier_edge_traversal_packet(
     void* prepared,
     const RtdlFrontierVertex* frontier,
     size_t frontier_count,
@@ -794,11 +794,11 @@ extern "C" int rtdl_hiprt_run_prepared_bfs_expand(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_triangle_probe(
+extern "C" int rtdl_hiprt_run_triangle_cycle_candidates(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlEdgeSeed* seeds,
     size_t seed_count,
     uint32_t enforce_id_ascending,
@@ -813,11 +813,11 @@ extern "C" int rtdl_hiprt_run_triangle_probe(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_triangle_probe(
+        run_triangle_cycle_candidates(
             row_offsets,
             row_offset_count,
             column_indices,
-            column_index_count,
+            edge_index_count,
             seeds,
             seed_count,
             enforce_id_ascending != 0u,
@@ -827,7 +827,7 @@ extern "C" int rtdl_hiprt_run_triangle_probe(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_run_prepared_triangle_probe(
+extern "C" int rtdl_hiprt_run_prepared_triangle_cycle_candidates(
     void* prepared,
     const RtdlEdgeSeed* seeds,
     size_t seed_count,
@@ -846,7 +846,7 @@ extern "C" int rtdl_hiprt_run_prepared_triangle_probe(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_prepared_triangle_probe(
+        run_prepared_triangle_cycle_candidates(
             *reinterpret_cast<PreparedGraphCSR*>(prepared),
             seeds,
             seed_count,
@@ -950,7 +950,7 @@ extern "C" int rtdl_hiprt_run_grouped_sum(
     }, error_out, error_size);
 }
 
-extern "C" int rtdl_hiprt_prepare_db_table(
+extern "C" int rtdl_hiprt_prepare_columnar_payload(
     const RtdlDbField* fields,
     size_t field_count,
     const RtdlDbScalar* row_values,
@@ -968,7 +968,7 @@ extern "C" int rtdl_hiprt_prepare_db_table(
     }, error_out, error_size);
 }
 
-extern "C" void rtdl_hiprt_destroy_prepared_db_table(void* prepared) {
+extern "C" void rtdl_hiprt_destroy_prepared_columnar_payload(void* prepared) {
     delete reinterpret_cast<PreparedDbTable*>(prepared);
 }
 
@@ -982,7 +982,7 @@ extern "C" int rtdl_hiprt_run_prepared_conjunctive_scan(
     size_t error_size) {
     return handle_call([&]() {
         if (prepared == nullptr) {
-            throw std::runtime_error("prepared HIPRT DB table handle must not be null");
+            throw std::runtime_error("prepared HIPRT dataset handle must not be null");
         }
         if (rows_out == nullptr || row_count_out == nullptr) {
             throw std::runtime_error("output pointers must not be null");
@@ -1009,7 +1009,7 @@ extern "C" int rtdl_hiprt_run_prepared_grouped_count(
     size_t error_size) {
     return handle_call([&]() {
         if (prepared == nullptr) {
-            throw std::runtime_error("prepared HIPRT DB table handle must not be null");
+            throw std::runtime_error("prepared HIPRT dataset handle must not be null");
         }
         if (rows_out == nullptr || row_count_out == nullptr) {
             throw std::runtime_error("output pointers must not be null");
@@ -1038,7 +1038,7 @@ extern "C" int rtdl_hiprt_run_prepared_grouped_sum(
     size_t error_size) {
     return handle_call([&]() {
         if (prepared == nullptr) {
-            throw std::runtime_error("prepared HIPRT DB table handle must not be null");
+            throw std::runtime_error("prepared HIPRT dataset handle must not be null");
         }
         if (rows_out == nullptr || row_count_out == nullptr) {
             throw std::runtime_error("output pointers must not be null");
@@ -1098,32 +1098,3 @@ extern "C" int rtdl_hiprt_context_probe(
     }
 
     oroDeviceProp props{};
-    oro_err = oroGetDeviceProperties(&props, device);
-    if (oro_err != oroSuccess) {
-        oroCtxDestroy(ctx);
-        set_message(error, error_size, oro_error_message("oroGetDeviceProperties", oro_err));
-        return 6;
-    }
-    set_message(device_name, device_name_size, props.name);
-
-    hiprtContextCreationInput input{};
-    input.ctxt = oroGetRawCtx(ctx);
-    input.device = oroGetRawDevice(device);
-    input.deviceType = std::strstr(props.name, "NVIDIA") != nullptr ? hiprtDeviceNVIDIA : hiprtDeviceAMD;
-    *device_type = static_cast<int>(input.deviceType);
-
-    hiprtContext hiprt_ctx{};
-    hiprtError hiprt_err = hiprtCreateContext(HIPRT_API_VERSION, input, hiprt_ctx);
-    if (hiprt_err != hiprtSuccess) {
-        oroCtxDestroy(ctx);
-        set_message(error, error_size, hiprt_error_message("hiprtCreateContext", hiprt_err));
-        return 7;
-    }
-    hiprt_err = hiprtDestroyContext(hiprt_ctx);
-    oroCtxDestroy(ctx);
-    if (hiprt_err != hiprtSuccess) {
-        set_message(error, error_size, hiprt_error_message("hiprtDestroyContext", hiprt_err));
-        return 8;
-    }
-    return 0;
-}

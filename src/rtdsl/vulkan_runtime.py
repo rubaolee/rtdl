@@ -1,9 +1,9 @@
-"""vulkan_runtime.py — Vulkan KHR ray-tracing backend for rtdl.
+﻿"""vulkan_runtime.py â€” Vulkan KHR ray-tracing backend for rtdl.
 
 Public API mirrors optix_runtime.py (just substitute "vulkan" for "optix"):
-  run_vulkan(kernel_fn_or_compiled, **inputs)        → tuple[dict, ...]
-  prepare_vulkan(kernel_fn_or_compiled)               → PreparedVulkanKernel
-  vulkan_version()                                    → tuple[int, int, int]
+  run_vulkan(kernel_fn_or_compiled, **inputs)        â†’ tuple[dict, ...]
+  prepare_vulkan(kernel_fn_or_compiled)               â†’ PreparedVulkanKernel
+  vulkan_version()                                    â†’ tuple[int, int, int]
 
 Current Vulkan-native workload surface:
   segment_intersection, point_in_polygon, overlay_compose,
@@ -50,7 +50,7 @@ from .embree_runtime import _RtdlFrontierVertex
 from .embree_runtime import _RtdlBfsExpandRow
 from .embree_runtime import _RtdlEdgeSeed
 from .embree_runtime import _RtdlTriangleRow
-from .embree_runtime import _RtdlDbColumn
+from .embree_runtime import _RtdlPayloadField
 from .embree_runtime import _encode_db_table_columnar
 from .oracle_runtime import _decode_db_group_key
 from .oracle_runtime import _RtdlDbField
@@ -92,10 +92,10 @@ _prepared_vulkan_execution_cache: OrderedDict[tuple[object, ...], "PreparedVulka
 _DB_MAX_ROWS_PER_JOB = 1_000_000
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # ctypes output row structs  (must match rtdl_vulkan.cpp)
 # Input geometry structs are imported from embree_runtime (same memory layout).
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _RtdlLsiRow(ctypes.Structure):
     _fields_ = [
@@ -183,9 +183,9 @@ class _RtdlDbGroupedSumRow(ctypes.Structure):
     ]
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Row-view wrapper (RAII-style, mirrors OptixRowView)
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @dataclass
 class VulkanRowView:
@@ -236,9 +236,9 @@ def _project_ray_hitcount_view_to_anyhit(rows: VulkanRowView) -> tuple[dict[str,
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Prepared-kernel API
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class PreparedVulkanKernel:
     """Compiled-once handle for the Vulkan backend.  Mirrors PreparedOptixKernel."""
@@ -471,9 +471,9 @@ def clear_vulkan_prepared_cache() -> None:
     _prepared_vulkan_execution_cache.clear()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Public run_vulkan
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def run_vulkan(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     """Execute a compiled kernel on the Vulkan KHR ray-tracing backend.
@@ -483,8 +483,8 @@ def run_vulkan(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     kernel_fn_or_compiled:
         A function decorated with ``@rt.kernel`` or a ``CompiledKernel``.
     result_mode:
-        ``"dict"`` (default) — returns ``tuple[dict[str, object], ...]``
-        ``"raw"`` — returns a ``VulkanRowView`` (caller must call ``.close()``)
+        ``"dict"`` (default) â€” returns ``tuple[dict[str, object], ...]``
+        ``"raw"`` â€” returns a ``VulkanRowView`` (caller must call ``.close()``)
     **inputs:
         Geometry inputs; may be raw records or pre-packed ``Packed*`` objects.
     """
@@ -749,7 +749,7 @@ class VulkanPreparedDbDataset:
         *,
         primary_fields=(),
         columns_array=None,
-        column_count: int | None = None,
+        field_count: int | None = None,
         transfer: str = "row",
         keepalive=(),
     ):
@@ -757,7 +757,7 @@ class VulkanPreparedDbDataset:
         self.fields_array = fields_array
         self.row_values_array = row_values_array
         self.columns_array = columns_array
-        self.column_count = int(column_count or 0)
+        self.field_count = int(field_count or 0)
         self.row_count = int(row_count)
         self.transfer = transfer
         self._keepalive = keepalive
@@ -770,14 +770,14 @@ class VulkanPreparedDbDataset:
         handle = ctypes.c_void_p()
         error = ctypes.create_string_buffer(4096)
         if transfer == "columnar":
-            if not hasattr(self.library, "rtdl_vulkan_db_dataset_create_columnar"):
+            if not hasattr(self.library, "rtdl_vulkan_columnar_payload_create_from_columns"):
                 raise RuntimeError(
-                    "loaded Vulkan backend does not export rtdl_vulkan_db_dataset_create_columnar; "
+                    "loaded Vulkan backend does not export rtdl_vulkan_columnar_payload_create_from_columns; "
                     "rebuild the Vulkan backend from the current checkout"
                 )
-            status = self.library.rtdl_vulkan_db_dataset_create_columnar(
+            status = self.library.rtdl_vulkan_columnar_payload_create_from_columns(
                 self.columns_array,
-                ctypes.c_size_t(self.column_count),
+                ctypes.c_size_t(self.field_count),
                 ctypes.c_size_t(self.row_count),
                 primary_fields_array,
                 ctypes.c_size_t(len(primary_field_bytes)),
@@ -786,7 +786,7 @@ class VulkanPreparedDbDataset:
                 len(error),
             )
         else:
-            status = self.library.rtdl_vulkan_db_dataset_create(
+            status = self.library.rtdl_vulkan_columnar_payload_create(
                 self.fields_array,
                 ctypes.c_size_t(len(self.fields_array)),
                 self.row_values_array,
@@ -803,14 +803,14 @@ class VulkanPreparedDbDataset:
 
     def close(self) -> None:
         if not self._closed and self.handle:
-            self.library.rtdl_vulkan_db_dataset_destroy(self.handle)
+            self.library.rtdl_vulkan_columnar_payload_destroy(self.handle)
         self._closed = True
 
     def conjunctive_scan(self, clauses_array) -> VulkanRowView:
         rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_vulkan_db_dataset_conjunctive_scan(
+        status = self.library.rtdl_vulkan_columnar_payload_multi_predicate_scan(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -832,7 +832,7 @@ class VulkanPreparedDbDataset:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_vulkan_db_dataset_grouped_count(
+        status = self.library.rtdl_vulkan_columnar_payload_grouped_reduction_count(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -855,7 +855,7 @@ class VulkanPreparedDbDataset:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_vulkan_db_dataset_grouped_sum(
+        status = self.library.rtdl_vulkan_columnar_payload_grouped_reduction_sum(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -905,7 +905,7 @@ class PreparedVulkanDbDataset:
             row_count,
             primary_fields=primary_fields,
             columns_array=columns_array,
-            column_count=len(columns_array) if columns_array is not None else None,
+            field_count=len(columns_array) if columns_array is not None else None,
             transfer=transfer,
             keepalive=keepalive,
         )
@@ -1022,7 +1022,7 @@ def _prepare_db_vulkan_execution(compiled: CompiledKernel, normalized_inputs, li
             row_count,
             primary_fields=_db_primary_fields_from_clauses(predicates.clauses),
             columns_array=columns_array,
-            column_count=len(columns_array),
+            field_count=len(columns_array),
             transfer="columnar",
             keepalive=keepalive,
         )
@@ -1060,7 +1060,7 @@ def _prepare_db_vulkan_execution(compiled: CompiledKernel, normalized_inputs, li
         row_count,
         primary_fields=_db_primary_fields_from_clauses(encoded_predicates),
         columns_array=columns_array,
-        column_count=len(columns_array),
+        field_count=len(columns_array),
         transfer="columnar",
         keepalive=keepalive,
     )
@@ -1158,9 +1158,9 @@ def _prepared_execution_cache_key(compiled: CompiledKernel, expected_inputs, inp
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Version query
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def vulkan_version() -> tuple:
     """Return (major, minor, patch) of the Vulkan backend library."""
@@ -1173,9 +1173,9 @@ def vulkan_version() -> tuple:
     return major.value, minor.value, patch.value
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Internal packed call helpers
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _call_lsi_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
     left  = packed[compiled.candidates.left.name]
@@ -1183,7 +1183,7 @@ def _call_lsi_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowV
     rows_ptr  = ctypes.POINTER(_RtdlLsiRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_lsi(
+    status = lib.rtdl_vulkan_run_segment_pair_intersection(
         left.records, left.count,
         right.records, right.count,
         ctypes.byref(rows_ptr), ctypes.byref(row_count),
@@ -1208,7 +1208,7 @@ def _call_pip_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowV
     rows_ptr  = ctypes.POINTER(_RtdlPipRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_pip(
+    status = lib.rtdl_vulkan_run_point_primitive_anyhit_packet(
         points.records, points.count,
         polygons.refs, polygons.polygon_count,
         polygons.vertices_xy, polygons.vertex_xy_count,
@@ -1228,7 +1228,7 @@ def _call_overlay_vulkan_packed(compiled: CompiledKernel, packed, lib) -> Vulkan
     rows_ptr  = ctypes.POINTER(_RtdlOverlayRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_overlay(
+    status = lib.rtdl_vulkan_run_shape_pair_relation_flags(
         left.refs, left.polygon_count,
         left.vertices_xy, left.vertex_xy_count,
         right.refs, right.polygon_count,
@@ -1321,7 +1321,7 @@ def _call_segment_polygon_hitcount_vulkan_packed(compiled: CompiledKernel, packe
     rows_ptr  = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_segment_polygon_hitcount(
+    status = lib.rtdl_vulkan_run_segment_shape_hitcount(
         segments.records, segments.count,
         polygons.refs, polygons.polygon_count,
         polygons.vertices_xy, polygons.vertex_xy_count,
@@ -1340,7 +1340,7 @@ def _call_segment_polygon_anyhit_rows_vulkan_packed(compiled: CompiledKernel, pa
     rows_ptr  = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_segment_polygon_anyhit_rows(
+    status = lib.rtdl_vulkan_run_segment_shape_anyhit_rows(
         segments.records, segments.count,
         polygons.refs, polygons.polygon_count,
         polygons.vertices_xy, polygons.vertex_xy_count,
@@ -1445,10 +1445,10 @@ def _call_knn_rows_vulkan_packed(compiled: CompiledKernel, packed, lib) -> Vulka
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
     if query_points.dimension == 3:
-        symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_knn_rows_3d")
+        symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_k_closest_hits_3d")
         if symbol is None:
             raise RuntimeError(
-                "loaded Vulkan backend library does not export rtdl_vulkan_run_knn_rows_3d; "
+                "loaded Vulkan backend library does not export rtdl_vulkan_run_k_closest_hits_3d; "
                 "rebuild the Vulkan backend from current main"
             )
         status = symbol(
@@ -1458,7 +1458,7 @@ def _call_knn_rows_vulkan_packed(compiled: CompiledKernel, packed, lib) -> Vulka
             ctypes.byref(rows_ptr), ctypes.byref(row_count),
             error, len(error))
     else:
-        status = lib.rtdl_vulkan_run_knn_rows(
+        status = lib.rtdl_vulkan_run_k_closest_hits(
             query_points.records, query_points.count,
             search_points.records, search_points.count,
             k,
@@ -1472,7 +1472,7 @@ def _call_knn_rows_vulkan_packed(compiled: CompiledKernel, packed, lib) -> Vulka
 
 
 def _call_bfs_expand_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
-    symbol = _require_vulkan_graph_symbol(lib, "rtdl_vulkan_run_bfs_expand")
+    symbol = _require_vulkan_graph_symbol(lib, "rtdl_vulkan_run_frontier_edge_traversal_packet")
     frontier = packed[compiled.candidates.left.name]
     graph = packed[compiled.candidates.right.name]
     visited_name = str(compiled.refine_op.predicate.options["visited_input"])
@@ -1482,7 +1482,7 @@ def _call_bfs_expand_vulkan_packed(compiled: CompiledKernel, packed, lib) -> Vul
     error = ctypes.create_string_buffer(4096)
     status = symbol(
         graph.row_offsets, graph.row_offset_count,
-        graph.column_indices, graph.column_index_count,
+        graph.column_indices, graph.field_index_count,
         frontier.records, frontier.count,
         visited.records, visited.count,
         ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("dedupe", True) else 0),
@@ -1500,7 +1500,7 @@ def _call_bfs_expand_vulkan_packed(compiled: CompiledKernel, packed, lib) -> Vul
 
 
 def _call_triangle_probe_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
-    symbol = _require_vulkan_graph_symbol(lib, "rtdl_vulkan_run_triangle_probe")
+    symbol = _require_vulkan_graph_symbol(lib, "rtdl_vulkan_run_triangle_cycle_candidates")
     seeds = packed[compiled.candidates.left.name]
     graph = packed[compiled.candidates.right.name]
     rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
@@ -1508,7 +1508,7 @@ def _call_triangle_probe_vulkan_packed(compiled: CompiledKernel, packed, lib) ->
     error = ctypes.create_string_buffer(4096)
     status = symbol(
         graph.row_offsets, graph.row_offset_count,
-        graph.column_indices, graph.column_index_count,
+        graph.column_indices, graph.field_index_count,
         seeds.records, seeds.count,
         ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("order") == "id_ascending" else 0),
         ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("unique", True) else 0),
@@ -1525,9 +1525,9 @@ def _call_triangle_probe_vulkan_packed(compiled: CompiledKernel, packed, lib) ->
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Library loading
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @functools.lru_cache(maxsize=1)
 def _load_vulkan_library():
@@ -1578,16 +1578,16 @@ def _register_argtypes(lib) -> None:
     _require_backend_symbol(lib, "rtdl_vulkan_free_rows").argtypes = [ctypes.c_void_p]
     lib.rtdl_vulkan_free_rows.restype  = None
 
-    _require_backend_symbol(lib, "rtdl_vulkan_run_lsi").argtypes = [
+    _require_backend_symbol(lib, "rtdl_vulkan_run_segment_pair_intersection").argtypes = [
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_vulkan_run_lsi.restype = ctypes.c_int
+    lib.rtdl_vulkan_run_segment_pair_intersection.restype = ctypes.c_int
 
-    _require_backend_symbol(lib, "rtdl_vulkan_run_pip").argtypes = [
+    _require_backend_symbol(lib, "rtdl_vulkan_run_point_primitive_anyhit_packet").argtypes = [
         ctypes.POINTER(_RtdlPoint),      ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -1596,9 +1596,9 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_vulkan_run_pip.restype = ctypes.c_int
+    lib.rtdl_vulkan_run_point_primitive_anyhit_packet.restype = ctypes.c_int
 
-    _require_backend_symbol(lib, "rtdl_vulkan_run_overlay").argtypes = [
+    _require_backend_symbol(lib, "rtdl_vulkan_run_shape_pair_relation_flags").argtypes = [
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
@@ -1607,7 +1607,7 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_vulkan_run_overlay.restype = ctypes.c_int
+    lib.rtdl_vulkan_run_shape_pair_relation_flags.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_vulkan_run_ray_hitcount").argtypes = [
         ctypes.POINTER(_RtdlRay2D),      ctypes.c_size_t,
@@ -1672,7 +1672,7 @@ def _register_argtypes(lib) -> None:
         ]
         optional_anyhit3d.restype = ctypes.c_int
 
-    _require_backend_symbol(lib, "rtdl_vulkan_run_segment_polygon_hitcount").argtypes = [
+    _require_backend_symbol(lib, "rtdl_vulkan_run_segment_shape_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -1680,9 +1680,9 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_vulkan_run_segment_polygon_hitcount.restype = ctypes.c_int
+    lib.rtdl_vulkan_run_segment_shape_hitcount.restype = ctypes.c_int
 
-    _require_backend_symbol(lib, "rtdl_vulkan_run_segment_polygon_anyhit_rows").argtypes = [
+    _require_backend_symbol(lib, "rtdl_vulkan_run_segment_shape_anyhit_rows").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -1690,7 +1690,7 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_vulkan_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
+    lib.rtdl_vulkan_run_segment_shape_anyhit_rows.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_vulkan_run_point_nearest_segment").argtypes = [
         ctypes.POINTER(_RtdlPoint),   ctypes.c_size_t,
@@ -1724,7 +1724,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    _require_backend_symbol(lib, "rtdl_vulkan_run_knn_rows").argtypes = [
+    _require_backend_symbol(lib, "rtdl_vulkan_run_k_closest_hits").argtypes = [
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
         ctypes.c_size_t,
@@ -1732,8 +1732,8 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_vulkan_run_knn_rows.restype = ctypes.c_int
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_knn_rows_3d")
+    lib.rtdl_vulkan_run_k_closest_hits.restype = ctypes.c_int
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_k_closest_hits_3d")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
@@ -1744,7 +1744,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_bfs_expand")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_frontier_edge_traversal_packet")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
@@ -1757,7 +1757,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_triangle_probe")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_triangle_cycle_candidates")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
@@ -1810,7 +1810,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_create")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_columnar_payload_create")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(_RtdlDbField),
@@ -1825,10 +1825,10 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_create_columnar")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_columnar_payload_create_from_columns")
     if symbol is not None:
         symbol.argtypes = [
-            ctypes.POINTER(_RtdlDbColumn),
+            ctypes.POINTER(_RtdlPayloadField),
             ctypes.c_size_t,
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_char_p),
@@ -1839,12 +1839,12 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_destroy")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_columnar_payload_destroy")
     if symbol is not None:
         symbol.argtypes = [ctypes.c_void_p]
         symbol.restype = None
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_conjunctive_scan")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_columnar_payload_multi_predicate_scan")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -1857,7 +1857,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_grouped_count")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_columnar_payload_grouped_reduction_count")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -1871,7 +1871,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_grouped_sum")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_columnar_payload_grouped_reduction_sum")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -1917,9 +1917,9 @@ def _require_vulkan_graph_symbol(lib, symbol_name: str):
     return symbol
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Small internal utilities
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _check_status(status: int, error=None) -> None:
     if status == 0:
@@ -1987,7 +1987,7 @@ def _pack_for_geometry(geometry_input, payload):
             row_offsets=row_offsets,
             row_offset_count=len(normalized.row_offsets),
             column_indices=column_indices,
-            column_index_count=len(normalized.column_indices),
+            field_index_count=len(normalized.column_indices),
         )
     if geometry_name == "vertex_frontier":
         if isinstance(payload, PackedVertexFrontier):

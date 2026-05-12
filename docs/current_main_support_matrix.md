@@ -1,13 +1,16 @@
 # RTDL Current Main Support Matrix
 
-Status: live support matrix for the released `v1.6` tag and current `main`.
+Status: live support matrix for the released `v1.8` source-tree Python+RTDL
+language boundary and current `main`.
 
 This page is intentionally separate from the
 [v1.6 release support matrix](release_reports/v1_6/support_matrix.md).
-The released `v1.6` tag is the current public release boundary. Users who
-build from the latest source should read this page together with the release
-matrix because stale local backend libraries may not contain the newest native
-symbols until rebuilt.
+The released `v1.8` tag is the current public source-tree release boundary.
+It includes the Python+RTDL boundary and tracked native ABI cleanup that were
+not part of the older v1.6 tag.
+Users who build from the latest source should read this page together with the
+release matrix because stale local backend libraries may not contain the newest
+native symbols until rebuilt.
 
 For the machine-readable feature-by-engine contract, read
 [Engine Feature Support Contract](features/engine_support_matrix.md). Every
@@ -17,8 +20,8 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
 
 ## Boundary
 
-- Current public release: `v1.6`.
-- Current `main`: released `v1.6` surface plus any later untagged local work.
+- Current public release: `v1.8`.
+- Current `main`: released `v1.8` source-tree Python+RTDL language surface.
 - The `v0.9.6` release boundary includes the native/native-assisted any-hit work
   and prepared repeated-query visibility/count optimizations from Goals650-681.
 - The `v0.9.8` release boundary added bounded RTX app evidence and public wording
@@ -31,9 +34,11 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
   excluded rows, and explicit `COLLECT_K_BOUNDED` deferral to v1.5.1.
 - The `v1.6` release boundary packages the first Python+RTDL architecture
   milestone for the supported Embree+OptiX primitive surface.
-- The `v1.6` release is not a whole-app speedup claim and not a
-  zero-app-knowledge native-engine release; some native Embree/OptiX entry
-  points remain workload-shaped compatibility/proof surfaces.
+- The historical `v1.6` release is not a whole-app speedup claim and not a
+  zero-app-knowledge native-engine release.
+- The tracked release native surface has app-agnostic source/ABI migration
+  evidence through Goal1758 and v1.8 release consensus through Goal1762 and
+  Goal1769.
 - Backend libraries must be rebuilt from current source before current-main
   native paths are available.
 - Stale backend libraries may fall back to compatibility dispatch or reject a

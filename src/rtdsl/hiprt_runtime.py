@@ -1,4 +1,4 @@
-"""HIPRT backend probe utilities for RTDL.
+﻿"""HIPRT backend probe utilities for RTDL.
 
 This module intentionally exposes only a bounded bring-up surface:
 version reporting and context creation. It does not claim RTDL workload
@@ -373,7 +373,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_ray_hitcount_2d.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_lsi.argtypes = [
+    lib.rtdl_hiprt_run_segment_pair_intersection.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment),
@@ -383,8 +383,8 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_lsi.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_pip.argtypes = [
+    lib.rtdl_hiprt_run_segment_pair_intersection.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_point_primitive_anyhit_packet.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -396,8 +396,8 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_pip.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_overlay.argtypes = [
+    lib.rtdl_hiprt_run_point_primitive_anyhit_packet.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_shape_pair_relation_flags.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -411,7 +411,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_overlay.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_shape_pair_relation_flags.restype = ctypes.c_int
     lib.rtdl_hiprt_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
@@ -423,7 +423,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_point_nearest_segment.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_segment_polygon_hitcount.argtypes = [
+    lib.rtdl_hiprt_run_segment_shape_hitcount.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -435,8 +435,8 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_segment_polygon_hitcount.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_segment_polygon_anyhit_rows.argtypes = [
+    lib.rtdl_hiprt_run_segment_shape_hitcount.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_segment_shape_anyhit_rows.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -448,7 +448,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_segment_shape_anyhit_rows.restype = ctypes.c_int
     lib.rtdl_hiprt_run_fixed_radius_neighbors_3d.argtypes = [
         ctypes.POINTER(_RtdlPoint3D),
         ctypes.c_size_t,
@@ -497,7 +497,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_fixed_radius_neighbors_2d.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_bfs_expand.argtypes = [
+    lib.rtdl_hiprt_run_frontier_edge_traversal_packet.argtypes = [
         ctypes.POINTER(_RtdlFrontierVertex),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_uint32),
@@ -513,7 +513,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_bfs_expand.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_frontier_edge_traversal_packet.restype = ctypes.c_int
     lib.rtdl_hiprt_prepare_graph_csr.argtypes = [
         ctypes.POINTER(ctypes.c_uint32),
         ctypes.c_size_t,
@@ -525,7 +525,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_prepare_graph_csr.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_prepared_bfs_expand.argtypes = [
+    lib.rtdl_hiprt_run_prepared_frontier_edge_traversal_packet.argtypes = [
         ctypes.c_void_p,
         ctypes.POINTER(_RtdlFrontierVertex),
         ctypes.c_size_t,
@@ -537,8 +537,8 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_prepared_bfs_expand.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_triangle_probe.argtypes = [
+    lib.rtdl_hiprt_run_prepared_frontier_edge_traversal_packet.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_triangle_cycle_candidates.argtypes = [
         ctypes.POINTER(ctypes.c_uint32),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_uint32),
@@ -552,8 +552,8 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_triangle_probe.restype = ctypes.c_int
-    lib.rtdl_hiprt_run_prepared_triangle_probe.argtypes = [
+    lib.rtdl_hiprt_run_triangle_cycle_candidates.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_prepared_triangle_cycle_candidates.argtypes = [
         ctypes.c_void_p,
         ctypes.POINTER(_RtdlEdgeSeed),
         ctypes.c_size_t,
@@ -564,7 +564,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_run_prepared_triangle_probe.restype = ctypes.c_int
+    lib.rtdl_hiprt_run_prepared_triangle_cycle_candidates.restype = ctypes.c_int
     lib.rtdl_hiprt_destroy_prepared_graph_csr.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_destroy_prepared_graph_csr.restype = None
     lib.rtdl_hiprt_run_conjunctive_scan.argtypes = [
@@ -609,7 +609,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_grouped_sum.restype = ctypes.c_int
-    lib.rtdl_hiprt_prepare_db_table.argtypes = [
+    lib.rtdl_hiprt_prepare_columnar_payload.argtypes = [
         ctypes.POINTER(_RtdlDbField),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlDbScalar),
@@ -618,7 +618,7 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    lib.rtdl_hiprt_prepare_db_table.restype = ctypes.c_int
+    lib.rtdl_hiprt_prepare_columnar_payload.restype = ctypes.c_int
     lib.rtdl_hiprt_run_prepared_conjunctive_scan.argtypes = [
         ctypes.c_void_p,
         ctypes.POINTER(_RtdlDbClause),
@@ -652,8 +652,8 @@ def _hiprt_lib() -> ctypes.CDLL:
         ctypes.c_size_t,
     ]
     lib.rtdl_hiprt_run_prepared_grouped_sum.restype = ctypes.c_int
-    lib.rtdl_hiprt_destroy_prepared_db_table.argtypes = [ctypes.c_void_p]
-    lib.rtdl_hiprt_destroy_prepared_db_table.restype = None
+    lib.rtdl_hiprt_destroy_prepared_columnar_payload.argtypes = [ctypes.c_void_p]
+    lib.rtdl_hiprt_destroy_prepared_columnar_payload.restype = None
     lib.rtdl_hiprt_prepare_ray_hitcount_3d.argtypes = [
         ctypes.POINTER(_RtdlTriangle3D),
         ctypes.c_size_t,
@@ -818,7 +818,7 @@ def segment_intersection_hiprt(
     rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_run_lsi(
+    status = _hiprt_lib().rtdl_hiprt_run_segment_pair_intersection(
         left_array,
         len(left_records),
         right_array,
@@ -830,7 +830,7 @@ def segment_intersection_hiprt(
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_run_lsi failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_run_segment_pair_intersection failed with status {status}: {detail}")
     try:
         return tuple(
             {
@@ -1082,7 +1082,7 @@ def point_in_polygon_hiprt(
     rows_ptr = ctypes.POINTER(_RtdlPipRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_run_pip(
+    status = _hiprt_lib().rtdl_hiprt_run_point_primitive_anyhit_packet(
         point_array,
         len(point_records),
         polygon_refs,
@@ -1096,7 +1096,7 @@ def point_in_polygon_hiprt(
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_run_pip failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_run_point_primitive_anyhit_packet failed with status {status}: {detail}")
     try:
         return tuple(
             {
@@ -1168,7 +1168,7 @@ def overlay_compose_hiprt(
     rows_ptr = ctypes.POINTER(_RtdlOverlayRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_run_overlay(
+    status = _hiprt_lib().rtdl_hiprt_run_shape_pair_relation_flags(
         left_refs,
         len(left_records),
         left_vertices,
@@ -1184,7 +1184,7 @@ def overlay_compose_hiprt(
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_run_overlay failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_run_shape_pair_relation_flags failed with status {status}: {detail}")
     try:
         return tuple(
             {
@@ -1220,7 +1220,7 @@ def segment_polygon_hitcount_hiprt(
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_run_segment_polygon_hitcount(
+    status = _hiprt_lib().rtdl_hiprt_run_segment_shape_hitcount(
         segment_array,
         len(segment_records),
         polygon_refs,
@@ -1234,7 +1234,7 @@ def segment_polygon_hitcount_hiprt(
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_run_segment_polygon_hitcount failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_run_segment_shape_hitcount failed with status {status}: {detail}")
     try:
         return tuple(
             {
@@ -1262,7 +1262,7 @@ def segment_polygon_anyhit_rows_hiprt(
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_run_segment_polygon_anyhit_rows(
+    status = _hiprt_lib().rtdl_hiprt_run_segment_shape_anyhit_rows(
         segment_array,
         len(segment_records),
         polygon_refs,
@@ -1276,7 +1276,7 @@ def segment_polygon_anyhit_rows_hiprt(
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_run_segment_polygon_anyhit_rows failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_run_segment_shape_anyhit_rows failed with status {status}: {detail}")
     try:
         return tuple(
             {
@@ -1536,7 +1536,7 @@ def bfs_expand_hiprt(
     rows_ptr = ctypes.POINTER(_RtdlBfsRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_run_bfs_expand(
+    status = _hiprt_lib().rtdl_hiprt_run_frontier_edge_traversal_packet(
         frontier_array,
         len(frontier_records),
         row_offsets_array,
@@ -1554,7 +1554,7 @@ def bfs_expand_hiprt(
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_run_bfs_expand failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_run_frontier_edge_traversal_packet failed with status {status}: {detail}")
     try:
         return tuple(
             {
@@ -1595,7 +1595,7 @@ def triangle_match_hiprt(
     rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_run_triangle_probe(
+    status = _hiprt_lib().rtdl_hiprt_run_triangle_cycle_candidates(
         row_offsets_array,
         len(graph.row_offsets),
         column_indices_array,
@@ -1611,7 +1611,7 @@ def triangle_match_hiprt(
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_run_triangle_probe failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_run_triangle_cycle_candidates failed with status {status}: {detail}")
     try:
         return tuple(
             {
@@ -1670,7 +1670,7 @@ class PreparedHiprtGraphCSR:
         rows_ptr = ctypes.POINTER(_RtdlBfsRow)()
         row_count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = _hiprt_lib().rtdl_hiprt_run_prepared_bfs_expand(
+        status = _hiprt_lib().rtdl_hiprt_run_prepared_frontier_edge_traversal_packet(
             self._handle,
             frontier_array,
             len(frontier_records),
@@ -1684,7 +1684,7 @@ class PreparedHiprtGraphCSR:
         )
         if status != 0:
             detail = error.value.decode("utf-8", errors="replace")
-            raise RuntimeError(f"rtdl_hiprt_run_prepared_bfs_expand failed with status {status}: {detail}")
+            raise RuntimeError(f"rtdl_hiprt_run_prepared_frontier_edge_traversal_packet failed with status {status}: {detail}")
         try:
             return tuple(
                 {
@@ -1718,7 +1718,7 @@ class PreparedHiprtGraphCSR:
         rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
         row_count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = _hiprt_lib().rtdl_hiprt_run_prepared_triangle_probe(
+        status = _hiprt_lib().rtdl_hiprt_run_prepared_triangle_cycle_candidates(
             self._handle,
             seed_array,
             len(seed_records),
@@ -1731,7 +1731,7 @@ class PreparedHiprtGraphCSR:
         )
         if status != 0:
             detail = error.value.decode("utf-8", errors="replace")
-            raise RuntimeError(f"rtdl_hiprt_run_prepared_triangle_probe failed with status {status}: {detail}")
+            raise RuntimeError(f"rtdl_hiprt_run_prepared_triangle_cycle_candidates failed with status {status}: {detail}")
         try:
             return tuple(
                 {
@@ -1960,7 +1960,7 @@ class PreparedHiprtDbTable:
 
     def close(self) -> None:
         if self._handle:
-            _hiprt_lib().rtdl_hiprt_destroy_prepared_db_table(self._handle)
+            _hiprt_lib().rtdl_hiprt_destroy_prepared_columnar_payload(self._handle)
             self._handle = ctypes.c_void_p()
 
     def __enter__(self) -> "PreparedHiprtDbTable":
@@ -2093,7 +2093,7 @@ def prepare_hiprt_db_table(table_rows) -> PreparedHiprtDbTable:
     fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
     handle = ctypes.c_void_p()
     error = ctypes.create_string_buffer(4096)
-    status = _hiprt_lib().rtdl_hiprt_prepare_db_table(
+    status = _hiprt_lib().rtdl_hiprt_prepare_columnar_payload(
         fields_array,
         len(fields_array),
         row_values_array,
@@ -2104,7 +2104,7 @@ def prepare_hiprt_db_table(table_rows) -> PreparedHiprtDbTable:
     )
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
-        raise RuntimeError(f"rtdl_hiprt_prepare_db_table failed with status {status}: {detail}")
+        raise RuntimeError(f"rtdl_hiprt_prepare_columnar_payload failed with status {status}: {detail}")
     return PreparedHiprtDbTable(handle, field_maps=field_maps, reverse_maps=reverse_maps)
 
 

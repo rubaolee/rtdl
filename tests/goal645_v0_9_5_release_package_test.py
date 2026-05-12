@@ -24,10 +24,10 @@ class Goal645V095ReleasePackageTest(unittest.TestCase):
         front_page = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         docs_index = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("current released version: `v1.5`", front_page)
-        self.assertIn("current released version is `v1.5`", docs_index)
-        self.assertIn("v0.9.5 Release Package", docs_index)
-        self.assertIn("v0.9.5 Release Package", docs_index)
+        self.assertIn("current released version is `v1.8`", front_page)
+        self.assertIn("current released version is `v1.8`", docs_index)
+        self.assertIn("History Index", docs_index)
+        self.assertIn("Release Reports", docs_index)
 
     def test_v095_release_surface_and_boundaries_are_documented(self) -> None:
         public_text = "\n".join(

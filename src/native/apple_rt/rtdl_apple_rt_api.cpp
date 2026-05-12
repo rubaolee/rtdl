@@ -1,4 +1,4 @@
-extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_get_version(int* major, int* minor, int* patch) {
+﻿extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_get_version(int* major, int* minor, int* patch) {
     if (major == nullptr || minor == nullptr || patch == nullptr) {
         return 1;
     }

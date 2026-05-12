@@ -1,4 +1,4 @@
-#import <Foundation/Foundation.h>
+﻿#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
@@ -81,7 +81,7 @@ struct RtdlSegment {
     double y1;
 };
 
-struct RtdlLsiRow {
+struct RtdlSegmentPairIntersectionRow {
     uint32_t left_id;
     uint32_t right_id;
     double intersection_point_x;

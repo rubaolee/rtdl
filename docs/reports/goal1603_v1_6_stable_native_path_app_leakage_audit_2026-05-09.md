@@ -53,7 +53,7 @@ The native tree still contains app-shaped, workload-shaped, or proof-oriented
 entry points. Examples found during this audit include:
 
 - GIS/polygon names such as `rtdl_embree_run_pip`, `rtdl_optix_run_pip`,
-  `rtdl_embree_run_overlay`, `rtdl_optix_run_overlay`,
+  `rtdl_embree_run_shape_pair_relation_flags`, `rtdl_optix_run_shape_pair_relation_flags`,
   `rtdl_embree_run_segment_polygon_hitcount`, and
   `rtdl_optix_run_segment_polygon_hitcount`.
 - Candidate-collection names such as

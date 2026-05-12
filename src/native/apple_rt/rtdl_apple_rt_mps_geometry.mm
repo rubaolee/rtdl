@@ -1,4 +1,4 @@
-extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_closest_hit_3d(
+﻿extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_closest_hit_3d(
     const RtdlRay3D* rays,
     size_t ray_count,
     const RtdlTriangle3D* triangles,
@@ -1797,7 +1797,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_fixed_radius_neighbors_3d(
     }
 }
 
-extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2d(
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_shape_candidates_2d(
     const RtdlPoint2D* points,
     size_t point_count,
     const RtdlPolygonBounds2D* polygons,
@@ -1807,13 +1807,13 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2
     char* error_out,
     size_t error_size) {
     if (rows_out == nullptr || row_count_out == nullptr) {
-        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_point_polygon_candidates_2d");
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_point_shape_candidates_2d");
         return 1;
     }
     *rows_out = nullptr;
     *row_count_out = 0;
     if ((point_count > 0 && points == nullptr) || (polygon_count > 0 && polygons == nullptr)) {
-        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_point_polygon_candidates_2d");
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_point_shape_candidates_2d");
         return 1;
     }
     if (point_count == 0 || polygon_count == 0) {
@@ -2033,7 +2033,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2
     }
 }
 
-extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_segment_polygon_candidates_2d(
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_segment_shape_candidates_2d(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonBounds2D* polygons,
@@ -2043,13 +2043,13 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_segment_polygon_candidates
     char* error_out,
     size_t error_size) {
     if (rows_out == nullptr || row_count_out == nullptr) {
-        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_segment_polygon_candidates_2d");
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_segment_shape_candidates_2d");
         return 1;
     }
     *rows_out = nullptr;
     *row_count_out = 0;
     if ((segment_count > 0 && segments == nullptr) || (polygon_count > 0 && polygons == nullptr)) {
-        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_segment_polygon_candidates_2d");
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_segment_shape_candidates_2d");
         return 1;
     }
     if (segment_count == 0 || polygon_count == 0) {
@@ -2269,23 +2269,23 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_segment_polygon_candidates
     }
 }
 
-extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_segment_pair_intersection(
     const RtdlSegment* left_segments,
     size_t left_count,
     const RtdlSegment* right_segments,
     size_t right_count,
-    RtdlLsiRow** rows_out,
+    RtdlSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
     if (rows_out == nullptr || row_count_out == nullptr) {
-        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_lsi");
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_segment_pair_intersection");
         return 1;
     }
     *rows_out = nullptr;
     *row_count_out = 0;
     if ((left_count > 0 && left_segments == nullptr) || (right_count > 0 && right_segments == nullptr)) {
-        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_lsi");
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_segment_pair_intersection");
         return 1;
     }
     if (left_count == 0 || right_count == 0) {
@@ -2349,7 +2349,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
         intersector.rayStride = sizeof(MPSRayOriginMaskDirectionMaxDistance);
         intersector.intersectionStride = sizeof(MPSIntersectionDistancePrimitiveIndex);
 
-        std::vector<std::vector<std::pair<size_t, RtdlLsiRow>>> rows_by_left(left_count);
+        std::vector<std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>> rows_by_left(left_count);
         constexpr float z_extent = 1.0f;
         constexpr size_t chunk_size = 32;
         for (size_t chunk_begin = 0; chunk_begin < right_count; chunk_begin += chunk_size) {
@@ -2455,7 +2455,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
                             double ix = 0.0;
                             double iy = 0.0;
                             if (segment_intersection_point(left, right, &ix, &iy)) {
-                                rows_by_left[left_index].push_back({right_index, RtdlLsiRow{left.id, right.id, ix, iy}});
+                                rows_by_left[left_index].push_back({right_index, RtdlSegmentPairIntersectionRow{left.id, right.id, ix, iy}});
                             }
                             gpu_rays[left_index].mask &= ~bit;
                             active_hits += 1;
@@ -2474,7 +2474,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
             [vertex_buffer release];
         }
 
-        std::vector<RtdlLsiRow> rows;
+        std::vector<RtdlSegmentPairIntersectionRow> rows;
         rows.reserve(std::min(left_count * right_count, static_cast<size_t>(1024)));
         for (auto& left_rows : rows_by_left) {
             std::sort(left_rows.begin(), left_rows.end(), [](const auto& a, const auto& b) {
@@ -2488,12 +2488,12 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
         if (rows.empty()) {
             return 0;
         }
-        auto* out = static_cast<RtdlLsiRow*>(std::malloc(rows.size() * sizeof(RtdlLsiRow)));
+        auto* out = static_cast<RtdlSegmentPairIntersectionRow*>(std::malloc(rows.size() * sizeof(RtdlSegmentPairIntersectionRow)));
         if (out == nullptr) {
             set_message(error_out, error_size, "out of memory allocating Apple RT segment-intersection rows");
             return 12;
         }
-        std::memcpy(out, rows.data(), rows.size() * sizeof(RtdlLsiRow));
+        std::memcpy(out, rows.data(), rows.size() * sizeof(RtdlSegmentPairIntersectionRow));
         *rows_out = out;
         *row_count_out = rows.size();
         return 0;

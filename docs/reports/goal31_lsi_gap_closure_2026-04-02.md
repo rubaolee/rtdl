@@ -17,7 +17,7 @@ The round was intentionally structured as:
 
 Codex proposed a parity-first local fix:
 - stop using the current `rtcIntersect1` segment-as-ray candidate path for local `lsi`
-- replace it with a native analytic segment loop in `rtdl_embree_run_lsi(...)`
+- replace it with a native analytic segment loop in `rtdl_embree_run_segment_pair_intersection(...)`
 - mark the current local `lsi` backend as `native_loop`
 - treat any future BVH-backed redesign as a later optimization round
 
@@ -43,7 +43,7 @@ So Goal 31 closes on:
 ## Implemented Change
 
 The active local `lsi` runtime in `src/native/rtdl_embree.cpp` was changed so that:
-- `rtdl_embree_run_lsi(...)` no longer uses `rtcIntersect1`
+- `rtdl_embree_run_segment_pair_intersection(...)` no longer uses `rtcIntersect1`
 - rows are produced by a native analytic left-by-right segment loop
 - the active segment-intersection denominator guard now uses a dedicated `1e-7` epsilon aligned more closely with the CPU oracle
 

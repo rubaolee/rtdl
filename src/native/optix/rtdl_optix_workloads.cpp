@@ -70,7 +70,7 @@ thread_local double g_optix_last_db_output_pack_s = 0.0;
 thread_local size_t g_optix_last_db_raw_candidate_count = 0;
 thread_local size_t g_optix_last_db_emitted_count = 0;
 
-extern "C" int rtdl_optix_db_get_last_phase_timings(
+extern "C" int rtdl_optix_columnar_payload_get_last_phase_timings(
         double* traversal,
         double* bitset_copy,
         double* exact_filter,
@@ -414,7 +414,7 @@ static size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t sca
     return count;
 }
 
-static void db_copy_dataset_table(
+static void db_copy_dataset_payload(
         OptixDbDatasetImpl& dataset,
         const RtdlDbField* fields,
         size_t field_count,
@@ -445,69 +445,69 @@ static void db_copy_dataset_table(
 }
 
 static void db_validate_columnar_inputs(
-        const RtdlDbColumn* columns,
-        size_t column_count,
+        const RtdlPayloadField* fields,
+        size_t field_count,
         size_t row_count)
 {
-    if (!columns || column_count == 0) {
-        throw std::runtime_error("DB columnar inputs must not be null");
+    if (!fields || field_count == 0) {
+        throw std::runtime_error("payload fields must not be null");
     }
     if (row_count > kDbMaxRowsPerJob) {
         throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
     }
-    for (size_t column_index = 0; column_index < column_count; ++column_index) {
-        const RtdlDbColumn& column = columns[column_index];
-        if (!column.name) {
-            throw std::runtime_error("DB column name must not be null");
+    for (size_t field_index = 0; field_index < field_count; ++field_index) {
+        const RtdlPayloadField& field = fields[field_index];
+        if (!field.name) {
+            throw std::runtime_error("field name must not be null");
         }
-        if ((column.kind == kDbKindInt64 || column.kind == kDbKindBool) && !column.int_values) {
-            throw std::runtime_error("DB integer/bool column values must not be null");
+        if ((field.kind == kDbKindInt64 || field.kind == kDbKindBool) && !field.int_values) {
+            throw std::runtime_error("field integer/bool values must not be null");
         }
-        if (column.kind == kDbKindFloat64 && !column.double_values) {
-            throw std::runtime_error("DB float column values must not be null");
+        if (field.kind == kDbKindFloat64 && !field.double_values) {
+            throw std::runtime_error("field float values must not be null");
         }
-        if (column.kind == kDbKindText && !column.string_values) {
-            throw std::runtime_error("DB text column values must not be null");
+        if (field.kind == kDbKindText && !field.string_values) {
+            throw std::runtime_error("field text values must not be null");
         }
     }
 }
 
-static void db_copy_dataset_columnar_table(
+static void db_copy_dataset_columnar_payload(
         OptixDbDatasetImpl& dataset,
-        const RtdlDbColumn* columns,
-        size_t column_count,
+        const RtdlPayloadField* fields,
+        size_t field_count,
         size_t row_count)
 {
-    dataset.field_names.reserve(column_count);
-    for (size_t column_index = 0; column_index < column_count; ++column_index) {
-        dataset.field_names.emplace_back(columns[column_index].name ? columns[column_index].name : "");
+    dataset.field_names.reserve(field_count);
+    for (size_t field_index = 0; field_index < field_count; ++field_index) {
+        dataset.field_names.emplace_back(fields[field_index].name ? fields[field_index].name : "");
     }
-    dataset.fields.reserve(column_count);
-    for (size_t column_index = 0; column_index < column_count; ++column_index) {
-        dataset.fields.push_back({dataset.field_names[column_index].c_str(), columns[column_index].kind});
+    dataset.fields.reserve(field_count);
+    for (size_t field_index = 0; field_index < field_count; ++field_index) {
+        dataset.fields.push_back({dataset.field_names[field_index].c_str(), fields[field_index].kind});
     }
 
     size_t string_count = 0;
-    for (size_t column_index = 0; column_index < column_count; ++column_index) {
-        if (columns[column_index].kind == kDbKindText) {
+    for (size_t field_index = 0; field_index < field_count; ++field_index) {
+        if (fields[field_index].kind == kDbKindText) {
             string_count += row_count;
         }
     }
     dataset.scalar_strings.reserve(string_count);
-    dataset.row_values.reserve(row_count * column_count);
+    dataset.row_values.reserve(row_count * field_count);
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
-        for (size_t column_index = 0; column_index < column_count; ++column_index) {
-            const RtdlDbColumn& column = columns[column_index];
+        for (size_t field_index = 0; field_index < field_count; ++field_index) {
+            const RtdlPayloadField& field = fields[field_index];
             RtdlDbScalar value{};
-            value.kind = column.kind;
-            if (column.kind == kDbKindFloat64) {
-                value.double_value = column.double_values[row_index];
-            } else if (column.kind == kDbKindText) {
-                const char* text = column.string_values[row_index];
+            value.kind = field.kind;
+            if (field.kind == kDbKindFloat64) {
+                value.double_value = field.double_values[row_index];
+            } else if (field.kind == kDbKindText) {
+                const char* text = field.string_values[row_index];
                 dataset.scalar_strings.emplace_back(text ? text : "");
                 value.string_value = dataset.scalar_strings.back().c_str();
             } else {
-                value.int_value = column.int_values[row_index];
+                value.int_value = field.int_values[row_index];
             }
             dataset.row_values.push_back(value);
         }
@@ -903,7 +903,7 @@ static OptixDbDatasetImpl* create_db_dataset_optix(
 {
     db_validate_db_inputs(fields, field_count, row_values, row_count, nullptr, 0);
     std::unique_ptr<OptixDbDatasetImpl> dataset(new OptixDbDatasetImpl());
-    db_copy_dataset_table(*dataset, fields, field_count, row_values, row_count);
+    db_copy_dataset_payload(*dataset, fields, field_count, row_values, row_count);
 
     std::vector<const char*> primary_names;
     if (primary_field_count > 0) {
@@ -947,15 +947,15 @@ static OptixDbDatasetImpl* create_db_dataset_optix(
 }
 
 static OptixDbDatasetImpl* create_db_dataset_optix_columnar(
-        const RtdlDbColumn* columns,
-        size_t column_count,
+        const RtdlPayloadField* fields,
+        size_t field_count,
         size_t row_count,
         const char* const* primary_fields,
         size_t primary_field_count)
 {
-    db_validate_columnar_inputs(columns, column_count, row_count);
+    db_validate_columnar_inputs(fields, field_count, row_count);
     std::unique_ptr<OptixDbDatasetImpl> dataset(new OptixDbDatasetImpl());
-    db_copy_dataset_columnar_table(*dataset, columns, column_count, row_count);
+    db_copy_dataset_columnar_payload(*dataset, fields, field_count, row_count);
 
     std::vector<const char*> primary_names;
     if (primary_field_count > 0) {
@@ -1619,7 +1619,7 @@ static void run_prepared_segment_polygon_anyhit_rows_2d_optix(
 
 static void run_bfs_expand_optix_host_indexed(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlFrontierVertex* frontier, size_t frontier_count,
         const uint32_t* visited_vertices, size_t visited_count,
         uint32_t dedupe,
@@ -1640,7 +1640,7 @@ static void run_bfs_expand_optix_host_indexed(
     if (frontier_count == 0) {
         return;
     }
-    if (!column_indices && column_index_count != 0) {
+    if (!column_indices && edge_index_count != 0) {
         throw std::runtime_error("graph column_indices pointer must not be null when edge count is non-zero");
     }
 
@@ -1650,11 +1650,11 @@ static void run_bfs_expand_optix_host_indexed(
         if (start > end) {
             throw std::runtime_error("graph row_offsets must be non-decreasing");
         }
-        if (end > column_index_count) {
+        if (end > edge_index_count) {
             throw std::runtime_error("graph row_offsets exceed column_indices length");
         }
     }
-    for (size_t edge_index = 0; edge_index < column_index_count; ++edge_index) {
+    for (size_t edge_index = 0; edge_index < edge_index_count; ++edge_index) {
         if (column_indices[edge_index] >= vertex_count) {
             throw std::runtime_error("graph column_indices must reference valid graph vertices");
         }
@@ -1670,7 +1670,7 @@ static void run_bfs_expand_optix_host_indexed(
 
     std::vector<uint8_t> discovered_flags(static_cast<size_t>(vertex_count), 0);
     std::vector<RtdlBfsExpandRow> rows;
-    rows.reserve(column_index_count);
+    rows.reserve(edge_index_count);
 
     for (size_t i = 0; i < frontier_count; ++i) {
         const uint32_t src = frontier[i].vertex_id;
@@ -1717,18 +1717,18 @@ static void run_bfs_expand_optix_host_indexed(
 
 static void validate_graph_csr_or_throw(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count)
+        const uint32_t* column_indices, size_t edge_index_count)
 {
     if (!row_offsets || row_offset_count == 0) {
         throw std::runtime_error("CSR graph row_offsets must not be empty");
     }
-    if (column_index_count > 0 && !column_indices) {
+    if (edge_index_count > 0 && !column_indices) {
         throw std::runtime_error("CSR graph column_indices pointer must not be null");
     }
     if (row_offsets[0] != 0u) {
         throw std::runtime_error("CSR graph row_offsets must start at 0");
     }
-    if (row_offsets[row_offset_count - 1] != column_index_count) {
+    if (row_offsets[row_offset_count - 1] != edge_index_count) {
         throw std::runtime_error("CSR graph final row_offset must equal edge_count");
     }
     const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
@@ -1737,7 +1737,7 @@ static void validate_graph_csr_or_throw(
             throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
         }
     }
-    for (size_t index = 0; index < column_index_count; ++index) {
+    for (size_t index = 0; index < edge_index_count; ++index) {
         if (column_indices[index] >= vertex_count) {
             throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
         }
@@ -1746,10 +1746,10 @@ static void validate_graph_csr_or_throw(
 
 static std::vector<GpuGraphEdge> build_graph_edges(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count)
+        const uint32_t* column_indices, size_t edge_index_count)
 {
     std::vector<GpuGraphEdge> edges;
-    edges.reserve(column_index_count);
+    edges.reserve(edge_index_count);
     const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
     for (uint32_t src = 0; src < vertex_count; ++src) {
         for (uint32_t offset = row_offsets[src]; offset < row_offsets[src + 1]; ++offset) {
@@ -1804,13 +1804,13 @@ struct GraphTriangleLaunchParams {
 
 static void run_bfs_expand_optix_graph_ray(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlFrontierVertex* frontier, size_t frontier_count,
         const uint32_t* visited_vertices, size_t visited_count,
         uint32_t dedupe,
         RtdlBfsExpandRow** rows_out, size_t* row_count_out)
 {
-    validate_graph_csr_or_throw(row_offsets, row_offset_count, column_indices, column_index_count);
+    validate_graph_csr_or_throw(row_offsets, row_offset_count, column_indices, edge_index_count);
     if (frontier_count > 0 && !frontier) {
         throw std::runtime_error("frontier pointer must not be null when frontier_count > 0");
     }
@@ -1854,7 +1854,7 @@ static void run_bfs_expand_optix_graph_ray(
             1).release();
     });
 
-    const std::vector<GpuGraphEdge> edges = build_graph_edges(row_offsets, row_offset_count, column_indices, column_index_count);
+    const std::vector<GpuGraphEdge> edges = build_graph_edges(row_offsets, row_offset_count, column_indices, edge_index_count);
     const std::vector<OptixAabb> aabbs = build_graph_edge_aabbs(edges);
     AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
     DevPtr d_edges(sizeof(GpuGraphEdge) * edges.size());
@@ -1910,9 +1910,9 @@ static void run_bfs_expand_optix_graph_ray(
     *row_count_out = rows.size();
 }
 
-static void run_triangle_probe_optix_host_indexed(
+static void run_triangle_cycle_candidates_optix_host_indexed(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlEdgeSeed* seeds, size_t seed_count,
         uint32_t enforce_id_ascending,
         uint32_t unique,
@@ -1926,7 +1926,7 @@ static void run_triangle_probe_optix_host_indexed(
     if (!row_offsets || row_offset_count == 0) {
         throw std::runtime_error("CSR graph row_offsets must not be empty");
     }
-    if (column_index_count > 0 && !column_indices) {
+    if (edge_index_count > 0 && !column_indices) {
         throw std::runtime_error("CSR graph column_indices pointer must not be null");
     }
     if (seed_count > 0 && !seeds) {
@@ -1935,7 +1935,7 @@ static void run_triangle_probe_optix_host_indexed(
     if (row_offsets[0] != 0u) {
         throw std::runtime_error("CSR graph row_offsets must start at 0");
     }
-    if (row_offsets[row_offset_count - 1] != column_index_count) {
+    if (row_offsets[row_offset_count - 1] != edge_index_count) {
         throw std::runtime_error("CSR graph final row_offset must equal edge_count");
     }
 
@@ -1945,7 +1945,7 @@ static void run_triangle_probe_optix_host_indexed(
             throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
         }
     }
-    for (size_t index = 0; index < column_index_count; ++index) {
+    for (size_t index = 0; index < edge_index_count; ++index) {
         if (column_indices[index] >= vertex_count) {
             throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
         }
@@ -2021,15 +2021,15 @@ static void run_triangle_probe_optix_host_indexed(
     *row_count_out = rows.size();
 }
 
-static void run_triangle_probe_optix_graph_ray(
+static void run_triangle_cycle_candidates_optix_graph_ray(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlEdgeSeed* seeds, size_t seed_count,
         uint32_t enforce_id_ascending,
         uint32_t unique,
         RtdlTriangleRow** rows_out, size_t* row_count_out)
 {
-    validate_graph_csr_or_throw(row_offsets, row_offset_count, column_indices, column_index_count);
+    validate_graph_csr_or_throw(row_offsets, row_offset_count, column_indices, edge_index_count);
     if (seed_count > 0 && !seeds) {
         throw std::runtime_error("edge seed pointer must not be null when seed_count > 0");
     }
@@ -2061,7 +2061,7 @@ static void run_triangle_probe_optix_graph_ray(
         std::string ptx = compile_to_ptx(kGraphTriangleRayKernelSrc, "graph_triangle_ray_kernel.cu");
         g_graph_triangle.pipe = build_pipeline(
             get_optix_context(), ptx,
-            "__raygen__graph_triangle_probe",
+            "__raygen__graph_triangle_cycle_candidates",
             "__miss__graph_triangle_miss",
             "__intersection__graph_triangle_isect",
             "__anyhit__graph_triangle_anyhit",
@@ -2069,7 +2069,7 @@ static void run_triangle_probe_optix_graph_ray(
             1).release();
     });
 
-    const std::vector<GpuGraphEdge> edges = build_graph_edges(row_offsets, row_offset_count, column_indices, column_index_count);
+    const std::vector<GpuGraphEdge> edges = build_graph_edges(row_offsets, row_offset_count, column_indices, edge_index_count);
     const std::vector<OptixAabb> aabbs = build_graph_edge_aabbs(edges);
     AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
     DevPtr d_edges(sizeof(GpuGraphEdge) * edges.size());
@@ -2169,35 +2169,35 @@ static void run_triangle_probe_optix_graph_ray(
     *row_count_out = rows.size();
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Workload implementations
-// ──────────────────────────────────────────────────────────────────────────────
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// ---------- LSI --------------------------------------------------------------
+// ---------- segment-pair intersection --------------------------------------------------------------
 
-struct LsiLaunchParams {
+struct SegmentPairIntersectionLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* left_segs;
     const GpuSegment* right_segs;
-    GpuLsiRecord*     output;
+    GpuSegmentPairIntersectionRecord*     output;
     uint32_t*         output_count;
     uint32_t          output_capacity;
     uint32_t          probe_count;
 };
 
-static void run_lsi_optix(
+static void run_segment_pair_intersection_optix(
         const RtdlSegment* left,  size_t left_count,
         const RtdlSegment* right, size_t right_count,
-        RtdlLsiRow** rows_out, size_t* row_count_out)
+        RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out)
 {
-    std::call_once(g_lsi.init, [&]() {
-        std::string ptx = compile_to_ptx(kLsiKernelSrc, "lsi_kernel.cu");
-        g_lsi.pipe = build_pipeline(
+    std::call_once(g_segment_pair_intersection.init, [&]() {
+        std::string ptx = compile_to_ptx(kSegmentPairIntersectionKernelSrc, "segment_pair_intersection_kernel.cu");
+        g_segment_pair_intersection.pipe = build_pipeline(
             get_optix_context(), ptx,
-            "__raygen__lsi_probe",
-            "__miss__lsi_miss",
-            "__intersection__lsi_isect",
-            "__anyhit__lsi_anyhit",
+            "__raygen__segment_pair_intersection_probe",
+            "__miss__segment_pair_intersection_miss",
+            "__intersection__segment_pair_intersection_isect",
+            "__anyhit__segment_pair_intersection_anyhit",
             nullptr,   // no closesthit
             4).release();
     });
@@ -2225,28 +2225,28 @@ static void run_lsi_optix(
 
     // Output buffer
     uint32_t capacity = static_cast<uint32_t>(left_count * right_count);
-    DevPtr d_output  (sizeof(GpuLsiRecord) * capacity);
+    DevPtr d_output  (sizeof(GpuSegmentPairIntersectionRecord) * capacity);
     DevPtr d_count   (sizeof(uint32_t));
     uint32_t zero = 0;
     upload<uint32_t>(d_count.ptr, &zero, 1);
 
     // Launch params
-    LsiLaunchParams lp;
+    SegmentPairIntersectionLaunchParams lp;
     lp.traversable      = accel.handle;
     lp.left_segs        = reinterpret_cast<const GpuSegment*>(d_left.ptr);
     lp.right_segs       = reinterpret_cast<const GpuSegment*>(d_right.ptr);
-    lp.output           = reinterpret_cast<GpuLsiRecord*>(d_output.ptr);
+    lp.output           = reinterpret_cast<GpuSegmentPairIntersectionRecord*>(d_output.ptr);
     lp.output_count     = reinterpret_cast<uint32_t*>(d_count.ptr);
     lp.output_capacity  = capacity;
     lp.probe_count      = static_cast<uint32_t>(left_count);
 
-    DevPtr d_params(sizeof(LsiLaunchParams));
+    DevPtr d_params(sizeof(SegmentPairIntersectionLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_lsi.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(LsiLaunchParams),
-                             &g_lsi.pipe->sbt,
+    OPTIX_CHECK(optixLaunch(g_segment_pair_intersection.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(SegmentPairIntersectionLaunchParams),
+                             &g_segment_pair_intersection.pipe->sbt,
                              static_cast<unsigned>(left_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
 
@@ -2254,9 +2254,9 @@ static void run_lsi_optix(
     uint32_t gpu_count = 0;
     download(&gpu_count, d_count.ptr, 1);
     if (gpu_count > capacity)
-        throw std::runtime_error("LSI output overflowed capacity");
+        throw std::runtime_error("segment-pair intersection output overflowed capacity");
 
-    std::vector<GpuLsiRecord> gpu_rows(gpu_count);
+    std::vector<GpuSegmentPairIntersectionRecord> gpu_rows(gpu_count);
     if (gpu_count > 0)
         download(gpu_rows.data(), d_output.ptr, gpu_count);
 
@@ -2271,7 +2271,7 @@ static void run_lsi_optix(
         right_by_id.emplace(right[i].id, &right[i]);
     }
 
-    std::vector<RtdlLsiRow> refined;
+    std::vector<RtdlSegmentPairIntersectionRow> refined;
     refined.reserve(gpu_count);
     std::unordered_set<uint64_t> seen_pairs;
     seen_pairs.reserve(gpu_count * 2 + 1);
@@ -2295,7 +2295,7 @@ static void run_lsi_optix(
         }
         seen_pairs.insert(pair_key);
         refined.push_back(
-            RtdlLsiRow{
+            RtdlSegmentPairIntersectionRow{
                 gpu_rows[i].left_id,
                 gpu_rows[i].right_id,
                 ix,
@@ -2303,7 +2303,7 @@ static void run_lsi_optix(
             });
     }
 
-    auto* out = static_cast<RtdlLsiRow*>(std::malloc(sizeof(RtdlLsiRow) * refined.size()));
+    auto* out = static_cast<RtdlSegmentPairIntersectionRow*>(std::malloc(sizeof(RtdlSegmentPairIntersectionRow) * refined.size()));
     if (!out && !refined.empty()) throw std::bad_alloc();
     for (size_t i = 0; i < refined.size(); ++i) {
         out[i] = refined[i];
@@ -2648,18 +2648,18 @@ static void collect_polygon_pair_candidates_bounded_optix(
         segments_from_polygon_refs_for_collection(left_polygons, left_count, left_vertices_xy);
     const std::vector<RtdlSegment> right_segments =
         segments_from_polygon_refs_for_collection(right_polygons, right_count, right_vertices_xy);
-    RtdlLsiRow* raw_lsi_rows = nullptr;
-    size_t lsi_row_count = 0;
-    run_lsi_optix(
+    RtdlSegmentPairIntersectionRow* raw_segment_intersection_rows = nullptr;
+    size_t segment_intersection_row_count = 0;
+    run_segment_pair_intersection_optix(
         left_segments.data(), left_segments.size(),
         right_segments.data(), right_segments.size(),
-        &raw_lsi_rows, &lsi_row_count);
-    std::unique_ptr<RtdlLsiRow, decltype(&std::free)> lsi_rows(raw_lsi_rows, &std::free);
+        &raw_segment_intersection_rows, &segment_intersection_row_count);
+    std::unique_ptr<RtdlSegmentPairIntersectionRow, decltype(&std::free)> segment_intersection_rows(raw_segment_intersection_rows, &std::free);
 
     std::vector<RtdlPolygonPairCandidate> candidates;
-    candidates.reserve(lsi_row_count);
-    for (size_t i = 0; i < lsi_row_count; ++i) {
-        candidates.push_back({lsi_rows.get()[i].left_id, lsi_rows.get()[i].right_id});
+    candidates.reserve(segment_intersection_row_count);
+    for (size_t i = 0; i < segment_intersection_row_count; ++i) {
+        candidates.push_back({segment_intersection_rows.get()[i].left_id, segment_intersection_rows.get()[i].right_id});
     }
 
     const std::vector<RtdlPoint> left_first_points =
@@ -2731,9 +2731,9 @@ static void collect_polygon_pair_candidates_bounded_optix(
     }
 }
 
-// ---------- Overlay ----------------------------------------------------------
+// ---------- shape-pair relation ----------------------------------------------------------
 
-struct OverlayLaunchParams {
+struct shape-pair relationLaunchParams {
     OptixTraversableHandle traversable;
     const GpuPolygonRef* left_polygons;
     const GpuPolygonRef* right_polygons;
@@ -2741,28 +2741,28 @@ struct OverlayLaunchParams {
     const float* left_vy;
     const float* right_vx;
     const float* right_vy;
-    GpuOverlayFlags* output;
+    GpuShapePairRelationFlags* output;
     uint32_t  right_count;
     uint32_t  left_count;
     uint32_t  launch_count;
     uint32_t  max_edges_per_poly;
 };
 
-static void run_overlay_optix(
+static void run_shape_pair_relation_flags_optix(
         const RtdlPolygonRef* left_polys,  size_t left_count,
         const double* left_verts_xy,       size_t left_vert_xy_count,
         const RtdlPolygonRef* right_polys, size_t right_count,
         const double* right_verts_xy,      size_t right_vert_xy_count,
-        RtdlOverlayRow** rows_out, size_t* row_count_out)
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
 {
-    std::call_once(g_overlay.init, [&]() {
-        std::string ptx = compile_to_ptx(kOverlayKernelSrc, "overlay_kernel.cu");
-        g_overlay.pipe = build_pipeline(
+    std::call_once(g_shape_pair_relation.init, [&]() {
+        std::string ptx = compile_to_ptx(kShapePairRelationKernelSrc, "shape_pair_relation_kernel.cu");
+        g_shape_pair_relation.pipe = build_pipeline(
             get_optix_context(), ptx,
-            "__raygen__overlay_probe",
-            "__miss__overlay_miss",
-            "__intersection__overlay_isect",
-            "__anyhit__overlay_anyhit",
+            "__raygen__shape_pair_relation_probe",
+            "__miss__shape_pair_relation_miss",
+            "__intersection__shape_pair_relation_isect",
+            "__anyhit__shape_pair_relation_anyhit",
             nullptr, 4).release();
     });
 
@@ -2811,12 +2811,12 @@ static void run_overlay_optix(
 
     // Pre-allocated output: left_count * right_count, all zeros
     size_t out_count = left_count * right_count;
-    DevPtr d_output(sizeof(GpuOverlayFlags) * out_count);
-    CU_CHECK(cuMemsetD8(d_output.ptr, 0, sizeof(GpuOverlayFlags) * out_count));
+    DevPtr d_output(sizeof(GpuShapePairRelationFlags) * out_count);
+    CU_CHECK(cuMemsetD8(d_output.ptr, 0, sizeof(GpuShapePairRelationFlags) * out_count));
 
     uint32_t launch_count = static_cast<uint32_t>(left_count) * max_edges;
 
-    OverlayLaunchParams lp;
+    shape-pair relationLaunchParams lp;
     lp.traversable         = accel.handle;
     lp.left_polygons       = reinterpret_cast<const GpuPolygonRef*>(d_lp.ptr);
     lp.right_polygons      = reinterpret_cast<const GpuPolygonRef*>(d_rp.ptr);
@@ -2824,30 +2824,30 @@ static void run_overlay_optix(
     lp.left_vy             = reinterpret_cast<const float*>(d_lvy.ptr);
     lp.right_vx            = reinterpret_cast<const float*>(d_rvx.ptr);
     lp.right_vy            = reinterpret_cast<const float*>(d_rvy.ptr);
-    lp.output              = reinterpret_cast<GpuOverlayFlags*>(d_output.ptr);
+    lp.output              = reinterpret_cast<GpuShapePairRelationFlags*>(d_output.ptr);
     lp.right_count         = static_cast<uint32_t>(right_count);
     lp.left_count          = static_cast<uint32_t>(left_count);
     lp.launch_count        = launch_count;
     lp.max_edges_per_poly  = max_edges;
 
-    DevPtr d_params(sizeof(OverlayLaunchParams));
+    DevPtr d_params(sizeof(shape-pair relationLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_overlay.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(OverlayLaunchParams),
-                             &g_overlay.pipe->sbt,
+    OPTIX_CHECK(optixLaunch(g_shape_pair_relation.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(shape-pair relationLaunchParams),
+                             &g_shape_pair_relation.pipe->sbt,
                              launch_count, 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
 
     // Also compute PIP flags: for each (left_poly, right_poly) pair, check if
     // any vertex of one polygon is inside the other.  Done on CPU after the
-    // GPU LSI pass to keep the device kernel simple.
-    std::vector<GpuOverlayFlags> gpu_flags(out_count);
+    // GPU segment-pair intersection pass to keep the device kernel simple.
+    std::vector<GpuShapePairRelationFlags> gpu_flags(out_count);
     download(gpu_flags.data(), d_output.ptr, out_count);
 
     // CPU PIP supplement: match the current RTDL oracle semantics exactly.
-    // overlay_compose_cpu checks only the first vertex of each polygon.
+    // shape_pair_relation_comgroup_cpu checks only the first vertex of each polygon.
 #if RTDL_OPTIX_HAS_GEOS
     GeosPreparedPolygonRefs left_geos(left_polys, left_count, left_verts_xy);
     GeosPreparedPolygonRefs right_geos(right_polys, right_count, right_verts_xy);
@@ -2856,7 +2856,7 @@ static void run_overlay_optix(
     for (size_t li = 0; li < left_count; ++li) {
         for (size_t ri = 0; ri < right_count; ++ri) {
             size_t slot = li * right_count + ri;
-            if (gpu_flags[slot].requires_pip) continue; // already set by GPU
+            if (gpu_flags[slot].requires_point_containment) continue; // already set by GPU
             bool found = false;
             if (left_polys[li].vertex_count > 0) {
                 double lxv = left_verts_xy[left_polys[li].vertex_offset * 2];
@@ -2879,18 +2879,18 @@ static void run_overlay_optix(
                     found = true;
             }
             if (found)
-                gpu_flags[slot].requires_pip = 1;
+                gpu_flags[slot].requires_point_containment = 1;
         }
     }
 
-    auto* out = static_cast<RtdlOverlayRow*>(std::malloc(sizeof(RtdlOverlayRow) * out_count));
+    auto* out = static_cast<RtdlShapePairRelationRow*>(std::malloc(sizeof(RtdlShapePairRelationRow) * out_count));
     if (!out) throw std::bad_alloc();
     for (size_t i = 0; i < out_count; ++i) {
         size_t li = i / right_count, ri = i % right_count;
         out[i].left_polygon_id  = left_polys[li].id;
         out[i].right_polygon_id = right_polys[ri].id;
-        out[i].requires_lsi     = gpu_flags[i].requires_lsi;
-        out[i].requires_pip     = gpu_flags[i].requires_pip;
+        out[i].requires_segment_intersection     = gpu_flags[i].requires_segment_intersection;
+        out[i].requires_point_containment     = gpu_flags[i].requires_point_containment;
     }
     *rows_out      = out;
     *row_count_out = out_count;
@@ -2916,15 +2916,15 @@ struct RayAnyHitCountLaunchParams {
     uint32_t               ray_count;
 };
 
-struct RayAnyHitPoseFlagsLaunchParams {
+struct RayAnyHitGroupFlagsLaunchParams {
     OptixTraversableHandle traversable;
     const GpuRay*          rays;
     const GpuTriangle*     triangles;
-    const uint32_t*        pose_indices;
-    uint32_t*              pose_flags;
-    uint32_t*              colliding_pose_count;
+    const uint32_t*        group_indices;
+    uint32_t*              group_flags;
+    uint32_t*              colliding_group_count;
     uint32_t               ray_count;
-    uint32_t               pose_count;
+    uint32_t               group_count;
 };
 
 static void ensure_ray_anyhit_2d_pipeline()
@@ -2990,21 +2990,21 @@ static void ensure_ray_anyhit_count_2d_pipeline()
     });
 }
 
-static std::string ray_anyhit_pose_flags_kernel_source_2d()
+static std::string ray_anyhit_group_flags_kernel_source_2d()
 {
     std::string src = ray_anyhit_kernel_source_2d();
     const std::string old_output_field =
         "    RayHitCountRecord* output;\n"
         "    uint32_t ray_count;\n";
     const std::string new_output_field =
-        "    const uint32_t* pose_indices;\n"
-        "    uint32_t* pose_flags;\n"
-        "    uint32_t* colliding_pose_count;\n"
+        "    const uint32_t* group_indices;\n"
+        "    uint32_t* group_flags;\n"
+        "    uint32_t* colliding_group_count;\n"
         "    uint32_t ray_count;\n"
-        "    uint32_t pose_count;\n";
+        "    uint32_t group_count;\n";
     size_t pos = src.find(old_output_field);
     if (pos == std::string::npos)
-        throw std::runtime_error("failed to specialize OptiX 2-D any-hit pose-flags params");
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit group-flags params");
     src.replace(pos, old_output_field.size(), new_output_field);
 
     const std::string old_zero_write =
@@ -3014,32 +3014,32 @@ static std::string ray_anyhit_pose_flags_kernel_source_2d()
         "        return;\n";
     pos = src.find(old_zero_write);
     if (pos == std::string::npos)
-        throw std::runtime_error("failed to specialize OptiX 2-D any-hit pose-flags zero-ray path");
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit group-flags zero-ray path");
     src.replace(pos, old_zero_write.size(), new_zero_write);
 
     const std::string old_final_write =
         "    params.output[idx] = {r.id, p1};\n";
     const std::string new_final_write =
         "    if (p1 != 0u) {\n"
-        "        const uint32_t pose_index = params.pose_indices[idx];\n"
-        "        if (pose_index < params.pose_count) {\n"
-        "            const uint32_t previous = atomicExch(&params.pose_flags[pose_index], 1u);\n"
-        "            if (previous == 0u && params.colliding_pose_count != nullptr) atomicAdd(params.colliding_pose_count, 1u);\n"
+        "        const uint32_t group_index = params.group_indices[idx];\n"
+        "        if (group_index < params.group_count) {\n"
+        "            const uint32_t previous = atomicExch(&params.group_flags[group_index], 1u);\n"
+        "            if (previous == 0u && params.colliding_group_count != nullptr) atomicAdd(params.colliding_group_count, 1u);\n"
         "        }\n"
         "    }\n";
     pos = src.find(old_final_write);
     if (pos == std::string::npos)
-        throw std::runtime_error("failed to specialize OptiX 2-D any-hit pose-flags output path");
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit group-flags output path");
     src.replace(pos, old_final_write.size(), new_final_write);
     return src;
 }
 
-static void ensure_ray_anyhit_pose_flags_2d_pipeline()
+static void ensure_ray_anyhit_group_flags_2d_pipeline()
 {
-    std::call_once(g_rayanyhit_pose_flags.init, [&]() {
-        std::string src = ray_anyhit_pose_flags_kernel_source_2d();
-        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_pose_flags_kernel.cu");
-        g_rayanyhit_pose_flags.pipe = build_pipeline(
+    std::call_once(g_rayanyhit_group_flags.init, [&]() {
+        std::string src = ray_anyhit_group_flags_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_group_flags_kernel.cu");
+        g_rayanyhit_group_flags.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit_probe",
             "__miss__rayhit_miss",
@@ -3272,16 +3272,16 @@ struct PreparedRays2D {
     }
 };
 
-struct PreparedPoseIndices2D {
+struct PreparedGroupIndices2D {
     size_t count;
-    DevPtr d_pose_indices;
+    DevPtr d_group_indices;
 
-    explicit PreparedPoseIndices2D(const uint32_t* source, size_t index_count)
-        : count(index_count), d_pose_indices(sizeof(uint32_t) * index_count)
+    explicit PreparedGroupIndices2D(const uint32_t* source, size_t index_count)
+        : count(index_count), d_group_indices(sizeof(uint32_t) * index_count)
     {
         if (!source && index_count != 0)
-            throw std::runtime_error("pose_indices pointer must not be null when index_count is nonzero");
-        upload(d_pose_indices.ptr, source, index_count);
+            throw std::runtime_error("group_indices pointer must not be null when index_count is nonzero");
+        upload(d_group_indices.ptr, source, index_count);
     }
 };
 
@@ -3298,10 +3298,10 @@ static PreparedRays2D* prepare_rays_2d_optix(
     return new PreparedRays2D(rays, ray_count);
 }
 
-static PreparedPoseIndices2D* prepare_pose_indices_2d_optix(
-        const uint32_t* pose_indices, size_t pose_index_count)
+static PreparedGroupIndices2D* prepare_group_indices_2d_optix(
+        const uint32_t* group_indices, size_t group_index_count)
 {
-    return new PreparedPoseIndices2D(pose_indices, pose_index_count);
+    return new PreparedGroupIndices2D(group_indices, group_index_count);
 }
 
 static void count_prepared_ray_anyhit_2d_gpu_optix(
@@ -3381,154 +3381,154 @@ static void count_prepared_ray_anyhit_2d_packed_optix(
         hit_count_out);
 }
 
-static void pose_flags_prepared_ray_anyhit_2d_packed_optix(
+static void group_flags_prepared_ray_anyhit_2d_packed_optix(
         PreparedRayAnyHit2D* prepared,
         PreparedRays2D* prepared_rays,
-        const uint32_t* pose_indices,
-        size_t pose_index_count,
-        uint32_t* pose_flags_out,
-        size_t pose_count)
+        const uint32_t* group_indices,
+        size_t group_index_count,
+        uint32_t* group_flags_out,
+        size_t group_count)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
     if (!prepared_rays) throw std::runtime_error("prepared OptiX rays handle must not be null");
-    if (!pose_flags_out && pose_count != 0) throw std::runtime_error("pose_flags_out must not be null when pose_count is nonzero");
-    if (!pose_indices && pose_index_count != 0) throw std::runtime_error("pose_indices must not be null when pose_index_count is nonzero");
-    if (pose_index_count != prepared_rays->ray_count)
-        throw std::runtime_error("pose_index_count must match prepared ray count");
+    if (!group_flags_out && group_count != 0) throw std::runtime_error("group_flags_out must not be null when group_count is nonzero");
+    if (!group_indices && group_index_count != 0) throw std::runtime_error("group_indices must not be null when group_index_count is nonzero");
+    if (group_index_count != prepared_rays->ray_count)
+        throw std::runtime_error("group_index_count must match prepared ray count");
 
-    for (size_t i = 0; i < pose_count; ++i)
-        pose_flags_out[i] = 0u;
-    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || pose_count == 0)
+    for (size_t i = 0; i < group_count; ++i)
+        group_flags_out[i] = 0u;
+    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || group_count == 0)
         return;
 
-    ensure_ray_anyhit_pose_flags_2d_pipeline();
+    ensure_ray_anyhit_group_flags_2d_pipeline();
 
-    DevPtr d_pose_indices(sizeof(uint32_t) * pose_index_count);
-    DevPtr d_pose_flags(sizeof(uint32_t) * pose_count);
-    std::vector<uint32_t> zero_flags(pose_count, 0u);
-    upload(d_pose_indices.ptr, pose_indices, pose_index_count);
-    upload(d_pose_flags.ptr, zero_flags.data(), zero_flags.size());
+    DevPtr d_group_indices(sizeof(uint32_t) * group_index_count);
+    DevPtr d_group_flags(sizeof(uint32_t) * group_count);
+    std::vector<uint32_t> zero_flags(group_count, 0u);
+    upload(d_group_indices.ptr, group_indices, group_index_count);
+    upload(d_group_flags.ptr, zero_flags.data(), zero_flags.size());
 
-    RayAnyHitPoseFlagsLaunchParams lp;
+    RayAnyHitGroupFlagsLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.rays = reinterpret_cast<const GpuRay*>(prepared_rays->d_rays.ptr);
     lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
-    lp.pose_indices = reinterpret_cast<const uint32_t*>(d_pose_indices.ptr);
-    lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
-    lp.colliding_pose_count = nullptr;
+    lp.group_indices = reinterpret_cast<const uint32_t*>(d_group_indices.ptr);
+    lp.group_flags = reinterpret_cast<uint32_t*>(d_group_flags.ptr);
+    lp.colliding_group_count = nullptr;
     lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
-    lp.pose_count = static_cast<uint32_t>(pose_count);
+    lp.group_count = static_cast<uint32_t>(group_count);
 
-    DevPtr d_params(sizeof(RayAnyHitPoseFlagsLaunchParams));
+    DevPtr d_params(sizeof(RayAnyHitGroupFlagsLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_rayanyhit_pose_flags.pipe->pipeline, stream,
-                            d_params.ptr, sizeof(RayAnyHitPoseFlagsLaunchParams),
-                            &g_rayanyhit_pose_flags.pipe->sbt,
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_group_flags.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitGroupFlagsLaunchParams),
+                            &g_rayanyhit_group_flags.pipe->sbt,
                             static_cast<unsigned>(prepared_rays->ray_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
 
-    download(pose_flags_out, d_pose_flags.ptr, pose_count);
+    download(group_flags_out, d_group_flags.ptr, group_count);
 }
 
-static void pose_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
+static void group_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
         PreparedRayAnyHit2D* prepared,
         PreparedRays2D* prepared_rays,
-        PreparedPoseIndices2D* prepared_pose_indices,
-        uint32_t* pose_flags_out,
-        size_t pose_count)
+        PreparedGroupIndices2D* prepared_group_indices,
+        uint32_t* group_flags_out,
+        size_t group_count)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
     if (!prepared_rays) throw std::runtime_error("prepared OptiX rays handle must not be null");
-    if (!prepared_pose_indices) throw std::runtime_error("prepared OptiX pose-indices handle must not be null");
-    if (!pose_flags_out && pose_count != 0) throw std::runtime_error("pose_flags_out must not be null when pose_count is nonzero");
-    if (prepared_pose_indices->count != prepared_rays->ray_count)
-        throw std::runtime_error("prepared pose-index count must match prepared ray count");
+    if (!prepared_group_indices) throw std::runtime_error("prepared OptiX group-indices handle must not be null");
+    if (!group_flags_out && group_count != 0) throw std::runtime_error("group_flags_out must not be null when group_count is nonzero");
+    if (prepared_group_indices->count != prepared_rays->ray_count)
+        throw std::runtime_error("prepared group-index count must match prepared ray count");
 
-    for (size_t i = 0; i < pose_count; ++i)
-        pose_flags_out[i] = 0u;
-    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || pose_count == 0)
+    for (size_t i = 0; i < group_count; ++i)
+        group_flags_out[i] = 0u;
+    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || group_count == 0)
         return;
 
-    ensure_ray_anyhit_pose_flags_2d_pipeline();
+    ensure_ray_anyhit_group_flags_2d_pipeline();
 
-    DevPtr d_pose_flags(sizeof(uint32_t) * pose_count);
-    std::vector<uint32_t> zero_flags(pose_count, 0u);
-    upload(d_pose_flags.ptr, zero_flags.data(), zero_flags.size());
+    DevPtr d_group_flags(sizeof(uint32_t) * group_count);
+    std::vector<uint32_t> zero_flags(group_count, 0u);
+    upload(d_group_flags.ptr, zero_flags.data(), zero_flags.size());
 
-    RayAnyHitPoseFlagsLaunchParams lp;
+    RayAnyHitGroupFlagsLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.rays = reinterpret_cast<const GpuRay*>(prepared_rays->d_rays.ptr);
     lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
-    lp.pose_indices = reinterpret_cast<const uint32_t*>(prepared_pose_indices->d_pose_indices.ptr);
-    lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
-    lp.colliding_pose_count = nullptr;
+    lp.group_indices = reinterpret_cast<const uint32_t*>(prepared_group_indices->d_group_indices.ptr);
+    lp.group_flags = reinterpret_cast<uint32_t*>(d_group_flags.ptr);
+    lp.colliding_group_count = nullptr;
     lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
-    lp.pose_count = static_cast<uint32_t>(pose_count);
+    lp.group_count = static_cast<uint32_t>(group_count);
 
-    DevPtr d_params(sizeof(RayAnyHitPoseFlagsLaunchParams));
+    DevPtr d_params(sizeof(RayAnyHitGroupFlagsLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_rayanyhit_pose_flags.pipe->pipeline, stream,
-                            d_params.ptr, sizeof(RayAnyHitPoseFlagsLaunchParams),
-                            &g_rayanyhit_pose_flags.pipe->sbt,
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_group_flags.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitGroupFlagsLaunchParams),
+                            &g_rayanyhit_group_flags.pipe->sbt,
                             static_cast<unsigned>(prepared_rays->ray_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
 
-    download(pose_flags_out, d_pose_flags.ptr, pose_count);
+    download(group_flags_out, d_group_flags.ptr, group_count);
 }
 
-static void count_poses_prepared_ray_anyhit_2d_prepared_indices_optix(
+static void count_groups_prepared_ray_anyhit_2d_prepared_indices_optix(
         PreparedRayAnyHit2D* prepared,
         PreparedRays2D* prepared_rays,
-        PreparedPoseIndices2D* prepared_pose_indices,
-        size_t pose_count,
-        size_t* colliding_pose_count_out)
+        PreparedGroupIndices2D* prepared_group_indices,
+        size_t group_count,
+        size_t* colliding_group_count_out)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
     if (!prepared_rays) throw std::runtime_error("prepared OptiX rays handle must not be null");
-    if (!prepared_pose_indices) throw std::runtime_error("prepared OptiX pose-indices handle must not be null");
-    if (!colliding_pose_count_out) throw std::runtime_error("colliding_pose_count_out must not be null");
-    if (prepared_pose_indices->count != prepared_rays->ray_count)
-        throw std::runtime_error("prepared pose-index count must match prepared ray count");
-    *colliding_pose_count_out = 0;
-    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || pose_count == 0)
+    if (!prepared_group_indices) throw std::runtime_error("prepared OptiX group-indices handle must not be null");
+    if (!colliding_group_count_out) throw std::runtime_error("colliding_group_count_out must not be null");
+    if (prepared_group_indices->count != prepared_rays->ray_count)
+        throw std::runtime_error("prepared group-index count must match prepared ray count");
+    *colliding_group_count_out = 0;
+    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || group_count == 0)
         return;
 
-    ensure_ray_anyhit_pose_flags_2d_pipeline();
+    ensure_ray_anyhit_group_flags_2d_pipeline();
 
-    DevPtr d_pose_flags(sizeof(uint32_t) * pose_count);
-    DevPtr d_colliding_pose_count(sizeof(uint32_t));
-    std::vector<uint32_t> zero_flags(pose_count, 0u);
+    DevPtr d_group_flags(sizeof(uint32_t) * group_count);
+    DevPtr d_colliding_group_count(sizeof(uint32_t));
+    std::vector<uint32_t> zero_flags(group_count, 0u);
     uint32_t zero_count = 0u;
-    upload(d_pose_flags.ptr, zero_flags.data(), zero_flags.size());
-    upload(d_colliding_pose_count.ptr, &zero_count, 1);
+    upload(d_group_flags.ptr, zero_flags.data(), zero_flags.size());
+    upload(d_colliding_group_count.ptr, &zero_count, 1);
 
-    RayAnyHitPoseFlagsLaunchParams lp;
+    RayAnyHitGroupFlagsLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.rays = reinterpret_cast<const GpuRay*>(prepared_rays->d_rays.ptr);
     lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
-    lp.pose_indices = reinterpret_cast<const uint32_t*>(prepared_pose_indices->d_pose_indices.ptr);
-    lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
-    lp.colliding_pose_count = reinterpret_cast<uint32_t*>(d_colliding_pose_count.ptr);
+    lp.group_indices = reinterpret_cast<const uint32_t*>(prepared_group_indices->d_group_indices.ptr);
+    lp.group_flags = reinterpret_cast<uint32_t*>(d_group_flags.ptr);
+    lp.colliding_group_count = reinterpret_cast<uint32_t*>(d_colliding_group_count.ptr);
     lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
-    lp.pose_count = static_cast<uint32_t>(pose_count);
+    lp.group_count = static_cast<uint32_t>(group_count);
 
-    DevPtr d_params(sizeof(RayAnyHitPoseFlagsLaunchParams));
+    DevPtr d_params(sizeof(RayAnyHitGroupFlagsLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_rayanyhit_pose_flags.pipe->pipeline, stream,
-                            d_params.ptr, sizeof(RayAnyHitPoseFlagsLaunchParams),
-                            &g_rayanyhit_pose_flags.pipe->sbt,
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_group_flags.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitGroupFlagsLaunchParams),
+                            &g_rayanyhit_group_flags.pipe->sbt,
                             static_cast<unsigned>(prepared_rays->ray_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
 
     uint32_t count = 0u;
-    download(&count, d_colliding_pose_count.ptr, 1);
-    *colliding_pose_count_out = static_cast<size_t>(count);
+    download(&count, d_colliding_group_count.ptr, 1);
+    *colliding_group_count_out = static_cast<size_t>(count);
 }
 
 // ---------- 3-D ray-triangle hit count (OptiX-accelerated) ------------------
@@ -4873,7 +4873,7 @@ static void run_fixed_radius_neighbors_cuda_3d(
     *row_count_out = rows.size();
 }
 
-static void run_knn_rows_cuda(
+static void run_k_closest_hits_cuda(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,
         size_t k,
@@ -4881,7 +4881,7 @@ static void run_knn_rows_cuda(
 {
     (void)get_optix_context();
     std::call_once(g_knn.init, [&]() {
-        std::string ptx = compile_to_ptx(kKnnRowsKernelSrc, "knn_kernel.cu");
+        std::string ptx = compile_to_ptx(kKnnRowsKernelSrc, "k_closest_hits_kernel.cu");
         CU_CHECK(cuModuleLoadData(&g_knn.module, ptx.c_str()));
         CU_CHECK(cuModuleGetFunction(&g_knn.fn, g_knn.module, "knn_rows"));
     });
@@ -4955,7 +4955,7 @@ static void run_knn_rows_cuda(
     *row_count_out = rows.size();
 }
 
-static void run_knn_rows_cuda_3d(
+static void run_k_closest_hits_cuda_3d(
         const RtdlPoint3D* query_points, size_t query_count,
         const RtdlPoint3D* search_points, size_t search_count,
         size_t k,

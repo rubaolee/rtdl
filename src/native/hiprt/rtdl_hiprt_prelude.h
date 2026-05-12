@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -95,7 +95,7 @@ struct RtdlPolygonRef {
     uint32_t vertex_count;
 };
 
-struct RtdlLsiRow {
+struct RtdlSegmentPairIntersectionRow {
     uint32_t left_id;
     uint32_t right_id;
     double intersection_point_x;
@@ -108,11 +108,11 @@ struct RtdlPipRow {
     uint32_t contains;
 };
 
-struct RtdlOverlayRow {
+struct RtdlShapePairRelationRow {
     uint32_t left_polygon_id;
     uint32_t right_polygon_id;
-    uint32_t requires_lsi;
-    uint32_t requires_pip;
+    uint32_t requires_segment_intersection;
+    uint32_t requires_point_containment;
 };
 
 struct RtdlPointNearestSegmentRow {

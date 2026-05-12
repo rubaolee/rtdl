@@ -1,4 +1,4 @@
-#include "rtdl_oracle_internal.h"
+﻿#include "rtdl_oracle_internal.h"
 
 namespace rtdl::oracle {
 
@@ -280,7 +280,7 @@ std::vector<Segment2D> segments_from_polygons(const std::vector<Polygon2D>& poly
   return segments;
 }
 
-std::vector<RtdlLsiRow> oracle_lsi(
+std::vector<RtdlSegmentPairIntersectionRow> oracle_segment_pair_intersection(
     const std::vector<Segment2D>& left_segments,
     const std::vector<Segment2D>& right_segments) {
   struct IndexedSegmentBounds {
@@ -331,7 +331,7 @@ std::vector<RtdlLsiRow> oracle_lsi(
         return left.min_x < right.min_x;
       });
 
-  std::vector<std::vector<std::pair<size_t, RtdlLsiRow>>> hits_by_probe(left_segments.size());
+  std::vector<std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>> hits_by_probe(left_segments.size());
   std::vector<size_t> active;
   std::vector<size_t> next_active;
   size_t build_cursor = 0;
@@ -343,7 +343,7 @@ std::vector<RtdlLsiRow> oracle_lsi(
     }
 
     next_active.clear();
-    std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits = hits_by_probe[probe.original_index];
+    std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>& probe_hits = hits_by_probe[probe.original_index];
     for (size_t active_index : active) {
       const IndexedSegmentBounds& build = build_sorted[active_index];
       if (build.max_x < probe.min_x) {
@@ -365,8 +365,8 @@ std::vector<RtdlLsiRow> oracle_lsi(
     active.swap(next_active);
   }
 
-  std::vector<RtdlLsiRow> rows;
-  for (std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits : hits_by_probe) {
+  std::vector<RtdlSegmentPairIntersectionRow> rows;
+  for (std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>& probe_hits : hits_by_probe) {
     std::stable_sort(
         probe_hits.begin(),
         probe_hits.end(),

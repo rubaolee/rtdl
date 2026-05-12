@@ -42,7 +42,7 @@ as ground-truth scaffolding, not as RTDL Embree validation.
 
 - `EMBREE_REQUIRED_SYMBOLS` at lines 54–77: tuple of 22 symbols covering the full
   public Embree surface including the v0.6.1 graph additions
-  (`rtdl_embree_run_bfs_expand`, `rtdl_embree_run_triangle_probe`) and the v0.7 DB
+  (`rtdl_embree_run_bfs_expand`, `rtdl_embree_run_edge_neighbor_intersection_packet`) and the v0.7 DB
   additions (`rtdl_embree_db_dataset_create_columnar`, etc.).
 - `_require_embree_symbols()` at lines 3004–3017: raises `RuntimeError` with an
   actionable rebuild message naming the missing symbols and giving the correct
@@ -65,7 +65,7 @@ as ground-truth scaffolding, not as RTDL Embree validation.
   contract.
 - `test_embree_required_symbols_cover_windows_audit_exports`: explicitly asserts
   the four symbols that were missing in the Windows audit (`rtdl_embree_run_fixed_radius_neighbors`,
-  `rtdl_embree_run_bfs_expand`, `rtdl_embree_run_triangle_probe`,
+  `rtdl_embree_run_bfs_expand`, `rtdl_embree_run_edge_neighbor_intersection_packet`,
   `rtdl_embree_db_dataset_create_columnar`). Correctly targets the audit's findings.
 
 **`Makefile`**

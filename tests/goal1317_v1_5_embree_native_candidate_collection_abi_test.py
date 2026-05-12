@@ -15,8 +15,8 @@ class Goal1317V15EmbreeNativeCandidateCollectionAbiTest(unittest.TestCase):
         self.assertIn("struct RtdlPolygonPairCandidate", prelude)
         self.assertIn("uint32_t left_polygon_id", prelude)
         self.assertIn("uint32_t right_polygon_id", prelude)
-        self.assertIn("rtdl_embree_collect_polygon_pair_candidates_bounded", prelude)
-        self.assertIn("RTDL_EMBREE_EXPORT int rtdl_embree_collect_polygon_pair_candidates_bounded", api)
+        self.assertIn("rtdl_embree_collect_shape_pair_candidates_bounded", prelude)
+        self.assertIn("RTDL_EMBREE_EXPORT int rtdl_embree_collect_shape_pair_candidates_bounded", api)
         self.assertNotIn("rtdl_embree_run_polygon_set_jaccard_fast", api)
 
     def test_native_embree_collection_is_fail_closed_and_stable_ordered(self) -> None:
@@ -31,7 +31,7 @@ class Goal1317V15EmbreeNativeCandidateCollectionAbiTest(unittest.TestCase):
 
     def test_python_and_native_abi_names_remain_aligned(self) -> None:
         runtime = (ROOT / "src/rtdsl/embree_runtime.py").read_text(encoding="utf-8")
-        symbol = "rtdl_embree_collect_polygon_pair_candidates_bounded"
+        symbol = "rtdl_embree_collect_shape_pair_candidates_bounded"
 
         self.assertIn(symbol, runtime)
         self.assertIn(

@@ -18,9 +18,9 @@ class Goal467ExternalReportResponseTest(unittest.TestCase):
 
     def test_embree_required_symbols_cover_windows_audit_exports(self) -> None:
         self.assertIn("rtdl_embree_run_fixed_radius_neighbors", EMBREE_REQUIRED_SYMBOLS)
-        self.assertIn("rtdl_embree_run_bfs_expand", EMBREE_REQUIRED_SYMBOLS)
-        self.assertIn("rtdl_embree_run_triangle_probe", EMBREE_REQUIRED_SYMBOLS)
-        self.assertIn("rtdl_embree_db_dataset_create_columnar", EMBREE_REQUIRED_SYMBOLS)
+        self.assertIn("rtdl_embree_run_frontier_edge_traversal_packet", EMBREE_REQUIRED_SYMBOLS)
+        self.assertIn("rtdl_embree_run_edge_neighbor_intersection_packet", EMBREE_REQUIRED_SYMBOLS)
+        self.assertIn("rtdl_embree_columnar_payload_create_from_columns", EMBREE_REQUIRED_SYMBOLS)
 
 
 if __name__ == "__main__":

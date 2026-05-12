@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -51,7 +51,7 @@ struct RtdlRay2D {
   double tmax;
 };
 
-struct RtdlLsiRow {
+struct RtdlSegmentPairIntersectionRow {
   uint32_t left_id;
   uint32_t right_id;
   double intersection_point_x;
@@ -64,11 +64,11 @@ struct RtdlPipRow {
   uint32_t contains;
 };
 
-struct RtdlOverlayRow {
+struct RtdlShapePairRelationRow {
   uint32_t left_polygon_id;
   uint32_t right_polygon_id;
-  uint32_t requires_lsi;
-  uint32_t requires_pip;
+  uint32_t requires_segment_intersection;
+  uint32_t requires_point_containment;
 };
 
 struct RtdlRayHitCountRow {
@@ -214,16 +214,16 @@ struct RtdlDbGroupedSumRow {
 };
 
 int rtdl_oracle_get_version(int* major_out, int* minor_out, int* patch_out);
-int rtdl_oracle_run_lsi(
+int rtdl_oracle_run_segment_pair_intersection(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
     size_t right_count,
-    RtdlLsiRow** rows_out,
+    RtdlSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_pip(
+int rtdl_oracle_run_point_primitive_anyhit_packet(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlPolygonRef* polygons,
@@ -235,7 +235,7 @@ int rtdl_oracle_run_pip(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_overlay(
+int rtdl_oracle_run_shape_pair_relation_flags(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -244,7 +244,7 @@ int rtdl_oracle_run_overlay(
     size_t right_count,
     const double* right_vertices_xy,
     size_t right_vertex_xy_count,
-    RtdlOverlayRow** rows_out,
+    RtdlShapePairRelationRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -257,7 +257,7 @@ int rtdl_oracle_run_ray_hitcount(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_segment_polygon_hitcount(
+int rtdl_oracle_run_segment_shape_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -268,7 +268,7 @@ int rtdl_oracle_run_segment_polygon_hitcount(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_segment_polygon_anyhit_rows(
+int rtdl_oracle_run_segment_shape_anyhit_rows(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -279,7 +279,7 @@ int rtdl_oracle_run_segment_polygon_anyhit_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_polygon_pair_overlap_area_rows(
+int rtdl_oracle_run_shape_pair_overlap_area_rows(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -292,7 +292,7 @@ int rtdl_oracle_run_polygon_pair_overlap_area_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_polygon_set_jaccard(
+int rtdl_oracle_run_shape_set_overlap_ratio(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -305,7 +305,7 @@ int rtdl_oracle_run_polygon_set_jaccard(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs(
+int rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -320,7 +320,7 @@ int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
+int rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -335,7 +335,7 @@ int rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_native_reduce_polygon_pair_exact_area_summary(
+int rtdl_native_reduce_shape_pair_exact_area_summary(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -387,7 +387,7 @@ int rtdl_oracle_summarize_fixed_radius_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_knn_rows(
+int rtdl_oracle_run_k_closest_hits(
     const RtdlPoint* query_points,
     size_t query_point_count,
     const RtdlPoint* search_points,
@@ -397,7 +397,7 @@ int rtdl_oracle_run_knn_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_knn_rows_3d(
+int rtdl_oracle_run_k_closest_hits_3d(
     const RtdlPoint3D* query_points,
     size_t query_point_count,
     const RtdlPoint3D* search_points,
@@ -407,7 +407,7 @@ int rtdl_oracle_run_knn_rows_3d(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_bounded_knn_rows(
+int rtdl_oracle_run_bounded_k_closest_hits(
     const RtdlPoint* query_points,
     size_t query_point_count,
     const RtdlPoint* search_points,
@@ -418,7 +418,7 @@ int rtdl_oracle_run_bounded_knn_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_bounded_knn_rows_3d(
+int rtdl_oracle_run_bounded_k_closest_hits_3d(
     const RtdlPoint3D* query_points,
     size_t query_point_count,
     const RtdlPoint3D* search_points,
@@ -429,18 +429,18 @@ int rtdl_oracle_run_bounded_knn_rows_3d(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_summarize_knn_rows(
+int rtdl_oracle_summarize_k_closest_hits(
     const RtdlKnnNeighborRow* rows,
     size_t row_count,
     RtdlKnnSummaryRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_bfs_expand(
+int rtdl_oracle_run_frontier_edge_traversal_packet(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlFrontierVertex* frontier,
     size_t frontier_count,
     const uint32_t* visited,
@@ -450,11 +450,11 @@ int rtdl_oracle_run_bfs_expand(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_run_triangle_probe(
+int rtdl_oracle_run_triangle_cycle_candidates(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlEdgeSeed* seeds,
     size_t seed_count,
     uint32_t enforce_id_ascending,
@@ -463,7 +463,7 @@ int rtdl_oracle_run_triangle_probe(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_oracle_summarize_bfs_rows(
+int rtdl_oracle_summarize_frontier_traversal_rows(
     const RtdlBfsExpandRow* rows,
     size_t row_count,
     RtdlBfsSummaryRow** rows_out,

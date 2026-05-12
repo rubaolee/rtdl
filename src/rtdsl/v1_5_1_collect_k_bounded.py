@@ -92,12 +92,12 @@ V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS = (
     (
         "embree",
         "src/native/embree/rtdl_embree_api.cpp",
-        "rtdl_embree_collect_polygon_pair_candidates_bounded",
+        "rtdl_embree_collect_shape_pair_candidates_bounded",
     ),
     (
         "optix",
         "src/native/optix/rtdl_optix_api.cpp",
-        "rtdl_optix_collect_polygon_pair_candidates_bounded",
+        "rtdl_optix_collect_shape_pair_candidates_bounded",
     ),
 )
 V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_REQUIRED_NEXT_STEPS = (

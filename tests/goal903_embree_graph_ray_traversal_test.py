@@ -95,10 +95,10 @@ class Goal903EmbreeGraphRayTraversalTest(unittest.TestCase):
 
     def test_native_embree_graph_path_uses_intersection_not_point_query(self) -> None:
         source = (ROOT / "src/native/embree/rtdl_embree_api.cpp").read_text()
-        bfs_body = source.split("RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand", 1)[1].split(
-            "RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe", 1
+        bfs_body = source.split("RTDL_EMBREE_EXPORT int rtdl_embree_run_frontier_edge_traversal_packet", 1)[1].split(
+            "RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet", 1
         )[0]
-        triangle_body = source.split("RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe", 1)[1].split(
+        triangle_body = source.split("RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet", 1)[1].split(
             "RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan", 1
         )[0]
         self.assertIn("rtcSetGeometryIntersectFunction(holder.geometry, graph_edge_point_intersect)", bfs_body)

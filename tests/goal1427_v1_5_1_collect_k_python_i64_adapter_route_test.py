@@ -21,7 +21,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
             capacity=2,
             row_width=2,
             backend="embree",
-            source_symbol="rtdl_embree_collect_polygon_pair_candidates_bounded",
+            source_symbol="rtdl_embree_collect_shape_pair_candidates_bounded",
         )
 
         self.assertEqual(result["primitive"], "COLLECT_K_BOUNDED")
@@ -29,7 +29,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
         self.assertTrue(result["native_i64_adapter"])
         self.assertEqual(
             result["native_source_symbol"],
-            "rtdl_embree_collect_polygon_pair_candidates_bounded",
+            "rtdl_embree_collect_shape_pair_candidates_bounded",
         )
         self.assertEqual(result["candidate_id_rows"], ((1, 10), (2, 20)))
         self.assertEqual(result["valid_count"], 2)
@@ -46,7 +46,7 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
                 capacity=1,
                 row_width=2,
                 backend="optix",
-                source_symbol="rtdl_optix_collect_polygon_pair_candidates_bounded",
+                source_symbol="rtdl_optix_collect_shape_pair_candidates_bounded",
             )
 
     def test_embree_and_optix_polygon_wrappers_route_through_built_generic_symbol(self) -> None:
@@ -54,12 +54,12 @@ class Goal1427V151CollectKPythonI64AdapterRouteTest(unittest.TestCase):
             (
                 "src/rtdsl/embree_runtime.py",
                 "embree",
-                "rtdl_embree_collect_polygon_pair_candidates_bounded",
+                "rtdl_embree_collect_shape_pair_candidates_bounded",
             ),
             (
                 "src/rtdsl/optix_runtime.py",
                 "optix",
-                "rtdl_optix_collect_polygon_pair_candidates_bounded",
+                "rtdl_optix_collect_shape_pair_candidates_bounded",
             ),
         ):
             source = (ROOT / relative_path).read_text(encoding="utf-8")

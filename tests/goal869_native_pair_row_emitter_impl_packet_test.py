@@ -18,8 +18,8 @@ class Goal869NativePairRowEmitterImplPacketTest(unittest.TestCase):
     def test_detects_foundation_and_missing_variable_output_path(self) -> None:
         packet = goal869.build_packet(
             "kSegPolyHitcountKernelSrc\n__raygen__segpoly_probe\nGpuSegPolyRecord* output;\nsizeof(GpuSegPolyRecord) * segment_count\n",
-            "rtdl_optix_run_segment_polygon_anyhit_rows(\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
-            "rtdl_optix_run_segment_polygon_anyhit_rows(\n",
+            "rtdl_optix_run_segment_shape_anyhit_rows(\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
+            "rtdl_optix_run_segment_shape_anyhit_rows(\n",
         )
         self.assertEqual(packet["current_truth"]["native_hitcount_foundation"], "present")
         self.assertEqual(packet["current_truth"]["existing_native_output_shape"], "fixed_one_row_per_segment")
@@ -37,11 +37,11 @@ class Goal869NativePairRowEmitterImplPacketTest(unittest.TestCase):
                 encoding="utf-8",
             )
             api_cpp.write_text(
-                "rtdl_optix_run_segment_polygon_anyhit_rows(\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
+                "rtdl_optix_run_segment_shape_anyhit_rows(\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
                 encoding="utf-8",
             )
             prelude_h.write_text(
-                "rtdl_optix_run_segment_polygon_anyhit_rows(\n",
+                "rtdl_optix_run_segment_shape_anyhit_rows(\n",
                 encoding="utf-8",
             )
             completed = subprocess.run(

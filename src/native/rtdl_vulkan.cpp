@@ -1,4 +1,4 @@
-#include "vulkan/rtdl_vulkan_prelude.h"
+﻿#include "vulkan/rtdl_vulkan_prelude.h"
 
 namespace {
 #include "vulkan/rtdl_vulkan_core.cpp"

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "rtdl_oracle_abi.h"
 
@@ -141,7 +141,7 @@ bool segment_intersection(const Segment2D& left, const Segment2D& right, Vec2* p
 bool point_on_segment(const Vec2& point, const Vec2& start, const Vec2& end);
 bool point_in_polygon(double x, double y, const std::vector<Vec2>& vertices);
 std::vector<Segment2D> segments_from_polygons(const std::vector<Polygon2D>& polygons);
-std::vector<RtdlLsiRow> oracle_lsi(
+std::vector<RtdlSegmentPairIntersectionRow> oracle_segment_pair_intersection(
     const std::vector<Segment2D>& left_segments,
     const std::vector<Segment2D>& right_segments);
 Bounds2D bounds_for_polygon(const Polygon2D& polygon);

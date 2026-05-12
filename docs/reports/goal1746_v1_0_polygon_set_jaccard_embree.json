@@ -1,0 +1,54 @@
+{
+  "_goal1746_adapter": {
+    "baseline_workdir": "/home/lestat/work/rtdl_goal1746_v1_0",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_polygon_set_jaccard.py",
+      "--backend",
+      "embree",
+      "--copies",
+      "20000"
+    ],
+    "source": "v1.0 Embree app CLI stdout JSON"
+  },
+  "app": "polygon_set_jaccard",
+  "backend": "embree",
+  "backend_mode": "embree_native_assisted",
+  "boundary": "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact grid-cell set-area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery and the same native C++ continuation. These modes are RT-candidate plus native-continuation pipelines, not monolithic GPU Jaccard kernels.",
+  "candidate_row_count": 60000,
+  "copies": 20000,
+  "left_polygon_count": 40000,
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp",
+  "optix_performance": {
+    "class": "python_interface_dominated",
+    "note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell set-area/Jaccard continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU Jaccard kernel."
+  },
+  "output_mode": "rows",
+  "right_polygon_count": 40000,
+  "row_count": 1,
+  "rows": [
+    {
+      "intersection_area": 100000,
+      "jaccard_similarity": 0.2631578947368421,
+      "left_area": 260000,
+      "right_area": 220000,
+      "union_area": 380000
+    }
+  ],
+  "rt_core_accelerated": false,
+  "rt_core_candidate_discovery_active": false,
+  "run_phases": {
+    "input_construction_sec": 0.19007989001693204,
+    "native_exact_continuation_sec": 4.588383699010592,
+    "rt_candidate_discovery_sec": 2.0215022960328497,
+    "summary_postprocess_sec": 1.5840050764381886e-06
+  },
+  "summary": {
+    "intersection_area": 100000,
+    "jaccard_similarity": 0.2631578947368421,
+    "left_area": 260000,
+    "right_area": 220000,
+    "union_area": 380000
+  }
+}

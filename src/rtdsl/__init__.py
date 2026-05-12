@@ -14,6 +14,12 @@ from .api import knn_rows
 from .api import overlay_compose
 from .api import point_nearest_segment
 from .api import point_in_polygon
+from . import partner
+from .partner import PartnerContext
+from .partner import CuPyAdapter
+from .partner import PyTorchAdapter
+from .partner import RtdlOutputSpec
+from .partner import RtdlTensorDescriptor
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_any_hit
@@ -318,6 +324,7 @@ from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
 from .optix_runtime import get_last_db_phase_timings
+from .optix_runtime import OptixGroupIndexBuffer
 from .optix_runtime import OptixRay2DBuffer
 from .optix_runtime import OptixPoseIndexBuffer
 from .optix_runtime import OptixRowView
@@ -329,6 +336,7 @@ from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
 from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
+from .optix_runtime import prepare_optix_group_indices_2d
 from .optix_runtime import prepare_optix_pose_indices_2d
 from .optix_runtime import prepare_optix_rays_2d
 from .optix_runtime import PreparedOptixDbDataset
@@ -896,6 +904,12 @@ __all__ = [
     "InputContract",
     "LaunchParam",
     "Layout",
+    "partner",
+    "PartnerContext",
+    "CuPyAdapter",
+    "PyTorchAdapter",
+    "RtdlOutputSpec",
+    "RtdlTensorDescriptor",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",
@@ -1165,6 +1179,7 @@ __all__ = [
     "embree_version",
     "OptixRowView",
     "optix_version",
+    "OptixGroupIndexBuffer",
     "OptixRay2DBuffer",
     "OptixPoseIndexBuffer",
     "pack_rays_2d_from_arrays",
@@ -1175,6 +1190,7 @@ __all__ = [
     "prepare_optix_segment_polygon_anyhit_rows_2d",
     "prepare_optix_segment_polygon_hitcount_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
+    "prepare_optix_group_indices_2d",
     "prepare_optix_pose_indices_2d",
     "prepare_optix_rays_2d",
     "PreparedOptixDbDataset",

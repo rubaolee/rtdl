@@ -1,9 +1,9 @@
 #pragma once
 
-// rtdl_vulkan.cpp — Vulkan KHR ray-tracing backend for rtdl
+// rtdl_vulkan.cpp - Vulkan KHR ray-tracing backend for rtdl
 //
 // Implements the current Vulkan-native workload surface:
-//   LSI, PIP, Overlay, RayHitCount, SegmentPolygonHitcount,
+//   segment-pair intersection, PIP, shape-pair relation, RayHitCount, SegmentPolygonHitcount,
 //   SegmentPolygonAnyHitRows, PointNearestSegment
 // using Vulkan KHR ray-tracing extensions plus a Vulkan compute shader for
 // PointNearestSegment (which does not map cleanly to ray traversal).
@@ -67,10 +67,10 @@
 #  define RTDL_VULKAN_HAS_GEOS 0
 #endif
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Public C ABI  (identical layout to rtdl_optix.cpp — same Python binding can
-// be reused by adjusting the prefix from rtdl_optix_ → rtdl_vulkan_)
-// ─────────────────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Public C ABI  (identical layout to rtdl_optix.cpp - same Python binding can
+// be reused by adjusting the prefix from rtdl_optix_ -> rtdl_vulkan_)
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
 
@@ -85,11 +85,11 @@ struct RtdlRay2D      { uint32_t id; double ox, oy, dx, dy, tmax; };
 struct RtdlRay3D      { uint32_t id; double ox, oy, oz, dx, dy, dz, tmax; };
 #pragma pack(pop)
 
-struct RtdlLsiRow               { uint32_t left_id, right_id;
+struct RtdlSegmentPairIntersectionRow               { uint32_t left_id, right_id;
                                    double intersection_point_x, intersection_point_y; };
 struct RtdlPipRow               { uint32_t point_id, polygon_id, contains; };
-struct RtdlOverlayRow           { uint32_t left_polygon_id, right_polygon_id,
-                                           requires_lsi, requires_pip; };
+struct RtdlShapePairRelationRow           { uint32_t left_polygon_id, right_polygon_id,
+                                           requires_segment_intersection, requires_point_containment; };
 struct RtdlRayHitCountRow       { uint32_t ray_id, hit_count; };
 struct RtdlRayAnyHitRow         { uint32_t ray_id, any_hit; };
 struct RtdlSegmentPolygonHitCountRow { uint32_t segment_id, hit_count; };
@@ -103,7 +103,7 @@ struct RtdlEdgeSeed                  { uint32_t u, v; };
 struct RtdlTriangleRow               { uint32_t u, v, w; };
 struct RtdlDbField                   { const char* name; uint32_t kind; };
 struct RtdlDbScalar                  { uint32_t kind; int64_t int_value; double double_value; const char* string_value; };
-struct RtdlDbColumn                  { const char* name; uint32_t kind; const int64_t* int_values; const double* double_values; const char* const* string_values; };
+struct RtdlPayloadField                  { const char* name; uint32_t kind; const int64_t* int_values; const double* double_values; const char* const* string_values; };
 struct RtdlDbClause                  { const char* field; uint32_t op; RtdlDbScalar value; RtdlDbScalar value_hi; };
 struct RtdlDbRowIdRow                { uint32_t row_id; };
 struct RtdlDbGroupedCountRow         { int64_t group_key; int64_t count; };
@@ -111,24 +111,24 @@ struct RtdlDbGroupedSumRow           { int64_t group_key; int64_t sum; };
 struct RtdlVulkanDbDataset;
 
 int  rtdl_vulkan_get_version(int* major_out, int* minor_out, int* patch_out);
-int  rtdl_vulkan_run_lsi(
+int  rtdl_vulkan_run_segment_pair_intersection(
          const RtdlSegment* left,  size_t left_count,
          const RtdlSegment* right, size_t right_count,
-         RtdlLsiRow** rows_out, size_t* row_count_out,
+         RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_pip(
+int  rtdl_vulkan_run_point_primitive_anyhit_packet(
          const RtdlPoint*     points,     size_t point_count,
          const RtdlPolygonRef* polys,     size_t poly_count,
          const double* vertices_xy,       size_t vertex_xy_count,
          uint32_t positive_only,
          RtdlPipRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_overlay(
+int  rtdl_vulkan_run_shape_pair_relation_flags(
          const RtdlPolygonRef* left_polys,  size_t left_count,
          const double* left_verts_xy,       size_t left_vert_xy_count,
          const RtdlPolygonRef* right_polys, size_t right_count,
          const double* right_verts_xy,      size_t right_vert_xy_count,
-         RtdlOverlayRow** rows_out, size_t* row_count_out,
+         RtdlShapePairRelationRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_vulkan_run_ray_hitcount(
          const RtdlRay2D*    rays,      size_t ray_count,
@@ -160,13 +160,13 @@ int  rtdl_vulkan_run_ray_anyhit_3d(
          const RtdlTriangle3D* triangles, size_t triangle_count,
          RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_segment_polygon_hitcount(
+int  rtdl_vulkan_run_segment_shape_hitcount(
          const RtdlSegment*    segments,  size_t segment_count,
          const RtdlPolygonRef* polygons,  size_t polygon_count,
          const double* vertices_xy,       size_t vertex_xy_count,
          RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_segment_polygon_anyhit_rows(
+int  rtdl_vulkan_run_segment_shape_anyhit_rows(
          const RtdlSegment*    segments,  size_t segment_count,
          const RtdlPolygonRef* polygons,  size_t polygon_count,
          const double* vertices_xy,       size_t vertex_xy_count,
@@ -191,29 +191,29 @@ int  rtdl_vulkan_run_fixed_radius_neighbors_3d(
          size_t k_max,
          RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_knn_rows(
+int  rtdl_vulkan_run_k_closest_hits(
          const RtdlPoint* query_points, size_t query_count,
          const RtdlPoint* search_points, size_t search_count,
          size_t k,
          RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_knn_rows_3d(
+int  rtdl_vulkan_run_k_closest_hits_3d(
          const RtdlPoint3D* query_points, size_t query_count,
          const RtdlPoint3D* search_points, size_t search_count,
          size_t k,
          RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_bfs_expand(
+int  rtdl_vulkan_run_frontier_edge_traversal_packet(
          const uint32_t* row_offsets, size_t row_offset_count,
-         const uint32_t* column_indices, size_t column_index_count,
+         const uint32_t* column_indices, size_t edge_index_count,
          const RtdlFrontierVertex* frontier, size_t frontier_count,
          const uint32_t* visited_vertices, size_t visited_count,
          uint32_t dedupe,
          RtdlBfsExpandRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_run_triangle_probe(
+int  rtdl_vulkan_run_triangle_cycle_candidates(
          const uint32_t* row_offsets, size_t row_offset_count,
-         const uint32_t* column_indices, size_t column_index_count,
+         const uint32_t* column_indices, size_t edge_index_count,
          const RtdlEdgeSeed* seeds, size_t seed_count,
          uint32_t enforce_id_ascending,
          uint32_t unique,
@@ -240,31 +240,31 @@ int  rtdl_vulkan_run_grouped_sum(
          const char* value_field,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_db_dataset_create(
+int  rtdl_vulkan_columnar_payload_create(
          const RtdlDbField* fields, size_t field_count,
          const RtdlDbScalar* row_values, size_t row_count,
          const char* const* primary_fields, size_t primary_field_count,
          RtdlVulkanDbDataset** dataset_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_db_dataset_create_columnar(
-         const RtdlDbColumn* columns, size_t column_count,
+int  rtdl_vulkan_columnar_payload_create_from_columns(
+         const RtdlPayloadField* fields, size_t field_count,
          size_t row_count,
          const char* const* primary_fields, size_t primary_field_count,
          RtdlVulkanDbDataset** dataset_out,
          char* error_out, size_t error_size);
-void rtdl_vulkan_db_dataset_destroy(RtdlVulkanDbDataset* dataset);
-int  rtdl_vulkan_db_dataset_conjunctive_scan(
+void rtdl_vulkan_columnar_payload_destroy(RtdlVulkanDbDataset* dataset);
+int  rtdl_vulkan_columnar_payload_multi_predicate_scan(
          RtdlVulkanDbDataset* dataset,
          const RtdlDbClause* clauses, size_t clause_count,
          RtdlDbRowIdRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_db_dataset_grouped_count(
+int  rtdl_vulkan_columnar_payload_grouped_reduction_count(
          RtdlVulkanDbDataset* dataset,
          const RtdlDbClause* clauses, size_t clause_count,
          const char* group_key_field,
          RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
-int  rtdl_vulkan_db_dataset_grouped_sum(
+int  rtdl_vulkan_columnar_payload_grouped_reduction_sum(
          RtdlVulkanDbDataset* dataset,
          const RtdlDbClause* clauses, size_t clause_count,
          const char* group_key_field,
@@ -275,6 +275,4 @@ void rtdl_vulkan_free_rows(void* rows);
 
 } // extern "C"
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Internal implementation
-// ─────────────────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------

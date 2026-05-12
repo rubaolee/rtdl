@@ -1,0 +1,44 @@
+{
+  "_goal1756_wall_clock": {
+    "app": "barnes_hut_force_app",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_barnes_hut_force_app.py",
+      "--backend",
+      "embree",
+      "--body-count",
+      "200000",
+      "--output-mode",
+      "candidate_summary"
+    ],
+    "elapsed_sec": 3.4010800230316818,
+    "engine": "embree",
+    "returncode": 0,
+    "stderr_tail": "",
+    "stdout_json": true,
+    "stdout_tail": "",
+    "timing_scope": "same app-level command wall clock including process startup, input construction, native query, and JSON serialization",
+    "version": "current",
+    "workdir": "/home/lestat/work/rtdl_goal1756_current"
+  },
+  "app": "barnes_hut_force_app",
+  "backend": "embree",
+  "body_count": 200000,
+  "body_count_with_candidates": 200000,
+  "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+  "candidate_row_count": 800000,
+  "native_continuation_active": true,
+  "native_continuation_backend": "native_fixed_radius_candidate_summary",
+  "node_count": 4,
+  "node_count_seen": 4,
+  "node_radius": null,
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+  },
+  "optix_summary_mode": null,
+  "output_mode": "candidate_summary",
+  "rt_core_accelerated": false,
+  "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+  "theta": 0.75
+}

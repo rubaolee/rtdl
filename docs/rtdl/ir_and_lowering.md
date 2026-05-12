@@ -73,8 +73,9 @@ details, but the plan makes the intended execution contract explicit.
 
 ## Current Lowering Boundary
 
-Current lowering is predicate-specific. `lower_to_execution_plan(...)` accepts
-the current DSL kernel and dispatches to workload-specific lowerers such as:
+Current public lowering is still predicate-specific at the Python language
+surface. `lower_to_execution_plan(...)` accepts the current DSL kernel and
+dispatches to workload lowerers such as:
 
 - line-segment intersection
 - point-in-polygon
@@ -90,9 +91,10 @@ the current DSL kernel and dispatches to workload-specific lowerers such as:
 - KNN rows
 - bounded KNN rows
 
-This is correct for v1.0 proof work, but it is not the final generic
-architecture. It means many backend paths still know about app/workload
-semantics directly.
+This public surface is intentionally workload-aware because users write
+meaningful Python programs. The v1.8 engine boundary is stricter underneath:
+native source and exported ABI terminology must stay app-agnostic for the
+tracked release surface.
 
 ## What Is Stable Today
 
@@ -107,12 +109,12 @@ Stable current facts:
 - Some generated backend artifacts still use capacity/counter patterns and
   should not be treated as the final v2.0 execution ABI.
 
-## What v1.5 Must Improve
+## What v1.8 Has Tightened
 
-v1.5 should reduce app-specific engine customization by turning common backend
-work into reviewed generic primitives. The previously accepted direction is to
-separate primitives by result semantics, not hide everything under one vague
-reduction bucket:
+The v1.8 release-prep chain tightens app-specific engine customization by
+turning common backend work into reviewed generic primitives and generic native
+ABI terminology. The accepted direction separates primitives by result
+semantics, not by app names:
 
 - `ANY_HIT`
 - `COUNT_HITS`

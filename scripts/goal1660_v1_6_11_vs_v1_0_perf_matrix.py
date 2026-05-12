@@ -54,6 +54,17 @@ def _path_exists_at_ref(ref: str, path: str) -> bool:
     return _git("cat-file", "-e", f"{ref}:{path}").returncode == 0
 
 
+def _path_text_at_ref(ref: str, path: str) -> str:
+    result = _git("show", f"{ref}:{path}")
+    return result.stdout if result.returncode == 0 else ""
+
+
+def _script_supports_backend_at_ref(ref: str, path: str | None) -> bool:
+    if not path:
+        return False
+    return "--backend" in _path_text_at_ref(ref, path)
+
+
 def _engine_selector(command: list[str]) -> str | None:
     if "--backend" in command:
         return "--backend"
@@ -103,6 +114,22 @@ def _with_output_path(command: list[str], app: str, engine: str, version_slug: s
                 converted[index] = output
                 return converted
     converted.extend(["--output-json", output])
+    return converted
+
+
+def _without_backend_optix(command: list[str]) -> list[str]:
+    converted: list[str] = []
+    index = 0
+    while index < len(command):
+        if (
+            command[index] == "--backend"
+            and index + 1 < len(command)
+            and command[index + 1] == "optix"
+        ):
+            index += 2
+            continue
+        converted.append(command[index])
+        index += 1
     return converted
 
 
@@ -162,11 +189,32 @@ def _row(entry: dict[str, Any], engine: str) -> dict[str, Any]:
     )
     script = _script_path(pod_command)
     script_exists = bool(script and _path_exists_at_ref(BASELINE_REF, script))
+    baseline_supports_backend = _script_supports_backend_at_ref(BASELINE_REF, script)
+    v1_0_command_shape = "same_command_shape"
+    reason = None
     status = "planned" if script_exists else "blocked_v1_0_missing_script"
+    compare_v1_0 = script_exists and status == "planned"
+    if (
+        status == "planned"
+        and selector == "insert--backend"
+        and not baseline_supports_backend
+    ):
+        if engine == "optix" and _script_is_optix_specific(pod_command):
+            baseline = _without_backend_optix(baseline)
+            v1_0_command_shape = "legacy_optix_only_without_backend_selector"
+        else:
+            status = "current_only_v1_0_missing_engine_selector"
+            compare_v1_0 = False
+            v1_0_command_shape = "unsupported_legacy_no_backend_selector"
+            reason = (
+                "tagged v1.0 script exposes no --backend selector for this engine; "
+                "do not fabricate a decorative same-engine baseline row"
+            )
     shared_primitive_canonical = None
     if entry["app"] == "dbscan_clustering" and script and Path(script).name == "goal757_optix_fixed_radius_prepared_perf.py":
         status = "shared_primitive_alias" if script_exists else status
         shared_primitive_canonical = "outlier_detection"
+        compare_v1_0 = False
     return {
         "app": entry["app"],
         "engine": engine,
@@ -178,11 +226,13 @@ def _row(entry: dict[str, Any], engine: str) -> dict[str, Any]:
         "v1_0_command": baseline,
         "script_path": script,
         "script_exists_in_v1_0": script_exists,
+        "script_supports_backend_in_v1_0": baseline_supports_backend,
         "engine_selector": engine_selector_kind,
+        "v1_0_command_shape": v1_0_command_shape,
         "shared_primitive_canonical": shared_primitive_canonical,
-        "compare_current": status == "planned",
-        "compare_v1_0": script_exists and status == "planned",
-        "reason": (
+        "compare_current": status in {"planned", "current_only_v1_0_missing_engine_selector"},
+        "compare_v1_0": compare_v1_0,
+        "reason": reason or (
             "shares the same Goal757 fixed-radius threshold-count primitive row as "
             "outlier_detection, so it is tracked as app coverage but excluded from "
             "independent cross-version timing"
@@ -192,7 +242,7 @@ def _row(entry: dict[str, Any], engine: str) -> dict[str, Any]:
         "acceptance": [
             "same app",
             "same engine",
-            "same command shape",
+            "same or explicitly adapted legacy command shape",
             "same scale where supported",
             "same artifact schema or explicit schema-drift note",
             "strict parity/status before timing comparison",
@@ -322,9 +372,22 @@ def validate_manifest(payload: dict[str, Any]) -> dict[str, Any]:
         "robot_collision_screening",
         "barnes_hut_force_app",
     ):
-        for engine in ("embree", "optix"):
-            if by_pair[(app, engine)]["status"] != "planned":
-                raise ValueError(f"{app} {engine} row should be planned through the standardized backend selector")
+        embree = by_pair[(app, "embree")]
+        if embree["status"] != "current_only_v1_0_missing_engine_selector":
+            raise ValueError(f"{app} Embree row must be current-only when tagged v1.0 exposes no backend selector")
+        if embree["compare_current"] is not True or embree["compare_v1_0"] is not False:
+            raise ValueError(f"{app} Embree row must run current only and avoid a fabricated v1.0 baseline")
+        if embree["v1_0_command_shape"] != "unsupported_legacy_no_backend_selector":
+            raise ValueError(f"{app} Embree row must record the unsupported v1.0 command shape")
+        optix = by_pair[(app, "optix")]
+        if optix["status"] != "planned":
+            raise ValueError(f"{app} OptiX row should be planned through the adapted legacy command shape")
+        if optix["compare_v1_0"] is not True:
+            raise ValueError(f"{app} OptiX row must remain a comparable v1.0 baseline row")
+        if optix["v1_0_command_shape"] != "legacy_optix_only_without_backend_selector":
+            raise ValueError(f"{app} OptiX row must drop the unsupported v1.0 --backend optix selector")
+        if "--backend" in optix["v1_0_command"]:
+            raise ValueError(f"{app} OptiX v1.0 command must not include the unsupported --backend selector")
     if by_pair[("outlier_detection", "embree")]["status"] != "excluded":
         raise ValueError("Outlier Embree row must be excluded until Goal757 exposes an independent backend selector")
     if by_pair[("outlier_detection", "optix")]["status"] != "planned":

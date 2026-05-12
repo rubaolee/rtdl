@@ -26,10 +26,10 @@ class Goal1248V10ReleaseCandidatePackageTest(unittest.TestCase):
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
         docs_index = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         package_readme = (PACKAGE_DIR / "README.md").read_text(encoding="utf-8")
-        self.assertEqual(version, "v1.5")
+        self.assertEqual(version, "v1.8")
         self.assertIn("The current released version is `v1.0`", package_readme)
-        self.assertIn("The current released version is `v1.5`", docs_index)
-        self.assertIn("[v1.0 Release Package](release_reports/v1_0/README.md)", docs_index)
+        self.assertIn("current released version is `v1.8`", docs_index)
+        self.assertIn("Release Reports", docs_index)
 
     def test_package_records_v1_0_scope_and_claim_boundaries(self) -> None:
         combined = "\n".join(path.read_text(encoding="utf-8") for path in PACKAGE_DIR.glob("*.md"))

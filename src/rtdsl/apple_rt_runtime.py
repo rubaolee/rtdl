@@ -1,4 +1,4 @@
-"""Apple Metal/MPS ray-intersection backend for RTDL.
+﻿"""Apple Metal/MPS ray-intersection backend for RTDL.
 
 The v0.9.1 surface starts with a bounded 3D ray/triangle closest-hit
 primitive backed by MPSRayIntersector. It intentionally does not claim parity
@@ -549,7 +549,7 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_u32_add_compute.restype = ctypes.c_int
-    library.rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute.argtypes = [
+    library.rtdl_apple_rt_run_columnar_multi_predicate_scan_numeric_compute.argtypes = [
         ctypes.POINTER(ctypes.c_uint32),
         ctypes.POINTER(ctypes.c_float),
         ctypes.c_size_t,
@@ -561,8 +561,8 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute.restype = ctypes.c_int
-    library.rtdl_apple_rt_run_bfs_discover_compute.argtypes = [
+    library.rtdl_apple_rt_run_columnar_multi_predicate_scan_numeric_compute.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_frontier_discover_compute.argtypes = [
         ctypes.POINTER(ctypes.c_uint32),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_uint32),
@@ -578,7 +578,7 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_apple_rt_run_bfs_discover_compute.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_frontier_discover_compute.restype = ctypes.c_int
     library.rtdl_apple_rt_run_triangle_match_compute.argtypes = [
         ctypes.POINTER(ctypes.c_uint32),
         ctypes.c_size_t,
@@ -750,7 +750,7 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_fixed_radius_neighbors_3d.restype = ctypes.c_int
-    library.rtdl_apple_rt_run_point_polygon_candidates_2d.argtypes = [
+    library.rtdl_apple_rt_run_point_shape_candidates_2d.argtypes = [
         ctypes.POINTER(_RtdlPoint2D),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonBounds2D),
@@ -760,8 +760,8 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_apple_rt_run_point_polygon_candidates_2d.restype = ctypes.c_int
-    library.rtdl_apple_rt_run_segment_polygon_candidates_2d.argtypes = [
+    library.rtdl_apple_rt_run_point_shape_candidates_2d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_segment_shape_candidates_2d.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonBounds2D),
@@ -771,8 +771,8 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_apple_rt_run_segment_polygon_candidates_2d.restype = ctypes.c_int
-    library.rtdl_apple_rt_run_lsi.argtypes = [
+    library.rtdl_apple_rt_run_segment_shape_candidates_2d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_segment_pair_intersection.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment),
@@ -782,7 +782,7 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_apple_rt_run_lsi.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_segment_pair_intersection.restype = ctypes.c_int
 
 
 def _check_status(status: int, error_buffer: ctypes.Array[ctypes.c_char]) -> None:
@@ -910,7 +910,7 @@ def conjunctive_scan_apple_rt(table_rows, predicates) -> tuple[dict[str, int], .
     rows_ptr = ctypes.POINTER(ctypes.c_uint32)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute(
+    status = library.rtdl_apple_rt_run_columnar_multi_predicate_scan_numeric_compute(
         row_ids_array,
         values_array,
         len(row_ids),
@@ -1005,7 +1005,7 @@ def bfs_discover_apple_rt(
     rows_ptr = ctypes.POINTER(_RtdlAppleBfsRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_apple_rt_run_bfs_discover_compute(
+    status = library.rtdl_apple_rt_run_frontier_discover_compute(
         row_offsets_array,
         len(graph_record.row_offsets),
         column_indices_array,
@@ -1478,7 +1478,7 @@ def segment_intersection_apple_rt(
     rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_apple_rt_run_lsi(
+    status = library.rtdl_apple_rt_run_segment_pair_intersection(
         left_records,
         len(left_segments),
         right_records,
@@ -1745,7 +1745,7 @@ def point_in_polygon_positive_hits_apple_rt(
     rows_ptr = ctypes.POINTER(_RtdlPointPolygonCandidateRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_apple_rt_run_point_polygon_candidates_2d(
+    status = library.rtdl_apple_rt_run_point_shape_candidates_2d(
         point_records,
         len(points),
         polygon_records,
@@ -1830,7 +1830,7 @@ def point_segment_candidates_apple_rt(
     rows_ptr = ctypes.POINTER(_RtdlPointPolygonCandidateRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_apple_rt_run_point_polygon_candidates_2d(
+    status = library.rtdl_apple_rt_run_point_shape_candidates_2d(
         point_records,
         len(points),
         segment_boxes,
@@ -1894,7 +1894,7 @@ def segment_polygon_candidates_apple_rt(
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonCandidateRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_apple_rt_run_segment_polygon_candidates_2d(
+    status = library.rtdl_apple_rt_run_segment_shape_candidates_2d(
         segment_records,
         len(segments),
         polygon_records,

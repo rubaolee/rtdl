@@ -32,7 +32,7 @@ Python runtime and test surface:
   - `rt.EdgeSet`
   - `rt.GraphCSR`
 - native symbol added:
-  - `rtdl_optix_run_triangle_probe(...)`
+  - `rtdl_optix_run_edge_neighbor_intersection_packet(...)`
 - candidate generation is currently implemented as a native host-indexed
   OptiX helper over the graph CSR inputs, not as a disguised oracle fallback
 

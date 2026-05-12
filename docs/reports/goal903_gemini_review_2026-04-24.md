@@ -11,7 +11,7 @@ The review confirms the following:
 1.  **Problem Statement Adherence:** The core problem of transitioning from point-query based BVH assistance to actual ray traversal for graph analytics is addressed directly.
 2.  **Implementation Details:**
     *   `src/native/embree/rtdl_embree_scene.cpp` introduces `GraphEdgePoint` as user geometry primitives, with `graph_edge_point_bounds` defining their spatial representation. The `QueryKind` enum now includes specific types for graph BFS and triangle probing.
-    *   `src/native/embree/rtdl_embree_api.cpp` demonstrates the critical change. The `rtdl_embree_run_bfs_expand` and `rtdl_embree_run_triangle_probe` functions now explicitly use `rtcSetGeometryIntersectFunction` with `graph_edge_point_intersect` and perform ray traversal via `rtcIntersect1`. This replaces the previous `rtcPointQuery` approach, fulfilling the goal's primary technical requirement.
+    *   `src/native/embree/rtdl_embree_api.cpp` demonstrates the critical change. The `rtdl_embree_run_bfs_expand` and `rtdl_embree_run_edge_neighbor_intersection_packet` functions now explicitly use `rtcSetGeometryIntersectFunction` with `graph_edge_point_intersect` and perform ray traversal via `rtcIntersect1`. This replaces the previous `rtcPointQuery` approach, fulfilling the goal's primary technical requirement.
     *   The `graph_edge_point_intersect` callback correctly processes hits for both BFS expansion and triangle probing based on the `g_query_kind` and associated state.
 3.  **Python Interface and Reporting:**
     *   `examples/rtdl_graph_bfs.py` and `examples/rtdl_graph_triangle_count.py` appropriately configure their kernels to use the `embree` backend with `accel="bvh"` and the new `mode="graph_expand"`/`"graph_intersect"`.

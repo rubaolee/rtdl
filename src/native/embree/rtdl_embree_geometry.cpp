@@ -1,4 +1,4 @@
-constexpr double kEps = 1.0e-6;
+﻿constexpr double kEps = 1.0e-6;
 constexpr double kSegmentIntersectionEps = 1.0e-7;
 
 template <typename T>
@@ -322,7 +322,7 @@ bool segment_intersection(
   return true;
 }
 
-std::vector<RtdlLsiRow> lsi_native_loop(
+std::vector<RtdlSegmentPairIntersectionRow> segment_pair_intersection_native_loop(
     const std::vector<Segment2D>& left_segments,
     const std::vector<Segment2D>& right_segments) {
   struct IndexedSegmentBounds {
@@ -376,7 +376,7 @@ std::vector<RtdlLsiRow> lsi_native_loop(
         return left.min_x < right.min_x;
       });
 
-  std::vector<std::vector<std::pair<size_t, RtdlLsiRow>>> hits_by_probe(left_segments.size());
+  std::vector<std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>> hits_by_probe(left_segments.size());
   std::vector<size_t> active;
   std::vector<size_t> next_active;
   size_t build_cursor = 0;
@@ -388,7 +388,7 @@ std::vector<RtdlLsiRow> lsi_native_loop(
     }
 
     next_active.clear();
-    std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits = hits_by_probe[probe.original_index];
+    std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>& probe_hits = hits_by_probe[probe.original_index];
     for (size_t active_index : active) {
       const IndexedSegmentBounds& build = build_sorted[active_index];
       if (build.max_x < probe.min_x) {
@@ -410,8 +410,8 @@ std::vector<RtdlLsiRow> lsi_native_loop(
     active.swap(next_active);
   }
 
-  std::vector<RtdlLsiRow> rows;
-  for (std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits : hits_by_probe) {
+  std::vector<RtdlSegmentPairIntersectionRow> rows;
+  for (std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>& probe_hits : hits_by_probe) {
     std::stable_sort(
         probe_hits.begin(),
         probe_hits.end(),
@@ -555,8 +555,8 @@ bool finite_ray_hits_triangle_3d(const RayQuery3D& ray, const Triangle3D& triang
   return t >= 0.0 && t <= ray.tmax;
 }
 
-bool polygon_pair_flags(const Polygon2D& left, const Polygon2D& right, bool* requires_lsi, bool* requires_pip) {
-  bool lsi = false;
+bool polygon_pair_flags(const Polygon2D& left, const Polygon2D& right, bool* requires_segment_intersection, bool* requires_point_containment) {
+  bool has_segment_intersection = false;
   bool pip = false;
 
   std::vector<Segment2D> left_edges;
@@ -570,11 +570,11 @@ bool polygon_pair_flags(const Polygon2D& left, const Polygon2D& right, bool* req
   for (const Segment2D& le : left_edges) {
     for (const Segment2D& re : right_edges) {
       if (segment_intersection(le, re, nullptr)) {
-        lsi = true;
+        has_segment_intersection = true;
         break;
       }
     }
-    if (lsi) {
+    if (has_segment_intersection) {
       break;
     }
   }
@@ -583,13 +583,13 @@ bool polygon_pair_flags(const Polygon2D& left, const Polygon2D& right, bool* req
   Point2D right_point {right.id, right.vertices[0]};
   pip = point_in_polygon(left_point, right) || point_in_polygon(right_point, left);
 
-  if (requires_lsi != nullptr) {
-    *requires_lsi = lsi;
+  if (requires_segment_intersection != nullptr) {
+    *requires_segment_intersection = has_segment_intersection;
   }
-  if (requires_pip != nullptr) {
-    *requires_pip = pip;
+  if (requires_point_containment != nullptr) {
+    *requires_point_containment = pip;
   }
-  return lsi || pip;
+  return has_segment_intersection || pip;
 }
 
 bool segment_hits_polygon(const Segment2D& segment, const Polygon2D& polygon) {

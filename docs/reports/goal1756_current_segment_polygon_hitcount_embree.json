@@ -1,0 +1,10277 @@
+{
+  "_goal1756_wall_clock": {
+    "app": "segment_polygon_hitcount",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_segment_polygon_hitcount.py",
+      "--backend",
+      "embree",
+      "--copies",
+      "256"
+    ],
+    "elapsed_sec": 0.2558442230219953,
+    "engine": "embree",
+    "returncode": 0,
+    "stderr_tail": "",
+    "stdout_json": true,
+    "stdout_tail": "",
+    "timing_scope": "same app-level command wall clock including process startup, input construction, native query, and JSON serialization",
+    "version": "current",
+    "workdir": "/home/lestat/work/rtdl_goal1756_current"
+  },
+  "app": "segment_polygon_hitcount",
+  "backend": "embree",
+  "boundary": "RT-core performance remains classified separately: OptiX mode 'native' explicitly requests the experimental native custom-AABB path, but current public performance class stays host_indexed_fallback until a focused correctness/performance gate passes.",
+  "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+  "native_continuation_active": false,
+  "native_continuation_backend": "none",
+  "optix_mode": "not_applicable",
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default segment/polygon OptiX path remains conservative, but the prepared hit-count profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal for compact hit-count summaries."
+  },
+  "row_count": 2560,
+  "rows": [
+    {
+      "hit_count": 2,
+      "segment_id": 1
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 3
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 4
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 5
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 6
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 7
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 8
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 9
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 10
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 11
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 12
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 13
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 14
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 15
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 16
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 17
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 18
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 19
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 20
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 21
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 22
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 23
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 24
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 25
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 26
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 27
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 28
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 29
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 30
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 31
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 32
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 33
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 34
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 35
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 36
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 37
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 38
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 39
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 40
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 41
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 42
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 43
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 44
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 45
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 46
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 47
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 48
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 49
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 50
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 51
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 52
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 53
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 54
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 55
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 56
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 57
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 58
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 59
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 60
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 61
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 62
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 63
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 64
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 65
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 66
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 67
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 68
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 69
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 70
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 71
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 72
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 73
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 74
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 75
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 76
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 77
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 78
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 79
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 80
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 81
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 82
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 83
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 84
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 85
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 86
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 87
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 88
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 89
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 90
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 91
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 92
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 93
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 94
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 95
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 96
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 97
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 98
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 99
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 100
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 101
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 102
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 103
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 104
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 105
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 106
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 107
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 108
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 109
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 110
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 111
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 112
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 113
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 114
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 115
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 116
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 117
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 118
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 119
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 120
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 121
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 122
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 123
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 124
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 125
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 126
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 127
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 128
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 129
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 130
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 131
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 132
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 133
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 134
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 135
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 136
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 137
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 138
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 139
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 140
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 141
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 142
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 143
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 144
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 145
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 146
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 147
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 148
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 149
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 150
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 151
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 152
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 153
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 154
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 155
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 156
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 157
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 158
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 159
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 160
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 161
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 162
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 163
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 164
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 165
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 166
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 167
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 168
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 169
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 170
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 171
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 172
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 173
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 174
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 175
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 176
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 177
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 178
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 179
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 180
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 181
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 182
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 183
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 184
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 185
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 186
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 187
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 188
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 189
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 190
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 191
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 192
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 193
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 194
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 195
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 196
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 197
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 198
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 199
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 200
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 201
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 202
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 203
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 204
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 205
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 206
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 207
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 208
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 209
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 210
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 211
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 212
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 213
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 214
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 215
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 216
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 217
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 218
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 219
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 220
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 221
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 222
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 223
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 224
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 225
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 226
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 227
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 228
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 229
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 230
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 231
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 232
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 233
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 234
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 235
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 236
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 237
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 238
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 239
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 240
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 241
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 242
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 243
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 244
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 245
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 246
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 247
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 248
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 249
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 250
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 251
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 252
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 253
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 254
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 255
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 256
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 257
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 258
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 259
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 260
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 261
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 262
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 263
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 264
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 265
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 266
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 267
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 268
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 269
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 270
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 271
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 272
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 273
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 274
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 275
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 276
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 277
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 278
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 279
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 280
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 281
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 282
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 283
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 284
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 285
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 286
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 287
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 288
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 289
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 290
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 291
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 292
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 293
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 294
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 295
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 296
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 297
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 298
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 299
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 300
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 301
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 302
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 303
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 304
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 305
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 306
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 307
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 308
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 309
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 310
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 311
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 312
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 313
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 314
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 315
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 316
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 317
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 318
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 319
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 320
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 321
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 322
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 323
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 324
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 325
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 326
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 327
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 328
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 329
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 330
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 331
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 332
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 333
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 334
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 335
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 336
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 337
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 338
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 339
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 340
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 341
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 342
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 343
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 344
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 345
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 346
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 347
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 348
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 349
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 350
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 351
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 352
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 353
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 354
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 355
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 356
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 357
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 358
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 359
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 360
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 361
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 362
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 363
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 364
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 365
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 366
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 367
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 368
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 369
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 370
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 371
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 372
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 373
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 374
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 375
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 376
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 377
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 378
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 379
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 380
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 381
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 382
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 383
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 384
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 385
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 386
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 387
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 388
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 389
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 390
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 391
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 392
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 393
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 394
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 395
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 396
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 397
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 398
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 399
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 400
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 401
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 402
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 403
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 404
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 405
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 406
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 407
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 408
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 409
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 410
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 411
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 412
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 413
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 414
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 415
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 416
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 417
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 418
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 419
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 420
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 421
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 422
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 423
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 424
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 425
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 426
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 427
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 428
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 429
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 430
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 431
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 432
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 433
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 434
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 435
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 436
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 437
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 438
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 439
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 440
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 441
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 442
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 443
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 444
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 445
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 446
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 447
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 448
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 449
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 450
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 451
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 452
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 453
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 454
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 455
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 456
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 457
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 458
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 459
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 460
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 461
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 462
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 463
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 464
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 465
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 466
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 467
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 468
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 469
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 470
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 471
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 472
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 473
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 474
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 475
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 476
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 477
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 478
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 479
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 480
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 481
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 482
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 483
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 484
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 485
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 486
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 487
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 488
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 489
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 490
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 491
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 492
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 493
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 494
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 495
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 496
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 497
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 498
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 499
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 500
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 501
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 502
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 503
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 504
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 505
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 506
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 507
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 508
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 509
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 510
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 511
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 512
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 513
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 514
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 515
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 516
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 517
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 518
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 519
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 520
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 521
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 522
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 523
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 524
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 525
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 526
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 527
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 528
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 529
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 530
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 531
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 532
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 533
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 534
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 535
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 536
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 537
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 538
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 539
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 540
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 541
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 542
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 543
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 544
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 545
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 546
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 547
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 548
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 549
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 550
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 551
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 552
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 553
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 554
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 555
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 556
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 557
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 558
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 559
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 560
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 561
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 562
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 563
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 564
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 565
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 566
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 567
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 568
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 569
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 570
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 571
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 572
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 573
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 574
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 575
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 576
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 577
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 578
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 579
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 580
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 581
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 582
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 583
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 584
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 585
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 586
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 587
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 588
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 589
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 590
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 591
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 592
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 593
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 594
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 595
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 596
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 597
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 598
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 599
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 600
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 601
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 602
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 603
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 604
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 605
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 606
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 607
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 608
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 609
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 610
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 611
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 612
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 613
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 614
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 615
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 616
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 617
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 618
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 619
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 620
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 621
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 622
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 623
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 624
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 625
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 626
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 627
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 628
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 629
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 630
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 631
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 632
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 633
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 634
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 635
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 636
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 637
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 638
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 639
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 640
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 641
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 642
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 643
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 644
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 645
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 646
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 647
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 648
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 649
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 650
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 651
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 652
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 653
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 654
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 655
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 656
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 657
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 658
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 659
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 660
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 661
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 662
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 663
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 664
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 665
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 666
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 667
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 668
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 669
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 670
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 671
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 672
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 673
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 674
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 675
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 676
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 677
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 678
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 679
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 680
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 681
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 682
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 683
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 684
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 685
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 686
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 687
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 688
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 689
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 690
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 691
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 692
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 693
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 694
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 695
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 696
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 697
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 698
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 699
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 700
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 701
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 702
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 703
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 704
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 705
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 706
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 707
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 708
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 709
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 710
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 711
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 712
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 713
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 714
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 715
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 716
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 717
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 718
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 719
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 720
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 721
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 722
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 723
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 724
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 725
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 726
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 727
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 728
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 729
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 730
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 731
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 732
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 733
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 734
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 735
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 736
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 737
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 738
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 739
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 740
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 741
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 742
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 743
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 744
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 745
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 746
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 747
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 748
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 749
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 750
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 751
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 752
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 753
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 754
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 755
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 756
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 757
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 758
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 759
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 760
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 761
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 762
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 763
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 764
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 765
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 766
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 767
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 768
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 769
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 770
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 771
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 772
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 773
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 774
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 775
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 776
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 777
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 778
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 779
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 780
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 781
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 782
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 783
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 784
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 785
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 786
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 787
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 788
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 789
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 790
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 791
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 792
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 793
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 794
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 795
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 796
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 797
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 798
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 799
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 800
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 801
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 802
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 803
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 804
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 805
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 806
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 807
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 808
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 809
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 810
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 811
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 812
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 813
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 814
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 815
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 816
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 817
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 818
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 819
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 820
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 821
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 822
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 823
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 824
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 825
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 826
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 827
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 828
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 829
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 830
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 831
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 832
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 833
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 834
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 835
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 836
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 837
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 838
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 839
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 840
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 841
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 842
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 843
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 844
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 845
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 846
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 847
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 848
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 849
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 850
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 851
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 852
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 853
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 854
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 855
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 856
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 857
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 858
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 859
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 860
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 861
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 862
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 863
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 864
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 865
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 866
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 867
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 868
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 869
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 870
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 871
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 872
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 873
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 874
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 875
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 876
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 877
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 878
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 879
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 880
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 881
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 882
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 883
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 884
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 885
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 886
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 887
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 888
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 889
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 890
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 891
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 892
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 893
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 894
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 895
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 896
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 897
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 898
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 899
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 900
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 901
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 902
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 903
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 904
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 905
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 906
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 907
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 908
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 909
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 910
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 911
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 912
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 913
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 914
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 915
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 916
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 917
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 918
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 919
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 920
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 921
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 922
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 923
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 924
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 925
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 926
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 927
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 928
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 929
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 930
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 931
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 932
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 933
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 934
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 935
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 936
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 937
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 938
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 939
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 940
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 941
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 942
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 943
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 944
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 945
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 946
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 947
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 948
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 949
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 950
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 951
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 952
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 953
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 954
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 955
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 956
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 957
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 958
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 959
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 960
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 961
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 962
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 963
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 964
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 965
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 966
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 967
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 968
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 969
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 970
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 971
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 972
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 973
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 974
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 975
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 976
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 977
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 978
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 979
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 980
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 981
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 982
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 983
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 984
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 985
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 986
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 987
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 988
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 989
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 990
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 991
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 992
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 993
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 994
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 995
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 996
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 997
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 998
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 999
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1000
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1001
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1002
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1003
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1004
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1005
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1006
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1007
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1008
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1009
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1010
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1011
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1012
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1013
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1014
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1015
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1016
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1017
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1018
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1019
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1020
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1021
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1022
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1023
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1024
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1025
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1026
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1027
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1028
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1029
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1030
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1031
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1032
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1033
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1034
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1035
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1036
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1037
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1038
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1039
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1040
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1041
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1042
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1043
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1044
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1045
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1046
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1047
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1048
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1049
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1050
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1051
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1052
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1053
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1054
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1055
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1056
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1057
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1058
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1059
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1060
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1061
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1062
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1063
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1064
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1065
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1066
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1067
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1068
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1069
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1070
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1071
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1072
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1073
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1074
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1075
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1076
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1077
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1078
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1079
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1080
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1081
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1082
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1083
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1084
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1085
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1086
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1087
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1088
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1089
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1090
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1091
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1092
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1093
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1094
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1095
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1096
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1097
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1098
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1099
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1100
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1101
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1102
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1103
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1104
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1105
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1106
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1107
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1108
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1109
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1110
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1111
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1112
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1113
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1114
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1115
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1116
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1117
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1118
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1119
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1120
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1121
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1122
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1123
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1124
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1125
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1126
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1127
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1128
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1129
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1130
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1131
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1132
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1133
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1134
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1135
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1136
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1137
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1138
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1139
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1140
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1141
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1142
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1143
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1144
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1145
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1146
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1147
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1148
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1149
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1150
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1151
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1152
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1153
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1154
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1155
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1156
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1157
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1158
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1159
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1160
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1161
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1162
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1163
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1164
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1165
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1166
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1167
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1168
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1169
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1170
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1171
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1172
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1173
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1174
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1175
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1176
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1177
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1178
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1179
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1180
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1181
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1182
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1183
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1184
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1185
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1186
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1187
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1188
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1189
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1190
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1191
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1192
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1193
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1194
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1195
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1196
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1197
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1198
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1199
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1200
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1201
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1202
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1203
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1204
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1205
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1206
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1207
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1208
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1209
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1210
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1211
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1212
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1213
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1214
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1215
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1216
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1217
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1218
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1219
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1220
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1221
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1222
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1223
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1224
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1225
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1226
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1227
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1228
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1229
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1230
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1231
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1232
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1233
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1234
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1235
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1236
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1237
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1238
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1239
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1240
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1241
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1242
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1243
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1244
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1245
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1246
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1247
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1248
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1249
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1250
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1251
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1252
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1253
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1254
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1255
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1256
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1257
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1258
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1259
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1260
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1261
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1262
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1263
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1264
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1265
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1266
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1267
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1268
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1269
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1270
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1271
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1272
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1273
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1274
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1275
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1276
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1277
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1278
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1279
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1280
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1281
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1282
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1283
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1284
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1285
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1286
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1287
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1288
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1289
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1290
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1291
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1292
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1293
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1294
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1295
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1296
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1297
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1298
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1299
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1300
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1301
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1302
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1303
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1304
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1305
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1306
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1307
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1308
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1309
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1310
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1311
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1312
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1313
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1314
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1315
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1316
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1317
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1318
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1319
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1320
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1321
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1322
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1323
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1324
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1325
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1326
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1327
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1328
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1329
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1330
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1331
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1332
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1333
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1334
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1335
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1336
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1337
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1338
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1339
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1340
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1341
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1342
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1343
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1344
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1345
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1346
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1347
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1348
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1349
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1350
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1351
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1352
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1353
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1354
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1355
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1356
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1357
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1358
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1359
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1360
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1361
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1362
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1363
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1364
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1365
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1366
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1367
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1368
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1369
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1370
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1371
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1372
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1373
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1374
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1375
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1376
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1377
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1378
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1379
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1380
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1381
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1382
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1383
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1384
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1385
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1386
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1387
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1388
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1389
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1390
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1391
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1392
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1393
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1394
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1395
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1396
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1397
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1398
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1399
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1400
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1401
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1402
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1403
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1404
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1405
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1406
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1407
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1408
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1409
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1410
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1411
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1412
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1413
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1414
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1415
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1416
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1417
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1418
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1419
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1420
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1421
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1422
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1423
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1424
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1425
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1426
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1427
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1428
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1429
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1430
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1431
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1432
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1433
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1434
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1435
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1436
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1437
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1438
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1439
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1440
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1441
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1442
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1443
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1444
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1445
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1446
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1447
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1448
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1449
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1450
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1451
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1452
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1453
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1454
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1455
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1456
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1457
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1458
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1459
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1460
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1461
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1462
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1463
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1464
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1465
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1466
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1467
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1468
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1469
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1470
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1471
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1472
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1473
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1474
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1475
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1476
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1477
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1478
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1479
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1480
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1481
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1482
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1483
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1484
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1485
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1486
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1487
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1488
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1489
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1490
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1491
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1492
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1493
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1494
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1495
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1496
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1497
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1498
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1499
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1500
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1501
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1502
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1503
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1504
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1505
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1506
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1507
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1508
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1509
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1510
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1511
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1512
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1513
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1514
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1515
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1516
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1517
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1518
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1519
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1520
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1521
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1522
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1523
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1524
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1525
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1526
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1527
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1528
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1529
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1530
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1531
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1532
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1533
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1534
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1535
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1536
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1537
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1538
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1539
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1540
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1541
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1542
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1543
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1544
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1545
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1546
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1547
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1548
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1549
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1550
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1551
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1552
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1553
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1554
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1555
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1556
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1557
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1558
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1559
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1560
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1561
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1562
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1563
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1564
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1565
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1566
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1567
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1568
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1569
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1570
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1571
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1572
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1573
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1574
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1575
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1576
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1577
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1578
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1579
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1580
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1581
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1582
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1583
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1584
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1585
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1586
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1587
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1588
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1589
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1590
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1591
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1592
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1593
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1594
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1595
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1596
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1597
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1598
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1599
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1600
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1601
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1602
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1603
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1604
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1605
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1606
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1607
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1608
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1609
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1610
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1611
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1612
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1613
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1614
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1615
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1616
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1617
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1618
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1619
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1620
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1621
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1622
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1623
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1624
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1625
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1626
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1627
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1628
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1629
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1630
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1631
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1632
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1633
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1634
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1635
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1636
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1637
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1638
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1639
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1640
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1641
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1642
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1643
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1644
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1645
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1646
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1647
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1648
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1649
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1650
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1651
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1652
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1653
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1654
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1655
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1656
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1657
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1658
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1659
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1660
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1661
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1662
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1663
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1664
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1665
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1666
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1667
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1668
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1669
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1670
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1671
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1672
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1673
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1674
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1675
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1676
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1677
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1678
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1679
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1680
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1681
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1682
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1683
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1684
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1685
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1686
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1687
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1688
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1689
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1690
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1691
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1692
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1693
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1694
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1695
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1696
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1697
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1698
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1699
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1700
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1701
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1702
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1703
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1704
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1705
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1706
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1707
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1708
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1709
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1710
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1711
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1712
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1713
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1714
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1715
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1716
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1717
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1718
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1719
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1720
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1721
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1722
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1723
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1724
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1725
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1726
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1727
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1728
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1729
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1730
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1731
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1732
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1733
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1734
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1735
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1736
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1737
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1738
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1739
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1740
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1741
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1742
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1743
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1744
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1745
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1746
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1747
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1748
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1749
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1750
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1751
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1752
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1753
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1754
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1755
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1756
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1757
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1758
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1759
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1760
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1761
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1762
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1763
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1764
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1765
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1766
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1767
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1768
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1769
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1770
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1771
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1772
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1773
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1774
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1775
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1776
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1777
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1778
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1779
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1780
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1781
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1782
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1783
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1784
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1785
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1786
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1787
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1788
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1789
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1790
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1791
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1792
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1793
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1794
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1795
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1796
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1797
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1798
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1799
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1800
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1801
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1802
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1803
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1804
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1805
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1806
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1807
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1808
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1809
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1810
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1811
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1812
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1813
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1814
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1815
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1816
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1817
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1818
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1819
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1820
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1821
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1822
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1823
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1824
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1825
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1826
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1827
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1828
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1829
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1830
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1831
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1832
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1833
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1834
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1835
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1836
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1837
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1838
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1839
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1840
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1841
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1842
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1843
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1844
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1845
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1846
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1847
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1848
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1849
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1850
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1851
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1852
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1853
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1854
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1855
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1856
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1857
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1858
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1859
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1860
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1861
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1862
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1863
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1864
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1865
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1866
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1867
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1868
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1869
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1870
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1871
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1872
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1873
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1874
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1875
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1876
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1877
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1878
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1879
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1880
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1881
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1882
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1883
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1884
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1885
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1886
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1887
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1888
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1889
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1890
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1891
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1892
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1893
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1894
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1895
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1896
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1897
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1898
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1899
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1900
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1901
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1902
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1903
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1904
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1905
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1906
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1907
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1908
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1909
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1910
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1911
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1912
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1913
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1914
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1915
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1916
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1917
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1918
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1919
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1920
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1921
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1922
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1923
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1924
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1925
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1926
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1927
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1928
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1929
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1930
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1931
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1932
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1933
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1934
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1935
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1936
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1937
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1938
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1939
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1940
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1941
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1942
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1943
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1944
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1945
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1946
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1947
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1948
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1949
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1950
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1951
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1952
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1953
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1954
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1955
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1956
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1957
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1958
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1959
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1960
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1961
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1962
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1963
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1964
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1965
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1966
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1967
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1968
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1969
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1970
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1971
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1972
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1973
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1974
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1975
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1976
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1977
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1978
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1979
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1980
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1981
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1982
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1983
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1984
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1985
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1986
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1987
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1988
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1989
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1990
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 1991
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1992
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1993
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1994
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1995
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1996
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1997
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1998
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 1999
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2000
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2001
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2002
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2003
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2004
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2005
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2006
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2007
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2008
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2009
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2010
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2011
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2012
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2013
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2014
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2015
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2016
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2017
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2018
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2019
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2020
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2021
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2022
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2023
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2024
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2025
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2026
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2027
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2028
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2029
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2030
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2031
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2032
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2033
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2034
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2035
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2036
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2037
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2038
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2039
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2040
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2041
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2042
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2043
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2044
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2045
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2046
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2047
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2048
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2049
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2050
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2051
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2052
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2053
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2054
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2055
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2056
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2057
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2058
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2059
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2060
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2061
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2062
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2063
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2064
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2065
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2066
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2067
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2068
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2069
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2070
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2071
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2072
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2073
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2074
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2075
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2076
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2077
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2078
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2079
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2080
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2081
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2082
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2083
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2084
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2085
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2086
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2087
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2088
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2089
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2090
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2091
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2092
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2093
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2094
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2095
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2096
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2097
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2098
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2099
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2100
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2101
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2102
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2103
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2104
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2105
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2106
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2107
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2108
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2109
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2110
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2111
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2112
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2113
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2114
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2115
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2116
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2117
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2118
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2119
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2120
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2121
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2122
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2123
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2124
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2125
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2126
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2127
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2128
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2129
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2130
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2131
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2132
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2133
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2134
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2135
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2136
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2137
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2138
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2139
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2140
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2141
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2142
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2143
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2144
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2145
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2146
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2147
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2148
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2149
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2150
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2151
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2152
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2153
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2154
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2155
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2156
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2157
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2158
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2159
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2160
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2161
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2162
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2163
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2164
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2165
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2166
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2167
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2168
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2169
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2170
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2171
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2172
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2173
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2174
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2175
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2176
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2177
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2178
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2179
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2180
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2181
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2182
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2183
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2184
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2185
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2186
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2187
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2188
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2189
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2190
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2191
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2192
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2193
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2194
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2195
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2196
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2197
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2198
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2199
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2200
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2201
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2202
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2203
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2204
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2205
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2206
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2207
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2208
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2209
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2210
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2211
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2212
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2213
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2214
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2215
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2216
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2217
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2218
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2219
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2220
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2221
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2222
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2223
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2224
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2225
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2226
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2227
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2228
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2229
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2230
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2231
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2232
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2233
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2234
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2235
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2236
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2237
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2238
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2239
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2240
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2241
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2242
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2243
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2244
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2245
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2246
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2247
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2248
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2249
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2250
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2251
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2252
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2253
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2254
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2255
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2256
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2257
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2258
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2259
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2260
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2261
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2262
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2263
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2264
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2265
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2266
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2267
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2268
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2269
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2270
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2271
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2272
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2273
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2274
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2275
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2276
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2277
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2278
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2279
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2280
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2281
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2282
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2283
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2284
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2285
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2286
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2287
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2288
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2289
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2290
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2291
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2292
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2293
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2294
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2295
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2296
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2297
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2298
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2299
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2300
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2301
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2302
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2303
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2304
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2305
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2306
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2307
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2308
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2309
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2310
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2311
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2312
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2313
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2314
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2315
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2316
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2317
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2318
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2319
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2320
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2321
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2322
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2323
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2324
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2325
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2326
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2327
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2328
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2329
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2330
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2331
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2332
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2333
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2334
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2335
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2336
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2337
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2338
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2339
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2340
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2341
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2342
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2343
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2344
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2345
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2346
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2347
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2348
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2349
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2350
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2351
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2352
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2353
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2354
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2355
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2356
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2357
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2358
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2359
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2360
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2361
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2362
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2363
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2364
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2365
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2366
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2367
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2368
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2369
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2370
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2371
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2372
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2373
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2374
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2375
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2376
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2377
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2378
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2379
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2380
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2381
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2382
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2383
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2384
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2385
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2386
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2387
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2388
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2389
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2390
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2391
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2392
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2393
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2394
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2395
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2396
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2397
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2398
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2399
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2400
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2401
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2402
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2403
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2404
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2405
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2406
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2407
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2408
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2409
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2410
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2411
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2412
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2413
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2414
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2415
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2416
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2417
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2418
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2419
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2420
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2421
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2422
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2423
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2424
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2425
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2426
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2427
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2428
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2429
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2430
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2431
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2432
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2433
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2434
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2435
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2436
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2437
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2438
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2439
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2440
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2441
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2442
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2443
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2444
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2445
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2446
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2447
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2448
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2449
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2450
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2451
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2452
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2453
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2454
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2455
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2456
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2457
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2458
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2459
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2460
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2461
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2462
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2463
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2464
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2465
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2466
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2467
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2468
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2469
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2470
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2471
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2472
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2473
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2474
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2475
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2476
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2477
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2478
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2479
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2480
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2481
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2482
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2483
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2484
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2485
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2486
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2487
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2488
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2489
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2490
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2491
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2492
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2493
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2494
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2495
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2496
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2497
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2498
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2499
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2500
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2501
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2502
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2503
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2504
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2505
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2506
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2507
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2508
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2509
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2510
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2511
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2512
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2513
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2514
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2515
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2516
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2517
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2518
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2519
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2520
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2521
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2522
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2523
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2524
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2525
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2526
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2527
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2528
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2529
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2530
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2531
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2532
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2533
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2534
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2535
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2536
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2537
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2538
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2539
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2540
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2541
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2542
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2543
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2544
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2545
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2546
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2547
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2548
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2549
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2550
+    },
+    {
+      "hit_count": 2,
+      "segment_id": 2551
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2552
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2553
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2554
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2555
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2556
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2557
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2558
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2559
+    },
+    {
+      "hit_count": 1,
+      "segment_id": 2560
+    }
+  ],
+  "rt_core_accelerated": false
+}

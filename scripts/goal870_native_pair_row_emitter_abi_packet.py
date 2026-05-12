@@ -19,7 +19,7 @@ def _read_text(path: Path) -> str:
 
 
 def build_packet(prelude_h: str, api_cpp: str) -> dict[str, Any]:
-    symbol = "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded"
+    symbol = "rtdl_optix_run_segment_shape_anyhit_rows_native_bounded"
     declaration_present = symbol in prelude_h
     definition_present = symbol in api_cpp
     contract_fields_present = all(

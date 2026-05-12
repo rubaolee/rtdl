@@ -1,5 +1,5 @@
 // C ABI implementations
-// ─────────────────────────────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
 
@@ -12,17 +12,17 @@ int rtdl_vulkan_get_version(int* major_out, int* minor_out, int* patch_out) {
 
 void rtdl_vulkan_free_rows(void* rows) { std::free(rows); }
 
-int rtdl_vulkan_run_lsi(
+int rtdl_vulkan_run_segment_pair_intersection(
         const RtdlSegment* left, size_t left_count,
         const RtdlSegment* right, size_t right_count,
-        RtdlLsiRow** rows_out, size_t* row_count_out,
+        RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size) {
     return handle_call([&] {
-        run_lsi_vulkan(left, left_count, right, right_count, rows_out, row_count_out);
+        run_segment_pair_intersection_vulkan(left, left_count, right, right_count, rows_out, row_count_out);
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_pip(
+int rtdl_vulkan_run_point_primitive_anyhit_packet(
         const RtdlPoint* points, size_t point_count,
         const RtdlPolygonRef* polys, size_t poly_count,
         const double* vertices_xy, size_t vertex_xy_count,
@@ -35,15 +35,15 @@ int rtdl_vulkan_run_pip(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_overlay(
+int rtdl_vulkan_run_shape_pair_relation_flags(
         const RtdlPolygonRef* left_polys, size_t left_count,
         const double* left_verts_xy, size_t left_vert_xy_count,
         const RtdlPolygonRef* right_polys, size_t right_count,
         const double* right_verts_xy, size_t right_vert_xy_count,
-        RtdlOverlayRow** rows_out, size_t* row_count_out,
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size) {
     return handle_call([&] {
-        run_overlay_vulkan(left_polys, left_count, left_verts_xy, left_vert_xy_count,
+        run_shape_pair_relation_flags_vulkan(left_polys, left_count, left_verts_xy, left_vert_xy_count,
                            right_polys, right_count, right_verts_xy, right_vert_xy_count,
                            rows_out, row_count_out);
     }, error_out, error_size);
@@ -130,7 +130,7 @@ int rtdl_vulkan_run_ray_anyhit_3d(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_segment_polygon_hitcount(
+int rtdl_vulkan_run_segment_shape_hitcount(
         const RtdlSegment* segments, size_t segment_count,
         const RtdlPolygonRef* polygons, size_t polygon_count,
         const double* vertices_xy, size_t vertex_xy_count,
@@ -144,7 +144,7 @@ int rtdl_vulkan_run_segment_polygon_hitcount(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_segment_polygon_anyhit_rows(
+int rtdl_vulkan_run_segment_shape_anyhit_rows(
         const RtdlSegment* segments, size_t segment_count,
         const RtdlPolygonRef* polygons, size_t polygon_count,
         const double* vertices_xy, size_t vertex_xy_count,
@@ -229,7 +229,7 @@ int rtdl_vulkan_run_fixed_radius_neighbors_3d(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_knn_rows(
+int rtdl_vulkan_run_k_closest_hits(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,
         size_t k,
@@ -248,7 +248,7 @@ int rtdl_vulkan_run_knn_rows(
             throw std::runtime_error("knn_rows k exceeds uint32 limit");
         *rows_out = nullptr; *row_count_out = 0;
         if (query_count == 0 || search_count == 0) return;
-        run_knn_rows_vulkan(
+        run_k_closest_hits_vulkan(
             query_points, query_count,
             search_points, search_count,
             k,
@@ -256,7 +256,7 @@ int rtdl_vulkan_run_knn_rows(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_knn_rows_3d(
+int rtdl_vulkan_run_k_closest_hits_3d(
         const RtdlPoint3D* query_points, size_t query_count,
         const RtdlPoint3D* search_points, size_t search_count,
         size_t k,
@@ -275,7 +275,7 @@ int rtdl_vulkan_run_knn_rows_3d(
             throw std::runtime_error("knn_rows k exceeds uint32 limit");
         *rows_out = nullptr; *row_count_out = 0;
         if (query_count == 0 || search_count == 0) return;
-        run_knn_rows_3d_vulkan(
+        run_k_closest_hits_3d_vulkan(
             query_points, query_count,
             search_points, search_count,
             k,
@@ -283,9 +283,9 @@ int rtdl_vulkan_run_knn_rows_3d(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_bfs_expand(
+int rtdl_vulkan_run_frontier_edge_traversal_packet(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlFrontierVertex* frontier, size_t frontier_count,
         const uint32_t* visited_vertices, size_t visited_count,
         uint32_t dedupe,
@@ -298,7 +298,7 @@ int rtdl_vulkan_run_bfs_expand(
         if (frontier_count == 0) return;
         run_bfs_expand_vulkan_host_indexed(
             row_offsets, row_offset_count,
-            column_indices, column_index_count,
+            column_indices, edge_index_count,
             frontier, frontier_count,
             visited_vertices, visited_count,
             dedupe,
@@ -306,9 +306,9 @@ int rtdl_vulkan_run_bfs_expand(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_run_triangle_probe(
+int rtdl_vulkan_run_triangle_cycle_candidates(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlEdgeSeed* seeds, size_t seed_count,
         uint32_t enforce_id_ascending,
         uint32_t unique,
@@ -319,9 +319,9 @@ int rtdl_vulkan_run_triangle_probe(
             throw std::runtime_error("output pointers must not be null");
         *rows_out = nullptr; *row_count_out = 0;
         if (seed_count == 0) return;
-        run_triangle_probe_vulkan_host_indexed(
+        run_triangle_cycle_candidates_vulkan_host_indexed(
             row_offsets, row_offset_count,
-            column_indices, column_index_count,
+            column_indices, edge_index_count,
             seeds, seed_count,
             enforce_id_ascending,
             unique,
@@ -380,7 +380,7 @@ int rtdl_vulkan_run_grouped_sum(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_db_dataset_create(
+int rtdl_vulkan_columnar_payload_create(
         const RtdlDbField* fields, size_t field_count,
         const RtdlDbScalar* row_values, size_t row_count,
         const char* const* primary_fields, size_t primary_field_count,
@@ -400,8 +400,8 @@ int rtdl_vulkan_db_dataset_create(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_db_dataset_create_columnar(
-        const RtdlDbColumn* columns, size_t column_count,
+int rtdl_vulkan_columnar_payload_create_from_columns(
+        const RtdlPayloadField* fields, size_t field_count,
         size_t row_count,
         const char* const* primary_fields, size_t primary_field_count,
         RtdlVulkanDbDataset** dataset_out,
@@ -413,19 +413,19 @@ int rtdl_vulkan_db_dataset_create_columnar(
         }
         *dataset_out = nullptr;
         auto* dataset = create_db_dataset_vulkan_columnar(
-            columns, column_count,
+            columns, field_count,
             row_count,
             primary_fields, primary_field_count);
         *dataset_out = reinterpret_cast<RtdlVulkanDbDataset*>(dataset);
     }, error_out, error_size);
 }
 
-void rtdl_vulkan_db_dataset_destroy(RtdlVulkanDbDataset* dataset)
+void rtdl_vulkan_columnar_payload_destroy(RtdlVulkanDbDataset* dataset)
 {
     destroy_db_dataset_vulkan(reinterpret_cast<VulkanDbDatasetImpl*>(dataset));
 }
 
-int rtdl_vulkan_db_dataset_conjunctive_scan(
+int rtdl_vulkan_columnar_payload_multi_predicate_scan(
         RtdlVulkanDbDataset* dataset,
         const RtdlDbClause* clauses, size_t clause_count,
         RtdlDbRowIdRow** rows_out, size_t* row_count_out,
@@ -444,7 +444,7 @@ int rtdl_vulkan_db_dataset_conjunctive_scan(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_db_dataset_grouped_count(
+int rtdl_vulkan_columnar_payload_grouped_reduction_count(
         RtdlVulkanDbDataset* dataset,
         const RtdlDbClause* clauses, size_t clause_count,
         const char* group_key_field,
@@ -465,27 +465,9 @@ int rtdl_vulkan_db_dataset_grouped_count(
     }, error_out, error_size);
 }
 
-int rtdl_vulkan_db_dataset_grouped_sum(
+int rtdl_vulkan_columnar_payload_grouped_reduction_sum(
         RtdlVulkanDbDataset* dataset,
         const RtdlDbClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
-        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
-        char* error_out, size_t error_size)
-{
-    return handle_call([&]() {
-        if (!rows_out || !row_count_out) {
-            throw std::runtime_error("output pointers must not be null");
-        }
-        *rows_out = nullptr;
-        *row_count_out = 0;
-        run_db_grouped_sum_vulkan_prepared(
-            reinterpret_cast<VulkanDbDatasetImpl*>(dataset),
-            clauses, clause_count,
-            group_key_field,
-            value_field,
-            rows_out, row_count_out);
-    }, error_out, error_size);
-}
-
-} // extern "C"
+        RtdlDbGroupedSumRow** rows_out, size_t* ro

@@ -15,8 +15,8 @@ class Goal1315V15OptixNativeCandidateCollectionAbiTest(unittest.TestCase):
         self.assertIn("struct RtdlPolygonPairCandidate", prelude)
         self.assertIn("uint32_t left_polygon_id", prelude)
         self.assertIn("uint32_t right_polygon_id", prelude)
-        self.assertIn("rtdl_optix_collect_polygon_pair_candidates_bounded", prelude)
-        self.assertIn('extern "C" int rtdl_optix_collect_polygon_pair_candidates_bounded', api)
+        self.assertIn("rtdl_optix_collect_shape_pair_candidates_bounded", prelude)
+        self.assertIn('extern "C" int rtdl_optix_collect_shape_pair_candidates_bounded', api)
         self.assertNotIn("rtdl_optix_run_polygon_set_jaccard_fast", api)
 
     def test_native_optix_collection_is_fail_closed_and_stable_ordered(self) -> None:
@@ -37,7 +37,7 @@ class Goal1315V15OptixNativeCandidateCollectionAbiTest(unittest.TestCase):
             ROOT / "src/native/optix/rtdl_optix_api.cpp",
         )
 
-        symbol = "rtdl_optix_collect_polygon_pair_candidates_bounded"
+        symbol = "rtdl_optix_collect_shape_pair_candidates_bounded"
         self.assertIn(symbol, runtime)
         for path in source_files:
             self.assertIn(symbol, path.read_text(encoding="utf-8"))

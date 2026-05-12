@@ -18,22 +18,22 @@ class Goal720EmbreePreparedKnnRowsTest(unittest.TestCase):
         required = {
             "src/native/embree/rtdl_embree_prelude.h": [
                 "RtdlEmbreeKnnRows2D",
-                "rtdl_embree_knn_rows_2d_create",
-                "rtdl_embree_knn_rows_2d_run",
-                "rtdl_embree_knn_rows_2d_destroy",
+                "rtdl_embree_k_closest_hits_2d_create",
+                "rtdl_embree_k_closest_hits_2d_run",
+                "rtdl_embree_k_closest_hits_2d_destroy",
             ],
             "src/native/embree/rtdl_embree_api.cpp": [
                 "PreparedKnnRows2DImpl",
                 "rtcCommitScene(holder.scene)",
-                "rtdl_embree_knn_rows_2d_run",
+                "rtdl_embree_k_closest_hits_2d_run",
                 "rtcPointQuery(impl->holder.scene",
             ],
             "src/rtdsl/embree_runtime.py": [
                 "PreparedEmbreeKnnRows2D",
                 "prepare_embree_knn_rows_2d",
-                "rtdl_embree_knn_rows_2d_create",
-                "rtdl_embree_knn_rows_2d_run",
-                "rtdl_embree_knn_rows_2d_destroy",
+                "rtdl_embree_k_closest_hits_2d_create",
+                "rtdl_embree_k_closest_hits_2d_run",
+                "rtdl_embree_k_closest_hits_2d_destroy",
             ],
         }
         for relative_path, needles in required.items():

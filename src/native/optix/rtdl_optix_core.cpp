@@ -362,7 +362,7 @@ using HitRecord    = SbtRecord<EmptyData>;
 // on the exact-source county/zipcode surface.
 constexpr float kAabbPad = 1.0e-3f;
 constexpr float kSegmentAabbPad = 1.0e-4f;
-constexpr float kLsiTraceTmaxPad = 1.0e-4f;
+constexpr float kSegmentPairIntersectionTraceTmaxPad = 1.0e-4f;
 
 OptixAabb aabb_for_segment(float x0, float y0, float x1, float y1) {
     OptixAabb a;
@@ -524,9 +524,9 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
         const std::string& ptx,
         const char* raygen_name,
         const char* miss_name,
-        const char* intersection_name,       // null → skip custom intersection
-        const char* anyhit_name,             // null → skip anyhit
-        const char* closesthit_name,         // null → skip closesthit
+        const char* intersection_name,       // null -> skip custom intersection
+        const char* anyhit_name,             // null -> skip anyhit
+        const char* closesthit_name,         // null -> skip closesthit
         int max_payload_values               // number of payload registers
 ) {
     auto holder = std::make_unique<PipelineHolder>();
@@ -653,13 +653,13 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
     return holder;
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Device kernel source strings
-// ──────────────────────────────────────────────────────────────────────────────
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// ---------- LSI kernel -------------------------------------------------------
+// ---------- segment-pair intersection kernel -------------------------------------------------------
 
-static const char* kLsiKernelSrc = R"CUDA(
+static const char* kSegmentPairIntersectionKernelSrc = R"CUDA(
 #include <optix_device.h>
 
 struct GpuSegment {
@@ -667,23 +667,23 @@ struct GpuSegment {
     unsigned int id;
 };
 
-struct LsiRecord {
+struct SegmentPairIntersectionRecord {
     unsigned int left_id, right_id;
     float ix, iy;
 };
 
-struct LsiParams {
+struct SegmentPairIntersectionParams {
     OptixTraversableHandle traversable;
     const GpuSegment* left_segs;
     const GpuSegment* right_segs;
-    LsiRecord* output;
+    SegmentPairIntersectionRecord* output;
     unsigned int* output_count;
     unsigned int  output_capacity;
     unsigned int  probe_count;
 };
 
 extern "C" {
-__constant__ LsiParams params;
+__constant__ SegmentPairIntersectionParams params;
 }
 
 static __forceinline__ __device__ float dabsf(float x) {
@@ -709,7 +709,7 @@ static __forceinline__ __device__ bool seg_intersect(
     return true;
 }
 
-extern "C" __global__ void __raygen__lsi_probe() {
+extern "C" __global__ void __raygen__segment_pair_intersection_probe() {
     const unsigned int idx = optixGetLaunchIndex().x;
     if (idx >= params.probe_count) return;
     const GpuSegment p = params.left_segs[idx];
@@ -724,9 +724,9 @@ extern "C" __global__ void __raygen__lsi_probe() {
                p0, p1, p2, p3);
 }
 
-extern "C" __global__ void __miss__lsi_miss() {}
+extern "C" __global__ void __miss__segment_pair_intersection_miss() {}
 
-extern "C" __global__ void __intersection__lsi_isect() {
+extern "C" __global__ void __intersection__segment_pair_intersection_isect() {
     const unsigned int prim = optixGetPrimitiveIndex();
     optixSetPayload_1(prim);
     optixSetPayload_2(0u);
@@ -736,14 +736,14 @@ extern "C" __global__ void __intersection__lsi_isect() {
     optixReportIntersection(0.5f, 0u);
 }
 
-extern "C" __global__ void __anyhit__lsi_anyhit() {
+extern "C" __global__ void __anyhit__segment_pair_intersection_anyhit() {
     const unsigned int pidx = optixGetPayload_0();
     const unsigned int bidx = optixGetPayload_1();
     const float    ix   = __uint_as_float(optixGetPayload_2());
     const float    iy   = __uint_as_float(optixGetPayload_3());
     const unsigned int slot = atomicAdd(params.output_count, 1u);
     if (slot < params.output_capacity) {
-        LsiRecord r;
+        SegmentPairIntersectionRecord r;
         r.left_id  = params.left_segs[pidx].id;
         r.right_id = params.right_segs[bidx].id;
         r.ix = ix; r.iy = iy;
@@ -894,9 +894,9 @@ extern "C" __global__ void __intersection__pip_isect() {
 }
 )CUDA";
 
-// ---------- Overlay kernel ---------------------------------------------------
+// ---------- shape-pair relation kernel ---------------------------------------------------
 
-static const char* kOverlayKernelSrc = R"CUDA(
+static const char* kShapePairRelationKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
 #include <math.h>
@@ -907,12 +907,12 @@ struct GpuPolygonRef {
     uint32_t vertex_count;
 };
 
-struct OverlayFlags {
-    uint32_t requires_lsi;
-    uint32_t requires_pip;
+struct shape-pair relationFlags {
+    uint32_t requires_segment_intersection;
+    uint32_t requires_point_containment;
 };
 
-struct OverlayParams {
+struct shape-pair relationParams {
     OptixTraversableHandle traversable;
     const GpuPolygonRef* left_polygons;
     const GpuPolygonRef* right_polygons;
@@ -920,7 +920,7 @@ struct OverlayParams {
     const float* left_vy;
     const float* right_vx;
     const float* right_vy;
-    OverlayFlags* output;         // left_count * right_count elements
+    shape-pair relationFlags* output;         // left_count * right_count elements
     uint32_t  right_count;
     uint32_t  left_count;
     uint32_t  launch_count;       // total raygen threads
@@ -928,7 +928,7 @@ struct OverlayParams {
 };
 
 extern "C" {
-__constant__ OverlayParams params;
+__constant__ shape-pair relationParams params;
 }
 
 static __forceinline__ __device__ bool seg_intersect_flag(
@@ -966,7 +966,7 @@ static __forceinline__ __device__ bool point_in_polygon_dev(
 // Launch layout: one thread per (left_polygon, left_edge_index)
 // left_polygon_idx = launch_idx / max_edges_per_poly
 // edge_idx         = launch_idx % max_edges_per_poly
-extern "C" __global__ void __raygen__overlay_probe() {
+extern "C" __global__ void __raygen__shape_pair_relation_probe() {
     const uint32_t gidx = optixGetLaunchIndex().x;
     if (gidx >= params.launch_count) return;
     const uint32_t lpidx   = gidx / params.max_edges_per_poly;
@@ -992,9 +992,9 @@ extern "C" __global__ void __raygen__overlay_probe() {
                p0, p1, p2, p3);
 }
 
-extern "C" __global__ void __miss__overlay_miss() {}
+extern "C" __global__ void __miss__shape_pair_relation_miss() {}
 
-extern "C" __global__ void __intersection__overlay_isect() {
+extern "C" __global__ void __intersection__shape_pair_relation_isect() {
     const uint32_t rpidx = optixGetPrimitiveIndex();
     const uint32_t lpidx = optixGetPayload_0();
     const uint32_t eidx  = optixGetPayload_1();
@@ -1005,28 +1005,28 @@ extern "C" __global__ void __intersection__overlay_isect() {
     uint32_t i1 = lp.vertex_offset + (eidx + 1) % lp.vertex_count;
     float ax0 = params.left_vx[i0], ay0 = params.left_vy[i0];
     float ax1 = params.left_vx[i1], ay1 = params.left_vy[i1];
-    bool lsi_hit = false;
+    bool segment_intersection_hit = false;
     for (uint32_t k = 0; k < rp.vertex_count; ++k) {
         uint32_t j0 = rp.vertex_offset + k;
         uint32_t j1 = rp.vertex_offset + (k + 1) % rp.vertex_count;
         float bx0 = params.right_vx[j0], by0 = params.right_vy[j0];
         float bx1 = params.right_vx[j1], by1 = params.right_vy[j1];
         if (seg_intersect_flag(ax0, ay0, ax1, ay1, bx0, by0, bx1, by1)) {
-            lsi_hit = true;
+            segment_pair_intersection_hit = true;
             break;
         }
     }
-    if (lsi_hit) {
+    if (segment_pair_intersection_hit) {
         optixSetPayload_2(rpidx);
-        optixReportIntersection(0.5f, 1u);  // hit_kind=1 → LSI
+        optixReportIntersection(0.5f, 1u);  // hit_kind=1 -> segment-pair intersection
     }
 }
 
-extern "C" __global__ void __anyhit__overlay_anyhit() {
+extern "C" __global__ void __anyhit__shape_pair_relation_anyhit() {
     const uint32_t lpidx = optixGetPayload_0();
     const uint32_t rpidx = optixGetPayload_2();
     const uint32_t slot  = lpidx * params.right_count + rpidx;
-    atomicOr(&params.output[slot].requires_lsi, 1u);
+    atomicOr(&params.output[slot].requires_segment_intersection, 1u);
     optixIgnoreIntersection();
 }
 )CUDA";
@@ -1216,7 +1216,7 @@ extern "C" {
 __constant__ RayHitCount3DParams params;
 }
 
-// Möller-Trumbore ray-triangle intersection.
+// M-¶ller-Trumbore ray-triangle intersection.
 // Returns the hit parameter t in [0, tmax], or -1 if no hit.
 static __forceinline__ __device__ float ray_hits_triangle_3d(
         float ox, float oy, float oz,
@@ -1229,7 +1229,7 @@ static __forceinline__ __device__ float ray_hits_triangle_3d(
     const float edge1x = x1 - x0, edge1y = y1 - y0, edge1z = z1 - z0;
     const float edge2x = x2 - x0, edge2y = y2 - y0, edge2z = z2 - z0;
 
-    // pvec = dir × edge2
+    // pvec = dir x edge2
     const float pvx = dy * edge2z - dz * edge2y;
     const float pvy = dz * edge2x - dx * edge2z;
     const float pvz = dx * edge2y - dy * edge2x;
@@ -1244,7 +1244,7 @@ static __forceinline__ __device__ float ray_hits_triangle_3d(
     const float u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det;
     if (u < 0.0f || u > 1.0f) return -1.0f;
 
-    // qvec = tvec × edge1
+    // qvec = tvec x edge1
     const float qvx = tvy * edge1z - tvz * edge1y;
     const float qvy = tvz * edge1x - tvx * edge1z;
     const float qvz = tvx * edge1y - tvy * edge1x;
@@ -3651,7 +3651,7 @@ extern "C" {
 __constant__ GraphTriangleParams params;
 }
 
-extern "C" __global__ void __raygen__graph_triangle_probe() {
+extern "C" __global__ void __raygen__graph_triangle_cycle_candidates() {
     const uint32_t ray_index = optixGetLaunchIndex().x;
     const uint32_t seed_index = ray_index >> 1;
     if (seed_index >= params.seed_count) {
@@ -3769,11 +3769,11 @@ extern "C" __global__ void knn_rows_3d(
 }
 )CUDA";
 
-// ──────────────────────────────────────────────────────────────────────────────
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Cached pipeline singletons
-// ──────────────────────────────────────────────────────────────────────────────
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct LsiPipeline {
+struct SegmentPairIntersectionPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag   init;
 };
@@ -3783,7 +3783,7 @@ struct PipPipeline {
     std::once_flag   init;
 };
 
-struct OverlayPipeline {
+struct shape-pair relationPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag   init;
 };
@@ -3836,15 +3836,15 @@ struct KnnCuFunction {
     std::once_flag init;
 };
 
-static LsiPipeline         g_lsi;
+static SegmentPairIntersectionPipeline         g_segment_pair_intersection;
 static PipPipeline         g_pip;
-static OverlayPipeline     g_overlay;
+static shape-pair relationPipeline     g_shape_pair_relation;
 static RayHitCountPipeline  g_rayhit;
 static RayHitCount3DPipeline g_rayhit3d;
 static RayAnyHitPipeline    g_rayanyhit;
 static RayAnyHitPipeline    g_rayanyhit3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
-static RayAnyHitPipeline    g_rayanyhit_pose_flags;
+static RayAnyHitPipeline    g_rayanyhit_group_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
 static SegPolyPipeline     g_segpoly;
 static SegPolyPipeline     g_segpoly_rows;
@@ -3892,16 +3892,16 @@ struct GpuPoint3DHost { float x, y, z;      uint32_t id; };
 struct GpuPolygonRef { uint32_t id, vertex_offset, vertex_count; };
 struct GpuTriangle  { float x0, y0, x1, y1, x2, y2; uint32_t id; };
 struct GpuRay       { float ox, oy, dx, dy, tmax; uint32_t id; };
-// 3-D counterparts – direction is pre-normalised before upload.
+// 3-D counterparts - direction is pre-normalised before upload.
 struct GpuRay3DHost { float ox, oy, oz, dx, dy, dz, tmax; uint32_t id; };
 struct GpuTriangle3DHost { float x0, y0, z0, x1, y1, z1, x2, y2, z2; uint32_t id; };
 #pragma pack(pop)
 
 // Output structs (GPU-side, float coords)
 #pragma pack(push, 1)
-struct GpuLsiRecord  { uint32_t left_id, right_id; float ix, iy; };
+struct GpuSegmentPairIntersectionRecord  { uint32_t left_id, right_id; float ix, iy; };
 struct GpuPipRecord  { uint32_t point_id, polygon_id, contains; };
-struct GpuOverlayFlags { uint32_t requires_lsi, requires_pip; };
+struct GpuShapePairRelationFlags { uint32_t requires_segment_intersection, requires_point_containment; };
 struct GpuRayHitRecord { uint32_t ray_id, hit_count; };
 struct GpuRayAnyHitRecord { uint32_t ray_id, any_hit; };
 struct GpuFixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };

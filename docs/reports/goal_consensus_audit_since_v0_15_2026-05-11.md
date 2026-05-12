@@ -1,0 +1,1998 @@
+# Goal Consensus Audit Since v0.15 (Interpreted as v1.5)
+
+Date: 2026-05-11
+
+## 1. Scope and boundary used
+The audit request specified the boundary `v0.15`. However, `v0.15` does not exist in the repository history as a tag, branch, or release report. The release sequence jumps from `v0.1.0` through `v0.9.8`, directly to `v1.0`, and later `v1.5`.
+Given the absence of `v0.15`, the exact boundary used for this audit is the **`v1.5` git tag**. This boundary was chosen because `v1.5` is a major established release milestone, and the typo (`v0.15` instead of `v1.5`) is highly probable. The scope includes all goals that have files modified or added between the `v1.5` tag and `HEAD`.
+
+## 2. Verdict
+Audit complete. Found 80 passing goals, 98 goals with missing or invalid consensus, and 351 ambiguous cases requiring review.
+
+## 3. Passing goals
+- **Goal 831**: GOAL831_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+- **Goal 832**: GOAL832_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+- **Goal 834**: GOAL834_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+- **Goal 835**: GOAL835_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+- **Goal 846**: goal846_active_rtx_claim_gate_2026-04-23.generated
+- **Goal 847**: goal847_active_rtx_claim_review_package_2026-04-23
+- **Goal 874**: GOAL874_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 878**: GOAL878_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 879**: GOAL879_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 880**: GOAL880_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 881**: GOAL881_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 883**: GOAL883_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 884**: GOAL884_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 885**: GOAL885_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 886**: GOAL886_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 887**: GOAL887_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+- **Goal 910**: goal910_claude_review_2026-04-24
+- **Goal 911**: goal911_claude_review_2026-04-24
+- **Goal 934**: goal934_codex_peer_review_2026-04-25
+- **Goal 977**: goal977_claude_review_2026-04-26
+- **Goal 983**: goal983_claude_review_2026-04-26
+- **Goal 1034**: goal1034_claude_review_2026-04-26
+- **Goal 1035**: goal1035_claude_review_2026-04-26
+- **Goal 1036**: goal1036_all_ready_apps_20000_after_outlier_fix_2026-04-26
+- **Goal 1038**: goal1038_claude_review_2026-04-26
+- **Goal 1039**: goal1039_goal1038_pod_artifact_audit_2026-04-27
+- **Goal 1066**: goal1066_claude_review_2026-04-28
+- **Goal 1067**: goal1067_claude_review_2026-04-28
+- **Goal 1068**: goal1068_claude_review_2026-04-28
+- **Goal 1069**: goal1069_claude_review_2026-04-28
+- **Goal 1070**: goal1070_claude_review_2026-04-28
+- **Goal 1071**: goal1071_claude_review_2026-04-28
+- **Goal 1073**: goal1073_claude_review_2026-04-28
+- **Goal 1074**: goal1074_claude_review_2026-04-28
+- **Goal 1075**: goal1075_barnes_hut_rich_contract_design_2026-04-28
+- **Goal 1076**: goal1076_barnes_hut_rich_rtx_pod_candidate_2026-04-28
+- **Goal 1077**: goal1077_gemini_review_2026-04-28
+- **Goal 1078**: goal1078_gemini_review_2026-04-28
+- **Goal 1079**: goal1079_gemini_review_2026-04-29
+- **Goal 1080**: goal1080_gemini_review_2026-04-29
+- **Goal 1082**: goal1082_claude_review_2026-04-29
+- **Goal 1083**: goal1083_claude_review_2026-04-29
+- **Goal 1084**: goal1084_claude_review_2026-04-29
+- **Goal 1085**: goal1085_claude_review_2026-04-29
+- **Goal 1086**: goal1086_claude_review_2026-04-29
+- **Goal 1087**: goal1087_claude_review_2026-04-29
+- **Goal 1089**: goal1089_claude_review_2026-04-29
+- **Goal 1090**: goal1090_claude_review_2026-04-29
+- **Goal 1091**: goal1091_claude_review_2026-04-29
+- **Goal 1121**: goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29
+- **Goal 1127**: goal1127_claude_review_2026-04-29
+- **Goal 1130**: goal1130_claude_review_2026-04-29
+- **Goal 1131**: goal1131_claude_review_2026-04-29
+- **Goal 1132**: goal1132_claude_review_2026-04-29
+- **Goal 1133**: goal1133_claude_review_2026-04-29
+- **Goal 1134**: goal1134_claude_review_2026-04-29
+- **Goal 1135**: goal1135_changed_path_rtx_pod_plan_2026-04-29
+- **Goal 1136**: goal1136_changed_path_rtx_pod_artifact_intake_2026-04-29
+- **Goal 1155**: GOAL1155_GEMINI_DB_COMPACT_SUMMARY_PRECLOUD_REVIEW_REQUEST_2026-04-30
+- **Goal 1166**: goal1166_gemini_next_pod_packet_review_2026-04-30
+- **Goal 1168**: GOAL1168_GEMINI_LIVE_POD_INTAKE_AUDIT_REVIEW_REQUEST_2026-04-30
+- **Goal 1204**: GOAL1204_GEMINI_REPAIRED_RTX_POD_PACKET_REVIEW_REQUEST_2026-05-01
+- **Goal 1208**: GOAL1208_CLAUDE_PUBLIC_WORDING_DECISION_REVIEW_REQUEST_2026-05-01
+- **Goal 1224**: GOAL1224_CLAUDE_REMAINING_PUBLIC_WORDING_ROWS_REVIEW_REQUEST_2026-05-01
+- **Goal 1233**: goal1233_gemini_app_example_quickstart_review_2026-05-03
+- **Goal 1234**: goal1234_gemini_docs_index_simplification_review_2026-05-03
+- **Goal 1235**: goal1235_gemini_quick_tutorial_simplification_review_2026-05-03
+- **Goal 1263**: goal1263_external_review_request_2026-05-04
+- **Goal 1412**: goal1412_claude_v1_5_docs_release_cleanup_review_2026-05-06
+- **Goal 1431**: goal1431_external_review_request_2026-05-06
+- **Goal 1432**: goal1432_external_review_request_2026-05-06
+- **Goal 1441**: goal1441_external_review_request_2026-05-07
+- **Goal 1443**: goal1443_external_review_request_2026-05-07
+- **Goal 1444**: goal1444_external_review_request_2026-05-07
+- **Goal 1445**: goal1445_external_review_request_2026-05-07
+- **Goal 1446**: goal1446_external_review_request_2026-05-07
+- **Goal 1447**: goal1447_external_review_request_2026-05-07
+- **Goal 1449**: goal1449_external_review_request_2026-05-07
+- **Goal 1660**: goal1660_linux_embree_execution_summary_2026-05-10
+- **Goal 1661**: goal1661_comprehensive_backend_pod_interpretation_2026-05-10
+
+## 4. Missing or invalid consensus
+- **Goal 823**: goal823_v1_0_nvidia_rt_core_app_promotion_plan_2026-04-23
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 824**: goal824_pre_cloud_rtx_readiness_gate_2026-04-23
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 921**: goal921_database_analytics_phase_review_contract_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 922**: goal922_graph_visibility_pair_semantics_and_metadata_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 923**: goal923_current_v1_0_rt_core_board_after_goal922_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 924**: goal924_cloud_runbook_and_pre_cloud_gate_refresh_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 925**: goal925_live_doc_test_sync_after_goal924_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 926**: goal926_runner_analyzer_replayability_gate_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 927**: goal927_pre_cloud_local_closure_packet_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 928**: goal928_generated_gate_artifact_refresh_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 935**: goal935_consolidated_rtx_runbook_sync_after_goal934_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 936**: goal936_next_rtx_pod_execution_packet_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 937**: goal937_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 938**: goal938_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 939**: goal939_current_rtx_claim_review_package_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 940**: goal940_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 941**: goal941_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 942**: goal942_goal941_app_intake_and_matrix_promotion_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 943**: goal943_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 944**: goal944_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 945**: goal945_full_suite_stabilization_after_goal942_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 946**: goal946_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 947**: goal947_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 948**: goal948_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 949**: goal949_graph_native_summary_continuation_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 950**: goal950_ann_native_rerank_summary_continuation_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 951**: goal951_barnes_hut_native_candidate_summary_continuation_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 952**: goal952_density_native_threshold_continuation_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 953**: goal953_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 954**: goal954_database_native_continuation_contract_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 955**: goal955_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 956**: goal956_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 957**: goal957_graph_hausdorff_native_continuation_metadata_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 958**: goal958_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 959**: goal959_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 960**: goal960_generated_packet_stale_artifact_cleanup_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 961**: goal961_peer_review_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 962**: goal962_next_rtx_pod_execution_packet_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 963**: goal963_local_release_audit_after_goal962_2026-04-25
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 964**: goal964_generated_spatial_gate_resync_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 965**: goal965_goal962_packet_hardening_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 966**: goal966_compact_local_release_gate_after_goal965_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 3 files examined.
+- **Goal 985**: goal985_gemini_review_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 3 files examined.
+- **Goal 986**: goal986_gemini_review_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 3 files examined.
+- **Goal 987**: goal987_gemini_review_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 3 files examined.
+- **Goal 988**: goal988_event_hotspot_scalar_threshold_profiler_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 3 files examined.
+- **Goal 989**: goal989_gemini_review_2026-04-26
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 3 files examined.
+- **Goal 1041**: goal1041_codex_consensus_2026-04-27
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 2 files examined.
+- **Goal 1042**: gemini_goal1042_architecture_feedback_confirmation_2026-04-27
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 3 files examined.
+- **Goal 1106**: goal1106_barnes_hut_chunked_embree_timing_design_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1107**: goal1107_linux_chunked_baseline_completion_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1108**: goal1108_current_rtx_vs_baseline_comparison_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1109**: goal1109_second_ai_review_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1110**: goal1110_robot_embree_chunk_feasibility_probe_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1111**: goal1111_robot_embree_timing_only_chunk_mode_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1112**: goal1112_robot_timing_only_chunk_linux_probe_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1113**: goal1113_robot_split_validation_timing_contract_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1114**: goal1114_robot_split_embree_baseline_completion_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1115**: goal1115_readiness_refresh_after_robot_baseline_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1116**: goal1116_current_source_rtx_rerun_packet_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 5 files examined.
+- **Goal 1117**: goal1117_robot_profiler_provenance_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 3 files examined.
+- **Goal 1118**: goal1118_current_source_rtx_rerun_intake_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 4 files examined.
+- **Goal 1119**: goal1119_pre_pod_local_gate_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Codex
+  - Paths: 4 files examined.
+- **Goal 1147**: goal1147_goal1146_promotion_implementation_audit_2026-04-29
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1206**: GOAL1206_GEMINI_LIVE_POD_MERGED_EVIDENCE_REVIEW_REQUEST_2026-05-01
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 5 files examined.
+- **Goal 1222**: goal1222_v0_9_8_release_commit_staging_inventory_2026-05-01
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1225**: goal1225_goal1224_closure_and_release_boundary_2026-05-01
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1226**: goal1226_codex_v1_0_v1_5_v2_0_roadmap_understanding_2026-05-01
+  - Missing evidence: False
+  - Invalid Codex+Codex: True
+  - AI Systems found: Gemini, Codex
+  - Paths: 2 files examined.
+- **Goal 1227**: goal1227_formal_v1_0_v1_5_v2_0_roadmap_design_2026-05-01
+  - Missing evidence: False
+  - Invalid Codex+Codex: True
+  - AI Systems found: Gemini, Codex
+  - Paths: 3 files examined.
+- **Goal 1259**: goal1259_v1_1_pre_pod_gate_2026-05-04
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1286**: goal1286_v1_4_contract_inventory_gate_2026-05-05
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1328**: goal1328_front_page_release_marker_dedup_2026-05-05
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1341**: goal1341_release_audit_public_wording_count_sync_2026-05-06
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1342**: goal1342_release_gate_current_state_sync_2026-05-06
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1367**: goal1367_v1_5_internal_readiness_gate_2026-05-06
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1374**: goal1374_claude_followup_review_v1_5_readiness_gate_2026-05-06
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Claude
+  - Paths: 1 files examined.
+- **Goal 1395**: goal1395_v1_5_release_readiness_decision_2026-05-06
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1398**: goal1398_v1_5_standalone_release_gate_2026-05-06
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1407**: goal1407_v1_5_release_public_wording_gate_2026-05-06
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1452**: goal1452_v1_5_2_prepared_host_output_parity_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1456**: goal1456_rtx2000ada_candidate_docs_validation_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 2 files examined.
+- **Goal 1460**: goal1460_v1_5_2_post_link_gate_alignment_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1466**: goal1466_v1_5_3_reduced_copy_post_review_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1468**: goal1468_v1_5_3_typed_host_parity_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1475**: goal1475_v1_5_3_post_consensus_checkpoint_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1476**: goal1476_v1_5_4_device_zero_copy_entry_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1480**: goal1480_gpu_memory_architecture_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1481**: goal1481_python_rtdl_managed_buffer_design_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1488**: goal1488_v1_5_4_cuda_evidence_boundary_gate_2026-05-07
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1496**: goal1496_v1_5_4_collect_k_device_pointer_stub_gate_2026-05-08
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 2 files examined.
+- **Goal 1514**: goal1514_v1_5_4_embree_cpu_promotion_lane_2026-05-08
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1524**: goal1524_v1_5_4_v1_5_gate_cross_platform_rerun_2026-05-08
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1547**: goal1547_v1_5_4_optix_collect_k_device_prefix_min_pair_gate_negative_result_2026-05-08
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1578**: goal1578_v1_5_4_optix_collect_k_derived_carry_alias_promotion_readiness_2026-05-08
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: Gemini
+  - Paths: 2 files examined.
+- **Goal 1593**: goal1593_v1_5_4_optix_collect_k_gated_candidate_rtx3090_validation_2026-05-09
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1594**: goal1594_v1_5_4_optix_collect_k_gated_candidate_rtx4090_validation_2026-05-09
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1597**: goal1597_v1_5_4_optix_collect_k_threshold4_gate_rtx3090_validation_2026-05-09
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+- **Goal 1649**: goal1649_v1_6_x_optix_collect_k_cooperative_residency_gate_2026-05-10
+  - Missing evidence: True
+  - Invalid Codex+Codex: False
+  - AI Systems found: None
+  - Paths: 1 files examined.
+
+## 5. Ambiguous cases needing human confirmation
+- **Goal 830**: GOAL830_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 836**: GOAL836_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 837**: GOAL837_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 838**: GOAL838_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 839**: GOAL839_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 840**: GOAL840_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 841**: GOAL841_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 842**: GOAL842_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 843**: GOAL843_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 844**: GOAL844_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 845**: goal845_codex_consensus_review_2026-04-23
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 848**: goal848_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 849**: goal849_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 850**: goal850_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 851**: goal851_codex_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 856**: goal856_codex_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 857**: goal857_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 858**: goal858_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 859**: goal859_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 860**: goal860_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 861**: goal861_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 862**: goal862_claude_review_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 863**: GOAL863_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 864**: GOAL864_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 865**: GOAL865_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 866**: GOAL866_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 867**: GOAL867_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 868**: GOAL868_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 869**: GOAL869_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 870**: GOAL870_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-23
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 871**: GOAL871_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 872**: GOAL872_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 873**: GOAL873_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 875**: GOAL875_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 876**: GOAL876_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 877**: GOAL877_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 882**: GOAL882_CLAUDE_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 889**: GOAL889_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 890**: GOAL890_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Codex
+- **Goal 891**: GOAL891_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 892**: GOAL892_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 893**: GOAL893_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 894**: GOAL894_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 895**: GOAL895_EXTERNAL_REVIEW_REQUEST_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 896**: goal896_gemini_external_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 897**: goal897_gemini_external_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 898**: goal898_gemini_external_review_2026-04-24
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 899**: goal899_gemini_external_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 900**: goal900_gemini_external_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 901**: goal901_gemini_external_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 902**: goal902_app_by_app_rt_usage_and_next_moves_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 903**: goal903_claude_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 904**: goal904_claude_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 905**: goal905_claude_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 906**: goal906_claude_review_2026-04-24
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 907**: goal907_claude_review_2026-04-24
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude
+- **Goal 908**: goal908_claude_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 909**: goal909_claude_review_2026-04-24
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 912**: goal912_claude_review_2026-04-24
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 913**: goal913_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 914**: goal914_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 915**: goal915_claude_review_2026-04-25
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 916**: goal916_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 917**: goal917_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 918**: goal918_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 919**: goal919_codex_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 920**: goal920_codex_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 929**: goal929_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 930**: goal930_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 932**: goal932_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 933**: goal933_claude_review_2026-04-25
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 967**: goal967_claude_consensus_compliance_review_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 970**: GOAL970_CLAUDE_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 971**: GOAL971_CLAUDE_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 972**: GOAL972_CLAUDE_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 973**: GOAL973_CLAUDE_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 974**: GOAL974_CLAUDE_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 975**: goal975_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 976**: goal976_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 978**: goal978_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 979**: goal979_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 980**: goal980_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 981**: goal981_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 982**: goal982_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 984**: goal984_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 990**: goal990_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 991**: goal991_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 992**: goal992_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 993**: goal993_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 994**: goal994_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 995**: goal995_gemini_review_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 996**: goal996_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 997**: goal997_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 998**: goal998_current_claim_packet_scalar_wording_resync_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 999**: goal999_full_suite_repair_after_scalar_packet_sync_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1000**: goal1000_ctypes_packed_layout_futureproofing_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1001**: goal1001_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1002**: goal1002_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1003**: goal1003_gemini_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1004**: GOAL1004_EXTERNAL_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1005**: GOAL1005_EXTERNAL_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1006**: GOAL1006_EXTERNAL_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1007**: GOAL1007_EXTERNAL_REVIEW_REQUEST_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1008**: goal1008_claude_external_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1009**: goal1009_claude_external_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1010**: goal1010_claude_external_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1011**: goal1011_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1012**: goal1012_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1013**: goal1013_claim_packet_public_wording_sync_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1014**: goal1014_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1015**: goal1015_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1016**: goal1016_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1017**: goal1017_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1018**: goal1018_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1020**: goal1020_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1022**: goal1022_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1023**: goal1023_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1024**: goal1024_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1025**: goal1025_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 1026**: goal1026_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 1027**: goal1027_claude_review_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 1028**: goal1028_a5000_rtx_cloud_batch_report_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1029**: goal1029_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1030**: goal1030_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1031**: goal1031_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1032**: goal1032_baseline_manifest_correction_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1033**: goal1033_claude_review_2026-04-26
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1037**: goal1037_claude_review_2026-04-26
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1040**: goal1040_codex_consensus_2026-04-27
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1043**: goal1043_claim_grade_pod_readiness_repairs_2026-04-27
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1044**: goal1044_gemini_review_2026-04-27
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1045**: goal1045_gemini_review_2026-04-27
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1046**: goal1046_gemini_review_2026-04-27
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1047**: goal1047_gemini_review_2026-04-27
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1048**: GOAL1048_EXTERNAL_REVIEW_REQUEST_2026-04-27
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1049**: goal1049_goal1048_public_doc_sync_review_2026-04-27
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1050**: goal1050_gemini_external_review_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1051**: goal1051_post_goal1048_followup_plan_2026-04-28
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1052**: goal1052_post_goal1048_cloud_batch_manifest_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1053**: goal1053_two_ai_consensus_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1055**: goal1055_goal1052_robot_validation_command_fix_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1056**: goal1056_post_goal1048_artifact_intake_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1058**: goal1058_claude_same_semantics_review_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1059**: goal1059_claude_review_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1060**: goal1060_claude_review_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1061**: goal1061_claude_review_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1062**: goal1062_blocked_rtx_wording_rerun_manifest_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1063**: goal1063_claude_review_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1064**: goal1064_claude_review_2026-04-28
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1065**: goal1065_claude_review_2026-04-28
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1072**: goal1072_claude_review_2026-04-28
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 1081**: goal1081_claude_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 1088**: goal1088_claude_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 1092**: goal1092_claude_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 1093**: goal1093_barnes_hut_20m_contract_packet_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 1094**: goal1094_claude_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 1095**: goal1095_claude_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1096**: goal1096_claude_followup_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1097**: goal1097_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1098**: goal1098_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1099**: goal1099_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1100**: goal1100_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1101**: goal1101_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1102**: goal1102_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1103**: goal1103_baseline_execution_manifest_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1104**: goal1104_barnes_hut_local_baseline_execution_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1105**: goal1105_gemini_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1120**: goal1120_recent_goal_consensus_audit_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1122**: goal1122_claude_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1123**: goal1123_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1124**: goal1124_claude_review_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1125**: goal1125_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1126**: goal1126_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1128**: goal1128_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1129**: goal1129_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1137**: goal1137_claude_review_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1138**: goal1138_current_rtx_status_evidence_sync_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1139**: goal1139_current_window_consensus_audit_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1140**: goal1140_current_public_surface_audit_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1142**: goal1142_current_source_robot_64m_replacement_report_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1146**: GOAL1146_GEMINI_PUBLIC_WORDING_PROMOTION_REVIEW_REQUEST_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1149**: GOAL1149_GEMINI_STALE_GATE_RECONCILIATION_REVIEW_REQUEST_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1150**: GOAL1150_GEMINI_LIVE_GATE_FOLLOWUP_REVIEW_REQUEST_2026-04-29
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1151**: GOAL1151_GEMINI_ROBOT_BOUNDARY_GATE_REVIEW_REQUEST_2026-04-29
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1152**: GOAL1152_GEMINI_PUBLIC_SURFACE_WORDING_SYNC_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1153**: GOAL1153_GEMINI_LEGACY_GATE_REPAIR_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1154**: GOAL1154_GEMINI_ROBOT_GOAL1126_FOLLOWUP_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1156**: GOAL1156_GEMINI_DB_COMPACT_SUMMARY_BATCH_CONTRACT_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1157**: GOAL1157_GEMINI_OPTIX_DB_COMPACT_SUMMARY_NATIVE_ABI_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1158**: GOAL1158_GEMINI_GRAPH_RAW_SUMMARY_CONTRACT_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1159**: GOAL1159_GEMINI_GRAPH_RTX_GATE_PHASE_METADATA_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1160**: GOAL1160_GEMINI_ROAD_HAZARD_GATE_PHASE_METADATA_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1161**: GOAL1161_GEMINI_HAUSDORFF_NONANALYTIC_THRESHOLD_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1162**: GOAL1162_GEMINI_POLYGON_GATE_ARTIFACT_REPLAYABILITY_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1163**: GOAL1163_GEMINI_PRE_CLOUD_RTX_READINESS_SUPERSESSION_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Codex
+- **Goal 1164**: goal1164_gemini_rtx_pod_batch_review_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1165**: goal1165_gemini_local_rtx_app_perf_followup_review_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1167**: gemini_msg_to_main_ai_goal1167_review_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1169**: GOAL1169_EXTERNAL_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1170**: GOAL1170_EXTERNAL_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1173**: GOAL1173_EXTERNAL_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1174**: GOAL1174_EXTERNAL_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1175**: GOAL1175_EXTERNAL_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1176**: GOAL1176_EXTERNAL_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1177**: GOAL1177_GEMINI_LIVE_POD_RECOVERY_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1178**: GOAL1178_GEMINI_PUBLIC_STATUS_SYNC_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1179**: GOAL1179_GEMINI_PUBLIC_DOC_BOUNDARY_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1180**: GOAL1180_GEMINI_CURRENT_RELEASE_READINESS_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1181**: GOAL1181_GEMINI_PUBLIC_SURFACE_LOCAL_SMOKE_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1182**: GOAL1182_GEMINI_NEXT_POD_PACKET_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1183**: GOAL1183_CLAUDE_PRE_POD_READINESS_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1184**: GOAL1184_CLAUDE_LIVE_POD_INTAKE_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1185**: GOAL1185_CLAUDE_PUBLIC_STATUS_SYNC_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1186**: GOAL1186_CLAUDE_CURRENT_RELEASE_READINESS_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1187**: GOAL1187_CLAUDE_PUBLIC_SURFACE_SMOKE_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1188**: GOAL1188_CLAUDE_NEXT_RTX_POD_GAP_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1189**: GOAL1189_CLAUDE_NEXT_RTX_POD_CONTRACT_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1190**: GOAL1190_CLAUDE_NEXT_RTX_POD_CONTRACT_SUPERSESSION_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1191**: GOAL1191_CLAUDE_LOCAL_BASELINE_SCHEMA_PROBE_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1192**: GOAL1192_CLAUDE_PUBLIC_WORDING_BATCH_PACKET_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1193**: GOAL1193_CLAUDE_PUBLIC_WORDING_BATCH_INTAKE_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1194**: GOAL1194_GEMINI_PUBLIC_WORDING_POD_PACKET_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1195**: GOAL1195_GEMINI_LIVE_POD_RECOVERY_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1196**: GOAL1196_CLAUDE_PUBLIC_WORDING_DECISION_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1197**: GOAL1197_CLAUDE_OPTIX_SLOWER_APP_INVESTIGATION_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1198**: GOAL1198_CLAUDE_SAME_SCALE_WORDING_AUDIT_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1199**: GOAL1199_CLAUDE_POST_1198_INVESTIGATION_SYNC_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1200**: GOAL1200_CLAUDE_AFTER_FIX_REVIEW_REQUEST_2026-04-30
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1205**: GOAL1205_GEMINI_REPAIRED_RTX_POD_INTAKE_FIX_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1207**: GOAL1207_GEMINI_LINUX_EMBREE_PREFIX_FIX_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1209**: GOAL1209_CLAUDE_PUBLIC_STATUS_SYNC_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1210**: GOAL1210_CLAUDE_V0_9_8_RELEASE_READINESS_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1211**: GOAL1211_CLAUDE_LOCAL_RELEASE_WINDOW_SMOKE_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1212**: GOAL1212_CLAUDE_PUBLIC_RELEASE_HYGIENE_SWEEP_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1213**: GOAL1213_CLAUDE_FULL_DISCOVERY_STALE_AUDIT_REPAIR_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1214**: GOAL1214_CLAUDE_FULL_LOCAL_DISCOVERY_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1215**: GOAL1215_CLAUDE_RELEASE_SURFACE_DOC_AUDIT_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1216**: GOAL1216_CLAUDE_V0_9_8_RELEASE_CANDIDATE_AUDIT_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1217**: GOAL1217_GEMINI_VERSION_MARKER_SYNC_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1218**: GOAL1218_GEMINI_V0_9_8_RELEASE_AUTHORIZATION_GATE_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1219**: GOAL1219_GEMINI_V0_9_8_RELEASE_PACKAGE_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1220**: GOAL1220_GEMINI_V0_9_8_FINAL_AUTHORIZATION_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1221**: GOAL1221_GEMINI_V0_9_8_RELEASE_ACTION_REVIEW_REQUEST_2026-05-01
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1228**: goal1228_gemini_v1_0_positioning_docs_review_2026-05-03
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1229**: goal1229_current_main_v1_0_readiness_audit_2026-05-03
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1230**: goal1230_gemini_v1_0_app_acceleration_inventory_review_2026-05-03
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1231**: goal1231_gemini_front_page_simplification_review_2026-05-03
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1232**: goal1232_gemini_public_doc_map_model_review_2026-05-03
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1236**: goal1236_gemini_public_doc_audit_sync_review_2026-05-03
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1237**: goal1237_gemini_current_main_release_audit_sync_review_2026-05-03
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1238**: goal1238_gemini_current_planning_audit_sync_review_2026-05-03
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1239**: goal1239_gemini_stale_public_docs_release_planning_review_2026-05-04
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1240**: goal1240_gemini_public_doc_boundary_sync_review_2026-05-04
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1241**: goal1241_gemini_goal1186_readme_boundary_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1242**: goal1242_gemini_goal1226_preliminary_roadmap_consensus_review_2026-05-04
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1243**: goal1243_gemini_front_page_simplification_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1244**: goal1244_gemini_public_doc_spine_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1245**: goal1245_gemini_examples_tutorial_entry_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1246**: goal1246_claude_front_page_diet_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1247**: goal1247_claude_quick_tutorial_final_polish_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1248**: goal1248_gemini_v1_0_release_candidate_package_rereview_2026-05-04
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1249**: goal1249_gemini_v1_0_release_candidate_audit_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1250**: goal1250_gemini_v1_0_release_surface_doc_audit_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1251**: goal1251_gemini_v1_0_full_local_discovery_review_2026-05-04
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1252**: goal1252_gemini_v1_0_final_release_authorization_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1253**: goal1253_gemini_v1_0_release_action_review_2026-05-04
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1254**: goal1254_claude_v1_0_goal_coverage_audit_review_2026-05-04
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1255**: goal1255_claude_external_review_v1_1_to_v1_5_roadmap_2026-05-04
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1274**: goal1274_claude_v1_3_primitive_contract_review_2026-05-05
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1293**: goal1293_claude_external_review_goal1292_pre_pod_2026-05-05
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1313**: goal1313_claude_review_request_2026-05-05
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1322**: goal1322_claude_review_jaccard_internal_status_2026-05-05
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1371**: goal1371_claude_review_v1_5_readiness_gate_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 1394**: goal1394_claude_v1_5_public_wording_review_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1397**: goal1397_claude_v1_5_partner_roadmap_review_2026-05-06
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1411**: goal1411_antigravity_review_prompt_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1416**: goal1416_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1417**: goal1417_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1418**: goal1418_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1419**: goal1419_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1420**: goal1420_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1421**: goal1421_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1422**: goal1422_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1423**: goal1423_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1424**: goal1424_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1425**: goal1425_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1426**: goal1426_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1427**: goal1427_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1428**: goal1428_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1429**: goal1429_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1430**: goal1430_external_review_request_2026-05-06
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1433**: goal1433_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Codex
+- **Goal 1434**: goal1434_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1435**: goal1435_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1436**: goal1436_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1437**: goal1437_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1438**: goal1438_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1440**: goal1440_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1442**: goal1442_external_review_request_2026-05-07
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Claude, Codex
+- **Goal 1448**: goal1448_external_review_request_2026-05-07
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Claude, Codex
+- **Goal 1455**: goal1455_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1457**: goal1457_external_release_surface_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1458**: goal1458_public_docs_link_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1465**: goal1465_v1_5_3_reduced_copy_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1474**: goal1474_v1_5_3_evidence_summary_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1479**: goal1479_gpu_memory_architecture_external_review_request_2026-05-07
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 1584**: goal1584_v1_5_4_optix_collect_k_candidate_preset_3_ai_consensus_2026-05-08
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1596**: goal1596_v1_5_4_optix_collect_k_threshold4_gate_rtx4090_validation_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1599**: goal1599_v1_6_python_rtdl_historical_milestone_readiness_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1600**: goal1600_v1_6_python_rtdl_readiness_gate_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1601**: goal1601_v1_6_release_surface_proposal_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1602**: goal1602_v1_6_public_docs_overclaim_audit_2026-05-09
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1603**: goal1603_v1_6_stable_native_path_app_leakage_audit_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1604**: goal1604_v1_6_blocked_claim_regression_gate_2026-05-09
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1605**: goal1605_v1_6_windows_linux_optix_validation_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1606**: goal1606_v1_6_release_package_claude_review_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 1607**: goal1607_v1_6_final_release_3ai_consensus_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1608**: goal1608_v1_6_public_front_door_update_claude_review_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1609**: goal1609_v1_6_x_performance_roadmap_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1610**: goal1610_v1_6_1_phase_copy_measurement_foundation_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1611**: goal1611_v1_6_2_prepared_host_output_measurement_foundation_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1612**: goal1612_v1_6_3_backend_prepared_host_output_bridge_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1613**: goal1613_v1_6_4_collect_k_bounded_promotion_gate_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1614**: goal1614_v1_6_4_collect_k_bounds_stress_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1615**: goal1615_v1_6_4_collect_k_reduced_copy_benchmark_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1616**: goal1616_v1_6_4_collect_k_rtx_packet_plan_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude
+- **Goal 1617**: goal1617_v1_6_4_collect_k_evidence_ledger_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1618**: goal1618_v1_6_4_collect_k_packet_runner_smoke_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1619**: goal1619_v1_6_4_linux_packet_runner_rehearsal_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1620**: goal1620_v1_6_4_rtx_a4500_collect_k_packet_evidence_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1621**: goal1621_v1_6_4_collect_k_evidence_ledger_after_rtx_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1622**: goal1622_v1_6_4_rtx_a4500_latest_main_repro_packet_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1623**: goal1623_v1_6_4_rtx_a4500_collect_k_test_sweep_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1624**: goal1624_v1_6_4_collect_k_stable_promotion_decision_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1625**: goal1625_v1_6_5_optix_collect_k_threshold4_a4500_probe_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1626**: goal1626_v1_6_x_optix_collect_k_midcount_micro_probe_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1627**: goal1627_v1_6_x_optix_collect_k_defer_merge_sync_diagnostic_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1630**: goal1630_v1_6_x_optix_collect_k_extended_128_tile_diagnostic_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1631**: goal1631_v1_6_x_optix_extended_defer_collect_k_test_sweep_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1639**: claude_goal1639_collect_k_graph_direction_review_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1643**: claude_goal1643_collect_k_merge_chain_direction_review_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1646**: goal1646_v1_6_x_optix_collect_k_good_win_next_candidate_3ai_consensus_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1647**: goal1647_linux_local_cooperative_capability_2026-05-09
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1652**: goal1652_fastest_cub_262144
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1658**: goal1658_python_rtdl_v2_5_product_checkpoint_2026-05-10
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1659**: goal1659_v1_6_11_local_command_preflight_2026-05-10
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1662**: goal1662_v1_6_11_dual_gpu_perf_release_report_2026-05-10
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1664**: goal1664_fresh_student_rtdl_user_experience_report_2026-05-10
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1668**: goal1668_antigravity_directive_app_agnostic_engine_2026-05-10
+  - Stale or contradictory language: True
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1669**: goal1669_python_partner_rtdl_partner_choice_architecture_2026-05-10
+  - Stale or contradictory language: False
+  - Distinguishes independent review: False
+  - AI Systems: Gemini, Claude, Codex
+- **Goal 1670**: goal1670_all_external_partner_analysis_consensus_2026-05-10
+  - Stale or contradictory language: True
+  - Distinguishes independent review: True
+  - AI Systems: Gemini, Claude
+
+## 6. Required fixes before using any affected goal as release evidence
+
+For any goal listed in Section 4 or 5:
+1. Conduct an independent review using a different AI system (e.g. Claude or Gemini if only Codex was used).
+2. Save the review output in `docs/reviews/`.
+3. Update or create a `_3ai_consensus_` or `_consensus_` file that clearly documents the distinct AI families used and states their independent verdicts.
+4. Do not use these goals as release evidence until consensus is verifiably achieved.

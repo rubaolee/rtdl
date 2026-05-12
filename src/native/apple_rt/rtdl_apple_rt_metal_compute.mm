@@ -1,4 +1,4 @@
-extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute(
+﻿extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_columnar_multi_predicate_scan_numeric_compute(
     const uint32_t* row_ids,
     const float* row_values,
     size_t row_count,
@@ -10,7 +10,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
     char* error_out,
     size_t error_size) {
     if (row_ids_out == nullptr || row_count_out == nullptr) {
-        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute");
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_columnar_multi_predicate_scan_numeric_compute");
         return 1;
     }
     *row_ids_out = nullptr;
@@ -19,7 +19,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
         return 0;
     }
     if (row_ids == nullptr || row_values == nullptr || (clause_count > 0 && clauses == nullptr)) {
-        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute");
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_columnar_multi_predicate_scan_numeric_compute");
         return 1;
     }
     if (field_count == 0) {
@@ -65,7 +65,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
              "    float value;\n"
              "    float value_hi;\n"
              "};\n"
-             "static bool rtdl_db_match(float lhs, RtdlAppleDbNumericClause clause) {\n"
+             "static bool rtdl_predicate_match(float lhs, RtdlAppleDbNumericClause clause) {\n"
              "    if (clause.op == 1u) { return lhs == clause.value; }\n"
              "    if (clause.op == 2u) { return lhs < clause.value; }\n"
              "    if (clause.op == 3u) { return lhs <= clause.value; }\n"
@@ -73,7 +73,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
              "    if (clause.op == 5u) { return lhs >= clause.value; }\n"
              "    return lhs >= clause.value && lhs <= clause.value_hi;\n"
              "}\n"
-             "kernel void rtdl_db_conjunctive_scan(device const uint* row_ids [[buffer(0)]],\n"
+             "kernel void rtdl_multi_predicate_scan(device const uint* row_ids [[buffer(0)]],\n"
              "                                      device const float* row_values [[buffer(1)]],\n"
              "                                      constant uint& field_count [[buffer(2)]],\n"
              "                                      device const RtdlAppleDbNumericClause* clauses [[buffer(3)]],\n"
@@ -84,7 +84,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
              "    for (uint i = 0; i < clause_count; ++i) {\n"
              "        RtdlAppleDbNumericClause clause = clauses[i];\n"
              "        float lhs = row_values[id * field_count + clause.field_index];\n"
-             "        if (!rtdl_db_match(lhs, clause)) { matched = false; break; }\n"
+             "        if (!rtdl_predicate_match(lhs, clause)) { matched = false; break; }\n"
              "    }\n"
              "    out[id] = matched ? 1u : 0u;\n"
              "}\n";
@@ -100,7 +100,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
             set_message(error_out, error_size, message);
             return 4;
         }
-        id<MTLFunction> function = [library newFunctionWithName:@"rtdl_db_conjunctive_scan"];
+        id<MTLFunction> function = [library newFunctionWithName:@"rtdl_multi_predicate_scan"];
         if (function == nil) {
             [library release];
             [command_queue release];
@@ -255,7 +255,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
     }
 }
 
-extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute(
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_frontier_discover_compute(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
@@ -271,7 +271,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute(
     char* error_out,
     size_t error_size) {
     if (rows_out == nullptr || row_count_out == nullptr) {
-        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_bfs_discover_compute");
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_frontier_discover_compute");
         return 1;
     }
     *rows_out = nullptr;
@@ -281,7 +281,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute(
     }
     if (row_offsets == nullptr || column_indices == nullptr || frontier == nullptr ||
         frontier_edge_offsets == nullptr || (visited_count > 0 && visited == nullptr)) {
-        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_bfs_discover_compute");
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_frontier_discover_compute");
         return 1;
     }
     if (row_offset_count < 2) {
@@ -341,7 +341,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute(
              "using namespace metal;\n"
              "struct FrontierVertex { uint vertex_id; uint level; };\n"
              "struct BfsRow { uint src_vertex; uint dst_vertex; uint level; };\n"
-             "kernel void rtdl_bfs_discover(device const uint* row_offsets [[buffer(0)]],\n"
+             "kernel void rtdl_frontier_discover(device const uint* row_offsets [[buffer(0)]],\n"
              "                              device const uint* column_indices [[buffer(1)]],\n"
              "                              device const FrontierVertex* frontier [[buffer(2)]],\n"
              "                              device const uint* frontier_edge_offsets [[buffer(3)]],\n"
@@ -377,7 +377,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute(
             set_message(error_out, error_size, message);
             return 4;
         }
-        id<MTLFunction> function = [library newFunctionWithName:@"rtdl_bfs_discover"];
+        id<MTLFunction> function = [library newFunctionWithName:@"rtdl_frontier_discover"];
         if (function == nil) {
             [library release];
             [command_queue release];

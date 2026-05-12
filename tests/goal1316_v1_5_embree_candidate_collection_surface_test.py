@@ -50,7 +50,7 @@ def _make_generic_collect_k_symbol():
 class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
     def test_embree_collection_requires_current_native_export(self) -> None:
         with mock.patch.object(embree_runtime, "_load_embree_library", return_value=object()):
-            with self.assertRaisesRegex(ValueError, "rtdl_embree_collect_polygon_pair_candidates_bounded"):
+            with self.assertRaisesRegex(ValueError, "rtdl_embree_collect_shape_pair_candidates_bounded"):
                 rt.collect_polygon_pair_candidates_bounded_embree(
                     _polygons(),
                     _polygons(),
@@ -86,7 +86,7 @@ class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
             return 0
 
         library = FakeLibrary()
-        library.rtdl_embree_collect_polygon_pair_candidates_bounded = fake_symbol
+        library.rtdl_embree_collect_shape_pair_candidates_bounded = fake_symbol
         library.rtdl_embree_collect_k_bounded_i64 = _make_generic_collect_k_symbol()
         with mock.patch.object(embree_runtime, "_load_embree_library", return_value=library):
             result = rt.collect_polygon_pair_candidates_bounded_embree(
@@ -130,7 +130,7 @@ class Goal1316V15EmbreeCandidateCollectionSurfaceTest(unittest.TestCase):
             return 0
 
         library = FakeLibrary()
-        library.rtdl_embree_collect_polygon_pair_candidates_bounded = fake_overflow_symbol
+        library.rtdl_embree_collect_shape_pair_candidates_bounded = fake_overflow_symbol
         library.rtdl_embree_collect_k_bounded_i64 = _make_generic_collect_k_symbol()
         with mock.patch.object(embree_runtime, "_load_embree_library", return_value=library):
             with self.assertRaisesRegex(RuntimeError, "fail_closed_overflow"):

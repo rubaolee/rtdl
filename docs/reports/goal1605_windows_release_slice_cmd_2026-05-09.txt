@@ -28,11 +28,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   301 | void rtdl_embree_configure_threads(size_t thread_count);
       |      ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_lsi' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_segment_pair_intersection' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:302:5: note: previous declaration is here
-  302 | int rtdl_embree_run_lsi(
+  302 | int rtdl_embree_run_segment_pair_intersection(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:669:24: warning: redeclaration of 'rtdl_embree_run_pip' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -42,11 +42,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   311 | int rtdl_embree_run_pip(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_overlay' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_shape_pair_relation_flags' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_shape_pair_relation_flags(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:323:5: note: previous declaration is here
-  323 | int rtdl_embree_run_overlay(
+  323 | int rtdl_embree_run_shape_pair_relation_flags(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:836:24: warning: redeclaration of 'rtdl_embree_run_ray_hitcount' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -210,11 +210,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   533 | int rtdl_embree_run_bfs_expand(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_triangle_probe' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
- 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_edge_neighbor_intersection_packet' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+ 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:547:5: note: previous declaration is here
-  547 | int rtdl_embree_run_triangle_probe(
+  547 | int rtdl_embree_run_edge_neighbor_intersection_packet(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2525:24: warning: redeclaration of 'rtdl_embree_run_conjunctive_scan' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -315,11 +315,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   301 | void rtdl_embree_configure_threads(size_t thread_count);
       |      ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_lsi' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_segment_pair_intersection' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:302:5: note: previous declaration is here
-  302 | int rtdl_embree_run_lsi(
+  302 | int rtdl_embree_run_segment_pair_intersection(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:669:24: warning: redeclaration of 'rtdl_embree_run_pip' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -329,11 +329,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   311 | int rtdl_embree_run_pip(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_overlay' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_shape_pair_relation_flags' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_shape_pair_relation_flags(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:323:5: note: previous declaration is here
-  323 | int rtdl_embree_run_overlay(
+  323 | int rtdl_embree_run_shape_pair_relation_flags(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:836:24: warning: redeclaration of 'rtdl_embree_run_ray_hitcount' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -497,11 +497,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   533 | int rtdl_embree_run_bfs_expand(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_triangle_probe' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
- 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_edge_neighbor_intersection_packet' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+ 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:547:5: note: previous declaration is here
-  547 | int rtdl_embree_run_triangle_probe(
+  547 | int rtdl_embree_run_edge_neighbor_intersection_packet(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2525:24: warning: redeclaration of 'rtdl_embree_run_conjunctive_scan' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -602,11 +602,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   301 | void rtdl_embree_configure_threads(size_t thread_count);
       |      ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_lsi' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_segment_pair_intersection' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:302:5: note: previous declaration is here
-  302 | int rtdl_embree_run_lsi(
+  302 | int rtdl_embree_run_segment_pair_intersection(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:669:24: warning: redeclaration of 'rtdl_embree_run_pip' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -616,11 +616,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   311 | int rtdl_embree_run_pip(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_overlay' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_shape_pair_relation_flags' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_shape_pair_relation_flags(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:323:5: note: previous declaration is here
-  323 | int rtdl_embree_run_overlay(
+  323 | int rtdl_embree_run_shape_pair_relation_flags(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:836:24: warning: redeclaration of 'rtdl_embree_run_ray_hitcount' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -784,11 +784,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   533 | int rtdl_embree_run_bfs_expand(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_triangle_probe' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
- 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_edge_neighbor_intersection_packet' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+ 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:547:5: note: previous declaration is here
-  547 | int rtdl_embree_run_triangle_probe(
+  547 | int rtdl_embree_run_edge_neighbor_intersection_packet(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2525:24: warning: redeclaration of 'rtdl_embree_run_conjunctive_scan' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -889,11 +889,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   301 | void rtdl_embree_configure_threads(size_t thread_count);
       |      ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_lsi' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:573:24: warning: redeclaration of 'rtdl_embree_run_segment_pair_intersection' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  573 | RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:302:5: note: previous declaration is here
-  302 | int rtdl_embree_run_lsi(
+  302 | int rtdl_embree_run_segment_pair_intersection(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:669:24: warning: redeclaration of 'rtdl_embree_run_pip' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -903,11 +903,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   311 | int rtdl_embree_run_pip(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_overlay' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
-  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:771:24: warning: redeclaration of 'rtdl_embree_run_shape_pair_relation_flags' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+  771 | RTDL_EMBREE_EXPORT int rtdl_embree_run_shape_pair_relation_flags(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:323:5: note: previous declaration is here
-  323 | int rtdl_embree_run_overlay(
+  323 | int rtdl_embree_run_shape_pair_relation_flags(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:836:24: warning: redeclaration of 'rtdl_embree_run_ray_hitcount' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
@@ -1071,11 +1071,11 @@ C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtd
   533 | int rtdl_embree_run_bfs_expand(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
-C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_triangle_probe' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
- 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2358:24: warning: redeclaration of 'rtdl_embree_run_edge_neighbor_intersection_packet' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]
+ 2358 | RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet(
       |                        ^
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_prelude.h:547:5: note: previous declaration is here
-  547 | int rtdl_embree_run_triangle_probe(
+  547 | int rtdl_embree_run_edge_neighbor_intersection_packet(
       |     ^
 In file included from C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\rtdl_embree.cpp:8:
 C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\src\native\embree/rtdl_embree_api.cpp:2525:24: warning: redeclaration of 'rtdl_embree_run_conjunctive_scan' should not add 'dllexport' attribute [-Wdll-attribute-on-redeclaration]

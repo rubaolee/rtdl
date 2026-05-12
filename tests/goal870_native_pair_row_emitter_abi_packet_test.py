@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class Goal870NativePairRowEmitterAbiPacketTest(unittest.TestCase):
     def test_detects_scaffold_and_non_promotion(self) -> None:
-        symbol = "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded"
+        symbol = "rtdl_optix_run_segment_shape_anyhit_rows_native_bounded"
         packet = goal870.build_packet(
             f"{symbol}(\n",
             f"{symbol}(\nsize_t output_capacity\nsize_t* emitted_count_out\nuint32_t* overflowed_out\nrun_seg_poly_anyhit_rows_optix_native_bounded(\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
@@ -32,7 +32,7 @@ class Goal870NativePairRowEmitterAbiPacketTest(unittest.TestCase):
             api_cpp = Path(tmp) / "api.cpp"
             output_json = Path(tmp) / "packet.json"
             output_md = Path(tmp) / "packet.md"
-            symbol = "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded"
+            symbol = "rtdl_optix_run_segment_shape_anyhit_rows_native_bounded"
             prelude_h.write_text(f"{symbol}(\n", encoding="utf-8")
             api_cpp.write_text(
                 f"{symbol}(\nsize_t output_capacity\nsize_t* emitted_count_out\nuint32_t* overflowed_out\n"

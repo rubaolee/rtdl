@@ -1,4 +1,4 @@
-#include <cmath>
+﻿#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -60,7 +60,7 @@ struct RtdlAdaptivePoint {
   double y;
 };
 
-struct RtdlAdaptiveLsiRow {
+struct RtdlAdaptiveSegmentPairIntersectionRow {
   uint32_t left_id;
   uint32_t right_id;
   double intersection_point_x;
@@ -102,7 +102,7 @@ RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
     size_t left_count,
     const RtdlAdaptiveSegment* right,
     size_t right_count,
-    RtdlAdaptiveLsiRow** rows_out,
+    RtdlAdaptiveSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -318,7 +318,7 @@ extern "C" RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
     size_t left_count,
     const RtdlAdaptiveSegment* right,
     size_t right_count,
-    RtdlAdaptiveLsiRow** rows_out,
+    RtdlAdaptiveSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -335,7 +335,7 @@ extern "C" RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
 
   try {
     SegmentSoA staged_right = stage_segments_soa(right, right_count);
-    std::vector<RtdlAdaptiveLsiRow> rows;
+    std::vector<RtdlAdaptiveSegmentPairIntersectionRow> rows;
     rows.reserve(std::min(left_count * right_count, static_cast<size_t>(1024)));
     for (size_t left_index = 0; left_index < left_count; ++left_index) {
       const RtdlAdaptiveSegment& left_segment = left[left_index];
@@ -358,14 +358,14 @@ extern "C" RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
       }
     }
 
-    auto* output = static_cast<RtdlAdaptiveLsiRow*>(
-        std::calloc(rows.empty() ? 1 : rows.size(), sizeof(RtdlAdaptiveLsiRow)));
+    auto* output = static_cast<RtdlAdaptiveSegmentPairIntersectionRow*>(
+        std::calloc(rows.empty() ? 1 : rows.size(), sizeof(RtdlAdaptiveSegmentPairIntersectionRow)));
     if (output == nullptr) {
       set_error(error_out, error_size, "out of memory allocating adaptive segment-intersection rows");
       return 3;
     }
     if (!rows.empty()) {
-      std::memcpy(output, rows.data(), rows.size() * sizeof(RtdlAdaptiveLsiRow));
+      std::memcpy(output, rows.data(), rows.size() * sizeof(RtdlAdaptiveSegmentPairIntersectionRow));
     }
     *rows_out = output;
     *row_count_out = rows.size();

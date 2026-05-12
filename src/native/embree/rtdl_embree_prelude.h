@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #if defined(__has_include)
 #  if __has_include(<embree4/rtcore.h>)
@@ -151,7 +151,7 @@ struct RtdlRay3D {
 };
 #pragma pack(pop)
 
-struct RtdlLsiRow {
+struct RtdlSegmentPairIntersectionRow {
   uint32_t left_id;
   uint32_t right_id;
   double intersection_point_x;
@@ -164,11 +164,11 @@ struct RtdlPipRow {
   uint32_t contains;
 };
 
-struct RtdlOverlayRow {
+struct RtdlShapePairRelationRow {
   uint32_t left_polygon_id;
   uint32_t right_polygon_id;
-  uint32_t requires_lsi;
-  uint32_t requires_pip;
+  uint32_t requires_segment_intersection;
+  uint32_t requires_point_containment;
 };
 
 struct RtdlRayHitCountRow {
@@ -266,7 +266,7 @@ struct RtdlDbScalar {
   const char* string_value;
 };
 
-struct RtdlDbColumn {
+struct RtdlPayloadField {
   const char* name;
   uint32_t kind;
   const int64_t* int_values;
@@ -299,16 +299,16 @@ struct RtdlEmbreeDbDataset;
 
 int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out);
 void rtdl_embree_configure_threads(size_t thread_count);
-int rtdl_embree_run_lsi(
+int rtdl_embree_run_segment_pair_intersection(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
     size_t right_count,
-    RtdlLsiRow** rows_out,
+    RtdlSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_pip(
+int rtdl_embree_run_point_primitive_anyhit_packet(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlPolygonRef* polygons,
@@ -320,7 +320,7 @@ int rtdl_embree_run_pip(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_overlay(
+int rtdl_embree_run_shape_pair_relation_flags(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -329,7 +329,7 @@ int rtdl_embree_run_overlay(
     size_t right_count,
     const double* right_vertices_xy,
     size_t right_vertex_xy_count,
-    RtdlOverlayRow** rows_out,
+    RtdlShapePairRelationRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -378,7 +378,7 @@ int rtdl_embree_run_ray_closest_hit_3d(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_segment_polygon_hitcount(
+int rtdl_embree_run_segment_shape_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -389,7 +389,7 @@ int rtdl_embree_run_segment_polygon_hitcount(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_segment_polygon_anyhit_rows(
+int rtdl_embree_run_segment_shape_anyhit_rows(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -410,7 +410,7 @@ int rtdl_embree_collect_k_bounded_i64(
     uint32_t* overflowed_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_collect_polygon_pair_candidates_bounded(
+int rtdl_embree_collect_shape_pair_candidates_bounded(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -485,13 +485,13 @@ int rtdl_embree_fixed_radius_count_threshold_2d_run(
     size_t error_size);
 void rtdl_embree_fixed_radius_count_threshold_2d_destroy(
     RtdlEmbreeFixedRadiusCountThreshold2D* handle);
-int rtdl_embree_knn_rows_2d_create(
+int rtdl_embree_k_closest_hits_2d_create(
     const RtdlPoint* search_points,
     size_t search_count,
     RtdlEmbreeKnnRows2D** handle_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_knn_rows_2d_run(
+int rtdl_embree_k_closest_hits_2d_run(
     RtdlEmbreeKnnRows2D* handle,
     const RtdlPoint* query_points,
     size_t query_count,
@@ -500,9 +500,9 @@ int rtdl_embree_knn_rows_2d_run(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-void rtdl_embree_knn_rows_2d_destroy(
+void rtdl_embree_k_closest_hits_2d_destroy(
     RtdlEmbreeKnnRows2D* handle);
-int rtdl_embree_run_knn_rows(
+int rtdl_embree_run_k_closest_hits(
     const RtdlPoint* query_points,
     size_t query_count,
     const RtdlPoint* search_points,
@@ -512,7 +512,7 @@ int rtdl_embree_run_knn_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_knn_rows_3d(
+int rtdl_embree_run_k_closest_hits_3d(
     const RtdlPoint3D* query_points,
     size_t query_count,
     const RtdlPoint3D* search_points,
@@ -522,7 +522,7 @@ int rtdl_embree_run_knn_rows_3d(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_directed_hausdorff_2d(
+int rtdl_embree_run_max_distance_nearest_candidate_2d(
     const RtdlPoint* query_points,
     size_t query_count,
     const RtdlPoint* search_points,
@@ -530,11 +530,11 @@ int rtdl_embree_run_directed_hausdorff_2d(
     RtdlDirectedHausdorffRow* row_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_bfs_expand(
+int rtdl_embree_run_frontier_edge_traversal_packet(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlFrontierVertex* frontier,
     size_t frontier_count,
     const uint32_t* visited,
@@ -544,11 +544,11 @@ int rtdl_embree_run_bfs_expand(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_run_triangle_probe(
+int rtdl_embree_run_edge_neighbor_intersection_packet(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlEdgeSeed* seeds,
     size_t seed_count,
     uint32_t enforce_id_ascending,
@@ -593,7 +593,7 @@ int rtdl_embree_run_grouped_sum(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_db_dataset_create(
+int rtdl_embree_columnar_payload_create(
     const RtdlDbField* fields,
     size_t field_count,
     const RtdlDbScalar* row_values,
@@ -603,17 +603,17 @@ int rtdl_embree_db_dataset_create(
     RtdlEmbreeDbDataset** dataset_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_db_dataset_create_columnar(
-    const RtdlDbColumn* columns,
-    size_t column_count,
+int rtdl_embree_columnar_payload_create_from_columns(
+    const RtdlPayloadField* fields,
+    size_t field_count,
     size_t row_count,
     const char* const* primary_fields,
     size_t primary_field_count,
     RtdlEmbreeDbDataset** dataset_out,
     char* error_out,
     size_t error_size);
-void rtdl_embree_db_dataset_destroy(RtdlEmbreeDbDataset* dataset);
-int rtdl_embree_db_dataset_conjunctive_scan(
+void rtdl_embree_columnar_payload_destroy(RtdlEmbreeDbDataset* dataset);
+int rtdl_embree_columnar_payload_multi_predicate_scan(
     RtdlEmbreeDbDataset* dataset,
     const RtdlDbClause* clauses,
     size_t clause_count,
@@ -621,7 +621,7 @@ int rtdl_embree_db_dataset_conjunctive_scan(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_db_dataset_grouped_count(
+int rtdl_embree_columnar_payload_grouped_reduction_count(
     RtdlEmbreeDbDataset* dataset,
     const RtdlDbClause* clauses,
     size_t clause_count,
@@ -630,7 +630,7 @@ int rtdl_embree_db_dataset_grouped_count(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
-int rtdl_embree_db_dataset_grouped_sum(
+int rtdl_embree_columnar_payload_grouped_reduction_sum(
     RtdlEmbreeDbDataset* dataset,
     const RtdlDbClause* clauses,
     size_t clause_count,

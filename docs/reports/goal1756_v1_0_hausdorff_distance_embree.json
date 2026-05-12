@@ -1,0 +1,96 @@
+{
+  "_goal1756_wall_clock": {
+    "app": "hausdorff_distance",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_hausdorff_distance_app.py",
+      "--backend",
+      "embree",
+      "--copies",
+      "20000",
+      "--embree-result-mode",
+      "directed_summary"
+    ],
+    "elapsed_sec": 105.03601461200742,
+    "engine": "embree",
+    "returncode": 0,
+    "stderr_tail": "",
+    "stdout_json": true,
+    "stdout_tail": "",
+    "timing_scope": "same app-level command wall clock including process startup, input construction, native query, and JSON serialization",
+    "version": "v1_0",
+    "workdir": "/home/lestat/work/rtdl_goal1746_v1_0"
+  },
+  "app": "hausdorff_distance",
+  "backend": "embree",
+  "copies": 20000,
+  "directed_a_to_b": {
+    "distance": 0.30000000000000004,
+    "distance_reduction_rows": [
+      {
+        "directed_distance": 0.30000000000000004
+      }
+    ],
+    "row_count": 80000,
+    "source_id": 3,
+    "target_id": 103
+  },
+  "directed_b_to_a": {
+    "distance": 0.30000000000000004,
+    "distance_reduction_rows": [
+      {
+        "directed_distance": 0.30000000000000004
+      }
+    ],
+    "row_count": 80000,
+    "source_id": 103,
+    "target_id": 3
+  },
+  "embree_result_mode": "directed_summary",
+  "hausdorff_distance": 0.30000000000000004,
+  "hausdorff_threshold": null,
+  "matches_oracle": true,
+  "native_continuation_active": true,
+  "native_continuation_backend": "embree_directed_hausdorff",
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+  },
+  "optix_summary_mode": null,
+  "oracle": {
+    "directed_a_to_b": {
+      "distance": 0.30000000000000004,
+      "distance_reduction_rows": [
+        {
+          "directed_distance": 0.30000000000000004
+        }
+      ],
+      "row_count": 80000,
+      "source_id": 3,
+      "target_id": 103
+    },
+    "directed_b_to_a": {
+      "distance": 0.30000000000000004,
+      "distance_reduction_rows": [
+        {
+          "directed_distance": 0.30000000000000004
+        }
+      ],
+      "row_count": 80000,
+      "source_id": 103,
+      "target_id": 3
+    },
+    "hausdorff_distance": 0.30000000000000004,
+    "witness_direction": "b_to_a"
+  },
+  "point_count_a": 80000,
+  "point_count_b": 80000,
+  "rt_core_accelerated": false,
+  "rtdl_role": "RTDL/Embree runs k=1 nearest-neighbor traversal and directed max reduction inside the native Embree summary path; Python keeps only undirected comparison and oracle validation.",
+  "run_phases": {
+    "input_construction_sec": 0.17287790001137182,
+    "native_directed_summary_sec": 104.66097393498057,
+    "validation_sec": 0.0001074239844456315
+  },
+  "witness_direction": "b_to_a"
+}

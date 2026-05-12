@@ -71,7 +71,7 @@ class Goal1318V15JaccardNativeCollectionRoutingTest(unittest.TestCase):
             mock.patch.object(
                 rt,
                 "collect_polygon_pair_candidates_bounded_embree",
-                side_effect=ValueError("rtdl_embree_collect_polygon_pair_candidates_bounded missing"),
+                side_effect=ValueError("rtdl_embree_collect_shape_pair_candidates_bounded missing"),
             ),
             mock.patch.object(jaccard_app, "_positive_candidate_pairs_embree", return_value={(1, 10)}),
             mock.patch.object(jaccard_app, "_native_jaccard_rows_for_candidates", side_effect=_score_rows),

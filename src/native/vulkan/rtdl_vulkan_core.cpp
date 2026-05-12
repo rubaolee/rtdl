@@ -1,5 +1,5 @@
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// helpers -------------------------------------------------------------------
 
 template <typename T>
 static void set_error(const std::string& msg, T* buf, size_t sz) {
@@ -21,7 +21,7 @@ struct Bounds2D {
                                      + std::to_string((int)_r));               \
     } while (0)
 
-// ── extension function-pointer table ─────────────────────────────────────────
+// extension function-pointer table -----------------------------------------
 // Base Vulkan functions (vkCreateInstance, vkEnumeratePhysicalDevices, etc.)
 // are provided by -lvulkan at link time.  Extension functions are loaded
 // dynamically via vkGetDeviceProcAddr / vkGetInstanceProcAddr.
@@ -64,7 +64,7 @@ static VkFunctions load_functions(VkInstance inst, VkDevice dev) {
     return fns;
 }
 
-// ── Vulkan context (singleton) ────────────────────────────────────────────────
+// Vulkan context ------------------------------------------------------------
 
 struct VkContext {
     VkInstance       instance     = VK_NULL_HANDLE;
@@ -109,7 +109,7 @@ static VkContext* get_context() {
         inst_ci.ppEnabledExtensionNames = inst_exts;
         VK_CHECK(vkCreateInstance(&inst_ci, nullptr, &ctx->instance));
 
-        // Physical device selection — prefer discrete GPU with RT support
+        // Physical device selection - prefer discrete GPU with RT support
         uint32_t pdev_count = 0;
         vkEnumeratePhysicalDevices(ctx->instance, &pdev_count, nullptr);
         std::vector<VkPhysicalDevice> pdevs(pdev_count);
@@ -227,7 +227,7 @@ static VkContext* get_context() {
     return g_ctx;
 }
 
-// ── buffer management ────────────────────────────────────────────────────────
+// buffer management ---------------------------------------------------------
 
 struct BufMem {
     VkBuffer       buffer = VK_NULL_HANDLE;
@@ -268,7 +268,7 @@ static void free_buf(VkContext* ctx, BufMem& bm) {
 }
 
 static void upload_to_buf(VkContext* ctx, BufMem& dst, const void* src, VkDeviceSize sz) {
-    // Stage → device
+    // Stage -> device
     BufMem staging = alloc_buffer(ctx, sz,
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -351,7 +351,7 @@ static VkDeviceAddress buf_addr(VkContext* ctx, VkBuffer buf) {
     return ctx->fns.vkGetBufferDeviceAddress(ctx->device, &info);
 }
 
-// ── SPIR-V compilation via shaderc ───────────────────────────────────────────
+// SPIR-V compilation via shaderc -------------------------------------------
 
 static std::vector<uint32_t> compile_glsl(const char* glsl_src,
                                            shaderc_shader_kind kind,
@@ -384,7 +384,7 @@ static std::vector<uint32_t> compile_glsl(const char* glsl_src,
     return spv;
 }
 
-// ── Acceleration structure building ─────────────────────────────────────────
+// Acceleration structure building ------------------------------------------
 
 struct AccelResult {
     BufMem as_buf;
@@ -579,7 +579,7 @@ static AccelResult build_aabb_blas(VkContext* ctx,
 }
 
 // Build a BLAS from native 3D triangle geometry (VK_GEOMETRY_TYPE_TRIANGLES_KHR).
-// vertices: flat float3 array, 9 floats per triangle (3 verts × xyz).
+// vertices: flat float3 array, 9 floats per triangle (3 verts x xyz).
 static AccelResult build_triangle_blas_3d(VkContext* ctx, const std::vector<float>& vertices) {
     size_t vert_sz     = sizeof(float) * vertices.size();
     uint32_t tri_count = static_cast<uint32_t>(vertices.size() / 9u);
@@ -604,7 +604,7 @@ static AccelResult build_triangle_blas_3d(VkContext* ctx, const std::vector<floa
         VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR };
     geom.geometryType     = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
     geom.geometry.triangles = tris_data;
-    geom.flags            = 0; // non-opaque → any-hit shader invoked
+    geom.flags            = 0; // non-opaque -> any-hit shader invoked
 
     VkAccelerationStructureBuildGeometryInfoKHR build_info{
         VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR };
@@ -678,7 +678,7 @@ static AccelResult build_triangle_blas_3d(VkContext* ctx, const std::vector<floa
 static AccelResult build_tlas(VkContext* ctx, VkAccelerationStructureKHR blas,
                                 VkDeviceAddress blas_addr) {
     VkAccelerationStructureInstanceKHR instance{};
-    // Identity transform (column-major 3×4)
+    // Identity transform (column-major 3x4)
     instance.transform.matrix[0][0] = 1.f; instance.transform.matrix[1][1] = 1.f;
     instance.transform.matrix[2][2] = 1.f;
     instance.instanceCustomIndex                    = 0;
@@ -774,7 +774,7 @@ static AccelResult build_tlas(VkContext* ctx, VkAccelerationStructureKHR blas,
     return result;
 }
 
-// ── GPU data structs (matching GLSL std430 layout) ───────────────────────────
+// GPU data structs (matching GLSL std430 layout) ---------------------------
 
 #pragma pack(push, 1)
 struct GpuSegment    { float x0, y0, x1, y1; uint32_t id; };        // 20 bytes
@@ -785,10 +785,10 @@ struct GpuTriangle   { float x0, y0, x1, y1, x2, y2; uint32_t id; };// 28 bytes
 struct GpuRay        { float ox, oy, dx, dy, tmax; uint32_t id; };   // 24 bytes
 struct GpuRay3D      { float ox, oy, oz, dx, dy, dz, tmax; uint32_t id; }; // 32 bytes
 
-struct GpuLsiRecord      { uint32_t left_id, right_id; float ix, iy; };        // 16 bytes
+struct GpuSegmentPairIntersectionRecord      { uint32_t left_id, right_id; float ix, iy; };        // 16 bytes
 struct GpuPipRecord      { uint32_t point_id, polygon_id, contains; };          // 12 bytes
 struct GpuPipCandidate   { uint32_t point_index, poly_index; };                  //  8 bytes
-struct GpuOverlayFlags   { uint32_t requires_lsi, requires_pip; };              //  8 bytes
+struct GpuShapePairRelationFlags   { uint32_t requires_segment_intersection, requires_point_containment; };              //  8 bytes
 struct GpuRayHitRecord   { uint32_t ray_id, hit_count; };                        //  8 bytes
 struct GpuSegPolyRecord  { uint32_t segment_id, hit_count; };                    //  8 bytes
 struct GpuPnsRecord      { uint32_t point_id, segment_id; float distance; };     // 12 bytes
@@ -1166,13 +1166,13 @@ static bool exact_segment_hits_polygon(
     return false;
 }
 
-static std::vector<RtdlLsiRow> exact_lsi_rows(
+static std::vector<RtdlSegmentPairIntersectionRow> exact_segment_pair_intersection_rows(
         const RtdlSegment* left,
         size_t left_count,
         const RtdlSegment* right,
         size_t right_count)
 {
-    std::vector<RtdlLsiRow> rows;
+    std::vector<RtdlSegmentPairIntersectionRow> rows;
     rows.reserve(left_count);
     for (size_t li = 0; li < left_count; ++li) {
         for (size_t ri = 0; ri < right_count; ++ri) {
@@ -1181,7 +1181,7 @@ static std::vector<RtdlLsiRow> exact_lsi_rows(
             if (!exact_segment_intersection(left[li], right[ri], &ix, &iy)) {
                 continue;
             }
-            rows.push_back(RtdlLsiRow{left[li].id, right[ri].id, ix, iy});
+            rows.push_back(RtdlSegmentPairIntersectionRow{left[li].id, right[ri].id, ix, iy});
         }
     }
     return rows;
@@ -1211,9 +1211,9 @@ static std::vector<RtdlSegment> polygon_edge_segments(
     return segments;
 }
 
-// ── GLSL source strings ───────────────────────────────────────────────────────
+// GLSL source strings -------------------------------------------------------
 
-// ---------- LSI shaders -------------------------------------------------------
+// ---------- segment-pair intersection shaders -------------------------------------------------------
 // Build: right segments as AABB geometry.
 // Probe: one ray per left segment; ray encodes the segment (origin=start,
 //        dir=end-start, tmax=1).
@@ -1221,7 +1221,7 @@ static std::vector<RtdlSegment> polygon_edge_segments(
 //               hit attributes.
 // Anyhit: writes output record atomically, ignores intersection to continue.
 
-static const char* kLsiRgen = R"GLSL(
+static const char* kSegmentPairIntersectionRgen = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 layout(set=0, binding=0) uniform accelerationStructureEXT tlas;
@@ -1245,14 +1245,14 @@ void main() {
 }
 )GLSL";
 
-static const char* kLsiRmiss = R"GLSL(
+static const char* kSegmentPairIntersectionRmiss = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 layout(location=0) rayPayloadInEXT uint probeIdx;
 void main() {}
 )GLSL";
 
-static const char* kLsiRint = R"GLSL(
+static const char* kSegmentPairIntersectionRint = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 struct HitAttr { uint buildIdx; float ix; float iy; };
@@ -1283,7 +1283,7 @@ void main() {
 }
 )GLSL";
 
-static const char* kLsiRahit = R"GLSL(
+static const char* kSegmentPairIntersectionRahit = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 struct HitAttr { uint buildIdx; float ix; float iy; };
@@ -1297,7 +1297,7 @@ layout(location=0) rayPayloadInEXT uint probeIdx;
 void main() {
     uint slot = atomicAdd(counter, 1u);
     if (slot < capacity) {
-        // GpuLsiRecord: uint left_id, right_id; float ix, iy → 4×uint slots
+        // GpuSegmentPairIntersectionRecord: uint left_id, right_id; float ix, iy -> 4xuint slots
         uint pbase = probeIdx * 5u;
         uint bbase = hitAttr.buildIdx * 5u;
         uint left_id  = floatBitsToUint(probeSegs.data[pbase+4u]);
@@ -1396,7 +1396,7 @@ layout(location=0) rayPayloadInEXT uint dummy;
 void main() {
     uint probeIdx = gl_LaunchIDEXT.x;
     uint primIdx  = gl_PrimitiveID;
-    // GpuPipRecord: uint point_id, polygon_id, contains → 3 uint slots
+    // GpuPipRecord: uint point_id, polygon_id, contains -> 3 uint slots
     uint slot  = probeIdx * npolygons + primIdx;
     uint obase = slot * 3u;
     uint pbase = probeIdx * 3u;
@@ -1443,13 +1443,13 @@ void main() {
 }
 )GLSL";
 
-// ---------- Overlay shaders ---------------------------------------------------
+// ---------- shape-pair relation shaders ---------------------------------------------------
 // Build: right polygon bounding-box AABBs.
 // Probe: one ray per (left_polygon, edge) pair, encoding the edge.
-// Intersection: test probe edge against all right polygon edges (LSI test).
-// Anyhit: set output[lpidx * right_count + rpidx].requires_lsi = 1 atomically.
+// Intersection: test probe edge against all right polygon edges (segment-pair intersection test).
+// Anyhit: set output[lpidx * right_count + rpidx].requires_segment_intersection = 1 atomically.
 
-static const char* kOverlayRgen = R"GLSL(
+static const char* kShapePairRelationRgen = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 layout(set=0, binding=0) uniform accelerationStructureEXT tlas;
@@ -1480,14 +1480,14 @@ void main() {
 }
 )GLSL";
 
-static const char* kOverlayRmiss = R"GLSL(
+static const char* kShapePairRelationRmiss = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 layout(location=0) rayPayloadInEXT uint lpidx_payload;
 void main() {}
 )GLSL";
 
-static const char* kOverlayRint = R"GLSL(
+static const char* kShapePairRelationRint = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 layout(set=0, binding=3, std140) uniform Params {
@@ -1535,7 +1535,7 @@ void main() {
 }
 )GLSL";
 
-static const char* kOverlayRahit = R"GLSL(
+static const char* kShapePairRelationRahit = R"GLSL(
 #version 460
 #extension GL_EXT_ray_tracing : require
 hitAttributeEXT uint rpidx_attr;
@@ -1548,7 +1548,7 @@ void main() {
     uint lpidx = lpidx_payload;
     uint rpidx = rpidx_attr;
     uint slot  = lpidx * right_count + rpidx;
-    // GpuOverlayFlags: requires_lsi at offset 0, requires_pip at offset 1
+    // GpuShapePairRelationFlags: requires_segment_intersection at offset 0, requires_point_containment at offset 1
     atomicOr(output_buf.data[slot*2u+0u], 1u);
     ignoreIntersectionEXT;
 }
@@ -1567,7 +1567,7 @@ static const char* kRhcRgen = R"GLSL(
 layout(set=0, binding=0) uniform accelerationStructureEXT tlas;
 layout(set=0, binding=3, std140) uniform Params { uint nrays; uint pad0; };
 layout(set=0, binding=4, std430) readonly buffer RayBuf { float data[]; } rays;
-// GpuRay: ox,oy,dx,dy,tmax,id → 6 floats per ray
+// GpuRay: ox,oy,dx,dy,tmax,id -> 6 floats per ray
 layout(set=0, binding=1, std430) buffer OutBuf { uint data[]; } output_buf;
 layout(location=0) rayPayloadEXT uint hitCount;
 void main() {
@@ -1603,7 +1603,7 @@ static const char* kRhcRint = R"GLSL(
 layout(set=0, binding=3, std140) uniform Params { uint nrays; uint pad0; };
 layout(set=0, binding=4, std430) readonly buffer RayBuf { float data[]; } rays;
 layout(set=0, binding=5, std430) readonly buffer TriBuf { float data[]; } tris;
-// GpuTriangle: x0,y0,x1,y1,x2,y2,id → 7 floats
+// GpuTriangle: x0,y0,x1,y1,x2,y2,id -> 7 floats
 void main() {
     uint  primIdx = gl_PrimitiveID;
     uint  rayIdx  = gl_LaunchIDEXT.x;
@@ -1704,7 +1704,7 @@ void main() {
 )GLSL";
 
 // ---------- RayHitCount3D shaders (native Vulkan triangle geometry) -----------
-// Build: BLAS from VK_GEOMETRY_TYPE_TRIANGLES_KHR — hardware handles intersection.
+// Build: BLAS from VK_GEOMETRY_TYPE_TRIANGLES_KHR - hardware handles intersection.
 // No intersection shader needed. Any-hit counts all hits; ignoreIntersectionEXT
 // forces continued traversal so every triangle is reported.
 
@@ -1878,7 +1878,7 @@ void main() {
 
 // ---------- SegmentPolygonHitcount shaders ------------------------------------
 // Build: polygon bounding-box AABBs.
-// Probe: one ray per segment (encoded like LSI probe).
+// Probe: one ray per segment (encoded like segment-pair intersection probe).
 // Intersection: test probe segment against all polygon edges.
 // Anyhit: increment hit count in payload, ignore intersection.
 // Raygen: after trace, write (segment_id, hit_count) to output.
@@ -2210,7 +2210,7 @@ void main() {
 //   word 2: distance as float bits
 //   word 3: neighbor_rank
 
-static const char* kKnnComp = R"GLSL(
+static const char* kKClosestHitsComp = R"GLSL(
 #version 460
 layout(local_size_x = 64) in;
 layout(set=0, binding=0, std430) readonly buffer QueryBuf  { float data[]; } queries;
@@ -2291,7 +2291,7 @@ void main() {
 }
 )GLSL";
 
-static const char* kKnn3DComp = R"GLSL(
+static const char* kKClosestHits3DComp = R"GLSL(
 #version 460
 layout(local_size_x = 64) in;
 layout(set=0, binding=0, std430) readonly buffer QueryBuf  { float data[]; } queries;
@@ -2375,7 +2375,7 @@ void main() {
 }
 )GLSL";
 
-// ── Pipeline building ────────────────────────────────────────────────────────
+// Pipeline building ---------------------------------------------------------
 
 struct RtPipeline {
     VkPipeline            pipeline      = VK_NULL_HANDLE;
@@ -2611,7 +2611,7 @@ static RtPipeline build_rt_pipeline_triangle(
     vkDestroyShaderModule(ctx->device, sm_rmiss, nullptr);
     vkDestroyShaderModule(ctx->device, sm_rahit, nullptr);
 
-    // SBT: 3 entries (rgen, miss, hitgroup) — same layout as build_rt_pipeline
+    // SBT: 3 entries (rgen, miss, hitgroup) - same layout as build_rt_pipeline
     uint32_t h = ctx->handle_size, a = ctx->handle_align;
     uint32_t entry_sz = (h + (a - 1)) & ~(a - 1);
     uint32_t sbt_sz   = 3u * entry_sz;
@@ -2671,7 +2671,7 @@ static ComputePipeline build_compute_pipeline(
     return pipe;
 }
 
-// ── Descriptor set management ────────────────────────────────────────────────
+// Descriptor set management ------------------------------------------------
 
 struct DescriptorSet {
     VkDescriptorPool pool = VK_NULL_HANDLE;
@@ -2755,7 +2755,7 @@ static void dispatch_rt(VkContext* ctx, RtPipeline& pipe,
     ctx->fns.vkCmdTraceRaysKHR(cmd,
         &pipe.rgen_region, &pipe.miss_region, &pipe.hit_region, &pipe.call_region,
         width, height, depth);
-    // Barrier: RT writes → host reads
+    // Barrier: RT writes -> host reads
     VkMemoryBarrier barrier{ VK_STRUCTURE_TYPE_MEMORY_BARRIER };
     barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
@@ -2800,13 +2800,13 @@ static void dispatch_compute(VkContext* ctx, ComputePipeline& pipe,
     vkFreeCommandBuffers(ctx->device, ctx->cmd_pool, 1, &cmd);
 }
 
-// ── Pipeline cache singletons ────────────────────────────────────────────────
+// Pipeline cache singletons ------------------------------------------------
 
-static RtPipeline*      g_lsi_pipe    = nullptr;
+static RtPipeline*      g_segment_pair_intersection_pipe    = nullptr;
 static RtPipeline*      g_pip_pipe    = nullptr;
 static RtPipeline*      g_pip_pos_count_pipe = nullptr;
 static RtPipeline*      g_pip_pos_pipe= nullptr;
-static RtPipeline*      g_overlay_pipe= nullptr;
+static RtPipeline*      g_shape_pair_relation_pipe= nullptr;
 static RtPipeline*      g_rhc_pipe    = nullptr;
 static RtPipeline*      g_rah_pipe    = nullptr;
 static RtPipeline*      g_sph_pipe    = nullptr;
@@ -2816,7 +2816,7 @@ static ComputePipeline* g_frn3d_pipe  = nullptr;
 static ComputePipeline* g_knn_pipe    = nullptr;
 static ComputePipeline* g_knn3d_pipe  = nullptr;
 static RtPipeline*      g_dbscan_pipe = nullptr;
-static std::once_flag   g_lsi_init, g_pip_init, g_pip_pos_count_init, g_pip_pos_init, g_overlay_init;
+static std::once_flag   g_segment_pair_intersection_init, g_pip_init, g_pip_pos_count_init, g_pip_pos_init, g_shape_pair_relation_init;
 static std::once_flag   g_rhc_init, g_rah_init, g_sph_init, g_pns_init, g_frn_init, g_knn_init;
 static std::once_flag   g_frn3d_init, g_knn3d_init;
 static RtPipeline*      g_rhc3d_pipe = nullptr;
@@ -2824,7 +2824,7 @@ static RtPipeline*      g_rah3d_pipe = nullptr;
 static std::once_flag   g_rhc3d_init, g_rah3d_init;
 static std::once_flag   g_dbscan_init;
 
-// ── Workload run functions ───────────────────────────────────────────────────
+// Workload run functions ---------------------------------------------------
 
 struct DbScanParams {
     uint32_t hit_word_count;
@@ -3157,7 +3157,7 @@ static size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t sca
     return count;
 }
 
-static void db_copy_dataset_table(
+static void db_copy_dataset_payload(
         VulkanDbDatasetImpl& dataset,
         const RtdlDbField* fields,
         size_t field_count,
@@ -3188,67 +3188,67 @@ static void db_copy_dataset_table(
 }
 
 static void db_validate_columnar_inputs(
-        const RtdlDbColumn* columns,
-        size_t column_count,
+        const RtdlPayloadField* fields,
+        size_t field_count,
         size_t row_count)
 {
-    if (!columns || column_count == 0) {
-        throw std::runtime_error("DB columnar inputs must not be null");
+    if (!fields || field_count == 0) {
+        throw std::runtime_error("payload fields must not be null");
     }
     if (row_count > kDbMaxRowsPerJob) {
         throw std::runtime_error("first-wave Vulkan DB lowering supports at most 1000000 rows per RT job");
     }
-    for (size_t column_index = 0; column_index < column_count; ++column_index) {
-        const RtdlDbColumn& column = columns[column_index];
-        if (!column.name) {
-            throw std::runtime_error("DB column name must not be null");
+    for (size_t field_index = 0; field_index < field_count; ++field_index) {
+        const RtdlPayloadField& field = fields[field_index];
+        if (!field.name) {
+            throw std::runtime_error("field name must not be null");
         }
-        if (column.kind == kDbKindText) {
-            if (!column.string_values) {
-                throw std::runtime_error("DB text column values must not be null");
+        if (field.kind == kDbKindText) {
+            if (!field.string_values) {
+                throw std::runtime_error("field text values must not be null");
             }
-        } else if (db_field_kind_is_numeric(column.kind)) {
-            if (!column.int_values && !column.double_values) {
-                throw std::runtime_error("DB numeric column values must not be null");
+        } else if (db_field_kind_is_numeric(field.kind)) {
+            if (!field.int_values && !field.double_values) {
+                throw std::runtime_error("field numeric values must not be null");
             }
         } else {
-            throw std::runtime_error("unsupported DB column kind");
+            throw std::runtime_error("unsupported field kind");
         }
     }
 }
 
-static void db_copy_dataset_columnar_table(
+static void db_copy_dataset_columnar_payload(
         VulkanDbDatasetImpl& dataset,
-        const RtdlDbColumn* columns,
-        size_t column_count,
+        const RtdlPayloadField* fields,
+        size_t field_count,
         size_t row_count)
 {
-    dataset.field_names.reserve(column_count);
-    for (size_t index = 0; index < column_count; ++index) {
-        dataset.field_names.emplace_back(columns[index].name ? columns[index].name : "");
+    dataset.field_names.reserve(field_count);
+    for (size_t index = 0; index < field_count; ++index) {
+        dataset.field_names.emplace_back(fields[index].name ? fields[index].name : "");
     }
-    dataset.fields.reserve(column_count);
-    for (size_t index = 0; index < column_count; ++index) {
-        dataset.fields.push_back({dataset.field_names[index].c_str(), columns[index].kind});
+    dataset.fields.reserve(field_count);
+    for (size_t index = 0; index < field_count; ++index) {
+        dataset.fields.push_back({dataset.field_names[index].c_str(), fields[index].kind});
     }
 
-    dataset.row_values.reserve(row_count * column_count);
+    dataset.row_values.reserve(row_count * field_count);
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
-        for (size_t column_index = 0; column_index < column_count; ++column_index) {
-            const RtdlDbColumn& column = columns[column_index];
+        for (size_t field_index = 0; field_index < field_count; ++field_index) {
+            const RtdlPayloadField& field = fields[field_index];
             RtdlDbScalar copied{};
-            copied.kind = column.kind;
-            if (column.kind == kDbKindText) {
-                const char* value = column.string_values[row_index];
+            copied.kind = field.kind;
+            if (field.kind == kDbKindText) {
+                const char* value = field.string_values[row_index];
                 if (value) {
                     dataset.scalar_strings.emplace_back(value);
                     copied.string_value = dataset.scalar_strings.back().c_str();
                 }
-            } else if (column.double_values) {
-                copied.double_value = column.double_values[row_index];
+            } else if (field.double_values) {
+                copied.double_value = field.double_values[row_index];
                 copied.int_value = static_cast<int64_t>(copied.double_value);
             } else {
-                copied.int_value = column.int_values[row_index];
+                copied.int_value = field.int_values[row_index];
                 copied.double_value = static_cast<double>(copied.int_value);
             }
             dataset.row_values.push_back(copied);
@@ -3266,7 +3266,7 @@ static void db_validate_db_inputs(
         size_t clause_count)
 {
     if (!fields || field_count == 0 || !row_values) {
-        throw std::runtime_error("DB table inputs must not be null");
+        throw std::runtime_error("dataset inputs must not be null");
     }
     if (clause_count > 0 && !clauses) {
         throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
@@ -3468,22 +3468,22 @@ static std::vector<size_t> db_collect_candidate_row_indices_vulkan_prepared(
     return row_indices;
 }
 
-// ---------- LSI ---------------------------------------------------------------
+// ---------- segment-pair intersection ---------------------------------------------------------------
 
-static void run_lsi_vulkan(
+static void run_segment_pair_intersection_vulkan(
         const RtdlSegment* left,  size_t left_count,
         const RtdlSegment* right, size_t right_count,
-        RtdlLsiRow** rows_out, size_t* row_count_out)
+        RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out)
 {
     VkContext* ctx = get_context();
 
-    std::call_once(g_lsi_init, [ctx]() {
-        g_lsi_pipe = new RtPipeline(build_rt_pipeline(
-            ctx, kLsiRgen, kLsiRmiss, kLsiRint, kLsiRahit,
-            "lsi.rgen", "lsi.rmiss", "lsi.rint", "lsi.rahit", 6));
+    std::call_once(g_segment_pair_intersection_init, [ctx]() {
+        g_segment_pair_intersection_pipe = new RtPipeline(build_rt_pipeline(
+            ctx, kSegmentPairIntersectionRgen, kSegmentPairIntersectionRmiss, kSegmentPairIntersectionRint, kSegmentPairIntersectionRahit,
+            "segment_pair_intersection.rgen", "segment_pair_intersection.rmiss", "segment_pair_intersection.rint", "segment_pair_intersection.rahit", 6));
     });
 
-    // Upload segments (double → float)
+    // Upload segments (double -> float)
     std::vector<GpuSegment> gpu_left(left_count), gpu_right(right_count);
     for (size_t i = 0; i < left_count;  ++i)
         gpu_left[i]  = {(float)left[i].x0,  (float)left[i].y0,
@@ -3513,8 +3513,8 @@ static void run_lsi_vulkan(
 
     // Output buffer + counter
     uint32_t capacity = checked_output_capacity_u32(
-        left_count, right_count, sizeof(GpuLsiRecord), "Vulkan LSI");
-    VkDeviceSize output_sz = checked_output_bytes(capacity, sizeof(GpuLsiRecord), "Vulkan LSI");
+        left_count, right_count, sizeof(GpuSegmentPairIntersectionRecord), "Vulkan segment-pair intersection");
+    VkDeviceSize output_sz = checked_output_bytes(capacity, sizeof(GpuSegmentPairIntersectionRecord), "Vulkan segment-pair intersection");
     BufMem d_output  = alloc_buffer(ctx, output_sz,
         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -3532,7 +3532,7 @@ static void run_lsi_vulkan(
     std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
 
     // Descriptor set
-    DescriptorSet ds = alloc_descriptor_set(ctx, g_lsi_pipe->dset_layout, 6, true);
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_segment_pair_intersection_pipe->dset_layout, 6, true);
     bind_tlas(ctx,       ds.set, tlas.handle, 0);
     bind_ssbo(ctx->device, ds.set, d_output.buffer, output_sz, 1);
     bind_ssbo(ctx->device, ds.set, d_counter.buffer, sizeof(uint32_t), 2);
@@ -3540,16 +3540,16 @@ static void run_lsi_vulkan(
     bind_ssbo(ctx->device, ds.set, d_left.buffer,    left_sz,  4);
     bind_ssbo(ctx->device, ds.set, d_right.buffer,   right_sz, 5);
 
-    dispatch_rt(ctx, *g_lsi_pipe, ds.set, (uint32_t)left_count);
+    dispatch_rt(ctx, *g_segment_pair_intersection_pipe, ds.set, (uint32_t)left_count);
 
     // Read back
     uint32_t gpu_count = 0;
     download_from_buf(ctx, &gpu_count, d_counter, sizeof(uint32_t));
     if (gpu_count > capacity) gpu_count = capacity;
 
-    std::vector<GpuLsiRecord> gpu_rows(gpu_count);
+    std::vector<GpuSegmentPairIntersectionRecord> gpu_rows(gpu_count);
     if (gpu_count > 0) {
-        VkDeviceSize sub_sz = checked_output_bytes(gpu_count, sizeof(GpuLsiRecord), "Vulkan LSI");
+        VkDeviceSize sub_sz = checked_output_bytes(gpu_count, sizeof(GpuSegmentPairIntersectionRecord), "Vulkan segment-pair intersection");
         BufMem d_sub = alloc_buffer(ctx, sub_sz,
             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         // Copy just the valid rows
@@ -3580,9 +3580,9 @@ static void run_lsi_vulkan(
     destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
 
     (void)gpu_rows;
-    std::vector<RtdlLsiRow> refined = exact_lsi_rows(left, left_count, right, right_count);
+    std::vector<RtdlSegmentPairIntersectionRow> refined = exact_segment_pair_intersection_rows(left, left_count, right, right_count);
 
-    auto* out = static_cast<RtdlLsiRow*>(std::malloc(sizeof(RtdlLsiRow) * refined.size()));
+    auto* out = static_cast<RtdlSegmentPairIntersectionRow*>(std::malloc(sizeof(RtdlSegmentPairIntersectionRow) * refined.size()));
     if (!out && !refined.empty()) throw std::bad_alloc();
     for (size_t i = 0; i < refined.size(); ++i) {
         out[i] = refined[i];
@@ -3602,12 +3602,12 @@ static void run_pip_vulkan(
 {
     if (positive_only != 0u) {
         // Two-stage sparse positive-hit path (Goal 78):
-        //   Stage 1 – GPU generates sparse candidate (point_index, poly_index)
+        //   Stage 1 - GPU generates sparse candidate (point_index, poly_index)
         //             pairs via ray tracing over polygon AABBs + exact GLSL PIP
         //             in the intersection shader.
-        //   Stage 2 – host exact-finalizes only those candidates (GEOS or CPU
+        //   Stage 2 - host exact-finalizes only those candidates (GEOS or CPU
         //             fallback), preserving full parity with the oracle path.
-        // The dense host full-scan (O(P×Q) on CPU) is replaced by GPU candidate
+        // The dense host full-scan (O(PxQ) on CPU) is replaced by GPU candidate
         // generation followed by host exact-finalize on the candidate subset.
 
         VkContext* ctx = get_context();
@@ -3825,7 +3825,7 @@ static void run_pip_vulkan(
     AccelResult blas = build_aabb_blas(ctx, aabbs);
     AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
 
-    // Pre-allocate output: npoints × npoly GpuPipRecord, initialized to 0
+    // Pre-allocate output: npoints x npoly GpuPipRecord, initialized to 0
     size_t out_count = checked_mul_size_t(point_count, poly_count, "Vulkan PIP");
     VkDeviceSize output_sz = checked_output_bytes(out_count, sizeof(GpuPipRecord), "Vulkan PIP");
     BufMem d_output = alloc_buffer(ctx, output_sz,
@@ -3850,7 +3850,7 @@ static void run_pip_vulkan(
     DescriptorSet ds = alloc_descriptor_set(ctx, g_pip_pipe->dset_layout, 7, true);
     bind_tlas(ctx,       ds.set, tlas.handle, 0);
     bind_ssbo(ctx->device, ds.set, d_output.buffer, output_sz, 1);
-    // binding 2 unused for PIP (no counter) — bind a dummy 4-byte buffer
+    // binding 2 unused for PIP (no counter) - bind a dummy 4-byte buffer
     BufMem d_dummy = alloc_buffer(ctx, 4,
         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
@@ -3917,20 +3917,20 @@ static void run_pip_vulkan(
     *row_count_out = out_count;
 }
 
-// ---------- Overlay -----------------------------------------------------------
+// ---------- shape-pair relation -----------------------------------------------------------
 
-static void run_overlay_vulkan(
+static void run_shape_pair_relation_flags_vulkan(
         const RtdlPolygonRef* left_polys,  size_t left_count,
         const double* left_verts_xy,       size_t left_vert_xy_count,
         const RtdlPolygonRef* right_polys, size_t right_count,
         const double* right_verts_xy,      size_t right_vert_xy_count,
-        RtdlOverlayRow** rows_out, size_t* row_count_out)
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
 {
     VkContext* ctx = get_context();
-    std::call_once(g_overlay_init, [ctx]() {
-        g_overlay_pipe = new RtPipeline(build_rt_pipeline(
-            ctx, kOverlayRgen, kOverlayRmiss, kOverlayRint, kOverlayRahit,
-            "overlay.rgen", "overlay.rmiss", "overlay.rint", "overlay.rahit", 8));
+    std::call_once(g_shape_pair_relation_init, [ctx]() {
+        g_shape_pair_relation_pipe = new RtPipeline(build_rt_pipeline(
+            ctx, kShapePairRelationRgen, kShapePairRelationRmiss, kShapePairRelationRint, kShapePairRelationRahit,
+            "shape_pair_relation.rgen", "shape_pair_relation.rmiss", "shape_pair_relation.rint", "shape_pair_relation.rahit", 8));
     });
 
     std::vector<GpuPolygonRef> gpu_lpolys(left_count), gpu_rpolys(right_count);
@@ -3967,9 +3967,9 @@ static void run_overlay_vulkan(
     AccelResult blas = build_aabb_blas(ctx, aabbs);
     AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
 
-    // Pre-allocated output: left_count × right_count GpuOverlayFlags, zeroed
-    size_t out_count = checked_mul_size_t(left_count, right_count, "Vulkan Overlay");
-    VkDeviceSize output_sz = checked_output_bytes(out_count, sizeof(GpuOverlayFlags), "Vulkan Overlay");
+    // Pre-allocated output: left_count x right_count GpuShapePairRelationFlags, zeroed
+    size_t out_count = checked_mul_size_t(left_count, right_count, "Vulkan shape-pair relation");
+    VkDeviceSize output_sz = checked_output_bytes(out_count, sizeof(GpuShapePairRelationFlags), "Vulkan shape-pair relation");
     BufMem d_output = alloc_buffer(ctx, output_sz,
         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -3988,7 +3988,7 @@ static void run_overlay_vulkan(
     void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
     std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
 
-    DescriptorSet ds = alloc_descriptor_set(ctx, g_overlay_pipe->dset_layout, 8, true);
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_shape_pair_relation_pipe->dset_layout, 8, true);
     bind_tlas(ctx,       ds.set, tlas.handle, 0);
     bind_ssbo(ctx->device, ds.set, d_output.buffer, output_sz, 1);
     BufMem d_dummy = alloc_buffer(ctx, 4, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
@@ -3999,9 +3999,9 @@ static void run_overlay_vulkan(
     bind_ssbo(ctx->device, ds.set, d_rp.buffer, rpoly_sz, 6);
     bind_ssbo(ctx->device, ds.set, d_rv.buffer, rvert_sz, 7);
 
-    dispatch_rt(ctx, *g_overlay_pipe, ds.set, launch_count);
+    dispatch_rt(ctx, *g_shape_pair_relation_pipe, ds.set, launch_count);
 
-    std::vector<GpuOverlayFlags> gpu_flags(out_count);
+    std::vector<GpuShapePairRelationFlags> gpu_flags(out_count);
     download_from_buf(ctx, gpu_flags.data(), d_output, output_sz);
 
     vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
@@ -4012,18 +4012,18 @@ static void run_overlay_vulkan(
 
     std::vector<RtdlSegment> left_segments = polygon_edge_segments(left_polys, left_count, left_verts_xy);
     std::vector<RtdlSegment> right_segments = polygon_edge_segments(right_polys, right_count, right_verts_xy);
-    std::vector<RtdlLsiRow> exact_overlay_hits = exact_lsi_rows(
+    std::vector<RtdlSegmentPairIntersectionRow> exact_shape_pair_hits = exact_segment_pair_intersection_rows(
         left_segments.data(),
         left_segments.size(),
         right_segments.data(),
         right_segments.size());
-    std::unordered_set<uint64_t> exact_lsi_pairs;
-    exact_lsi_pairs.reserve(exact_overlay_hits.size() * 2 + 1);
-    for (const RtdlLsiRow& hit : exact_overlay_hits) {
+    std::unordered_set<uint64_t> exact_segment_intersection_pairs;
+    exact_segment_intersection_pairs.reserve(exact_shape_pair_hits.size() * 2 + 1);
+    for (const RtdlSegmentPairIntersectionRow& hit : exact_shape_pair_hits) {
         const uint64_t pair_key =
             (static_cast<uint64_t>(hit.left_id) << 32) |
             static_cast<uint64_t>(hit.right_id);
-        exact_lsi_pairs.insert(pair_key);
+        exact_segment_intersection_pairs.insert(pair_key);
     }
     for (size_t li = 0; li < left_count; ++li) {
         for (size_t ri = 0; ri < right_count; ++ri) {
@@ -4031,7 +4031,7 @@ static void run_overlay_vulkan(
             const uint64_t pair_key =
                 (static_cast<uint64_t>(left_polys[li].id) << 32) |
                 static_cast<uint64_t>(right_polys[ri].id);
-            gpu_flags[slot].requires_lsi = exact_lsi_pairs.count(pair_key) ? 1u : 0u;
+            gpu_flags[slot].requires_segment_intersection = exact_segment_intersection_pairs.count(pair_key) ? 1u : 0u;
         }
     }
 
@@ -4043,7 +4043,7 @@ static void run_overlay_vulkan(
     for (size_t li = 0; li < left_count; ++li) {
         for (size_t ri = 0; ri < right_count; ++ri) {
             const size_t slot = li * right_count + ri;
-            if (gpu_flags[slot].requires_pip) continue;
+            if (gpu_flags[slot].requires_point_containment) continue;
             bool found = false;
             if (left_polys[li].vertex_count > 0) {
                 const double lxv = left_verts_xy[left_polys[li].vertex_offset * 2];
@@ -4066,18 +4066,18 @@ static void run_overlay_vulkan(
                     found = true;
             }
             if (found) {
-                gpu_flags[slot].requires_pip = 1;
+                gpu_flags[slot].requires_point_containment = 1;
             }
         }
     }
 
-    auto* out = static_cast<RtdlOverlayRow*>(std::malloc(sizeof(RtdlOverlayRow) * out_count));
+    auto* out = static_cast<RtdlShapePairRelationRow*>(std::malloc(sizeof(RtdlShapePairRelationRow) * out_count));
     if (!out && out_count > 0) throw std::bad_alloc();
     for (size_t i = 0; i < left_count; ++i)
         for (size_t j = 0; j < right_count; ++j) {
             size_t slot = i * right_count + j;
             out[slot] = { left_polys[i].id, right_polys[j].id,
-                          gpu_flags[slot].requires_lsi, gpu_flags[slot].requires_pip };
+                          gpu_flags[slot].requires_segment_intersection, gpu_flags[slot].requires_point_containment };
         }
     *rows_out      = out;
     *row_count_out = out_count;
@@ -4544,7 +4544,7 @@ static void run_db_conjunctive_scan_vulkan(
     *rows_out = nullptr;
     *row_count_out = 0;
     if (!fields || field_count == 0 || !row_values) {
-        throw std::runtime_error("DB table inputs must not be null");
+        throw std::runtime_error("dataset inputs must not be null");
     }
     if (clause_count > 0 && !clauses) {
         throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
@@ -4689,7 +4689,7 @@ static VulkanDbDatasetImpl* create_db_dataset_vulkan(
     db_validate_db_inputs(fields, field_count, row_values, row_count, nullptr, 0);
     VkContext* ctx = get_context();
     std::unique_ptr<VulkanDbDatasetImpl> dataset(new VulkanDbDatasetImpl());
-    db_copy_dataset_table(*dataset, fields, field_count, row_values, row_count);
+    db_copy_dataset_payload(*dataset, fields, field_count, row_values, row_count);
 
     std::vector<const char*> primary_names;
     if (primary_field_count > 0) {
@@ -4734,16 +4734,16 @@ static VulkanDbDatasetImpl* create_db_dataset_vulkan(
 }
 
 static VulkanDbDatasetImpl* create_db_dataset_vulkan_columnar(
-        const RtdlDbColumn* columns,
-        size_t column_count,
+        const RtdlPayloadField* fields,
+        size_t field_count,
         size_t row_count,
         const char* const* primary_fields,
         size_t primary_field_count)
 {
-    db_validate_columnar_inputs(columns, column_count, row_count);
+    db_validate_columnar_inputs(columns, field_count, row_count);
     VkContext* ctx = get_context();
     std::unique_ptr<VulkanDbDatasetImpl> dataset(new VulkanDbDatasetImpl());
-    db_copy_dataset_columnar_table(*dataset, columns, column_count, row_count);
+    db_copy_dataset_columnar_payload(*dataset, columns, field_count, row_count);
 
     std::vector<const char*> primary_names;
     if (primary_field_count > 0) {
@@ -4952,7 +4952,7 @@ static void run_db_grouped_sum_vulkan_prepared(
 
 static void run_bfs_expand_vulkan_host_indexed(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlFrontierVertex* frontier, size_t frontier_count,
         const uint32_t* visited_vertices, size_t visited_count,
         uint32_t dedupe,
@@ -4973,7 +4973,7 @@ static void run_bfs_expand_vulkan_host_indexed(
     if (frontier_count == 0) {
         return;
     }
-    if (!column_indices && column_index_count != 0) {
+    if (!column_indices && edge_index_count != 0) {
         throw std::runtime_error("graph column_indices pointer must not be null when edge count is non-zero");
     }
     for (size_t vertex = 0; vertex + 1 < row_offset_count; ++vertex) {
@@ -4982,11 +4982,11 @@ static void run_bfs_expand_vulkan_host_indexed(
         if (start > end) {
             throw std::runtime_error("graph row_offsets must be non-decreasing");
         }
-        if (end > column_index_count) {
+        if (end > edge_index_count) {
             throw std::runtime_error("graph row_offsets exceed column_indices length");
         }
     }
-    for (size_t edge_index = 0; edge_index < column_index_count; ++edge_index) {
+    for (size_t edge_index = 0; edge_index < edge_index_count; ++edge_index) {
         if (column_indices[edge_index] >= vertex_count) {
             throw std::runtime_error("graph column_indices must reference valid graph vertices");
         }
@@ -5002,7 +5002,7 @@ static void run_bfs_expand_vulkan_host_indexed(
 
     std::vector<uint8_t> discovered_flags(static_cast<size_t>(vertex_count), 0);
     std::vector<RtdlBfsExpandRow> rows;
-    rows.reserve(column_index_count);
+    rows.reserve(edge_index_count);
     for (size_t i = 0; i < frontier_count; ++i) {
         const uint32_t src = frontier[i].vertex_id;
         if (src >= vertex_count) {
@@ -5043,9 +5043,9 @@ static void run_bfs_expand_vulkan_host_indexed(
     *row_count_out = rows.size();
 }
 
-static void run_triangle_probe_vulkan_host_indexed(
+static void run_triangle_cycle_candidates_vulkan_host_indexed(
         const uint32_t* row_offsets, size_t row_offset_count,
-        const uint32_t* column_indices, size_t column_index_count,
+        const uint32_t* column_indices, size_t edge_index_count,
         const RtdlEdgeSeed* seeds, size_t seed_count,
         uint32_t enforce_id_ascending,
         uint32_t unique,
@@ -5059,7 +5059,7 @@ static void run_triangle_probe_vulkan_host_indexed(
     if (!row_offsets || row_offset_count == 0) {
         throw std::runtime_error("CSR graph row_offsets must not be empty");
     }
-    if (column_index_count > 0 && !column_indices) {
+    if (edge_index_count > 0 && !column_indices) {
         throw std::runtime_error("CSR graph column_indices pointer must not be null");
     }
     if (seed_count > 0 && !seeds) {
@@ -5068,7 +5068,7 @@ static void run_triangle_probe_vulkan_host_indexed(
     if (row_offsets[0] != 0u) {
         throw std::runtime_error("CSR graph row_offsets must start at 0");
     }
-    if (row_offsets[row_offset_count - 1] != column_index_count) {
+    if (row_offsets[row_offset_count - 1] != edge_index_count) {
         throw std::runtime_error("CSR graph final row_offset must equal edge_count");
     }
 
@@ -5078,7 +5078,7 @@ static void run_triangle_probe_vulkan_host_indexed(
             throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
         }
     }
-    for (size_t index = 0; index < column_index_count; ++index) {
+    for (size_t index = 0; index < edge_index_count; ++index) {
         if (column_indices[index] >= vertex_count) {
             throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
         }
@@ -5219,14 +5219,14 @@ static void run_point_nearest_segment_vulkan(
     *row_count_out = point_count;
 }
 
-// ---------- RayHitCount3D (Vulkan GPU — native triangle geometry) -------------
+// ---------- RayHitCount3D (Vulkan GPU - native triangle geometry) -------------
 
 static void run_ray_hitcount_3d_vulkan(
         const RtdlRay3D* rays, size_t ray_count,
         const RtdlTriangle3D* triangles, size_t triangle_count,
         RtdlRayHitCountRow** rows_out, size_t* row_count_out)
 {
-    // Edge case: no rays → empty result.
+    // Edge case: no rays -> empty result.
     if (ray_count == 0) {
         *rows_out = nullptr; *row_count_out = 0; return;
     }
@@ -5689,7 +5689,7 @@ static void run_fixed_radius_neighbors_3d_vulkan(
 
 // ---------- KNNRows (compute brute-force) ------------------------------------
 
-static void run_knn_rows_vulkan(
+static void run_k_closest_hits_vulkan(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,
         size_t k,
@@ -5697,7 +5697,7 @@ static void run_knn_rows_vulkan(
 {
     VkContext* ctx = get_context();
     std::call_once(g_knn_init, [ctx]() {
-        g_knn_pipe = new ComputePipeline(build_compute_pipeline(ctx, kKnnComp, "knn.comp", 4));
+        g_knn_pipe = new ComputePipeline(build_compute_pipeline(ctx, kKClosestHitsComp, "k_closest_hits.comp", 4));
     });
 
     std::vector<GpuPoint> gpu_queries(query_count);
@@ -5777,16 +5777,16 @@ static void run_knn_rows_vulkan(
     *row_count_out = rows.size();
 }
 
-static void run_knn_rows_3d_vulkan(
+static void run_k_closest_hits_3d_vulkan(
         const RtdlPoint3D* query_points, size_t query_count,
         const RtdlPoint3D* search_points, size_t search_count,
         size_t k,
         RtdlKnnNeighborRow** rows_out, size_t* row_count_out)
 {
     VkContext* ctx = get_context();
-    constexpr size_t kKnnCandidateSlack = 8;
+    constexpr size_t kKClosestHitsCandidateSlack = 8;
     std::call_once(g_knn3d_init, [ctx]() {
-        g_knn3d_pipe = new ComputePipeline(build_compute_pipeline(ctx, kKnn3DComp, "knn3d.comp", 4));
+        g_knn3d_pipe = new ComputePipeline(build_compute_pipeline(ctx, kKClosestHits3DComp, "k_closest_hits3d.comp", 4));
     });
 
     std::vector<GpuPoint3D> gpu_queries(query_count);
@@ -5800,7 +5800,7 @@ static void run_knn_rows_3d_vulkan(
 
     const size_t capped_k = std::min(k, search_count);
     const size_t candidate_slack = std::min(
-        kKnnCandidateSlack,
+        kKClosestHitsCandidateSlack,
         search_count > capped_k ? search_count - capped_k : size_t{0});
     const size_t kernel_k = capped_k + candidate_slack;
     const size_t output_capacity = checked_mul_size_t(
@@ -5924,7 +5924,7 @@ static void run_knn_rows_3d_vulkan(
     *row_count_out = rows.size();
 }
 
-// ── Error wrapper ─────────────────────────────────────────────────────────────
+// Error wrapper -------------------------------------------------------------
 
 template <typename Fn>
 static int handle_call(Fn fn, char* error_out, size_t error_size) noexcept {
@@ -5935,7 +5935,4 @@ static int handle_call(Fn fn, char* error_out, size_t error_size) noexcept {
         set_error(e.what(), error_out, error_size);
         return 1;
     } catch (...) {
-        set_error("unknown Vulkan backend error", error_out, error_size);
-        return 1;
-    }
-}
+        set_erro

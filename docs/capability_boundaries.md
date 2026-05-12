@@ -9,9 +9,9 @@ ray-tracing-style traversal and refinement. Python remains the application
 host: it loads data, calls RTDL kernels, checks results, reduces rows, and
 connects the kernel result to the rest of an application.
 
-Current release: `v1.6`. The current release is the first Python+RTDL
-architecture milestone, not a whole-application accelerator, package-install
-release, or true zero-copy release.
+Current public release: `v1.8`, the source-tree Python+RTDL language boundary.
+It should not be read as a whole-application accelerator, package-install
+release, partner-framework release, or true zero-copy release.
 
 ## Short Version
 

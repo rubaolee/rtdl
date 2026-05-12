@@ -1,4 +1,4 @@
-template <typename T>
+﻿template <typename T>
 void copy_host_to_device(DeviceAllocation& allocation, const std::vector<T>& values) {
     if (values.empty()) {
         return;
@@ -464,7 +464,7 @@ std::vector<RtdlHiprtAabb> encode_polygon_aabbs(
     return aabbs;
 }
 
-std::vector<RtdlHiprtAabb> encode_overlay_candidate_aabbs(
+std::vector<RtdlHiprtAabb> encode_shape_pair_candidate_aabbs(
     const RtdlHiprtPolygonRefDevice* right_polygons,
     size_t right_count,
     const RtdlHiprtPolygonRefDevice* left_polygons,
@@ -703,12 +703,12 @@ RtdlRayAnyHitRow* copy_rows_to_heap(const std::vector<RtdlRayAnyHitRow>& output)
     return reinterpret_cast<RtdlRayAnyHitRow*>(rows);
 }
 
-RtdlLsiRow* copy_lsi_rows_to_heap(const std::vector<RtdlLsiRow>& output) {
-    auto* rows = new unsigned char[output.size() * sizeof(RtdlLsiRow)];
+RtdlSegmentPairIntersectionRow* copy_segment_intersection_rows_to_heap(const std::vector<RtdlSegmentPairIntersectionRow>& output) {
+    auto* rows = new unsigned char[output.size() * sizeof(RtdlSegmentPairIntersectionRow)];
     if (!output.empty()) {
-        std::memcpy(rows, output.data(), output.size() * sizeof(RtdlLsiRow));
+        std::memcpy(rows, output.data(), output.size() * sizeof(RtdlSegmentPairIntersectionRow));
     }
-    return reinterpret_cast<RtdlLsiRow*>(rows);
+    return reinterpret_cast<RtdlSegmentPairIntersectionRow*>(rows);
 }
 
 RtdlPipRow* copy_pip_rows_to_heap(const std::vector<RtdlPipRow>& output) {
@@ -719,12 +719,12 @@ RtdlPipRow* copy_pip_rows_to_heap(const std::vector<RtdlPipRow>& output) {
     return reinterpret_cast<RtdlPipRow*>(rows);
 }
 
-RtdlOverlayRow* copy_overlay_rows_to_heap(const std::vector<RtdlOverlayRow>& output) {
-    auto* rows = new unsigned char[output.size() * sizeof(RtdlOverlayRow)];
+RtdlShapePairRelationRow* copy_shape_pair_relation_rows_to_heap(const std::vector<RtdlShapePairRelationRow>& output) {
+    auto* rows = new unsigned char[output.size() * sizeof(RtdlShapePairRelationRow)];
     if (!output.empty()) {
-        std::memcpy(rows, output.data(), output.size() * sizeof(RtdlOverlayRow));
+        std::memcpy(rows, output.data(), output.size() * sizeof(RtdlShapePairRelationRow));
     }
-    return reinterpret_cast<RtdlOverlayRow*>(rows);
+    return reinterpret_cast<RtdlShapePairRelationRow*>(rows);
 }
 
 RtdlPointNearestSegmentRow* copy_pns_rows_to_heap(const std::vector<RtdlPointNearestSegmentRow>& output) {
@@ -1318,8 +1318,8 @@ void run_fixed_radius_neighbors_2d(
     }
 }
 
-void sort_lsi_rows_by_input_order(
-    std::vector<RtdlLsiRow>& rows,
+void sort_segment_intersection_rows_by_input_order(
+    std::vector<RtdlSegmentPairIntersectionRow>& rows,
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
@@ -1334,7 +1334,7 @@ void sort_lsi_rows_by_input_order(
     for (size_t i = 0; i < right_count; ++i) {
         right_order.emplace(right[i].id, i);
     }
-    std::sort(rows.begin(), rows.end(), [&](const RtdlLsiRow& a, const RtdlLsiRow& b) {
+    std::sort(rows.begin(), rows.end(), [&](const RtdlSegmentPairIntersectionRow& a, const RtdlSegmentPairIntersectionRow& b) {
         const size_t left_a = left_order.count(a.left_id) ? left_order[a.left_id] : std::numeric_limits<size_t>::max();
         const size_t left_b = left_order.count(b.left_id) ? left_order[b.left_id] : std::numeric_limits<size_t>::max();
         if (left_a != left_b) {
@@ -1374,12 +1374,12 @@ void sort_segment_polygon_anyhit_rows_by_input_order(
     });
 }
 
-void run_lsi_2d(
+void run_segment_pair_intersection_2d(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
     size_t right_count,
-    RtdlLsiRow** rows_out,
+    RtdlSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out) {
     if (left_count > std::numeric_limits<uint32_t>::max() || right_count > std::numeric_limits<uint32_t>::max()) {
         throw std::runtime_error("HIPRT segment_intersection currently supports at most 2^32-1 left/right segments");
@@ -1394,8 +1394,8 @@ void run_lsi_2d(
         throw std::runtime_error("right segment pointer must not be null when right_count is nonzero");
     }
     if (left_count == 0 || right_count == 0) {
-        std::vector<RtdlLsiRow> empty;
-        *rows_out = copy_lsi_rows_to_heap(empty);
+        std::vector<RtdlSegmentPairIntersectionRow> empty;
+        *rows_out = copy_segment_intersection_rows_to_heap(empty);
         *row_count_out = 0;
         return;
     }
@@ -1425,17 +1425,17 @@ void run_lsi_2d(
         check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
         oroFunction kernel = build_trace_kernel_from_source(
             runtime.context,
-            lsi_2d_kernel_source(),
-            "rtdl_hiprt_lsi_2d.cu",
-            "RtdlLsi2DKernel",
+            segment_pair_intersection_2d_kernel_source(),
+            "rtdl_hiprt_segment_pair_intersection_2d.cu",
+            "RtdlSegmentPairIntersection2DKernel",
             &func_name_set,
             1,
             1);
 
         const size_t output_capacity = left_count * right_count;
-        std::vector<RtdlLsiRow> output(output_capacity);
+        std::vector<RtdlSegmentPairIntersectionRow> output(output_capacity);
         std::vector<uint32_t> counts(left_count);
-        DeviceAllocation output_device(output.size() * sizeof(RtdlLsiRow));
+        DeviceAllocation output_device(output.size() * sizeof(RtdlSegmentPairIntersectionRow));
         DeviceAllocation counts_device(counts.size() * sizeof(uint32_t));
 
         void* left_device_ptr = left_device.get();
@@ -1462,7 +1462,7 @@ void run_lsi_2d(
         copy_device_to_host(output, output_device);
         copy_device_to_host(counts, counts_device);
 
-        std::vector<RtdlLsiRow> compacted;
+        std::vector<RtdlSegmentPairIntersectionRow> compacted;
         for (size_t left_index = 0; left_index < left_count; ++left_index) {
             uint32_t count = std::min<uint32_t>(counts[left_index], static_cast<uint32_t>(right_count));
             size_t base = left_index * right_count;
@@ -1470,8 +1470,8 @@ void run_lsi_2d(
                 compacted.push_back(output[base + rank]);
             }
         }
-        sort_lsi_rows_by_input_order(compacted, left, left_count, right, right_count);
-        *rows_out = copy_lsi_rows_to_heap(compacted);
+        sort_segment_intersection_rows_by_input_order(compacted, left, left_count, right, right_count);
+        *rows_out = copy_segment_intersection_rows_to_heap(compacted);
         *row_count_out = compacted.size();
     } catch (...) {
         if (func_table != nullptr) {
@@ -1590,7 +1590,7 @@ void run_segment_polygon_2d_common(
             oroFunction kernel = build_trace_kernel_from_source(
                 runtime.context,
                 segment_polygon_2d_kernel_source(),
-                "rtdl_hiprt_segment_polygon_2d.cu",
+                "rtdl_hiprt_segment_shape_2d.cu",
                 "RtdlSegmentPolygonAnyhit2DKernel",
                 &func_name_set,
                 1,
@@ -1633,7 +1633,7 @@ void run_segment_polygon_2d_common(
             oroFunction kernel = build_trace_kernel_from_source(
                 runtime.context,
                 segment_polygon_2d_kernel_source(),
-                "rtdl_hiprt_segment_polygon_2d.cu",
+                "rtdl_hiprt_segment_shape_2d.cu",
                 "RtdlSegmentPolygonHitcount2DKernel",
                 &func_name_set,
                 1,
@@ -1993,7 +1993,7 @@ void run_pip_2d(
         oroFunction kernel = build_trace_kernel_from_source(
             runtime.context,
             pip_2d_kernel_source(),
-            "rtdl_hiprt_pip_2d.cu",
+            "rtdl_hiprt_point_primitive_anyhit_2d.cu",
             "RtdlPip2DKernel",
             &func_name_set,
             1,
@@ -2041,7 +2041,7 @@ void run_pip_2d(
     }
 }
 
-void run_overlay_2d(
+void run_shape_pair_relation_flags_2d(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -2050,13 +2050,13 @@ void run_overlay_2d(
     size_t right_count,
     const double* right_vertices_xy,
     size_t right_vertex_xy_count,
-    RtdlOverlayRow** rows_out,
+    RtdlShapePairRelationRow** rows_out,
     size_t* row_count_out) {
     if (left_count > std::numeric_limits<uint32_t>::max() || right_count > std::numeric_limits<uint32_t>::max()) {
-        throw std::runtime_error("HIPRT overlay_compose currently supports at most 2^32-1 left/right polygons");
+        throw std::runtime_error("HIPRT shape_pair_relation_compose currently supports at most 2^32-1 left/right polygons");
     }
     if (left_count != 0 && right_count > std::numeric_limits<size_t>::max() / left_count) {
-        throw std::runtime_error("HIPRT overlay_compose output capacity overflow");
+        throw std::runtime_error("HIPRT shape_pair_relation_compose output capacity overflow");
     }
     if (left_count > 0 && left_polygons == nullptr) {
         throw std::runtime_error("left polygon pointer must not be null when left_count is nonzero");
@@ -2074,8 +2074,8 @@ void run_overlay_2d(
         throw std::runtime_error("right polygon vertices pointer must not be null when vertex count is nonzero");
     }
     if (left_count == 0 || right_count == 0) {
-        std::vector<RtdlOverlayRow> empty;
-        *rows_out = copy_overlay_rows_to_heap(empty);
+        std::vector<RtdlShapePairRelationRow> empty;
+        *rows_out = copy_shape_pair_relation_rows_to_heap(empty);
         *row_count_out = 0;
         return;
     }
@@ -2084,7 +2084,7 @@ void run_overlay_2d(
     std::vector<RtdlHiprtVertex2DDevice> left_vertex_values = encode_vertices_2d(left_vertices_xy, left_vertex_xy_count);
     std::vector<RtdlHiprtPolygonRefDevice> right_values = encode_polygon_refs_2d(right_polygons, right_count);
     std::vector<RtdlHiprtVertex2DDevice> right_vertex_values = encode_vertices_2d(right_vertices_xy, right_vertex_xy_count);
-    std::vector<RtdlHiprtAabb> aabb_values = encode_overlay_candidate_aabbs(
+    std::vector<RtdlHiprtAabb> aabb_values = encode_shape_pair_candidate_aabbs(
         right_values.data(),
         right_values.size(),
         left_values.data(),
@@ -2110,23 +2110,23 @@ void run_overlay_2d(
     hiprtFuncTable func_table{};
     try {
         hiprtFuncNameSet func_name_set{};
-        func_name_set.intersectFuncName = "intersectRtdlOverlayCandidate2D";
+        func_name_set.intersectFuncName = "intersectRtdlShapePairCandidate2D";
         hiprtFuncDataSet func_data_set{};
         func_data_set.intersectFuncData = nullptr;
         check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
         check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
         oroFunction kernel = build_trace_kernel_from_source(
             runtime.context,
-            overlay_2d_kernel_source(),
-            "rtdl_hiprt_overlay_2d.cu",
-            "RtdlOverlay2DKernel",
+            shape_pair_relation_flags_2d_kernel_source(),
+            "rtdl_hiprt_shape_pair_relation_flags_2d.cu",
+            "RtdlShapePairRelationFlags2DKernel",
             &func_name_set,
             1,
             1);
 
         const size_t output_capacity = left_count * right_count;
-        std::vector<RtdlOverlayRow> output(output_capacity);
-        DeviceAllocation output_device(output.size() * sizeof(RtdlOverlayRow));
+        std::vector<RtdlShapePairRelationRow> output(output_capacity);
+        DeviceAllocation output_device(output.size() * sizeof(RtdlShapePairRelationRow));
         void* left_device_ptr = left_device.get();
         void* left_vertex_device_ptr = left_vertex_device.get();
         void* right_device_ptr = right_device.get();
@@ -2151,7 +2151,7 @@ void run_overlay_2d(
             "oroModuleLaunchKernel",
             oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
         copy_device_to_host(output, output_device);
-        *rows_out = copy_overlay_rows_to_heap(output);
+        *rows_out = copy_shape_pair_relation_rows_to_heap(output);
         *row_count_out = output.size();
     } catch (...) {
         if (func_table != nullptr) {
@@ -2369,7 +2369,7 @@ void run_bfs_expand(
         oroFunction kernel = build_trace_kernel_from_source(
             runtime.context,
             bfs_expand_kernel_source(),
-            "rtdl_hiprt_bfs_expand.cu",
+            "rtdl_hiprt_frontier_edge_traversal_packet.cu",
             "RtdlBfsExpandKernel",
             &func_name_set,
             1,
@@ -2492,7 +2492,7 @@ std::unique_ptr<PreparedGraphCSR> prepare_graph_csr(
         oroFunction bfs_kernel = build_trace_kernel_from_source(
             runtime.context,
             bfs_expand_kernel_source(),
-            "rtdl_hiprt_bfs_expand.cu",
+            "rtdl_hiprt_frontier_edge_traversal_packet.cu",
             "RtdlBfsExpandKernel",
             &bfs_func_name_set,
             1,
@@ -2506,8 +2506,8 @@ std::unique_ptr<PreparedGraphCSR> prepare_graph_csr(
         check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, triangle_func_table, 0, 0, triangle_func_data_set));
         oroFunction triangle_kernel = build_trace_kernel_from_source(
             runtime.context,
-            triangle_probe_kernel_source(),
-            "rtdl_hiprt_triangle_probe.cu",
+            triangle_cycle_candidates_kernel_source(),
+            "rtdl_hiprt_triangle_cycle_candidates.cu",
             "RtdlTriangleProbeKernel",
             &triangle_func_name_set,
             1,
@@ -2645,7 +2645,7 @@ void run_prepared_bfs_expand(
     *row_count_out = output.size();
 }
 
-void run_triangle_probe(
+void run_triangle_cycle_candidates(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
@@ -2720,8 +2720,8 @@ void run_triangle_probe(
         check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
         oroFunction kernel = build_trace_kernel_from_source(
             runtime.context,
-            triangle_probe_kernel_source(),
-            "rtdl_hiprt_triangle_probe.cu",
+            triangle_cycle_candidates_kernel_source(),
+            "rtdl_hiprt_triangle_cycle_candidates.cu",
             "RtdlTriangleProbeKernel",
             &func_name_set,
             1,
@@ -2808,7 +2808,7 @@ void run_triangle_probe(
     }
 }
 
-void run_prepared_triangle_probe(
+void run_prepared_triangle_cycle_candidates(
     PreparedGraphCSR& prepared,
     const RtdlEdgeSeed* seeds,
     size_t seed_count,
@@ -2995,7 +2995,7 @@ std::unique_ptr<PreparedDbTable> prepare_db_table(
     prepared->match_kernel = build_trace_kernel_from_source(
         prepared->runtime.context,
         db_match_kernel_source(),
-        "rtdl_hiprt_db_match_prepared.cu",
+        "rtdl_hiprt_predicate_match_prepared.cu",
         "RtdlDbMatchKernel",
         &func_name_set,
         1,
@@ -3183,7 +3183,7 @@ std::vector<uint32_t> run_db_match_indices(
         oroFunction kernel = build_trace_kernel_from_source(
             runtime.context,
             db_match_kernel_source(),
-            "rtdl_hiprt_db_match.cu",
+            "rtdl_hiprt_predicate_match.cu",
             "RtdlDbMatchKernel",
             &func_name_set,
             1,

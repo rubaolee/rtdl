@@ -1,0 +1,62 @@
+{
+  "_goal1756_wall_clock": {
+    "app": "polygon_set_jaccard",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_polygon_set_jaccard.py",
+      "--backend",
+      "embree",
+      "--copies",
+      "2000"
+    ],
+    "elapsed_sec": 0.49160192400449887,
+    "engine": "embree",
+    "returncode": 0,
+    "stderr_tail": "",
+    "stdout_json": true,
+    "stdout_tail": "",
+    "timing_scope": "same app-level command wall clock including process startup, input construction, native query, and JSON serialization",
+    "version": "v1_0",
+    "workdir": "/home/lestat/work/rtdl_goal1746_v1_0"
+  },
+  "app": "polygon_set_jaccard",
+  "backend": "embree",
+  "backend_mode": "embree_native_assisted",
+  "boundary": "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact grid-cell set-area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery and the same native C++ continuation. These modes are RT-candidate plus native-continuation pipelines, not monolithic GPU Jaccard kernels.",
+  "candidate_row_count": 6000,
+  "copies": 2000,
+  "left_polygon_count": 4000,
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp",
+  "optix_performance": {
+    "class": "python_interface_dominated",
+    "note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell set-area/Jaccard continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU Jaccard kernel."
+  },
+  "output_mode": "rows",
+  "right_polygon_count": 4000,
+  "row_count": 1,
+  "rows": [
+    {
+      "intersection_area": 10000,
+      "jaccard_similarity": 0.2631578947368421,
+      "left_area": 26000,
+      "right_area": 22000,
+      "union_area": 38000
+    }
+  ],
+  "rt_core_accelerated": false,
+  "rt_core_candidate_discovery_active": false,
+  "run_phases": {
+    "input_construction_sec": 0.014908217010088265,
+    "native_exact_continuation_sec": 0.08363616798305884,
+    "rt_candidate_discovery_sec": 0.19352717295987532,
+    "summary_postprocess_sec": 8.330098353326321e-07
+  },
+  "summary": {
+    "intersection_area": 10000,
+    "jaccard_similarity": 0.2631578947368421,
+    "left_area": 26000,
+    "right_area": 22000,
+    "union_area": 38000
+  }
+}

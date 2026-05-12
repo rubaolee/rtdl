@@ -32,34 +32,34 @@ def optix_prepared_packed_anyhit_available() -> bool:
     )
 
 
-def optix_prepared_pose_flags_available() -> bool:
+def optix_prepared_group_flags_available() -> bool:
     try:
         lib = _load_optix_library()
     except Exception:
         return False
     return (
         optix_prepared_packed_anyhit_available()
-        and _find_optional_backend_symbol(lib, "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed") is not None
+        and _find_optional_backend_symbol(lib, "rtdl_optix_group_flags_prepared_ray_anyhit_2d_packed") is not None
     )
 
 
-def optix_prepared_pose_indices_available() -> bool:
+def optix_prepared_group_indices_available() -> bool:
     try:
         lib = _load_optix_library()
     except Exception:
         return False
     return (
-        optix_prepared_pose_flags_available()
-        and _find_optional_backend_symbol(lib, "rtdl_optix_prepare_pose_indices_2d") is not None
+        optix_prepared_group_flags_available()
+        and _find_optional_backend_symbol(lib, "rtdl_optix_prepare_group_indices_2d") is not None
         and _find_optional_backend_symbol(
             lib,
-            "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices",
+            "rtdl_optix_group_flags_prepared_ray_anyhit_2d_prepared_indices",
         ) is not None
         and _find_optional_backend_symbol(
             lib,
-            "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+            "rtdl_optix_count_groups_prepared_ray_anyhit_2d_prepared_indices",
         ) is not None
-        and _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_pose_indices_2d") is not None
+        and _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_group_indices_2d") is not None
     )
 
 
@@ -100,33 +100,33 @@ class Goal671OptixPreparedAnyHitCountPortableTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "ray buffer is closed"):
                 prepared.count_packed(rays)
 
-    def test_empty_prepared_pose_flags_do_not_need_native_library(self) -> None:
+    def test_empty_prepared_group_flags_do_not_need_native_library(self) -> None:
         with rt.prepare_optix_rays_2d(()) as rays:
             with rt.prepare_optix_ray_triangle_any_hit_2d(()) as prepared:
-                self.assertEqual(prepared.pose_flags_packed(rays, (), pose_count=3), (False, False, False))
+                self.assertEqual(prepared.group_flags_packed(rays, (), group_count=3), (False, False, False))
 
-    def test_empty_prepared_pose_index_buffer_do_not_need_native_library(self) -> None:
-        with rt.prepare_optix_pose_indices_2d(()) as pose_indices:
+    def test_empty_prepared_group_index_buffer_do_not_need_native_library(self) -> None:
+        with rt.prepare_optix_group_indices_2d(()) as group_indices:
             with rt.prepare_optix_rays_2d(()) as rays:
                 with rt.prepare_optix_ray_triangle_any_hit_2d(()) as prepared:
                     self.assertEqual(
-                        prepared.pose_flags_prepared_indices(rays, pose_indices, pose_count=3),
+                        prepared.group_flags_prepared_indices(rays, group_indices, group_count=3),
                         (False, False, False),
                     )
 
-    def test_closed_prepared_pose_index_buffer_is_rejected(self) -> None:
-        pose_indices = rt.prepare_optix_pose_indices_2d(())
-        pose_indices.close()
+    def test_closed_prepared_group_index_buffer_is_rejected(self) -> None:
+        group_indices = rt.prepare_optix_group_indices_2d(())
+        group_indices.close()
         with rt.prepare_optix_rays_2d(()) as rays:
             with rt.prepare_optix_ray_triangle_any_hit_2d(()) as prepared:
-                with self.assertRaisesRegex(RuntimeError, "pose-index buffer is closed"):
-                    prepared.pose_flags_prepared_indices(rays, pose_indices, pose_count=1)
+                with self.assertRaisesRegex(RuntimeError, "group-index buffer is closed"):
+                    prepared.group_flags_prepared_indices(rays, group_indices, group_count=1)
 
-    def test_prepared_pose_flags_rejects_bad_pose_index_length(self) -> None:
+    def test_prepared_group_flags_rejects_bad_group_index_length(self) -> None:
         with rt.prepare_optix_rays_2d(()) as rays:
             with rt.prepare_optix_ray_triangle_any_hit_2d(()) as prepared:
-                with self.assertRaisesRegex(ValueError, "pose_indices length"):
-                    prepared.pose_flags_packed(rays, (0,), pose_count=1)
+                with self.assertRaisesRegex(ValueError, "group_indices length"):
+                    prepared.group_flags_packed(rays, (0,), group_count=1)
 
     def test_pack_rays_2d_from_arrays_preserves_c_abi_records(self) -> None:
         np = unittest.import_module("numpy") if hasattr(unittest, "import_module") else None
@@ -218,9 +218,9 @@ class Goal672OptixPreparedAnyHitPackedCountNativeTest(unittest.TestCase):
                 self.assertEqual(prepared.count(packed_rays), prepared.count(rays))
 
 
-@unittest.skipUnless(optix_prepared_pose_flags_available(), "current OptiX packed pose-flag any-hit symbols are not available")
-class Goal753OptixPreparedAnyHitPoseFlagsNativeTest(unittest.TestCase):
-    def test_packed_prepared_pose_flags_match_cpu_anyhit_rows(self) -> None:
+@unittest.skipUnless(optix_prepared_group_flags_available(), "current OptiX packed group-flag any-hit symbols are not available")
+class Goal753OptixPreparedAnyHitGroupFlagsNativeTest(unittest.TestCase):
+    def test_packed_prepared_group_flags_match_cpu_anyhit_rows(self) -> None:
         triangles = (
             rt.Triangle(id=10, x0=-0.1, y0=0.1, x1=0.1, y1=0.1, x2=0.0, y2=0.2),
         )
@@ -229,7 +229,7 @@ class Goal753OptixPreparedAnyHitPoseFlagsNativeTest(unittest.TestCase):
             rt.Ray2D(id=1001, ox=1.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
             rt.Ray2D(id=2000, ox=2.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
         )
-        pose_indices = (0, 0, 1)
+        group_indices = (0, 0, 1)
         expected_rows = tuple(rt.ray_triangle_any_hit_cpu(rays, triangles))
         expected = (
             any(bool(row["any_hit"]) for row in expected_rows[:2]),
@@ -238,12 +238,12 @@ class Goal753OptixPreparedAnyHitPoseFlagsNativeTest(unittest.TestCase):
         self.assertEqual(expected, (True, False))
         with rt.prepare_optix_ray_triangle_any_hit_2d(triangles) as prepared:
             with rt.prepare_optix_rays_2d(rays) as packed_rays:
-                self.assertEqual(prepared.pose_flags_packed(packed_rays, pose_indices, pose_count=2), expected)
+                self.assertEqual(prepared.group_flags_packed(packed_rays, group_indices, group_count=2), expected)
 
 
-@unittest.skipUnless(optix_prepared_pose_indices_available(), "current OptiX prepared pose-index symbols are not available")
-class Goal767OptixPreparedPoseIndicesNativeTest(unittest.TestCase):
-    def test_prepared_pose_indices_match_plain_pose_indices(self) -> None:
+@unittest.skipUnless(optix_prepared_group_indices_available(), "current OptiX prepared group-index symbols are not available")
+class Goal767OptixPreparedGroupIndicesNativeTest(unittest.TestCase):
+    def test_prepared_group_indices_match_plain_group_indices(self) -> None:
         triangles = (
             rt.Triangle(id=10, x0=-0.1, y0=0.1, x1=0.1, y1=0.1, x2=0.0, y2=0.2),
         )
@@ -252,22 +252,22 @@ class Goal767OptixPreparedPoseIndicesNativeTest(unittest.TestCase):
             rt.Ray2D(id=1001, ox=1.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
             rt.Ray2D(id=2000, ox=2.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
         )
-        pose_indices = (0, 0, 1)
+        group_indices = (0, 0, 1)
         with rt.prepare_optix_ray_triangle_any_hit_2d(triangles) as prepared:
             with rt.prepare_optix_rays_2d(rays) as packed_rays:
-                with rt.prepare_optix_pose_indices_2d(pose_indices) as packed_pose_indices:
+                with rt.prepare_optix_group_indices_2d(group_indices) as packed_group_indices:
                     self.assertEqual(
-                        prepared.pose_flags_prepared_indices(packed_rays, packed_pose_indices, pose_count=2),
-                        prepared.pose_flags_packed(packed_rays, pose_indices, pose_count=2),
+                        prepared.group_flags_prepared_indices(packed_rays, packed_group_indices, group_count=2),
+                        prepared.group_flags_packed(packed_rays, group_indices, group_count=2),
                     )
                     self.assertEqual(
-                        prepared.pose_count_prepared_indices(packed_rays, packed_pose_indices, pose_count=2),
+                        prepared.group_count_prepared_indices(packed_rays, packed_group_indices, group_count=2),
                         sum(
                             1
-                            for flag in prepared.pose_flags_packed(
+                            for flag in prepared.group_flags_packed(
                                 packed_rays,
-                                pose_indices,
-                                pose_count=2,
+                                group_indices,
+                                group_count=2,
                             )
                             if flag
                         ),

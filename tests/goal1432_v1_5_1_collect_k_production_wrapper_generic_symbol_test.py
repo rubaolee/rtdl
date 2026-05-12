@@ -77,7 +77,7 @@ class Goal1432V151CollectKProductionWrapperGenericSymbolTest(unittest.TestCase):
             backend="embree",
             library=_FakeLibrary(),
             symbol_name="rtdl_embree_collect_k_bounded_i64",
-            candidate_source_symbol="rtdl_embree_collect_polygon_pair_candidates_bounded",
+            candidate_source_symbol="rtdl_embree_collect_shape_pair_candidates_bounded",
         )
 
         self.assertEqual(result["candidate_id_rows"], ((1, 10), (2, 20)))
@@ -85,7 +85,7 @@ class Goal1432V151CollectKProductionWrapperGenericSymbolTest(unittest.TestCase):
         self.assertEqual(result["native_generic_symbol"], "rtdl_embree_collect_k_bounded_i64")
         self.assertEqual(
             result["native_candidate_source_symbol"],
-            "rtdl_embree_collect_polygon_pair_candidates_bounded",
+            "rtdl_embree_collect_shape_pair_candidates_bounded",
         )
         self.assertFalse(result["native_i64_adapter"])
         self.assertTrue(result["binary_symbol_validation_present"])
@@ -104,7 +104,7 @@ class Goal1432V151CollectKProductionWrapperGenericSymbolTest(unittest.TestCase):
                 backend="embree",
                 library=_FakeLibrary(),
                 symbol_name="rtdl_embree_collect_k_bounded_i64",
-                candidate_source_symbol="rtdl_embree_collect_polygon_pair_candidates_bounded",
+                candidate_source_symbol="rtdl_embree_collect_shape_pair_candidates_bounded",
             )
 
     def test_embree_and_optix_wrappers_call_generic_native_symbols(self) -> None:
@@ -120,7 +120,7 @@ class Goal1432V151CollectKProductionWrapperGenericSymbolTest(unittest.TestCase):
                 self.assertIn("collect_native_i64_rows_with_backend_symbol(", function_source)
                 self.assertIn(f'symbol_name="rtdl_{backend}_collect_k_bounded_i64"', function_source)
                 self.assertIn(
-                    f'candidate_source_symbol="rtdl_{backend}_collect_polygon_pair_candidates_bounded"',
+                    f'candidate_source_symbol="rtdl_{backend}_collect_shape_pair_candidates_bounded"',
                     function_source,
                 )
                 self.assertIn('"native_generic_symbol"', function_source)

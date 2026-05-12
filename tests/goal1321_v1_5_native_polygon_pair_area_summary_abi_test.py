@@ -13,8 +13,8 @@ class Goal1321V15NativePolygonPairAreaSummaryAbiTest(unittest.TestCase):
         api = Path("src/native/oracle/rtdl_oracle_api.cpp").read_text(encoding="utf-8")
 
         self.assertIn("struct RtdlPolygonPairAreaSummary", abi)
-        self.assertIn("rtdl_native_reduce_polygon_pair_exact_area_summary", abi)
-        self.assertIn("RTDL_ORACLE_EXPORT int rtdl_native_reduce_polygon_pair_exact_area_summary", api)
+        self.assertIn("rtdl_native_reduce_shape_pair_exact_area_summary", abi)
+        self.assertIn("RTDL_ORACLE_EXPORT int rtdl_native_reduce_shape_pair_exact_area_summary", api)
         self.assertNotIn("rtdl_native_run_polygon_set_jaccard_fast", api)
 
     def test_native_area_summary_matches_existing_jaccard_refinement(self) -> None:

@@ -44,19 +44,18 @@ class Goal1658PythonRtdlProductCheckpointTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
-    def test_native_audit_detects_legacy_app_shaped_exports(self) -> None:
+    def test_native_audit_no_longer_detects_legacy_app_shaped_exports(self) -> None:
         audit = native_symbol_purity_audit(repo_root=ROOT)
         self.assertGreaterEqual(len(audit["native_symbols"]), 100)
-        self.assertGreaterEqual(len(audit["legacy_engine_customized_symbols"]), 40)
+        self.assertEqual(len(audit["legacy_engine_customized_symbols"]), 0)
         symbols = {row.symbol for row in audit["legacy_engine_customized_symbols"]}
         for symbol in [
-            "rtdl_optix_run_pip",
-            "rtdl_optix_run_overlay",
-            "rtdl_optix_db_dataset_compact_summary_batch",
-            "rtdl_embree_run_segment_polygon_hitcount",
+            "rtdl_optix_run_shape_pair_relation_flags",
+            "rtdl_optix_run_segment_pair_intersection",
+            "rtdl_embree_run_edge_neighbor_intersection_packet",
         ]:
             with self.subTest(symbol=symbol):
-                self.assertIn(symbol, symbols)
+                self.assertNotIn(symbol, symbols)
         self.assertFalse(audit["pure_native_app_contract_ready"])
 
     def test_app_matrix_separates_pure_target_from_blockers(self) -> None:

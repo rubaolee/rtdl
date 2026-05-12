@@ -13,20 +13,27 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class Goal722EmbreeHausdorffSummaryTest(unittest.TestCase):
     def test_native_sources_export_directed_hausdorff_summary(self):
+        # Goal1682 migrated the native export from
+        # `rtdl_embree_run_directed_hausdorff_2d` to the generic
+        # `rtdl_embree_run_max_distance_nearest_candidate_2d`; Hausdorff
+        # semantics remain in the Python `directed_hausdorff_2d_embree`
+        # helper. The native row struct keeps the historical
+        # `RtdlDirectedHausdorffRow` C++ type name (CamelCase, not flagged
+        # by the strict `\brtdl_` scan).
         required = {
             "src/native/embree/rtdl_embree_prelude.h": [
                 "RtdlDirectedHausdorffRow",
-                "rtdl_embree_run_directed_hausdorff_2d",
+                "rtdl_embree_run_max_distance_nearest_candidate_2d",
             ],
             "src/native/embree/rtdl_embree_api.cpp": [
-                "rtdl_embree_run_directed_hausdorff_2d",
+                "rtdl_embree_run_max_distance_nearest_candidate_2d",
                 "KnnRowsQueryState state",
                 "RtdlDirectedHausdorffRow best",
             ],
             "src/rtdsl/embree_runtime.py": [
                 "_RtdlDirectedHausdorffRow",
                 "directed_hausdorff_2d_embree",
-                "rtdl_embree_run_directed_hausdorff_2d",
+                "rtdl_embree_run_max_distance_nearest_candidate_2d",
             ],
             "examples/rtdl_hausdorff_distance_app.py": [
                 "embree_result_mode",

@@ -1,4 +1,4 @@
-#include "rtdl_oracle_internal.h"
+﻿#include "rtdl_oracle_internal.h"
 
 #include <map>
 #include <set>
@@ -178,12 +178,12 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_get_version(int* major_out, int* minor_out, i
   return 0;
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_lsi(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_pair_intersection(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
     size_t right_count,
-    RtdlLsiRow** rows_out,
+    RtdlSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -193,7 +193,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_lsi(
     }
     *rows_out = nullptr;
     *row_count_out = 0;
-    std::vector<RtdlLsiRow> rows = rtdl::oracle::oracle_lsi(
+    std::vector<RtdlSegmentPairIntersectionRow> rows = rtdl::oracle::oracle_segment_pair_intersection(
         rtdl::oracle::decode_segments(left, left_count),
         rtdl::oracle::decode_segments(right, right_count));
     *rows_out = rtdl::oracle::copy_rows_out(rows);
@@ -201,7 +201,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_lsi(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_pip(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_point_primitive_anyhit_packet(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlPolygonRef* polygons,
@@ -228,7 +228,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_pip(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_overlay(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_shape_pair_relation_flags(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -237,7 +237,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_overlay(
     size_t right_count,
     const double* right_vertices_xy,
     size_t right_vertex_xy_count,
-    RtdlOverlayRow** rows_out,
+    RtdlShapePairRelationRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -255,7 +255,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_overlay(
 
     std::vector<rtdl::oracle::Segment2D> left_segments = rtdl::oracle::segments_from_polygons(left_values);
     std::vector<rtdl::oracle::Segment2D> right_segments = rtdl::oracle::segments_from_polygons(right_values);
-    std::vector<RtdlLsiRow> lsi_hits = rtdl::oracle::oracle_lsi(left_segments, right_segments);
+    std::vector<RtdlSegmentPairIntersectionRow> segment_intersection_hits = rtdl::oracle::oracle_segment_pair_intersection(left_segments, right_segments);
 
     std::vector<rtdl::oracle::Point2D> left_points;
     left_points.reserve(left_values.size());
@@ -272,35 +272,35 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_overlay(
     std::vector<RtdlPipRow> left_in_right = rtdl::oracle::oracle_pip(left_points, right_values, false);
     std::vector<RtdlPipRow> right_in_left = rtdl::oracle::oracle_pip(right_points, left_values, false);
 
-    std::vector<RtdlOverlayRow> rows;
+    std::vector<RtdlShapePairRelationRow> rows;
     rows.reserve(left_values.size() * right_values.size());
     for (const rtdl::oracle::Polygon2D& left_polygon : left_values) {
       for (const rtdl::oracle::Polygon2D& right_polygon : right_values) {
-        uint32_t requires_lsi = 0;
-        for (const RtdlLsiRow& hit : lsi_hits) {
+        uint32_t requires_segment_intersection = 0;
+        for (const RtdlSegmentPairIntersectionRow& hit : segment_intersection_hits) {
           if (hit.left_id == left_polygon.id && hit.right_id == right_polygon.id) {
-            requires_lsi = 1;
+            requires_segment_intersection = 1;
             break;
           }
         }
 
-        uint32_t requires_pip = 0;
+        uint32_t requires_point_containment = 0;
         for (const RtdlPipRow& hit : left_in_right) {
           if (hit.point_id == left_polygon.id && hit.polygon_id == right_polygon.id && hit.contains == 1u) {
-            requires_pip = 1;
+            requires_point_containment = 1;
             break;
           }
         }
-        if (requires_pip == 0) {
+        if (requires_point_containment == 0) {
           for (const RtdlPipRow& hit : right_in_left) {
             if (hit.point_id == right_polygon.id && hit.polygon_id == left_polygon.id && hit.contains == 1u) {
-              requires_pip = 1;
+              requires_point_containment = 1;
               break;
             }
           }
         }
 
-        rows.push_back({left_polygon.id, right_polygon.id, requires_lsi, requires_pip});
+        rows.push_back({left_polygon.id, right_polygon.id, requires_segment_intersection, requires_point_containment});
       }
     }
 
@@ -344,7 +344,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_ray_hitcount(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_hitcount(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_shape_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -420,7 +420,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_hitcount(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_anyhit_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_shape_anyhit_rows(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -493,7 +493,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_anyhit_rows(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_pair_overlap_area_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_shape_pair_overlap_area_rows(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -591,7 +591,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_pair_overlap_area_rows(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_set_jaccard(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_shape_set_overlap_ratio(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -631,7 +631,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_set_jaccard(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs(
+RTDL_ORACLE_EXPORT int rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -702,7 +702,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pai
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
+RTDL_ORACLE_EXPORT int rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -778,7 +778,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_native_reduce_polygon_pair_exact_area_summary(
+RTDL_ORACLE_EXPORT int rtdl_native_reduce_shape_pair_exact_area_summary(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -1063,7 +1063,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_fixed_radius_rows(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_k_closest_hits(
     const RtdlPoint* query_points,
     size_t query_point_count,
     const RtdlPoint* search_points,
@@ -1124,7 +1124,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows_3d(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_k_closest_hits_3d(
     const RtdlPoint3D* query_points,
     size_t query_point_count,
     const RtdlPoint3D* search_points,
@@ -1186,7 +1186,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows_3d(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_k_closest_hits(
     const RtdlPoint* query_points,
     size_t query_point_count,
     const RtdlPoint* search_points,
@@ -1251,7 +1251,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows_3d(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_k_closest_hits_3d(
     const RtdlPoint3D* query_points,
     size_t query_point_count,
     const RtdlPoint3D* search_points,
@@ -1317,7 +1317,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows_3d(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_knn_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_k_closest_hits(
     const RtdlKnnNeighborRow* rows,
     size_t row_count,
     RtdlKnnSummaryRow** rows_out,
@@ -1355,11 +1355,11 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_knn_rows(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_expand(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_frontier_edge_traversal_packet(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlFrontierVertex* frontier,
     size_t frontier_count,
     const uint32_t* visited,
@@ -1382,7 +1382,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_expand(
     if (row_offsets == nullptr) {
       throw std::runtime_error("CSR graph row_offsets pointer must not be null");
     }
-    if (column_index_count > 0 && column_indices == nullptr) {
+    if (edge_index_count > 0 && column_indices == nullptr) {
       throw std::runtime_error("CSR graph column_indices pointer must not be null");
     }
     if (frontier_count > 0 && frontier == nullptr) {
@@ -1394,7 +1394,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_expand(
     if (row_offsets[0] != 0u) {
       throw std::runtime_error("CSR graph row_offsets must start at 0");
     }
-    if (row_offsets[row_offset_count - 1] != column_index_count) {
+    if (row_offsets[row_offset_count - 1] != edge_index_count) {
       throw std::runtime_error("CSR graph final row_offset must equal edge_count");
     }
 
@@ -1404,7 +1404,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_expand(
         throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
       }
     }
-    for (size_t index = 0; index < column_index_count; ++index) {
+    for (size_t index = 0; index < edge_index_count; ++index) {
       if (column_indices[index] >= vertex_count) {
         throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
       }
@@ -1459,11 +1459,11 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_expand(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_probe(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_cycle_candidates(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlEdgeSeed* seeds,
     size_t seed_count,
     uint32_t enforce_id_ascending,
@@ -1485,7 +1485,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_probe(
     if (row_offsets == nullptr) {
       throw std::runtime_error("CSR graph row_offsets pointer must not be null");
     }
-    if (column_index_count > 0 && column_indices == nullptr) {
+    if (edge_index_count > 0 && column_indices == nullptr) {
       throw std::runtime_error("CSR graph column_indices pointer must not be null");
     }
     if (seed_count > 0 && seeds == nullptr) {
@@ -1494,7 +1494,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_probe(
     if (row_offsets[0] != 0u) {
       throw std::runtime_error("CSR graph row_offsets must start at 0");
     }
-    if (row_offsets[row_offset_count - 1] != column_index_count) {
+    if (row_offsets[row_offset_count - 1] != edge_index_count) {
       throw std::runtime_error("CSR graph final row_offset must equal edge_count");
     }
 
@@ -1504,7 +1504,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_probe(
         throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
       }
     }
-    for (size_t index = 0; index < column_index_count; ++index) {
+    for (size_t index = 0; index < edge_index_count; ++index) {
       if (column_indices[index] >= vertex_count) {
         throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
       }
@@ -1574,7 +1574,7 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_probe(
   }, error_out, error_size);
 }
 
-RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_bfs_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_frontier_traversal_rows(
     const RtdlBfsExpandRow* rows,
     size_t row_count,
     RtdlBfsSummaryRow** rows_out,

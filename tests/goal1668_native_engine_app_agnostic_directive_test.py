@@ -22,10 +22,9 @@ LEAKAGE_RE = re.compile(
 
 CURRENT_DIRTY_BASELINE_SYMBOLS = 96
 CURRENT_DIRTY_BASELINE_REQUIRED_SYMBOLS = (
-    "rtdl_optix_db_dataset_compact_summary_batch",
-    "rtdl_optix_prepare_pose_indices_2d",
-    "rtdl_embree_run_directed_hausdorff_2d",
-    "rtdl_optix_run_bfs_expand",
+    "RTDL_DB_KIND_INT64",
+    "RTDL_DB_OP_BETWEEN",
+    "RTDL_DB_OP_EQ",
 )
 
 
@@ -68,9 +67,8 @@ class Goal1668NativeEngineAppAgnosticDirectiveTest(unittest.TestCase):
     def test_current_native_tree_still_has_known_leakage_until_superseded(self) -> None:
         hits = _native_leakage_symbols()
 
-        # This records representative current dirty-state symbols accepted by
-        # Goal1668. When the v1.7/v2.0 migration removes or quarantines them,
-        # update this baseline and enable the forward release gate below.
+        # This now records the remaining strict-regex false positives after
+        # the tracked lowercase callable/export ABI cleanup.
         for required in CURRENT_DIRTY_BASELINE_REQUIRED_SYMBOLS:
             with self.subTest(required=required):
                 self.assertIn(required, hits)

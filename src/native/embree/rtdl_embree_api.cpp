@@ -1,4 +1,4 @@
-#if defined(_WIN32)
+﻿#if defined(_WIN32)
 #  define RTDL_EMBREE_EXPORT extern "C" __declspec(dllexport)
 #else
 #  define RTDL_EMBREE_EXPORT extern "C"
@@ -399,7 +399,7 @@ void db_validate_db_inputs(
     const RtdlDbClause* clauses,
     size_t clause_count) {
   if (field_count == 0 || fields == nullptr || row_values == nullptr) {
-    throw std::runtime_error("DB table inputs must not be null");
+    throw std::runtime_error("dataset inputs must not be null");
   }
   if (clause_count > 0 && clauses == nullptr) {
     throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
@@ -430,7 +430,7 @@ size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t scalar_cou
   return count;
 }
 
-void db_copy_dataset_table(
+void db_copy_dataset_payload(
     EmbreeDbDatasetImpl& dataset,
     const RtdlDbField* fields,
     size_t field_count,
@@ -460,65 +460,65 @@ void db_copy_dataset_table(
 }
 
 void db_validate_columnar_inputs(
-    const RtdlDbColumn* columns,
-    size_t column_count,
+    const RtdlPayloadField* fields,
+    size_t field_count,
     size_t row_count) {
-  if (column_count == 0 || columns == nullptr) {
-    throw std::runtime_error("DB columnar inputs must not be null");
+  if (field_count == 0 || fields == nullptr) {
+    throw std::runtime_error("payload fields must not be null");
   }
   db_throw_if_row_count_exceeds_limit(row_count);
-  for (size_t column_index = 0; column_index < column_count; ++column_index) {
-    const RtdlDbColumn& column = columns[column_index];
-    if (column.name == nullptr) {
-      throw std::runtime_error("DB column name must not be null");
+  for (size_t field_index = 0; field_index < field_count; ++field_index) {
+    const RtdlPayloadField& field = fields[field_index];
+    if (field.name == nullptr) {
+      throw std::runtime_error("field name must not be null");
     }
-    if ((column.kind == kDbKindInt64 || column.kind == kDbKindBool) && column.int_values == nullptr) {
-      throw std::runtime_error("DB integer/bool column values must not be null");
+    if ((field.kind == kDbKindInt64 || field.kind == kDbKindBool) && field.int_values == nullptr) {
+      throw std::runtime_error("field integer/bool values must not be null");
     }
-    if (column.kind == kDbKindFloat64 && column.double_values == nullptr) {
-      throw std::runtime_error("DB float column values must not be null");
+    if (field.kind == kDbKindFloat64 && field.double_values == nullptr) {
+      throw std::runtime_error("field float values must not be null");
     }
-    if (column.kind == kDbKindText && column.string_values == nullptr) {
-      throw std::runtime_error("DB text column values must not be null");
+    if (field.kind == kDbKindText && field.string_values == nullptr) {
+      throw std::runtime_error("field text values must not be null");
     }
   }
 }
 
-void db_copy_dataset_columnar_table(
+void db_copy_dataset_columnar_payload(
     EmbreeDbDatasetImpl& dataset,
-    const RtdlDbColumn* columns,
-    size_t column_count,
+    const RtdlPayloadField* fields,
+    size_t field_count,
     size_t row_count) {
-  dataset.field_names.reserve(column_count);
-  for (size_t column_index = 0; column_index < column_count; ++column_index) {
-    dataset.field_names.emplace_back(columns[column_index].name == nullptr ? "" : columns[column_index].name);
+  dataset.field_names.reserve(field_count);
+  for (size_t field_index = 0; field_index < field_count; ++field_index) {
+    dataset.field_names.emplace_back(fields[field_index].name == nullptr ? "" : fields[field_index].name);
   }
-  dataset.fields.reserve(column_count);
-  for (size_t column_index = 0; column_index < column_count; ++column_index) {
-    dataset.fields.push_back({dataset.field_names[column_index].c_str(), columns[column_index].kind});
+  dataset.fields.reserve(field_count);
+  for (size_t field_index = 0; field_index < field_count; ++field_index) {
+    dataset.fields.push_back({dataset.field_names[field_index].c_str(), fields[field_index].kind});
   }
 
   size_t string_count = 0;
-  for (size_t column_index = 0; column_index < column_count; ++column_index) {
-    if (columns[column_index].kind == kDbKindText) {
+  for (size_t field_index = 0; field_index < field_count; ++field_index) {
+    if (fields[field_index].kind == kDbKindText) {
       string_count += row_count;
     }
   }
   dataset.scalar_strings.reserve(string_count);
-  dataset.row_values.reserve(row_count * column_count);
+  dataset.row_values.reserve(row_count * field_count);
   for (size_t row_index = 0; row_index < row_count; ++row_index) {
-    for (size_t column_index = 0; column_index < column_count; ++column_index) {
-      const RtdlDbColumn& column = columns[column_index];
+    for (size_t field_index = 0; field_index < field_count; ++field_index) {
+      const RtdlPayloadField& field = fields[field_index];
       RtdlDbScalar value{};
-      value.kind = column.kind;
-      if (column.kind == kDbKindFloat64) {
-        value.double_value = column.double_values[row_index];
-      } else if (column.kind == kDbKindText) {
-        const char* text = column.string_values[row_index];
+      value.kind = field.kind;
+      if (field.kind == kDbKindFloat64) {
+        value.double_value = field.double_values[row_index];
+      } else if (field.kind == kDbKindText) {
+        const char* text = field.string_values[row_index];
         dataset.scalar_strings.emplace_back(text == nullptr ? "" : text);
         value.string_value = dataset.scalar_strings.back().c_str();
       } else {
-        value.int_value = column.int_values[row_index];
+        value.int_value = field.int_values[row_index];
       }
       dataset.row_values.push_back(value);
     }
@@ -570,12 +570,12 @@ RTDL_EMBREE_EXPORT void rtdl_embree_configure_threads(size_t thread_count) {
   g_embree_thread_override.store(thread_count);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
     size_t right_count,
-    RtdlLsiRow** rows_out,
+    RtdlSegmentPairIntersectionRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -614,18 +614,18 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
       build_order_by_primitive[index] = index;
     }
 
-    std::vector<RtdlLsiRow> rows = run_query_ranges<RtdlLsiRow>(
+    std::vector<RtdlSegmentPairIntersectionRow> rows = run_query_ranges<RtdlSegmentPairIntersectionRow>(
         left_segments.size(),
-        [&](size_t begin, size_t end, std::vector<RtdlLsiRow>& local_rows) {
+        [&](size_t begin, size_t end, std::vector<RtdlSegmentPairIntersectionRow>& local_rows) {
           for (size_t left_index = begin; left_index < end; ++left_index) {
             const Segment2D& probe = left_segments[left_index];
             Vec2 direction = sub(probe.b, probe.a);
             if (std::fabs(direction.x) < kSegmentIntersectionEps && std::fabs(direction.y) < kSegmentIntersectionEps) {
               continue;
             }
-            std::vector<std::pair<size_t, RtdlLsiRow>> query_rows;
-            LsiQueryState state {&probe, &query_rows, &build_order_by_primitive};
-            g_query_kind = QueryKind::kLsi;
+            std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>> query_rows;
+            SegmentPairIntersectionQueryState state {&probe, &query_rows, &build_order_by_primitive};
+            g_query_kind = QueryKind::kSegmentPairIntersection;
             g_query_state = &state;
             RTCRayHit rayhit;
             const double endpoint_pad = 1.0e-4;
@@ -666,7 +666,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_pip(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_point_primitive_anyhit_packet(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlPolygonRef* polygons,
@@ -768,7 +768,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_pip(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_shape_pair_relation_flags(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -777,7 +777,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
     size_t right_count,
     const double* right_vertices_xy,
     size_t right_vertex_xy_count,
-    RtdlOverlayRow** rows_out,
+    RtdlShapePairRelationRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -803,12 +803,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
 
-    std::vector<RtdlOverlayRow> rows;
+    std::vector<RtdlShapePairRelationRow> rows;
     rows.reserve(left_values.size() * right_values.size());
     for (const Polygon2D& left_polygon : left_values) {
-      std::unordered_map<uint32_t, OverlayPairFlags> flags_by_right_id;
-      OverlayQueryState state {&left_polygon, &flags_by_right_id};
-      g_query_kind = QueryKind::kOverlay;
+      std::unordered_map<uint32_t, ShapePairRelationFlags> flags_by_right_id;
+      ShapePairRelationQueryState state {&left_polygon, &flags_by_right_id};
+      g_query_kind = QueryKind::kShapePairRelation;
       g_query_state = &state;
       for (size_t i = 0; i < left_polygon.vertices.size(); ++i) {
         Vec2 start = left_polygon.vertices[i];
@@ -821,8 +821,8 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
         rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       }
       for (const Polygon2D& right_polygon : right_values) {
-        OverlayPairFlags flags = flags_by_right_id[right_polygon.id];
-        rows.push_back({left_polygon.id, right_polygon.id, flags.requires_lsi, flags.requires_pip});
+        ShapePairRelationFlags flags = flags_by_right_id[right_polygon.id];
+        rows.push_back({left_polygon.id, right_polygon.id, flags.requires_segment_intersection, flags.requires_point_containment});
       }
     }
     g_query_kind = QueryKind::kNone;
@@ -1160,7 +1160,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_closest_hit_3d(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_hitcount(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_shape_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -1239,7 +1239,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_hitcount(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_anyhit_rows(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_shape_anyhit_rows(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -1314,7 +1314,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_anyhit_rows(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_collect_polygon_pair_candidates_bounded(
+RTDL_EMBREE_EXPORT int rtdl_embree_collect_shape_pair_candidates_bounded(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -1345,9 +1345,9 @@ RTDL_EMBREE_EXPORT int rtdl_embree_collect_polygon_pair_candidates_bounded(
     std::vector<RtdlPolygonPairCandidate> candidates;
     for (const Polygon2D& left_polygon : left_values) {
       for (const Polygon2D& right_polygon : right_values) {
-        bool requires_lsi = false;
-        bool requires_pip = false;
-        if (polygon_pair_flags(left_polygon, right_polygon, &requires_lsi, &requires_pip)) {
+        bool requires_segment_intersection = false;
+        bool requires_point_containment = false;
+        if (polygon_pair_flags(left_polygon, right_polygon, &requires_segment_intersection, &requires_point_containment)) {
           candidates.push_back({left_polygon.id, right_polygon.id});
         }
       }
@@ -1849,7 +1849,7 @@ RTDL_EMBREE_EXPORT void rtdl_embree_fixed_radius_count_threshold_2d_destroy(
   delete impl;
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_knn_rows_2d_create(
+RTDL_EMBREE_EXPORT int rtdl_embree_k_closest_hits_2d_create(
     const RtdlPoint* search_points,
     size_t search_count,
     RtdlEmbreeKnnRows2D** handle_out,
@@ -1870,7 +1870,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_knn_rows_2d_create(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_knn_rows_2d_run(
+RTDL_EMBREE_EXPORT int rtdl_embree_k_closest_hits_2d_run(
     RtdlEmbreeKnnRows2D* handle,
     const RtdlPoint* query_points,
     size_t query_count,
@@ -1944,13 +1944,13 @@ RTDL_EMBREE_EXPORT int rtdl_embree_knn_rows_2d_run(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT void rtdl_embree_knn_rows_2d_destroy(
+RTDL_EMBREE_EXPORT void rtdl_embree_k_closest_hits_2d_destroy(
     RtdlEmbreeKnnRows2D* handle) {
   auto* impl = reinterpret_cast<PreparedKnnRows2DImpl*>(handle);
   delete impl;
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_k_closest_hits(
     const RtdlPoint* query_points,
     size_t query_count,
     const RtdlPoint* search_points,
@@ -2038,7 +2038,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows_3d(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_k_closest_hits_3d(
     const RtdlPoint3D* query_points,
     size_t query_count,
     const RtdlPoint3D* search_points,
@@ -2126,7 +2126,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows_3d(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_directed_hausdorff_2d(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_max_distance_nearest_candidate_2d(
     const RtdlPoint* query_points,
     size_t query_count,
     const RtdlPoint* search_points,
@@ -2221,11 +2221,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_directed_hausdorff_2d(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_frontier_edge_traversal_packet(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlFrontierVertex* frontier,
     size_t frontier_count,
     const uint32_t* visited,
@@ -2248,7 +2248,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
     if (row_offsets == nullptr) {
       throw std::runtime_error("CSR graph row_offsets pointer must not be null");
     }
-    if (column_index_count > 0 && column_indices == nullptr) {
+    if (edge_index_count > 0 && column_indices == nullptr) {
       throw std::runtime_error("CSR graph column_indices pointer must not be null");
     }
     if (frontier_count > 0 && frontier == nullptr) {
@@ -2260,7 +2260,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
     if (row_offsets[0] != 0u) {
       throw std::runtime_error("CSR graph row_offsets must start at 0");
     }
-    if (row_offsets[row_offset_count - 1] != column_index_count) {
+    if (row_offsets[row_offset_count - 1] != edge_index_count) {
       throw std::runtime_error("CSR graph final row_offset must equal edge_count");
     }
 
@@ -2270,7 +2270,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
         throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
       }
     }
-    for (size_t index = 0; index < column_index_count; ++index) {
+    for (size_t index = 0; index < edge_index_count; ++index) {
       if (column_indices[index] >= vertex_count) {
         throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
       }
@@ -2285,7 +2285,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
     }
 
     std::vector<GraphEdgePoint> edge_points;
-    edge_points.reserve(column_index_count);
+    edge_points.reserve(edge_index_count);
     for (uint32_t src_vertex = 0; src_vertex < vertex_count; ++src_vertex) {
       const size_t start = row_offsets[src_vertex];
       const size_t end = row_offsets[src_vertex + 1];
@@ -2355,11 +2355,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet(
     const uint32_t* row_offsets,
     size_t row_offset_count,
     const uint32_t* column_indices,
-    size_t column_index_count,
+    size_t edge_index_count,
     const RtdlEdgeSeed* seeds,
     size_t seed_count,
     uint32_t enforce_id_ascending,
@@ -2381,7 +2381,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
     if (row_offsets == nullptr) {
       throw std::runtime_error("CSR graph row_offsets pointer must not be null");
     }
-    if (column_index_count > 0 && column_indices == nullptr) {
+    if (edge_index_count > 0 && column_indices == nullptr) {
       throw std::runtime_error("CSR graph column_indices pointer must not be null");
     }
     if (seed_count > 0 && seeds == nullptr) {
@@ -2390,7 +2390,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
     if (row_offsets[0] != 0u) {
       throw std::runtime_error("CSR graph row_offsets must start at 0");
     }
-    if (row_offsets[row_offset_count - 1] != column_index_count) {
+    if (row_offsets[row_offset_count - 1] != edge_index_count) {
       throw std::runtime_error("CSR graph final row_offset must equal edge_count");
     }
 
@@ -2400,14 +2400,14 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
         throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
       }
     }
-    for (size_t index = 0; index < column_index_count; ++index) {
+    for (size_t index = 0; index < edge_index_count; ++index) {
       if (column_indices[index] >= vertex_count) {
         throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
       }
     }
 
     std::vector<GraphEdgePoint> edge_points;
-    edge_points.reserve(column_index_count);
+    edge_points.reserve(edge_index_count);
     for (uint32_t src_vertex = 0; src_vertex < vertex_count; ++src_vertex) {
       const size_t start = row_offsets[src_vertex];
       const size_t end = row_offsets[src_vertex + 1];
@@ -2540,7 +2540,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
     *rows_out = nullptr;
     *row_count_out = 0;
     if (field_count == 0 || fields == nullptr || row_values == nullptr) {
-      throw std::runtime_error("DB table inputs must not be null");
+      throw std::runtime_error("dataset inputs must not be null");
     }
     if (clause_count > 0 && clauses == nullptr) {
       throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
@@ -2780,7 +2780,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create(
+RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create(
     const RtdlDbField* fields,
     size_t field_count,
     const RtdlDbScalar* row_values,
@@ -2799,7 +2799,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create(
 
     EmbreeDbDatasetImpl* dataset = new EmbreeDbDatasetImpl();
     try {
-      db_copy_dataset_table(*dataset, fields, field_count, row_values, row_count);
+      db_copy_dataset_payload(*dataset, fields, field_count, row_values, row_count);
 
       std::vector<const char*> primary_names;
       if (primary_field_count > 0) {
@@ -2842,9 +2842,9 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create_columnar(
-    const RtdlDbColumn* columns,
-    size_t column_count,
+RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create_from_columns(
+    const RtdlPayloadField* fields,
+    size_t field_count,
     size_t row_count,
     const char* const* primary_fields,
     size_t primary_field_count,
@@ -2856,11 +2856,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create_columnar(
       throw std::runtime_error("dataset output pointer must not be null");
     }
     *dataset_out = nullptr;
-    db_validate_columnar_inputs(columns, column_count, row_count);
+    db_validate_columnar_inputs(fields, field_count, row_count);
 
     EmbreeDbDatasetImpl* dataset = new EmbreeDbDatasetImpl();
     try {
-      db_copy_dataset_columnar_table(*dataset, columns, column_count, row_count);
+      db_copy_dataset_columnar_payload(*dataset, fields, field_count, row_count);
 
       std::vector<const char*> primary_names;
       if (primary_field_count > 0) {
@@ -2903,11 +2903,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create_columnar(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT void rtdl_embree_db_dataset_destroy(RtdlEmbreeDbDataset* dataset) {
+RTDL_EMBREE_EXPORT void rtdl_embree_columnar_payload_destroy(RtdlEmbreeDbDataset* dataset) {
   delete reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_conjunctive_scan(
+RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
     RtdlEmbreeDbDataset* dataset,
     const RtdlDbClause* clauses,
     size_t clause_count,
@@ -2957,7 +2957,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_conjunctive_scan(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_count(
+RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_count(
     RtdlEmbreeDbDataset* dataset,
     const RtdlDbClause* clauses,
     size_t clause_count,
@@ -3020,7 +3020,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_count(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_sum(
+RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_sum(
     RtdlEmbreeDbDataset* dataset,
     const RtdlDbClause* clauses,
     size_t clause_count,

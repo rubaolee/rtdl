@@ -31,7 +31,7 @@ Python runtime and test surface:
   - `rt.EdgeSet`
   - `rt.GraphCSR`
 - native symbol now used:
-  - `rtdl_embree_run_triangle_probe(...)`
+  - `rtdl_embree_run_edge_neighbor_intersection_packet(...)`
 - candidate generation is Embree-specific:
   - graph edges are encoded as Embree point-query primitives keyed by source vertex
   - each seed edge issues two point queries, one for each endpoint

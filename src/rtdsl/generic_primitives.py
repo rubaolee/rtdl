@@ -395,7 +395,7 @@ class GenericPreparedRayTriangleAnyHitScene:
         if prepare_rays is None:
             prepare_rays = self._prepare_rays
         if prepare_group_indices is None and self.backend == "optix":
-            from .optix_runtime import prepare_optix_pose_indices_2d as prepare_group_indices
+            from .optix_runtime import prepare_optix_group_indices_2d as prepare_group_indices
 
         normalized_group_indices = tuple(int(index) for index in group_indices)
         if any(index < 0 or index >= group_count for index in normalized_group_indices):
@@ -408,7 +408,7 @@ class GenericPreparedRayTriangleAnyHitScene:
             query_times = []
             group_flags: tuple[bool, ...] = tuple(False for _ in range(group_count))
 
-            if prepare_group_indices is not None and hasattr(self._prepared_scene, "pose_flags_prepared_indices"):
+            if prepare_group_indices is not None and hasattr(self._prepared_scene, "group_flags_prepared_indices"):
                 group_prepare_start = time.perf_counter()
                 with prepare_group_indices(normalized_group_indices) as prepared_group_indices:
                     group_prepare_sec = time.perf_counter() - group_prepare_start
@@ -416,10 +416,10 @@ class GenericPreparedRayTriangleAnyHitScene:
                         query_start = time.perf_counter()
                         group_flags = tuple(
                             bool(flag)
-                            for flag in self._prepared_scene.pose_flags_prepared_indices(
+                            for flag in self._prepared_scene.group_flags_prepared_indices(
                                 prepared_rays,
                                 prepared_group_indices,
-                                pose_count=group_count,
+                                group_count=group_count,
                             )
                         )
                         query_times.append(time.perf_counter() - query_start)
@@ -428,10 +428,10 @@ class GenericPreparedRayTriangleAnyHitScene:
                     query_start = time.perf_counter()
                     group_flags = tuple(
                         bool(flag)
-                        for flag in self._prepared_scene.pose_flags_packed(
+                        for flag in self._prepared_scene.group_flags_packed(
                             prepared_rays,
                             normalized_group_indices,
-                            pose_count=group_count,
+                            group_count=group_count,
                         )
                     )
                     query_times.append(time.perf_counter() - query_start)

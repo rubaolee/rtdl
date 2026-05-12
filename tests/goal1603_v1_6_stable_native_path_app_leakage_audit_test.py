@@ -49,23 +49,38 @@ class Goal1603V16StableNativePathAppLeakageAuditTest(unittest.TestCase):
         embree = _text(EMBREE_API)
         optix = _text(OPTIX_API)
         for symbol in [
-            "rtdl_embree_run_pip",
-            "rtdl_embree_run_overlay",
-            "rtdl_embree_run_segment_polygon_hitcount",
-            "rtdl_embree_collect_polygon_pair_candidates_bounded",
-            "rtdl_embree_run_directed_hausdorff_2d",
-            "rtdl_embree_run_bfs_expand",
+            "rtdl_embree_run_shape_pair_relation_flags",
+            "rtdl_embree_run_segment_shape_hitcount",
+            "rtdl_embree_collect_shape_pair_candidates_bounded",
         ]:
             self.assertIn(symbol, embree)
         for symbol in [
-            "rtdl_optix_run_pip",
-            "rtdl_optix_run_overlay",
-            "rtdl_optix_run_segment_polygon_hitcount",
-            "rtdl_optix_db_dataset_compact_summary_batch",
-            "rtdl_optix_prepare_pose_indices_2d",
-            "rtdl_optix_run_bfs_expand",
+            "rtdl_optix_run_shape_pair_relation_flags",
+            "rtdl_optix_run_segment_shape_hitcount",
+            "rtdl_optix_columnar_payload_compact_summary_batch",
         ]:
             self.assertIn(symbol, optix)
+        # Goal1681: pip-family native exports were migrated to generic
+        # point/primitive any-hit packet symbols. The pose-shaped OptiX
+        # exports were similarly migrated to generic group-shaped exports
+        # in Goal1673. Goal1682: the directed-Hausdorff Embree export was
+        # migrated to a generic max-distance nearest-candidate export with
+        # Hausdorff semantics retained at the Python layer.
+        self.assertNotIn("rtdl_embree_run_pip", embree)
+        self.assertNotIn("rtdl_optix_run_pip", optix)
+        self.assertIn("rtdl_embree_run_point_primitive_anyhit_packet", embree)
+        self.assertIn("rtdl_optix_run_point_primitive_anyhit_packet", optix)
+        self.assertNotIn("rtdl_optix_prepare_pose_indices_2d", optix)
+        self.assertIn("rtdl_optix_prepare_group_indices_2d", optix)
+        self.assertNotIn("rtdl_embree_run_directed_hausdorff_2d", embree)
+        self.assertIn("rtdl_embree_run_max_distance_nearest_candidate_2d", embree)
+        # Goal1688: BFS-shaped native exports were migrated to generic
+        # frontier/edge traversal packet symbols across Embree, HIPRT, OptiX,
+        # Oracle, and Vulkan (Apple RT discover symbols deferred).
+        self.assertNotIn("rtdl_embree_run_bfs_expand", embree)
+        self.assertNotIn("rtdl_optix_run_bfs_expand", optix)
+        self.assertIn("rtdl_embree_run_frontier_edge_traversal_packet", embree)
+        self.assertIn("rtdl_optix_run_frontier_edge_traversal_packet", optix)
 
     def test_goal1601_and_goal1603_block_full_native_app_agnostic_claims(self):
         goal1601 = " ".join(_text(GOAL1601_REPORT).split())

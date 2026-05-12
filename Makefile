@@ -72,8 +72,8 @@ else
 NVCC ?= /usr/bin/nvcc
 endif
 CXX_OPTIX ?= $(NVCC)
-GEOS_CFLAGS := $(shell pkg-config --cflags geos 2>/dev/null)
-GEOS_LIBS := $(shell pkg-config --libs geos 2>/dev/null)
+GEOS_CFLAGS := $(shell (pkg-config --cflags geos-c || pkg-config --cflags geos) 2>/dev/null)
+GEOS_LIBS := $(shell (pkg-config --libs geos-c || pkg-config --libs geos || if [ -f /usr/lib/x86_64-linux-gnu/libgeos_c.so ]; then echo -lgeos_c; fi) 2>/dev/null)
 
 HIPRT_CANDIDATES := \
 	$(HOME)/vendor/hiprt-official/hiprtSdk-2.2.0e68f54 \

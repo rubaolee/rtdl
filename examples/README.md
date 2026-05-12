@@ -17,6 +17,21 @@ Run source-tree examples from the repository root with `PYTHONPATH=src:.`.
 
 The quick rule: examples show runnable RTDL shapes; public speedup wording comes only from the support matrix and reviewed evidence for an exact bounded sub-path.
 
+## How To Read Examples In v1.8
+
+Each public example is a Python application wrapped around an RTDL kernel:
+
+| In the example | Meaning |
+| --- | --- |
+| app name, JSON fields, labels, command flags | Python-owned application surface |
+| `@rt.kernel(backend="rtdl")` | RTDL language contract |
+| `rt.input -> rt.traverse -> rt.refine -> rt.emit` | RTDL-owned kernel shape |
+| `--backend cpu_python_reference`, `embree`, `optix` | runtime engine selection |
+
+Do not infer that an app name in `examples/` means the native engine has an
+app-customized implementation. The v1.8 release-prep boundary keeps app logic
+in Python and keeps native runtime symbols generic.
+
 ## Directory Contents
 
 This directory contains:

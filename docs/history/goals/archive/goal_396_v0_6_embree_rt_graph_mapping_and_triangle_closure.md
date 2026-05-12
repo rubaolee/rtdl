@@ -14,7 +14,7 @@ The current Embree state before this goal was:
 
 - real geometry backend coverage exists
 - Embree graph `bfs` is closed
-- the native Embree surface declared `rtdl_embree_run_triangle_probe(...)`
+- the native Embree surface declared `rtdl_embree_run_edge_neighbor_intersection_packet(...)`
 - but there was no implementation or Python runtime dispatch for it
 
 ## Required Outcome

@@ -1,0 +1,156 @@
+{
+  "completed_count": 16,
+  "done": true,
+  "entry_count": 16,
+  "goal": "Goal1716",
+  "pod_workspace": "/workspace/rtdl_goal1714",
+  "results": [
+    {
+      "app": "database_analytics",
+      "elapsed_seconds": 3.880066156387329,
+      "output_json": "docs/reports/goal1659_db_sales_risk_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "      \"central\": 20000,\n                \"east\": 20000,\n                \"west\": 40000\n              },\n              \"risky_revenue_by_region\": {\n                \"central\": 5200000,\n                \"east\": 6200000,\n                \"west\": 8600000\n              }\n            }\n          }\n        }\n      },\n      \"prepared_session_prepare_total_sec\": 0.6630656756460667,\n      \"prepared_session_warm_query_sec\": {\n        \"max_sec\": 0.08039478585124016,\n        \"median_sec\": 0.0751455407589674,\n        \"min_sec\": 0.07330309599637985\n      },\n      \"reported_native_db_phase_totals_sec\": {\n        \"bitset_copyback_sec\": 0.0,\n        \"counter_status\": \"exported\",\n        \"emitted_count\": 0,\n        \"exact_filter_sec\": 0.0,\n        \"operation_count\": 1,\n        \"output_pack_sec\": 0.0,\n        \"raw_candidate_count\": 0,\n        \"sections\": {\n          \"sales_risk\": {\n            \"bitset_copyback_sec\": 0.0,\n            \"emitted_count\": 0,\n            \"exact_filter_sec\": 0.0,\n            \"operation_count\": 1,\n            \"output_pack_sec\": 0.0,\n            \"raw_candidate_count\": 0,\n            \"traversal_sec\": 0.0\n          }\n        },\n        \"traversal_sec\": 0.0\n      },\n      \"reported_native_db_phases_sec\": {\n        \"sales_risk\": {\n          \"compact_summary_batch\": {\n            \"risky_order_count_by_region\": {\n              \"bitset_copyback\": 1.4798e-05,\n              \"emitted_count\": 3,\n              \"exact_filter\": 0.006180381,\n              \"output_pack\": 0.001831105,\n              \"raw_candidate_count\": 80000,\n              \"traversal\": 0.017491256\n            },\n            \"risky_revenue_by_region\": {\n              \"bitset_copyback\": 1.4888e-05,\n              \"emitted_count\": 3,\n              \"exact_filter\": 0.006157678,\n              \"output_pack\": 0.001717177,\n              \"raw_candidate_count\": 80000,\n              \"traversal\": 0.017493901\n            },\n            \"risky_scan_count\": {\n              \"bitset_copyback\": 1.5619e-05,\n              \"emitted_count\": 80000,\n              \"exact_filter\": 0.00599616,\n              \"output_pack\": 1.1e-07,\n              \"raw_candidate_count\": 80000,\n              \"traversal\": 0.017497317\n            }\n          }\n        }\n      },\n      \"reported_prepare_phases_sec\": {\n        \"sales_risk\": {\n          \"input_construction_sec\": 0.04719631001353264,\n          \"prepare_sec\": 0.6158262304961681\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 0.6630417034029961,\n          \"scenario_count\": 1\n        }\n      },\n      \"reported_run_phase_modes\": {\n        \"sales_risk\": {\n          \"grouped_count\": \"batch_summary\",\n          \"grouped_sum\": \"batch_summary\",\n          \"scan\": \"batch_summary\"\n        }\n      },\n      \"reported_run_phase_totals_sec\": {\n        \"all_sections_python_summary_postprocess_sec\": 8.065253496170044e-06,\n        \"all_sections_query_sec\": 0.1496068611741066,\n        \"compact_summary_operation_count\": 3,\n        \"row_materializing_operation_count\": 0,\n        \"sections\": {\n          \"sales_risk\": {\n            \"compact_summary_operation_count\": 3,\n            \"python_summary_postprocess_sec\": 8.065253496170044e-06,\n            \"query_sec\": 0.1496068611741066,\n            \"row_materializing_operation_count\": 0\n          }\n        }\n      },\n      \"reported_run_phases_sec\": {\n        \"sales_risk\": {\n          \"python_summary_postprocess_sec\": 8.065253496170044e-06,\n          \"query_compact_summary_batch_sec\": 0.0748034305870533,\n          \"query_generic_db_compact_summary_batch_sec\": 0.0748034305870533\n        },\n        \"unified_session\": {\n          \"per_section_run_sec\": {\n            \"sales_risk\": 0.07495759427547455\n          }\n        }\n      },\n      \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n      \"speedup_one_shot_over_warm_query_median\": 20.29296890908327,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"sales_risk\",\n  \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+    },
+    {
+      "app": "graph_analytics",
+      "elapsed_seconds": 3.1139323711395264,
+      "output_json": "docs/reports/goal1659_graph_visibility_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"output_json\": \"docs/reports/goal1659_graph_visibility_optix.json\", \"status\": \"pass\", \"strict_pass\": true}\n"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "elapsed_seconds": 1.9265363216400146,
+      "output_json": "docs/reports/goal1659_service_coverage_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal1659_service_coverage_optix.json\", \"scenario\": \"service_coverage_gaps\"}\n"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "elapsed_seconds": 2.1684582233428955,
+      "output_json": "docs/reports/goal1659_event_hotspot_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal1659_event_hotspot_optix.json\", \"scenario\": \"event_hotspot_screening\"}\n"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "elapsed_seconds": 2.297666072845459,
+      "output_json": "docs/reports/goal1659_facility_coverage_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal1659_facility_coverage_optix.json\", \"scenario\": \"facility_service_coverage\"}\n"
+    },
+    {
+      "app": "road_hazard_screening",
+      "elapsed_seconds": 3.973726511001587,
+      "output_json": "docs/reports/goal1659_road_hazard_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"output_json\": \"docs/reports/goal1659_road_hazard_optix.json\", \"status\": \"pass\"}\n"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "elapsed_seconds": 1.6843082904815674,
+      "output_json": "docs/reports/goal1659_segment_polygon_hitcount_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"output_json\": \"docs/reports/goal1659_segment_polygon_hitcount_optix.json\", \"status\": \"pass\"}\n"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "elapsed_seconds": 1.6909306049346924,
+      "output_json": "docs/reports/goal1659_segment_polygon_anyhit_rows_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"output_json\": \"docs/reports/goal1659_segment_polygon_anyhit_rows_optix.json\", \"status\": \"pass\"}\n"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "elapsed_seconds": 6.081561326980591,
+      "output_json": "docs/reports/goal1659_pair_overlap_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"output_json\": \"docs/reports/goal1659_pair_overlap_optix.json\", \"status\": \"pass\"}\n"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "elapsed_seconds": 7.46244215965271,
+      "output_json": "docs/reports/goal1659_jaccard_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"output_json\": \"docs/reports/goal1659_jaccard_optix.json\", \"status\": \"diagnostic_chunk_config\"}\n"
+    },
+    {
+      "app": "hausdorff_distance",
+      "elapsed_seconds": 2.0740463733673096,
+      "output_json": "docs/reports/goal1659_hausdorff_threshold_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal1659_hausdorff_threshold_optix.json\", \"scenario\": \"hausdorff_threshold\"}\n"
+    },
+    {
+      "app": "ann_candidate_search",
+      "elapsed_seconds": 2.1781983375549316,
+      "output_json": "docs/reports/goal1659_ann_candidate_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal1659_ann_candidate_optix.json\", \"scenario\": \"ann_candidate_coverage\"}\n"
+    },
+    {
+      "app": "outlier_detection",
+      "elapsed_seconds": 3.669940710067749,
+      "output_json": "docs/reports/goal1659_outlier_fixed_radius_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "       \"result_mode\": \"threshold_count\"\n      },\n      \"copies\": 20000,\n      \"one_shot_total_sec\": null,\n      \"phase_contract\": {\n        \"native_warm_query\": \"prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back\",\n        \"postprocess\": \"none in scalar-summary mode\",\n        \"validation\": \"oracle construction/comparison timing; omitted when skip_validation=true\"\n      },\n      \"point_count\": 160000,\n      \"prepared_optix_close_sec\": 0.0008885711431503296,\n      \"prepared_optix_pack_points_sec\": 0.22279361635446548,\n      \"prepared_optix_postprocess_sec\": {\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0\n      },\n      \"prepared_optix_prepare_sec\": 0.6635173223912716,\n      \"prepared_optix_validation_sec\": {\n        \"max_sec\": 0.08510753512382507,\n        \"median_sec\": 0.04489055462181568,\n        \"min_sec\": 0.042945124208927155\n      },\n      \"prepared_optix_warm_query_sec\": {\n        \"max_sec\": 0.0023644715547561646,\n        \"median_sec\": 0.0016939826309680939,\n        \"min_sec\": 0.0012924782931804657\n      },\n      \"prepared_output\": {\n        \"matches_oracle\": true,\n        \"oracle_outlier_count\": 40000,\n        \"outlier_count\": 40000,\n        \"point_count\": 160000,\n        \"threshold_reached_count\": 120000\n      },\n      \"result_mode\": \"threshold_count\",\n      \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n      \"speedup_one_shot_over_warm_query_median\": null,\n      \"validation_mode\": \"per_iteration_expected_fixture\"\n    },\n    {\n      \"app\": \"dbscan_clustering\",\n      \"cloud_claim_contract\": {\n        \"claim_scope\": \"prepared fixed-radius scalar core-count traversal only\",\n        \"cloud_policy\": \"include in the single active RTX batch only after local pre-cloud readiness passes\",\n        \"non_claim\": \"not per-point core flags, not full DBSCAN clustering, cluster expansion, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup\",\n        \"required_phase_groups\": [\n          \"prepared_optix_pack_points_sec\",\n          \"prepared_optix_prepare_sec\",\n          \"prepared_optix_warm_query_sec\",\n          \"prepared_optix_postprocess_sec\",\n          \"prepared_optix_validation_sec\",\n          \"prepared_optix_close_sec\"\n        ],\n        \"result_mode\": \"threshold_count\"\n      },\n      \"copies\": 20000,\n      \"one_shot_total_sec\": null,\n      \"phase_contract\": {\n        \"native_warm_query\": \"prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back\",\n        \"postprocess\": \"none in scalar-summary mode; full DBSCAN cluster expansion remains outside this profiler\",\n        \"validation\": \"oracle construction/comparison timing; omitted when skip_validation=true\"\n      },\n      \"point_count\": 160000,\n      \"prepared_optix_close_sec\": 0.0008665695786476135,\n      \"prepared_optix_pack_points_sec\": 0.22255506739020348,\n      \"prepared_optix_postprocess_sec\": {\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0\n      },\n      \"prepared_optix_prepare_sec\": 0.0071122050285339355,\n      \"prepared_optix_validation_sec\": {\n        \"max_sec\": 0.07585272565484047,\n        \"median_sec\": 0.04383404366672039,\n        \"min_sec\": 0.04212498664855957\n      },\n      \"prepared_optix_warm_query_sec\": {\n        \"max_sec\": 0.0020415037870407104,\n        \"median_sec\": 0.0016653947532176971,\n        \"min_sec\": 0.0012151822447776794\n      },\n      \"prepared_output\": {\n        \"core_count\": 140000,\n        \"matches_oracle\": true,\n        \"oracle_core_count\": 140000,\n        \"point_count\": 160000,\n        \"threshold_reached_count\": 140000\n      },\n      \"result_mode\": \"threshold_count\",\n      \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n      \"speedup_one_shot_over_warm_query_median\": null,\n      \"validation_mode\": \"per_iteration_expected_fixture\"\n    }\n  ],\n  \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n  \"skip_validation\": false,\n  \"suite\": \"goal757_optix_fixed_radius_prepared_perf\"\n}\n"
+    },
+    {
+      "app": "dbscan_clustering",
+      "elapsed_seconds": 3.905813455581665,
+      "output_json": "docs/reports/goal1659_dbscan_fixed_radius_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "    ],\n        \"result_mode\": \"threshold_count\"\n      },\n      \"copies\": 20000,\n      \"one_shot_total_sec\": null,\n      \"phase_contract\": {\n        \"native_warm_query\": \"prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back\",\n        \"postprocess\": \"none in scalar-summary mode\",\n        \"validation\": \"oracle construction/comparison timing; omitted when skip_validation=true\"\n      },\n      \"point_count\": 160000,\n      \"prepared_optix_close_sec\": 0.0008800551295280457,\n      \"prepared_optix_pack_points_sec\": 0.233962032943964,\n      \"prepared_optix_postprocess_sec\": {\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0\n      },\n      \"prepared_optix_prepare_sec\": 0.6998737007379532,\n      \"prepared_optix_validation_sec\": {\n        \"max_sec\": 0.08545226231217384,\n        \"median_sec\": 0.04579584300518036,\n        \"min_sec\": 0.043319374322891235\n      },\n      \"prepared_optix_warm_query_sec\": {\n        \"max_sec\": 0.002381701022386551,\n        \"median_sec\": 0.0016682427376508713,\n        \"min_sec\": 0.001256737858057022\n      },\n      \"prepared_output\": {\n        \"matches_oracle\": true,\n        \"oracle_outlier_count\": 40000,\n        \"outlier_count\": 40000,\n        \"point_count\": 160000,\n        \"threshold_reached_count\": 120000\n      },\n      \"result_mode\": \"threshold_count\",\n      \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n      \"speedup_one_shot_over_warm_query_median\": null,\n      \"validation_mode\": \"per_iteration_expected_fixture\"\n    },\n    {\n      \"app\": \"dbscan_clustering\",\n      \"cloud_claim_contract\": {\n        \"claim_scope\": \"prepared fixed-radius scalar core-count traversal only\",\n        \"cloud_policy\": \"include in the single active RTX batch only after local pre-cloud readiness passes\",\n        \"non_claim\": \"not per-point core flags, not full DBSCAN clustering, cluster expansion, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup\",\n        \"required_phase_groups\": [\n          \"prepared_optix_pack_points_sec\",\n          \"prepared_optix_prepare_sec\",\n          \"prepared_optix_warm_query_sec\",\n          \"prepared_optix_postprocess_sec\",\n          \"prepared_optix_validation_sec\",\n          \"prepared_optix_close_sec\"\n        ],\n        \"result_mode\": \"threshold_count\"\n      },\n      \"copies\": 20000,\n      \"one_shot_total_sec\": null,\n      \"phase_contract\": {\n        \"native_warm_query\": \"prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back\",\n        \"postprocess\": \"none in scalar-summary mode; full DBSCAN cluster expansion remains outside this profiler\",\n        \"validation\": \"oracle construction/comparison timing; omitted when skip_validation=true\"\n      },\n      \"point_count\": 160000,\n      \"prepared_optix_close_sec\": 0.0009542368352413177,\n      \"prepared_optix_pack_points_sec\": 0.22292441129684448,\n      \"prepared_optix_postprocess_sec\": {\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0\n      },\n      \"prepared_optix_prepare_sec\": 0.005765032023191452,\n      \"prepared_optix_validation_sec\": {\n        \"max_sec\": 0.07657557725906372,\n        \"median_sec\": 0.04388648085296154,\n        \"min_sec\": 0.04248915612697601\n      },\n      \"prepared_optix_warm_query_sec\": {\n        \"max_sec\": 0.03590582683682442,\n        \"median_sec\": 0.0016856137663125992,\n        \"min_sec\": 0.001191217452287674\n      },\n      \"prepared_output\": {\n        \"core_count\": 140000,\n        \"matches_oracle\": true,\n        \"oracle_core_count\": 140000,\n        \"point_count\": 160000,\n        \"threshold_reached_count\": 140000\n      },\n      \"result_mode\": \"threshold_count\",\n      \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n      \"speedup_one_shot_over_warm_query_median\": null,\n      \"validation_mode\": \"per_iteration_expected_fixture\"\n    }\n  ],\n  \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n  \"skip_validation\": false,\n  \"suite\": \"goal757_optix_fixed_radius_prepared_perf\"\n}\n"
+    },
+    {
+      "app": "robot_collision_screening",
+      "elapsed_seconds": 1.5917527675628662,
+      "output_json": "docs/reports/goal1659_robot_pose_count_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"boundary\": \"This is a phase profiler, not a speedup claim. dry-run mode is schema/logic validation only. optix mode can support future RTX claim review only on RTX-class hardware with exported prepared OptiX any-hit symbols, and only for prepared ray/triangle pose-flag summary timing. packed_arrays input mode avoids per-ray Python object construction but remains app-specific. pose_count result mode returns only a scalar colliding-pose count for clean native summary timing.\",\n  \"cloud_claim_contract\": {\n    \"claim_scope\": \"prepared OptiX ray/triangle any-hit compact pose summary\",\n    \"cloud_policy\": \"include in the single active RTX batch only after local pre-cloud readiness passes\",\n    \"non_claim\": \"not continuous collision detection, full robot planning, full kinematics, witness-row speedup, or mesh-engine replacement\",\n    \"required_phase_groups\": [\n      \"python_input_construction_sec\",\n      \"optix_prepare_scene_sec\",\n      \"optix_prepare_rays_sec\",\n      \"optix_prepare_pose_indices_sec\",\n      \"prepared_pose_flags_warm_query_sec\",\n      \"oracle_validate_sec\",\n      \"close_sec\",\n      \"total_sec\"\n    ],\n    \"result_mode\": \"pose_count\"\n  },\n  \"date\": \"2026-04-22\",\n  \"edge_ray_count\": 800000,\n  \"generated_at\": \"2026-05-12T04:43:42\",\n  \"host\": {\n    \"hostname\": \"5a955904c650\",\n    \"machine\": \"x86_64\",\n    \"platform\": \"Linux-6.8.0-58-generic-x86_64-with-glibc2.39\",\n    \"python\": \"3.12.3\"\n  },\n  \"input_mode\": \"packed_arrays\",\n  \"iterations\": 10,\n  \"matches_oracle\": null,\n  \"mode\": \"optix\",\n  \"obstacle_count\": 1024,\n  \"obstacle_triangle_count\": 2048,\n  \"phases\": {\n    \"close_sec\": 0.0006385073065757751,\n    \"optix_prepare_pose_indices_sec\": 0.0007627718150615692,\n    \"optix_prepare_rays_sec\": 0.018894605338573456,\n    \"optix_prepare_scene_sec\": 0.33722639456391335,\n    \"oracle_validate_sec\": 0.0,\n    \"prepared_pose_flags_warm_query_sec\": {\n      \"max_sec\": 0.07032592967152596,\n      \"median_sec\": 0.00035594217479228973,\n      \"min_sec\": 0.0003519579768180847\n    },\n    \"python_input_construction_sec\": 0.2859766222536564,\n    \"total_sec\": 0.8127395622432232\n  },\n  \"pose_count\": 200000,\n  \"result\": {\n    \"colliding_pose_count\": 193750,\n    \"colliding_pose_ids_sample\": [],\n    \"oracle_colliding_pose_count\": null,\n    \"pose_collision_flags_sample\": []\n  },\n  \"result_mode\": \"pose_count\",\n  \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n  \"source_commit\": \"aee364d677442994958d87dacf3f814360c20ffa\",\n  \"suite\": \"Goal760 OptiX robot pose-flags phase profiler\",\n  \"validated\": false\n}\n"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "elapsed_seconds": 5.350018262863159,
+      "output_json": "docs/reports/goal1659_barnes_hut_node_coverage_optix.json",
+      "output_json_exists": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal1659_barnes_hut_node_coverage_optix.json\", \"scenario\": \"barnes_hut_node_coverage\"}\n"
+    }
+  ],
+  "source": "Goal1659 active current-version pod rows",
+  "started_at_epoch": 1778560975.1383796,
+  "updated_at_epoch": 1778561028.513157
+}

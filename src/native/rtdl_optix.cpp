@@ -1,4 +1,4 @@
-#include "optix/rtdl_optix_prelude.h"
+﻿#include "optix/rtdl_optix_prelude.h"
 
 namespace {
 #include "optix/rtdl_optix_core.cpp"

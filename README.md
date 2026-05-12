@@ -11,6 +11,12 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
+The current released version is `v1.8`: the first source-tree Python+RTDL
+language release with the tracked native release surface migrated to an
+app-agnostic engine contract. Use it from the repository source tree with
+`PYTHONPATH=src:.`; do not read this release as a package-install promise,
+broad speedup claim, or Python+partner+RTDL claim.
+
 ## Start Fast
 
 Run commands from the repository root. RTDL is used directly from the source
@@ -58,6 +64,29 @@ def visibility_kernel():
 Python owns the surrounding program: loading data, choosing a backend,
 post-processing rows, and writing outputs. RTDL owns the kernel contract and
 backend dispatch for supported RT-shaped primitive paths.
+
+## v1.8 Design In One Page
+
+For the v1.8 Python+RTDL boundary, learn RTDL as two layers:
+
+| Layer | What belongs there |
+| --- | --- |
+| Python app layer | data loading, fixtures, policy, orchestration, reductions, labels, files, plots, and final app answers |
+| RTDL engine layer | typed inputs, traversal, refinement, emitted rows, backend dispatch, and app-agnostic native runtime symbols |
+
+This is the key design rule: user programs may be app-shaped Python, but the
+native engine must stay app-agnostic. App names such as graph, database,
+polygon, or robot can appear in examples and Python compatibility helpers; they
+must not become special private engine products.
+
+The fastest way to learn the design is:
+
+1. Run `examples/rtdl_hello_world.py`.
+2. Read [Quick Tutorial](docs/quick_tutorial.md).
+3. Run `examples/rtdl_feature_quickstart_cookbook.py`.
+4. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
+5. Read [Current Architecture](docs/current_architecture.md) only after you can
+   explain `input -> traverse -> refine -> emit`.
 
 ## What RTDL Contains
 

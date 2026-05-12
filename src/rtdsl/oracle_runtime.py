@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import ctypes
 import functools
@@ -38,10 +38,10 @@ def _pkg_config_flags(package: str, option: str) -> list[str]:
 def _geos_pkg_config_flags(option: str) -> list[str]:
     if platform.system() == "Windows":
         return []
-    flags = _pkg_config_flags("geos", option)
+    flags = _pkg_config_flags("geos_c", option)
     if flags:
         return flags
-    flags = _pkg_config_flags("geos_c", option)
+    flags = _pkg_config_flags("geos", option)
     if flags:
         return flags
     return ["-lgeos_c"] if option == "--libs" else []
@@ -690,7 +690,7 @@ def _run_bfs_expand_oracle(compiled: CompiledKernel, normalized_inputs, library)
     rows_ptr = ctypes.POINTER(_RtdlBfsExpandRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_bfs_expand(
+    status = library.rtdl_oracle_run_frontier_edge_traversal_packet(
         row_offsets,
         len(graph.row_offsets),
         column_indices,
@@ -733,7 +733,7 @@ def _run_triangle_probe_oracle(compiled: CompiledKernel, normalized_inputs, libr
     rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_triangle_probe(
+    status = library.rtdl_oracle_run_triangle_cycle_candidates(
         row_offsets,
         len(graph.row_offsets),
         column_indices,
@@ -766,7 +766,7 @@ def _summarize_bfs_row_buffer(input_rows_ptr, input_row_count: int) -> dict[str,
     summary_rows_ptr = ctypes.POINTER(_RtdlBfsSummaryRow)()
     summary_row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_summarize_bfs_rows(
+    status = library.rtdl_oracle_summarize_frontier_traversal_rows(
         input_rows_ptr,
         input_row_count,
         ctypes.byref(summary_rows_ptr),
@@ -857,7 +857,7 @@ def summarize_knn_rows(rows) -> dict[str, int]:
     rows_ptr = ctypes.POINTER(_RtdlKnnSummaryRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_summarize_knn_rows(
+    status = library.rtdl_oracle_summarize_k_closest_hits(
         row_array,
         len(row_values),
         ctypes.byref(rows_ptr),
@@ -937,7 +937,7 @@ def _run_lsi_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tup
     rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_lsi(
+    status = library.rtdl_oracle_run_segment_pair_intersection(
         left_array,
         len(left),
         right_array,
@@ -980,7 +980,7 @@ def _run_pip_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tup
     rows_ptr = ctypes.POINTER(_RtdlPipRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_pip(
+    status = library.rtdl_oracle_run_point_primitive_anyhit_packet(
         point_array,
         len(points),
         polygon_refs,
@@ -1017,7 +1017,7 @@ def _run_overlay_oracle(compiled: CompiledKernel, normalized_inputs, library) ->
     rows_ptr = ctypes.POINTER(_RtdlOverlayRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_overlay(
+    status = library.rtdl_oracle_run_shape_pair_relation_flags(
         left_refs,
         len(left),
         left_vertices,
@@ -1096,7 +1096,7 @@ def _run_segment_polygon_hitcount_oracle(compiled: CompiledKernel, normalized_in
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_segment_polygon_hitcount(
+    status = library.rtdl_oracle_run_segment_shape_hitcount(
         segment_array,
         len(segments),
         polygon_refs,
@@ -1133,7 +1133,7 @@ def _run_segment_polygon_anyhit_rows_oracle(compiled: CompiledKernel, normalized
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_segment_polygon_anyhit_rows(
+    status = library.rtdl_oracle_run_segment_shape_anyhit_rows(
         segment_array,
         len(segments),
         polygon_refs,
@@ -1168,7 +1168,7 @@ def _run_polygon_pair_overlap_area_rows_oracle(compiled: CompiledKernel, normali
     rows_ptr = ctypes.POINTER(_RtdlPolygonPairOverlapAreaRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_polygon_pair_overlap_area_rows(
+    status = library.rtdl_oracle_run_shape_pair_overlap_area_rows(
         left_refs,
         len(left_polygons),
         left_vertices,
@@ -1209,7 +1209,7 @@ def _run_polygon_set_jaccard_oracle(compiled: CompiledKernel, normalized_inputs,
     rows_ptr = ctypes.POINTER(_RtdlPolygonSetJaccardRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_polygon_set_jaccard(
+    status = library.rtdl_oracle_run_shape_set_overlap_ratio(
         left_refs,
         len(left_polygons),
         left_vertices,
@@ -1254,7 +1254,7 @@ def refine_polygon_pair_overlap_area_rows_for_pairs(
     rows_ptr = ctypes.POINTER(_RtdlPolygonPairOverlapAreaRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs(
+    status = library.rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs(
         left_refs,
         len(left_polygons),
         left_vertices,
@@ -1302,7 +1302,7 @@ def refine_polygon_set_jaccard_for_pairs(
     rows_ptr = ctypes.POINTER(_RtdlPolygonSetJaccardRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
+    status = library.rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs(
         left_refs,
         len(left_polygons),
         left_vertices,
@@ -1348,7 +1348,7 @@ def reduce_polygon_pair_exact_area_summary_for_candidates(
     ])
     summary = _RtdlPolygonPairAreaSummary()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_native_reduce_polygon_pair_exact_area_summary(
+    status = library.rtdl_native_reduce_shape_pair_exact_area_summary(
         left_refs,
         len(left_polygons),
         left_vertices,
@@ -1489,7 +1489,7 @@ def _run_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -
         search_array = (_RtdlPoint3D * len(search_points))(*[
             _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
         ])
-        status = library.rtdl_oracle_run_knn_rows_3d(
+        status = library.rtdl_oracle_run_k_closest_hits_3d(
             query_array,
             len(query_points),
             search_array,
@@ -1507,7 +1507,7 @@ def _run_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -
         search_array = (_RtdlPoint * len(search_points))(*[
             _RtdlPoint(item.id, item.x, item.y) for item in search_points
         ])
-        status = library.rtdl_oracle_run_knn_rows(
+        status = library.rtdl_oracle_run_k_closest_hits(
             query_array,
             len(query_points),
             search_array,
@@ -1550,7 +1550,7 @@ def _run_bounded_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, li
         search_array = (_RtdlPoint3D * len(search_points))(*[
             _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
         ])
-        status = library.rtdl_oracle_run_bounded_knn_rows_3d(
+        status = library.rtdl_oracle_run_bounded_k_closest_hits_3d(
             query_array,
             len(query_points),
             search_array,
@@ -1569,7 +1569,7 @@ def _run_bounded_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, li
         search_array = (_RtdlPoint * len(search_points))(*[
             _RtdlPoint(item.id, item.x, item.y) for item in search_points
         ])
-        status = library.rtdl_oracle_run_bounded_knn_rows(
+        status = library.rtdl_oracle_run_bounded_k_closest_hits(
             query_array,
             len(query_points),
             search_array,
@@ -1681,7 +1681,7 @@ def _load_oracle_library():
     library.rtdl_oracle_free_rows.argtypes = [ctypes.c_void_p]
     library.rtdl_oracle_free_rows.restype = None
 
-    library.rtdl_oracle_run_lsi.argtypes = [
+    library.rtdl_oracle_run_segment_pair_intersection.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment),
@@ -1691,9 +1691,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_lsi.restype = ctypes.c_int
+    library.rtdl_oracle_run_segment_pair_intersection.restype = ctypes.c_int
 
-    library.rtdl_oracle_run_pip.argtypes = [
+    library.rtdl_oracle_run_point_primitive_anyhit_packet.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -1706,9 +1706,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_pip.restype = ctypes.c_int
+    library.rtdl_oracle_run_point_primitive_anyhit_packet.restype = ctypes.c_int
 
-    library.rtdl_oracle_run_overlay.argtypes = [
+    library.rtdl_oracle_run_shape_pair_relation_flags.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -1722,7 +1722,7 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_overlay.restype = ctypes.c_int
+    library.rtdl_oracle_run_shape_pair_relation_flags.restype = ctypes.c_int
 
     library.rtdl_oracle_run_ray_hitcount.argtypes = [
         ctypes.POINTER(_RtdlRay2D),
@@ -1736,7 +1736,7 @@ def _load_oracle_library():
     ]
     library.rtdl_oracle_run_ray_hitcount.restype = ctypes.c_int
 
-    library.rtdl_oracle_run_segment_polygon_hitcount.argtypes = [
+    library.rtdl_oracle_run_segment_shape_hitcount.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -1748,9 +1748,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_segment_polygon_hitcount.restype = ctypes.c_int
+    library.rtdl_oracle_run_segment_shape_hitcount.restype = ctypes.c_int
 
-    library.rtdl_oracle_run_segment_polygon_anyhit_rows.argtypes = [
+    library.rtdl_oracle_run_segment_shape_anyhit_rows.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -1762,9 +1762,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
+    library.rtdl_oracle_run_segment_shape_anyhit_rows.restype = ctypes.c_int
 
-    library.rtdl_oracle_run_polygon_pair_overlap_area_rows.argtypes = [
+    library.rtdl_oracle_run_shape_pair_overlap_area_rows.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -1778,9 +1778,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_polygon_pair_overlap_area_rows.restype = ctypes.c_int
+    library.rtdl_oracle_run_shape_pair_overlap_area_rows.restype = ctypes.c_int
 
-    library.rtdl_oracle_run_polygon_set_jaccard.argtypes = [
+    library.rtdl_oracle_run_shape_set_overlap_ratio.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -1794,9 +1794,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_polygon_set_jaccard.restype = ctypes.c_int
+    library.rtdl_oracle_run_shape_set_overlap_ratio.restype = ctypes.c_int
 
-    library.rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs.argtypes = [
+    library.rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -1812,9 +1812,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs.restype = ctypes.c_int
+    library.rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs.restype = ctypes.c_int
 
-    library.rtdl_oracle_refine_polygon_set_jaccard_for_pairs.argtypes = [
+    library.rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -1830,9 +1830,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_refine_polygon_set_jaccard_for_pairs.restype = ctypes.c_int
+    library.rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs.restype = ctypes.c_int
 
-    library.rtdl_native_reduce_polygon_pair_exact_area_summary.argtypes = [
+    library.rtdl_native_reduce_shape_pair_exact_area_summary.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -1847,7 +1847,7 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_native_reduce_polygon_pair_exact_area_summary.restype = ctypes.c_int
+    library.rtdl_native_reduce_shape_pair_exact_area_summary.restype = ctypes.c_int
 
     library.rtdl_oracle_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),
@@ -1897,7 +1897,7 @@ def _load_oracle_library():
     ]
     library.rtdl_oracle_summarize_fixed_radius_rows.restype = ctypes.c_int
 
-    library.rtdl_oracle_run_knn_rows.argtypes = [
+    library.rtdl_oracle_run_k_closest_hits.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPoint),
@@ -1908,8 +1908,8 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_knn_rows.restype = ctypes.c_int
-    library.rtdl_oracle_run_knn_rows_3d.argtypes = [
+    library.rtdl_oracle_run_k_closest_hits.restype = ctypes.c_int
+    library.rtdl_oracle_run_k_closest_hits_3d.argtypes = [
         ctypes.POINTER(_RtdlPoint3D),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPoint3D),
@@ -1920,8 +1920,8 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_knn_rows_3d.restype = ctypes.c_int
-    library.rtdl_oracle_run_bounded_knn_rows.argtypes = [
+    library.rtdl_oracle_run_k_closest_hits_3d.restype = ctypes.c_int
+    library.rtdl_oracle_run_bounded_k_closest_hits.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPoint),
@@ -1933,8 +1933,8 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_bounded_knn_rows.restype = ctypes.c_int
-    library.rtdl_oracle_run_bounded_knn_rows_3d.argtypes = [
+    library.rtdl_oracle_run_bounded_k_closest_hits.restype = ctypes.c_int
+    library.rtdl_oracle_run_bounded_k_closest_hits_3d.argtypes = [
         ctypes.POINTER(_RtdlPoint3D),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPoint3D),
@@ -1946,9 +1946,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_bounded_knn_rows_3d.restype = ctypes.c_int
+    library.rtdl_oracle_run_bounded_k_closest_hits_3d.restype = ctypes.c_int
 
-    library.rtdl_oracle_summarize_knn_rows.argtypes = [
+    library.rtdl_oracle_summarize_k_closest_hits.argtypes = [
         ctypes.POINTER(_RtdlKnnNeighborRow),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlKnnSummaryRow)),
@@ -1956,8 +1956,8 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_summarize_knn_rows.restype = ctypes.c_int
-    library.rtdl_oracle_run_bfs_expand.argtypes = [
+    library.rtdl_oracle_summarize_k_closest_hits.restype = ctypes.c_int
+    library.rtdl_oracle_run_frontier_edge_traversal_packet.argtypes = [
         ctypes.POINTER(ctypes.c_uint32),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_uint32),
@@ -1972,8 +1972,8 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_bfs_expand.restype = ctypes.c_int
-    library.rtdl_oracle_run_triangle_probe.argtypes = [
+    library.rtdl_oracle_run_frontier_edge_traversal_packet.restype = ctypes.c_int
+    library.rtdl_oracle_run_triangle_cycle_candidates.argtypes = [
         ctypes.POINTER(ctypes.c_uint32),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_uint32),
@@ -1987,9 +1987,9 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_run_triangle_probe.restype = ctypes.c_int
+    library.rtdl_oracle_run_triangle_cycle_candidates.restype = ctypes.c_int
 
-    library.rtdl_oracle_summarize_bfs_rows.argtypes = [
+    library.rtdl_oracle_summarize_frontier_traversal_rows.argtypes = [
         ctypes.POINTER(_RtdlBfsExpandRow),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlBfsSummaryRow)),
@@ -1997,7 +1997,7 @@ def _load_oracle_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_oracle_summarize_bfs_rows.restype = ctypes.c_int
+    library.rtdl_oracle_summarize_frontier_traversal_rows.restype = ctypes.c_int
 
     library.rtdl_oracle_summarize_triangle_rows.argtypes = [
         ctypes.POINTER(_RtdlTriangleRow),

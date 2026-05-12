@@ -6,7 +6,7 @@
 ## Findings & Evaluation
 
 ### 1. Is the implementation OptiX-specific rather than a disguised oracle fallback?
-**Yes.** The implementation avoids falling back to the global CPU oracle or Python logic. Instead, `rtdl_optix_run_triangle_probe` executes `run_triangle_probe_optix_host_indexed`, which is a native C++ implementation built directly into the `librtdl_optix.so` library. While it currently runs on the host CPU rather than using device-side OptiX RT-cores, it correctly establishes the ABI boundary, memory unpacking, and native OptiX library structure required for the workload.
+**Yes.** The implementation avoids falling back to the global CPU oracle or Python logic. Instead, `rtdl_optix_run_edge_neighbor_intersection_packet` executes `run_triangle_probe_optix_host_indexed`, which is a native C++ implementation built directly into the `librtdl_optix.so` library. While it currently runs on the host CPU rather than using device-side OptiX RT-cores, it correctly establishes the ABI boundary, memory unpacking, and native OptiX library structure required for the workload.
 
 ### 2. Is the runtime/API boundary honest?
 **Yes.** The goal correctly and explicitly documents that the current implementation is "a native host-indexed OptiX helper over the graph CSR inputs", rather than a fully GPU-validated RT traversal. The honesty boundary in the documentation is clear, and the Python runtime correctly binds to the new OptiX ABI (`_call_triangle_probe_optix_packed`).

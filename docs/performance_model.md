@@ -1,9 +1,9 @@
 # RTDL Performance Model
 
-This page explains how to read RTDL performance claims in the current v1.6
-release line. It is intentionally stricter than marketing language: a
-backend flag, a native code path, and a public speedup claim are different
-things.
+This page explains how to read RTDL performance claims across the released
+v1.8 source-tree Python+RTDL language boundary. It is
+intentionally stricter than marketing language: a backend flag, a native code
+path, and a public speedup claim are different things.
 
 ## Short Version
 
@@ -19,8 +19,9 @@ The current public performance model is:
 - v1.6 keeps the v1.0 app-shaped proof history and publishes the first
   Python+RTDL architecture milestone for the supported Embree+OptiX primitive
   surface.
-- Some native entry points remain workload-shaped compatibility/proof surfaces;
-  v1.6 is not a zero-app-knowledge native-engine release.
+- v1.8 publishes the source-tree Python+RTDL language boundary with
+  app-agnostic native source/ABI cleanup evidence for the tracked release
+  surface.
 - Python convenience row output is useful for development but can dominate
   runtime.
 - Raw/prepared/native summary paths are the serious performance path.
@@ -68,10 +69,11 @@ performance is still mixed by design:
 - RT traversal-heavy sub-paths can be fast.
 - Full apps may still be slow when Python owns ranking, clustering, exact
   polygon refinement, graph reductions, or force computation.
-- Some app-specific or workload-shaped native continuations exist to make the
-  proof apps measurable.
-- Those continuations are proof machinery, not the final app-independent native
-  engine architecture.
+- At the v1.6 tag boundary, some app-specific or workload-shaped native
+  continuations exist to make the proof apps measurable.
+- Current main later migrates the tracked release native ABI surface toward
+  app-agnostic terminology, but that does not convert every workload into a
+  public speedup claim.
 
 Examples:
 
@@ -145,8 +147,9 @@ v1.6 subpath boundary unless a later report explicitly moves them.
 
 ## What v1.7-v2.0 Should Fix
 
-v1.7-v2.0 are the broader partner-interoperability performance track. They
-should preserve the Python-facing DSL while removing Python from hot data
+v1.7-v2.0 are the broader productization and partner-interoperability track.
+v1.8 finishes Python+RTDL productization; v2.0 finishes Python+partner+RTDL.
+They should preserve the Python-facing DSL while removing Python from hot data
 movement and heavy non-RT continuation work:
 
 - stable compiled plans
@@ -157,9 +160,11 @@ movement and heavy non-RT continuation work:
 - explicit boundaries between RT traversal, compute reductions, and Python
   presentation
 
-Until that architecture exists, public docs should say v1.6 provides the first
-Python+RTDL architecture milestone for the bounded release surface and selected
-sub-path evidence, not universal whole-app speedup.
+Now that v1.8 is the current source-tree Python+RTDL language release, public
+docs should say v1.6 provides the earlier Python+RTDL architecture milestone
+and v1.8 provides the bounded source-tree Python+RTDL release surface. They
+should not claim universal whole-app speedup, arbitrary RTX acceleration, or
+universal partner zero-copy.
 
 ## Public Wording Rule
 

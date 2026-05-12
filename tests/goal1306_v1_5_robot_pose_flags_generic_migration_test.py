@@ -18,9 +18,9 @@ class _PreparedScene:
     def __exit__(self, exc_type, exc, tb) -> None:
         pass
 
-    def pose_flags_packed(self, _rays, _group_indices, *, pose_count: int) -> tuple[bool, ...]:
+    def group_flags_packed(self, _rays, _group_indices, *, group_count: int) -> tuple[bool, ...]:
         self.query_count += 1
-        return self.flags[:pose_count]
+        return self.flags[:group_count]
 
 
 class _PreparedRays:

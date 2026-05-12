@@ -106,7 +106,7 @@ class Goal1415V151NativeCollectKZeroCapacityTest(unittest.TestCase):
     def test_embree_wrapper_allows_zero_capacity_empty_collection(self) -> None:
         captured = {}
         library = SimpleNamespace(
-            rtdl_embree_collect_polygon_pair_candidates_bounded=_make_zero_result_symbol(captured),
+            rtdl_embree_collect_shape_pair_candidates_bounded=_make_zero_result_symbol(captured),
             rtdl_embree_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 
@@ -128,7 +128,7 @@ class Goal1415V151NativeCollectKZeroCapacityTest(unittest.TestCase):
     def test_optix_wrapper_allows_zero_capacity_empty_collection(self) -> None:
         captured = {}
         library = SimpleNamespace(
-            rtdl_optix_collect_polygon_pair_candidates_bounded=_make_zero_result_symbol(captured),
+            rtdl_optix_collect_shape_pair_candidates_bounded=_make_zero_result_symbol(captured),
             rtdl_optix_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 
@@ -156,7 +156,7 @@ class Goal1415V151NativeCollectKZeroCapacityTest(unittest.TestCase):
 
     def test_embree_wrapper_canonicalizes_duplicate_native_rows_through_generic_symbol(self) -> None:
         library = SimpleNamespace(
-            rtdl_embree_collect_polygon_pair_candidates_bounded=_make_duplicate_result_symbol(),
+            rtdl_embree_collect_shape_pair_candidates_bounded=_make_duplicate_result_symbol(),
             rtdl_embree_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 
@@ -175,7 +175,7 @@ class Goal1415V151NativeCollectKZeroCapacityTest(unittest.TestCase):
 
     def test_optix_wrapper_canonicalizes_duplicate_native_rows_through_generic_symbol(self) -> None:
         library = SimpleNamespace(
-            rtdl_optix_collect_polygon_pair_candidates_bounded=_make_duplicate_result_symbol(),
+            rtdl_optix_collect_shape_pair_candidates_bounded=_make_duplicate_result_symbol(),
             rtdl_optix_collect_k_bounded_i64=_make_generic_collect_k_symbol(),
         )
 

@@ -7,19 +7,26 @@ released `v0.9.0` HIPRT / closest-hit expansion, the released `v0.9.1`
 Apple RT closest-hit slice, the released `v0.9.4` Apple RT consolidation, the
 released `v0.9.5` any-hit / visibility-row / emitted-row reduction layer, the
 released `v1.0` app-shaped proof release, the released `v1.5` standalone
-Embree+OptiX language/runtime completion, and the released `v1.6` Python+RTDL
-architecture milestone.
+Embree+OptiX language/runtime completion, the released `v1.6` Python+RTDL
+architecture milestone, and the released `v1.8` source-tree Python+RTDL
+language boundary.
 
 For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
 [RTDL Capability Boundaries](capability_boundaries.md).
 
-## v1.6 Lens
+## Current Main Lens
 
-Read the current architecture through this v1.6 lens:
+Read the current architecture through this current-main lens:
 
-- v1.6 is the current release line and the first Python+RTDL architecture
-  milestone.
+- v1.8 is the current released source-tree Python+RTDL language boundary.
+- v1.6 remains the earlier Python+RTDL architecture milestone.
+- Goal1758 removes the final known older multi-backend source/ABI
+  app-shaped blocker by migrating Apple RT / HIPRT / Oracle / Vulkan `lsi`,
+  `overlay`, and `triangle_probe` native support symbols to generic engine
+  terminology.
+- v1.8 remains source-tree only unless a separate packaging goal adds and
+  validates packaging metadata.
 - Python remains the app/control layer; RTDL owns the supported RT-shaped
   primitive contract and bridge.
 - Embree and OptiX execute the validated stable primitive subpaths.
@@ -30,15 +37,26 @@ Read the current architecture through this v1.6 lens:
 - Those continuations are intentionally documented in
   [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md); they
   are not the final engine architecture.
-- v1.6 stabilizes the public Python+RTDL primitive-contract boundary, but it is
-  not yet a zero-app-knowledge native engine release; some Embree/OptiX entry
-  points remain workload-shaped compatibility/proof surfaces.
+- The historical v1.6 tag is not a zero-app-knowledge native-engine release;
+  current main's tracked release native surface has since been migrated to
+  app-agnostic source/ABI terminology under the v1.7/v1.8 gates.
 - v1.6 is not a whole-app speedup claim.
-- v1.6 is an architecture anchor, not a performance freeze.
+- v1.8 must also remain bounded: it is a Python+RTDL productization target, not
+  a whole-app speedup claim, not a partner-readiness claim, and not a universal
+  zero-copy claim.
 - v1.7-v2.0 are the staged Python+partner+RTDL mechanism track for non-RT
   phases that should not stay in Python hot loops.
 - v1.7-v2.0 are the broader end-to-end performance target after the first
   Python+RTDL closure.
+- v1.8 finishes Python+RTDL productization, while v2.0 finishes
+  Python+partner+RTDL.
+- The active partner consensus is protocol first, PyTorch reference first, and
+  CuPy conformance alongside it. The RTDL engine must remain app-agnostic
+  throughout.
+- For the live partner and app-agnostic release gates, read
+  [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md)
+  and
+  [v1.7 App-Agnostic Native-Engine Gate](release_reports/v1_7_app_agnostic_native_gate.md).
 
 ## The User Contract
 

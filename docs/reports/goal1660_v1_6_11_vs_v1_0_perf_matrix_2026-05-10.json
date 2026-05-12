@@ -11,17 +11,17 @@
     "python_partner_rtdl",
     "v1_6_11_release_tag_action"
   ],
-  "blocked_or_excluded_row_count": 8,
+  "blocked_or_excluded_row_count": 20,
   "boundary": "This manifest prepares the v1.6.11 versus v1.0 performance comparison. It does not publish v1.6.11, authorize a tag, or authorize public speedup wording. Final evidence needs a pod because OptiX/NVIDIA RT rows require real NVIDIA RT hardware.",
   "comparison": "v1.6.11_vs_v1.0_by_app_and_engine",
-  "current_head": "46d8d17a7e8adcbbe3cda5e52bf98e7b5a203c38",
+  "current_head": "aee364d677442994958d87dacf3f814360c20ffa",
   "current_version": "v1.6.11",
   "engines": [
     "embree",
     "optix"
   ],
   "goal": "Goal1660",
-  "planned_row_count": 28,
+  "planned_row_count": 16,
   "pod_needed_after_local_preflight": true,
   "pod_run_contract": {
     "build_policy": "Build Embree and OptiX separately in each checkout from that checkout's source. Record commit, GPU, driver, CUDA, OptiX SDK, and build command.",
@@ -37,7 +37,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -54,6 +54,7 @@
       "scope": "compact-summary DB prepared session only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal756_db_prepared_session_perf.py",
+      "script_supports_backend_in_v1_0": true,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -73,6 +74,7 @@
         "--output-json",
         "docs/reports/goal1660_v1_0_database_analytics_embree.json"
       ],
+      "v1_0_command_shape": "same_command_shape",
       "v1_6_11_command": [
         "python3",
         "scripts/goal756_db_prepared_session_perf.py",
@@ -95,7 +97,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -112,6 +114,7 @@
       "scope": "compact-summary DB prepared session only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal756_db_prepared_session_perf.py",
+      "script_supports_backend_in_v1_0": true,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -131,6 +134,7 @@
         "--output-json",
         "docs/reports/goal1660_v1_0_database_analytics_optix.json"
       ],
+      "v1_0_command_shape": "same_command_shape",
       "v1_6_11_command": [
         "python3",
         "scripts/goal756_db_prepared_session_perf.py",
@@ -163,7 +167,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -180,6 +184,7 @@
       "scope": "visibility-edge and native graph-ray candidate-generation subpaths",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal889_graph_visibility_optix_gate.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -197,6 +202,7 @@
         "--output-json",
         "docs/reports/goal1660_v1_0_graph_analytics_optix.json"
       ],
+      "v1_0_command_shape": "same_command_shape",
       "v1_6_11_command": [
         "python3",
         "scripts/goal889_graph_visibility_optix_gate.py",
@@ -233,7 +239,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -242,16 +248,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "prepared fixed-radius gap-summary decision",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal811_spatial_optix_summary_phase_profiler.py",
@@ -266,6 +273,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal811_spatial_optix_summary_phase_profiler.py",
@@ -285,7 +293,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -302,6 +310,7 @@
       "scope": "prepared fixed-radius gap-summary decision",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -314,10 +323,9 @@
         "--copies",
         "20000",
         "--output-json",
-        "docs/reports/goal1660_v1_0_service_coverage_gaps_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_service_coverage_gaps_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal811_spatial_optix_summary_phase_profiler.py",
@@ -337,7 +345,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -346,16 +354,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "prepared fixed-radius hotspot count-summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal811_spatial_optix_summary_phase_profiler.py",
@@ -370,6 +379,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal811_spatial_optix_summary_phase_profiler.py",
@@ -389,7 +399,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -406,6 +416,7 @@
       "scope": "prepared fixed-radius hotspot count-summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -418,10 +429,9 @@
         "--copies",
         "20000",
         "--output-json",
-        "docs/reports/goal1660_v1_0_event_hotspot_screening_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_event_hotspot_screening_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal811_spatial_optix_summary_phase_profiler.py",
@@ -441,7 +451,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -450,16 +460,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "coverage-threshold prepared decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -479,6 +490,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -503,7 +515,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -520,6 +532,7 @@
       "scope": "coverage-threshold prepared decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -537,10 +550,9 @@
         "1.0",
         "--skip-validation",
         "--output-json",
-        "docs/reports/goal1660_v1_0_facility_knn_assignment_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_facility_knn_assignment_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -565,7 +577,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -574,16 +586,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "prepared segment/polygon compact road-hazard summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
@@ -600,6 +613,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
@@ -621,7 +635,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -638,6 +652,7 @@
       "scope": "prepared segment/polygon compact road-hazard summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -652,10 +667,9 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_0_road_hazard_screening_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_road_hazard_screening_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
@@ -677,7 +691,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -686,16 +700,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "prepared segment/polygon hit-count summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
@@ -712,6 +727,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
@@ -733,7 +749,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -750,6 +766,7 @@
       "scope": "prepared segment/polygon hit-count summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -764,10 +781,9 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_0_segment_polygon_hitcount_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_segment_polygon_hitcount_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
@@ -789,7 +805,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -798,16 +814,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "experimental_primitive_blocked",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "bounded pair-row output with overflow metadata",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
@@ -824,6 +841,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
@@ -845,7 +863,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -862,6 +880,7 @@
       "scope": "bounded pair-row output with overflow metadata",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -876,10 +895,9 @@
         "--mode",
         "run",
         "--output-json",
-        "docs/reports/goal1660_v1_0_segment_polygon_anyhit_rows_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_segment_polygon_anyhit_rows_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
@@ -901,7 +919,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -910,16 +928,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "native-assisted LSI/PIP candidate discovery plus exact-area continuation",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
@@ -940,6 +959,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
@@ -965,7 +985,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -982,6 +1002,7 @@
       "scope": "native-assisted LSI/PIP candidate discovery plus exact-area continuation",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -1000,10 +1021,9 @@
         "--chunk-copies",
         "100",
         "--output-json",
-        "docs/reports/goal1660_v1_0_polygon_pair_overlap_area_rows_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_polygon_pair_overlap_area_rows_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
@@ -1029,7 +1049,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1038,16 +1058,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "experimental_primitive_blocked",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "bounded candidate discovery plus exact Jaccard summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
@@ -1068,6 +1089,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
@@ -1093,7 +1115,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1110,6 +1132,7 @@
       "scope": "bounded candidate discovery plus exact Jaccard summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -1128,10 +1151,9 @@
         "--chunk-copies",
         "20",
         "--output-json",
-        "docs/reports/goal1660_v1_0_polygon_set_jaccard_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_polygon_set_jaccard_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
@@ -1157,7 +1179,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1166,16 +1188,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "directed threshold decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1194,6 +1217,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1217,7 +1241,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1234,6 +1258,7 @@
       "scope": "directed threshold decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -1250,10 +1275,9 @@
         "--radius",
         "0.4",
         "--output-json",
-        "docs/reports/goal1660_v1_0_hausdorff_distance_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_hausdorff_distance_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1277,7 +1301,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1286,16 +1310,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "candidate-coverage threshold decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1314,6 +1339,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1337,7 +1363,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1354,6 +1380,7 @@
       "scope": "candidate-coverage threshold decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -1370,10 +1397,9 @@
         "--radius",
         "0.2",
         "--output-json",
-        "docs/reports/goal1660_v1_0_ann_candidate_search_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_ann_candidate_search_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1407,7 +1433,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1424,6 +1450,7 @@
       "scope": "prepared fixed-radius scalar threshold-count",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -1438,6 +1465,7 @@
         "--output-json",
         "docs/reports/goal1660_v1_0_outlier_detection_optix.json"
       ],
+      "v1_0_command_shape": "same_command_shape",
       "v1_6_11_command": [
         "python3",
         "scripts/goal757_optix_fixed_radius_prepared_perf.py",
@@ -1465,7 +1493,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1482,6 +1510,7 @@
       "scope": "prepared fixed-radius scalar core-count",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": "outlier_detection",
       "status": "shared_primitive_alias",
       "v1_0_command": [
@@ -1496,6 +1525,7 @@
         "--output-json",
         "docs/reports/goal1660_v1_0_dbscan_clustering_optix.json"
       ],
+      "v1_0_command_shape": "same_command_shape",
       "v1_6_11_command": [
         "python3",
         "scripts/goal757_optix_fixed_radius_prepared_perf.py",
@@ -1513,7 +1543,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1522,16 +1552,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "legacy_engine_customized",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "prepared ray/triangle any-hit pose-count summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
@@ -1553,6 +1584,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
@@ -1579,7 +1611,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1596,6 +1628,7 @@
       "scope": "prepared ray/triangle any-hit pose-count summary",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -1615,10 +1648,9 @@
         "pose_count",
         "--skip-validation",
         "--output-json",
-        "docs/reports/goal1660_v1_0_robot_collision_screening_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_robot_collision_screening_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
@@ -1645,7 +1677,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1654,16 +1686,17 @@
       "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_boundary": "This row compares v1.6.11 against v1.0 for the same engine. It is not a public speedup claim unless the final artifacts pass parity, phase metadata, and 3-AI review.",
       "compare_current": true,
-      "compare_v1_0": true,
+      "compare_v1_0": false,
       "engine": "embree",
       "engine_selector": "insert--backend",
       "purity_status": "pure_python_rtdl_ready",
-      "reason": null,
+      "reason": "tagged v1.0 script exposes no --backend selector for this engine; do not fabricate a decorative same-engine baseline row",
       "scope": "node-coverage threshold decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
-      "status": "planned",
+      "status": "current_only_v1_0_missing_engine_selector",
       "v1_0_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1682,6 +1715,7 @@
         "--backend",
         "embree"
       ],
+      "v1_0_command_shape": "unsupported_legacy_no_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",
@@ -1705,7 +1739,7 @@
       "acceptance": [
         "same app",
         "same engine",
-        "same command shape",
+        "same or explicitly adapted legacy command shape",
         "same scale where supported",
         "same artifact schema or explicit schema-drift note",
         "strict parity/status before timing comparison"
@@ -1722,6 +1756,7 @@
       "scope": "node-coverage threshold decision only",
       "script_exists_in_v1_0": true,
       "script_path": "scripts/goal887_prepared_decision_phase_profiler.py",
+      "script_supports_backend_in_v1_0": false,
       "shared_primitive_canonical": null,
       "status": "planned",
       "v1_0_command": [
@@ -1738,10 +1773,9 @@
         "--radius",
         "10.0",
         "--output-json",
-        "docs/reports/goal1660_v1_0_barnes_hut_force_app_optix.json",
-        "--backend",
-        "optix"
+        "docs/reports/goal1660_v1_0_barnes_hut_force_app_optix.json"
       ],
+      "v1_0_command_shape": "legacy_optix_only_without_backend_selector",
       "v1_6_11_command": [
         "python3",
         "scripts/goal887_prepared_decision_phase_profiler.py",

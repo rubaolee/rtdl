@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class Goal867NativePairRowEmitterDesignPacketTest(unittest.TestCase):
     def test_current_truth_detects_host_indexed_gap(self) -> None:
         packet = goal867.build_packet(
-            "extern \"C\" int rtdl_optix_run_segment_polygon_anyhit_rows(){ run_seg_poly_anyhit_rows_optix_host_indexed(); }",
+            "extern \"C\" int rtdl_optix_run_segment_shape_anyhit_rows(){ run_seg_poly_anyhit_rows_optix_host_indexed(); }",
             "static void run_seg_poly_anyhit_rows_optix_host_indexed() {}",
             "__raygen__rtdl_segment_polygon_anyhit_rows_probe\n// Goal 126 placeholder:\n__closesthit__rtdl_segment_polygon_anyhit_rows_refine\n// Materialize one (segment_id, polygon_id) row",
         )
@@ -27,7 +27,7 @@ class Goal867NativePairRowEmitterDesignPacketTest(unittest.TestCase):
 
     def test_ready_state_requires_non_placeholder_and_non_host_indexed(self) -> None:
         packet = goal867.build_packet(
-            "extern \"C\" int rtdl_optix_run_segment_polygon_anyhit_rows(){ run_seg_poly_anyhit_rows_optix_native(); }",
+            "extern \"C\" int rtdl_optix_run_segment_shape_anyhit_rows(){ run_seg_poly_anyhit_rows_optix_native(); }",
             "static void run_seg_poly_anyhit_rows_optix_native() {}",
             "__raygen__rtdl_segment_polygon_anyhit_rows_probe\nextern \"C\" __global__ void __closesthit__rtdl_segment_polygon_anyhit_rows_refine() {}",
         )
@@ -42,7 +42,7 @@ class Goal867NativePairRowEmitterDesignPacketTest(unittest.TestCase):
             output_json = Path(tmp) / "packet.json"
             output_md = Path(tmp) / "packet.md"
             api_cpp.write_text(
-                "extern \"C\" int rtdl_optix_run_segment_polygon_anyhit_rows(){ run_seg_poly_anyhit_rows_optix_host_indexed(); }\n",
+                "extern \"C\" int rtdl_optix_run_segment_shape_anyhit_rows(){ run_seg_poly_anyhit_rows_optix_host_indexed(); }\n",
                 encoding="utf-8",
             )
             workloads_cpp.write_text(

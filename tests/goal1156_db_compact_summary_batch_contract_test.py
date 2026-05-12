@@ -124,7 +124,7 @@ class Goal1156DbCompactSummaryBatchContractTest(unittest.TestCase):
         from rtdsl import optix_runtime
 
         class _FakeLib:
-            rtdl_optix_db_dataset_compact_summary_batch = object()
+            rtdl_optix_columnar_payload_compact_summary_batch = object()
 
         class _FakeLower:
             library = _FakeLib()

@@ -32,7 +32,7 @@ Read these in order:
 | Pick an app demo | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Examples Index](../examples/README.md) |
 | Understand features | [Feature Guide](rtdl_feature_guide.md) | [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md), [Features Index](features/README.md) |
 | Choose a backend | [Capability Boundaries](capability_boundaries.md) | [Backend Maturity](backend_maturity.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
-| Understand the architecture | [Current Architecture](current_architecture.md) | [IR And Lowering](rtdl/ir_and_lowering.md), [ITRE App Programming Model](rtdl/itre_app_model.md) |
+| Understand the architecture | [Current Architecture](current_architecture.md) | [IR And Lowering](rtdl/ir_and_lowering.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 | Interpret benchmark results | [Performance Model](performance_model.md) | [Current Support Matrix](current_main_support_matrix.md), [Release Reports](release_reports/) |
 
 ## What RTDL Promises
@@ -48,6 +48,31 @@ input -> traverse -> refine -> emit
 
 Python remains the application layer. RTDL owns the supported kernel contract,
 runtime dispatch, and backend bridge for RT-shaped primitive work.
+
+The current roadmap keeps `v1.8` focused on finishing Python+RTDL and `v2.0`
+focused on finishing Python+partner+RTDL. The partner track is protocol first,
+with PyTorch as the primary reference partner and CuPy as the lightweight
+conformance partner, while the RTDL engine remains app-agnostic.
+
+The current released version is `v1.8`: the first source-tree Python+RTDL
+language release with the tracked native release surface migrated to an
+app-agnostic engine contract. Treat packaging/install support, broad public
+speedup wording, and partner-framework readiness as future work unless a later
+authorized release packet says otherwise.
+
+## v1.8 Learner Rule
+
+If you are learning RTDL from GitHub, keep this split in mind:
+
+```text
+Python writes the application.
+RTDL expresses the RT-shaped kernel.
+Native backends execute generic engine contracts.
+```
+
+Examples may have app names because they are Python applications. Native engine
+symbols and architecture claims must stay app-agnostic. This is the main design
+lesson behind the v1.8 release chain.
 
 ## What RTDL Does Not Promise
 
@@ -87,9 +112,11 @@ backend-specific claims.
 Use benchmark reports as evidence, not as blanket promises. The safest wording
 is specific: name the app, backend, hardware, command shape, and exact artifact.
 
-Current release-prep performance evidence lives in:
+Current release performance evidence lives in:
 
 - [Performance Model](performance_model.md)
+- [v1.8 Python+RTDL Gap Audit](reports/goal1737_v1_8_python_rtdl_gap_audit_2026-05-12.md)
+- [v1.8 Public Docs Boundary Alignment](reports/goal1740_v1_8_public_docs_boundary_alignment_2026-05-12.md)
 - [Dual-GPU Performance Release Report](reports/goal1662_v1_6_11_dual_gpu_perf_release_report_2026-05-10.md)
 - [Benchmark And Audit Reports](reports/)
 - [Release Reports](release_reports/)

@@ -20,7 +20,7 @@ Gemini's judgment is consistent with the code.
 
 Goal 397 is a valid bounded closure because:
 
-- the runtime dispatch is genuinely OptiX-native through `rtdl_optix_run_triangle_probe`
+- the runtime dispatch is genuinely OptiX-native through `rtdl_optix_run_edge_neighbor_intersection_packet`
 - the implementation uses a native host-indexed OptiX helper rather than oracle fallback
 - the bounded triangle semantics are preserved:
   - seed-edge probes

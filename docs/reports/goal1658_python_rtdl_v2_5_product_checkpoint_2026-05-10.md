@@ -51,7 +51,7 @@ Legacy or blocked apps remain outside the product-ready claim until migrated:
 Native engine audit currently finds app-shaped exports such as:
 
 - `rtdl_optix_run_pip`
-- `rtdl_optix_run_overlay`
+- `rtdl_optix_run_shape_pair_relation_flags`
 - `rtdl_optix_db_dataset_compact_summary_batch`
 - `rtdl_embree_run_segment_polygon_hitcount`
 

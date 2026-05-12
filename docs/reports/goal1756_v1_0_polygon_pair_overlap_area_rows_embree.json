@@ -1,0 +1,52 @@
+{
+  "_goal1756_wall_clock": {
+    "app": "polygon_pair_overlap_area_rows",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_polygon_pair_overlap_area_rows.py",
+      "--backend",
+      "embree",
+      "--copies",
+      "20000",
+      "--output-mode",
+      "summary"
+    ],
+    "elapsed_sec": 5.266816477000248,
+    "engine": "embree",
+    "returncode": 0,
+    "stderr_tail": "",
+    "stdout_json": true,
+    "stdout_tail": "",
+    "timing_scope": "same app-level command wall clock including process startup, input construction, native query, and JSON serialization",
+    "version": "v1_0",
+    "workdir": "/home/lestat/work/rtdl_goal1746_v1_0"
+  },
+  "app": "polygon_pair_overlap_area_rows",
+  "backend": "embree",
+  "backend_mode": "embree_native_assisted",
+  "boundary": "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact grid-cell area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery and the same native C++ continuation. These modes are RT-candidate plus native-continuation pipelines, not monolithic GPU area-overlay kernels.",
+  "candidate_row_count": 60000,
+  "copies": 20000,
+  "left_polygon_count": 40000,
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp",
+  "optix_performance": {
+    "class": "python_interface_dominated",
+    "note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell area continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU polygon-area kernel."
+  },
+  "output_mode": "summary",
+  "right_polygon_count": 60000,
+  "row_count": 40000,
+  "rt_core_accelerated": false,
+  "rt_core_candidate_discovery_active": false,
+  "run_phases": {
+    "input_construction_sec": 0.24969708698336035,
+    "native_exact_continuation_sec": 2.255221640050877,
+    "rt_candidate_discovery_sec": 2.4906685079913586
+  },
+  "summary": {
+    "overlap_pair_count": 40000,
+    "total_intersection_area": 100000,
+    "total_union_area": 380000
+  }
+}

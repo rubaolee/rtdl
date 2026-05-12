@@ -60,26 +60,26 @@ EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_get_version",
     "rtdl_embree_configure_threads",
     "rtdl_embree_free_rows",
-    "rtdl_embree_run_lsi",
-    "rtdl_embree_run_pip",
-    "rtdl_embree_run_overlay",
+    "rtdl_embree_run_segment_pair_intersection",
+    "rtdl_embree_run_point_primitive_anyhit_packet",
+    "rtdl_embree_run_shape_pair_relation_flags",
     "rtdl_embree_run_ray_hitcount",
-    "rtdl_embree_run_segment_polygon_hitcount",
-    "rtdl_embree_run_segment_polygon_anyhit_rows",
+    "rtdl_embree_run_segment_shape_hitcount",
+    "rtdl_embree_run_segment_shape_anyhit_rows",
     "rtdl_embree_run_point_nearest_segment",
     "rtdl_embree_run_fixed_radius_neighbors",
-    "rtdl_embree_run_knn_rows",
-    "rtdl_embree_run_bfs_expand",
-    "rtdl_embree_run_triangle_probe",
+    "rtdl_embree_run_k_closest_hits",
+    "rtdl_embree_run_frontier_edge_traversal_packet",
+    "rtdl_embree_run_edge_neighbor_intersection_packet",
     "rtdl_embree_run_conjunctive_scan",
     "rtdl_embree_run_grouped_count",
     "rtdl_embree_run_grouped_sum",
-    "rtdl_embree_db_dataset_create",
-    "rtdl_embree_db_dataset_create_columnar",
-    "rtdl_embree_db_dataset_destroy",
-    "rtdl_embree_db_dataset_conjunctive_scan",
-    "rtdl_embree_db_dataset_grouped_count",
-    "rtdl_embree_db_dataset_grouped_sum",
+    "rtdl_embree_columnar_payload_create",
+    "rtdl_embree_columnar_payload_create_from_columns",
+    "rtdl_embree_columnar_payload_destroy",
+    "rtdl_embree_columnar_payload_multi_predicate_scan",
+    "rtdl_embree_columnar_payload_grouped_reduction_count",
+    "rtdl_embree_columnar_payload_grouped_reduction_sum",
 )
 
 
@@ -183,10 +183,10 @@ def _pkg_config_flags(package: str, option: str) -> list[str]:
 def _geos_pkg_config_flags(option: str) -> list[str]:
     if platform.system() == "Windows":
         return []
-    flags = _pkg_config_flags("geos", option)
+    flags = _pkg_config_flags("geos_c", option)
     if flags:
         return flags
-    flags = _pkg_config_flags("geos_c", option)
+    flags = _pkg_config_flags("geos", option)
     if flags:
         return flags
     return ["-lgeos_c"] if option == "--libs" else []
@@ -450,7 +450,7 @@ class _RtdlTriangleRow(ctypes.Structure):
     ]
 
 
-class _RtdlDbColumn(ctypes.Structure):
+class _RtdlPayloadField(ctypes.Structure):
     _fields_ = [
         ("name", ctypes.c_char_p),
         ("kind", ctypes.c_uint32),
@@ -500,7 +500,7 @@ class PackedGraphCSR:
     row_offsets: object
     row_offset_count: int
     column_indices: object
-    column_index_count: int
+    field_index_count: int
 
 
 @dataclass(frozen=True)
@@ -835,11 +835,11 @@ def collect_polygon_pair_candidates_bounded_embree(
     packed_left = pack_polygons(records=left_polygons)
     packed_right = pack_polygons(records=right_polygons)
     library = _load_embree_library()
-    symbol = getattr(library, "rtdl_embree_collect_polygon_pair_candidates_bounded", None)
+    symbol = getattr(library, "rtdl_embree_collect_shape_pair_candidates_bounded", None)
     if symbol is None:
         raise ValueError(
             "loaded Embree backend does not export "
-            "rtdl_embree_collect_polygon_pair_candidates_bounded; "
+            "rtdl_embree_collect_shape_pair_candidates_bounded; "
             "rebuild the Embree backend from current main"
         )
 
@@ -897,7 +897,7 @@ def collect_polygon_pair_candidates_bounded_embree(
         backend="embree",
         library=library,
         symbol_name="rtdl_embree_collect_k_bounded_i64",
-        candidate_source_symbol="rtdl_embree_collect_polygon_pair_candidates_bounded",
+        candidate_source_symbol="rtdl_embree_collect_shape_pair_candidates_bounded",
     )
     result = {
         "primitive": "COLLECT_K_BOUNDED",
@@ -1394,12 +1394,12 @@ class PreparedEmbreeKnnRows2D:
         self._closed = False
         create = _require_optional_embree_symbol(
             self._library,
-            "rtdl_embree_knn_rows_2d_create",
+            "rtdl_embree_k_closest_hits_2d_create",
         )
         if create is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
-                "rtdl_embree_knn_rows_2d_create; "
+                "rtdl_embree_k_closest_hits_2d_create; "
                 "rebuild the Embree backend from current main"
             )
         packed_search = pack_points(records=search_points, dimension=2)
@@ -1418,7 +1418,7 @@ class PreparedEmbreeKnnRows2D:
             return
         destroy = _require_optional_embree_symbol(
             self._library,
-            "rtdl_embree_knn_rows_2d_destroy",
+            "rtdl_embree_k_closest_hits_2d_destroy",
         )
         if destroy is not None and self._handle:
             destroy(self._handle)
@@ -1444,12 +1444,12 @@ class PreparedEmbreeKnnRows2D:
             raise ValueError("k must be positive")
         run = _require_optional_embree_symbol(
             self._library,
-            "rtdl_embree_knn_rows_2d_run",
+            "rtdl_embree_k_closest_hits_2d_run",
         )
         if run is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
-                "rtdl_embree_knn_rows_2d_run; "
+                "rtdl_embree_k_closest_hits_2d_run; "
                 "rebuild the Embree backend from current main"
             )
         packed_queries = pack_points(records=query_points, dimension=2)
@@ -1494,14 +1494,19 @@ def prepare_embree_knn_rows_2d(search_points) -> PreparedEmbreeKnnRows2D:
 
 
 def directed_hausdorff_2d_embree(query_points, search_points) -> dict[str, object]:
-    """Run one directed Hausdorff pass fully inside the Embree KNN traversal path."""
+    """Run one directed Hausdorff pass over the generic max-distance
+    nearest-candidate native packet.
+
+    The native engine returns the max-over-queries nearest-candidate row;
+    Hausdorff semantics live in this Python helper, not in the native ABI.
+    """
     packed_queries = pack_points(records=query_points, dimension=2)
     packed_search = pack_points(records=search_points, dimension=2)
     lib = _load_configured_embree_library()
-    symbol = _require_optional_embree_symbol(lib, "rtdl_embree_run_directed_hausdorff_2d")
+    symbol = _require_optional_embree_symbol(lib, "rtdl_embree_run_max_distance_nearest_candidate_2d")
     if symbol is None:
         raise RuntimeError(
-            "loaded Embree backend library does not export rtdl_embree_run_directed_hausdorff_2d; "
+            "loaded Embree backend library does not export rtdl_embree_run_max_distance_nearest_candidate_2d; "
             "rebuild the Embree backend from current main"
         )
     row = _RtdlDirectedHausdorffRow()
@@ -1723,7 +1728,7 @@ class EmbreePreparedDbDataset:
         *,
         primary_fields=(),
         columns_array=None,
-        column_count: int | None = None,
+        field_count: int | None = None,
         transfer: str = "row",
         keepalive=(),
     ):
@@ -1731,7 +1736,7 @@ class EmbreePreparedDbDataset:
         self.fields_array = fields_array
         self.row_values_array = row_values_array
         self.columns_array = columns_array
-        self.column_count = int(column_count or 0)
+        self.field_count = int(field_count or 0)
         self.row_count = int(row_count)
         self.transfer = transfer
         self._keepalive = keepalive
@@ -1744,14 +1749,14 @@ class EmbreePreparedDbDataset:
         handle = ctypes.c_void_p()
         error = ctypes.create_string_buffer(4096)
         if transfer == "columnar":
-            if not hasattr(self.library, "rtdl_embree_db_dataset_create_columnar"):
+            if not hasattr(self.library, "rtdl_embree_columnar_payload_create_from_columns"):
                 raise RuntimeError(
-                    "loaded Embree backend does not export rtdl_embree_db_dataset_create_columnar; "
+                    "loaded Embree backend does not export rtdl_embree_columnar_payload_create_from_columns; "
                     "rebuild the Embree backend from the current checkout"
                 )
-            status = self.library.rtdl_embree_db_dataset_create_columnar(
+            status = self.library.rtdl_embree_columnar_payload_create_from_columns(
                 self.columns_array,
-                ctypes.c_size_t(self.column_count),
+                ctypes.c_size_t(self.field_count),
                 ctypes.c_size_t(self.row_count),
                 primary_fields_array,
                 ctypes.c_size_t(len(primary_field_bytes)),
@@ -1760,7 +1765,7 @@ class EmbreePreparedDbDataset:
                 len(error),
             )
         else:
-            status = self.library.rtdl_embree_db_dataset_create(
+            status = self.library.rtdl_embree_columnar_payload_create(
                 self.fields_array,
                 ctypes.c_size_t(len(self.fields_array)),
                 self.row_values_array,
@@ -1777,14 +1782,14 @@ class EmbreePreparedDbDataset:
 
     def close(self) -> None:
         if not self._closed and self.handle:
-            self.library.rtdl_embree_db_dataset_destroy(self.handle)
+            self.library.rtdl_embree_columnar_payload_destroy(self.handle)
         self._closed = True
 
     def conjunctive_scan(self, clauses_array) -> EmbreeRowView:
         rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_embree_db_dataset_conjunctive_scan(
+        status = self.library.rtdl_embree_columnar_payload_multi_predicate_scan(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -1806,7 +1811,7 @@ class EmbreePreparedDbDataset:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_embree_db_dataset_grouped_count(
+        status = self.library.rtdl_embree_columnar_payload_grouped_reduction_count(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -1829,7 +1834,7 @@ class EmbreePreparedDbDataset:
         rows_ptr = ctypes.POINTER(_EmbreeRtdlDbGroupedSumRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_embree_db_dataset_grouped_sum(
+        status = self.library.rtdl_embree_columnar_payload_grouped_reduction_sum(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -1879,7 +1884,7 @@ class PreparedEmbreeDbDataset:
             row_count,
             primary_fields=primary_fields,
             columns_array=columns_array,
-            column_count=len(columns_array) if columns_array is not None else None,
+            field_count=len(columns_array) if columns_array is not None else None,
             transfer=transfer,
             keepalive=keepalive,
         )
@@ -2096,7 +2101,7 @@ def _encode_db_table_columnar(table_rows) -> tuple[object, int, tuple[object, ..
             keepalive.append(values)
             int_values = values
         columns.append(
-            _RtdlDbColumn(
+            _RtdlPayloadField(
                 name=name_bytes,
                 kind=kind,
                 int_values=int_values,
@@ -2105,7 +2110,7 @@ def _encode_db_table_columnar(table_rows) -> tuple[object, int, tuple[object, ..
             )
         )
 
-    columns_array = (_RtdlDbColumn * len(columns))(*columns)
+    columns_array = (_RtdlPayloadField * len(columns))(*columns)
     keepalive.append(columns_array)
     return columns_array, len(table_rows), tuple(keepalive)
 
@@ -2139,7 +2144,7 @@ def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, li
             row_count,
             primary_fields=_db_primary_fields_from_clauses(predicates.clauses),
             columns_array=columns_array,
-            column_count=len(columns_array),
+            field_count=len(columns_array),
             transfer="columnar",
             keepalive=keepalive,
         )
@@ -2176,7 +2181,7 @@ def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, li
         row_count,
         primary_fields=_db_primary_fields_from_clauses(encoded_predicates),
         columns_array=columns_array,
-        column_count=len(columns_array),
+        field_count=len(columns_array),
         transfer="columnar",
         keepalive=keepalive,
     )
@@ -2208,7 +2213,7 @@ def _run_lsi_embree(compiled: CompiledKernel, normalized_inputs, library) -> tup
     rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_lsi(
+    status = library.rtdl_embree_run_segment_pair_intersection(
         left_array,
         len(left),
         right_array,
@@ -2249,7 +2254,7 @@ def _call_lsi_embree_packed(compiled: CompiledKernel, packed_inputs, library) ->
     rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_lsi(
+    status = library.rtdl_embree_run_segment_pair_intersection(
         left.records,
         left.count,
         right.records,
@@ -2290,7 +2295,7 @@ def _run_pip_embree(compiled: CompiledKernel, normalized_inputs, library) -> tup
     rows_ptr = ctypes.POINTER(_RtdlPipRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_pip(
+    status = library.rtdl_embree_run_point_primitive_anyhit_packet(
         point_array,
         len(points),
         polygon_refs,
@@ -2341,7 +2346,7 @@ def _call_pip_embree_packed(compiled: CompiledKernel, packed_inputs, library) ->
     rows_ptr = ctypes.POINTER(_RtdlPipRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_pip(
+    status = library.rtdl_embree_run_point_primitive_anyhit_packet(
         points.records,
         points.count,
         polygons.refs,
@@ -2375,7 +2380,7 @@ def _run_overlay_embree(compiled: CompiledKernel, normalized_inputs, library) ->
     rows_ptr = ctypes.POINTER(_RtdlOverlayRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_overlay(
+    status = library.rtdl_embree_run_shape_pair_relation_flags(
         left_refs,
         len(left),
         left_vertices,
@@ -2421,7 +2426,7 @@ def _call_overlay_embree_packed(compiled: CompiledKernel, packed_inputs, library
     rows_ptr = ctypes.POINTER(_RtdlOverlayRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_overlay(
+    status = library.rtdl_embree_run_shape_pair_relation_flags(
         left.refs,
         left.polygon_count,
         left.vertices_xy,
@@ -2658,7 +2663,7 @@ def _run_segment_polygon_hitcount_embree(compiled: CompiledKernel, normalized_in
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_segment_polygon_hitcount(
+    status = library.rtdl_embree_run_segment_shape_hitcount(
         segment_array,
         len(segments),
         polygon_refs,
@@ -2700,7 +2705,7 @@ def _call_segment_polygon_hitcount_embree_packed(compiled: CompiledKernel, packe
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_segment_polygon_hitcount(
+    status = library.rtdl_embree_run_segment_shape_hitcount(
         segments.records,
         segments.count,
         polygons.refs,
@@ -2731,7 +2736,7 @@ def _call_segment_polygon_anyhit_rows_embree_packed(compiled: CompiledKernel, pa
     rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_segment_polygon_anyhit_rows(
+    status = library.rtdl_embree_run_segment_shape_anyhit_rows(
         segments.records,
         segments.count,
         polygons.refs,
@@ -3056,10 +3061,10 @@ def _run_knn_rows_embree(compiled: CompiledKernel, normalized_inputs, library) -
         (query_points and isinstance(query_points[0], _CanonicalPoint3D))
         or (search_points and isinstance(search_points[0], _CanonicalPoint3D))
     ):
-        call = _require_optional_embree_symbol(library, "rtdl_embree_run_knn_rows_3d")
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_k_closest_hits_3d")
         if call is None:
             raise RuntimeError(
-                "loaded Embree backend library does not export rtdl_embree_run_knn_rows_3d; "
+                "loaded Embree backend library does not export rtdl_embree_run_k_closest_hits_3d; "
                 "rebuild the Embree backend from current main"
             )
         query_array = (_RtdlPoint3D * len(query_points))(*[
@@ -3086,7 +3091,7 @@ def _run_knn_rows_embree(compiled: CompiledKernel, normalized_inputs, library) -
         search_array = (_RtdlPoint * len(search_points))(*[
             _RtdlPoint(item.id, item.x, item.y) for item in search_points
         ])
-        status = library.rtdl_embree_run_knn_rows(
+        status = library.rtdl_embree_run_k_closest_hits(
             query_array,
             len(query_points),
             search_array,
@@ -3130,10 +3135,10 @@ def _call_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, librar
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
     if query_points.dimension == 3:
-        call = _require_optional_embree_symbol(library, "rtdl_embree_run_knn_rows_3d")
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_k_closest_hits_3d")
         if call is None:
             raise RuntimeError(
-                "loaded Embree backend library does not export rtdl_embree_run_knn_rows_3d; "
+                "loaded Embree backend library does not export rtdl_embree_run_k_closest_hits_3d; "
                 "rebuild the Embree backend from current main"
             )
         status = call(
@@ -3148,7 +3153,7 @@ def _call_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, librar
             len(error),
         )
     else:
-        status = library.rtdl_embree_run_knn_rows(
+        status = library.rtdl_embree_run_k_closest_hits(
             query_points.records,
             query_points.count,
             search_points.records,
@@ -3179,11 +3184,11 @@ def _call_bfs_expand_embree_packed(compiled: CompiledKernel, packed_inputs, libr
     rows_ptr = ctypes.POINTER(_RtdlBfsExpandRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_bfs_expand(
+    status = library.rtdl_embree_run_frontier_edge_traversal_packet(
         graph.row_offsets,
         graph.row_offset_count,
         graph.column_indices,
-        graph.column_index_count,
+        graph.field_index_count,
         frontier.records,
         frontier.count,
         visited.records,
@@ -3212,11 +3217,11 @@ def _call_triangle_probe_embree_packed(compiled: CompiledKernel, packed_inputs, 
     rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_triangle_probe(
+    status = library.rtdl_embree_run_edge_neighbor_intersection_packet(
         graph.row_offsets,
         graph.row_offset_count,
         graph.column_indices,
-        graph.column_index_count,
+        graph.field_index_count,
         seeds.records,
         seeds.count,
         ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("order") == "id_ascending" else 0),
@@ -3284,7 +3289,7 @@ def _pack_for_geometry(geometry_input, payload):
             row_offsets=row_offsets,
             row_offset_count=len(normalized.row_offsets),
             column_indices=column_indices,
-            column_index_count=len(normalized.column_indices),
+            field_index_count=len(normalized.column_indices),
         )
     if geometry_name == "vertex_frontier":
         if isinstance(payload, PackedVertexFrontier):
@@ -3432,7 +3437,7 @@ def _load_embree_library():
     library.rtdl_embree_free_rows.argtypes = [ctypes.c_void_p]
     library.rtdl_embree_free_rows.restype = None
 
-    library.rtdl_embree_run_lsi.argtypes = [
+    library.rtdl_embree_run_segment_pair_intersection.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment),
@@ -3442,9 +3447,9 @@ def _load_embree_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_embree_run_lsi.restype = ctypes.c_int
+    library.rtdl_embree_run_segment_pair_intersection.restype = ctypes.c_int
 
-    library.rtdl_embree_run_pip.argtypes = [
+    library.rtdl_embree_run_point_primitive_anyhit_packet.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -3457,9 +3462,9 @@ def _load_embree_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_embree_run_pip.restype = ctypes.c_int
+    library.rtdl_embree_run_point_primitive_anyhit_packet.restype = ctypes.c_int
 
-    library.rtdl_embree_run_overlay.argtypes = [
+    library.rtdl_embree_run_shape_pair_relation_flags.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
@@ -3473,7 +3478,7 @@ def _load_embree_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_embree_run_overlay.restype = ctypes.c_int
+    library.rtdl_embree_run_shape_pair_relation_flags.restype = ctypes.c_int
 
     library.rtdl_embree_run_ray_hitcount.argtypes = [
         ctypes.POINTER(_RtdlRay2D),
@@ -3543,7 +3548,7 @@ def _load_embree_library():
         ]
         optional_closest_3d.restype = ctypes.c_int
 
-    library.rtdl_embree_run_segment_polygon_hitcount.argtypes = [
+    library.rtdl_embree_run_segment_shape_hitcount.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -3555,9 +3560,9 @@ def _load_embree_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_embree_run_segment_polygon_hitcount.restype = ctypes.c_int
+    library.rtdl_embree_run_segment_shape_hitcount.restype = ctypes.c_int
 
-    library.rtdl_embree_run_segment_polygon_anyhit_rows.argtypes = [
+    library.rtdl_embree_run_segment_shape_anyhit_rows.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
@@ -3569,11 +3574,11 @@ def _load_embree_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_embree_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
+    library.rtdl_embree_run_segment_shape_anyhit_rows.restype = ctypes.c_int
 
     optional_polygon_pair_candidates_bounded = getattr(
         library,
-        "rtdl_embree_collect_polygon_pair_candidates_bounded",
+        "rtdl_embree_collect_shape_pair_candidates_bounded",
         None,
     )
     if optional_polygon_pair_candidates_bounded is not None:
@@ -3693,7 +3698,7 @@ def _load_embree_library():
         optional_frn_count_destroy.argtypes = [ctypes.c_void_p]
         optional_frn_count_destroy.restype = None
 
-    library.rtdl_embree_run_knn_rows.argtypes = [
+    library.rtdl_embree_run_k_closest_hits.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPoint),
@@ -3704,9 +3709,9 @@ def _load_embree_library():
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
-    library.rtdl_embree_run_knn_rows.restype = ctypes.c_int
+    library.rtdl_embree_run_k_closest_hits.restype = ctypes.c_int
 
-    optional_knn_rows_2d_create = _require_optional_embree_symbol(library, "rtdl_embree_knn_rows_2d_create")
+    optional_knn_rows_2d_create = _require_optional_embree_symbol(library, "rtdl_embree_k_closest_hits_2d_create")
     if optional_knn_rows_2d_create is not None:
         optional_knn_rows_2d_create.argtypes = [
             ctypes.POINTER(_RtdlPoint),
@@ -3717,7 +3722,7 @@ def _load_embree_library():
         ]
         optional_knn_rows_2d_create.restype = ctypes.c_int
 
-    optional_knn_rows_2d_run = _require_optional_embree_symbol(library, "rtdl_embree_knn_rows_2d_run")
+    optional_knn_rows_2d_run = _require_optional_embree_symbol(library, "rtdl_embree_k_closest_hits_2d_run")
     if optional_knn_rows_2d_run is not None:
         optional_knn_rows_2d_run.argtypes = [
             ctypes.c_void_p,
@@ -3731,12 +3736,12 @@ def _load_embree_library():
         ]
         optional_knn_rows_2d_run.restype = ctypes.c_int
 
-    optional_knn_rows_2d_destroy = _require_optional_embree_symbol(library, "rtdl_embree_knn_rows_2d_destroy")
+    optional_knn_rows_2d_destroy = _require_optional_embree_symbol(library, "rtdl_embree_k_closest_hits_2d_destroy")
     if optional_knn_rows_2d_destroy is not None:
         optional_knn_rows_2d_destroy.argtypes = [ctypes.c_void_p]
         optional_knn_rows_2d_destroy.restype = None
 
-    optional_knn_rows_3d = _require_optional_embree_symbol(library, "rtdl_embree_run_knn_rows_3d")
+    optional_knn_rows_3d = _require_optional_embree_symbol(library, "rtdl_embree_run_k_closest_hits_3d")
     if optional_knn_rows_3d is not None:
         optional_knn_rows_3d.argtypes = [
             ctypes.POINTER(_RtdlPoint3D),
@@ -3751,12 +3756,12 @@ def _load_embree_library():
         ]
         optional_knn_rows_3d.restype = ctypes.c_int
 
-    optional_directed_hausdorff_2d = _require_optional_embree_symbol(
+    optional_max_distance_nearest_candidate_2d = _require_optional_embree_symbol(
         library,
-        "rtdl_embree_run_directed_hausdorff_2d",
+        "rtdl_embree_run_max_distance_nearest_candidate_2d",
     )
-    if optional_directed_hausdorff_2d is not None:
-        optional_directed_hausdorff_2d.argtypes = [
+    if optional_max_distance_nearest_candidate_2d is not None:
+        optional_max_distance_nearest_candidate_2d.argtypes = [
             ctypes.POINTER(_RtdlPoint),
             ctypes.c_size_t,
             ctypes.POINTER(_RtdlPoint),
@@ -3765,9 +3770,9 @@ def _load_embree_library():
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]
-        optional_directed_hausdorff_2d.restype = ctypes.c_int
+        optional_max_distance_nearest_candidate_2d.restype = ctypes.c_int
 
-    optional_bfs_expand = _require_optional_embree_symbol(library, "rtdl_embree_run_bfs_expand")
+    optional_bfs_expand = _require_optional_embree_symbol(library, "rtdl_embree_run_frontier_edge_traversal_packet")
     if optional_bfs_expand is not None:
         optional_bfs_expand.argtypes = [
             ctypes.POINTER(ctypes.c_uint32),
@@ -3786,7 +3791,7 @@ def _load_embree_library():
         ]
         optional_bfs_expand.restype = ctypes.c_int
 
-    optional_triangle_probe = _require_optional_embree_symbol(library, "rtdl_embree_run_triangle_probe")
+    optional_triangle_probe = _require_optional_embree_symbol(library, "rtdl_embree_run_edge_neighbor_intersection_packet")
     if optional_triangle_probe is not None:
         optional_triangle_probe.argtypes = [
             ctypes.POINTER(ctypes.c_uint32),
@@ -3855,7 +3860,7 @@ def _load_embree_library():
         ]
         optional_db_grouped_sum.restype = ctypes.c_int
 
-    optional_db_dataset_create = _require_optional_embree_symbol(library, "rtdl_embree_db_dataset_create")
+    optional_db_dataset_create = _require_optional_embree_symbol(library, "rtdl_embree_columnar_payload_create")
     if optional_db_dataset_create is not None:
         optional_db_dataset_create.argtypes = [
             ctypes.POINTER(_RtdlDbField),
@@ -3871,11 +3876,11 @@ def _load_embree_library():
         optional_db_dataset_create.restype = ctypes.c_int
 
     optional_db_dataset_create_columnar = _require_optional_embree_symbol(
-        library, "rtdl_embree_db_dataset_create_columnar"
+        library, "rtdl_embree_columnar_payload_create_from_columns"
     )
     if optional_db_dataset_create_columnar is not None:
         optional_db_dataset_create_columnar.argtypes = [
-            ctypes.POINTER(_RtdlDbColumn),
+            ctypes.POINTER(_RtdlPayloadField),
             ctypes.c_size_t,
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_char_p),
@@ -3886,13 +3891,13 @@ def _load_embree_library():
         ]
         optional_db_dataset_create_columnar.restype = ctypes.c_int
 
-    optional_db_dataset_destroy = _require_optional_embree_symbol(library, "rtdl_embree_db_dataset_destroy")
+    optional_db_dataset_destroy = _require_optional_embree_symbol(library, "rtdl_embree_columnar_payload_destroy")
     if optional_db_dataset_destroy is not None:
         optional_db_dataset_destroy.argtypes = [ctypes.c_void_p]
         optional_db_dataset_destroy.restype = None
 
     optional_db_dataset_conjunctive_scan = _require_optional_embree_symbol(
-        library, "rtdl_embree_db_dataset_conjunctive_scan"
+        library, "rtdl_embree_columnar_payload_multi_predicate_scan"
     )
     if optional_db_dataset_conjunctive_scan is not None:
         optional_db_dataset_conjunctive_scan.argtypes = [
@@ -3907,7 +3912,7 @@ def _load_embree_library():
         optional_db_dataset_conjunctive_scan.restype = ctypes.c_int
 
     optional_db_dataset_grouped_count = _require_optional_embree_symbol(
-        library, "rtdl_embree_db_dataset_grouped_count"
+        library, "rtdl_embree_columnar_payload_grouped_reduction_count"
     )
     if optional_db_dataset_grouped_count is not None:
         optional_db_dataset_grouped_count.argtypes = [
@@ -3923,7 +3928,7 @@ def _load_embree_library():
         optional_db_dataset_grouped_count.restype = ctypes.c_int
 
     optional_db_dataset_grouped_sum = _require_optional_embree_symbol(
-        library, "rtdl_embree_db_dataset_grouped_sum"
+        library, "rtdl_embree_columnar_payload_grouped_reduction_sum"
     )
     if optional_db_dataset_grouped_sum is not None:
         optional_db_dataset_grouped_sum.argtypes = [

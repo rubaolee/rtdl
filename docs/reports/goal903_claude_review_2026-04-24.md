@@ -22,7 +22,7 @@ Goal903 upgrades Embree BFS and triangle-count from `rtcPointQuery`-based BVH-as
 
 **`rtdl_embree_run_bfs_expand`** — Builds the BVH once, then for each frontier vertex shoots a vertical ray from `(vertex_id, -1.0)` with direction `(0, 1, 0)` and `tfar = vertex_count + 2`. The ray sweeps through the x = vertex_id slab, the BVH narrows candidates to edges from that source, and the intersect callback (`graph_edge_point_intersect`) filters by visited/dedupe before emitting rows. `rtcIntersect1` is confirmed; `rtcPointQuery` is absent. ✓
 
-**`rtdl_embree_run_triangle_probe`** — Same scene setup. For each seed `(u, v)`, two rays are issued sequentially on the same thread. The stamp-based neighbour-marking correctly handles uint32_t wraparound. The `enforce_id_ascending` checks follow the standard edge enumeration pattern: `u < v` on the seed, `v < w` on the common neighbour, which enumerates each triangle exactly once. ✓
+**`rtdl_embree_run_edge_neighbor_intersection_packet`** — Same scene setup. For each seed `(u, v)`, two rays are issued sequentially on the same thread. The stamp-based neighbour-marking correctly handles uint32_t wraparound. The `enforce_id_ascending` checks follow the standard edge enumeration pattern: `u < v` on the seed, `v < w` on the common neighbour, which enumerates each triangle exactly once. ✓
 
 **Intersect callback design** — `graph_edge_point_intersect` never updates `rayhit->ray.tfar`, which means Embree sees no hit and continues traversal, visiting all candidates in the bbox. This is the correct "collect-all" pattern for multi-hit user geometry. ✓
 

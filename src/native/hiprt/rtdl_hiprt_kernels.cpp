@@ -1,4 +1,4 @@
-const char* ray_hitcount_kernel_source() {
+﻿const char* ray_hitcount_kernel_source() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>
 #include <hiprt/hiprt_vec.h>
@@ -48,7 +48,7 @@ extern "C" __global__ void RtdlRayHitcount3DKernel(
 )KERNEL";
 }
 
-const char* lsi_2d_kernel_source() {
+const char* segment_pair_intersection_2d_kernel_source() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>
 #include <hiprt/hiprt_vec.h>
@@ -61,7 +61,7 @@ struct RtdlHiprtSegmentDevice {
     float y1;
 };
 
-struct RtdlLsiRow {
+struct RtdlSegmentPairIntersectionRow {
     uint32_t left_id;
     uint32_t right_id;
     double intersection_point_x;
@@ -94,13 +94,13 @@ __device__ bool intersectRtdlSegment2D(const hiprtRay& ray, const void* data, vo
     return true;
 }
 
-extern "C" __global__ void RtdlLsi2DKernel(
+extern "C" __global__ void RtdlSegmentPairIntersection2DKernel(
     hiprtGeometry geom,
     const RtdlHiprtSegmentDevice* left_segments,
     const RtdlHiprtSegmentDevice* right_segments,
     uint32_t left_count,
     uint32_t right_count,
-    RtdlLsiRow* rows,
+    RtdlSegmentPairIntersectionRow* rows,
     uint32_t* counts,
     hiprtFuncTable table) {
     const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -821,7 +821,7 @@ extern "C" __global__ void RtdlFixedRadiusNeighbors3DKernel(
 )KERNEL";
 }
 
-const char* overlay_2d_kernel_source() {
+const char* shape_pair_relation_flags_2d_kernel_source() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>
 #include <hiprt/hiprt_vec.h>
@@ -837,11 +837,11 @@ struct RtdlHiprtVertex2DDevice {
     float y;
 };
 
-struct RtdlOverlayRow {
+struct RtdlShapePairRelationRow {
     uint32_t left_polygon_id;
     uint32_t right_polygon_id;
-    uint32_t requires_lsi;
-    uint32_t requires_pip;
+    uint32_t requires_segment_intersection;
+    uint32_t requires_point_containment;
 };
 
 __device__ bool pointOnSegment2D(float px, float py, float ax, float ay, float bx, float by) {
@@ -907,7 +907,7 @@ __device__ bool segmentsIntersect2D(float ax, float ay, float bx, float by, floa
     return false;
 }
 
-__device__ bool polygonsHaveLsi2D(
+__device__ bool polygonsHaveSegmentIntersection2D(
     const RtdlHiprtPolygonRefDevice& left,
     const RtdlHiprtVertex2DDevice* left_vertices,
     const RtdlHiprtPolygonRefDevice& right,
@@ -933,12 +933,12 @@ __device__ bool polygonsHaveLsi2D(
     return false;
 }
 
-__device__ bool intersectRtdlOverlayCandidate2D(const hiprtRay& ray, const void* data, void* payload, hiprtHit& hit) {
+__device__ bool intersectRtdlShapePairCandidate2D(const hiprtRay& ray, const void* data, void* payload, hiprtHit& hit) {
     hit.t = 0.0f;
     return true;
 }
 
-extern "C" __global__ void RtdlOverlay2DKernel(
+extern "C" __global__ void RtdlShapePairRelationFlags2DKernel(
     hiprtGeometry geom,
     const RtdlHiprtPolygonRefDevice* left_polygons,
     const RtdlHiprtVertex2DDevice* left_vertices,
@@ -946,7 +946,7 @@ extern "C" __global__ void RtdlOverlay2DKernel(
     const RtdlHiprtVertex2DDevice* right_vertices,
     uint32_t left_count,
     uint32_t right_count,
-    RtdlOverlayRow* rows,
+    RtdlShapePairRelationRow* rows,
     hiprtFuncTable table) {
     const uint32_t left_index = blockIdx.x * blockDim.x + threadIdx.x;
     if (left_index >= left_count) {
@@ -959,8 +959,8 @@ extern "C" __global__ void RtdlOverlay2DKernel(
     for (uint32_t right_index = 0; right_index < right_count; ++right_index) {
         rows[base + right_index].left_polygon_id = left.id;
         rows[base + right_index].right_polygon_id = right_polygons[right_index].id;
-        rows[base + right_index].requires_lsi = 0u;
-        rows[base + right_index].requires_pip = 0u;
+        rows[base + right_index].requires_segment_intersection = 0u;
+        rows[base + right_index].requires_point_containment = 0u;
     }
 
     hiprtRay ray;
@@ -981,11 +981,11 @@ extern "C" __global__ void RtdlOverlay2DKernel(
         }
         const RtdlHiprtPolygonRefDevice right = right_polygons[right_index];
         const RtdlHiprtVertex2DDevice right_first = right_vertices[right.vertex_offset];
-        RtdlOverlayRow& row = rows[base + right_index];
-        row.requires_lsi = polygonsHaveLsi2D(left, left_vertices, right, right_vertices) ? 1u : 0u;
+        RtdlShapePairRelationRow& row = rows[base + right_index];
+        row.requires_segment_intersection = polygonsHaveSegmentIntersection2D(left, left_vertices, right, right_vertices) ? 1u : 0u;
         const bool left_in_right = pointInPolygon2D(left_first.x, left_first.y, right, right_vertices);
         const bool right_in_left = pointInPolygon2D(right_first.x, right_first.y, left, left_vertices);
-        row.requires_pip = (left_in_right || right_in_left) ? 1u : 0u;
+        row.requires_point_containment = (left_in_right || right_in_left) ? 1u : 0u;
     }
 }
 )KERNEL";
@@ -1223,7 +1223,7 @@ extern "C" __global__ void RtdlBfsExpandKernel(
 )KERNEL";
 }
 
-const char* triangle_probe_kernel_source() {
+const char* triangle_cycle_candidates_kernel_source() {
     return R"KERNEL(
 #include <hiprt/hiprt_device.h>
 #include <hiprt/hiprt_vec.h>

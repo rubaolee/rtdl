@@ -1,4 +1,4 @@
-struct EmbreeDevice {
+﻿struct EmbreeDevice {
   RTCDevice device;
 
   EmbreeDevice() : device(rtcNewDevice(nullptr)) {
@@ -38,9 +38,9 @@ constexpr float kBvhCandidatePad = 2.5e-1f;
 
 enum class QueryKind {
   kNone,
-  kLsi,
+  kSegmentPairIntersection,
   kPip,
-  kOverlay,
+  kShapePairRelation,
   kRayHitCount,
   kRayAnyHit,
   kRayClosestHit,
@@ -104,9 +104,9 @@ struct TriangleSceneData3D {
   const std::vector<Triangle3D>* triangles;
 };
 
-struct LsiQueryState {
+struct SegmentPairIntersectionQueryState {
   const Segment2D* probe;
-  std::vector<std::pair<size_t, RtdlLsiRow>>* rows;
+  std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>* rows;
   const std::vector<size_t>* build_order_by_primitive;
 };
 
@@ -115,14 +115,14 @@ struct PipQueryState {
   std::unordered_set<uint32_t>* candidate_polygon_indices;
 };
 
-struct OverlayPairFlags {
-  uint32_t requires_lsi;
-  uint32_t requires_pip;
+struct ShapePairRelationFlags {
+  uint32_t requires_segment_intersection;
+  uint32_t requires_point_containment;
 };
 
-struct OverlayQueryState {
+struct ShapePairRelationQueryState {
   const Polygon2D* left;
-  std::unordered_map<uint32_t, OverlayPairFlags>* flags_by_right_id;
+  std::unordered_map<uint32_t, ShapePairRelationFlags>* flags_by_right_id;
 };
 
 struct RayHitCountState {
@@ -654,15 +654,15 @@ void triangle_bounds_3d(const RTCBoundsFunctionArguments* args) {
 }
 
 void segment_intersect(const RTCIntersectFunctionNArguments* args) {
-  if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kLsi || g_query_state == nullptr) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kSegmentPairIntersection || g_query_state == nullptr) {
     return;
   }
   auto* data = static_cast<SegmentSceneData*>(args->geometryUserPtr);
-  auto* state = static_cast<LsiQueryState*>(g_query_state);
+  auto* state = static_cast<SegmentPairIntersectionQueryState*>(g_query_state);
   const Segment2D& build = (*data->segments)[args->primID];
   Vec2 point {};
   if (segment_intersection(*state->probe, build, &point)) {
-    // LSI collects all intersecting build segments directly from the user-geometry
+    // segment-pair intersection collects all intersecting build segments directly from the user-geometry
     // callback; this path is not limited to a single closest-hit row.
     const size_t build_order = state->build_order_by_primitive == nullptr
         ? static_cast<size_t>(args->primID)
@@ -703,17 +703,17 @@ void polygon_intersect(const RTCIntersectFunctionNArguments* args) {
 #endif
     return;
   }
-  if (g_query_kind == QueryKind::kOverlay) {
-    auto* state = static_cast<OverlayQueryState*>(g_query_state);
-    bool requires_lsi = false;
-    bool requires_pip = false;
-    if (polygon_pair_flags(*state->left, polygon, &requires_lsi, &requires_pip)) {
-      OverlayPairFlags& flags = (*state->flags_by_right_id)[polygon.id];
-      if (requires_lsi) {
-        flags.requires_lsi = 1;
+  if (g_query_kind == QueryKind::kShapePairRelation) {
+    auto* state = static_cast<ShapePairRelationQueryState*>(g_query_state);
+    bool requires_segment_intersection = false;
+    bool requires_point_containment = false;
+    if (polygon_pair_flags(*state->left, polygon, &requires_segment_intersection, &requires_point_containment)) {
+      ShapePairRelationFlags& flags = (*state->flags_by_right_id)[polygon.id];
+      if (requires_segment_intersection) {
+        flags.requires_segment_intersection = 1;
       }
-      if (requires_pip) {
-        flags.requires_pip = 1;
+      if (requires_point_containment) {
+        flags.requires_point_containment = 1;
       }
     }
     return;

@@ -1,0 +1,81 @@
+{
+  "backend": "optix",
+  "boundary": "This profiler separates prepared OptiX setup from warm bounded pair-row query execution. It does not authorize public speedup claims without real RTX artifact intake and same-semantics baseline review.",
+  "cloud_claim_contract": {
+    "claim_scope": "prepared OptiX custom-AABB segment/polygon pair-row traversal with polygon BVH built once, bounded output, and warm segment batches",
+    "non_claim": "not an unbounded row-output speedup claim until real RTX artifacts prove no overflow, CPU-reference parity, and same-semantics baseline review",
+    "required_phase_groups": [
+      "input_build_sec",
+      "cpu_reference_total_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec",
+      "emitted_count",
+      "copied_count",
+      "overflowed"
+    ]
+  },
+  "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+  "date": "2026-04-25",
+  "generated_at": "2026-05-12T04:43:15",
+  "goal": "Goal934 prepared segment/polygon pair-row OptiX profiler",
+  "host": {
+    "hostname": "5a955904c650",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-58-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "iterations": 5,
+  "mode": "run",
+  "output_capacity": 4096,
+  "result": {
+    "actual_digest": {
+      "polygon_id_sum": 721152,
+      "row_count": 2816,
+      "segment_id_sum": 3604736,
+      "unique_polygon_count": 512,
+      "unique_segment_count": 2560
+    },
+    "copied_count": 2816,
+    "emitted_count": 2816,
+    "expected_digest": {
+      "polygon_id_sum": 721152,
+      "row_count": 2816,
+      "segment_id_sum": 3604736,
+      "unique_polygon_count": 512,
+      "unique_segment_count": 2560
+    },
+    "matches_oracle": true,
+    "overflowed": false,
+    "polygon_count": 512,
+    "segment_count": 2560
+  },
+  "scenario": "segment_polygon_anyhit_rows_prepared_bounded",
+  "schema_version": "goal934_prepared_segment_polygon_pair_rows_optix_contract_v1",
+  "status": "pass",
+  "strict_failures": [],
+  "strict_pass": true,
+  "timings_sec": {
+    "cpu_reference_total_sec": 0.03697366267442703,
+    "input_build_sec": 0.017757073044776917,
+    "optix_close_sec": 2.4262815713882446e-05,
+    "optix_prepare_sec": 0.7381228879094124,
+    "optix_query_sec": {
+      "max_sec": 0.005938678979873657,
+      "median_sec": 0.0039970763027668,
+      "min_sec": 0.003961607813835144
+    },
+    "python_postprocess_sec": {
+      "max_sec": 0.0013474635779857635,
+      "median_sec": 0.0012866966426372528,
+      "min_sec": 0.0012629255652427673
+    },
+    "validation_sec": {
+      "max_sec": 2.5369226932525635e-06,
+      "median_sec": 2.5369226932525635e-06,
+      "min_sec": 2.5369226932525635e-06
+    }
+  }
+}

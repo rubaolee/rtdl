@@ -1,0 +1,38 @@
+{
+  "_goal1746_adapter": {
+    "baseline_workdir": "/home/lestat/work/rtdl_goal1746_v1_0",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_ann_candidate_app.py",
+      "--backend",
+      "embree",
+      "--copies",
+      "20000",
+      "--output-mode",
+      "rerank_summary"
+    ],
+    "source": "v1.0 Embree app CLI stdout JSON"
+  },
+  "app": "ann_candidate_search",
+  "approximate_row_count": 60000,
+  "backend": "embree",
+  "boundary": "Bounded ANN candidate-search demo only; RTDL does not yet provide an ANN index, training phase, or recall/latency optimizer. rerank_summary measures only the RTDL candidate-subset KNN reranking slice; full quality evaluation still uses Python exact full-set comparison.",
+  "candidate_count": 60000,
+  "candidate_radius": null,
+  "copies": 20000,
+  "k": 1,
+  "max_neighbor_rank": 1,
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp",
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only."
+  },
+  "optix_summary_mode": null,
+  "output_mode": "rerank_summary",
+  "query_count": 60000,
+  "query_count_with_candidate": 60000,
+  "rt_core_accelerated": false,
+  "rtdl_role": "RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.",
+  "search_count": 120000
+}

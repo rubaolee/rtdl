@@ -1,0 +1,236 @@
+{
+  "boundary": "These rows use real v1.0 Embree example/app command surfaces from the Goal1030 local baseline manifest. They are adapter candidates, not public speedup claims. Timing comparability must be assessed per row after artifacts are generated.",
+  "goal": "Goal1746",
+  "row_count": 14,
+  "rows": [
+    {
+      "app": "service_coverage_gaps",
+      "artifact": "docs/reports/goal1746_v1_0_service_coverage_gaps_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--embree-summary-mode",
+        "gap_summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact": "docs/reports/goal1746_v1_0_event_hotspot_screening_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--embree-summary-mode",
+        "count_summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "artifact": "docs/reports/goal1746_v1_0_facility_knn_assignment_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_facility_knn_assignment.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact": "docs/reports/goal1746_v1_0_road_hazard_screening_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_road_hazard_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact": "docs/reports/goal1746_v1_0_segment_polygon_hitcount_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "256"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "artifact": "docs/reports/goal1746_v1_0_segment_polygon_anyhit_rows_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_segment_polygon_anyhit_rows.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "256",
+        "--output-mode",
+        "rows",
+        "--output-capacity",
+        "4096"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "graph_visibility_edges",
+      "artifact": "docs/reports/goal1746_v1_0_graph_visibility_edges_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_graph_analytics_app.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "visibility_edges",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "graph_bfs",
+      "artifact": "docs/reports/goal1746_v1_0_graph_bfs_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_graph_analytics_app.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "bfs",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "graph_triangle_count",
+      "artifact": "docs/reports/goal1746_v1_0_graph_triangle_count_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_graph_analytics_app.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "triangle_count",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact": "docs/reports/goal1746_v1_0_hausdorff_distance_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--embree-result-mode",
+        "directed_summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "ann_candidate_search",
+      "artifact": "docs/reports/goal1746_v1_0_ann_candidate_search_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_ann_candidate_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "rerank_summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact": "docs/reports/goal1746_v1_0_barnes_hut_force_app_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "embree",
+        "--body-count",
+        "200000",
+        "--output-mode",
+        "candidate_summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact": "docs/reports/goal1746_v1_0_polygon_pair_overlap_area_rows_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact": "docs/reports/goal1746_v1_0_polygon_set_jaccard_embree.json",
+      "command": [
+        "C:\\Python311\\python.exe",
+        "examples/rtdl_polygon_set_jaccard.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000"
+      ],
+      "engine": "embree",
+      "scale": "goal1660"
+    }
+  ],
+  "verdict": "v1_0_embree_baseline_adapter_ready"
+}

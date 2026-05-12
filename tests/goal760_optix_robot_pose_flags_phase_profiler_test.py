@@ -75,7 +75,7 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
             "scripts.goal760_optix_robot_pose_flags_phase_profiler",
             fromlist=["run_suite"],
         )
-        with self.assertRaisesRegex(ValueError, "only supported with mode='optix'"):
+        with self.assertRaisesRegex(ValueError, "only supported with mode='embree' or mode='optix'"):
             module.run_suite(
                 mode="dry-run",
                 pose_count=4,

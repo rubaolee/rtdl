@@ -1,0 +1,737 @@
+{
+  "artifact_pairs_present": 16,
+  "boundary": "Artifact consolidation and companion evidence only; not a speedup or release claim.",
+  "date": "2026-05-12",
+  "goal": "Goal1723",
+  "planned_comparable_rows": 16,
+  "public_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_database_analytics_embree.json",
+      "baseline_parity_flags": [
+        {
+          "name": "results[0].status_ok",
+          "value": true
+        }
+      ],
+      "baseline_status": "ok",
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_database_analytics_embree.json",
+      "current_parity_flags": [
+        {
+          "name": "results[0].status_ok",
+          "value": true
+        }
+      ],
+      "current_status": "ok",
+      "engine": "embree",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "max_sec",
+        "median_sec",
+        "min_sec"
+      ],
+      "timing_fields_current": [
+        "max_sec",
+        "median_sec",
+        "min_sec"
+      ]
+    },
+    {
+      "app": "database_analytics",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_database_analytics_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "results[0].status_ok",
+          "value": true
+        }
+      ],
+      "baseline_status": "ok",
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_database_analytics_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "results[0].status_ok",
+          "value": true
+        }
+      ],
+      "current_status": "ok",
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "max_sec",
+        "median_sec",
+        "min_sec"
+      ],
+      "timing_fields_current": [
+        "max_sec",
+        "median_sec",
+        "min_sec"
+      ]
+    },
+    {
+      "app": "graph_analytics",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_graph_analytics_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        }
+      ],
+      "baseline_status": "pass",
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_graph_analytics_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        }
+      ],
+      "current_status": "pass",
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": null,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [],
+      "timing_fields_current": []
+    },
+    {
+      "app": "service_coverage_gaps",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_service_coverage_gaps_optix.json",
+      "baseline_parity_flags": [],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_service_coverage_gaps_optix.json",
+      "current_parity_flags": [],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "timing_fields_current": [
+        "backend_prepare",
+        "backend_query",
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ]
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_event_hotspot_screening_optix.json",
+      "baseline_parity_flags": [],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_event_hotspot_screening_optix.json",
+      "current_parity_flags": [],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "timing_fields_current": [
+        "backend_prepare",
+        "backend_query",
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ]
+    },
+    {
+      "app": "facility_knn_assignment",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_facility_knn_assignment_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "scenario.result.all_queries_reached_threshold",
+          "value": true
+        }
+      ],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": true,
+      "companion_resolution": {
+        "baseline_artifact": "docs/reports/goal1726_v1_0_facility_validation_companion_optix.json",
+        "current_artifact": "docs/reports/goal1726_v1_6_11_facility_validation_companion_optix.json",
+        "resolution": "validation_companion_matches_oracle",
+        "resolved": true
+      },
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_facility_knn_assignment_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "scenario.result.all_queries_reached_threshold",
+          "value": true
+        }
+      ],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [
+        "skip_validation_true_in_profiler_payload"
+      ],
+      "timing_fields_baseline": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ],
+      "timing_fields_current": [
+        "backend_close_sec",
+        "backend_prepare_sec",
+        "backend_query_sec",
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ]
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_road_hazard_screening_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        },
+        {
+          "name": "result.matches_oracle",
+          "value": true
+        }
+      ],
+      "baseline_status": "pass",
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_road_hazard_screening_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        },
+        {
+          "name": "result.matches_oracle",
+          "value": true
+        }
+      ],
+      "current_status": "pass",
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ],
+      "timing_fields_current": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ]
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_segment_polygon_hitcount_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        },
+        {
+          "name": "result.matches_oracle",
+          "value": true
+        }
+      ],
+      "baseline_status": "pass",
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_segment_polygon_hitcount_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        },
+        {
+          "name": "result.matches_oracle",
+          "value": true
+        }
+      ],
+      "current_status": "pass",
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ],
+      "timing_fields_current": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ]
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_segment_polygon_anyhit_rows_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        },
+        {
+          "name": "result.matches_oracle",
+          "value": true
+        }
+      ],
+      "baseline_status": "pass",
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_segment_polygon_anyhit_rows_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "strict_pass",
+          "value": true
+        },
+        {
+          "name": "result.matches_oracle",
+          "value": true
+        }
+      ],
+      "current_status": "pass",
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "cpu_reference_total_sec",
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ],
+      "timing_fields_current": [
+        "cpu_reference_total_sec",
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ]
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_polygon_pair_overlap_area_rows_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "parity_vs_cpu",
+          "value": true
+        },
+        {
+          "name": "cpu_digest_equals_optix_digest",
+          "value": true
+        }
+      ],
+      "baseline_status": "pass",
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_polygon_pair_overlap_area_rows_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "parity_vs_cpu",
+          "value": true
+        },
+        {
+          "name": "cpu_digest_equals_optix_digest",
+          "value": true
+        }
+      ],
+      "current_status": "pass",
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "cpu_exact_refinement_sec",
+        "cpu_reference_sec",
+        "input_build_sec",
+        "native_exact_continuation_sec",
+        "optix_candidate_discovery_sec"
+      ],
+      "timing_fields_current": [
+        "cpu_exact_refinement_sec",
+        "cpu_reference_sec",
+        "input_build_sec",
+        "native_exact_continuation_sec",
+        "optix_candidate_discovery_sec"
+      ]
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_polygon_set_jaccard_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "parity_vs_cpu",
+          "value": true
+        },
+        {
+          "name": "cpu_digest_equals_optix_digest",
+          "value": true
+        }
+      ],
+      "baseline_status": "diagnostic_chunk_config",
+      "boundary_resolved_by_companion": true,
+      "companion_resolution": {
+        "baseline_artifact": "docs/reports/goal1726_v1_0_polygon_set_jaccard_public_safe_chunk_optix.json",
+        "current_artifact": "docs/reports/goal1726_v1_6_11_polygon_set_jaccard_public_safe_chunk_optix.json",
+        "resolution": "public_safe_chunk_companion_passes_parity",
+        "resolved": true
+      },
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_polygon_set_jaccard_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "parity_vs_cpu",
+          "value": true
+        },
+        {
+          "name": "cpu_digest_equals_optix_digest",
+          "value": true
+        }
+      ],
+      "current_status": "diagnostic_chunk_config",
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [
+        "diagnostic_chunk_config_not_public_safe"
+      ],
+      "timing_fields_baseline": [
+        "cpu_exact_refinement_sec",
+        "cpu_reference_sec",
+        "input_build_sec",
+        "native_exact_continuation_sec",
+        "optix_candidate_discovery_sec"
+      ],
+      "timing_fields_current": [
+        "cpu_exact_refinement_sec",
+        "cpu_reference_sec",
+        "input_build_sec",
+        "native_exact_continuation_sec",
+        "optix_candidate_discovery_sec"
+      ]
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_hausdorff_distance_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "scenario.result.matches_oracle",
+          "value": true
+        },
+        {
+          "name": "scenario.result.within_threshold",
+          "value": true
+        }
+      ],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_hausdorff_distance_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "scenario.result.matches_oracle",
+          "value": true
+        },
+        {
+          "name": "scenario.result.within_threshold",
+          "value": true
+        }
+      ],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ],
+      "timing_fields_current": [
+        "backend_close_sec",
+        "backend_prepare_sec",
+        "backend_query_sec",
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ]
+    },
+    {
+      "app": "ann_candidate_search",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_ann_candidate_search_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "scenario.result.matches_oracle",
+          "value": true
+        },
+        {
+          "name": "scenario.result.all_queries_reached_threshold",
+          "value": true
+        }
+      ],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_ann_candidate_search_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "scenario.result.matches_oracle",
+          "value": true
+        },
+        {
+          "name": "scenario.result.all_queries_reached_threshold",
+          "value": true
+        }
+      ],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ],
+      "timing_fields_current": [
+        "backend_close_sec",
+        "backend_prepare_sec",
+        "backend_query_sec",
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ]
+    },
+    {
+      "app": "outlier_detection",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_outlier_detection_optix.json",
+      "baseline_parity_flags": [],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_outlier_detection_optix.json",
+      "current_parity_flags": [],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": null,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [],
+      "timing_fields_current": []
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_robot_collision_screening_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "validated",
+          "value": false
+        }
+      ],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": true,
+      "companion_resolution": {
+        "baseline_artifact": "docs/reports/goal1726_v1_0_robot_collision_validation_companion_optix.json",
+        "current_artifact": "docs/reports/goal1726_v1_6_11_robot_collision_validation_companion_optix.json",
+        "resolution": "pose_flags_validation_companion_matches_oracle",
+        "resolved": true
+      },
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_robot_collision_screening_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "validated",
+          "value": false
+        }
+      ],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [
+        "validated_false_in_profiler_payload"
+      ],
+      "timing_fields_baseline": [
+        "close_sec",
+        "optix_prepare_pose_indices_sec",
+        "optix_prepare_rays_sec",
+        "optix_prepare_scene_sec",
+        "oracle_validate_sec",
+        "prepared_pose_flags_warm_query_sec",
+        "python_input_construction_sec",
+        "total_sec"
+      ],
+      "timing_fields_current": [
+        "close_sec",
+        "optix_prepare_pose_indices_sec",
+        "optix_prepare_rays_sec",
+        "optix_prepare_scene_sec",
+        "oracle_validate_sec",
+        "prepared_pose_flags_warm_query_sec",
+        "python_input_construction_sec",
+        "total_sec"
+      ]
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact_pair_present": true,
+      "baseline_artifact": "docs\\reports\\goal1660_v1_0_barnes_hut_force_app_optix.json",
+      "baseline_parity_flags": [
+        {
+          "name": "scenario.result.matches_oracle",
+          "value": true
+        },
+        {
+          "name": "scenario.result.all_queries_reached_threshold",
+          "value": true
+        }
+      ],
+      "baseline_status": null,
+      "boundary_resolved_by_companion": false,
+      "companion_resolution": null,
+      "current_artifact": "docs\\reports\\goal1660_v1_6_11_barnes_hut_force_app_optix.json",
+      "current_parity_flags": [
+        {
+          "name": "scenario.result.matches_oracle",
+          "value": true
+        },
+        {
+          "name": "scenario.result.all_queries_reached_threshold",
+          "value": true
+        }
+      ],
+      "current_status": null,
+      "engine": "optix",
+      "evidence_pair_ready_without_public_claim": true,
+      "parity_evidence_clean": true,
+      "semantic_digest_equal_across_versions": true,
+      "timing_artifact_boundary_notes": [],
+      "timing_fields_baseline": [
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ],
+      "timing_fields_current": [
+        "backend_close_sec",
+        "backend_prepare_sec",
+        "backend_query_sec",
+        "input_build_sec",
+        "optix_close_sec",
+        "optix_prepare_sec",
+        "optix_query_sec",
+        "point_pack_sec",
+        "python_postprocess_sec",
+        "validation_sec"
+      ]
+    }
+  ],
+  "rows_with_clean_parity_or_companion_evidence": 16,
+  "rows_with_companion_resolutions": 3,
+  "rows_with_timing_artifact_boundary_notes": 3,
+  "rows_with_unresolved_boundaries": 0,
+  "source_manifest": "docs/reports/goal1660_v1_6_11_vs_v1_0_perf_matrix_2026-05-10.json"
+}

@@ -48,7 +48,7 @@ from .embree_runtime import _RtdlFrontierVertex
 from .embree_runtime import _RtdlBfsExpandRow
 from .embree_runtime import _RtdlEdgeSeed
 from .embree_runtime import _RtdlTriangleRow
-from .embree_runtime import _RtdlDbColumn
+from .embree_runtime import _RtdlPayloadField
 from .embree_runtime import _encode_db_table_columnar
 from .oracle_runtime import _decode_db_group_key
 from .oracle_runtime import _RtdlDbField
@@ -924,11 +924,11 @@ class PreparedOptixSegmentPolygonHitcount2D:
             return
 
         lib = _load_optix_library()
-        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_segment_polygon_hitcount_2d")
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_segment_shape_hitcount_2d")
         if prepare_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                "rtdl_optix_prepare_segment_polygon_hitcount_2d; rebuild the OptiX backend from current main"
+                "rtdl_optix_prepare_segment_shape_hitcount_2d; rebuild the OptiX backend from current main"
             )
         error = ctypes.create_string_buffer(4096)
         status = prepare_symbol(
@@ -959,11 +959,11 @@ class PreparedOptixSegmentPolygonHitcount2D:
             )
 
         lib = _load_optix_library()
-        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_segment_polygon_hitcount_2d")
+        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_segment_shape_hitcount_2d")
         if run_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                "rtdl_optix_run_prepared_segment_polygon_hitcount_2d; rebuild the OptiX backend from current main"
+                "rtdl_optix_run_prepared_segment_shape_hitcount_2d; rebuild the OptiX backend from current main"
             )
         rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
         row_count = ctypes.c_size_t()
@@ -1012,12 +1012,12 @@ class PreparedOptixSegmentPolygonHitcount2D:
         lib = _load_optix_library()
         count_symbol = _find_optional_backend_symbol(
             lib,
-            "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d",
+            "rtdl_optix_count_prepared_segment_shape_hitcount_at_least_2d",
         )
         if count_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d; rebuild the OptiX backend from current main"
+                "rtdl_optix_count_prepared_segment_shape_hitcount_at_least_2d; rebuild the OptiX backend from current main"
             )
         count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
@@ -1053,12 +1053,12 @@ class PreparedOptixSegmentPolygonHitcount2D:
         lib = _load_optix_library()
         aggregate_symbol = _find_optional_backend_symbol(
             lib,
-            "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d",
+            "rtdl_optix_aggregate_prepared_segment_shape_hitcount_2d",
         )
         if aggregate_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d; rebuild the OptiX backend from current main"
+                "rtdl_optix_aggregate_prepared_segment_shape_hitcount_2d; rebuild the OptiX backend from current main"
             )
         row_count = ctypes.c_size_t()
         hit_sum = ctypes.c_uint64()
@@ -1090,7 +1090,7 @@ class PreparedOptixSegmentPolygonHitcount2D:
         self._closed = True
         if handle.value:
             lib = _load_optix_library()
-            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d")
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_segment_shape_hitcount_2d")
             if destroy_symbol is not None:
                 destroy_symbol(handle)
 
@@ -1123,11 +1123,11 @@ class PreparedOptixSegmentPolygonAnyHitRows2D:
             return
 
         lib = _load_optix_library()
-        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d")
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_segment_shape_anyhit_rows_2d")
         if prepare_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d; rebuild the OptiX backend from current main"
+                "rtdl_optix_prepare_segment_shape_anyhit_rows_2d; rebuild the OptiX backend from current main"
             )
         error = ctypes.create_string_buffer(4096)
         status = prepare_symbol(
@@ -1160,11 +1160,11 @@ class PreparedOptixSegmentPolygonAnyHitRows2D:
             }
 
         lib = _load_optix_library()
-        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d")
+        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_segment_shape_anyhit_rows_2d")
         if run_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d; rebuild the OptiX backend from current main"
+                "rtdl_optix_run_prepared_segment_shape_anyhit_rows_2d; rebuild the OptiX backend from current main"
             )
         row_array = (_RtdlSegmentPolygonAnyHitRow * output_capacity)()
         emitted_count = ctypes.c_size_t()
@@ -1214,7 +1214,7 @@ class PreparedOptixSegmentPolygonAnyHitRows2D:
         self._closed = True
         if handle.value:
             lib = _load_optix_library()
-            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d")
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_segment_shape_anyhit_rows_2d")
             if destroy_symbol is not None:
                 destroy_symbol(handle)
 
@@ -1264,7 +1264,7 @@ def get_last_db_phase_timings() -> dict[str, float | int] | None:
 
 
 def _get_last_db_phase_timings_from_library(lib) -> dict[str, float | int] | None:
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_get_last_phase_timings")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_get_last_phase_timings")
     if symbol is None:
         return None
     symbol.argtypes = (
@@ -1500,7 +1500,7 @@ class OptixPreparedDbDataset:
         *,
         primary_fields=(),
         columns_array=None,
-        column_count: int | None = None,
+        field_count: int | None = None,
         transfer: str = "row",
         keepalive=(),
     ):
@@ -1508,7 +1508,7 @@ class OptixPreparedDbDataset:
         self.fields_array = fields_array
         self.row_values_array = row_values_array
         self.columns_array = columns_array
-        self.column_count = int(column_count or 0)
+        self.field_count = int(field_count or 0)
         self.row_count = int(row_count)
         self.transfer = transfer
         self._keepalive = keepalive
@@ -1521,14 +1521,14 @@ class OptixPreparedDbDataset:
         handle = ctypes.c_void_p()
         error = ctypes.create_string_buffer(4096)
         if transfer == "columnar":
-            if not hasattr(self.library, "rtdl_optix_db_dataset_create_columnar"):
+            if not hasattr(self.library, "rtdl_optix_columnar_payload_create_from_columns"):
                 raise RuntimeError(
-                    "loaded OptiX backend does not export rtdl_optix_db_dataset_create_columnar; "
+                    "loaded OptiX backend does not export rtdl_optix_columnar_payload_create_from_columns; "
                     "rebuild the OptiX backend from the current checkout"
                 )
-            status = self.library.rtdl_optix_db_dataset_create_columnar(
+            status = self.library.rtdl_optix_columnar_payload_create_from_columns(
                 self.columns_array,
-                ctypes.c_size_t(self.column_count),
+                ctypes.c_size_t(self.field_count),
                 ctypes.c_size_t(self.row_count),
                 primary_fields_array,
                 ctypes.c_size_t(len(primary_field_bytes)),
@@ -1537,7 +1537,7 @@ class OptixPreparedDbDataset:
                 len(error),
             )
         else:
-            status = self.library.rtdl_optix_db_dataset_create(
+            status = self.library.rtdl_optix_columnar_payload_create(
                 self.fields_array,
                 ctypes.c_size_t(len(self.fields_array)),
                 self.row_values_array,
@@ -1554,14 +1554,14 @@ class OptixPreparedDbDataset:
 
     def close(self) -> None:
         if not self._closed and self.handle:
-            self.library.rtdl_optix_db_dataset_destroy(self.handle)
+            self.library.rtdl_optix_columnar_payload_destroy(self.handle)
         self._closed = True
 
     def conjunctive_scan(self, clauses_array) -> OptixRowView:
         rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_optix_db_dataset_conjunctive_scan(
+        status = self.library.rtdl_optix_columnar_payload_multi_predicate_scan(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -1580,7 +1580,7 @@ class OptixPreparedDbDataset:
         )
 
     def conjunctive_scan_count(self, clauses_array) -> int:
-        symbol = getattr(self.library, "rtdl_optix_db_dataset_conjunctive_scan_count", None)
+        symbol = getattr(self.library, "rtdl_optix_columnar_payload_multi_predicate_scan_count", None)
         if symbol is None:
             rows = self.conjunctive_scan(clauses_array)
             try:
@@ -1604,7 +1604,7 @@ class OptixPreparedDbDataset:
         return _get_last_db_phase_timings_from_library(self.library)
 
     def compact_summary_batch_native(self, requests_array, request_count):
-        symbol = getattr(self.library, "rtdl_optix_db_dataset_compact_summary_batch", None)
+        symbol = getattr(self.library, "rtdl_optix_columnar_payload_compact_summary_batch", None)
         if symbol is None:
             return None
         results_ptr = ctypes.POINTER(_RtdlDbCompactSummaryResult)()
@@ -1623,7 +1623,7 @@ class OptixPreparedDbDataset:
         return results_ptr, int(result_count.value)
 
     def destroy_compact_summary_batch_results(self, results_ptr, result_count: int) -> None:
-        symbol = getattr(self.library, "rtdl_optix_db_compact_summary_results_destroy", None)
+        symbol = getattr(self.library, "rtdl_optix_columnar_compact_summary_results_destroy", None)
         if symbol is not None:
             symbol(results_ptr, ctypes.c_size_t(result_count))
 
@@ -1631,7 +1631,7 @@ class OptixPreparedDbDataset:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_optix_db_dataset_grouped_count(
+        status = self.library.rtdl_optix_columnar_payload_grouped_reduction_count(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -1654,7 +1654,7 @@ class OptixPreparedDbDataset:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = self.library.rtdl_optix_db_dataset_grouped_sum(
+        status = self.library.rtdl_optix_columnar_payload_grouped_reduction_sum(
             self.handle,
             clauses_array,
             ctypes.c_size_t(len(clauses_array)),
@@ -1704,7 +1704,7 @@ class PreparedOptixDbDataset:
             row_count,
             primary_fields=primary_fields,
             columns_array=columns_array,
-            column_count=len(columns_array) if columns_array is not None else None,
+            field_count=len(columns_array) if columns_array is not None else None,
             transfer=transfer,
             keepalive=keepalive,
         )
@@ -1761,7 +1761,7 @@ class PreparedOptixDbDataset:
     def _compact_summary_batch_native(self, requests) -> dict[str, object] | None:
         if not hasattr(self, "_dataset"):
             return None
-        if getattr(self._dataset.library, "rtdl_optix_db_dataset_compact_summary_batch", None) is None:
+        if getattr(self._dataset.library, "rtdl_optix_columnar_payload_compact_summary_batch", None) is None:
             return None
 
         encoded_requests: list[_RtdlDbCompactSummaryRequest] = []
@@ -1994,7 +1994,7 @@ def _prepare_db_optix_execution(compiled: CompiledKernel, normalized_inputs, lib
             row_count,
             primary_fields=_db_primary_fields_from_clauses(predicates.clauses),
             columns_array=columns_array,
-            column_count=len(columns_array),
+            field_count=len(columns_array),
             transfer="columnar",
             keepalive=keepalive,
         )
@@ -2031,7 +2031,7 @@ def _prepare_db_optix_execution(compiled: CompiledKernel, normalized_inputs, lib
         row_count,
         primary_fields=_db_primary_fields_from_clauses(encoded_predicates),
         columns_array=columns_array,
-        column_count=len(columns_array),
+        field_count=len(columns_array),
         transfer="columnar",
         keepalive=keepalive,
     )
@@ -2407,7 +2407,7 @@ def _call_lsi_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowVie
     rows_ptr  = ctypes.POINTER(_RtdlLsiRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_optix_run_lsi(
+    status = lib.rtdl_optix_run_segment_pair_intersection(
         left.records, left.count,
         right.records, right.count,
         ctypes.byref(rows_ptr), ctypes.byref(row_count),
@@ -2432,7 +2432,7 @@ def _call_pip_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowVie
     rows_ptr  = ctypes.POINTER(_RtdlPipRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_optix_run_pip(
+    status = lib.rtdl_optix_run_point_primitive_anyhit_packet(
         points.records, points.count,
         polygons.refs, polygons.polygon_count,
         polygons.vertices_xy, polygons.vertex_xy_count,
@@ -2452,7 +2452,7 @@ def _call_overlay_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRo
     rows_ptr  = ctypes.POINTER(_RtdlOverlayRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_optix_run_overlay(
+    status = lib.rtdl_optix_run_shape_pair_relation_flags(
         left.refs, left.polygon_count,
         left.vertices_xy, left.vertex_xy_count,
         right.refs, right.polygon_count,
@@ -2671,11 +2671,11 @@ class PreparedOptixRayTriangleAnyHit2D:
             return tuple(False for _ in range(pose_count))
 
         lib = _load_optix_library()
-        pose_flags_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed")
+        pose_flags_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_group_flags_prepared_ray_anyhit_2d_packed")
         if pose_flags_symbol is None:
             raise RuntimeError(
                 "Loaded OptiX backend library does not export "
-                "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed. "
+                "rtdl_optix_group_flags_prepared_ray_anyhit_2d_packed. "
                 "Rebuild it with 'make build-optix' from current main."
             )
         PoseFlagArray = ctypes.c_uint32 * pose_count
@@ -2693,6 +2693,12 @@ class PreparedOptixRayTriangleAnyHit2D:
         )
         _check_status(status, error)
         return tuple(bool(pose_flag_buffer[index]) for index in range(pose_count))
+
+    def group_flags_packed(self, rays: "OptixRay2DBuffer", group_indices, *, group_count: int) -> tuple[bool, ...]:
+        try:
+            return self.pose_flags_packed(rays, group_indices, pose_count=group_count)
+        except (RuntimeError, ValueError) as exc:
+            _raise_group_index_error(exc)
 
     def pose_flags_prepared_indices(
         self,
@@ -2722,12 +2728,12 @@ class PreparedOptixRayTriangleAnyHit2D:
         lib = _load_optix_library()
         pose_flags_symbol = _find_optional_backend_symbol(
             lib,
-            "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices",
+            "rtdl_optix_group_flags_prepared_ray_anyhit_2d_prepared_indices",
         )
         if pose_flags_symbol is None:
             raise RuntimeError(
                 "Loaded OptiX backend library does not export "
-                "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices. "
+                "rtdl_optix_group_flags_prepared_ray_anyhit_2d_prepared_indices. "
                 "Rebuild it with 'make build-optix' from current main."
             )
         PoseFlagArray = ctypes.c_uint32 * pose_count
@@ -2744,6 +2750,18 @@ class PreparedOptixRayTriangleAnyHit2D:
         )
         _check_status(status, error)
         return tuple(bool(pose_flag_buffer[index]) for index in range(pose_count))
+
+    def group_flags_prepared_indices(
+        self,
+        rays: "OptixRay2DBuffer",
+        group_indices: "OptixGroupIndexBuffer",
+        *,
+        group_count: int,
+    ) -> tuple[bool, ...]:
+        try:
+            return self.pose_flags_prepared_indices(rays, group_indices, pose_count=group_count)
+        except (RuntimeError, ValueError) as exc:
+            _raise_group_index_error(exc)
 
     def pose_count_prepared_indices(
         self,
@@ -2773,12 +2791,12 @@ class PreparedOptixRayTriangleAnyHit2D:
         lib = _load_optix_library()
         count_symbol = _find_optional_backend_symbol(
             lib,
-            "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+            "rtdl_optix_count_groups_prepared_ray_anyhit_2d_prepared_indices",
         )
         if count_symbol is None:
             raise RuntimeError(
                 "Loaded OptiX backend library does not export "
-                "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices. "
+                "rtdl_optix_count_groups_prepared_ray_anyhit_2d_prepared_indices. "
                 "Rebuild it with 'make build-optix' from current main."
             )
         colliding_pose_count = ctypes.c_size_t()
@@ -2794,6 +2812,18 @@ class PreparedOptixRayTriangleAnyHit2D:
         )
         _check_status(status, error)
         return int(colliding_pose_count.value)
+
+    def group_count_prepared_indices(
+        self,
+        rays: "OptixRay2DBuffer",
+        group_indices: "OptixGroupIndexBuffer",
+        *,
+        group_count: int,
+    ) -> int:
+        try:
+            return self.pose_count_prepared_indices(rays, group_indices, pose_count=group_count)
+        except (RuntimeError, ValueError) as exc:
+            _raise_group_index_error(exc)
 
     def close(self) -> None:
         if self._closed:
@@ -2927,10 +2957,10 @@ class OptixPoseIndexBuffer:
             return
 
         lib = _load_optix_library()
-        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_pose_indices_2d")
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_group_indices_2d")
         if prepare_symbol is None:
             raise RuntimeError(
-                "Loaded OptiX backend library does not export rtdl_optix_prepare_pose_indices_2d. "
+                "Loaded OptiX backend library does not export rtdl_optix_prepare_group_indices_2d. "
                 "Rebuild it with 'make build-optix' from current main."
             )
         error = ctypes.create_string_buffer(4096)
@@ -2963,7 +2993,7 @@ class OptixPoseIndexBuffer:
         self._closed = True
         if handle.value:
             lib = _load_optix_library()
-            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_pose_indices_2d")
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_group_indices_2d")
             if destroy_symbol is not None:
                 destroy_symbol(handle)
 
@@ -2984,13 +3014,30 @@ def prepare_optix_pose_indices_2d(pose_indices) -> OptixPoseIndexBuffer:
     return OptixPoseIndexBuffer(pose_indices)
 
 
+OptixGroupIndexBuffer = OptixPoseIndexBuffer
+
+
+def prepare_optix_group_indices_2d(group_indices) -> OptixGroupIndexBuffer:
+    return OptixGroupIndexBuffer(group_indices)
+
+
+def _raise_group_index_error(exc: Exception):
+    message = str(exc)
+    message = message.replace("pose_indices", "group_indices")
+    message = message.replace("pose-index", "group-index")
+    message = message.replace("pose index", "group index")
+    message = message.replace("pose_count", "group_count")
+    message = message.replace("poses", "groups")
+    raise type(exc)(message) from exc
+
+
 def _call_segment_polygon_hitcount_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     segments = packed[compiled.candidates.left.name]
     polygons = packed[compiled.candidates.right.name]
     rows_ptr  = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_optix_run_segment_polygon_hitcount(
+    status = lib.rtdl_optix_run_segment_shape_hitcount(
         segments.records, segments.count,
         polygons.refs, polygons.polygon_count,
         polygons.vertices_xy, polygons.vertex_xy_count,
@@ -3009,7 +3056,7 @@ def _call_segment_polygon_anyhit_rows_optix_packed(compiled: CompiledKernel, pac
     rows_ptr  = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_optix_run_segment_polygon_anyhit_rows(
+    status = lib.rtdl_optix_run_segment_shape_anyhit_rows(
         segments.records, segments.count,
         polygons.refs, polygons.polygon_count,
         polygons.vertices_xy, polygons.vertex_xy_count,
@@ -3041,12 +3088,12 @@ def segment_polygon_anyhit_rows_native_bounded_optix(
     lib = _load_optix_library()
     symbol = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded",
+        "rtdl_optix_run_segment_shape_anyhit_rows_native_bounded",
     )
     if symbol is None:
         raise ValueError(
             "loaded OptiX backend does not export "
-            "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded; "
+            "rtdl_optix_run_segment_shape_anyhit_rows_native_bounded; "
             "rebuild the OptiX backend from current main"
         )
     row_array = (_RtdlSegmentPolygonAnyHitRow * output_capacity)()
@@ -3098,12 +3145,12 @@ def collect_polygon_pair_candidates_bounded_optix(
     lib = _load_optix_library()
     symbol = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_collect_polygon_pair_candidates_bounded",
+        "rtdl_optix_collect_shape_pair_candidates_bounded",
     )
     if symbol is None:
         raise ValueError(
             "loaded OptiX backend does not export "
-            "rtdl_optix_collect_polygon_pair_candidates_bounded; "
+            "rtdl_optix_collect_shape_pair_candidates_bounded; "
             "rebuild the OptiX backend from current main"
         )
 
@@ -3161,7 +3208,7 @@ def collect_polygon_pair_candidates_bounded_optix(
         backend="optix",
         library=lib,
         symbol_name="rtdl_optix_collect_k_bounded_i64",
-        candidate_source_symbol="rtdl_optix_collect_polygon_pair_candidates_bounded",
+        candidate_source_symbol="rtdl_optix_collect_shape_pair_candidates_bounded",
     )
     result = {
         "primitive": "COLLECT_K_BOUNDED",
@@ -3295,10 +3342,10 @@ def _call_knn_rows_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixR
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
     if query_points.dimension == 3:
-        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_knn_rows_3d")
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_k_closest_hits_3d")
         if symbol is None:
             raise RuntimeError(
-                "loaded OptiX backend library does not export rtdl_optix_run_knn_rows_3d; "
+                "loaded OptiX backend library does not export rtdl_optix_run_k_closest_hits_3d; "
                 "rebuild the OptiX backend from current main"
             )
         status = symbol(
@@ -3308,7 +3355,7 @@ def _call_knn_rows_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixR
             ctypes.byref(rows_ptr), ctypes.byref(row_count),
             error, len(error))
     else:
-        status = lib.rtdl_optix_run_knn_rows(
+        status = lib.rtdl_optix_run_k_closest_hits(
             query_points.records, query_points.count,
             search_points.records, search_points.count,
             k,
@@ -3322,7 +3369,7 @@ def _call_knn_rows_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixR
 
 
 def _call_bfs_expand_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
-    symbol = _require_optix_graph_symbol(lib, "rtdl_optix_run_bfs_expand")
+    symbol = _require_optix_graph_symbol(lib, "rtdl_optix_run_frontier_edge_traversal_packet")
     frontier = packed[compiled.candidates.left.name]
     graph = packed[compiled.candidates.right.name]
     visited_name = str(compiled.refine_op.predicate.options["visited_input"])
@@ -3332,7 +3379,7 @@ def _call_bfs_expand_optix_packed(compiled: CompiledKernel, packed, lib) -> Opti
     error = ctypes.create_string_buffer(4096)
     status = symbol(
         graph.row_offsets, graph.row_offset_count,
-        graph.column_indices, graph.column_index_count,
+        graph.column_indices, graph.field_index_count,
         frontier.records, frontier.count,
         visited.records, visited.count,
         ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("dedupe", True) else 0),
@@ -3350,7 +3397,7 @@ def _call_bfs_expand_optix_packed(compiled: CompiledKernel, packed, lib) -> Opti
 
 
 def _call_triangle_probe_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
-    symbol = _require_optix_graph_symbol(lib, "rtdl_optix_run_triangle_probe")
+    symbol = _require_optix_graph_symbol(lib, "rtdl_optix_run_edge_neighbor_intersection_packet")
     seeds = packed[compiled.candidates.left.name]
     graph = packed[compiled.candidates.right.name]
     rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
@@ -3358,7 +3405,7 @@ def _call_triangle_probe_optix_packed(compiled: CompiledKernel, packed, lib) -> 
     error = ctypes.create_string_buffer(4096)
     status = symbol(
         graph.row_offsets, graph.row_offset_count,
-        graph.column_indices, graph.column_index_count,
+        graph.column_indices, graph.field_index_count,
         seeds.records, seeds.count,
         ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("order") == "id_ascending" else 0),
         ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("unique", True) else 0),
@@ -3428,16 +3475,16 @@ def _register_argtypes(lib) -> None:
     _require_backend_symbol(lib, "rtdl_optix_free_rows").argtypes = [ctypes.c_void_p]
     lib.rtdl_optix_free_rows.restype  = None
 
-    _require_backend_symbol(lib, "rtdl_optix_run_lsi").argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_segment_pair_intersection").argtypes = [
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_optix_run_lsi.restype = ctypes.c_int
+    lib.rtdl_optix_run_segment_pair_intersection.restype = ctypes.c_int
 
-    _require_backend_symbol(lib, "rtdl_optix_run_pip").argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_point_primitive_anyhit_packet").argtypes = [
         ctypes.POINTER(_RtdlPoint),      ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -3446,9 +3493,9 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_optix_run_pip.restype = ctypes.c_int
+    lib.rtdl_optix_run_point_primitive_anyhit_packet.restype = ctypes.c_int
 
-    _require_backend_symbol(lib, "rtdl_optix_run_overlay").argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_shape_pair_relation_flags").argtypes = [
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
@@ -3457,7 +3504,7 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_optix_run_overlay.restype = ctypes.c_int
+    lib.rtdl_optix_run_shape_pair_relation_flags.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_optix_run_ray_hitcount").argtypes = [
         ctypes.POINTER(_RtdlRay2D),      ctypes.c_size_t,
@@ -3544,7 +3591,7 @@ def _register_argtypes(lib) -> None:
         optional_count_anyhit2d_packed.restype = ctypes.c_int
     optional_pose_flags_anyhit2d_packed = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed",
+        "rtdl_optix_group_flags_prepared_ray_anyhit_2d_packed",
     )
     if optional_pose_flags_anyhit2d_packed is not None:
         optional_pose_flags_anyhit2d_packed.argtypes = [
@@ -3558,7 +3605,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_pose_flags_anyhit2d_packed.restype = ctypes.c_int
-    optional_prepare_pose_indices2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_pose_indices_2d")
+    optional_prepare_pose_indices2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_group_indices_2d")
     if optional_prepare_pose_indices2d is not None:
         optional_prepare_pose_indices2d.argtypes = [
             ctypes.POINTER(ctypes.c_uint32),
@@ -3570,7 +3617,7 @@ def _register_argtypes(lib) -> None:
         optional_prepare_pose_indices2d.restype = ctypes.c_int
     optional_pose_flags_anyhit2d_prepared_indices = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices",
+        "rtdl_optix_group_flags_prepared_ray_anyhit_2d_prepared_indices",
     )
     if optional_pose_flags_anyhit2d_prepared_indices is not None:
         optional_pose_flags_anyhit2d_prepared_indices.argtypes = [
@@ -3585,7 +3632,7 @@ def _register_argtypes(lib) -> None:
         optional_pose_flags_anyhit2d_prepared_indices.restype = ctypes.c_int
     optional_pose_count_anyhit2d_prepared_indices = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+        "rtdl_optix_count_groups_prepared_ray_anyhit_2d_prepared_indices",
     )
     if optional_pose_count_anyhit2d_prepared_indices is not None:
         optional_pose_count_anyhit2d_prepared_indices.argtypes = [
@@ -3598,7 +3645,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_pose_count_anyhit2d_prepared_indices.restype = ctypes.c_int
-    optional_destroy_pose_indices2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_pose_indices_2d")
+    optional_destroy_pose_indices2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_group_indices_2d")
     if optional_destroy_pose_indices2d is not None:
         optional_destroy_pose_indices2d.argtypes = [ctypes.c_void_p]
         optional_destroy_pose_indices2d.restype = None
@@ -3607,7 +3654,7 @@ def _register_argtypes(lib) -> None:
         optional_destroy_rays2d.argtypes = [ctypes.c_void_p]
         optional_destroy_rays2d.restype = None
 
-    _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_hitcount").argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_segment_shape_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -3615,11 +3662,11 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_optix_run_segment_polygon_hitcount.restype = ctypes.c_int
+    lib.rtdl_optix_run_segment_shape_hitcount.restype = ctypes.c_int
 
     optional_prepare_segpoly_hitcount = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_prepare_segment_polygon_hitcount_2d",
+        "rtdl_optix_prepare_segment_shape_hitcount_2d",
     )
     if optional_prepare_segpoly_hitcount is not None:
         optional_prepare_segpoly_hitcount.argtypes = [
@@ -3631,7 +3678,7 @@ def _register_argtypes(lib) -> None:
         optional_prepare_segpoly_hitcount.restype = ctypes.c_int
     optional_run_prepared_segpoly_hitcount = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_run_prepared_segment_polygon_hitcount_2d",
+        "rtdl_optix_run_prepared_segment_shape_hitcount_2d",
     )
     if optional_run_prepared_segpoly_hitcount is not None:
         optional_run_prepared_segpoly_hitcount.argtypes = [
@@ -3644,7 +3691,7 @@ def _register_argtypes(lib) -> None:
         optional_run_prepared_segpoly_hitcount.restype = ctypes.c_int
     optional_count_prepared_segpoly_hitcount_at_least = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d",
+        "rtdl_optix_count_prepared_segment_shape_hitcount_at_least_2d",
     )
     if optional_count_prepared_segpoly_hitcount_at_least is not None:
         optional_count_prepared_segpoly_hitcount_at_least.argtypes = [
@@ -3657,7 +3704,7 @@ def _register_argtypes(lib) -> None:
         optional_count_prepared_segpoly_hitcount_at_least.restype = ctypes.c_int
     optional_aggregate_prepared_segpoly_hitcount = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d",
+        "rtdl_optix_aggregate_prepared_segment_shape_hitcount_2d",
     )
     if optional_aggregate_prepared_segpoly_hitcount is not None:
         optional_aggregate_prepared_segpoly_hitcount.argtypes = [
@@ -3672,13 +3719,13 @@ def _register_argtypes(lib) -> None:
         optional_aggregate_prepared_segpoly_hitcount.restype = ctypes.c_int
     optional_destroy_prepared_segpoly_hitcount = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d",
+        "rtdl_optix_destroy_prepared_segment_shape_hitcount_2d",
     )
     if optional_destroy_prepared_segpoly_hitcount is not None:
         optional_destroy_prepared_segpoly_hitcount.argtypes = [ctypes.c_void_p]
         optional_destroy_prepared_segpoly_hitcount.restype = None
 
-    _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_anyhit_rows").argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_segment_shape_anyhit_rows").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -3686,11 +3733,11 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_optix_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
+    lib.rtdl_optix_run_segment_shape_anyhit_rows.restype = ctypes.c_int
 
     optional_segment_polygon_anyhit_rows_native_bounded = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded",
+        "rtdl_optix_run_segment_shape_anyhit_rows_native_bounded",
     )
     if optional_segment_polygon_anyhit_rows_native_bounded is not None:
         optional_segment_polygon_anyhit_rows_native_bounded.argtypes = [
@@ -3707,7 +3754,7 @@ def _register_argtypes(lib) -> None:
 
     optional_polygon_pair_candidates_bounded = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_collect_polygon_pair_candidates_bounded",
+        "rtdl_optix_collect_shape_pair_candidates_bounded",
     )
     if optional_polygon_pair_candidates_bounded is not None:
         optional_polygon_pair_candidates_bounded.argtypes = [
@@ -3725,7 +3772,7 @@ def _register_argtypes(lib) -> None:
 
     optional_prepare_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d",
+        "rtdl_optix_prepare_segment_shape_anyhit_rows_2d",
     )
     if optional_prepare_segment_polygon_anyhit_rows is not None:
         optional_prepare_segment_polygon_anyhit_rows.argtypes = [
@@ -3737,7 +3784,7 @@ def _register_argtypes(lib) -> None:
         optional_prepare_segment_polygon_anyhit_rows.restype = ctypes.c_int
     optional_run_prepared_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d",
+        "rtdl_optix_run_prepared_segment_shape_anyhit_rows_2d",
     )
     if optional_run_prepared_segment_polygon_anyhit_rows is not None:
         optional_run_prepared_segment_polygon_anyhit_rows.argtypes = [
@@ -3752,7 +3799,7 @@ def _register_argtypes(lib) -> None:
         optional_run_prepared_segment_polygon_anyhit_rows.restype = ctypes.c_int
     optional_destroy_prepared_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
         lib,
-        "rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d",
+        "rtdl_optix_destroy_prepared_segment_shape_anyhit_rows_2d",
     )
     if optional_destroy_prepared_segment_polygon_anyhit_rows is not None:
         optional_destroy_prepared_segment_polygon_anyhit_rows.argtypes = [ctypes.c_void_p]
@@ -3846,7 +3893,7 @@ def _register_argtypes(lib) -> None:
         optional_destroy_prepared_frn_count.argtypes = [ctypes.c_void_p]
         optional_destroy_prepared_frn_count.restype = None
 
-    _require_backend_symbol(lib, "rtdl_optix_run_knn_rows").argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_k_closest_hits").argtypes = [
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
         ctypes.c_size_t,
@@ -3854,9 +3901,9 @@ def _register_argtypes(lib) -> None:
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p, ctypes.c_size_t,
     ]
-    lib.rtdl_optix_run_knn_rows.restype = ctypes.c_int
+    lib.rtdl_optix_run_k_closest_hits.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_knn_rows_3d")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_k_closest_hits_3d")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
@@ -3868,7 +3915,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_bfs_expand")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_frontier_edge_traversal_packet")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
@@ -3881,7 +3928,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_triangle_probe")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_edge_neighbor_intersection_packet")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
@@ -3946,7 +3993,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_create")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_create")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.POINTER(_RtdlDbField),
@@ -3961,10 +4008,10 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_create_columnar")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_create_from_columns")
     if symbol is not None:
         symbol.argtypes = [
-            ctypes.POINTER(_RtdlDbColumn),
+            ctypes.POINTER(_RtdlPayloadField),
             ctypes.c_size_t,
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_char_p),
@@ -3975,12 +4022,12 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_destroy")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_destroy")
     if symbol is not None:
         symbol.argtypes = [ctypes.c_void_p]
         symbol.restype = None
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_conjunctive_scan")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_multi_predicate_scan")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -3993,7 +4040,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_conjunctive_scan_count")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_multi_predicate_scan_count")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -4005,7 +4052,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_grouped_count")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_grouped_reduction_count")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -4019,7 +4066,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_grouped_sum")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_grouped_reduction_sum")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -4034,7 +4081,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_compact_summary_batch")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_compact_summary_batch")
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
@@ -4047,7 +4094,7 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
-    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_compact_summary_results_destroy")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_compact_summary_results_destroy")
     if symbol is not None:
         symbol.argtypes = [ctypes.POINTER(_RtdlDbCompactSummaryResult), ctypes.c_size_t]
         symbol.restype = None
@@ -4175,7 +4222,7 @@ def _pack_for_geometry(geometry_input, payload):
             row_offsets=row_offsets,
             row_offset_count=len(normalized.row_offsets),
             column_indices=column_indices,
-            column_index_count=len(normalized.column_indices),
+            field_index_count=len(normalized.column_indices),
         )
     if geometry_name == "vertex_frontier":
         if isinstance(payload, PackedVertexFrontier):

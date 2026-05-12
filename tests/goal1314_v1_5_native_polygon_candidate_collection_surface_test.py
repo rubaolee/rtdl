@@ -54,7 +54,7 @@ class Goal1314V15NativePolygonCandidateCollectionSurfaceTest(unittest.TestCase):
             mock.patch.object(optix_runtime, "_load_optix_library", return_value=SimpleNamespace()),
             mock.patch.object(optix_runtime, "_find_optional_backend_symbol", return_value=None),
         ):
-            with self.assertRaisesRegex(ValueError, "rtdl_optix_collect_polygon_pair_candidates_bounded"):
+            with self.assertRaisesRegex(ValueError, "rtdl_optix_collect_shape_pair_candidates_bounded"):
                 rt.collect_polygon_pair_candidates_bounded_optix(
                     _polygons(),
                     _polygons(),

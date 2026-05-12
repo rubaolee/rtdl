@@ -1,0 +1,40 @@
+{
+  "_goal1756_wall_clock": {
+    "app": "robot_collision_screening",
+    "command": [
+      "/usr/bin/python3",
+      "examples/rtdl_robot_collision_screening_app.py",
+      "--backend",
+      "embree",
+      "--pose-count",
+      "20000",
+      "--obstacle-count",
+      "1024",
+      "--output-mode",
+      "hit_count"
+    ],
+    "elapsed_sec": 717.8390749600367,
+    "engine": "embree",
+    "returncode": 0,
+    "stderr_tail": "",
+    "stdout_json": true,
+    "stdout_tail": "",
+    "timing_scope": "same app-level command wall clock including process startup, input construction, native query, and JSON serialization",
+    "version": "v1_0",
+    "workdir": "/home/lestat/work/rtdl_goal1746_v1_0"
+  },
+  "app": "robot_collision_screening",
+  "backend": "embree",
+  "boundary": "Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine. Compact output modes reduce app-interface row volume but do not replace a native OptiX pose-level summary ABI.",
+  "edge_ray_count": 80000,
+  "hit_edge_count": 58125,
+  "matches_oracle": true,
+  "native_continuation_active": false,
+  "native_continuation_backend": "none",
+  "obstacle_triangle_count": 2048,
+  "optix_summary_mode": "rows",
+  "oracle_hit_edge_count": 58125,
+  "output_mode": "hit_count",
+  "pose_count": 20000,
+  "rtdl_role": "RTDL emits per-edge ray/triangle any-hit rows; rt.reduce_rows(any) converts edge rows into pose collision flags, and Python maps witnesses back to pose/link summaries."
+}

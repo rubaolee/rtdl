@@ -79,20 +79,51 @@ class Goal1660V1611VsV10PerfMatrixTest(unittest.TestCase):
                 self.assertIn(engine, row["v1_6_11_command"])
                 self.assertIn(engine, row["v1_0_command"])
                 self.assertTrue(row["script_exists_in_v1_0"])
+                self.assertTrue(row["script_supports_backend_in_v1_0"])
+                self.assertEqual(row["v1_0_command_shape"], "same_command_shape")
 
-    def test_backend_aware_scripts_get_real_backend_rows(self) -> None:
+    def test_legacy_optix_only_scripts_are_adapted_without_faking_embree_baselines(self) -> None:
         payload = validate_manifest(build_manifest())
         by_pair = {(row["app"], row["engine"]): row for row in payload["rows"]}
-        for app in ["robot_collision_screening", "polygon_set_jaccard", "road_hazard_screening"]:
-            for engine in ["embree", "optix"]:
-                with self.subTest(app=app, engine=engine):
-                    row = by_pair[(app, engine)]
-                    self.assertEqual(row["status"], "planned")
-                    self.assertEqual(row["engine_selector"], "insert--backend")
-                    self.assertIn("--backend", row["v1_6_11_command"])
-                    self.assertIn(engine, row["v1_6_11_command"])
-                if app == "road_hazard_screening":
-                    self.assertIn("run", by_pair[(app, "optix")]["v1_6_11_command"])
+        apps = [
+            "service_coverage_gaps",
+            "event_hotspot_screening",
+            "facility_knn_assignment",
+            "road_hazard_screening",
+            "segment_polygon_hitcount",
+            "segment_polygon_anyhit_rows",
+            "polygon_pair_overlap_area_rows",
+            "polygon_set_jaccard",
+            "hausdorff_distance",
+            "ann_candidate_search",
+            "robot_collision_screening",
+            "barnes_hut_force_app",
+        ]
+        for app in apps:
+            with self.subTest(app=app, engine="embree"):
+                row = by_pair[(app, "embree")]
+                self.assertEqual(row["status"], "current_only_v1_0_missing_engine_selector")
+                self.assertEqual(row["engine_selector"], "insert--backend")
+                self.assertIn("--backend", row["v1_6_11_command"])
+                self.assertIn("embree", row["v1_6_11_command"])
+                self.assertFalse(row["script_supports_backend_in_v1_0"])
+                self.assertEqual(row["v1_0_command_shape"], "unsupported_legacy_no_backend_selector")
+                self.assertTrue(row["compare_current"])
+                self.assertFalse(row["compare_v1_0"])
+                self.assertIn("decorative", row["reason"])
+            with self.subTest(app=app, engine="optix"):
+                row = by_pair[(app, "optix")]
+                self.assertEqual(row["status"], "planned")
+                self.assertEqual(row["engine_selector"], "insert--backend")
+                self.assertIn("--backend", row["v1_6_11_command"])
+                self.assertIn("optix", row["v1_6_11_command"])
+                self.assertFalse(row["script_supports_backend_in_v1_0"])
+                self.assertEqual(row["v1_0_command_shape"], "legacy_optix_only_without_backend_selector")
+                self.assertTrue(row["compare_current"])
+                self.assertTrue(row["compare_v1_0"])
+                self.assertNotIn("--backend", row["v1_0_command"])
+            if app == "road_hazard_screening":
+                self.assertIn("run", by_pair[(app, "optix")]["v1_6_11_command"])
 
     def test_no_engine_selector_rows_are_not_decorative_engine_claims(self) -> None:
         payload = validate_manifest(build_manifest())
@@ -102,6 +133,18 @@ class Goal1660V1611VsV10PerfMatrixTest(unittest.TestCase):
         self.assertIn("decorative engine label", graph_embree["reason"])
         graph_optix = by_pair[("graph_analytics", "optix")]
         self.assertEqual(graph_optix["engine_selector"], "optix_specific_script")
+
+    def test_manifest_counts_match_observed_pod_command_support(self) -> None:
+        payload = validate_manifest(build_manifest())
+        statuses = {}
+        for row in payload["rows"]:
+            statuses[row["status"]] = statuses.get(row["status"], 0) + 1
+        self.assertEqual(payload["planned_row_count"], 16)
+        self.assertEqual(payload["blocked_or_excluded_row_count"], 20)
+        self.assertEqual(statuses["planned"], 16)
+        self.assertEqual(statuses["current_only_v1_0_missing_engine_selector"], 12)
+        self.assertEqual(statuses["excluded"], 7)
+        self.assertEqual(statuses["shared_primitive_alias"], 1)
 
     def test_cli_writes_reports(self) -> None:
         completed = subprocess.run(

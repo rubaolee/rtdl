@@ -110,6 +110,23 @@ rows = rt.run_cpu_python_reference(my_kernel, probe_name=(...), build_name=(...)
 
 `rows` is a tuple of dicts, one per output row.
 
+## Step 2.5: Python App, Generic Engine
+
+The v1.8 Python+RTDL design is intentionally split:
+
+| You write in Python | RTDL owns in the engine |
+| --- | --- |
+| app data, labels, command-line flags, policies, reductions, output formatting | typed inputs, traversal, refinement, emitted rows, backend dispatch |
+
+So a Python file may be named for an app, such as Hausdorff, graph analytics, or
+database analytics. The RTDL engine underneath should still expose generic
+runtime concepts such as nearest candidates, any-hit rows, frontier traversal,
+columnar payload scans, or segment-pair intersections.
+
+That is why the tutorial starts with the portable `cpu_python_reference`
+backend: it teaches the public program shape before you think about native
+libraries or performance.
+
 ## Backend Names In Two Places
 
 RTDL uses the word "backend" in two related but different places:

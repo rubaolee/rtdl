@@ -1,0 +1,87 @@
+{
+  "app": "pair_overlap",
+  "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from native C++ exact area/Jaccard continuation. It does not authorize full polygon-overlap RTX speedup claims.",
+  "candidate_diagnostics": {
+    "candidate_count_delta_vs_expected": -20000,
+    "candidate_count_matches_expected": false,
+    "comparison_note": "candidate_count_matches_expected compares against a conservative candidate upper-bound/counting model; positive_pair_count_matches_expected compares final positive overlap rows.",
+    "expected_or_cpu_candidate_row_count": 60000,
+    "expected_positive_pair_count": 40000,
+    "optix_candidate_row_count": 40000,
+    "optix_positive_pair_count": 40000,
+    "positive_pair_count_matches_expected": true
+  },
+  "chunk_copies": 100,
+  "chunk_count": 200,
+  "chunk_policy": null,
+  "cloud_claim_contract": {
+    "chunk_policy": "not_applicable",
+    "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+    "non_claim": "not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim",
+    "required_phase_groups": [
+      "input_build_sec",
+      "cpu_reference_sec",
+      "optix_candidate_discovery_sec",
+      "cpu_exact_refinement_sec",
+      "native_exact_continuation_sec",
+      "parity_vs_cpu",
+      "rt_core_candidate_discovery_active",
+      "validation_mode",
+      "output_mode"
+    ]
+  },
+  "copies": 20000,
+  "cpu_digest": {
+    "app": "polygon_pair_overlap_area_rows",
+    "copies": 20000,
+    "output_mode": "summary",
+    "row_count": 40000,
+    "summary": {
+      "overlap_pair_count": 40000,
+      "total_intersection_area": 100000,
+      "total_union_area": 380000
+    }
+  },
+  "date": "2026-04-24",
+  "error": null,
+  "generated_at": "2026-05-12T04:43:21",
+  "goal": "Goal877 polygon overlap OptiX phase profiler",
+  "host": {
+    "hostname": "5a955904c650",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-58-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "mode": "optix",
+  "optix_digest": {
+    "app": "polygon_pair_overlap_area_rows",
+    "copies": 20000,
+    "output_mode": "summary",
+    "row_count": 40000,
+    "summary": {
+      "overlap_pair_count": 40000,
+      "total_intersection_area": 100000,
+      "total_union_area": 380000
+    }
+  },
+  "optix_metadata": {
+    "backend_mode": "optix_native_assisted",
+    "native_continuation_active": false,
+    "native_continuation_backend": null,
+    "rt_core_accelerated": false,
+    "rt_core_candidate_discovery_active": true
+  },
+  "output_mode": "summary",
+  "parity_vs_cpu": true,
+  "phases": {
+    "cpu_exact_refinement_sec": 2.264558345079422,
+    "cpu_reference_sec": null,
+    "input_build_sec": 0.0,
+    "native_exact_continuation_sec": 2.264558345079422,
+    "optix_candidate_discovery_sec": 2.783302463591099
+  },
+  "schema_version": "goal877_polygon_overlap_optix_phase_contract_v2",
+  "source_commit": "aee364d677442994958d87dacf3f814360c20ffa",
+  "status": "pass",
+  "validation_mode": "analytic_summary"
+}

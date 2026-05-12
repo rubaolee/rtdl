@@ -138,7 +138,10 @@ def _collect_candidate_pairs_bounded(
                 candidate_capacity=capacity,
             )
         except ValueError as exc:
-            if "rtdl_embree_collect_polygon_pair_candidates_bounded" not in str(exc):
+            if (
+                "rtdl_embree_collect_polygon_pair_candidates_bounded" not in str(exc)
+                and "rtdl_embree_collect_shape_pair_candidates_bounded" not in str(exc)
+            ):
                 raise
             pairs = _positive_candidate_pairs_embree(left, right)
         except FileNotFoundError:
@@ -151,7 +154,10 @@ def _collect_candidate_pairs_bounded(
                 candidate_capacity=capacity,
             )
         except ValueError as exc:
-            if "rtdl_optix_collect_polygon_pair_candidates_bounded" not in str(exc):
+            if (
+                "rtdl_optix_collect_polygon_pair_candidates_bounded" not in str(exc)
+                and "rtdl_optix_collect_shape_pair_candidates_bounded" not in str(exc)
+            ):
                 raise
             pairs = _positive_candidate_pairs_optix(left, right)
         except FileNotFoundError:

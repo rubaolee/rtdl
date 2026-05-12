@@ -1,0 +1,45 @@
+{
+  "boundary": "This profiler separates input construction, OptiX preparation, prepared query, and Python postprocess for compact spatial summaries. It does not authorize an RTX speedup claim without a real RTX run and review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot compact summaries",
+    "cloud_policy": "do not start a paid pod for this app alone; include only in the single consolidated RTX batch after local readiness passes",
+    "non_claim": "not neighbor-row output, not a full hotspot analytics system, and not a whole-app RTX speedup claim",
+    "required_phase_groups": [
+      "input_build",
+      "optix_prepare",
+      "optix_query",
+      "python_postprocess"
+    ]
+  },
+  "copies": 20000,
+  "date": "2026-04-23",
+  "generated_at": "2026-05-12T04:53:27",
+  "goal": "Goal811 spatial OptiX prepared-summary phase profiler",
+  "host": {
+    "hostname": "5a955904c650",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-58-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "scenario": {
+    "mode": "embree",
+    "result": {
+      "event_count": 120000,
+      "hotspot_count": 99999,
+      "hotspots": null,
+      "summary_mode": "scalar_threshold_count",
+      "threshold_includes_self": 4
+    },
+    "scenario": "event_hotspot_screening",
+    "timings_sec": {
+      "backend_prepare": 0.2630855217576027,
+      "backend_query": 0.38277484849095345,
+      "embree_prepare": 0.2630855217576027,
+      "embree_query": 0.38277484849095345,
+      "input_build": 0.17058899998664856,
+      "python_postprocess": 6.936490535736084e-06
+    }
+  },
+  "schema_version": "goal826_tier2_phase_contract_v1"
+}

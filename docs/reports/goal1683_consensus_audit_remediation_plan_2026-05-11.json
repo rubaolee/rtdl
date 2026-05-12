@@ -1,0 +1,109 @@
+{
+  "goal": "Goal1683",
+  "date": "2026-05-11",
+  "source_audit": "docs/reports/goal_consensus_audit_since_v0_15_2026-05-11.json",
+  "source_boundary_requested": "v0.15",
+  "source_boundary_used": "v1.5",
+  "source_counts": {
+    "passing": 80,
+    "missing_or_invalid": 98,
+    "ambiguous": 351
+  },
+  "consensus_rule": {
+    "minimum_ai_reviews": 2,
+    "distinct_ai_systems_required": true,
+    "codex_plus_codex_valid": false,
+    "authoring_is_not_independent_review": true
+  },
+  "codex_remediation_verdict": "Codex can triage and block release use, but Codex alone cannot close missing or ambiguous distinct-AI consensus.",
+  "current_external_review_status": {
+    "goals1668_1682": {
+      "gemini_review": {
+        "status": "complete",
+        "path": "docs/reviews/goal1684_gemini_review_goals1668_1682_2026-05-11.md",
+        "independent": true
+      },
+      "claude_review": {
+        "status": "complete_with_independence_caveat",
+        "path": "docs/reviews/goal1685_claude_review_goals1668_1682_2026-05-11.md",
+        "independent_for_goals": [
+          1668,
+          1669,
+          1670,
+          1671,
+          1672,
+          1673,
+          1674,
+          1675,
+          1676,
+          1677,
+          1678,
+          1679,
+          1680
+        ],
+        "not_fully_independent_for_goals": [
+          1681,
+          1682
+        ]
+      },
+      "claude_followup_review_goals1681_1682": {
+        "status": "complete_as_compatibility_audit_with_same_conversation_independence_caveat",
+        "path": "docs/reviews/goal1685_followup_claude_fresh_review_goals1681_1682_2026-05-11.md",
+        "verdicts": {
+          "Goal1681": "accept-with-boundary",
+          "Goal1682": "accept-with-boundary",
+          "overall_v1_8_v2_0": "needs-more-evidence"
+        },
+        "strict_consensus_effect": "does_not_close_fresh_non_authoring_review_requirement"
+      },
+      "reconciliation": "docs/reviews/goal1687_goals1668_1682_distinct_ai_consensus_reconciliation_2026-05-11.md",
+      "consensus_status": "goals1668_1680_clean_goals1681_1682_need_fresh_independent_review"
+    }
+  },
+  "current_release_blockers": {
+    "ambiguous_from_gemini_audit": [
+      1668,
+      1669,
+      1670
+    ],
+    "not_covered_by_gemini_audit": [
+      1671,
+      1672,
+      1673,
+      1674,
+      1675,
+      1676,
+      1677,
+      1678,
+      1679,
+      1680,
+      1681,
+      1682
+    ],
+    "missing_or_invalid_if_used_as_release_evidence": [
+      1649
+    ]
+  },
+  "required_next_reviews": [
+    {
+      "scope": "Goals1668-1682 current v1.8/v2.0 app-agnostic and partner-track evidence",
+      "required_reviewers": [
+        "Fresh non-authoring Claude for Goals1681-1682, or another distinct external AI system"
+      ],
+      "reason": "Gemini review is complete and Claude review is complete for Goals1668-1680; Claude disclosed authoring involvement for Goals1681-1682, so those two still need clean independent review before strict consensus."
+    },
+    {
+      "scope": "Goal1649 if it is used for any release claim",
+      "required_reviewers": [
+        "Claude or Gemini, plus one other distinct AI system"
+      ],
+      "reason": "Gemini audit classified Goal1649 as missing or invalid consensus."
+    }
+  ],
+  "blocked_until_reviewed": [
+    "Using missing_or_invalid goals as release evidence",
+    "Using ambiguous goals as release gates without explicit distinct-AI reconciliation",
+    "Counting Codex+Codex as 2-AI consensus",
+    "Counting an authoring pass as an independent external review"
+  ]
+}

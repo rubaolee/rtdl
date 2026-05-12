@@ -37,7 +37,7 @@ class Goal1424V151CollectKNativeAppGenericAuditTest(unittest.TestCase):
                 {
                     "backend": "embree",
                     "path": "src/native/embree/rtdl_embree_api.cpp",
-                    "symbol": "rtdl_embree_collect_polygon_pair_candidates_bounded",
+                    "symbol": "rtdl_embree_collect_shape_pair_candidates_bounded",
                     "path_exists": True,
                     "symbol_present": True,
                     "app_specific_reason": "polygon_pair_specific_native_entrypoint",
@@ -45,7 +45,7 @@ class Goal1424V151CollectKNativeAppGenericAuditTest(unittest.TestCase):
                 {
                     "backend": "optix",
                     "path": "src/native/optix/rtdl_optix_api.cpp",
-                    "symbol": "rtdl_optix_collect_polygon_pair_candidates_bounded",
+                    "symbol": "rtdl_optix_collect_shape_pair_candidates_bounded",
                     "path_exists": True,
                     "symbol_present": True,
                     "app_specific_reason": "polygon_pair_specific_native_entrypoint",
@@ -54,14 +54,15 @@ class Goal1424V151CollectKNativeAppGenericAuditTest(unittest.TestCase):
         )
         self.assertEqual(audit["missing_expected_symbols"], ())
 
-    def test_native_symbol_files_still_contain_polygon_pair_specific_names(self) -> None:
+    def test_native_symbol_files_contain_shape_pair_generic_names(self) -> None:
         for _backend, relative_path, symbol in (
             rt.V1_5_1_COLLECT_K_BOUNDED_NATIVE_APP_GENERIC_AUDIT_SYMBOLS
         ):
             with self.subTest(symbol=symbol):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
                 self.assertIn(symbol, text)
-                self.assertIn("polygon_pair", symbol)
+                self.assertIn("shape_pair", symbol)
+                self.assertNotIn("polygon_pair", symbol)
 
     def test_required_next_steps_define_generic_native_abi_work(self) -> None:
         audit = rt.validate_v1_5_1_collect_k_bounded_native_app_generic_audit()
