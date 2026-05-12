@@ -7,10 +7,12 @@ import os
 import platform
 import subprocess
 import tempfile
+import time
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 
+from . import partner as _partner
 from .ir import CompiledKernel
 from .runtime import _normalize_records
 from .runtime import _resolve_kernel
@@ -55,6 +57,8 @@ from .reference import Ray3D as _CanonicalRay3D
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_embree_execution_cache: OrderedDict[tuple[object, ...], "PreparedEmbreeExecution"] = OrderedDict()
 _DB_MAX_ROWS_PER_JOB = 1_000_000
+_PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
+_PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
 _EMBREE_THREAD_OVERRIDE: str | int | None = None
 EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_get_version",
@@ -699,6 +703,149 @@ class PreparedEmbreeExecution:
 
 def prepare_embree(kernel_fn_or_compiled) -> PreparedEmbreeKernel:
     return PreparedEmbreeKernel(kernel_fn_or_compiled)
+
+
+def _partner_column_to_host_array(value, *, column_name: str):
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        raise RuntimeError("partner Embree host staging requires numpy")
+
+    descriptor_start = time.perf_counter()
+    ctx = _partner.auto(value)
+    descriptor = ctx.tensor(value, access="read")
+    if len(descriptor.shape) != 1:
+        raise ValueError(f"partner column {column_name!r} must be one-dimensional")
+    descriptor_seconds = time.perf_counter() - descriptor_start
+
+    staging_start = time.perf_counter()
+    if descriptor.source_protocol == "torch":
+        tensor = value.detach() if callable(getattr(value, "detach", None)) else value
+        tensor = tensor.cpu() if callable(getattr(tensor, "cpu", None)) else tensor
+        if not callable(getattr(tensor, "numpy", None)):
+            raise TypeError(f"PyTorch partner column {column_name!r} cannot be converted to a host NumPy array")
+        host_array = tensor.numpy()
+    elif descriptor.source_protocol == "cupy":
+        cupy = __import__("cupy")
+        host_array = cupy.asnumpy(value)
+    else:
+        if descriptor.device_type != "cpu":
+            raise TypeError(
+                f"partner column {column_name!r} uses device {descriptor.device_type}:{descriptor.device_id}; "
+                "only torch/cupy CUDA columns have a defined first-wave host staging path"
+            )
+        host_array = _np.asarray(value)
+    staging_seconds = time.perf_counter() - staging_start
+    return host_array, descriptor, {
+        "descriptor_validation_s": descriptor_seconds,
+        "framework_to_host_staging_s": staging_seconds,
+    }
+
+
+def _partner_host_stage_columns(columns: dict, required: tuple[str, ...], *, label: str):
+    missing = [name for name in required if name not in columns]
+    unexpected = [name for name in columns if name not in required]
+    if missing:
+        raise ValueError(f"missing {label} partner columns: {', '.join(missing)}")
+    if unexpected:
+        raise ValueError(f"unexpected {label} partner columns: {', '.join(unexpected)}")
+    arrays = {}
+    descriptors = {}
+    timings = {
+        "descriptor_validation_s": 0.0,
+        "framework_to_host_staging_s": 0.0,
+    }
+    for name in required:
+        arrays[name], descriptors[name], column_timings = _partner_column_to_host_array(
+            columns[name],
+            column_name=f"{label}.{name}",
+        )
+        for timing_name, seconds in column_timings.items():
+            timings[timing_name] += float(seconds)
+    return arrays, descriptors, timings
+
+
+def pack_embree_ray_triangle_any_hit_2d_partner_inputs(ray_columns: dict, triangle_columns: dict) -> dict[str, object]:
+    """Host-stage partner-owned ray/triangle columns into existing Embree packets."""
+    ray_arrays, ray_descriptors, ray_timings = _partner_host_stage_columns(
+        ray_columns,
+        _PARTNER_RAY_2D_COLUMNS,
+        label="rays",
+    )
+    triangle_arrays, triangle_descriptors, triangle_timings = _partner_host_stage_columns(
+        triangle_columns,
+        _PARTNER_TRIANGLE_2D_COLUMNS,
+        label="triangles",
+    )
+    packet_start = time.perf_counter()
+    packed_rays = pack_rays(
+        ids=ray_arrays["ids"],
+        ox=ray_arrays["ox"],
+        oy=ray_arrays["oy"],
+        dx=ray_arrays["dx"],
+        dy=ray_arrays["dy"],
+        tmax=ray_arrays["tmax"],
+        dimension=2,
+    )
+    packed_triangles = pack_triangles(
+        ids=triangle_arrays["ids"],
+        x0=triangle_arrays["x0"],
+        y0=triangle_arrays["y0"],
+        x1=triangle_arrays["x1"],
+        y1=triangle_arrays["y1"],
+        x2=triangle_arrays["x2"],
+        y2=triangle_arrays["y2"],
+        dimension=2,
+    )
+    packet_packing_seconds = time.perf_counter() - packet_start
+    descriptors = (*ray_descriptors.values(), *triangle_descriptors.values())
+    return {
+        "rays": packed_rays,
+        "triangles": packed_triangles,
+        "metadata": {
+            "backend": "embree",
+            "transfer_mode": "host_stage",
+            "source_protocols": tuple(sorted({descriptor.source_protocol for descriptor in descriptors})),
+            "source_devices": tuple(
+                sorted({f"{descriptor.device_type}:{descriptor.device_id}" for descriptor in descriptors})
+            ),
+            "ray_count": int(packed_rays.count),
+            "triangle_count": int(packed_triangles.count),
+            "true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": {
+                "descriptor_validation": float(
+                    ray_timings["descriptor_validation_s"] + triangle_timings["descriptor_validation_s"]
+                ),
+                "framework_to_host_staging": float(
+                    ray_timings["framework_to_host_staging_s"] + triangle_timings["framework_to_host_staging_s"]
+                ),
+                "packet_packing": float(packet_packing_seconds),
+            },
+        },
+    }
+
+
+def run_embree_partner_ray_triangle_any_hit_2d(ray_columns: dict, triangle_columns: dict) -> dict[str, object]:
+    """Run Embree any-hit count from partner-owned 2-D column tensors."""
+    prepared_inputs = pack_embree_ray_triangle_any_hit_2d_partner_inputs(ray_columns, triangle_columns)
+    from .generic_primitives import _generic_ray_triangle_any_hit_2d_kernel
+
+    embree_start = time.perf_counter()
+    rows = prepare_embree(_generic_ray_triangle_any_hit_2d_kernel).bind(
+        rays=prepared_inputs["rays"],
+        triangles=prepared_inputs["triangles"],
+    ).run()
+    embree_seconds = time.perf_counter() - embree_start
+    partner_timings = dict(prepared_inputs["metadata"]["partner_phase_timings_s"])
+    partner_timings["embree_anyhit_count"] = float(embree_seconds)
+    return {
+        **prepared_inputs["metadata"],
+        "hit_count": int(sum(1 for row in rows if int(row["any_hit"]))),
+        "row_count": int(len(rows)),
+        "partner_phase_timings_s": partner_timings,
+    }
 
 
 def clear_embree_prepared_cache() -> None:

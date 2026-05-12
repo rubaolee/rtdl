@@ -415,6 +415,8 @@ from .embree_runtime import prepare_embree_db_dataset
 from .embree_runtime import PreparedEmbreeDbDataset
 from .embree_runtime import PreparedEmbreeExecution
 from .embree_runtime import PreparedEmbreeKernel
+from .embree_runtime import pack_embree_ray_triangle_any_hit_2d_partner_inputs
+from .embree_runtime import run_embree_partner_ray_triangle_any_hit_2d
 from .embree_runtime import run_embree
 from .evaluation_matrix import evaluation_entries
 from .evaluation_matrix import EMBREE_EVALUATION_MATRIX
@@ -1337,6 +1339,8 @@ __all__ = [
     "PreparedEmbreeDbDataset",
     "PreparedEmbreeExecution",
     "PreparedEmbreeKernel",
+    "pack_embree_ray_triangle_any_hit_2d_partner_inputs",
+    "run_embree_partner_ray_triangle_any_hit_2d",
     "PreparedAdaptiveExecution",
     "public_pathology_datasets",
     "public_engine_features",
