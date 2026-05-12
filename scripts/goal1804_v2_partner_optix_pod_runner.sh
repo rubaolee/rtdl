@@ -4,6 +4,10 @@ set -euo pipefail
 OUT_DIR="${OUT_DIR:-docs/reports/goal1804_v2_partner_optix_pod}"
 OPTIX_PREFIX="${OPTIX_PREFIX:-/root/vendor/optix-dev}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+RTDL_PYTHONPATH="src:."
+if [[ -n "${PYTHONPATH:-}" ]]; then
+  RTDL_PYTHONPATH="${PYTHONPATH}:${RTDL_PYTHONPATH}"
+fi
 
 mkdir -p "${OUT_DIR}"
 
@@ -33,7 +37,7 @@ then
 fi
 
 echo "[goal1804] probing partner frameworks"
-PYTHONPATH=src:. ${PYTHON_BIN} - <<'PY' | tee "${OUT_DIR}/partner_probe.json"
+PYTHONPATH="${RTDL_PYTHONPATH}" ${PYTHON_BIN} - <<'PY' | tee "${OUT_DIR}/partner_probe.json"
 import json
 import numpy as np
 import torch
@@ -53,7 +57,7 @@ echo "[goal1804] building OptiX"
 make build-optix OPTIX_PREFIX="${OPTIX_PREFIX}" 2>&1 | tee "${OUT_DIR}/build_optix.log"
 
 echo "[goal1804] running focused v2.0 partner OptiX tests"
-PYTHONPATH=src:. ${PYTHON_BIN} -m unittest \
+PYTHONPATH="${RTDL_PYTHONPATH}" ${PYTHON_BIN} -m unittest \
   tests.goal1799_partner_anyhit_public_dispatch_test \
   tests.goal1793_mixed_partner_columns_conformance_test \
   tests.goal1791_partner_handoff_phase_timing_test \
@@ -65,7 +69,7 @@ PYTHONPATH=src:. ${PYTHON_BIN} -m unittest \
 
 echo "[goal1804] running example over OptiX for NumPy, PyTorch CUDA, and CuPy CUDA"
 for partner in numpy torch-cuda cupy-cuda; do
-  PYTHONPATH=src:. ${PYTHON_BIN} examples/rtdl_partner_anyhit.py \
+  PYTHONPATH="${RTDL_PYTHONPATH}" ${PYTHON_BIN} examples/rtdl_partner_anyhit.py \
     --partner "${partner}" \
     --backend optix \
     > "${OUT_DIR}/example_${partner}_optix.json"
@@ -73,7 +77,7 @@ for partner in numpy torch-cuda cupy-cuda; do
 done
 
 echo "[goal1804] validating claim flags"
-PYTHONPATH=src:. ${PYTHON_BIN} - "${OUT_DIR}" <<'PY'
+PYTHONPATH="${RTDL_PYTHONPATH}" ${PYTHON_BIN} - "${OUT_DIR}" <<'PY'
 import json
 import pathlib
 import sys

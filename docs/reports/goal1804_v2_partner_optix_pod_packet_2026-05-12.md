@@ -37,6 +37,8 @@ The runner records:
 
 - git commit;
 - Python version;
+- caller `PYTHONPATH`, preserving preinstalled framework site directories before
+  appending `src:.`;
 - `nvidia-smi`;
 - PyTorch/CuPy/NumPy versions and CUDA visibility;
 - OptiX build log;
@@ -54,6 +56,12 @@ cd /workspace/rtdl
 export PYTHONPATH=src:.
 export OPTIX_PREFIX=/root/vendor/optix-dev
 bash scripts/goal1804_v2_partner_optix_pod_runner.sh
+```
+
+If the host uses a pre-seeded framework directory, keep it in front:
+
+```bash
+export PYTHONPATH=.partner_site:src:.
 ```
 
 If the pod has a different OptiX SDK path:
@@ -109,6 +117,7 @@ test CUDA/OptiX behavior but cannot support RT-core performance claims.
 Static validation should verify that the runner includes:
 
 - environment capture;
+- caller `PYTHONPATH` preservation;
 - framework probe;
 - OptiX build;
 - focused partner tests;

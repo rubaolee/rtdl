@@ -11,6 +11,8 @@ class Goal1804V2PartnerOptixPodPacketTest(unittest.TestCase):
     def test_runner_contains_required_pod_steps_and_claim_guards(self) -> None:
         runner = (ROOT / "scripts" / "goal1804_v2_partner_optix_pod_runner.sh").read_text(encoding="utf-8")
         self.assertIn("nvidia-smi", runner)
+        self.assertIn("RTDL_PYTHONPATH", runner)
+        self.assertIn('${PYTHONPATH}:${RTDL_PYTHONPATH}', runner)
         self.assertIn("partner_probe.json", runner)
         self.assertIn("make build-optix", runner)
         self.assertIn("tests.goal1799_partner_anyhit_public_dispatch_test", runner)
