@@ -22,6 +22,7 @@ from .partner import PyTorchAdapter
 from .partner import RtdlPartnerProtocolContract
 from .partner import RtdlOutputSpec
 from .partner import RtdlTensorDescriptor
+from .partner import run_ray_triangle_any_hit_2d as run_partner_ray_triangle_any_hit_2d
 from .partner import validate_v2_0_partner_protocol_contract
 from .partner import v2_0_partner_protocol_contract
 from .api import polygon_pair_overlap_area_rows
@@ -920,6 +921,7 @@ __all__ = [
     "RtdlPartnerProtocolContract",
     "RtdlOutputSpec",
     "RtdlTensorDescriptor",
+    "run_partner_ray_triangle_any_hit_2d",
     "validate_v2_0_partner_protocol_contract",
     "v2_0_partner_protocol_contract",
     "overlay_compose",

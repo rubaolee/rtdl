@@ -341,8 +341,31 @@ def validate_v2_0_partner_protocol_contract(contract: RtdlPartnerProtocolContrac
     }
 
 
+def run_ray_triangle_any_hit_2d(ray_columns: dict, triangle_columns: dict, *, backend: str = "embree") -> dict[str, Any]:
+    """Run the first v2.0 partner 2-D ray/triangle ANY_HIT bridge.
+
+    The initial partner execution surface is explicit host staging. This helper
+    deliberately dispatches only to existing app-agnostic backend primitives and
+    does not imply true zero-copy or performance claims.
+    """
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend == "embree":
+        from .embree_runtime import run_embree_partner_ray_triangle_any_hit_2d
+
+        return run_embree_partner_ray_triangle_any_hit_2d(ray_columns, triangle_columns)
+    if normalized_backend == "optix":
+        from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d
+
+        return run_optix_partner_ray_triangle_any_hit_2d(ray_columns, triangle_columns)
+    raise ValueError("partner ray_triangle_any_hit_2d backend must be one of: embree, optix")
+
+
 def _normalize_name(name: str) -> str:
     return name.strip().lower().replace("-", "_")
+
+
+def _normalize_backend(name: str) -> str:
+    return str(name).strip().lower().replace("-", "_")
 
 
 def _module_root(obj: Any) -> str:
