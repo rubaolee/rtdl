@@ -1,12 +1,12 @@
 # Goal1772 Continuous Frechet OptiX Pod Validation Attempt
 
 Date: 2026-05-12
-Status: blocked by missing OptiX SDK/runtime library
-Verdict: needs-more-evidence
+Status: completed after installing compatible OptiX headers
+Verdict: accept-with-boundary
 
 ## Scope
 
-This report records the first hardware-side validation attempt for the v1.8
+This report records the first hardware-side validation pass for the v1.8
 continuous Frechet Python+RTDL learner app added in Goal1771.
 
 The claim-sensitive command under test is:
@@ -36,7 +36,8 @@ GPU: NVIDIA RTX A5000
 driver: 570.195.03
 Python: 3.11.10
 CUDA: /usr/local/cuda-12.4/bin/nvcc present
-repository HEAD: a1fc0c06
+repository HEAD for learner test: a1fc0c06
+repository HEAD after OptiX identifier fix: 5a587f48
 ```
 
 ## Passing Portable Validation
@@ -53,7 +54,7 @@ OK
 This validates the learner app, Python free-space logic, claim-boundary checks,
 and non-OptiX compatibility on the pod.
 
-## OptiX Runtime Blocker
+## Initial OptiX Runtime Blocker
 
 The claim-sensitive OptiX command fails before hardware execution because the
 RTDL OptiX native library is absent:
@@ -81,18 +82,113 @@ Searches under `/root`, `/usr`, `/opt`, and `/usr/local` did not find
 `optix.h`, `optix_stubs.h`, or `librtdl_optix.so`. `apt-cache search optix`
 did not show an installable package in the pod's current package sources.
 
+## Remediation
+
+The pod has full root access, so normal OS/package installation was possible.
+OptiX itself was not available from the configured apt repositories, but NVIDIA
+publishes a public header-only `optix-dev` repository. The headers were
+installed on the pod at:
+
+```text
+/root/vendor/optix-dev
+```
+
+Using the default `optix-dev` `main`/`v9.1.0` headers built the RTDL OptiX
+library, but runtime initialization failed with:
+
+```text
+RuntimeError: OptiX error: Unsupported ABI version
+```
+
+The cause was an ABI mismatch: `v9.1.0` reports `OPTIX_ABI_VERSION 118`, which
+the pod's installed `570.195.03` driver rejected. Fetching the full
+`optix-dev` tag set and pinning to `v9.0.0` produced
+`OPTIX_ABI_VERSION 105`, which the driver accepted.
+
+During the first compile attempt, `nvcc` also exposed a source-level OptiX
+identifier regression from an earlier mechanical rename:
+
+```text
+struct shape-pair relationPipeline
+struct shape-pair relationLaunchParams
+```
+
+Those invalid C++ identifiers were fixed in commit `5a587f48` by restoring
+legal internal identifier names (`ShapePairRelationPipeline` and
+`ShapePairRelationLaunchParams`) while leaving the native ABI app-agnostic.
+
+## Build Evidence
+
+Command:
+
+```bash
+cd /root/vendor/optix-dev
+git fetch --unshallow --tags
+git checkout -q v9.0.0
+
+cd /root/rtdl
+make build-optix OPTIX_PREFIX=/root/vendor/optix-dev
+```
+
+Result:
+
+```text
+build/librtdl_optix.so
+```
+
+Export check:
+
+```text
+000000000004cc40 T rtdl_optix_run_segment_shape_anyhit_rows_native_bounded
+```
+
+## Passing RT-Core Path
+
+Command:
+
+```bash
+RTDL_OPTIX_LIB=/root/rtdl/build/librtdl_optix.so \
+PYTHONPATH=src:. \
+python3 examples/rtdl_continuous_frechet_distance_app.py \
+  --backend optix \
+  --candidate-mode rtdl_broadphase \
+  --require-rt-core \
+  --iterations 8 \
+  --decision-radius 0.25
+```
+
+Key output:
+
+```json
+{
+  "app": "continuous_frechet_distance",
+  "backend": "optix",
+  "candidate_mode": "rtdl_broadphase",
+  "decision": {
+    "broadphase_row_count": 7,
+    "candidate_cell_count": 7,
+    "radius": 0.25,
+    "within_radius": true
+  },
+  "distance_estimate": 0.20614200080478015,
+  "free_space_cell_count": 9,
+  "matches_oracle": true,
+  "oracle_distance_estimate": 0.20614200080478015,
+  "rt_core_accelerated": true
+}
+```
+
 ## Verdict
 
-This pod is suitable for CUDA/NVIDIA hardware work, but it is not yet suitable
-for RTDL OptiX validation because it lacks both:
+The continuous Frechet learner app now has pod-side OptiX execution evidence on
+an RTX A5000. The claim remains deliberately bounded:
 
-- the RTDL-built `librtdl_optix.so`,
-- the NVIDIA OptiX SDK header tree required to build that library.
+- RTDL/OptiX accelerates the segment/expanded-shape broadphase over candidate
+  free-space cells.
+- Python still owns the continuous Frechet free-space reachability algorithm,
+  binary-search distance estimate, and JSON app assembly.
+- This is not a whole-algorithm or universal speedup claim.
 
-The continuous Frechet app remains accepted as a Python+RTDL learner program.
-The NVIDIA RT-core validation for this app remains blocked until a pod provides
-either:
-
-- a valid `RTDL_OPTIX_LIB=/path/to/librtdl_optix.so`, or
-- the NVIDIA OptiX SDK at a known `OPTIX_PREFIX`, after which
-  `make build-optix` can be run and the claim-sensitive command retried.
+The infrastructure lesson is also clear: future pod runs should install
+`NVIDIA/optix-dev` and pin it to `v9.0.0` for this driver family unless the
+driver is upgraded to support newer OptiX ABI versions.

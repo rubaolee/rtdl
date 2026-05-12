@@ -70,6 +70,7 @@ the release-facing example surface.
 
 Follow-up hardware validation is recorded in
 `docs/reports/goal1772_continuous_frechet_optix_pod_validation_attempt_2026-05-12.md`.
-That attempt reached an RTX A5000 pod and passed the portable learner test, but
-the claim-sensitive OptiX run remains blocked because the pod lacks
-`librtdl_optix.so` and the NVIDIA OptiX SDK headers needed to build it.
+That run reached an RTX A5000 pod, installed compatible NVIDIA `optix-dev`
+`v9.0.0` headers, built `librtdl_optix.so`, and executed the
+`--backend optix --candidate-mode rtdl_broadphase --require-rt-core` path with
+`rt_core_accelerated: true` and `matches_oracle: true`.
