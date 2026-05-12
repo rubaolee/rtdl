@@ -322,6 +322,28 @@ def _candidate_cells_from_rows(rows: Iterable[dict[str, object]]) -> frozenset[t
     return frozenset((int(row["segment_id"]) - 1, int(row["polygon_id"]) - 1) for row in rows)
 
 
+def _expand_candidate_cells(
+    cells: frozenset[tuple[int, int]],
+    *,
+    p_count: int,
+    q_count: int,
+    radius: int,
+) -> frozenset[tuple[int, int]]:
+    if radius <= 0:
+        return cells
+    expanded: set[tuple[int, int]] = set()
+    for i, j in cells:
+        for di in range(-radius, radius + 1):
+            ni = i + di
+            if ni < 0 or ni >= p_count:
+                continue
+            for dj in range(-radius, radius + 1):
+                nj = j + dj
+                if 0 <= nj < q_count:
+                    expanded.add((ni, nj))
+    return frozenset(expanded)
+
+
 def _clip_interval(interval: Interval, start: float) -> Interval:
     if interval is None:
         return None
@@ -559,6 +581,7 @@ def run_curves_app(
     output_capacity: int = 1_000_000,
     min_prune_ratio: float = 0.25,
     verify_oracle: bool = True,
+    candidate_expansion: int = 1,
 ) -> dict[str, object]:
     if len(curve_p) < 2 or len(curve_q) < 2:
         raise ValueError("continuous Frechet distance requires two curves with at least two points each")
@@ -580,7 +603,9 @@ def run_curves_app(
         "fallback_reason": None,
         "last_candidate_cell_count": None,
         "last_broadphase_row_count": None,
+        "last_raw_candidate_cell_count": None,
         "last_prune_ratio": None,
+        "candidate_expansion": candidate_expansion,
     }
 
     def candidate_provider(radius: float):
@@ -595,11 +620,18 @@ def run_curves_app(
             output_capacity=output_capacity,
         )
         phases["last_rtdl_broadphase_sec"] = time.perf_counter() - broadphase_start
-        cells = _candidate_cells_from_rows(rows)
+        raw_cells = _candidate_cells_from_rows(rows)
         # The start and end cells are required by the continuous Frechet boundary condition.
-        cells = frozenset(set(cells) | {(0, 0), (len(p_segments) - 1, len(q_segments) - 1)})
+        cells = frozenset(set(raw_cells) | {(0, 0), (len(p_segments) - 1, len(q_segments) - 1)})
+        cells = _expand_candidate_cells(
+            cells,
+            p_count=len(p_segments),
+            q_count=len(q_segments),
+            radius=candidate_expansion,
+        )
         prune_ratio = 1.0 - (len(cells) / max(1, len(all_cells)))
         broadphase_stats["last_candidate_cell_count"] = len(cells)
+        broadphase_stats["last_raw_candidate_cell_count"] = len(raw_cells)
         broadphase_stats["last_broadphase_row_count"] = len(rows)
         broadphase_stats["last_prune_ratio"] = prune_ratio
         if prune_ratio < min_prune_ratio:
@@ -710,6 +742,7 @@ def run_app(
     output_capacity: int = 1_000_000,
     min_prune_ratio: float = 0.25,
     verify_oracle: bool = True,
+    candidate_expansion: int = 1,
 ) -> dict[str, object]:
     if candidate_mode not in {"all_cells", "rtdl_broadphase"}:
         raise ValueError("candidate_mode must be 'all_cells' or 'rtdl_broadphase'")
@@ -733,6 +766,7 @@ def run_app(
         output_capacity=output_capacity,
         min_prune_ratio=min_prune_ratio,
         verify_oracle=verify_oracle,
+        candidate_expansion=candidate_expansion,
     )
 
 
@@ -772,6 +806,12 @@ def main(argv: list[str] | None = None) -> int:
         help="Use RTDL candidates as a Frechet filter only when they prune at least this fraction of cells.",
     )
     parser.add_argument(
+        "--candidate-expansion",
+        type=int,
+        default=1,
+        help="Expand RTDL candidate cells by this Chebyshev neighborhood radius before Frechet filtering.",
+    )
+    parser.add_argument(
         "--no-oracle",
         action="store_true",
         help="Skip the Python all-cells oracle pass for performance-oriented runs.",
@@ -790,6 +830,7 @@ def main(argv: list[str] | None = None) -> int:
                 output_capacity=args.output_capacity,
                 min_prune_ratio=args.min_prune_ratio,
                 verify_oracle=not args.no_oracle,
+                candidate_expansion=args.candidate_expansion,
             ),
             indent=2,
             sort_keys=True,

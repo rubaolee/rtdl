@@ -92,6 +92,7 @@ class Goal1771ContinuousFrechetPythonRtdlLearnerAppTest(unittest.TestCase):
         self.assertIn("learner-owned C++ continuation", text)
         self.assertIn("verify_oracle", text)
         self.assertIn("min_prune_ratio", text)
+        self.assertIn("candidate_expansion", text)
         self.assertIn("not a universal speedup claim", text)
 
 
