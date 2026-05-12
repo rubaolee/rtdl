@@ -2733,7 +2733,7 @@ static void collect_polygon_pair_candidates_bounded_optix(
 
 // ---------- shape-pair relation ----------------------------------------------------------
 
-struct shape-pair relationLaunchParams {
+struct ShapePairRelationLaunchParams {
     OptixTraversableHandle traversable;
     const GpuPolygonRef* left_polygons;
     const GpuPolygonRef* right_polygons;
@@ -2816,7 +2816,7 @@ static void run_shape_pair_relation_flags_optix(
 
     uint32_t launch_count = static_cast<uint32_t>(left_count) * max_edges;
 
-    shape-pair relationLaunchParams lp;
+    ShapePairRelationLaunchParams lp;
     lp.traversable         = accel.handle;
     lp.left_polygons       = reinterpret_cast<const GpuPolygonRef*>(d_lp.ptr);
     lp.right_polygons      = reinterpret_cast<const GpuPolygonRef*>(d_rp.ptr);
@@ -2830,12 +2830,12 @@ static void run_shape_pair_relation_flags_optix(
     lp.launch_count        = launch_count;
     lp.max_edges_per_poly  = max_edges;
 
-    DevPtr d_params(sizeof(shape-pair relationLaunchParams));
+    DevPtr d_params(sizeof(ShapePairRelationLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
     OPTIX_CHECK(optixLaunch(g_shape_pair_relation.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(shape-pair relationLaunchParams),
+                             d_params.ptr, sizeof(ShapePairRelationLaunchParams),
                              &g_shape_pair_relation.pipe->sbt,
                              launch_count, 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));

@@ -907,12 +907,12 @@ struct GpuPolygonRef {
     uint32_t vertex_count;
 };
 
-struct shape-pair relationFlags {
+struct ShapePairRelationFlags {
     uint32_t requires_segment_intersection;
     uint32_t requires_point_containment;
 };
 
-struct shape-pair relationParams {
+struct ShapePairRelationParams {
     OptixTraversableHandle traversable;
     const GpuPolygonRef* left_polygons;
     const GpuPolygonRef* right_polygons;
@@ -920,7 +920,7 @@ struct shape-pair relationParams {
     const float* left_vy;
     const float* right_vx;
     const float* right_vy;
-    shape-pair relationFlags* output;         // left_count * right_count elements
+    ShapePairRelationFlags* output;         // left_count * right_count elements
     uint32_t  right_count;
     uint32_t  left_count;
     uint32_t  launch_count;       // total raygen threads
@@ -928,7 +928,7 @@ struct shape-pair relationParams {
 };
 
 extern "C" {
-__constant__ shape-pair relationParams params;
+__constant__ ShapePairRelationParams params;
 }
 
 static __forceinline__ __device__ bool seg_intersect_flag(
@@ -3783,7 +3783,7 @@ struct PipPipeline {
     std::once_flag   init;
 };
 
-struct shape-pair relationPipeline {
+struct ShapePairRelationPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag   init;
 };
@@ -3838,7 +3838,7 @@ struct KnnCuFunction {
 
 static SegmentPairIntersectionPipeline         g_segment_pair_intersection;
 static PipPipeline         g_pip;
-static shape-pair relationPipeline     g_shape_pair_relation;
+static ShapePairRelationPipeline     g_shape_pair_relation;
 static RayHitCountPipeline  g_rayhit;
 static RayHitCount3DPipeline g_rayhit3d;
 static RayAnyHitPipeline    g_rayanyhit;
