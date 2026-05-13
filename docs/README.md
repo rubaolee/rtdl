@@ -34,7 +34,7 @@ Read these in order:
 | Choose a backend | [Capability Boundaries](capability_boundaries.md) | [Backend Maturity](backend_maturity.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
 | Understand the architecture | [Current Architecture](current_architecture.md) | [IR And Lowering](rtdl/ir_and_lowering.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 | Interpret benchmark results | [Performance Model](performance_model.md) | [Current Support Matrix](current_main_support_matrix.md), [Release Reports](release_reports/) |
-| Try the partner preview path | [Python Partner Any-Hit](tutorials/partner_anyhit.md) | [OptiX Partner Zero-Copy Any-Hit Preview](tutorials/partner_optix_zero_copy_anyhit.md), [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
+| Try the partner preview path | [Python Partner Any-Hit](tutorials/partner_anyhit.md) | [Partner Acceleration Boundaries](partner_acceleration_boundaries.md), [OptiX Partner Zero-Copy Any-Hit Preview](tutorials/partner_optix_zero_copy_anyhit.md), [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 
 ## What RTDL Promises
 
@@ -68,6 +68,8 @@ reviewed and the remaining general true zero-copy, broad RT-core,
 general direct device-pointer handoff, whole-application,
 arbitrary PyTorch/CuPy acceleration, and
 package-install/source-tree scope questions are resolved by reviewed evidence.
+Use [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) for
+the current positive and negative rule around partner-owned columns.
 
 ## v1.8 Learner Rule
 

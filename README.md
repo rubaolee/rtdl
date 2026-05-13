@@ -128,6 +128,8 @@ This preview is not v2.0 yet. It does not claim general true zero-copy support,
 general direct device-pointer handoff, broad RT-core speedup,
 whole-application acceleration, arbitrary PyTorch/CuPy acceleration, or
 package-install support. Those are hard gates for the actual v2.0 release.
+For the exact positive and negative rule, read
+[Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
 ## Performance Boundary
 
@@ -151,6 +153,7 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Application Catalog](docs/application_catalog.md)
 - [Feature Guide](docs/rtdl_feature_guide.md)
 - [Capability Boundaries](docs/capability_boundaries.md)
+- [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md)
 - [Current Architecture](docs/current_architecture.md)
 - [Performance Model](docs/performance_model.md)
 - [IR And Lowering](docs/rtdl/ir_and_lowering.md)

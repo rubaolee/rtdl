@@ -20,8 +20,9 @@ RTDL accelerates explicit RTDL primitive calls over partner-owned data. RTDL doe
 
 ## Release Boundary
 
-This goal does not close v2.0 by itself. The document needs external review and
-must be linked from the public docs before the v2.0 release packet.
+This goal does not close v2.0 by itself. The document is now linked from the
+front-page README, docs index, and tutorial ladder, but still needs external
+review before the v2.0 release packet.
 
 The blocked claims remain blocked:
 
