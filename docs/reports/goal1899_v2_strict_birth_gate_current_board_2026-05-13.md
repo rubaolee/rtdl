@@ -64,6 +64,9 @@ blocks the v2.0 release label.
 - Goal1919: RTX pod artifacts are integrated locally; Goal1905 and Goal1916
   pass, and Goal1911 now marks pod evidence collected while keeping release
   blocked pending external review and final consensus.
+- Goal1921: detailed post-pod performance report records fixed-radius positive
+  rows, mixed 512-row segment/polygon and road-hazard behavior, positive 2048
+  prepared-reuse rows, and exact claim boundaries.
 
 ## Immediate Next Hardware Step
 

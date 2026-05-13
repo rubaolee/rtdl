@@ -33,6 +33,7 @@ TEST_MODULES = (
     "tests.goal1918_fixed_radius_reference_oom_guard_test",
     "tests.goal1919_post_pod_evidence_integration_test",
     "tests.goal1920_gemini_followup_goal1912_post_pod_review_correction_test",
+    "tests.goal1921_v2_post_pod_performance_report_test",
 )
 
 
