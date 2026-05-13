@@ -1,0 +1,569 @@
+[goal1925] start app=facility_knn_assignment partner=cupy
+[goal1925] timing facility_knn_assignment:v1_8_prepared_optix:cupy repeat=3
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.682708
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.328406
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.365337
+[goal1925] timing facility_knn_assignment:v2_prepared_partner:cupy repeat=3
+[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=1 elapsed_s=0.000815
+[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=2 elapsed_s=0.000440
+[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=3 elapsed_s=0.000410
+[goal1925] start app=facility_knn_assignment partner=torch
+[goal1925] timing facility_knn_assignment:v1_8_prepared_optix:torch repeat=3
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=1 elapsed_s=1.423761
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=2 elapsed_s=1.455003
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=3 elapsed_s=1.304051
+[goal1925] timing facility_knn_assignment:v2_prepared_partner:torch repeat=3
+[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=1 elapsed_s=0.000751
+[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=2 elapsed_s=0.000452
+[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=3 elapsed_s=0.000419
+[goal1925] start app=hausdorff_distance partner=cupy
+[goal1925] timing hausdorff_distance:v1_8_prepared_optix:cupy repeat=3
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.429343
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.136224
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.337785
+[goal1925] timing hausdorff_distance:v2_prepared_partner:cupy repeat=3
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=1 elapsed_s=0.000681
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=2 elapsed_s=0.000397
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=3 elapsed_s=0.000354
+[goal1925] timing hausdorff_distance:v1_8_prepared_optix:cupy repeat=3
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.401202
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.366652
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.378323
+[goal1925] timing hausdorff_distance:v2_prepared_partner:cupy repeat=3
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=1 elapsed_s=0.000872
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=2 elapsed_s=0.000342
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=3 elapsed_s=0.000325
+[goal1925] start app=hausdorff_distance partner=torch
+[goal1925] timing hausdorff_distance:v1_8_prepared_optix:torch repeat=3
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=1 elapsed_s=1.170082
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=2 elapsed_s=1.352306
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=3 elapsed_s=1.374766
+[goal1925] timing hausdorff_distance:v2_prepared_partner:torch repeat=3
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=1 elapsed_s=0.000633
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=2 elapsed_s=0.000361
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=3 elapsed_s=0.000342
+[goal1925] timing hausdorff_distance:v1_8_prepared_optix:torch repeat=3
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=1 elapsed_s=1.402586
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=2 elapsed_s=1.374851
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=3 elapsed_s=1.084693
+[goal1925] timing hausdorff_distance:v2_prepared_partner:torch repeat=3
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=1 elapsed_s=0.000543
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=2 elapsed_s=0.000307
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=3 elapsed_s=0.000285
+[goal1925] start app=ann_candidate_search partner=cupy
+[goal1925] timing ann_candidate_search:v1_8_prepared_optix:cupy repeat=3
+[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.398177
+[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.360990
+[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.380117
+[goal1925] timing ann_candidate_search:v2_prepared_partner:cupy repeat=3
+[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=1 elapsed_s=0.000567
+[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=2 elapsed_s=0.000397
+[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=3 elapsed_s=0.000341
+[goal1925] start app=ann_candidate_search partner=torch
+[goal1925] timing ann_candidate_search:v1_8_prepared_optix:torch repeat=3
+[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=1 elapsed_s=1.169294
+[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=2 elapsed_s=1.343490
+[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=3 elapsed_s=1.358180
+[goal1925] timing ann_candidate_search:v2_prepared_partner:torch repeat=3
+[goal1925] ann_candidate_search:v2_prepared_partner:torch iter=1 elapsed_s=0.000584
+[goal1925] ann_candidate_search:v2_prepared_partner:torch iter=2 elapsed_s=0.000336
+[goal1925] ann_candidate_search:v2_prepared_partner:torch iter=3 elapsed_s=0.000308
+[goal1925] start app=outlier_detection partner=cupy
+[goal1925] timing outlier_detection:v1_8_prepared_optix:cupy repeat=3
+[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.417147
+[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.353595
+[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.352730
+[goal1925] timing outlier_detection:v2_prepared_partner:cupy repeat=3
+[goal1925] outlier_detection:v2_prepared_partner:cupy iter=1 elapsed_s=0.000665
+[goal1925] outlier_detection:v2_prepared_partner:cupy iter=2 elapsed_s=0.000443
+[goal1925] outlier_detection:v2_prepared_partner:cupy iter=3 elapsed_s=0.000423
+[goal1925] start app=outlier_detection partner=torch
+[goal1925] timing outlier_detection:v1_8_prepared_optix:torch repeat=3
+[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=1 elapsed_s=1.406314
+[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=2 elapsed_s=1.392411
+[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=3 elapsed_s=1.057064
+[goal1925] timing outlier_detection:v2_prepared_partner:torch repeat=3
+[goal1925] outlier_detection:v2_prepared_partner:torch iter=1 elapsed_s=0.000646
+[goal1925] outlier_detection:v2_prepared_partner:torch iter=2 elapsed_s=0.000415
+[goal1925] outlier_detection:v2_prepared_partner:torch iter=3 elapsed_s=0.000394
+[goal1925] start app=dbscan_clustering partner=cupy
+[goal1925] timing dbscan_clustering:v1_8_prepared_optix:cupy repeat=3
+[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.421227
+[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.084967
+[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.319673
+[goal1925] timing dbscan_clustering:v2_prepared_partner:cupy repeat=3
+[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=1 elapsed_s=0.000639
+[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=2 elapsed_s=0.000455
+[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=3 elapsed_s=0.000412
+[goal1925] start app=dbscan_clustering partner=torch
+[goal1925] timing dbscan_clustering:v1_8_prepared_optix:torch repeat=3
+[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=1 elapsed_s=1.136362
+[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=2 elapsed_s=1.315482
+[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=3 elapsed_s=1.339231
+[goal1925] timing dbscan_clustering:v2_prepared_partner:torch repeat=3
+[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=1 elapsed_s=0.000634
+[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=2 elapsed_s=0.000418
+[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=3 elapsed_s=0.000396
+[goal1925] start app=barnes_hut_force_app partner=cupy
+[goal1925] timing barnes_hut_force_app:v1_8_prepared_optix:cupy repeat=3
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.398777
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.415423
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.376969
+[goal1925] timing barnes_hut_force_app:v2_prepared_partner:cupy repeat=3
+[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=1 elapsed_s=0.000633
+[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=2 elapsed_s=0.000423
+[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=3 elapsed_s=0.000388
+[goal1925] start app=barnes_hut_force_app partner=torch
+[goal1925] timing barnes_hut_force_app:v1_8_prepared_optix:torch repeat=3
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=1 elapsed_s=1.399346
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=2 elapsed_s=1.369663
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=3 elapsed_s=1.353515
+[goal1925] timing barnes_hut_force_app:v2_prepared_partner:torch repeat=3
+[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=1 elapsed_s=0.000629
+[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=2 elapsed_s=0.000397
+[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=3 elapsed_s=0.000386
+fatal: not a git repository (or any of the parent directories): .git
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "fixed_radius_family_true_zero_copy_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "git_commit": "unknown",
+  "goal": "Goal1925",
+  "gpu": "NVIDIA RTX A5000, 570.195.03",
+  "results": [
+    {
+      "app": "facility_knn_assignment",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 393216,
+          "threshold_reached_count": 131072
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.6827075332403183,
+          "median_s": 1.36533734947443,
+          "min_s": 1.3284055385738611
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0008149370551109314,
+          "median_s": 0.000440400093793869,
+          "min_s": 0.00041045062243938446
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.00032255771364007266
+      },
+      "partner": "cupy",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "coverage_threshold_decision",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "facility_knn_assignment",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 393216,
+          "threshold_reached_count": 131072
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.4550032950937748,
+          "median_s": 1.423761311918497,
+          "min_s": 1.3040514439344406
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0007505044341087341,
+          "median_s": 0.00045216456055641174,
+          "min_s": 0.00041948817670345306
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0003175845254195921
+      },
+      "partner": "torch",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "coverage_threshold_decision",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "hausdorff_distance",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 262144,
+          "threshold_reached_count": 262144
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.4293429479002953,
+          "median_s": 1.337785355746746,
+          "min_s": 1.1362240798771381
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0006814859807491302,
+          "median_s": 0.00039692223072052,
+          "min_s": 0.00035395100712776184
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.00029670098346902573
+      },
+      "partner": "cupy",
+      "query_count": 524288,
+      "radius": 1.5,
+      "result_kind": "bidirectional_threshold_decision",
+      "reverse": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 262144,
+          "threshold_reached_count": 262144
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.4012022335082293,
+          "median_s": 1.378323145210743,
+          "min_s": 1.366651725023985
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0008715111762285233,
+          "median_s": 0.00034173019230365753,
+          "min_s": 0.00032465532422065735
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.00024793183912717915
+      },
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "hausdorff_distance",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 262144,
+          "threshold_reached_count": 262144
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.3747658170759678,
+          "median_s": 1.3523057457059622,
+          "min_s": 1.170082276687026
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0006330423057079315,
+          "median_s": 0.0003611277788877487,
+          "min_s": 0.00034221261739730835
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0002670459546847702
+      },
+      "partner": "torch",
+      "query_count": 524288,
+      "radius": 1.5,
+      "result_kind": "bidirectional_threshold_decision",
+      "reverse": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 262144,
+          "threshold_reached_count": 262144
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.4025861471891403,
+          "median_s": 1.3748506736010313,
+          "min_s": 1.08469314314425
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0005434602499008179,
+          "median_s": 0.000307498499751091,
+          "min_s": 0.0002847537398338318
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.00022365956220226152
+      },
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "ann_candidate_search",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 262144,
+          "threshold_reached_count": 262144
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.3981767445802689,
+          "median_s": 1.3801166210323572,
+          "min_s": 1.360989548265934
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0005665645003318787,
+          "median_s": 0.0003973469138145447,
+          "min_s": 0.0003407783806324005
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0002879082156965261
+      },
+      "partner": "cupy",
+      "query_count": 524288,
+      "radius": 0.1,
+      "result_kind": "candidate_coverage_threshold_decision",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "ann_candidate_search",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 262144,
+          "threshold_reached_count": 262144
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.35817982070148,
+          "median_s": 1.3434902038425207,
+          "min_s": 1.1692936830222607
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0005835257470607758,
+          "median_s": 0.00033621490001678467,
+          "min_s": 0.00030836835503578186
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0002502548206568052
+      },
+      "partner": "torch",
+      "query_count": 524288,
+      "radius": 0.1,
+      "result_kind": "candidate_coverage_threshold_decision",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "outlier_detection",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "outlier_count": 2,
+          "threshold_reached_count": 524286
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.417146522551775,
+          "median_s": 1.3535953685641289,
+          "min_s": 1.35273009352386
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0006654337048530579,
+          "median_s": 0.00044318661093711853,
+          "min_s": 0.00042282603681087494
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.00032741439667250294
+      },
+      "partner": "cupy",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "scalar_outlier_count",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 3
+    },
+    {
+      "app": "outlier_detection",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "outlier_count": 2,
+          "threshold_reached_count": 524286
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.4063144028186798,
+          "median_s": 1.3924105297774076,
+          "min_s": 1.0570639688521624
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0006455797702074051,
+          "median_s": 0.00041515007615089417,
+          "min_s": 0.00039380043745040894
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0002981520659839168
+      },
+      "partner": "torch",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "scalar_outlier_count",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 3
+    },
+    {
+      "app": "dbscan_clustering",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "core_count": 524286,
+          "threshold_reached_count": 524286
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.4212272353470325,
+          "median_s": 1.3196733873337507,
+          "min_s": 1.0849665310233831
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0006385613232851028,
+          "median_s": 0.00045542605221271515,
+          "min_s": 0.00041205994784832
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0003451051272109468
+      },
+      "partner": "cupy",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "scalar_core_count",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 3
+    },
+    {
+      "app": "dbscan_clustering",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "core_count": 524286,
+          "threshold_reached_count": 524286
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.3392313811928034,
+          "median_s": 1.3154822625219822,
+          "min_s": 1.1363616921007633
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.00063367560505867,
+          "median_s": 0.0004184376448392868,
+          "min_s": 0.0003958083689212799
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0003180868771556656
+      },
+      "partner": "torch",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "scalar_core_count",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 3
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 393216,
+          "threshold_reached_count": 131072
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.4154227189719677,
+          "median_s": 1.3987765368074179,
+          "min_s": 1.3769692089408636
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0006328411400318146,
+          "median_s": 0.00042256899178028107,
+          "min_s": 0.00038765184581279755
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.0003020989991330259
+      },
+      "partner": "cupy",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "node_coverage_threshold_decision",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 393216,
+          "threshold_reached_count": 131072
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 1.3993458729237318,
+          "median_s": 1.3696631845086813,
+          "min_s": 1.3535147085785866
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0006287451833486557,
+          "median_s": 0.0003971736878156662,
+          "min_s": 0.0003860741853713989
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.00028997909289511813
+      },
+      "partner": "torch",
+      "query_count": 524288,
+      "radius": 1.1,
+      "result_kind": "node_coverage_threshold_decision",
+      "search_count": 524288,
+      "status": "pass",
+      "threshold": 1
+    }
+  ],
+  "source_commit_label": "unknown",
+  "status": "pass"
+}
