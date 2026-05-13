@@ -25,7 +25,13 @@ The v2.0 side is only partially born:
 - Goal1838 proves one real OptiX partner zero-copy slice:
   Torch/CuPy CUDA input columns plus Torch/CuPy CUDA output flags for the
   prepared 2-D ray/triangle any-hit primitive.
-- No public app has yet been rewritten end-to-end as a v2.0 partner app.
+- Goal1848 extends that primitive surface from flags to bounded all-hit witness
+  rows, preserving generic ray/primitive identity without app-shaped native ABI.
+- Goal1850 lifts the witness contract to the first app-level adapter for
+  `segment_polygon_anyhit_rows`.
+- Goal1853 adds the stronger caller-supplied PyTorch/CuPy GPU-column version of
+  that adapter, so the input tensors can be owned by the learner/user rather
+  than packed internally by RTDL.
 - No all-app v2.0 partner timing harness exists yet.
 
 ## Current Evidence Inventory
@@ -36,13 +42,16 @@ The v2.0 side is only partially born:
 | Goal1750 | v1.8/current vs v1.0 OptiX, same-contract primary ratios, 17 rows | complete internal evidence | not public speedup wording |
 | Goal1838 | v2.0 preview, OptiX prepared 2-D any-hit primitive, Torch/CuPy input-plus-output zero-copy | accepted by Gemini as `accept-with-boundary` | not v2.0 release |
 | Goal1842 | learner docs for the Goal1838 preview path | complete local docs gate | not v2.0 release |
+| Goal1848 | v2.0 preview, OptiX bounded all-hit witness rows into partner-owned CUDA outputs | pod validated on RTX A4500 for Torch/CuPy | not v2.0 release |
+| Goal1850 | first app-level segment/polygon partner adapter over generic witness rows | pod validated on RTX A4500 for Torch/CuPy; Claude accepted with boundary | not v2.0 release |
+| Goal1853 | caller-supplied PyTorch/CuPy GPU-column segment/polygon partner adapter | pod validated on RTX A4500 for Torch/CuPy; Claude accepted with boundary | not v2.0 release |
 
 ## Engine Readiness
 
 | Engine | v1.8 comparison baseline | v2.0 partner comparison readiness | What remains before total comparison |
 | --- | --- | --- | --- |
 | Embree | ready as CPU same-surface app-wall evidence | no GPU partner zero-copy claim is applicable; Embree can still be timed as the CPU RT fallback/control | define whether v2.0 Embree rows are unchanged control rows or partner-host rows, then rerun the same app-command harness on the v2.0 release candidate |
-| OptiX | ready as same-contract primary/subpath evidence | one primitive is ready, but no app-level partner rewrites are complete | rewrite public apps that can use the partner any-hit/count/reduce surface, add a v2.0 app harness, then run pod timings with Torch and CuPy |
+| OptiX | ready as same-contract primary/subpath evidence | one app-level row adapter is execution-proven for Torch/CuPy GPU columns: `segment_polygon_anyhit_rows` | expand to count/reduce-style app adapters, add a v2.0 app harness, then run pod timings with Torch and CuPy |
 
 ## Public App Matrix
 
@@ -55,8 +64,8 @@ The v2.0 side is only partially born:
 | `event_hotspot_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
 | `facility_knn_assignment` | available | CPU control rerun needed | available | not yet covered by Goal1838 any-hit slice |
 | `road_hazard_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
-| `segment_polygon_hitcount` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
-| `segment_polygon_anyhit_rows` | available | CPU control rerun needed | available | closest current app to Goal1838; still needs app-level partner rewrite |
+| `segment_polygon_hitcount` | available | CPU control rerun needed | available | candidate after count-output partner adapter; not covered by Goal1853 row witness path |
+| `segment_polygon_anyhit_rows` | available | CPU control rerun needed | available | first v2.0 OptiX app adapter exists: Goal1850 record adapter plus Goal1853 caller-supplied PyTorch/CuPy GPU-column adapter; perf comparison harness still needed |
 | `polygon_pair_overlap_area_rows` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
 | `polygon_set_jaccard` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
 | `hausdorff_distance` | available | CPU control rerun needed | available | not yet covered by Goal1838 any-hit slice |
@@ -74,12 +83,12 @@ The v2.0 side is only partially born:
    `v2.0 source-tree Python+partner+RTDL app`, with identical datasets,
    identical output semantics, and explicit warm/cold timing phases.
 
-2. Build a v2.0 partner app adapter for at least one any-hit/count app:
-   `segment_polygon_anyhit_rows` is the natural first app because Goal1838
-   already proves the underlying OptiX primitive can consume partner-owned CUDA
-   inputs and write partner-owned CUDA output flags.
+2. Extend from the first v2.0 partner app adapter to a timing harness:
+   `segment_polygon_anyhit_rows` now has both a record adapter (Goal1850) and a
+   caller-supplied GPU-column adapter (Goal1853), but it still needs an accepted
+   same-contract timing row against the v1.8 app path.
 
-3. Extend from primitive output flags to the app's real output contract:
+3. Extend the same pattern from rows to compact outputs:
    hit counts, selected rows, compact summaries, or domain-level metrics must be
    produced without quietly falling back to RTDL-owned staging buffers in the
    measured path.
@@ -103,7 +112,8 @@ The v2.0 side is only partially born:
 
 ## Boundary
 
-Goal1843 says the comparison is plan-ready, not execution-ready. The next
-implementation goal should create the first app-level v2.0 partner adapter and
-timing row, preferably for `segment_polygon_anyhit_rows` on OptiX, then expand
-only after that row proves parity and useful timing telemetry.
+Goal1843 now says the comparison is beyond plan-only but still not all-app
+execution-ready. The first app-level v2.0 OptiX adapter exists and has pod
+correctness evidence. The next implementation goal should create the first
+same-contract v2.0-vs-v1.8 timing row for `segment_polygon_anyhit_rows`, then
+expand only after that row proves parity and useful timing telemetry.

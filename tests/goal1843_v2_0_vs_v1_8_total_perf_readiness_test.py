@@ -30,7 +30,10 @@ class Goal1843V20VsV18TotalPerfReadinessTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Goal1838 proves one real OptiX partner zero-copy slice", text)
         self.assertIn("prepared 2-D ray/triangle any-hit primitive", text)
-        self.assertIn("No public app has yet been rewritten end-to-end as a v2.0 partner app", text)
+        self.assertIn("Goal1850 lifts the witness contract to the first app-level adapter", text)
+        self.assertIn("Goal1853 adds the stronger caller-supplied PyTorch/CuPy GPU-column version", text)
+        self.assertIn("first v2.0 OptiX app adapter exists", text)
+        self.assertIn("perf comparison harness still needed", text)
         self.assertIn("segment_polygon_anyhit_rows", text)
 
 
