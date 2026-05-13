@@ -126,13 +126,23 @@ class Goal756DbPreparedSessionPerfTest(unittest.TestCase):
         }
         native = {
             "sales_risk": {
-                "grouped_sum_summary": {
-                    "traversal": 0.01,
-                    "bitset_copyback": 0.002,
-                    "exact_filter": 0.003,
-                    "output_pack": 0.004,
-                    "raw_candidate_count": 12,
-                    "emitted_count": 3,
+                "compact_summary_batch": {
+                    "grouped_sum_summary": {
+                        "traversal": 0.01,
+                        "bitset_copyback": 0.002,
+                        "exact_filter": 0.003,
+                        "output_pack": 0.004,
+                        "raw_candidate_count": 12,
+                        "emitted_count": 3,
+                    },
+                    "scan_count": {
+                        "traversal": 0.02,
+                        "bitset_copyback": 0.001,
+                        "exact_filter": 0.005,
+                        "output_pack": 0.006,
+                        "raw_candidate_count": 8,
+                        "emitted_count": 8,
+                    },
                 }
             }
         }
@@ -148,9 +158,10 @@ class Goal756DbPreparedSessionPerfTest(unittest.TestCase):
         self.assertEqual(run_totals["compact_summary_operation_count"], 3)
         self.assertEqual(run_totals["row_materializing_operation_count"], 0)
         self.assertEqual(native_totals["counter_status"], "exported")
-        self.assertEqual(native_totals["operation_count"], 1)
-        self.assertAlmostEqual(native_totals["traversal_sec"], 0.01)
-        self.assertEqual(native_totals["raw_candidate_count"], 12)
+        self.assertEqual(native_totals["operation_count"], 2)
+        self.assertAlmostEqual(native_totals["traversal_sec"], 0.03)
+        self.assertAlmostEqual(native_totals["exact_filter_sec"], 0.008)
+        self.assertEqual(native_totals["raw_candidate_count"], 20)
         self.assertEqual(observation["status"], "phase_clean_candidate_for_rtx_review")
 
     def test_optional_backend_failure_is_recorded_without_strict(self) -> None:

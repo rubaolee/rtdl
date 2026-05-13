@@ -70,3 +70,13 @@ The claim remains narrow. These rows prove the fixed-radius count/threshold
 subpath with partner-owned input/output columns. They do not authorize v2.0
 release, whole-app speedup wording, broad RT-core speedup wording, arbitrary
 PyTorch/CuPy acceleration, true zero-copy claims, or package-install claims.
+
+## External Review Follow-Up
+
+Gemini Goal1938 accepted this repeat-3 packet with boundary. It confirms that
+Goal1937 resolves the Goal1936 single-repeat caveat and that all 12 rows support
+the narrow fixed-radius v2 performance conclusion. The remaining provenance
+caveat is the JSON `source_commit_label: unknown`/`git_commit: unknown` value
+caused by the remote checkout lacking usable `.git` metadata. Gemini also noted
+that the run log should be accessible; the run log is tracked in this repository
+at `docs/reports/goal1937_fixed_radius_repeat3_pod/run.log`.

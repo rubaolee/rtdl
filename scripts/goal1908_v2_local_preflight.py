@@ -47,6 +47,8 @@ TEST_MODULES = (
     "tests.goal1935_gemini_review_goal1933_1934_large_scale_perf_test",
     "tests.goal1936_claude_review_goal1933_1935_large_scale_perf_test",
     "tests.goal1937_fixed_radius_repeat3_pod_perf_test",
+    "tests.goal1938_gemini_review_goal1937_repeat3_fixed_radius_test",
+    "tests.goal1939_db_phase_totals_fix_test",
 )
 
 

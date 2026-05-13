@@ -171,7 +171,9 @@ run:
   files, but future reports should label reused provenance explicitly.
 - The database artifact's primary warm-query timing is valid, but its
   phase-total aggregation field has an all-zero schema anomaly. Future DB
-  evidence generation should fix or quarantine that aggregate field.
+  evidence generation should fix or quarantine that aggregate field. Goal1939
+  fixes the recursive aggregation helper and provides a refreshed DB control
+  artifact with non-zero native phase totals.
 - The polygon control rows do not activate RT cores (`rt_core_accelerated:
   false`) and therefore remain exact/control evidence, not RT-core speedup
   evidence.

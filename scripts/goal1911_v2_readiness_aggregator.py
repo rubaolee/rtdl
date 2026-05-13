@@ -65,6 +65,8 @@ SUPPORTING_REQUIRED = (
     "docs/reviews/goal1935_gemini_review_goal1933_1934_large_scale_perf_2026-05-13.md",
     "docs/reviews/goal1936_claude_review_goal1933_1935_large_scale_perf_2026-05-13.md",
     "docs/reports/goal1937_fixed_radius_repeat3_pod_perf_2026-05-13.md",
+    "docs/reviews/goal1938_gemini_review_goal1937_repeat3_fixed_radius_2026-05-13.md",
+    "docs/reports/goal1939_db_phase_totals_fix_2026-05-13.md",
 )
 
 

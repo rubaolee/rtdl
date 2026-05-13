@@ -196,6 +196,26 @@ def _reported_native_db_phases(payload: dict[str, Any]) -> dict[str, Any]:
     return phases
 
 
+def _native_db_phase_records(value: Any):
+    if not isinstance(value, dict):
+        return
+    if any(
+        key in value
+        for key in (
+            "traversal",
+            "bitset_copyback",
+            "exact_filter",
+            "output_pack",
+            "raw_candidate_count",
+            "emitted_count",
+        )
+    ):
+        yield value
+        return
+    for nested in value.values():
+        yield from _native_db_phase_records(nested)
+
+
 def _reported_native_db_phase_totals(native_phases: dict[str, Any]) -> dict[str, Any]:
     totals: dict[str, Any] = {
         "counter_status": "absent",
@@ -220,9 +240,7 @@ def _reported_native_db_phase_totals(native_phases: dict[str, Any]) -> dict[str,
             "raw_candidate_count": 0,
             "emitted_count": 0,
         }
-        for phase in section_phases.values():
-            if not isinstance(phase, dict):
-                continue
+        for phase in _native_db_phase_records(section_phases):
             section_total["operation_count"] += 1
             section_total["traversal_sec"] += float(phase.get("traversal", 0.0) or 0.0)
             section_total["bitset_copyback_sec"] += float(phase.get("bitset_copyback", 0.0) or 0.0)
