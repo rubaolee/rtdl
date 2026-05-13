@@ -1,0 +1,30 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "fixed_radius": {
+    "artifact": "docs/reports/goal1903_fixed_radius_batch_pod.json",
+    "requested": true
+  },
+  "road_hazard": {
+    "artifacts": [
+      "docs/reports/goal1889_road_hazard_prepared_reuse_pod_512.json",
+      "docs/reports/goal1889_road_hazard_prepared_reuse_pod_2048.json"
+    ],
+    "requested": true
+  },
+  "segment_polygon": {
+    "artifacts": [
+      "docs/reports/goal1903_segment_polygon_batch_pod_512.json",
+      "docs/reports/goal1903_segment_polygon_batch_pod_2048.json"
+    ],
+    "counts": [
+      512,
+      2048
+    ],
+    "requested": true
+  },
+  "source_commit_label": "c4aebb2a29744a3a78af9d3b2d4b8be957c7cd68"
+}

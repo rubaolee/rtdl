@@ -1,0 +1,26 @@
+{
+  "2048_cupy": {
+    "prepared_median_s": 0.0011076927185058594,
+    "prepared_ratio_vs_unprepared": 0.6246014107643251,
+    "prepared_ratio_vs_v1_8_prepared": 0.24665083955053643,
+    "unprepared_median_s": 0.001773439347743988
+  },
+  "2048_torch": {
+    "prepared_median_s": 0.0012103989720344543,
+    "prepared_ratio_vs_unprepared": 0.6003961815782958,
+    "prepared_ratio_vs_v1_8_prepared": 0.2695205246506504,
+    "unprepared_median_s": 0.00201600044965744
+  },
+  "512_cupy": {
+    "prepared_median_s": 0.0008832886815071106,
+    "prepared_ratio_vs_unprepared": 0.69721884060528,
+    "prepared_ratio_vs_v1_8_prepared": 1.2865917846871777,
+    "unprepared_median_s": 0.001266874372959137
+  },
+  "512_torch": {
+    "prepared_median_s": 0.0006086081266403198,
+    "prepared_ratio_vs_unprepared": 0.5120769312746444,
+    "prepared_ratio_vs_v1_8_prepared": 0.8864941125400184,
+    "unprepared_median_s": 0.0011885091662406921
+  }
+}

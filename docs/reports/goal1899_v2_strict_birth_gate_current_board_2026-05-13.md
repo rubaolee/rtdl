@@ -61,6 +61,9 @@ blocks the v2.0 release label.
   evidence or release authorization.
 - Goal1918: fixed-radius pod batch now caps optional dense partner-reference
   pair materialization to avoid GPU OOM on large rows.
+- Goal1919: RTX pod artifacts are integrated locally; Goal1905 and Goal1916
+  pass, and Goal1911 now marks pod evidence collected while keeping release
+  blocked pending external review and final consensus.
 
 ## Immediate Next Hardware Step
 

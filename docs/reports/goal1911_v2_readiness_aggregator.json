@@ -1,0 +1,31 @@
+{
+  "blockers": [
+    "fresh Claude or Pro-class review of actual pod artifacts missing",
+    "final source-tree-only or packaging decision lacks 3-AI release consensus",
+    "final v2.0 release consensus missing",
+    "explicit user-requested release action missing"
+  ],
+  "claim_boundary": {
+    "arbitrary_partner_program_acceleration_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "pod_evidence_collected": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "decisive_post_pod_review_files": [],
+  "goal": "Goal1911",
+  "goal1905_acceptance_status": "pass",
+  "goal1916_manifest_status": "pass",
+  "local_preflight_status": "pass",
+  "missing_pod_artifacts": [],
+  "missing_supporting_files": [],
+  "next_hardware_command": "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1903_v2_partner_pod_batch_runner.sh",
+  "pod_session_runbook_command": "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1913_v2_pod_session_runbook.sh",
+  "post_pod_acceptance_command": "PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py",
+  "post_pod_manifest_command": "PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py",
+  "post_pod_review_files": [
+    "docs/reviews/goal1912_gemini_review_goal1903_post_pod_artifacts_2026-05-13.md"
+  ],
+  "status": "blocked"
+}

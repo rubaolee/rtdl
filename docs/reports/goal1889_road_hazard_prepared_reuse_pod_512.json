@@ -1,0 +1,138 @@
+{
+  "baseline": {
+    "name": "v1_8_one_shot_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      0.2710471749305725,
+      0.2632628604769707,
+      0.2688855677843094,
+      0.26665251702070236,
+      0.26695816218852997
+    ],
+    "query_summary": {
+      "max_s": 0.2710471749305725,
+      "median_s": 0.26695816218852997,
+      "min_s": 0.2632628604769707
+    },
+    "row_count": 512
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 512,
+  "git_commit": "c4aebb2a29744a3a78af9d3b2d4b8be957c7cd68",
+  "goal": "Goal1869",
+  "goal_extension": "Goal1889",
+  "gpu": "NVIDIA RTX 2000 Ada Generation, 550.127.05",
+  "iterations": 5,
+  "output_capacity": 393216,
+  "parity": {
+    "expected_row_count": 512,
+    "strict_priority_flags_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.004117920994758606,
+      "goal1889_prepared_reuse": {
+        "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
+        "prepared_scene_reused": true,
+        "query_median_ratio_vs_goal1869_unprepared_partner": 0.69721884060528,
+        "query_median_ratio_vs_v1_8_one_shot_native": 0.0033087157712874816,
+        "query_median_ratio_vs_v1_8_prepared_native": 1.2865917846871777,
+        "query_samples_s": [
+          0.0009089186787605286,
+          0.0008832886815071106,
+          0.0009212791919708252,
+          0.0008676201105117798,
+          0.000864371657371521
+        ],
+        "query_summary": {
+          "max_s": 0.0009212791919708252,
+          "median_s": 0.0008832886815071106,
+          "min_s": 0.000864371657371521
+        },
+        "row_count": 512,
+        "witness_output_columns_reused": true
+      },
+      "output_contract": "partner_owned_road_hazard_priority_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": 0.00474559145363179,
+      "query_median_ratio_vs_v1_8_prepared_native": 1.845319876281947,
+      "query_samples_s": [
+        0.20598961412906647,
+        0.001525595784187317,
+        0.001266874372959137,
+        0.0012632831931114197,
+        0.0012394264340400696
+      ],
+      "query_summary": {
+        "max_s": 0.20598961412906647,
+        "median_s": 0.001266874372959137,
+        "min_s": 0.0012394264340400696
+      },
+      "row_count": 512
+    },
+    "torch": {
+      "column_build_s": 0.01319226622581482,
+      "goal1889_prepared_reuse": {
+        "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
+        "prepared_scene_reused": true,
+        "query_median_ratio_vs_goal1869_unprepared_partner": 0.5120769312746444,
+        "query_median_ratio_vs_v1_8_one_shot_native": 0.002279788419469682,
+        "query_median_ratio_vs_v1_8_prepared_native": 0.8864941125400184,
+        "query_samples_s": [
+          0.0006144791841506958,
+          0.0006086081266403198,
+          0.0006244704127311707,
+          0.0005906671285629272,
+          0.0005860030651092529
+        ],
+        "query_summary": {
+          "max_s": 0.0006244704127311707,
+          "median_s": 0.0006086081266403198,
+          "min_s": 0.0005860030651092529
+        },
+        "row_count": 512,
+        "witness_output_columns_reused": true
+      },
+      "output_contract": "partner_owned_road_hazard_priority_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": 0.00445204280887036,
+      "query_median_ratio_vs_v1_8_prepared_native": 1.7311736936350317,
+      "query_samples_s": [
+        0.11089321225881577,
+        0.0013170093297958374,
+        0.0011885091662406921,
+        0.0009731948375701904,
+        0.0009151846170425415
+      ],
+      "query_summary": {
+        "max_s": 0.11089321225881577,
+        "median_s": 0.0011885091662406921,
+        "min_s": 0.0009151846170425415
+      },
+      "row_count": 512
+    }
+  },
+  "prepared_baseline": {
+    "name": "v1_8_prepared_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      0.0011508464813232422,
+      0.0006865337491035461,
+      0.000757358968257904,
+      0.0006131082773208618,
+      0.0006148740649223328
+    ],
+    "query_summary": {
+      "max_s": 0.0011508464813232422,
+      "median_s": 0.0006865337491035461,
+      "min_s": 0.0006131082773208618
+    },
+    "row_count": 512
+  },
+  "source_commit_label": "c4aebb2a29744a3a78af9d3b2d4b8be957c7cd68",
+  "status": "pass",
+  "threshold": 2
+}

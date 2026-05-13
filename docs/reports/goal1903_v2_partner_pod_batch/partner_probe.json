@@ -1,0 +1,7 @@
+{
+  "cupy": "14.0.1",
+  "cupy_device": "NVIDIA RTX 2000 Ada Generation",
+  "torch": "2.4.1+cu124",
+  "torch_cuda_available": true,
+  "torch_cuda_device": "NVIDIA RTX 2000 Ada Generation"
+}
