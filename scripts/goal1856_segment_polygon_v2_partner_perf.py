@@ -156,6 +156,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--count", type=int, default=512)
     parser.add_argument("--iterations", type=int, default=5)
     parser.add_argument("--partners", default="cupy,torch")
+    parser.add_argument(
+        "--source-commit-label",
+        default=None,
+        help="Explicit source label for copied-source pod runs that lack .git metadata.",
+    )
     parser.add_argument("--skip-overflow-check", action="store_true")
     parser.add_argument("--output", default=None)
     return parser.parse_args()
@@ -236,10 +241,12 @@ def main() -> int:
             "overflow_check": overflow_check,
         }
 
+    commit = args.source_commit_label or _git_commit()
     payload = {
         "status": "pass",
         "goal": "Goal1856",
-        "git_commit": _git_commit(),
+        "git_commit": commit,
+        "source_commit_label": commit,
         "gpu": _gpu_name(),
         "count": args.count,
         "iterations": args.iterations,

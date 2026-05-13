@@ -22,6 +22,7 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         self.assertIn("query_median_ratio_vs_v1_8_native", text)
         self.assertIn("_canonical_rows", text)
         self.assertIn("--skip-overflow-check", text)
+        self.assertIn("--source-commit-label", text)
         self.assertIn("[overflow]", text)
         self.assertIn('"overflow_check"', text)
         self.assertIn('"same_contract_timing_row": True', text)

@@ -64,6 +64,7 @@ run_step "goal1928_robot_collision_pose_flags" \
     --obstacle-count "$ROBOT_OBSTACLE_COUNT" \
     --partners "$PARTNERS" \
     --repeat "$ROBOT_REPEAT" \
+    ${SOURCE_COMMIT_LABEL:+--source-commit-label "$SOURCE_COMMIT_LABEL"} \
     --output "$OUT_DIR/goal1928_robot_collision_v2_partner_perf_pod.json"
 
 IFS=',' read -r -a segment_counts <<< "$SEGMENT_COUNTS"
@@ -77,6 +78,7 @@ for segment_count in "${segment_counts[@]}"; do
       --count "$segment_count" \
       --iterations "$SEGMENT_ITERATIONS" \
       --partners "$PARTNERS" \
+      ${SOURCE_COMMIT_LABEL:+--source-commit-label "$SOURCE_COMMIT_LABEL"} \
       --output "$OUT_DIR/goal1856_segment_polygon_v2_partner_perf_pod_current_${segment_count}.json"
 done
 

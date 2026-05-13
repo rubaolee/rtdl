@@ -240,6 +240,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--obstacle-count", type=int, default=256)
     parser.add_argument("--partners", default="cupy,torch")
     parser.add_argument("--repeat", type=int, default=5)
+    parser.add_argument(
+        "--source-commit-label",
+        default=None,
+        help="Explicit source label for copied-source pod runs that lack .git metadata.",
+    )
     parser.add_argument("--output", default="docs/reports/goal1928_robot_collision_v2_partner_perf.json")
     return parser.parse_args()
 
@@ -256,11 +261,12 @@ def main() -> int:
         )
         for partner in partners
     ]
+    commit = args.source_commit_label or _git_commit()
     payload = {
         "goal": "Goal1928",
         "status": "pass" if all(item["status"] == "pass" for item in results) else "fail",
-        "git_commit": _git_commit(),
-        "source_commit_label": _git_commit(),
+        "git_commit": commit,
+        "source_commit_label": commit,
         "gpu": _gpu_name(),
         "results": results,
         "claim_boundary": {

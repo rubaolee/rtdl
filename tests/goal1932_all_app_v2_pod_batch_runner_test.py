@@ -19,6 +19,7 @@ class Goal1932AllAppV2PodBatchRunnerTest(unittest.TestCase):
         self.assertIn("timeout --preserve-status", text)
         self.assertIn("SOURCE_COMMIT_LABEL", text)
         self.assertIn("goal1925_fixed_radius_family_v2_partner_perf.py", text)
+        self.assertIn("--source-commit-label", text)
         self.assertIn("--query-count-override", text)
         self.assertIn("--search-count-override", text)
         self.assertIn("ROBOT_POSE_COUNT", text)

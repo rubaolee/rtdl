@@ -31,6 +31,7 @@ class Goal1928RobotCollisionV2PartnerPerfTest(unittest.TestCase):
         self.assertIn("--pose-count", text)
         self.assertIn("--obstacle-count", text)
         self.assertIn("--partners", text)
+        self.assertIn("--source-commit-label", text)
         self.assertIn('"v2_0_release_authorized": False', text)
         self.assertIn('"whole_app_speedup_claim_authorized": False', text)
         self.assertIn('"broad_rt_core_speedup_claim_authorized": False', text)
