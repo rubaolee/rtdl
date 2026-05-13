@@ -43,6 +43,7 @@ TEST_MODULES = (
     "tests.goal1930_all_app_v2_matrix_test",
     "tests.goal1931_current_all_app_v18_v2_perf_analysis_test",
     "tests.goal1932_all_app_v2_pod_batch_runner_test",
+    "tests.goal1933_goal1934_large_scale_all_app_v2_pod_perf_test",
 )
 
 

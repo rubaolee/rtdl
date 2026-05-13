@@ -1,0 +1,78 @@
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      0.8594299461692572,
+      0.014505382627248764,
+      0.012556178495287895
+    ],
+    "query_summary": {
+      "max_s": 0.8594299461692572,
+      "median_s": 0.014505382627248764,
+      "min_s": 0.012556178495287895
+    },
+    "row_count": 4096
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 4096,
+  "git_commit": "unknown",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A5000, 570.195.03",
+  "iterations": 3,
+  "output_capacity": 8192,
+  "parity": {
+    "expected_row_count": 4096,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.02133382298052311,
+      "overflow_check": {
+        "elapsed_s": 0.1699379626661539,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 2048
+      },
+      "query_median_ratio_vs_v1_8_native": 0.2943181640158007,
+      "query_samples_s": [
+        0.004269197583198547,
+        0.005033198744058609,
+        0.003927551209926605
+      ],
+      "query_summary": {
+        "max_s": 0.005033198744058609,
+        "median_s": 0.004269197583198547,
+        "min_s": 0.003927551209926605
+      },
+      "row_count": 4096
+    },
+    "torch": {
+      "column_build_s": 0.03777666017413139,
+      "overflow_check": {
+        "elapsed_s": 0.011392157524824142,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 2048
+      },
+      "query_median_ratio_vs_v1_8_native": 0.4293211264487607,
+      "query_samples_s": [
+        0.007055502384901047,
+        0.006227467209100723,
+        0.0058082956820726395
+      ],
+      "query_summary": {
+        "max_s": 0.007055502384901047,
+        "median_s": 0.006227467209100723,
+        "min_s": 0.0058082956820726395
+      },
+      "row_count": 4096
+    }
+  },
+  "status": "pass"
+}

@@ -1,0 +1,84 @@
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      0.9622325599193573,
+      0.0021912846714258194,
+      0.0018076878041028976,
+      0.0017849374562501907,
+      0.0017624404281377792
+    ],
+    "query_summary": {
+      "max_s": 0.9622325599193573,
+      "median_s": 0.0018076878041028976,
+      "min_s": 0.0017624404281377792
+    },
+    "row_count": 512
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 512,
+  "git_commit": "unknown",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A5000, 570.195.03",
+  "iterations": 5,
+  "output_capacity": 1024,
+  "parity": {
+    "expected_row_count": 512,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.004492232576012611,
+      "overflow_check": {
+        "elapsed_s": 0.37586293928325176,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 256
+      },
+      "query_median_ratio_vs_v1_8_native": 0.6814697654289821,
+      "query_samples_s": [
+        0.001568881794810295,
+        0.001328757032752037,
+        0.0012318845838308334,
+        0.001140691339969635,
+        0.0011248327791690826
+      ],
+      "query_summary": {
+        "max_s": 0.001568881794810295,
+        "median_s": 0.0012318845838308334,
+        "min_s": 0.0011248327791690826
+      },
+      "row_count": 512
+    },
+    "torch": {
+      "column_build_s": 0.017979560419917107,
+      "overflow_check": {
+        "elapsed_s": 0.010983403772115707,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 256
+      },
+      "query_median_ratio_vs_v1_8_native": 0.6973637164539745,
+      "query_samples_s": [
+        0.001565614715218544,
+        0.001418503001332283,
+        0.001260615885257721,
+        0.0011896602809429169,
+        0.001172104850411415
+      ],
+      "query_summary": {
+        "max_s": 0.001565614715218544,
+        "median_s": 0.001260615885257721,
+        "min_s": 0.001172104850411415
+      },
+      "row_count": 512
+    }
+  },
+  "status": "pass"
+}

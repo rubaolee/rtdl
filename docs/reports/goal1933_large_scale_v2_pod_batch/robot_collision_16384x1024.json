@@ -1,0 +1,129 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "git_commit": "unknown",
+  "goal": "Goal1928",
+  "gpu": "NVIDIA RTX A5000, 570.195.03",
+  "results": [
+    {
+      "app": "robot_collision_screening",
+      "metadata": {
+        "adapter": "robot_collision_pose_flags_optix_prepared_partner_device_columns",
+        "app": "robot_collision_screening",
+        "app_flag_host_materialization": false,
+        "app_flag_materialization": "partner_gpu_pose_flags_from_native_any_hit_ray_flags",
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "input_contract": "caller_supplied_partner_device_ray_columns_and_pose_indices",
+        "native_engine_row_contract": "generic_ray_primitive_any_hit_flags",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+        "output_columns_reused": true,
+        "output_flags_true_zero_copy_authorized": true,
+        "partner": "cupy",
+        "partner_tensor_handoff_authorized": true,
+        "pose_count": 16384,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 65536,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "obstacle_count": 1024,
+      "parity": {
+        "colliding_pose_count_match": true,
+        "pose_collision_flags_match": true,
+        "v1_colliding_pose_count": 15872,
+        "v2_colliding_pose_count": 15872
+      },
+      "partner": "cupy",
+      "pose_count": 16384,
+      "ray_count": 65536,
+      "status": "pass",
+      "triangle_count": 2048,
+      "v1_8_prepared_optix_pose_flags": {
+        "max_s": 0.06329186446964741,
+        "median_s": 0.0010522585362195969,
+        "min_s": 0.0009907595813274384
+      },
+      "v2_prepared_native_optix_partner_pose_flags": {
+        "max_s": 0.09694535844027996,
+        "median_s": 0.0006698127835988998,
+        "min_s": 0.00043162330985069275
+      },
+      "v2_vs_v1_8_prepared_ratio": 0.6365477309457682
+    },
+    {
+      "app": "robot_collision_screening",
+      "metadata": {
+        "adapter": "robot_collision_pose_flags_optix_prepared_partner_device_columns",
+        "app": "robot_collision_screening",
+        "app_flag_host_materialization": false,
+        "app_flag_materialization": "partner_gpu_pose_flags_from_native_any_hit_ray_flags",
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "input_contract": "caller_supplied_partner_device_ray_columns_and_pose_indices",
+        "native_engine_row_contract": "generic_ray_primitive_any_hit_flags",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+        "output_columns_reused": true,
+        "output_flags_true_zero_copy_authorized": true,
+        "partner": "torch",
+        "partner_tensor_handoff_authorized": true,
+        "pose_count": 16384,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 65536,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "torch"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "obstacle_count": 1024,
+      "parity": {
+        "colliding_pose_count_match": true,
+        "pose_collision_flags_match": true,
+        "v1_colliding_pose_count": 15872,
+        "v2_colliding_pose_count": 15872
+      },
+      "partner": "torch",
+      "pose_count": 16384,
+      "ray_count": 65536,
+      "status": "pass",
+      "triangle_count": 2048,
+      "v1_8_prepared_optix_pose_flags": {
+        "max_s": 0.0011114515364170074,
+        "median_s": 0.001004587858915329,
+        "min_s": 0.0009943004697561264
+      },
+      "v2_prepared_native_optix_partner_pose_flags": {
+        "max_s": 0.015287712216377258,
+        "median_s": 0.0005841609090566635,
+        "min_s": 0.0004183296114206314
+      },
+      "v2_vs_v1_8_prepared_ratio": 0.5814931007501845
+    }
+  ],
+  "source_commit_label": "unknown",
+  "status": "pass"
+}

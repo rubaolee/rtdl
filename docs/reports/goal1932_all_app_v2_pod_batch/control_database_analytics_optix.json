@@ -1,0 +1,835 @@
+{
+  "boundary": "Prepared DB session profiler compares one-shot app calls with reused prepared sessions. GTX 1070 evidence is backend behavior evidence only, not RTX RT-core speedup evidence.",
+  "cloud_claim_contract": {
+    "claim_scope": "prepared DB compact-summary sessions only",
+    "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+    "non_claim": "not SQL, not DBMS behavior, not full row materialization speedup, and not broad RTX app speedup",
+    "required_phase_groups": [
+      "one_shot_total_sec",
+      "prepared_session_prepare_total_sec",
+      "prepared_session_warm_query_sec",
+      "reported_prepare_phases_sec",
+      "reported_run_phases_sec",
+      "reported_native_db_phases_sec",
+      "reported_run_phase_totals_sec",
+      "reported_native_db_phase_totals_sec",
+      "db_review_observation"
+    ]
+  },
+  "copies": 20000,
+  "iterations": 3,
+  "output_mode": "compact_summary",
+  "results": [
+    {
+      "backend": "optix",
+      "cloud_claim_contract": {
+        "claim_scope": "prepared DB compact-summary sessions only",
+        "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+        "non_claim": "not SQL, not DBMS behavior, not full row materialization speedup, and not broad RTX app speedup",
+        "required_phase_groups": [
+          "one_shot_total_sec",
+          "prepared_session_prepare_total_sec",
+          "prepared_session_warm_query_sec",
+          "reported_prepare_phases_sec",
+          "reported_run_phases_sec",
+          "reported_native_db_phases_sec",
+          "reported_run_phase_totals_sec",
+          "reported_native_db_phase_totals_sec",
+          "db_review_observation"
+        ]
+      },
+      "db_review_observation": {
+        "blocker": "None for local shape; compare RTX artifact against baselines before promotion.",
+        "compact_summary_operation_count": 6,
+        "native_counter_status": "exported",
+        "row_materializing_operation_count": 0,
+        "status": "phase_clean_candidate_for_rtx_review"
+      },
+      "one_shot_output": {
+        "app": "database_analytics",
+        "copies": 20000,
+        "data_flow": [
+          "application-owned denormalized rows",
+          "bounded RTDL DB kernels",
+          "scan and grouped aggregate rows",
+          "Python-owned dashboard or risk-summary JSON"
+        ],
+        "execution_mode": "one_shot",
+        "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+        "native_continuation_active": true,
+        "native_continuation_backend": "optix_db_compact_summary",
+        "optix_performance": {
+          "class": "python_interface_dominated",
+          "note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization."
+        },
+        "output_mode": "compact_summary",
+        "requested_backend": "optix",
+        "retired_compatibility_helpers": [
+          "examples/rtdl_v0_7_db_app_demo.py",
+          "examples/rtdl_sales_risk_screening.py"
+        ],
+        "rt_core_accelerated": true,
+        "rt_core_claim_scope": "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim",
+        "scenario": "all",
+        "sections": {
+          "regional_dashboard": {
+            "app": "regional_order_dashboard",
+            "backend": "optix",
+            "copies": 20000,
+            "data_flow": [
+              "app order rows",
+              "RTDL v0.7 bounded DB workload",
+              "reused prepared RT dataset over encoded row boxes",
+              "application-ready JSON rows"
+            ],
+            "execution_mode": "prepared_session",
+            "fallback_note": null,
+            "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
+            "input_table": {
+              "fields": [
+                "channel",
+                "discount",
+                "quantity",
+                "region",
+                "revenue",
+                "row_id",
+                "ship_date"
+              ],
+              "row_count": 140000
+            },
+            "native_continuation_active": true,
+            "native_continuation_backend": "optix_db_compact_summary",
+            "native_db_phases": {
+              "compact_summary_batch": {
+                "open_order_count_by_region": {
+                  "bitset_copyback": 2.1e-05,
+                  "emitted_count": 3,
+                  "exact_filter": 0.006316537,
+                  "output_pack": 0.001991283,
+                  "raw_candidate_count": 100000,
+                  "traversal": 0.044344153
+                },
+                "promo_order_count": {
+                  "bitset_copyback": 3.1213e-05,
+                  "emitted_count": 80000,
+                  "exact_filter": 0.00609935,
+                  "output_pack": 2.3e-08,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.040735553
+                },
+                "web_revenue_by_region": {
+                  "bitset_copyback": 2.5301e-05,
+                  "emitted_count": 2,
+                  "exact_filter": 0.005417783,
+                  "output_pack": 0.001658863,
+                  "raw_candidate_count": 100000,
+                  "traversal": 0.044180426
+                }
+              }
+            },
+            "output_mode": "compact_summary",
+            "prepared_dataset": {
+              "row_count": 140000,
+              "transfer": "columnar"
+            },
+            "queries": {
+              "open_order_count_by_region": {
+                "meaning": "How many small post-window orders remain by region?",
+                "operation": "grouped_count",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "quantity",
+                      "lt",
+                      20
+                    ]
+                  ]
+                }
+              },
+              "promo_order_ids": {
+                "meaning": "Which discounted small-quantity orders shipped during the campaign window?",
+                "operation": "conjunctive_scan",
+                "predicates": [
+                  [
+                    "ship_date",
+                    "between",
+                    12,
+                    15
+                  ],
+                  [
+                    "discount",
+                    "eq",
+                    6
+                  ],
+                  [
+                    "quantity",
+                    "lt",
+                    20
+                  ]
+                ]
+              },
+              "web_revenue_by_region": {
+                "meaning": "How much web-channel revenue is covered by region?",
+                "operation": "grouped_sum",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "channel",
+                      "eq",
+                      "web"
+                    ]
+                  ],
+                  "value_field": "revenue"
+                }
+              }
+            },
+            "requested_backend": "optix",
+            "run_phases": {
+              "python_summary_postprocess_sec": 6.6962093114852905e-06,
+              "query_compact_summary_batch_sec": 0.6628604643046856
+            },
+            "session": {
+              "backend_selection_sec": 4.742294549942017e-06,
+              "prepare_sec": 0.9313484150916338,
+              "table_construction_sec": 0.05001476779580116
+            },
+            "summary": {
+              "open_order_count_by_region": {
+                "east": 40000,
+                "south": 20000,
+                "west": 40000
+              },
+              "promo_order_count": 80000,
+              "web_revenue_by_region": {
+                "east": 3600000,
+                "west": 4800000
+              }
+            }
+          },
+          "sales_risk": {
+            "app": "sales_risk_screening",
+            "backend": "optix",
+            "copies": 20000,
+            "execution_mode": "prepared_session",
+            "generic_compact_summary": {
+              "backend": "optix",
+              "claim_boundary": "Generic v1.5 prepared DB compact-summary primitive only: scan count, grouped integer count, and grouped integer sum over an application-owned denormalized table; not SQL, DBMS behavior, joins, indexes, transactions, query planning, row output, or public speedup wording.",
+              "materialization_free": true,
+              "primitive": "DB_COMPACT_SUMMARY",
+              "request_count": 3,
+              "request_operations": [
+                "conjunctive_scan_count",
+                "grouped_count_summary",
+                "grouped_sum_summary"
+              ],
+              "result_layout": "aggregate_scan_count_and_grouped_integer_maps",
+              "summary_primitives": [
+                "COUNT_HITS",
+                "REDUCE_INT(COUNT)",
+                "REDUCE_INT(SUM)"
+              ]
+            },
+            "native_continuation_active": true,
+            "native_continuation_backend": "optix_db_compact_summary",
+            "native_db_phases": {
+              "compact_summary_batch": {
+                "risky_order_count_by_region": {
+                  "bitset_copyback": 1.9414e-05,
+                  "emitted_count": 3,
+                  "exact_filter": 0.005647276,
+                  "output_pack": 0.001537924,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.026715536
+                },
+                "risky_revenue_by_region": {
+                  "bitset_copyback": 1.6564e-05,
+                  "emitted_count": 3,
+                  "exact_filter": 0.004115701,
+                  "output_pack": 0.001511989,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.02669922
+                },
+                "risky_scan_count": {
+                  "bitset_copyback": 2.4086e-05,
+                  "emitted_count": 80000,
+                  "exact_filter": 0.004155691,
+                  "output_pack": 2.5e-08,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.027073345
+                }
+              }
+            },
+            "output_mode": "compact_summary",
+            "prepared_dataset": {
+              "row_count": 120000,
+              "transfer": "columnar"
+            },
+            "primitive_contract": {
+              "active_v1_4_backend": true,
+              "alternate_primitive": "REDUCE_INT(COUNT)",
+              "app_row": "database_analytics.sales_risk",
+              "backend": "optix",
+              "backend_contract_role": "nvidia_rt_target",
+              "backend_scope": [
+                "embree",
+                "optix"
+              ],
+              "build_layout": "columnar_denorm_table",
+              "chunked_compact_summary": false,
+              "claim_boundary": "database_analytics.sales_risk compact-summary only: bounded predicate count, grouped integer count, and grouped integer sum over an application-owned denormalized table. This excludes SQL engines, DBMS behavior, query planning, joins, transactions, indexes as a database feature, and row-materializing output.",
+              "materialization_free": true,
+              "migration_status": "compatibility_wrapper_metadata_only",
+              "mode": "prepared_compact_summary",
+              "phase_counters": [
+                "query_compact_summary_batch_sec",
+                "query_conjunctive_scan_count_sec",
+                "query_grouped_count_summary_sec",
+                "query_grouped_sum_summary_sec",
+                "query_conjunctive_scan_and_materialize_sec",
+                "query_grouped_count_and_materialize_sec",
+                "query_grouped_sum_and_materialize_sec",
+                "python_summary_postprocess_sec"
+              ],
+              "prepared_state": "prepared_columnar_dataset_reusable",
+              "primitive": "COUNT_HITS",
+              "probe_layout": "predicate_bundle_and_grouped_query",
+              "result_layout": "aggregate_scan_count_and_grouped_integer_maps",
+              "same_contract_baseline_required": true,
+              "secondary_primitive": "REDUCE_INT(SUM)"
+            },
+            "row_counts": {
+              "grouped_count": 3,
+              "grouped_sum": 3,
+              "scan": 80000
+            },
+            "run_phases": {
+              "python_summary_postprocess_sec": 2.9511749744415283e-05,
+              "query_compact_summary_batch_sec": 0.09843406826257706,
+              "query_generic_db_compact_summary_batch_sec": 0.09843406826257706
+            },
+            "session": {
+              "input_construction_sec": 0.043181514367461205,
+              "prepare_sec": 0.4200848340988159
+            },
+            "summary": {
+              "highest_risk_region": "west",
+              "risky_order_count": 80000,
+              "risky_order_count_by_region": {
+                "central": 20000,
+                "east": 20000,
+                "west": 40000
+              },
+              "risky_revenue_by_region": {
+                "central": 5200000,
+                "east": 6200000,
+                "west": 8600000
+              }
+            }
+          }
+        }
+      },
+      "one_shot_total_sec": 2.2387854158878326,
+      "output_mode": "compact_summary",
+      "phase_contract": {
+        "db_review_observation": "machine-readable local readiness observation for DB compact-summary RTX review; not a public speedup claim",
+        "one_shot_total": "complete public app call including fixture construction, backend selection, native prepare, query, materialization, and summary postprocess",
+        "prepared_session_prepare_total": "public app prepare_session call including fixture construction and native prepared dataset creation where available",
+        "prepared_session_warm_query": "session.run only: prepared queries plus any required grouped/row output shaping and app summary construction",
+        "reported_native_db_phase_totals": "summed native DB counters across sections and operations; counter_status is exported, empty, or absent",
+        "reported_native_db_phases": "OptiX prepared DB native counters when exported: traversal, candidate bitset copy-back, exact native filtering/grouping, output packing, raw candidate count, and emitted result count",
+        "reported_prepare_phases": "scenario-provided construction/selection/prepare timers embedded in app JSON",
+        "reported_run_phase_modes": "per-section classification of scan/grouped_count/grouped_sum as count_summary, group_summary, or row_materializing",
+        "reported_run_phase_totals": "summed query/postprocess phase time plus explicit row-materializing versus compact-summary operation counts",
+        "reported_run_phases": "scenario-provided per-operation query timers embedded in app JSON; grouped compact-summary fast paths use query_*_summary_sec while row paths use query_*_and_materialize_sec"
+      },
+      "prepared_session_close_sec": 0.0008082836866378784,
+      "prepared_session_output": {
+        "app": "database_analytics",
+        "copies": 20000,
+        "data_flow": [
+          "application-owned denormalized rows",
+          "reused bounded RTDL DB prepared sessions",
+          "scan and grouped aggregate rows",
+          "Python-owned dashboard or risk-summary JSON"
+        ],
+        "execution_mode": "prepared_session",
+        "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+        "native_continuation_active": true,
+        "native_continuation_backend": "optix_db_compact_summary",
+        "optix_performance": {
+          "class": "python_interface_dominated",
+          "note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization."
+        },
+        "output_mode": "compact_summary",
+        "prepared_session": {
+          "per_section_run_sec": {
+            "regional_dashboard": 0.14218894019722939,
+            "sales_risk": 0.10167453810572624
+          },
+          "prepare_session_sec": 1.0489848740398884,
+          "scenario_count": 2
+        },
+        "requested_backend": "optix",
+        "retired_compatibility_helpers": [
+          "examples/rtdl_v0_7_db_app_demo.py",
+          "examples/rtdl_sales_risk_screening.py"
+        ],
+        "rt_core_accelerated": true,
+        "rt_core_claim_scope": "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim",
+        "scenario": "all",
+        "sections": {
+          "regional_dashboard": {
+            "app": "regional_order_dashboard",
+            "backend": "optix",
+            "copies": 20000,
+            "data_flow": [
+              "app order rows",
+              "RTDL v0.7 bounded DB workload",
+              "reused prepared RT dataset over encoded row boxes",
+              "application-ready JSON rows"
+            ],
+            "execution_mode": "prepared_session",
+            "fallback_note": null,
+            "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
+            "input_table": {
+              "fields": [
+                "channel",
+                "discount",
+                "quantity",
+                "region",
+                "revenue",
+                "row_id",
+                "ship_date"
+              ],
+              "row_count": 140000
+            },
+            "native_continuation_active": true,
+            "native_continuation_backend": "optix_db_compact_summary",
+            "native_db_phases": {
+              "compact_summary_batch": {
+                "open_order_count_by_region": {
+                  "bitset_copyback": 2.5824e-05,
+                  "emitted_count": 3,
+                  "exact_filter": 0.005893649,
+                  "output_pack": 0.001988342,
+                  "raw_candidate_count": 100000,
+                  "traversal": 0.03934188
+                },
+                "promo_order_count": {
+                  "bitset_copyback": 8.8709e-05,
+                  "emitted_count": 80000,
+                  "exact_filter": 0.012729751,
+                  "output_pack": 8.92e-07,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.035747736
+                },
+                "web_revenue_by_region": {
+                  "bitset_copyback": 2.2638e-05,
+                  "emitted_count": 2,
+                  "exact_filter": 0.004913685,
+                  "output_pack": 0.001433872,
+                  "raw_candidate_count": 100000,
+                  "traversal": 0.039280757
+                }
+              }
+            },
+            "output_mode": "compact_summary",
+            "prepared_dataset": {
+              "row_count": 140000,
+              "transfer": "columnar"
+            },
+            "queries": {
+              "open_order_count_by_region": {
+                "meaning": "How many small post-window orders remain by region?",
+                "operation": "grouped_count",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "quantity",
+                      "lt",
+                      20
+                    ]
+                  ]
+                }
+              },
+              "promo_order_ids": {
+                "meaning": "Which discounted small-quantity orders shipped during the campaign window?",
+                "operation": "conjunctive_scan",
+                "predicates": [
+                  [
+                    "ship_date",
+                    "between",
+                    12,
+                    15
+                  ],
+                  [
+                    "discount",
+                    "eq",
+                    6
+                  ],
+                  [
+                    "quantity",
+                    "lt",
+                    20
+                  ]
+                ]
+              },
+              "web_revenue_by_region": {
+                "meaning": "How much web-channel revenue is covered by region?",
+                "operation": "grouped_sum",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "channel",
+                      "eq",
+                      "web"
+                    ]
+                  ],
+                  "value_field": "revenue"
+                }
+              }
+            },
+            "requested_backend": "optix",
+            "run_phases": {
+              "python_summary_postprocess_sec": 6.485730409622192e-06,
+              "query_compact_summary_batch_sec": 0.14211827144026756
+            },
+            "session": {
+              "backend_selection_sec": 2.183765172958374e-05,
+              "prepare_sec": 0.5532147977501154,
+              "table_construction_sec": 0.03439747169613838
+            },
+            "summary": {
+              "open_order_count_by_region": {
+                "east": 40000,
+                "south": 20000,
+                "west": 40000
+              },
+              "promo_order_count": 80000,
+              "web_revenue_by_region": {
+                "east": 3600000,
+                "west": 4800000
+              }
+            }
+          },
+          "sales_risk": {
+            "app": "sales_risk_screening",
+            "backend": "optix",
+            "copies": 20000,
+            "execution_mode": "prepared_session",
+            "generic_compact_summary": {
+              "backend": "optix",
+              "claim_boundary": "Generic v1.5 prepared DB compact-summary primitive only: scan count, grouped integer count, and grouped integer sum over an application-owned denormalized table; not SQL, DBMS behavior, joins, indexes, transactions, query planning, row output, or public speedup wording.",
+              "materialization_free": true,
+              "primitive": "DB_COMPACT_SUMMARY",
+              "request_count": 3,
+              "request_operations": [
+                "conjunctive_scan_count",
+                "grouped_count_summary",
+                "grouped_sum_summary"
+              ],
+              "result_layout": "aggregate_scan_count_and_grouped_integer_maps",
+              "summary_primitives": [
+                "COUNT_HITS",
+                "REDUCE_INT(COUNT)",
+                "REDUCE_INT(SUM)"
+              ]
+            },
+            "native_continuation_active": true,
+            "native_continuation_backend": "optix_db_compact_summary",
+            "native_db_phases": {
+              "compact_summary_batch": {
+                "risky_order_count_by_region": {
+                  "bitset_copyback": 1.8514e-05,
+                  "emitted_count": 3,
+                  "exact_filter": 0.004315845,
+                  "output_pack": 0.00173414,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.026695044
+                },
+                "risky_revenue_by_region": {
+                  "bitset_copyback": 1.8838e-05,
+                  "emitted_count": 3,
+                  "exact_filter": 0.004123718,
+                  "output_pack": 0.001605752,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.026694958
+                },
+                "risky_scan_count": {
+                  "bitset_copyback": 2.9336e-05,
+                  "emitted_count": 80000,
+                  "exact_filter": 0.009068767,
+                  "output_pack": 3.9e-08,
+                  "raw_candidate_count": 80000,
+                  "traversal": 0.02670035
+                }
+              }
+            },
+            "output_mode": "compact_summary",
+            "prepared_dataset": {
+              "row_count": 120000,
+              "transfer": "columnar"
+            },
+            "primitive_contract": {
+              "active_v1_4_backend": true,
+              "alternate_primitive": "REDUCE_INT(COUNT)",
+              "app_row": "database_analytics.sales_risk",
+              "backend": "optix",
+              "backend_contract_role": "nvidia_rt_target",
+              "backend_scope": [
+                "embree",
+                "optix"
+              ],
+              "build_layout": "columnar_denorm_table",
+              "chunked_compact_summary": false,
+              "claim_boundary": "database_analytics.sales_risk compact-summary only: bounded predicate count, grouped integer count, and grouped integer sum over an application-owned denormalized table. This excludes SQL engines, DBMS behavior, query planning, joins, transactions, indexes as a database feature, and row-materializing output.",
+              "materialization_free": true,
+              "migration_status": "compatibility_wrapper_metadata_only",
+              "mode": "prepared_compact_summary",
+              "phase_counters": [
+                "query_compact_summary_batch_sec",
+                "query_conjunctive_scan_count_sec",
+                "query_grouped_count_summary_sec",
+                "query_grouped_sum_summary_sec",
+                "query_conjunctive_scan_and_materialize_sec",
+                "query_grouped_count_and_materialize_sec",
+                "query_grouped_sum_and_materialize_sec",
+                "python_summary_postprocess_sec"
+              ],
+              "prepared_state": "prepared_columnar_dataset_reusable",
+              "primitive": "COUNT_HITS",
+              "probe_layout": "predicate_bundle_and_grouped_query",
+              "result_layout": "aggregate_scan_count_and_grouped_integer_maps",
+              "same_contract_baseline_required": true,
+              "secondary_primitive": "REDUCE_INT(SUM)"
+            },
+            "row_counts": {
+              "grouped_count": 3,
+              "grouped_sum": 3,
+              "scan": 80000
+            },
+            "run_phases": {
+              "python_summary_postprocess_sec": 1.6937032341957092e-05,
+              "query_compact_summary_batch_sec": 0.10142852738499641,
+              "query_generic_db_compact_summary_batch_sec": 0.10142852738499641
+            },
+            "session": {
+              "input_construction_sec": 0.0494578555226326,
+              "prepare_sec": 0.41178580187261105
+            },
+            "summary": {
+              "highest_risk_region": "west",
+              "risky_order_count": 80000,
+              "risky_order_count_by_region": {
+                "central": 20000,
+                "east": 20000,
+                "west": 40000
+              },
+              "risky_revenue_by_region": {
+                "central": 5200000,
+                "east": 6200000,
+                "west": 8600000
+              }
+            }
+          }
+        }
+      },
+      "prepared_session_prepare_total_sec": 1.0490462463349104,
+      "prepared_session_warm_query_sec": {
+        "max_sec": 0.24390562251210213,
+        "median_sec": 0.23661217093467712,
+        "min_sec": 0.23212791047990322
+      },
+      "reported_native_db_phase_totals_sec": {
+        "bitset_copyback_sec": 0.0,
+        "counter_status": "exported",
+        "emitted_count": 0,
+        "exact_filter_sec": 0.0,
+        "operation_count": 2,
+        "output_pack_sec": 0.0,
+        "raw_candidate_count": 0,
+        "sections": {
+          "regional_dashboard": {
+            "bitset_copyback_sec": 0.0,
+            "emitted_count": 0,
+            "exact_filter_sec": 0.0,
+            "operation_count": 1,
+            "output_pack_sec": 0.0,
+            "raw_candidate_count": 0,
+            "traversal_sec": 0.0
+          },
+          "sales_risk": {
+            "bitset_copyback_sec": 0.0,
+            "emitted_count": 0,
+            "exact_filter_sec": 0.0,
+            "operation_count": 1,
+            "output_pack_sec": 0.0,
+            "raw_candidate_count": 0,
+            "traversal_sec": 0.0
+          }
+        },
+        "traversal_sec": 0.0
+      },
+      "reported_native_db_phases_sec": {
+        "regional_dashboard": {
+          "compact_summary_batch": {
+            "open_order_count_by_region": {
+              "bitset_copyback": 2.5824e-05,
+              "emitted_count": 3,
+              "exact_filter": 0.005893649,
+              "output_pack": 0.001988342,
+              "raw_candidate_count": 100000,
+              "traversal": 0.03934188
+            },
+            "promo_order_count": {
+              "bitset_copyback": 8.8709e-05,
+              "emitted_count": 80000,
+              "exact_filter": 0.012729751,
+              "output_pack": 8.92e-07,
+              "raw_candidate_count": 80000,
+              "traversal": 0.035747736
+            },
+            "web_revenue_by_region": {
+              "bitset_copyback": 2.2638e-05,
+              "emitted_count": 2,
+              "exact_filter": 0.004913685,
+              "output_pack": 0.001433872,
+              "raw_candidate_count": 100000,
+              "traversal": 0.039280757
+            }
+          }
+        },
+        "sales_risk": {
+          "compact_summary_batch": {
+            "risky_order_count_by_region": {
+              "bitset_copyback": 1.8514e-05,
+              "emitted_count": 3,
+              "exact_filter": 0.004315845,
+              "output_pack": 0.00173414,
+              "raw_candidate_count": 80000,
+              "traversal": 0.026695044
+            },
+            "risky_revenue_by_region": {
+              "bitset_copyback": 1.8838e-05,
+              "emitted_count": 3,
+              "exact_filter": 0.004123718,
+              "output_pack": 0.001605752,
+              "raw_candidate_count": 80000,
+              "traversal": 0.026694958
+            },
+            "risky_scan_count": {
+              "bitset_copyback": 2.9336e-05,
+              "emitted_count": 80000,
+              "exact_filter": 0.009068767,
+              "output_pack": 3.9e-08,
+              "raw_candidate_count": 80000,
+              "traversal": 0.02670035
+            }
+          }
+        }
+      },
+      "reported_prepare_phases_sec": {
+        "regional_dashboard": {
+          "backend_selection_sec": 2.183765172958374e-05,
+          "prepare_sec": 0.5532147977501154,
+          "table_construction_sec": 0.03439747169613838
+        },
+        "sales_risk": {
+          "input_construction_sec": 0.0494578555226326,
+          "prepare_sec": 0.41178580187261105
+        },
+        "unified_session": {
+          "prepare_session_sec": 1.0489848740398884,
+          "scenario_count": 2
+        }
+      },
+      "reported_run_phase_modes": {
+        "regional_dashboard": {
+          "grouped_count": "batch_summary",
+          "grouped_sum": "batch_summary",
+          "scan": "batch_summary"
+        },
+        "sales_risk": {
+          "grouped_count": "batch_summary",
+          "grouped_sum": "batch_summary",
+          "scan": "batch_summary"
+        }
+      },
+      "reported_run_phase_totals_sec": {
+        "all_sections_python_summary_postprocess_sec": 2.3422762751579285e-05,
+        "all_sections_query_sec": 0.3449753262102604,
+        "compact_summary_operation_count": 6,
+        "row_materializing_operation_count": 0,
+        "sections": {
+          "regional_dashboard": {
+            "compact_summary_operation_count": 3,
+            "python_summary_postprocess_sec": 6.485730409622192e-06,
+            "query_sec": 0.14211827144026756,
+            "row_materializing_operation_count": 0
+          },
+          "sales_risk": {
+            "compact_summary_operation_count": 3,
+            "python_summary_postprocess_sec": 1.6937032341957092e-05,
+            "query_sec": 0.20285705476999283,
+            "row_materializing_operation_count": 0
+          }
+        }
+      },
+      "reported_run_phases_sec": {
+        "regional_dashboard": {
+          "python_summary_postprocess_sec": 6.485730409622192e-06,
+          "query_compact_summary_batch_sec": 0.14211827144026756
+        },
+        "sales_risk": {
+          "python_summary_postprocess_sec": 1.6937032341957092e-05,
+          "query_compact_summary_batch_sec": 0.10142852738499641,
+          "query_generic_db_compact_summary_batch_sec": 0.10142852738499641
+        },
+        "unified_session": {
+          "per_section_run_sec": {
+            "regional_dashboard": 0.14218894019722939,
+            "sales_risk": 0.10167453810572624
+          }
+        }
+      },
+      "schema_version": "goal921_db_phase_review_contract_v2",
+      "speedup_one_shot_over_warm_query_median": 9.461835403665296,
+      "status": "ok"
+    }
+  ],
+  "scenario": "all",
+  "schema_version": "goal921_db_phase_review_contract_v2",
+  "suite": "goal756_db_prepared_session_perf"
+}

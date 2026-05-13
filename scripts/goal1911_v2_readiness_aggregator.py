@@ -61,6 +61,7 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1931_current_all_app_v18_v2_perf_analysis_2026-05-13.md",
     "scripts/goal1932_all_app_v2_pod_batch_runner.sh",
     "docs/reports/goal1932_all_app_v2_pod_batch_runner_2026-05-13.md",
+    "docs/reports/goal1933_goal1934_large_scale_all_app_v2_pod_perf_2026-05-13.md",
 )
 
 

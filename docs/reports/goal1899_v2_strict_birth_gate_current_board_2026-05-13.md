@@ -98,6 +98,11 @@ blocks the v2.0 release label.
 - Goal1932: all-app pod batch runner now packages the pending fixed-radius,
   robot, segment-anyhit reruns, and the DB/graph/polygon evidence-only control
   rows with visible progress output for the next RTX pod session.
+- Goal1933/1934: large-scale RTX A5000 pod evidence collected. Fixed-radius
+  family rows now run at `524288 x 524288`, making v1.8 prepared rows
+  seconds-scale while v2 prepared partner rows remain low-millisecond. DB,
+  graph, and polygon controls are also seconds-scale evidence, but still not
+  v2 partner speedup rows.
 
 ## Immediate Next Hardware Step
 
