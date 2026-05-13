@@ -95,6 +95,16 @@ def _v1_hotspot(events, *, radius: float, hotspot_threshold: int):
         prepared.close()
 
 
+def _v1_reused_service(prepared, households, *, radius: float):
+    rows = prepared.run(households, radius=radius, threshold=1)
+    return tuple(1 - int(row["threshold_reached"]) for row in rows)
+
+
+def _v1_reused_hotspot(prepared, events, *, radius: float, hotspot_threshold: int):
+    rows = prepared.run(events, radius=radius, threshold=hotspot_threshold + 1)
+    return tuple(int(row["threshold_reached"]) for row in rows)
+
+
 def run_case(size: int, *, repeat: int, partner: str, max_reference_pairs: int | None = None) -> dict[str, object]:
     print(f"[goal1878] start case partner={partner} size={size}", flush=True)
     radius = 1.1
@@ -116,6 +126,8 @@ def run_case(size: int, *, repeat: int, partner: str, max_reference_pairs: int |
         max_radius=hotspot_radius,
         partner=partner,
     )
+    v1_service_prepared = prepare_optix_fixed_radius_count_threshold_2d(clinics, max_radius=radius)
+    v1_hotspot_prepared = prepare_optix_fixed_radius_count_threshold_2d(events, max_radius=hotspot_radius)
     service_outputs = allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
         len(households),
         partner=partner,
@@ -128,6 +140,15 @@ def run_case(size: int, *, repeat: int, partner: str, max_reference_pairs: int |
     print(f"[goal1878] timing v1.8 host-packed OptiX partner={partner} size={size}", flush=True)
     v1_service = _time(lambda: _v1_service(households, clinics, radius=radius), repeat=repeat)
     v1_hotspot = _time(lambda: _v1_hotspot(events, radius=hotspot_radius, hotspot_threshold=1), repeat=repeat)
+    print(f"[goal1878] timing v1.8 reused prepared OptiX partner={partner} size={size}", flush=True)
+    v1_reused_service = _time(
+        lambda: _v1_reused_service(v1_service_prepared, households, radius=radius),
+        repeat=repeat,
+    )
+    v1_reused_hotspot = _time(
+        lambda: _v1_reused_hotspot(v1_hotspot_prepared, events, radius=hotspot_radius, hotspot_threshold=1),
+        repeat=repeat,
+    )
     service_pairs = len(households) * len(clinics)
     hotspot_pairs = len(events) * len(events)
     if max_reference_pairs is not None and service_pairs > max_reference_pairs:
@@ -205,18 +226,22 @@ def run_case(size: int, *, repeat: int, partner: str, max_reference_pairs: int |
     )
     service_prepared.close()
     hotspot_prepared.close()
+    v1_service_prepared.close()
+    v1_hotspot_prepared.close()
     print(f"[goal1878] done case partner={partner} size={size}", flush=True)
     return {
         "size": size,
         "partner": partner,
         "service_coverage_gaps": {
             "v1_8_prepared_optix": v1_service,
+            "v1_8_reused_prepared_optix": v1_reused_service,
             "goal1873_partner_reference": ref_service,
             "goal1877_v2_native_optix_partner": native_service,
             "goal1879_v2_prepared_native_optix_partner": prepared_native_service,
         },
         "event_hotspot_screening": {
             "v1_8_prepared_optix": v1_hotspot,
+            "v1_8_reused_prepared_optix": v1_reused_hotspot,
             "goal1873_partner_reference": ref_hotspot,
             "goal1877_v2_native_optix_partner": native_hotspot,
             "goal1879_v2_prepared_native_optix_partner": prepared_native_hotspot,

@@ -40,6 +40,7 @@ class Goal1881PreparedFixedRadiusReusableOutputsTest(unittest.TestCase):
         self.assertIn("fixed_radius_output_columns=hotspot_outputs", script)
         self.assertIn("[goal1878] start case", script)
         self.assertIn("--max-reference-pairs", script)
+        self.assertIn("v1_8_reused_prepared_optix", script)
 
     def test_report_keeps_claim_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
