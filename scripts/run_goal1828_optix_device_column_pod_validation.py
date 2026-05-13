@@ -108,7 +108,10 @@ def main() -> int:
     parser.add_argument("--goal", default="Goal1828")
     parser.add_argument("--partner", choices=("torch", "cupy"), default="torch")
     parser.add_argument("--output-flags", action="store_true")
+    parser.add_argument("--output-witnesses", action="store_true")
     args = parser.parse_args()
+    if args.output_flags and args.output_witnesses:
+        raise SystemExit("--output-flags and --output-witnesses are mutually exclusive")
 
     import rtdsl as rt
 
@@ -130,14 +133,30 @@ def main() -> int:
     try:
         partner["sync"]()
         execute_start = time.perf_counter()
-        if args.output_flags:
+        if args.output_witnesses:
+            witness_ray_ids = partner["zeros"]((2,), partner["uint32_dtype"])
+            witness_primitive_ids = partner["zeros"]((2,), partner["uint32_dtype"])
+            output_packet = scene.write_device_any_hit_witnesses(
+                rays,
+                witness_ray_ids,
+                witness_primitive_ids,
+            )
+            partner["sync"]()
+            observed_witness_ray_ids = partner["to_host_list"](witness_ray_ids)
+            observed_witness_primitive_ids = partner["to_host_list"](witness_primitive_ids)
+            observed_count = sum(1 for value in observed_witness_primitive_ids if value != 0xFFFFFFFF)
+        elif args.output_flags:
             output_flags = partner["zeros"]((2,), partner["uint32_dtype"])
             output_packet = scene.write_device_any_hit_flags(rays, output_flags)
             partner["sync"]()
             observed_flags = partner["to_host_list"](output_flags)
             observed_count = sum(observed_flags)
+            observed_witness_ray_ids = None
+            observed_witness_primitive_ids = None
         else:
             observed_count = scene.count_device_rays(rays)
+            observed_witness_ray_ids = None
+            observed_witness_primitive_ids = None
         partner["sync"]()
         execute_seconds = time.perf_counter() - execute_start
     finally:
@@ -161,6 +180,8 @@ def main() -> int:
         "triangle_metadata": triangle_packet["metadata"],
         "output_metadata": None if output_packet is None else output_packet["metadata"],
         "observed_flags": observed_flags,
+        "observed_witness_ray_ids": observed_witness_ray_ids,
+        "observed_witness_primitive_ids": observed_witness_primitive_ids,
         "claim_boundary": {
             "direct_device_column_execution_observed": passed,
             "ray_column_true_zero_copy_observed": bool(
@@ -179,6 +200,16 @@ def main() -> int:
                 and output_packet is not None
                 and output_packet["metadata"].get("output_flags_true_zero_copy_authorized")
             ),
+            "witness_outputs_true_zero_copy_observed": bool(
+                passed
+                and output_packet is not None
+                and output_packet["metadata"].get("witness_outputs_true_zero_copy_authorized")
+            ),
+            "first_hit_witness_identity_observed": bool(
+                passed
+                and observed_witness_ray_ids == [101, 102]
+                and observed_witness_primitive_ids == [11, 0xFFFFFFFF]
+            ),
             "true_zero_copy_authorized": bool(
                 passed
                 and ray_packet["metadata"].get("ray_columns_true_zero_copy_authorized")
@@ -186,6 +217,7 @@ def main() -> int:
                 and (
                     output_packet is None
                     or output_packet["metadata"].get("output_flags_true_zero_copy_authorized")
+                    or output_packet["metadata"].get("witness_outputs_true_zero_copy_authorized")
                 )
             ),
             "rt_core_speedup_claim_authorized": False,
