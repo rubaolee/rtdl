@@ -57,6 +57,8 @@ blocks the v2.0 release label.
   guardrail while keeping actual pod artifacts and post-pod review required.
 - Goal1916: post-pod artifact manifest generator for reviewer-ready commit,
   GPU, source-label, partner, and claim-boundary summaries.
+- Goal1917: Gemini accepted Goal1916 as a post-pod review aid, not hardware
+  evidence or release authorization.
 
 ## Immediate Next Hardware Step
 

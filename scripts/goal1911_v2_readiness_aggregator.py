@@ -43,6 +43,7 @@ SUPPORTING_REQUIRED = (
     "docs/reviews/goal1915_gemini_review_goal1914_pod_provenance_2026-05-13.md",
     "scripts/goal1916_v2_post_pod_artifact_manifest.py",
     "docs/reports/goal1916_v2_post_pod_artifact_manifest_2026-05-13.md",
+    "docs/reviews/goal1917_gemini_review_goal1916_post_pod_manifest_2026-05-13.md",
 )
 
 
