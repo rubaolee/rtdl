@@ -20,6 +20,9 @@ class Goal1932AllAppV2PodBatchRunnerTest(unittest.TestCase):
         self.assertIn("goal1925_fixed_radius_family_v2_partner_perf.py", text)
         self.assertIn("--query-count-override", text)
         self.assertIn("--search-count-override", text)
+        self.assertIn("ROBOT_POSE_COUNT", text)
+        self.assertIn("ROBOT_OBSTACLE_COUNT", text)
+        self.assertIn("SEGMENT_COUNTS", text)
         self.assertIn("goal1928_robot_collision_v2_partner_perf.py", text)
         self.assertIn("goal1856_segment_polygon_v2_partner_perf.py", text)
         self.assertIn("goal877_polygon_overlap_optix_phase_profiler.py", text)
@@ -35,6 +38,7 @@ class Goal1932AllAppV2PodBatchRunnerTest(unittest.TestCase):
         self.assertIn("control_database_analytics", text)
         self.assertIn("control_graph_analytics", text)
         self.assertNotIn("release_authorized=true", text)
+        self.assertIn("goal1856_segment_polygon_anyhit_rows_${segment_count}", text)
 
     def test_report_documents_pod_command_and_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -42,6 +46,7 @@ class Goal1932AllAppV2PodBatchRunnerTest(unittest.TestCase):
         self.assertIn("Status: runner-ready-pod-needed", text)
         self.assertIn("OUT_DIR=docs/reports/goal1932_all_app_v2_pod_batch", text)
         self.assertIn("STEP_TIMEOUT_SECONDS", text)
+        self.assertIn("SEGMENT_COUNTS", text)
         self.assertIn("Evidence-only control rows", text)
         self.assertIn("not v2 partner speedup rows", text)
         self.assertIn("not a release action", text)

@@ -42,7 +42,8 @@ Optional scale knobs:
 
 ```bash
 FIXED_QUERY_COUNT=524288 FIXED_SEARCH_COUNT=524288 FIXED_REPEAT=1 \
-SEGMENT_ITERATIONS=7 ROBOT_REPEAT=7 \
+SEGMENT_COUNTS=4096,65536 SEGMENT_ITERATIONS=3 \
+ROBOT_POSE_COUNT=16384 ROBOT_OBSTACLE_COUNT=1024 ROBOT_REPEAT=3 \
 POLYGON_COPIES=8192 DB_COPIES=100000 GRAPH_COPIES=100000 \
 STEP_TIMEOUT_SECONDS=2700
 ```
@@ -50,6 +51,9 @@ STEP_TIMEOUT_SECONDS=2700
 Use the fixed-radius override when the goal is seconds-scale evidence rather
 than quick smoke coverage. The default runner remains a compact all-app packet;
 the large knobs are the preferred pod form for performance interpretation.
+Robot and segment/polygon rows should still be interpreted by their measured
+duration: if a larger row remains sub-second, the report must keep that boundary
+rather than upgrading it into a broad whole-app speedup claim.
 
 ## Expected Outputs
 
@@ -57,6 +61,8 @@ the large knobs are the preferred pod form for performance interpretation.
 - `goal1928_robot_collision_v2_partner_perf_pod.json`
 - `goal1856_segment_polygon_v2_partner_perf_pod_current_512.json`
 - `goal1856_segment_polygon_v2_partner_perf_pod_current_2048.json`
+- optional additional `goal1856_segment_polygon_v2_partner_perf_pod_current_<count>.json`
+  files when `SEGMENT_COUNTS` includes larger rows;
 - `control_polygon_pair_overlap_area_rows_optix.json`
 - `control_polygon_set_jaccard_optix.json`
 - `control_database_analytics_optix.json`
