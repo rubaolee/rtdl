@@ -3456,6 +3456,37 @@ extern "C" __global__ void knn_rows(
 }
 )CUDA";
 
+static const char* kPackRay2DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+
+struct GpuRay {
+    float ox, oy, dx, dy, tmax;
+    uint32_t id;
+};
+
+extern "C" __global__ void pack_ray2d_device_columns(
+        const uint32_t* ids,
+        const double* ox,
+        const double* oy,
+        const double* dx,
+        const double* dy,
+        const double* tmax,
+        GpuRay* output,
+        uint32_t ray_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    GpuRay ray;
+    ray.ox = static_cast<float>(ox[idx]);
+    ray.oy = static_cast<float>(oy[idx]);
+    ray.dx = static_cast<float>(dx[idx]);
+    ray.dy = static_cast<float>(dy[idx]);
+    ray.tmax = static_cast<float>(tmax[idx]);
+    ray.id = ids[idx];
+    output[idx] = ray;
+}
+)CUDA";
+
 // ---------- DB conjunctive_scan kernel --------------------------------------
 
 static const char* kDbScanKernelSrc = R"CUDA(
@@ -3854,6 +3885,7 @@ static GraphEdgePipeline   g_graph_triangle;
 static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
+static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;

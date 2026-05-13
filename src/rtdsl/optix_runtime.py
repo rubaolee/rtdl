@@ -2354,6 +2354,44 @@ def pack_triangles_2d_from_arrays(
 _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
 _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_device_columns"
+_OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL = "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays"
+
+
+def _partner_dtype_token(dtype) -> str:
+    token = str(dtype).lower()
+    if "." in token:
+        token = token.rsplit(".", 1)[-1]
+    return token
+
+
+def _require_partner_device_ray_column_layout(handoffs: dict) -> None:
+    expected_dtypes = {
+        "ids": {"uint32"},
+        "ox": {"float64", "double"},
+        "oy": {"float64", "double"},
+        "dx": {"float64", "double"},
+        "dy": {"float64", "double"},
+        "tmax": {"float64", "double"},
+    }
+    expected_count = None
+    expected_device = None
+    for name in _PARTNER_RAY_2D_COLUMNS:
+        handoff = handoffs[name]
+        if _partner_dtype_token(handoff.dtype) not in expected_dtypes[name]:
+            allowed = ", ".join(sorted(expected_dtypes[name]))
+            raise ValueError(f"partner device ray column {name!r} must use dtype {allowed}")
+        if handoff.strides not in (None, (1,)):
+            raise ValueError(f"partner device ray column {name!r} must be contiguous")
+        count = int(handoff.shape[0])
+        if expected_count is None:
+            expected_count = count
+        elif count != expected_count:
+            raise ValueError("partner device ray columns must have matching lengths")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError("partner device ray columns must live on the same CUDA device")
 
 
 def _partner_column_to_host_array(value, *, column_name: str):
@@ -2432,6 +2470,40 @@ def _partner_device_descriptor_columns(columns: dict, required: tuple[str, ...],
         handoffs[name] = handoff
     validation_seconds = time.perf_counter() - validation_start
     return handoffs, {"descriptor_validation_s": validation_seconds}
+
+
+def pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns: dict) -> dict[str, object]:
+    """Validate partner-owned CUDA ray columns for a prepared OptiX scene.
+
+    This is a partial direct-device path: ray columns stay device-resident and
+    are packed on GPU into OptiX's ray layout, while the triangle scene must
+    already be prepared through the existing OptiX scene handle.
+    """
+    ray_handoffs, timings = _partner_device_descriptor_columns(
+        ray_columns,
+        _PARTNER_RAY_2D_COLUMNS,
+        label="ray",
+    )
+    _require_partner_device_ray_column_layout(ray_handoffs)
+    descriptors = tuple(ray_handoffs[name] for name in _PARTNER_RAY_2D_COLUMNS)
+    return {
+        "rays": ray_handoffs,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_columns_gpu_pack",
+            "native_symbol": _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
+            "ray_count": int(ray_handoffs["ids"].shape[0]),
+            "triangle_scene_transfer_mode": "prepared_scene_existing_path",
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": timings,
+        },
+    }
 
 
 def pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs(
@@ -2886,6 +2958,48 @@ class PreparedOptixRayTriangleAnyHit2D:
         status = count_symbol(
             self._handle,
             rays.handle,
+            ctypes.byref(hit_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(hit_count.value)
+
+    def count_device_rays(self, ray_columns: dict) -> int:
+        """Count any-hit intersections from partner-owned CUDA ray columns.
+
+        The ray columns are read from device pointers and packed on GPU. The
+        prepared triangle scene is still the existing OptiX prepared-scene path,
+        so this method is direct-device for rays only and never authorizes true
+        zero-copy wording.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX any-hit handle is closed")
+        packet = pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns)
+        if packet["metadata"]["ray_count"] == 0 or self._packed_triangles.count == 0:
+            return 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(lib, _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL)
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL}. "
+                "Direct device-ray partner execution remains blocked; rebuild the "
+                "OptiX backend after the native device-ray ABI lands."
+            )
+        hit_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        rays = packet["rays"]
+        status = count_symbol(
+            self._handle,
+            ctypes.c_void_p(rays["ids"].data_ptr),
+            ctypes.c_void_p(rays["ox"].data_ptr),
+            ctypes.c_void_p(rays["oy"].data_ptr),
+            ctypes.c_void_p(rays["dx"].data_ptr),
+            ctypes.c_void_p(rays["dy"].data_ptr),
+            ctypes.c_void_p(rays["tmax"].data_ptr),
+            packet["metadata"]["ray_count"],
             ctypes.byref(hit_count),
             error,
             len(error),

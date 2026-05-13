@@ -333,6 +333,17 @@ int  rtdl_optix_count_prepared_ray_anyhit_2d_packed(
          void* prepared_rays,
          size_t* hit_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_ray_anyhit_2d_device_rays(
+         void* prepared,
+         const uint32_t* ray_ids,
+         const double* ray_ox,
+         const double* ray_oy,
+         const double* ray_dx,
+         const double* ray_dy,
+         const double* ray_tmax,
+         size_t ray_count,
+         size_t* hit_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_group_flags_prepared_ray_anyhit_2d_packed(
          void* prepared,
          void* prepared_rays,

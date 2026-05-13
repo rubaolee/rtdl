@@ -337,6 +337,7 @@ from .optix_runtime import OptixPoseIndexBuffer
 from .optix_runtime import OptixRowView
 from .optix_runtime import pack_rays_2d_from_arrays
 from .optix_runtime import pack_triangles_2d_from_arrays
+from .optix_runtime import pack_optix_ray_any_hit_2d_device_ray_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_partner_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs
 from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d
@@ -1204,6 +1205,7 @@ __all__ = [
     "OptixPoseIndexBuffer",
     "pack_rays_2d_from_arrays",
     "pack_triangles_2d_from_arrays",
+    "pack_optix_ray_any_hit_2d_device_ray_inputs",
     "pack_optix_ray_triangle_any_hit_2d_partner_inputs",
     "pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs",
     "run_optix_partner_ray_triangle_any_hit_2d",

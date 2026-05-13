@@ -59,6 +59,7 @@ _GENERIC_NATIVE_SYMBOL_FRAGMENTS = (
     "_prepare_ray_anyhit",
     "_prepare_rays_",
     "_count_prepared_ray_anyhit",
+    "_count_prepared_ray_anyhit_2d_device_rays",
     "_run_fixed_radius_neighbors",
     "_run_fixed_radius_count_threshold",
     "_prepare_fixed_radius_count_threshold",

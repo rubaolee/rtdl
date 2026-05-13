@@ -3381,6 +3381,73 @@ static void count_prepared_ray_anyhit_2d_packed_optix(
         hit_count_out);
 }
 
+static void ensure_pack_ray2d_device_columns_kernel()
+{
+    (void)get_optix_context();
+    std::call_once(g_partner_ray2d_pack.init, [&]() {
+        const std::string ptx = compile_to_ptx(
+            kPackRay2DDeviceColumnsKernelSrc,
+            "partner_ray2d_device_columns_pack_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_partner_ray2d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_partner_ray2d_pack.fn,
+            g_partner_ray2d_pack.module,
+            "pack_ray2d_device_columns"));
+    });
+}
+
+static void count_prepared_ray_anyhit_2d_device_rays_optix(
+        PreparedRayAnyHit2D* prepared,
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_tmax,
+        size_t ray_count,
+        size_t* hit_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
+    if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
+    *hit_count_out = 0;
+    if (ray_count == 0 || prepared->triangles.empty()) return;
+    if (!ray_ids || !ray_ox || !ray_oy || !ray_dx || !ray_dy || !ray_tmax)
+        throw std::runtime_error("partner device ray column pointers must not be null when ray_count is nonzero");
+    if (ray_count > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("partner device ray column count exceeds uint32_t launch limit");
+
+    ensure_pack_ray2d_device_columns_kernel();
+
+    DevPtr d_rays(sizeof(GpuRay) * ray_count);
+    CUdeviceptr d_ray_ids = reinterpret_cast<CUdeviceptr>(ray_ids);
+    CUdeviceptr d_ray_ox = reinterpret_cast<CUdeviceptr>(ray_ox);
+    CUdeviceptr d_ray_oy = reinterpret_cast<CUdeviceptr>(ray_oy);
+    CUdeviceptr d_ray_dx = reinterpret_cast<CUdeviceptr>(ray_dx);
+    CUdeviceptr d_ray_dy = reinterpret_cast<CUdeviceptr>(ray_dy);
+    CUdeviceptr d_ray_tmax = reinterpret_cast<CUdeviceptr>(ray_tmax);
+    uint32_t rc = static_cast<uint32_t>(ray_count);
+    void* args[] = {
+        &d_ray_ids,
+        &d_ray_ox,
+        &d_ray_oy,
+        &d_ray_dx,
+        &d_ray_dy,
+        &d_ray_tmax,
+        &d_rays.ptr,
+        &rc,
+    };
+    const unsigned block = 256;
+    const unsigned grid = (rc + block - 1u) / block;
+    CU_CHECK(cuLaunchKernel(
+        g_partner_ray2d_pack.fn,
+        grid, 1, 1,
+        block, 1, 1,
+        0, nullptr, args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    count_prepared_ray_anyhit_2d_gpu_optix(prepared, d_rays.ptr, ray_count, hit_count_out);
+}
+
 static void group_flags_prepared_ray_anyhit_2d_packed_optix(
         PreparedRayAnyHit2D* prepared,
         PreparedRays2D* prepared_rays,

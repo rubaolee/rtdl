@@ -119,6 +119,8 @@ The app-agnostic gate is paired with:
 - [Goal1818 3-AI Consensus for Goal1814](../reviews/goal1818_3ai_consensus_goal1814_strict_v2_birth_gate_2026-05-13.md)
 - [Goal1819 Partner Direct Device-Pointer Descriptor](../reports/goal1819_partner_direct_device_pointer_descriptor_2026-05-13.md)
 - [Goal1821 OptiX Partner Device-Descriptor Fail-Closed Path](../reports/goal1821_optix_partner_device_descriptor_fail_closed_2026-05-13.md)
+- [Goal1823 OptiX Partner Device-Ray Columns Partial ABI](../reports/goal1823_optix_partner_device_ray_columns_partial_abi_2026-05-13.md)
+- [Goal1824 Gemini Review of Goal1823](../reviews/goal1824_gemini_review_goal1823_optix_device_ray_columns_2026-05-13.md)
 
 ## Claim Boundary
 
@@ -168,3 +170,10 @@ false.
 Goal1821 adds the Python-side OptiX device-descriptor packet and a fail-closed
 runner. It still does not satisfy the blocker because the native OptiX
 device-column ABI is not implemented or validated on hardware.
+
+Goal1823 adds a first native OptiX device-column ABI for partner-owned CUDA ray
+columns against an already prepared OptiX scene. It is real progress on direct
+device-pointer handoff, but it is still partial: rays are GPU-packed into an
+RTDL-owned layout, triangle scene setup still uses the existing prepared-scene
+path, and RTX hardware evidence is still pending. v2.0 remains
+`needs-more-evidence`.
