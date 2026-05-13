@@ -19,6 +19,8 @@ ROAD_HAZARD_ITERATIONS="${ROAD_HAZARD_ITERATIONS:-5}"
 ROAD_HAZARD_PARTNERS="${ROAD_HAZARD_PARTNERS:-cupy,torch}"
 ROAD_HAZARD_THRESHOLD="${ROAD_HAZARD_THRESHOLD:-2}"
 SOURCE_COMMIT_LABEL="${RTDL_SOURCE_COMMIT_LABEL:-$(git rev-parse HEAD)}"
+FIXED_RADIUS_ARTIFACT="docs/reports/goal1903_fixed_radius_batch_pod.json"
+SUMMARY_ARTIFACT="docs/reports/goal1903_v2_partner_pod_batch_summary.json"
 
 RTDL_PYTHONPATH="src:."
 if [[ -n "${PYTHONPATH:-}" ]]; then
@@ -26,6 +28,15 @@ if [[ -n "${PYTHONPATH:-}" ]]; then
 fi
 
 mkdir -p "${OUT_DIR}"
+
+echo "[goal1903] clearing this run's target artifacts"
+rm -f "${FIXED_RADIUS_ARTIFACT}" "${SUMMARY_ARTIFACT}" docs/reports/goal1897_road_hazard_prepared_reuse_pod_summary.json
+for count in ${SEGMENT_POLYGON_COUNTS}; do
+  rm -f "docs/reports/goal1903_segment_polygon_batch_pod_${count}.json"
+done
+for count in ${ROAD_HAZARD_COUNTS}; do
+  rm -f "docs/reports/goal1889_road_hazard_prepared_reuse_pod_${count}.json"
+done
 
 echo "[goal1903] repo: $(pwd)"
 echo "[goal1903] commit: $(git rev-parse HEAD)"
@@ -104,7 +115,7 @@ if [[ "${RUN_FIXED_RADIUS}" == "1" ]]; then
     --sizes "${FIXED_RADIUS_SIZES}" \
     --repeat "${FIXED_RADIUS_REPEAT}" \
     --partner "${FIXED_RADIUS_PARTNER}" \
-    --output docs/reports/goal1903_fixed_radius_batch_pod.json \
+    --output "${FIXED_RADIUS_ARTIFACT}" \
     2>&1 | tee "${OUT_DIR}/fixed_radius.log"
 fi
 
@@ -136,21 +147,34 @@ if [[ "${RUN_ROAD_HAZARD}" == "1" ]]; then
 fi
 
 echo "[goal1903] writing batch summary"
-PYTHONPATH="${RTDL_PYTHONPATH}" ${PYTHON_BIN} - "${SOURCE_COMMIT_LABEL}" "${RUN_FIXED_RADIUS}" "${RUN_SEGMENT_POLYGON}" "${RUN_ROAD_HAZARD}" <<'PY'
+PYTHONPATH="${RTDL_PYTHONPATH}" \
+SEGMENT_POLYGON_COUNTS="${SEGMENT_POLYGON_COUNTS}" \
+ROAD_HAZARD_COUNTS="${ROAD_HAZARD_COUNTS}" \
+${PYTHON_BIN} - "${SOURCE_COMMIT_LABEL}" "${RUN_FIXED_RADIUS}" "${RUN_SEGMENT_POLYGON}" "${RUN_ROAD_HAZARD}" <<'PY'
 import json
+import os
 import pathlib
 import sys
 
 source_commit_label, run_fixed, run_segment, run_road = sys.argv[1:5]
+segment_counts = [value for value in os.environ["SEGMENT_POLYGON_COUNTS"].split() if value]
+road_counts = [value for value in os.environ["ROAD_HAZARD_COUNTS"].split() if value]
 summary = {
     "source_commit_label": source_commit_label,
     "fixed_radius": {"requested": run_fixed == "1", "artifact": "docs/reports/goal1903_fixed_radius_batch_pod.json"},
-    "segment_polygon": {"requested": run_segment == "1", "artifacts": []},
+    "segment_polygon": {
+        "requested": run_segment == "1",
+        "counts": [int(value) for value in segment_counts],
+        "artifacts": [
+            f"docs/reports/goal1903_segment_polygon_batch_pod_{value}.json"
+            for value in segment_counts
+        ],
+    },
     "road_hazard": {
         "requested": run_road == "1",
         "artifacts": [
-            "docs/reports/goal1889_road_hazard_prepared_reuse_pod_512.json",
-            "docs/reports/goal1889_road_hazard_prepared_reuse_pod_2048.json",
+            f"docs/reports/goal1889_road_hazard_prepared_reuse_pod_{value}.json"
+            for value in road_counts
         ],
     },
     "claim_boundary": {
@@ -159,11 +183,9 @@ summary = {
         "broad_rt_core_speedup_claim_authorized": False,
     },
 }
-for path in sorted(pathlib.Path("docs/reports").glob("goal1903_segment_polygon_batch_pod_*.json")):
-    summary["segment_polygon"]["artifacts"].append(str(path).replace("\\", "/"))
 path = pathlib.Path("docs/reports/goal1903_v2_partner_pod_batch_summary.json")
 path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 print(path)
 PY
-cp docs/reports/goal1903_v2_partner_pod_batch_summary.json "${OUT_DIR}/summary.json"
+cp "${SUMMARY_ARTIFACT}" "${OUT_DIR}/summary.json"
 echo "[goal1903] complete: ${OUT_DIR}"

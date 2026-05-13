@@ -34,6 +34,10 @@ Default accepted-mode outputs:
 - `docs/reports/goal1889_road_hazard_prepared_reuse_pod_2048.json`
 - `docs/reports/goal1903_v2_partner_pod_batch_summary.json`
 
+The runner clears only this run's target artifact paths before execution and
+builds the summary from the requested counts, not from a broad filesystem glob,
+so stale pod JSON cannot be swept into a new evidence packet.
+
 ## Local Dry Run
 
 For mechanics-only local Linux dry runs, use only the road-hazard head:
