@@ -66,6 +66,14 @@ class Goal1848OptixPartnerBoundedAllWitnessOutputContractTest(unittest.TestCase)
         self.assertIn("g_rayanyhit_all_witnesses_device_columns", core)
         self.assertIn("RayAnyHitAllWitnessesDeviceColumnsLaunchParams", workloads)
         self.assertIn("witness_capacity", workloads)
+        params_struct = workloads[
+            workloads.index("struct RayAnyHitAllWitnessesDeviceColumnsLaunchParams")
+            : workloads.index("struct RayAnyHitGroupFlagsLaunchParams")
+        ]
+        self.assertLess(
+            params_struct.index("uint32_t               witness_capacity;"),
+            params_struct.index("uint32_t               ray_count;"),
+        )
         self.assertIn("atomicAdd(params.emitted_count, 1u)", workloads)
         self.assertIn("atomicExch(params.overflowed, 1u)", workloads)
         self.assertIn("optixIgnoreIntersection()", workloads)

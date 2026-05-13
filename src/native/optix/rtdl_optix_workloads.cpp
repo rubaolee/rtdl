@@ -3006,8 +3006,8 @@ struct RayAnyHitAllWitnessesDeviceColumnsLaunchParams {
     uint32_t*              witness_primitive_ids;
     uint32_t*              emitted_count;
     uint32_t*              overflowed;
-    uint32_t               ray_count;
     uint32_t               witness_capacity;
+    uint32_t               ray_count;
 };
 
 struct RayAnyHitGroupFlagsLaunchParams {
