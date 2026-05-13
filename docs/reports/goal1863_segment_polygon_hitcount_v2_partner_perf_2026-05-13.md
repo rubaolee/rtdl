@@ -40,19 +40,19 @@ output capacity 1024.
 
 | Path | Median query time (s) | Ratio vs v1.8 one-shot | Ratio vs v1.8 prepared |
 | --- | ---: | ---: | ---: |
-| v1.8 one-shot native OptiX hitcount rows | 0.1764944121 | 1.000x | 186.719x |
-| v1.8 prepared native OptiX hitcount rows | 0.0009452328 | 0.0054x | 1.000x |
-| v2.0 CuPy device count columns | 0.0014976561 | 0.0085x | 1.584x |
-| v2.0 Torch device count columns | 0.0013628453 | 0.0077x | 1.442x |
+| v1.8 one-shot native OptiX hitcount rows | 0.1764340252 | 1.000x | 185.823x |
+| v1.8 prepared native OptiX hitcount rows | 0.0009494722 | 0.0054x | 1.000x |
+| v2.0 CuPy device count columns | 0.0014837086 | 0.0084x | 1.563x |
+| v2.0 Torch device count columns | 0.0011088550 | 0.0063x | 1.168x |
 
 The same harness should also run at 2048 rows:
 
 | Path | Median query time (s) | Ratio vs v1.8 one-shot | Ratio vs v1.8 prepared |
 | --- | ---: | ---: | ---: |
-| v1.8 one-shot native OptiX hitcount rows | 14.7081498653 | 1.000x | 4436.663x |
-| v1.8 prepared native OptiX hitcount rows | 0.0033151358 | 0.00023x | 1.000x |
-| v2.0 CuPy device count columns | 0.0014812797 | 0.00010x | 0.447x |
-| v2.0 Torch device count columns | 0.0012702122 | 0.00009x | 0.383x |
+| v1.8 one-shot native OptiX hitcount rows | 15.1018138751 | 1.000x | 4581.731x |
+| v1.8 prepared native OptiX hitcount rows | 0.0032960922 | 0.00022x | 1.000x |
+| v2.0 CuPy device count columns | 0.0014491379 | 0.00010x | 0.440x |
+| v2.0 Torch device count columns | 0.0012654215 | 0.00008x | 0.384x |
 
 The first partner iteration includes one-time framework/kernel effects and is
 retained in the artifact rather than hidden. The median is the working
@@ -60,8 +60,8 @@ comparison statistic for this narrow row.
 
 Column-build phase:
 
-- 512 rows: CuPy 0.0044035688 s, Torch 0.0147466883 s
-- 2048 rows: CuPy 0.0070588440 s, Torch 0.0181888342 s
+- 512 rows: CuPy 0.0043708608 s, Torch 0.0146999061 s
+- 2048 rows: CuPy 0.0071500540 s, Torch 0.0189230070 s
 
 The one-shot v1.8 native hitcount baseline is unexpectedly expensive at 2048
 synthetic rows because it includes the public one-shot app path. The prepared
