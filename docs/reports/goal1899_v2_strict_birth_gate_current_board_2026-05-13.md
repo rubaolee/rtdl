@@ -130,6 +130,9 @@ blocks the v2.0 release label.
   pose-flag parity through 8,388,608 poses with about `0.02x` v2/v1.8 ratios,
   but its v1.8 baseline is still subsecond, so it remains a strong scaling
   signal rather than a seconds-scale whole-app claim.
+- Goal1941: Gemini reviewed Goal1940 as `accept-with-boundary`, accepted the
+  segment and robot interpretations, and kept the release/whole-app/broad
+  RT-core/package-install/arbitrary-partner boundaries intact.
 
 ## Immediate Next Hardware Step
 
@@ -223,7 +226,8 @@ PYTHONPATH=src:. python3 scripts/goal1911_v2_readiness_aggregator.py
 
 v2.0 is still not born. The fixed-radius and segment any-hit rows now have
 seconds-scale positive pod evidence, while robot has large exact-parity scaling
-evidence that remains subsecond on the v1.8 side. The strongest next progress is
-external review of the Goal1940 interpretation, then deciding whether more
-robot stress is technically meaningful or whether the remaining release gate is
-consensus and packaging/source-tree policy rather than more timing.
+evidence that remains subsecond on the v1.8 side. Goal1931 now rolls this up as
+11 positive rows, 1 positive-subsecond robot row, and 4 control rows. The
+strongest next progress is deciding whether more robot stress is technically
+meaningful or whether the remaining release gate is consensus and
+packaging/source-tree policy rather than more timing.
