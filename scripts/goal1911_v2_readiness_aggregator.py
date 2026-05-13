@@ -30,6 +30,8 @@ SUPPORTING_REQUIRED = (
     "docs/reviews/goal1910_gemini_review_v2_release_skeleton_2026-05-13.md",
     "docs/handoff/GOAL1912_POST_POD_EXTERNAL_REVIEW_TEMPLATE_2026-05-13.md",
     "docs/reports/goal1912_post_pod_external_review_template_2026-05-13.md",
+    "scripts/goal1913_v2_pod_session_runbook.sh",
+    "docs/reports/goal1913_v2_pod_session_runbook_2026-05-13.md",
 )
 
 
@@ -76,6 +78,11 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
             "bash scripts/goal1903_v2_partner_pod_batch_runner.sh"
         ),
         "post_pod_acceptance_command": "PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py",
+        "pod_session_runbook_command": (
+            "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch "
+            "OPTIX_PREFIX=/root/vendor/optix-sdk "
+            "bash scripts/goal1913_v2_pod_session_runbook.sh"
+        ),
         "claim_boundary": {
             "v2_0_release_authorized": False,
             "pod_evidence_collected": False,

@@ -49,6 +49,8 @@ blocks the v2.0 release label.
   action.
 - Goal1912: post-pod external review handoff template, waiting for actual pod
   artifacts.
+- Goal1913: visible-progress pod session runbook for Goal1908, Goal1903,
+  Goal1905, and Goal1911.
 
 ## Immediate Next Hardware Step
 
@@ -58,6 +60,14 @@ Run Goal1903 on an RTX pod:
 OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch \
 OPTIX_PREFIX=/root/vendor/optix-sdk \
 bash scripts/goal1903_v2_partner_pod_batch_runner.sh
+```
+
+Or run the visible-progress pod session wrapper:
+
+```bash
+OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch \
+OPTIX_PREFIX=/root/vendor/optix-sdk \
+bash scripts/goal1913_v2_pod_session_runbook.sh
 ```
 
 Expected accepted artifacts:

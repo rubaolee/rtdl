@@ -26,6 +26,8 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
         self.assertIn("RTX pod batch artifacts missing", payload["blockers"])
         self.assertIn("fresh Claude or Pro-class review", " ".join(payload["blockers"]))
         self.assertIn("docs/handoff/GOAL1912_POST_POD_EXTERNAL_REVIEW_TEMPLATE_2026-05-13.md", SUPPORTING_REQUIRED)
+        self.assertIn("scripts/goal1913_v2_pod_session_runbook.sh", SUPPORTING_REQUIRED)
+        self.assertIn("goal1913_v2_pod_session_runbook.sh", payload["pod_session_runbook_command"])
         self.assertFalse(payload["claim_boundary"]["v2_0_release_authorized"])
         self.assertFalse(payload["claim_boundary"]["pod_evidence_collected"])
 

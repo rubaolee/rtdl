@@ -25,6 +25,7 @@ TEST_MODULES = (
     "tests.goal1910_gemini_review_v2_release_skeleton_test",
     "tests.goal1911_v2_readiness_aggregator_test",
     "tests.goal1912_post_pod_external_review_template_test",
+    "tests.goal1913_v2_pod_session_runbook_test",
 )
 
 
