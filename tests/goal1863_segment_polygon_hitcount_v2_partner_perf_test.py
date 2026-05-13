@@ -10,6 +10,7 @@ RUNNER = ROOT / "scripts" / "goal1863_segment_polygon_hitcount_v2_partner_perf.p
 REPORT = ROOT / "docs" / "reports" / "goal1863_segment_polygon_hitcount_v2_partner_perf_2026-05-13.md"
 ARTIFACT_512 = ROOT / "docs" / "reports" / "goal1863_segment_polygon_hitcount_v2_partner_perf_pod_512.json"
 ARTIFACT_2048 = ROOT / "docs" / "reports" / "goal1863_segment_polygon_hitcount_v2_partner_perf_pod_2048.json"
+GEMINI_REVIEW = ROOT / "docs" / "reviews" / "goal1864_gemini_review_goal1863_hitcount_perf_2026-05-13.md"
 
 
 class Goal1863SegmentPolygonHitcountV2PartnerPerfTest(unittest.TestCase):
@@ -45,6 +46,8 @@ class Goal1863SegmentPolygonHitcountV2PartnerPerfTest(unittest.TestCase):
         self.assertIn("not an all-app performance table", report)
         self.assertIn("does not authorize v2.0 release wording", report)
         self.assertIn("goal1863_segment_polygon_hitcount_v2_partner_perf_pod_2048.json", report)
+        self.assertIn("goal1864_gemini_review_goal1863_hitcount_perf_2026-05-13.md", report)
+        self.assertIn("accept-with-boundary", report)
         self.assertEqual(artifact["status"], "pass")
         self.assertEqual(artifact["goal"], "Goal1863")
         self.assertIn("NVIDIA RTX A4500", artifact["gpu"])
@@ -72,6 +75,15 @@ class Goal1863SegmentPolygonHitcountV2PartnerPerfTest(unittest.TestCase):
         self.assertEqual(artifact["baseline"]["row_count"], 2048)
         self.assertEqual(artifact["prepared_baseline"]["row_count"], 2048)
         self.assertFalse(artifact["claim_boundary"]["v2_0_release_authorized"])
+
+    def test_gemini_review_accepts_with_boundary(self) -> None:
+        review = GEMINI_REVIEW.read_text(encoding="utf-8")
+        self.assertIn("Gemini / Antigravity", review)
+        self.assertIn("Verdict:** `accept-with-boundary`", review)
+        self.assertIn("same_contract_timing_row", review)
+        self.assertIn("partner_output_columns_true_zero_copy_authorized", review)
+        self.assertIn("v2_0_release_authorized", review)
+        self.assertIn("whole_app_speedup_claim_authorized", review)
 
 
 if __name__ == "__main__":

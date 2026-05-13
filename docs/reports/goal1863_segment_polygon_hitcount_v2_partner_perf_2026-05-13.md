@@ -76,3 +76,13 @@ This is a same-contract v2.0-vs-v1.8 timing row for one app path. It is not an a
 
 No whole-app speedup claim, broad RT-core speedup claim, package-install claim,
 or v2.0 release claim is authorized by this goal.
+
+## External Review
+
+Gemini/Antigravity reviewed Goal1863 in
+`docs/reviews/goal1864_gemini_review_goal1863_hitcount_perf_2026-05-13.md`
+with verdict `accept-with-boundary`.
+
+The review accepts the dual-baseline framing, confirms the
+partner-owned device count column path as a narrow same-contract timing row, and
+keeps v2.0 release, whole-app speedup, and broad RT-core speedup claims blocked.
