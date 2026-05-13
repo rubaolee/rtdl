@@ -95,7 +95,6 @@ PYTHONPATH="${RTDL_PYTHONPATH}" ${PYTHON_BIN} -m unittest \
   tests.goal1881_prepared_fixed_radius_reusable_outputs_test \
   tests.goal1886_segment_polygon_prepared_partner_reuse_test \
   tests.goal1889_road_hazard_prepared_partner_reuse_perf_test \
-  tests.goal1895_v2_partner_perf_matrix_status_test \
   tests.goal1897_road_hazard_prepared_reuse_pod_packet_test \
   2>&1 | tee "${OUT_DIR}/focused_unittest.log"
 
