@@ -159,6 +159,43 @@ import sys
 source_commit_label, run_fixed, run_segment, run_road = sys.argv[1:5]
 segment_counts = [value for value in os.environ["SEGMENT_POLYGON_COUNTS"].split() if value]
 road_counts = [value for value in os.environ["ROAD_HAZARD_COUNTS"].split() if value]
+forbid_true_claims = (
+    "v2_0_release_authorized",
+    "whole_app_speedup_claim_authorized",
+    "broad_rt_core_speedup_claim_authorized",
+)
+
+def _load_json(path_text):
+    path = pathlib.Path(path_text)
+    if not path.exists():
+        raise SystemExit(f"{path}: expected artifact to exist")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+def _check_boundary_false(boundary, path_text):
+    for key in forbid_true_claims:
+        if boundary.get(key):
+            raise SystemExit(f"{path_text}: {key} unexpectedly true")
+
+if run_fixed == "1":
+    fixed_path = "docs/reports/goal1903_fixed_radius_batch_pod.json"
+    fixed = _load_json(fixed_path)
+    if fixed.get("status") != "measurement":
+        raise SystemExit(f"{fixed_path}: expected status=measurement")
+    if not fixed.get("results"):
+        raise SystemExit(f"{fixed_path}: expected non-empty results")
+    for result in fixed["results"]:
+        _check_boundary_false(result.get("claim_boundaries", {}), fixed_path)
+
+if run_segment == "1":
+    for value in segment_counts:
+        segment_path = f"docs/reports/goal1903_segment_polygon_batch_pod_{value}.json"
+        segment = _load_json(segment_path)
+        if segment.get("status") != "pass":
+            raise SystemExit(f"{segment_path}: expected status=pass")
+        if not segment.get("parity", {}).get("strict_counts_match"):
+            raise SystemExit(f"{segment_path}: strict_counts_match failed")
+        _check_boundary_false(segment.get("claim_boundary", {}), segment_path)
+
 summary = {
     "source_commit_label": source_commit_label,
     "fixed_radius": {"requested": run_fixed == "1", "artifact": "docs/reports/goal1903_fixed_radius_batch_pod.json"},

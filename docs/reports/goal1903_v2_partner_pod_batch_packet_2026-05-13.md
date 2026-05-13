@@ -37,6 +37,9 @@ Default accepted-mode outputs:
 The runner clears only this run's target artifact paths before execution and
 builds the summary from the requested counts, not from a broad filesystem glob,
 so stale pod JSON cannot be swept into a new evidence packet.
+Before writing the final summary it also validates the requested fixed-radius
+and segment/polygon artifacts, including status, parity where applicable, and
+the false release/speedup claim-boundary flags.
 
 ## Local Dry Run
 
