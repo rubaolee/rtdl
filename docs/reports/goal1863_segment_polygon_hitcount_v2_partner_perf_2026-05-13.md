@@ -38,17 +38,17 @@ output capacity 1024.
 
 | Path | Median query time (s) | Ratio vs v1.8 native query |
 | --- | ---: | ---: |
-| v1.8 native OptiX hitcount rows | 0.1798767224 | 1.000x |
-| v2.0 CuPy device count columns | 0.0014071390 | 0.0078x |
-| v2.0 Torch device count columns | 0.0011153445 | 0.0062x |
+| v1.8 native OptiX hitcount rows | 0.1781796366 | 1.000x |
+| v2.0 CuPy device count columns | 0.0013938695 | 0.0078x |
+| v2.0 Torch device count columns | 0.0012617484 | 0.0071x |
 
 The same harness should also run at 2048 rows:
 
 | Path | Median query time (s) | Ratio vs v1.8 native query |
 | --- | ---: | ---: |
-| v1.8 native OptiX hitcount rows | 14.8491087332 | 1.000x |
-| v2.0 CuPy device count columns | 0.0014781058 | 0.00010x |
-| v2.0 Torch device count columns | 0.0014070645 | 0.00009x |
+| v1.8 native OptiX hitcount rows | 15.1251612604 | 1.000x |
+| v2.0 CuPy device count columns | 0.0014832616 | 0.00010x |
+| v2.0 Torch device count columns | 0.0012883395 | 0.00009x |
 
 The first partner iteration includes one-time framework/kernel effects and is
 retained in the artifact rather than hidden. The median is the working
@@ -56,8 +56,8 @@ comparison statistic for this narrow row.
 
 Column-build phase:
 
-- 512 rows: CuPy 0.1215314493 s, Torch 0.0144181401 s
-- 2048 rows: CuPy 0.1197794080 s, Torch 0.0187093690 s
+- 512 rows: CuPy 0.1150562689 s, Torch 0.0147782564 s
+- 2048 rows: CuPy 0.1205041036 s, Torch 0.0181660503 s
 
 The v1.8 native hitcount baseline is unexpectedly expensive at 2048 synthetic
 rows. This is useful engineering evidence about the current app-level native
