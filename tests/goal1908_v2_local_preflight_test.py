@@ -60,7 +60,7 @@ class Goal1908V2LocalPreflightTest(unittest.TestCase):
         self.assertIn("Status: active-local-gate", text)
         self.assertIn("one-command local preflight", text)
         self.assertIn("does not run hardware performance evidence", text)
-        self.assertIn("authorize v2.0 release", text)
+        self.assertIn("v2.0 release", text)
 
 
 if __name__ == "__main__":

@@ -76,6 +76,12 @@ def _run(command: list[str], *, root: pathlib.Path) -> dict[str, object]:
     }
 
 
+def _read_json_if_exists(path: pathlib.Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run local non-pod v2 preflight checks.")
     parser.add_argument("--root", default=".")
@@ -110,6 +116,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     ]
     runs = [_run(command, root=root) for command in commands]
     status = "pass" if all(run["returncode"] == 0 for run in runs) else "fail"
+    readiness = _read_json_if_exists(root / "scratch/goal1908_readiness_aggregator.json")
+    readiness_boundary = readiness.get("claim_boundary", {}) if readiness else {}
+    pod_evidence_collected = bool(readiness_boundary.get("pod_evidence_collected", False))
     payload = {
         "goal": "Goal1908",
         "status": status,
@@ -117,7 +126,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         "runs": runs,
         "claim_boundary": {
             "v2_0_release_authorized": False,
-            "pod_evidence_collected": False,
+            "pod_evidence_collected": pod_evidence_collected,
             "package_install_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,
             "whole_app_speedup_claim_authorized": False,

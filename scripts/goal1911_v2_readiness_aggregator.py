@@ -133,19 +133,18 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         "missing_supporting_files": missing_supporting,
         "missing_pod_artifacts": missing_pod,
         "blockers": blockers,
-        "next_hardware_command": (
-            "OUT_DIR=docs/reports/goal1932_all_app_v2_pod_batch "
-            "PARTNERS=cupy,torch PYTHONPATH=src:. "
-            "timeout --preserve-status 45m "
-            "bash scripts/goal1932_all_app_v2_pod_batch_runner.sh"
+        "next_policy_review_handoff": "docs/handoff/GOAL1944_EXTERNAL_REVIEW_SOURCE_TREE_ONLY_POLICY.md",
+        "next_required_external_review": (
+            "Claude or another distinct non-Codex, non-Gemini AI review of "
+            "docs/reports/goal1943_v2_source_tree_only_release_decision_packet_2026-05-13.md"
+        ),
+        "optional_hardware_command": (
+            "PYTHONPATH=src:. python3 scripts/goal1928_robot_collision_v2_partner_perf.py "
+            "--pose-count 16777216 --obstacle-count 16384 --partners cupy,torch --repeat 3 "
+            "--output docs/reports/goal1940_robot_segment_scaleup_pod/robot_16777216x16384.json"
         ),
         "post_pod_acceptance_command": "PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py",
         "post_pod_manifest_command": "PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py",
-        "pod_session_runbook_command": (
-            "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch "
-            "OPTIX_PREFIX=/root/vendor/optix-sdk "
-            "bash scripts/goal1913_v2_pod_session_runbook.sh"
-        ),
         "claim_boundary": {
             "v2_0_release_authorized": False,
             "pod_evidence_collected": pod_evidence_collected,

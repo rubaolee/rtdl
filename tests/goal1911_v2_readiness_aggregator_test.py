@@ -66,9 +66,9 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
             "docs/reviews/goal1944_gemini_review_v2_source_tree_only_policy_2026-05-13.md",
             SUPPORTING_REQUIRED,
         )
-        self.assertIn("goal1932_all_app_v2_pod_batch_runner.sh", payload["next_hardware_command"])
-        self.assertIn("timeout --preserve-status", payload["next_hardware_command"])
-        self.assertIn("goal1913_v2_pod_session_runbook.sh", payload["pod_session_runbook_command"])
+        self.assertIn("GOAL1944_EXTERNAL_REVIEW_SOURCE_TREE_ONLY_POLICY", payload["next_policy_review_handoff"])
+        self.assertIn("distinct non-Codex, non-Gemini", payload["next_required_external_review"])
+        self.assertIn("goal1928_robot_collision_v2_partner_perf.py", payload["optional_hardware_command"])
         self.assertFalse(payload["claim_boundary"]["v2_0_release_authorized"])
         self.assertTrue(payload["claim_boundary"]["pod_evidence_collected"])
 
@@ -131,9 +131,10 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
 
         self.assertIn("Status: active-local-gate", text)
         self.assertIn("machine-readable readiness aggregator", text)
-        self.assertIn("expected status is `blocked`", text)
-        self.assertIn("does not replace Goal1903 pod", text)
-        self.assertIn("user-requested release action", text)
+        self.assertIn("expected status is still", text)
+        self.assertIn("`blocked`", text)
+        self.assertIn("pod evidence has now been collected", text)
+        self.assertIn("explicit user release action", text)
 
 
 if __name__ == "__main__":

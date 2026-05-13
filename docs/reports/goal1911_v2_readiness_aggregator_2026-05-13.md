@@ -12,8 +12,9 @@ Goal1911 adds a machine-readable readiness aggregator:
 
 The aggregator reads the current v2.0 gate files and reports which release
 slots are still blocked. It is intentionally conservative and always keeps v2.0
-release unauthorized until pod evidence, post-pod acceptance, and final
-consensus exist.
+release unauthorized until pod evidence, post-pod acceptance, source-tree or
+package policy consensus, final release consensus, and explicit release action
+exist.
 
 ## Command
 
@@ -27,17 +28,18 @@ The generated JSON goes to:
 
 ## Current Expected Result
 
-Before the next RTX pod run, the expected status is `blocked` with missing
-Goal1903 pod artifacts and the remaining consensus/release-action blockers.
+After the Goal1937/1940 pod scale-up work, the expected status is still
+`blocked`, but pod evidence has now been collected. The remaining unconditional
+blockers are source-tree/package policy consensus, final v2.0 release consensus,
+and explicit user release action.
 
 The JSON also reports the strict Goal1905 acceptance status, the Goal1916
 post-pod manifest status, and any post-pod external review files that are
-present. These fields let the board clear those specific blockers
-automatically after a real pod run instead of leaving stale unconditional
-blocker text.
+present. These fields keep old hardware blockers from lingering after pod
+evidence lands.
 
 ## Boundary
 
-Goal1911 is an aggregator, not evidence. It does not replace Goal1903 pod
-execution, Goal1905 strict post-pod acceptance, external reviews, final
-consensus, or a user-requested release action.
+Goal1911 is an aggregator, not evidence. It does not replace Goal1905 strict
+post-pod acceptance, external reviews, final consensus, or a user-requested
+release action.

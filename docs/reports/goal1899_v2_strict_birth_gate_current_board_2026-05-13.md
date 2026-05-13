@@ -45,8 +45,8 @@ blocks the v2.0 release label.
   without authorizing release.
 - Goal1910: Gemini review accepted the Goal1909 skeleton boundary.
 - Goal1911: machine-readable v2 readiness aggregator; current status is
-  blocked only by pod artifacts, post-pod review, final consensus, and release
-  action.
+  blocked by source-tree/package policy consensus, final v2.0 release
+  consensus, and release action after pod evidence and post-pod reviews landed.
 - Goal1912: post-pod external review handoff template, waiting for actual pod
   artifacts.
 - Goal1913: visible-progress pod session runbook for Goal1908, Goal1903,
@@ -134,68 +134,24 @@ blocks the v2.0 release label.
   segment and robot interpretations, and kept the release/whole-app/broad
   RT-core/package-install/arbitrary-partner boundaries intact.
 
-## Immediate Next Hardware Step
+## Immediate Next Step
 
-The fixed-radius family no longer needs the old Goal1925 small-scale command
-for evidence. The next RTX pod work should be a visible-progress, background
-run only if we are trying to push currently sub-second rows, especially robot
-and segment/polygon any-hit, into seconds-scale scenarios:
+The next required step is not another pod run. It is a distinct non-Codex,
+non-Gemini review of the source-tree-only policy packet:
 
-```bash
-OUT_DIR=docs/reports/goal1932_all_app_v2_pod_batch \
-PARTNERS=cupy,torch \
-PYTHONPATH=src:. \
-timeout --preserve-status 45m \
-bash scripts/goal1932_all_app_v2_pod_batch_runner.sh
-```
+`docs/reports/goal1943_v2_source_tree_only_release_decision_packet_2026-05-13.md`
 
-Goal1903 remains the earlier accepted pod packet and can be rerun if a fresh
-post-commit provenance packet is needed:
+Use the handoff:
+
+`docs/handoff/GOAL1944_EXTERNAL_REVIEW_SOURCE_TREE_ONLY_POLICY.md`
+
+Optional hardware stress remains possible if the team wants to push robot beyond
+the current subsecond v1.8 baseline, but it is not the primary release blocker:
 
 ```bash
-OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch \
-OPTIX_PREFIX=/root/vendor/optix-sdk \
-bash scripts/goal1903_v2_partner_pod_batch_runner.sh
-```
-
-Or run the visible-progress pod session wrapper:
-
-```bash
-OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch \
-OPTIX_PREFIX=/root/vendor/optix-sdk \
-bash scripts/goal1913_v2_pod_session_runbook.sh
-```
-
-Expected accepted artifacts:
-
-- `docs/reports/goal1903_fixed_radius_batch_pod.json`
-- `docs/reports/goal1903_segment_polygon_batch_pod_512.json`
-- `docs/reports/goal1903_segment_polygon_batch_pod_2048.json`
-- `docs/reports/goal1889_road_hazard_prepared_reuse_pod_512.json`
-- `docs/reports/goal1889_road_hazard_prepared_reuse_pod_2048.json`
-- `docs/reports/goal1903_v2_partner_pod_batch_summary.json`
-
-Then validate:
-
-```bash
-PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py
-PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py
-```
-
-## Immediate Next Non-Hardware Step
-
-Continue the all-app implementation plan from Goal1924 using the Goal1930
-matrix. Family A has a runner, Family B has the robot runner and needs the
-`segment_polygon_anyhit_rows` rerun, and Families D/E/F are explicit
-evidence-only control rows until a reviewed partner continuation exists.
-
-For the next all-app hardware session, run:
-
-```bash
-OUT_DIR=docs/reports/goal1932_all_app_v2_pod_batch \
-PARTNERS=cupy,torch \
-PYTHONPATH=src:. \
-bash scripts/goal1932_all_app_v2_pod_batch_runner.sh
+PYTHONPATH=src:. python3 scripts/goal1928_robot_collision_v2_partner_perf.py \
+  --pose-count 16777216 --obstacle-count 16384 --partners cupy,torch --repeat 3 \
+  --output docs/reports/goal1940_robot_segment_scaleup_pod/robot_16777216x16384.json
 ```
 
 Keep the external review of the Goal1900 partner-acceleration boundary document
