@@ -51,6 +51,7 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1919_post_pod_evidence_integration_2026-05-13.md",
     "docs/reviews/goal1920_gemini_followup_goal1912_post_pod_review_correction_2026-05-13.md",
     "docs/reports/goal1921_v2_post_pod_performance_report_2026-05-13.md",
+    "docs/reports/goal1922_numba_triton_strategy_preplanning_2026-05-13.md",
 )
 
 

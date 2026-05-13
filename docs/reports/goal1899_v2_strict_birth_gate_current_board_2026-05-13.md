@@ -67,6 +67,9 @@ blocks the v2.0 release label.
 - Goal1921: detailed post-pod performance report records fixed-radius positive
   rows, mixed 512-row segment/polygon and road-hazard behavior, positive 2048
   prepared-reuse rows, and exact claim boundaries.
+- Goal1922: Numba/Triton/CuPy RawKernel strategy note keeps v2.0 focused on
+  partner tensor composition, defers external custom-kernel interop to v2.5,
+  and reserves engine-extension/JIT scope for v3.0.
 
 ## Immediate Next Hardware Step
 
