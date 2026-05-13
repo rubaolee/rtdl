@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import statistics
 import subprocess
 import time
@@ -287,6 +288,7 @@ def main() -> int:
         "goal": "Goal1869",
         "goal_extension": "Goal1889",
         "git_commit": _git_commit(),
+        "source_commit_label": os.environ.get("RTDL_SOURCE_COMMIT_LABEL", ""),
         "gpu": _gpu_name(),
         "count": args.count,
         "threshold": args.threshold,

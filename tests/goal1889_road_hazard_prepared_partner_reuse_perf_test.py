@@ -22,6 +22,7 @@ class Goal1889RoadHazardPreparedPartnerReusePerfTest(unittest.TestCase):
         self.assertIn("goal1889_prepared_reuse", text)
         self.assertIn("query_median_ratio_vs_goal1869_unprepared_partner", text)
         self.assertIn('"goal_extension": "Goal1889"', text)
+        self.assertIn('"source_commit_label": os.environ.get("RTDL_SOURCE_COMMIT_LABEL", "")', text)
         self.assertIn('"prepared_scene_reused": True', text)
         self.assertIn('"witness_output_columns_reused": True', text)
         self.assertIn("prepared_partner_scene.close()", text)
