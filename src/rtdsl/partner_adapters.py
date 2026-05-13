@@ -5,6 +5,15 @@ from .reference import Segment as _CanonicalSegment
 from .runtime import _normalize_records
 from . import optix_runtime as _optix
 
+_UINT32_MAX = 2**32 - 1
+
+
+def _require_uint32_id(value: int, label: str) -> int:
+    item = int(value)
+    if item < 0 or item > _UINT32_MAX:
+        raise ValueError(f"{label} IDs must fit uint32 for the current OptiX witness contract")
+    return item
+
 
 def _partner_module(partner: str):
     if partner == "torch":
@@ -47,7 +56,11 @@ def _partner_module(partner: str):
 def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict) -> dict[str, object]:
     device = partner["device"]
     return {
-        "ids": partner["tensor"]([segment.id for segment in segments], partner["uint32"], device),
+        "ids": partner["tensor"](
+            [_require_uint32_id(segment.id, "segment") for segment in segments],
+            partner["uint32"],
+            device,
+        ),
         "ox": partner["tensor"]([segment.x0 for segment in segments], partner["float64"], device),
         "oy": partner["tensor"]([segment.y0 for segment in segments], partner["float64"], device),
         "dx": partner["tensor"]([segment.x1 - segment.x0 for segment in segments], partner["float64"], device),
@@ -73,7 +86,7 @@ def _polygon_triangle_columns(polygons: tuple[_CanonicalPolygon, ...], partner: 
         for index in range(1, len(vertices) - 1):
             bx, by = vertices[index]
             cx, cy = vertices[index + 1]
-            ids.append(int(polygon.id))
+            ids.append(_require_uint32_id(polygon.id, "polygon"))
             x0.append(anchor_x)
             y0.append(anchor_y)
             x1.append(bx)

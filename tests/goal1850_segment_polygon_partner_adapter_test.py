@@ -65,9 +65,10 @@ class Goal1850SegmentPolygonPartnerAdapterTest(unittest.TestCase):
         self.assertIn("write_device_any_hit_all_witnesses", adapter_source)
         self.assertIn("generic_ray_primitive_witness_pairs", adapter_source)
         self.assertIn("caller_supplied_partner_device_columns", adapter_source)
+        self.assertIn("_require_uint32_id", adapter_source)
         self.assertIn("whole_app_speedup_claim_authorized", adapter_source)
         self.assertIn("v2_0_release_authorized", adapter_source)
-        self.assertIn("ids.append(int(polygon.id))", adapter_source)
+        self.assertIn('ids.append(_require_uint32_id(polygon.id, "polygon"))', adapter_source)
         self.assertIn("sorted(set(zip(ray_ids, primitive_ids)))", adapter_source)
         self.assertIn("segment_polygon_anyhit_rows_optix_partner", init_source)
         self.assertIn("segment_polygon_anyhit_rows_optix_partner_columns", init_source)
@@ -106,6 +107,20 @@ class Goal1850SegmentPolygonPartnerAdapterTest(unittest.TestCase):
         self.assertEqual(result["metadata"]["native_engine_row_contract"], "generic_ray_primitive_witness_pairs")
         self.assertFalse(result["metadata"]["v2_0_release_authorized"])
         self.assertFalse(result["metadata"]["whole_app_speedup_claim_authorized"])
+
+    def test_record_adapter_rejects_ids_that_do_not_fit_native_witness_contract(self) -> None:
+        with mock.patch.object(partner_adapters, "_partner_module", side_effect=_fake_partner_module):
+            with self.assertRaisesRegex(ValueError, "segment IDs must fit uint32"):
+                rt.segment_polygon_anyhit_rows_optix_partner(
+                    (rt.Segment(2**32, 0.0, 0.0, 1.0, 0.0),),
+                    (rt.Polygon(11, ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0))),),
+                )
+
+            with self.assertRaisesRegex(ValueError, "polygon IDs must fit uint32"):
+                rt.segment_polygon_anyhit_rows_optix_partner(
+                    (rt.Segment(101, 0.0, 0.0, 1.0, 0.0),),
+                    (rt.Polygon(-1, ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0))),),
+                )
 
     def test_column_adapter_keeps_caller_supplied_partner_input_contract(self) -> None:
         scene = _FakeScene()
