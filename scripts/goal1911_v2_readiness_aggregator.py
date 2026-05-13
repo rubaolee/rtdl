@@ -62,6 +62,7 @@ SUPPORTING_REQUIRED = (
     "scripts/goal1932_all_app_v2_pod_batch_runner.sh",
     "docs/reports/goal1932_all_app_v2_pod_batch_runner_2026-05-13.md",
     "docs/reports/goal1933_goal1934_large_scale_all_app_v2_pod_perf_2026-05-13.md",
+    "docs/reviews/goal1935_gemini_review_goal1933_1934_large_scale_perf_2026-05-13.md",
 )
 
 
@@ -124,9 +125,10 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         "missing_pod_artifacts": missing_pod,
         "blockers": blockers,
         "next_hardware_command": (
-            "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch "
-            "OPTIX_PREFIX=/root/vendor/optix-sdk "
-            "bash scripts/goal1903_v2_partner_pod_batch_runner.sh"
+            "OUT_DIR=docs/reports/goal1932_all_app_v2_pod_batch "
+            "PARTNERS=cupy,torch PYTHONPATH=src:. "
+            "timeout --preserve-status 45m "
+            "bash scripts/goal1932_all_app_v2_pod_batch_runner.sh"
         ),
         "post_pod_acceptance_command": "PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py",
         "post_pod_manifest_command": "PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py",

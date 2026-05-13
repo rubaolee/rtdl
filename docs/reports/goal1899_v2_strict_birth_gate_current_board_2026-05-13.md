@@ -103,17 +103,24 @@ blocks the v2.0 release label.
   seconds-scale while v2 prepared partner rows remain low-millisecond. DB,
   graph, and polygon controls are also seconds-scale evidence, but still not
   v2 partner speedup rows.
+- Goal1935: Gemini accepted the Goal1933/1934 interpretation: fixed-radius is
+  a strong narrow v2 result, robot and segment/polygon rows remain positive but
+  sub-second, and DB/graph/polygon exact metrics remain control evidence rather
+  than v2 partner speedup claims.
 
 ## Immediate Next Hardware Step
 
-Run Goal1925 on an RTX pod when available:
+The fixed-radius family no longer needs the old Goal1925 small-scale command
+for evidence. The next RTX pod work should be a visible-progress, background
+run only if we are trying to push currently sub-second rows, especially robot
+and segment/polygon any-hit, into seconds-scale scenarios:
 
 ```bash
-PYTHONPATH=src:. python3 scripts/goal1925_fixed_radius_family_v2_partner_perf.py \
-  --apps facility_knn_assignment,hausdorff_distance,ann_candidate_search,outlier_detection,dbscan_clustering,barnes_hut_force_app \
-  --partners cupy,torch \
-  --repeat 5 \
-  --output docs/reports/goal1925_fixed_radius_family_v2_partner_perf_pod.json
+OUT_DIR=docs/reports/goal1932_all_app_v2_pod_batch \
+PARTNERS=cupy,torch \
+PYTHONPATH=src:. \
+timeout --preserve-status 45m \
+bash scripts/goal1932_all_app_v2_pod_batch_runner.sh
 ```
 
 Goal1903 remains the earlier accepted pod packet and can be rerun if a fresh

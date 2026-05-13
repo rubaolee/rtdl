@@ -44,6 +44,7 @@ TEST_MODULES = (
     "tests.goal1931_current_all_app_v18_v2_perf_analysis_test",
     "tests.goal1932_all_app_v2_pod_batch_runner_test",
     "tests.goal1933_goal1934_large_scale_all_app_v2_pod_perf_test",
+    "tests.goal1935_gemini_review_goal1933_1934_large_scale_perf_test",
 )
 
 

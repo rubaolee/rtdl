@@ -31,6 +31,7 @@ class Goal1908V2LocalPreflightTest(unittest.TestCase):
             "tests.goal1911_v2_readiness_aggregator_test",
             "tests.goal1912_post_pod_external_review_template_test",
             "tests.goal1913_v2_pod_session_runbook_test",
+            "tests.goal1935_gemini_review_goal1933_1934_large_scale_perf_test",
         ):
             self.assertIn(module, modules)
 
