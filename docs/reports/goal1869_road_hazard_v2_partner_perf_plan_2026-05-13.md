@@ -93,3 +93,16 @@ all-app performance table and does not authorize v2.0 release wording.
 
 No whole-app speedup claim, broad RT-core speedup claim, package-install claim,
 or v2.0 release claim is authorized by this goal.
+
+## External Review
+
+Claude reviewed the post-pod Goal1868/1869 evidence in:
+
+`docs/reviews/goal1871_claude_review_goal1868_1869_road_hazard_pod_evidence_2026-05-13.md`
+
+Verdict: `accept-with-boundary`.
+
+The review accepts the Torch/CuPy pod smoke, the Torch `uint32` threshold fix,
+and the dual-baseline timing interpretation, while keeping v2.0 release,
+whole-application speedup, broad RT-core speedup, and package-install claims
+blocked.

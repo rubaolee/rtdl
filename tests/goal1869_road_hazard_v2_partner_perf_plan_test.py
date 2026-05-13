@@ -10,6 +10,7 @@ SCRIPT = ROOT / "scripts" / "goal1869_road_hazard_v2_partner_perf.py"
 REPORT = ROOT / "docs" / "reports" / "goal1869_road_hazard_v2_partner_perf_plan_2026-05-13.md"
 ARTIFACT_512 = ROOT / "docs" / "reports" / "goal1869_road_hazard_v2_partner_perf_pod_512.json"
 ARTIFACT_2048 = ROOT / "docs" / "reports" / "goal1869_road_hazard_v2_partner_perf_pod_2048.json"
+CLAUDE_REVIEW = ROOT / "docs" / "reviews" / "goal1871_claude_review_goal1868_1869_road_hazard_pod_evidence_2026-05-13.md"
 
 
 class Goal1869RoadHazardV2PartnerPerfPlanTest(unittest.TestCase):
@@ -47,6 +48,8 @@ class Goal1869RoadHazardV2PartnerPerfPlanTest(unittest.TestCase):
         self.assertIn("NVIDIA GeForce RTX 3090", report)
         self.assertIn("Observed Timing", report)
         self.assertIn("does not authorize v2.0 release wording", report)
+        self.assertIn("goal1871_claude_review_goal1868_1869", report)
+        self.assertIn("accept-with-boundary", report)
 
     def test_pod_artifacts_record_same_contract_timing_boundaries(self) -> None:
         for path, count in ((ARTIFACT_512, 512), (ARTIFACT_2048, 2048)):
@@ -70,6 +73,16 @@ class Goal1869RoadHazardV2PartnerPerfPlanTest(unittest.TestCase):
                 self.assertTrue(boundary["partner_output_columns_true_zero_copy_authorized"])
                 self.assertFalse(boundary["v2_0_release_authorized"])
                 self.assertFalse(boundary["whole_app_speedup_claim_authorized"])
+
+    def test_claude_review_accepts_with_boundary(self) -> None:
+        review = CLAUDE_REVIEW.read_text(encoding="utf-8")
+
+        self.assertIn("Claude", review)
+        self.assertIn("Verdict:** `accept-with-boundary`", review)
+        self.assertIn("Torch uint32 comparison fix", review)
+        self.assertIn("dual-baseline", review)
+        self.assertIn("v2.0 release wording", review)
+        self.assertIn("Remaining gaps", review)
 
 
 if __name__ == "__main__":
