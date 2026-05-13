@@ -33,8 +33,9 @@ hand-maintaining separate ray-tracing backend implementations.
 | 10 | [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py) | Apple RT closest-hit and visibility-count scenarios |
 | 11 | [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py) | Bounded any-hit row primitive |
 | 12 | [Python Partner Any-Hit](partner_anyhit.md) | First v2.0 partner-owned column path with Embree as CPU RT fallback |
-| 13 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | Observer-target line-of-sight rows |
-| 14 | [Reduce Rows Example](../../examples/rtdl_reduce_rows.py) | Deterministic Python standard-library reductions over emitted RTDL rows |
+| 13 | [OptiX Partner Zero-Copy Any-Hit Preview](partner_optix_zero_copy_anyhit.md) | Advanced Torch/CuPy CUDA input-plus-output zero-copy slice for one OptiX primitive |
+| 14 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | Observer-target line-of-sight rows |
+| 15 | [Reduce Rows Example](../../examples/rtdl_reduce_rows.py) | Deterministic Python standard-library reductions over emitted RTDL rows |
 
 ## Three Learning Tracks
 
@@ -76,6 +77,7 @@ Python application.
 - [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py)
 - [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py)
 - [Python Partner Any-Hit](partner_anyhit.md)
+- [OptiX Partner Zero-Copy Any-Hit Preview](partner_optix_zero_copy_anyhit.md)
 - [Visibility Rows Example](../../examples/rtdl_visibility_rows.py)
 - [Reduce Rows Example](../../examples/rtdl_reduce_rows.py)
 

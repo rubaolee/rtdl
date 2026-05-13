@@ -34,7 +34,7 @@ Read these in order:
 | Choose a backend | [Capability Boundaries](capability_boundaries.md) | [Backend Maturity](backend_maturity.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
 | Understand the architecture | [Current Architecture](current_architecture.md) | [IR And Lowering](rtdl/ir_and_lowering.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 | Interpret benchmark results | [Performance Model](performance_model.md) | [Current Support Matrix](current_main_support_matrix.md), [Release Reports](release_reports/) |
-| Try the partner preview path | [Python Partner Any-Hit](tutorials/partner_anyhit.md) | [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
+| Try the partner preview path | [Python Partner Any-Hit](tutorials/partner_anyhit.md) | [OptiX Partner Zero-Copy Any-Hit Preview](tutorials/partner_optix_zero_copy_anyhit.md), [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 
 ## What RTDL Promises
 
@@ -61,10 +61,13 @@ app-agnostic engine contract. Treat packaging/install support, broad public
 speedup wording, and finished partner-framework readiness as future work unless
 a later authorized release packet says otherwise.
 
-The current Python+partner path is a preview, not v2.0. v2.0 remains blocked
-until true zero-copy, direct device-pointer handoff, broad RT-core evidence,
-whole-application evidence, arbitrary PyTorch/CuPy acceleration boundaries, and
-package-install/source-tree scope are resolved by reviewed evidence.
+The current Python+partner path is a preview, not v2.0. A narrow OptiX
+Torch/CuPy CUDA input-plus-output zero-copy slice now has pod evidence for the
+prepared 2-D any-hit primitive, but v2.0 remains blocked until that evidence is
+reviewed and the remaining general true zero-copy, broad RT-core,
+general direct device-pointer handoff, whole-application,
+arbitrary PyTorch/CuPy acceleration, and
+package-install/source-tree scope questions are resolved by reviewed evidence.
 
 ## v1.8 Learner Rule
 

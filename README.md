@@ -120,10 +120,14 @@ RTDL also contains an experimental Python+partner preview path for the v2.0
 track. It accepts partner-owned NumPy, PyTorch CUDA, and CuPy CUDA columns,
 then runs a host-staged ray/triangle any-hit primitive through Embree or OptiX.
 
-This preview is not v2.0 yet. It does not claim true zero-copy,
-direct device-pointer handoff, broad RT-core speedup, whole-application
-acceleration, arbitrary PyTorch/CuPy acceleration, or package-install support.
-Those are the hard gates for the actual v2.0 release.
+There is also an advanced OptiX preview slice with pod evidence for Torch/CuPy
+CUDA input-plus-output zero-copy on the prepared 2-D ray/triangle any-hit
+primitive. That is one measured primitive path, not a finished v2.0 release.
+
+This preview is not v2.0 yet. It does not claim general true zero-copy support,
+general direct device-pointer handoff, broad RT-core speedup,
+whole-application acceleration, arbitrary PyTorch/CuPy acceleration, or
+package-install support. Those are hard gates for the actual v2.0 release.
 
 ## Performance Boundary
 

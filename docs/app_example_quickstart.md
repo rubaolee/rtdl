@@ -35,6 +35,7 @@ What this does not show:
 | First working command | `examples/rtdl_hello_world.py` | import and output smoke path | performance |
 | Backend selection | `examples/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
 | Python+partner first path | `examples/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | zero-copy or RT-core speedup |
+| Advanced OptiX partner preview | `scripts/run_goal1828_optix_device_column_pod_validation.py --partner cupy --goal Goal1838 --output-flags` | Torch/CuPy CUDA input-plus-output zero-copy evidence for one prepared OptiX any-hit primitive | v2.0 release readiness or broad acceleration |
 | Feature recipes | `examples/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
 | Geometry/spatial joins | `examples/rtdl_segment_polygon_hitcount.py` | segment/polygon candidate traversal and refinement | full GIS engine |
 | Spatial coverage app | `examples/rtdl_service_coverage_gaps.py` | fixed-radius household/clinic join | full service optimization |
