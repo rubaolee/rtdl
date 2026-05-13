@@ -375,6 +375,8 @@ from .partner_adapters import segment_polygon_hitcount_optix_partner_device_coun
 from .partner_adapters import segment_polygon_hitcount_optix_partner_columns
 from .partner_adapters import prepare_segment_polygon_anyhit_optix_partner_device_scene
 from .partner_adapters import allocate_segment_polygon_witness_partner_device_output_columns
+from .partner_adapters import allocate_robot_collision_pose_partner_device_output_columns
+from .partner_adapters import robot_collision_pose_flags_optix_prepared_partner_device_columns
 from .partner_adapters import segment_polygon_hitcount_optix_prepared_partner_device_count_columns
 from .partner_adapters import road_hazard_priority_flags_optix_partner_device_columns
 from .partner_adapters import road_hazard_priority_flags_optix_prepared_partner_device_columns
@@ -1271,6 +1273,8 @@ __all__ = [
     "segment_polygon_hitcount_optix_partner_columns",
     "prepare_segment_polygon_anyhit_optix_partner_device_scene",
     "allocate_segment_polygon_witness_partner_device_output_columns",
+    "allocate_robot_collision_pose_partner_device_output_columns",
+    "robot_collision_pose_flags_optix_prepared_partner_device_columns",
     "segment_polygon_hitcount_optix_prepared_partner_device_count_columns",
     "road_hazard_priority_flags_optix_partner_device_columns",
     "road_hazard_priority_flags_optix_prepared_partner_device_columns",

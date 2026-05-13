@@ -53,6 +53,10 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1921_v2_post_pod_performance_report_2026-05-13.md",
     "docs/reports/goal1922_numba_triton_strategy_preplanning_2026-05-13.md",
     "docs/reports/goal1923_claude_post_pod_review_integration_2026-05-13.md",
+    "docs/reports/goal1924_all_app_v2_completion_and_perf_analysis_plan_2026-05-13.md",
+    "docs/reports/goal1925_fixed_radius_family_v2_partner_perf_2026-05-13.md",
+    "docs/reports/goal1927_robot_collision_partner_pose_flags_adapter_2026-05-13.md",
+    "docs/reports/goal1928_robot_collision_v2_partner_perf_2026-05-13.md",
 )
 
 

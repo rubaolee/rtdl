@@ -74,10 +74,35 @@ blocks the v2.0 release label.
   `accept-with-boundary`, closing the fresh Claude/Pro-class review blocker
   while keeping v2.0 release blocked pending package/source-tree decision,
   final release consensus, and explicit release action.
+- Goal1924: all-app v2 completion plan maps the 16 active public app rows to
+  reusable implementation families and marks the current v2 evidence as a
+  strong slice, not a finished all-app matrix.
+- Goal1925: fixed-radius family harness covers six additional app rows
+  (`facility_knn_assignment`, `hausdorff_distance`, `ann_candidate_search`,
+  `outlier_detection`, `dbscan_clustering`, and `barnes_hut_force_app`) with a
+  same-contract v1.8 prepared OptiX versus v2 prepared partner comparison;
+  pod timing is still needed.
+- Goal1927: robot collision v2 partner adapter writes generic any-hit ray
+  flags through prepared OptiX, then reduces them to app pose-collision flags
+  with Torch/CuPy partner operations; pod timing is still needed.
+- Goal1928: robot collision v2 partner perf harness compares v1.8 prepared
+  OptiX pose flags to the Goal1927 v2 partner adapter with scalar count parity;
+  pod timing is still needed.
 
 ## Immediate Next Hardware Step
 
-Run Goal1903 on an RTX pod:
+Run Goal1925 on an RTX pod when available:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1925_fixed_radius_family_v2_partner_perf.py \
+  --apps facility_knn_assignment,hausdorff_distance,ann_candidate_search,outlier_detection,dbscan_clustering,barnes_hut_force_app \
+  --partners cupy,torch \
+  --repeat 5 \
+  --output docs/reports/goal1925_fixed_radius_family_v2_partner_perf_pod.json
+```
+
+Goal1903 remains the earlier accepted pod packet and can be rerun if a fresh
+post-commit provenance packet is needed:
 
 ```bash
 OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch \
@@ -111,12 +136,17 @@ PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py
 
 ## Immediate Next Non-Hardware Step
 
-Obtain external review for Goal1900, then decide whether the accepted wording is
-enough for the final v2.0 release packet or needs a second Claude/Pro-class
-review.
+Continue the all-app implementation plan from Goal1924. Family A now has a
+runner; Family B has a robot timing runner but still needs the
+`segment_polygon_anyhit_rows` rerun; Family D, Family E, and Family F still need
+implementation or explicit exclusion/control-row decisions before the final
+v2.0 matrix.
 
-Goal1903 has one Gemini review. After pod artifacts land, collect a fresh
-Claude or Pro-class review before using it for key release consensus.
+Keep the external review of the Goal1900 partner-acceleration boundary document
+as part of the final release packet history; later all-app performance reports
+must not broaden that accepted wording without new review.
+If a new key performance conclusion is drawn from the all-app matrix, require a
+fresh Claude or Pro-class review before release consensus.
 
 Run Goal1906 after public doc edits:
 
@@ -138,5 +168,6 @@ PYTHONPATH=src:. python3 scripts/goal1911_v2_readiness_aggregator.py
 
 ## Verdict
 
-v2.0 is still not born. The strongest next progress is Goal1903 pod execution
-plus external review of the Goal1900 partner-acceleration boundary document.
+v2.0 is still not born. The strongest next progress is completing the remaining
+all-app v2 families, then running Goal1925 and the final all-app batch on RTX
+hardware for a same-contract v1.8 versus v2.0 analysis.

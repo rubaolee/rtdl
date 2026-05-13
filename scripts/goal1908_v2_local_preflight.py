@@ -36,6 +36,10 @@ TEST_MODULES = (
     "tests.goal1921_v2_post_pod_performance_report_test",
     "tests.goal1922_numba_triton_strategy_preplanning_test",
     "tests.goal1923_claude_post_pod_review_integration_test",
+    "tests.goal1924_all_app_v2_completion_and_perf_analysis_plan_test",
+    "tests.goal1925_fixed_radius_family_v2_partner_perf_test",
+    "tests.goal1927_robot_collision_partner_pose_flags_adapter_test",
+    "tests.goal1928_robot_collision_v2_partner_perf_test",
 )
 
 
