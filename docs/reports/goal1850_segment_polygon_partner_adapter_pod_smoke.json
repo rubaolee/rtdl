@@ -1,0 +1,93 @@
+{
+  "results": {
+    "cupy": {
+      "elapsed_s": 0.7025691717863083,
+      "metadata": {
+        "adapter": "segment_polygon_anyhit_rows_optix_partner",
+        "app_rows_emitted": 2,
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "emitted_count": 2,
+        "exact_row_semantics_authorized": true,
+        "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+        "overflowed": false,
+        "partner": "cupy",
+        "partner_tensor_handoff_authorized": true,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 2,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+        "witness_outputs_true_zero_copy_authorized": true,
+        "witness_row_capacity": 8
+      },
+      "rows": [
+        {
+          "polygon_id": 11,
+          "segment_id": 101
+        },
+        {
+          "polygon_id": 12,
+          "segment_id": 101
+        }
+      ]
+    },
+    "torch": {
+      "elapsed_s": 1.2207670956850052,
+      "metadata": {
+        "adapter": "segment_polygon_anyhit_rows_optix_partner",
+        "app_rows_emitted": 2,
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "emitted_count": 2,
+        "exact_row_semantics_authorized": true,
+        "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+        "overflowed": false,
+        "partner": "torch",
+        "partner_tensor_handoff_authorized": true,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 2,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "torch"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+        "witness_outputs_true_zero_copy_authorized": true,
+        "witness_row_capacity": 8
+      },
+      "rows": [
+        {
+          "polygon_id": 11,
+          "segment_id": 101
+        },
+        {
+          "polygon_id": 12,
+          "segment_id": 101
+        }
+      ]
+    }
+  },
+  "status": "pass"
+}
