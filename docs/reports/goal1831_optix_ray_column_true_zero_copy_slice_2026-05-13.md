@@ -1,7 +1,7 @@
 # Goal1831 OptiX Ray-Column True Zero-Copy Slice
 
 Date: 2026-05-13
-Status: `ready-for-pod`
+Status: `accept-with-boundary`
 
 ## Summary
 
@@ -84,10 +84,43 @@ PYTHONPATH=src;. py -3 -m unittest \
   tests.goal1823_optix_partner_device_ray_columns_partial_abi_test
 ```
 
-Pod validation is still required. The expected pod command is:
+Pod validation was completed on:
+
+- Host: `ssh root@213.173.108.219 -p 17793`
+- GPU: NVIDIA RTX A4500
+- Driver: 550.127.05
+- CUDA/NVRTC: CUDA 12.4 from `/usr/local/cuda`
+- Torch: 2.4.1+cu124
+- Commit: `4b43f229ed0d7324ff3a714b8f037c4d2a456ee6`
+
+Command:
 
 ```text
 PYTHONPATH=src:. python3 scripts/run_goal1828_optix_device_column_pod_validation.py \
+  --goal Goal1831 \
   --output docs/reports/goal1831_optix_ray_column_true_zero_copy_pod_validation.json
 ```
 
+Artifact:
+
+- `docs/reports/goal1831_optix_ray_column_true_zero_copy_pod_validation.json`
+
+Result:
+
+```json
+{
+  "goal": "Goal1831",
+  "status": "pass",
+  "device": "NVIDIA RTX A4500",
+  "observed_count": 1,
+  "expected_count": 1,
+  "claim_boundary": {
+    "direct_device_column_execution_observed": true,
+    "ray_column_true_zero_copy_observed": true,
+    "whole_primitive_true_zero_copy_authorized": false,
+    "true_zero_copy_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false
+  }
+}
+```

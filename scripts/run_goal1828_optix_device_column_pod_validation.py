@@ -36,6 +36,7 @@ def _device_columns(torch):
 def main() -> int:
     parser = argparse.ArgumentParser(description="Goal1828 OptiX partner device-column RTX validation")
     parser.add_argument("--output", default="docs/reports/goal1828_optix_device_column_pod_validation.json")
+    parser.add_argument("--goal", default="Goal1828")
     args = parser.parse_args()
 
     import rtdsl as rt
@@ -62,7 +63,7 @@ def main() -> int:
     expected_count = 1
     passed = observed_count == expected_count
     result = {
-        "goal": "Goal1828",
+        "goal": args.goal,
         "status": "pass" if passed else "fail",
         "expected_count": expected_count,
         "observed_count": observed_count,

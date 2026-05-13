@@ -17,6 +17,7 @@ class Goal1828OptixDeviceColumnPodValidationPacketTest(unittest.TestCase):
         self.assertIn("pack_optix_ray_any_hit_2d_device_triangle_inputs", text)
         self.assertIn("prepare_optix_ray_triangle_any_hit_2d_device_triangles", text)
         self.assertIn("count_device_rays", text)
+        self.assertIn('parser.add_argument("--goal", default="Goal1828")', text)
         self.assertIn("torch.cuda.is_available", text)
         self.assertIn('"ray_column_true_zero_copy_observed"', text)
         self.assertIn('"whole_primitive_true_zero_copy_authorized": False', text)

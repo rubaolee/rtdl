@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pathlib
 import unittest
+import json
 
 import rtdsl as rt
 
@@ -11,6 +12,7 @@ CORE = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 REPORT = ROOT / "docs" / "reports" / "goal1831_optix_ray_column_true_zero_copy_slice_2026-05-13.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1831_optix_ray_column_true_zero_copy_pod_validation.json"
 
 
 class _CudaColumn:
@@ -76,9 +78,27 @@ class Goal1831OptixRayColumnTrueZeroCopySliceTest(unittest.TestCase):
         report = REPORT.read_text(encoding="utf-8")
         self.assertIn("ray-side true zero-copy path", runtime)
         self.assertIn("whole-primitive zero-copy is not implied", runtime)
+        self.assertIn("`accept-with-boundary`", report)
         self.assertIn("ray-side true zero-copy", report)
         self.assertIn("whole-primitive true zero-copy", report)
         self.assertIn("v2.0 release readiness", report)
+
+    def test_pod_artifact_records_ray_column_zero_copy_without_broad_claim(self) -> None:
+        artifact = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["goal"], "Goal1831")
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["device"], "NVIDIA RTX A4500")
+        self.assertEqual(artifact["observed_count"], artifact["expected_count"])
+        self.assertTrue(artifact["claim_boundary"]["direct_device_column_execution_observed"])
+        self.assertTrue(artifact["claim_boundary"]["ray_column_true_zero_copy_observed"])
+        self.assertFalse(artifact["claim_boundary"]["whole_primitive_true_zero_copy_authorized"])
+        self.assertFalse(artifact["claim_boundary"]["true_zero_copy_authorized"])
+        self.assertFalse(artifact["claim_boundary"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(artifact["claim_boundary"]["v2_0_release_authorized"])
+        self.assertEqual(artifact["ray_metadata"]["transfer_mode"], "device_ray_columns_zero_copy")
+        self.assertTrue(artifact["ray_metadata"]["ray_columns_true_zero_copy_authorized"])
+        self.assertFalse(artifact["ray_metadata"]["triangle_scene_true_zero_copy_authorized"])
+        self.assertEqual(artifact["triangle_metadata"]["transfer_mode"], "device_columns_gpu_pack_gas_build")
 
 
 if __name__ == "__main__":
