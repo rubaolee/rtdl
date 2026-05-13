@@ -53,7 +53,7 @@ def _partner_module(partner: str):
             "to_host": lambda value: [int(item) for item in value.detach().cpu().tolist()],
             "slice": lambda value, count: value[: int(count)],
             "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
-            "greater_equal_uint32": lambda value, threshold: value.ge(int(threshold)).to(torch.uint32),
+            "greater_equal_uint32": lambda value, threshold: value.to(torch.int64).ge(int(threshold)).to(torch.uint32),
         }
     if partner == "cupy":
         import cupy
