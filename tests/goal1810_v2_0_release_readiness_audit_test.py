@@ -46,21 +46,24 @@ class Goal1810V20ReleaseReadinessAuditTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
-    def test_audit_records_external_final_consensus_before_publication(self) -> None:
+    def test_audit_records_external_final_consensus_but_is_superseded(self) -> None:
         text = AUDIT.read_text(encoding="utf-8")
         self.assertIn("Claude review of Goal1810", text)
         self.assertIn("Gemini review of Goal1810", text)
         self.assertIn("Goal1813 records final 3-AI release-readiness", text)
-        self.assertIn("release-ready with the bounded claims", text)
-        self.assertIn("not published until the user explicitly authorizes", text)
+        self.assertIn("Goal1814 supersedes", text)
+        self.assertIn("v2.0 is not release-ready until the", text)
+        self.assertIn("stricter blockers are resolved", text)
 
     def test_gate_links_latest_evidence_but_still_blocks_overclaims(self) -> None:
         text = GATE.read_text(encoding="utf-8")
         self.assertIn("Goal1808 v2.0 Partner OptiX Pod Hardware Evidence", text)
         self.assertIn("Goal1809 Gemini Review of Goal1808", text)
         self.assertIn("Goal1813 3-AI Consensus for v2.0 Release Readiness", text)
+        self.assertIn("Goal1814 v2.0 Strict Birth Gate", text)
         self.assertIn("RTDL has general true zero-copy support", text)
         self.assertIn("RTDL accelerates arbitrary PyTorch/CuPy programs", text)
+        self.assertIn("RTDL v2.0 is released", text)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ The current released version is `v1.8`: the first source-tree Python+RTDL
 language release with the tracked native release surface migrated to an
 app-agnostic engine contract. Use it from the repository source tree with
 `PYTHONPATH=src:.`; do not read this release as a package-install promise,
-broad speedup claim, or Python+partner+RTDL claim.
+broad speedup claim, or finished Python+partner+RTDL claim.
 
 ## Start Fast
 
@@ -113,6 +113,17 @@ the language.
 Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
+
+## Python Partner Preview
+
+RTDL also contains an experimental Python+partner preview path for the v2.0
+track. It accepts partner-owned NumPy, PyTorch CUDA, and CuPy CUDA columns,
+then runs a host-staged ray/triangle any-hit primitive through Embree or OptiX.
+
+This preview is not v2.0 yet. It does not claim true zero-copy,
+direct device-pointer handoff, broad RT-core speedup, whole-application
+acceleration, arbitrary PyTorch/CuPy acceleration, or package-install support.
+Those are the hard gates for the actual v2.0 release.
 
 ## Performance Boundary
 

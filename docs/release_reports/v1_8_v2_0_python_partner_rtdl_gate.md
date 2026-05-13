@@ -115,14 +115,24 @@ The app-agnostic gate is paired with:
 - [Goal1811 Claude Review of Goal1810](../reviews/goal1811_claude_review_goal1810_v2_0_release_readiness_audit_2026-05-13.md)
 - [Goal1812 Gemini Review of Goal1810](../reviews/goal1812_gemini_review_goal1810_v2_0_release_readiness_audit_2026-05-13.md)
 - [Goal1813 3-AI Consensus for v2.0 Release Readiness](../reviews/goal1813_3ai_consensus_v2_0_release_readiness_2026-05-13.md)
+- [Goal1814 v2.0 Strict Birth Gate](../reports/goal1814_v2_0_strict_birth_gate_2026-05-13.md)
+- [Goal1818 3-AI Consensus for Goal1814](../reviews/goal1818_3ai_consensus_goal1814_strict_v2_birth_gate_2026-05-13.md)
 
 ## Claim Boundary
 
-Allowed near-term wording:
+Allowed near-term wording before v2.0:
 
 ```text
 RTDL is building a protocol-first Python+partner+RTDL track with PyTorch as the
 primary reference partner and CuPy as the lightweight conformance partner.
+```
+
+Allowed preview wording:
+
+```text
+RTDL includes an experimental Python+partner preview path: partner-owned NumPy,
+PyTorch CUDA, and CuPy CUDA columns can be passed through a host-staged public
+Python API to the RTDL any-hit primitive path for Embree and OptiX.
 ```
 
 Blocked wording until separately proven:
@@ -132,7 +142,18 @@ Blocked wording until separately proven:
 - "RTDL optimizes partner code."
 - "RTDL native internals are fully app-agnostic."
 - "All partners are interchangeable with no performance differences."
+- "RTDL v2.0 is released."
+- "RTDL supports package installation."
 
 True zero-copy is a measured claim boundary. Device-resident handoff,
 reduced-copy, fallback copy, and host staging must be reported separately in
 benchmark artifacts and release text.
+
+## v2.0 Birth Gate
+
+Goal1814 and Goal1818 supersede the earlier `release-ready-with-boundary`
+conclusion for Goal1810/Goal1813. The current partner path is accepted as
+preview evidence, but v2.0 remains `needs-more-evidence` until true zero-copy,
+direct device-pointer handoff, broad RT-core evidence, whole-application evidence,
+arbitrary PyTorch/CuPy acceleration boundaries, and package-install/source-tree
+scope are resolved by new reviewed evidence.

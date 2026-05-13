@@ -11,7 +11,7 @@ Run source-tree examples from the repository root with `PYTHONPATH=src:.`.
 | --- | --- | --- |
 | 1 | `PYTHONPATH=src:. python examples/rtdl_hello_world.py` | prove the checkout imports and runs |
 | 2 | `PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference` | see backend selection without performance claims |
-| 3 | `PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree` | see the first Python+partner host-stage path |
+| 3 | `PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree` | see the Python+partner host-stage preview path |
 | 4 | `PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py` | see one compact recipe per public feature |
 | 5 | [App And Example Quickstart](../docs/app_example_quickstart.md) | choose one app by job instead of scanning the directory |
 | 6 | [Performance Model](../docs/performance_model.md) | interpret any timing or speedup wording safely |

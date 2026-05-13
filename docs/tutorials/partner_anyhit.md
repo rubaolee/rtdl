@@ -1,6 +1,7 @@
 # Python Partner Any-Hit
 
-This tutorial shows the first v2.0 Python+partner+RTDL shape.
+This tutorial shows the first Python+partner+RTDL preview shape for the v2.0
+track.
 
 The idea is:
 
@@ -112,7 +113,7 @@ phase timing.
 
 ## Boundaries
 
-This first-wave bridge is deliberately conservative:
+This first-wave bridge is deliberately conservative and is not the v2.0 release:
 
 - partner frameworks stay in Python adapter code;
 - the native engine remains app-agnostic;
@@ -120,6 +121,9 @@ This first-wave bridge is deliberately conservative:
 - `true_zero_copy_authorized` remains `false`;
 - `rt_core_speedup_claim_authorized` remains `false`;
 - timing fields show phase shape, not benchmark evidence.
+- v2.0 remains blocked until true zero-copy, direct device-pointer handoff,
+  broad RT-core evidence, whole-application evidence, arbitrary PyTorch/CuPy
+  acceleration boundaries, and package-install/source-tree scope are resolved.
 
 That boundary is what lets RTDL support partner frameworks without turning the
 engine into a PyTorch-, CuPy-, or app-specific runtime.

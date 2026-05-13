@@ -1,6 +1,6 @@
 # Goal1810: v2.0 Release Readiness Audit
 
-Status: `release-ready-with-boundary`
+Status: `superseded-by-stricter-v2.0-birth-gate`
 
 Date: 2026-05-13
 
@@ -8,8 +8,9 @@ Date: 2026-05-13
 
 When is v2.0 done?
 
-For this roadmap, v2.0 is done when RTDL has a reviewed, documented,
-source-tree Python+partner+RTDL release surface where:
+For the earlier bounded-candidate interpretation used by this audit, v2.0 was
+considered done when RTDL had a reviewed, documented, source-tree
+Python+partner+RTDL release surface where:
 
 - the partner protocol is explicit and protocol-first;
 - PyTorch is the primary/reference partner;
@@ -21,15 +22,32 @@ source-tree Python+partner+RTDL release surface where:
 - the app-agnostic engine boundary remains intact;
 - final release consensus is recorded by distinct AI systems.
 
-## Current Verdict
+## Superseding Decision
+
+Goal1814 supersedes this audit's release-readiness conclusion with a stricter
+v2.0 birth gate. Under that gate, the current evidence is accepted only as a
+Python+partner preview, not as the v2.0 release. v2.0 is not born until the
+following blockers are solved or explicitly removed from the v2.0 public claim:
+
+- true zero-copy;
+- direct device-pointer handoff;
+- broad RT-core speedup evidence;
+- whole-application acceleration evidence;
+- arbitrary PyTorch/CuPy acceleration boundaries;
+- package-install support.
+
+The evidence chain below remains useful, but the release answer at the end of
+this file is historical and no longer authorizes v2.0 publication.
+
+## Prior Verdict
 
 `accept-with-boundary`: v2.0 implementation evidence for the first public
 partner any-hit path is present. Goal1813 records final 3-AI release-readiness
-consensus.
+consensus under the earlier bounded-candidate interpretation.
 
 In practical terms: the engineering proof and final release-readiness consensus
-are now present. Publishing or tagging the release still requires explicit user
-authorization.
+were present only for the bounded candidate. Goal1814 changes the release
+standard, so publishing or tagging v2.0 remains blocked.
 
 ## Evidence Chain
 
@@ -182,6 +200,8 @@ user authorization.
 
 ## Answer
 
-v2.0 is release-ready with the bounded claims in this audit.
+Under the old bounded-candidate definition, v2.0 was release-ready with the
+bounded claims in this audit.
 
-It is not published until the user explicitly authorizes the release/tag action.
+Under the superseding Goal1814 definition, v2.0 is not release-ready until the
+stricter blockers are resolved.

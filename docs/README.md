@@ -34,7 +34,7 @@ Read these in order:
 | Choose a backend | [Capability Boundaries](capability_boundaries.md) | [Backend Maturity](backend_maturity.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
 | Understand the architecture | [Current Architecture](current_architecture.md) | [IR And Lowering](rtdl/ir_and_lowering.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 | Interpret benchmark results | [Performance Model](performance_model.md) | [Current Support Matrix](current_main_support_matrix.md), [Release Reports](release_reports/) |
-| Try the first partner path | [Python Partner Any-Hit](tutorials/partner_anyhit.md) | [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
+| Try the partner preview path | [Python Partner Any-Hit](tutorials/partner_anyhit.md) | [v1.8 / v2.0 Python Partner RTDL Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 
 ## What RTDL Promises
 
@@ -50,16 +50,21 @@ input -> traverse -> refine -> emit
 Python remains the application layer. RTDL owns the supported kernel contract,
 runtime dispatch, and backend bridge for RT-shaped primitive work.
 
-The current roadmap keeps `v1.8` focused on finishing Python+RTDL and `v2.0`
-focused on finishing Python+partner+RTDL. The partner track is protocol first,
+The current roadmap keeps `v1.8` focused on finished Python+RTDL and `v2.0`
+focused on finished Python+partner+RTDL. The partner preview is protocol first,
 with PyTorch as the primary reference partner and CuPy as the lightweight
 conformance partner, while the RTDL engine remains app-agnostic.
 
 The current released version is `v1.8`: the first source-tree Python+RTDL
 language release with the tracked native release surface migrated to an
 app-agnostic engine contract. Treat packaging/install support, broad public
-speedup wording, and partner-framework readiness as future work unless a later
-authorized release packet says otherwise.
+speedup wording, and finished partner-framework readiness as future work unless
+a later authorized release packet says otherwise.
+
+The current Python+partner path is a preview, not v2.0. v2.0 remains blocked
+until true zero-copy, direct device-pointer handoff, broad RT-core evidence,
+whole-application evidence, arbitrary PyTorch/CuPy acceleration boundaries, and
+package-install/source-tree scope are resolved by reviewed evidence.
 
 ## v1.8 Learner Rule
 

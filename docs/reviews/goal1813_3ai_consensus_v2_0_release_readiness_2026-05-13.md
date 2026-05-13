@@ -2,11 +2,16 @@
 
 Date: 2026-05-13
 
-Verdict: `accept-with-boundary`
+Verdict: `superseded-by-goal1814`
+
+Goal1814 supersedes this file's release-readiness conclusion with a stricter
+v2.0 birth gate. This consensus remains valid evidence for the first
+Python+partner any-hit preview path, but it no longer authorizes a v2.0 release
+label.
 
 ## Scope
 
-This consensus evaluates whether RTDL v2.0 is release-ready as the first
+This consensus evaluated whether RTDL v2.0 was release-ready as the first
 Python+partner+RTDL release candidate, with the bounded claim surface defined
 in Goal1810.
 
@@ -93,5 +98,6 @@ not a true zero-copy bridge.
 `accept-with-boundary`: v2.0 is release-ready as the first bounded
 Python+partner+RTDL release candidate.
 
-The release may proceed only with the allowed claim surface above and only after
-explicit user authorization to tag or publish.
+Under the superseding Goal1814 gate, the release may not proceed until the
+stricter blockers are solved or explicitly removed from the v2.0 public scope
+by a new 3-AI consensus.
