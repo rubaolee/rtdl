@@ -54,6 +54,42 @@ bash scripts/goal1903_v2_partner_pod_batch_runner.sh
 
 `REQUIRE_RTX=0` is local mechanics-only and must not be used for accepted RTX evidence.
 
+Codex ran the local dry-run on `192.168.1.20` with:
+
+```bash
+OUT_DIR=/tmp/goal1903_dryrun \
+REQUIRE_RTX=0 \
+RUN_FIXED_RADIUS=0 \
+RUN_SEGMENT_POLYGON=0 \
+RUN_ROAD_HAZARD=1 \
+ROAD_HAZARD_COUNTS="64" \
+ROAD_HAZARD_ITERATIONS=2 \
+ROAD_HAZARD_PARTNERS=torch \
+ROAD_HAZARD_THRESHOLD=2 \
+OPTIX_PREFIX=/home/lestat/vendor/optix-dev \
+PYTHONPATH=/tmp/rtdl_v2_partner_pydeps \
+RTDL_SOURCE_COMMIT_LABEL=13275c462af5eadfb624b287a937d8af00d13e51 \
+bash scripts/goal1903_v2_partner_pod_batch_runner.sh
+```
+
+Dry-run result:
+
+- OptiX build passed.
+- Shared focused tests passed: 16 tests.
+- Goal1897 nested road-hazard packet passed: 14 tests.
+- One mechanics artifact was generated for count 64 and partner `torch`.
+- Batch summary was written to `/tmp/goal1903_dryrun/summary.json`.
+
+Dry-run summary:
+
+| Head | Requested | Local result |
+| --- | --- | --- |
+| fixed-radius | false | skipped by dry-run config |
+| segment/polygon | false | skipped by dry-run config |
+| road-hazard | true | pass, count 64, Torch only |
+
+This dry-run proves batch orchestration only. It is not accepted RTX evidence.
+
 ## Boundary
 
 The batch runner collects evidence. It does not by itself authorize v2.0 release

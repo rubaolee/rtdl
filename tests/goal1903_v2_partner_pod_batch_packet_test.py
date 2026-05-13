@@ -37,6 +37,10 @@ class Goal1903V2PartnerPodBatchPacketTest(unittest.TestCase):
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_2048.json", text)
         self.assertIn("REQUIRE_RTX=0", text)
         self.assertIn("must not be used for accepted RTX evidence", text)
+        self.assertIn("Shared focused tests passed: 16 tests", text)
+        self.assertIn("Goal1897 nested road-hazard packet passed: 14 tests", text)
+        self.assertIn("13275c462af5eadfb624b287a937d8af00d13e51", text)
+        self.assertIn("batch orchestration only", text)
         self.assertIn("does not by itself authorize v2.0 release", text)
 
 
