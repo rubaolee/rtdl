@@ -16,7 +16,7 @@ blocks the v2.0 release label.
 | --- | --- | --- | --- |
 | True zero-copy | Partially evidenced for selected OptiX device-column input/output paths; broad release wording still blocked. | Goals1819, 1821, 1823, 1826, 1831, 1834, 1836, 1838, 1845, 1847, 1848 | Decide exact public wording after the remaining app rows and pod evidence. |
 | Direct device-pointer handoff | Implemented and fail-closed for selected partner descriptors; still bounded to specific primitives and contracts. | Goals1819, 1821, 1823, 1826 | Keep descriptor/lifetime/stream wording narrow; do not generalize to arbitrary partner code. |
-| Broad RT-core speedup | Not ready. Strong exact-row evidence exists for fixed-radius and segment/polygon subpaths, but the road-hazard prepared row still lacks RTX pod artifacts. | Goals1881, 1886, 1889, 1895, 1897, 1903, 1904 | Run Goal1903 on RTX pod, including the road-hazard head, and review results. |
+| Broad RT-core speedup | Not ready. Strong exact-row evidence exists for fixed-radius and segment/polygon subpaths, but the road-hazard prepared row still lacks RTX pod artifacts. | Goals1881, 1886, 1889, 1895, 1897, 1903, 1904, 1905 | Run Goal1903 on RTX pod, validate with Goal1905, then review results. |
 | Whole-application acceleration | Not ready. Some app-level prepared rows exist, but not all app claims have same-contract RTX evidence. | Goals1878, 1881, 1886, 1889, 1895 | Finish road-hazard pod row; then decide which app claims are allowed and which remain preview-only. |
 | Arbitrary PyTorch/CuPy acceleration boundary | Source doc written and linked; still needs external review before final v2.0 release review. | Goal1814 plus Goal1900 | Complete external review and fold accepted wording into final v2.0 release gate. |
 | Package-install support | Blocked. No packaging metadata exists; source-tree-only remains the current validated mode. | Goal1898 | Either create validated packaging metadata or get 3-AI consensus for source-tree-only v2.0. |
@@ -35,6 +35,7 @@ blocks the v2.0 release label.
   road-hazard head and remains non-release evidence.
 - Goal1904: Gemini review accepted Goal1903's batch structure and constrained
   claim boundaries, without authorizing v2.0 release or broad speedup claims.
+- Goal1905: post-pod acceptance validator for the Goal1903 artifact set.
 
 ## Immediate Next Hardware Step
 
@@ -54,6 +55,12 @@ Expected accepted artifacts:
 - `docs/reports/goal1889_road_hazard_prepared_reuse_pod_512.json`
 - `docs/reports/goal1889_road_hazard_prepared_reuse_pod_2048.json`
 - `docs/reports/goal1903_v2_partner_pod_batch_summary.json`
+
+Then validate:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py
+```
 
 ## Immediate Next Non-Hardware Step
 

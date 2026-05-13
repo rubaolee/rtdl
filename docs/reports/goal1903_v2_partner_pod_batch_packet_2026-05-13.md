@@ -41,6 +41,12 @@ Before writing the final summary it also validates the requested fixed-radius
 and segment/polygon artifacts, including status, parity where applicable, and
 the false release/speedup claim-boundary flags.
 
+After the pod run, execute the Goal1905 acceptance validator:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py
+```
+
 ## Local Dry Run
 
 For mechanics-only local Linux dry runs, use only the road-hazard head:

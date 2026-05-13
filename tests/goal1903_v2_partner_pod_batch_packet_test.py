@@ -47,6 +47,7 @@ class Goal1903V2PartnerPodBatchPacketTest(unittest.TestCase):
         self.assertIn("must not be used for accepted RTX evidence", text)
         self.assertIn("not from a broad filesystem glob", text)
         self.assertIn("validates the requested fixed-radius", text)
+        self.assertIn("scripts/goal1905_v2_partner_pod_batch_acceptance.py", text)
         self.assertIn("Shared focused tests passed: 16 tests", text)
         self.assertIn("Goal1897 nested road-hazard packet passed: 14 tests", text)
         self.assertIn("13275c462af5eadfb624b287a937d8af00d13e51", text)
