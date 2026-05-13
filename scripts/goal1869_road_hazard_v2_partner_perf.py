@@ -285,6 +285,7 @@ def main() -> int:
     payload = {
         "status": "pass",
         "goal": "Goal1869",
+        "goal_extension": "Goal1889",
         "git_commit": _git_commit(),
         "gpu": _gpu_name(),
         "count": args.count,
