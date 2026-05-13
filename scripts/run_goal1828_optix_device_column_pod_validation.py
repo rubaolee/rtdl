@@ -11,7 +11,7 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def _device_columns(torch):
+def _torch_device_columns(torch):
     device = torch.device("cuda:0")
     triangles = {
         "ids": torch.tensor([11], dtype=torch.uint32, device=device),
@@ -38,20 +38,76 @@ def _device_columns(torch):
     return rays, triangles, triangle_aabbs
 
 
+def _cupy_device_columns(cupy):
+    triangles = {
+        "ids": cupy.asarray([11], dtype=cupy.uint32),
+        "x0": cupy.asarray([0.0], dtype=cupy.float64),
+        "y0": cupy.asarray([0.0], dtype=cupy.float64),
+        "x1": cupy.asarray([1.0], dtype=cupy.float64),
+        "y1": cupy.asarray([0.0], dtype=cupy.float64),
+        "x2": cupy.asarray([0.0], dtype=cupy.float64),
+        "y2": cupy.asarray([1.0], dtype=cupy.float64),
+    }
+    triangle_aabbs = cupy.asarray(
+        [[0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4]],
+        dtype=cupy.float32,
+    )
+    rays = {
+        "ids": cupy.asarray([101, 102], dtype=cupy.uint32),
+        "ox": cupy.asarray([-0.25, 2.0], dtype=cupy.float64),
+        "oy": cupy.asarray([0.25, 2.0], dtype=cupy.float64),
+        "dx": cupy.asarray([1.0, 1.0], dtype=cupy.float64),
+        "dy": cupy.asarray([0.0, 0.0], dtype=cupy.float64),
+        "tmax": cupy.asarray([2.0, 2.0], dtype=cupy.float64),
+    }
+    return rays, triangles, triangle_aabbs
+
+
+def _partner_runtime(partner_name: str):
+    if partner_name == "torch":
+        import torch
+
+        if not torch.cuda.is_available():
+            raise RuntimeError("Goal1828 requires a CUDA-capable RTX pod with torch.cuda available")
+        return {
+            "module": torch,
+            "version": torch.__version__,
+            "device": torch.cuda.get_device_name(0),
+            "sync": torch.cuda.synchronize,
+            "factory": _torch_device_columns,
+        }
+    if partner_name == "cupy":
+        import cupy
+
+        count = int(cupy.cuda.runtime.getDeviceCount())
+        if count <= 0:
+            raise RuntimeError("Goal1836 requires a CUDA-capable RTX pod with cupy.cuda available")
+        props = cupy.cuda.runtime.getDeviceProperties(0)
+        device_name = props.get("name", "cuda:0")
+        if isinstance(device_name, bytes):
+            device_name = device_name.decode("utf-8", errors="replace")
+        return {
+            "module": cupy,
+            "version": cupy.__version__,
+            "device": str(device_name),
+            "sync": cupy.cuda.runtime.deviceSynchronize,
+            "factory": _cupy_device_columns,
+        }
+    raise ValueError(f"unsupported partner: {partner_name!r}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Goal1828 OptiX partner device-column RTX validation")
     parser.add_argument("--output", default="docs/reports/goal1828_optix_device_column_pod_validation.json")
     parser.add_argument("--goal", default="Goal1828")
+    parser.add_argument("--partner", choices=("torch", "cupy"), default="torch")
     args = parser.parse_args()
 
     import rtdsl as rt
-    import torch
 
-    if not torch.cuda.is_available():
-        raise RuntimeError("Goal1828 requires a CUDA-capable RTX pod with torch.cuda available")
-
+    partner = _partner_runtime(args.partner)
     start = time.perf_counter()
-    rays, triangles, triangle_aabbs = _device_columns(torch)
+    rays, triangles, triangle_aabbs = partner["factory"](partner["module"])
     ray_packet = rt.pack_optix_ray_any_hit_2d_device_ray_inputs(rays)
     triangle_packet = rt.pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs(
         triangles,
@@ -63,10 +119,10 @@ def main() -> int:
         triangle_aabbs,
     )
     try:
-        torch.cuda.synchronize()
+        partner["sync"]()
         execute_start = time.perf_counter()
         observed_count = scene.count_device_rays(rays)
-        torch.cuda.synchronize()
+        partner["sync"]()
         execute_seconds = time.perf_counter() - execute_start
     finally:
         scene.close()
@@ -78,8 +134,10 @@ def main() -> int:
         "status": "pass" if passed else "fail",
         "expected_count": expected_count,
         "observed_count": observed_count,
-        "device": torch.cuda.get_device_name(0),
-        "torch_version": torch.__version__,
+        "device": partner["device"],
+        "partner": args.partner,
+        "partner_version": partner["version"],
+        f"{args.partner}_version": partner["version"],
         "python": platform.python_version(),
         "elapsed_s": time.perf_counter() - start,
         "execute_s": execute_seconds,

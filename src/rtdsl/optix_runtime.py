@@ -2368,6 +2368,22 @@ def _partner_dtype_token(dtype) -> str:
     return token
 
 
+def _partner_dtype_itemsize(dtype_token: str) -> int:
+    if dtype_token in {"uint32", "float32", "float"}:
+        return 4
+    if dtype_token in {"float64", "double"}:
+        return 8
+    raise ValueError(f"unsupported partner dtype for stride validation: {dtype_token!r}")
+
+
+def _partner_contiguous_column_strides(strides, *, itemsize: int) -> bool:
+    return strides in (None, (1,), (itemsize,))
+
+
+def _partner_contiguous_aabb_strides(strides) -> bool:
+    return strides in (None, (6, 1), (24, 4))
+
+
 def _require_partner_device_ray_column_layout(handoffs: dict) -> None:
     expected_dtypes = {
         "ids": {"uint32"},
@@ -2381,10 +2397,14 @@ def _require_partner_device_ray_column_layout(handoffs: dict) -> None:
     expected_device = None
     for name in _PARTNER_RAY_2D_COLUMNS:
         handoff = handoffs[name]
-        if _partner_dtype_token(handoff.dtype) not in expected_dtypes[name]:
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype not in expected_dtypes[name]:
             allowed = ", ".join(sorted(expected_dtypes[name]))
             raise ValueError(f"partner device ray column {name!r} must use dtype {allowed}")
-        if handoff.strides not in (None, (1,)):
+        if not _partner_contiguous_column_strides(
+            handoff.strides,
+            itemsize=_partner_dtype_itemsize(dtype),
+        ):
             raise ValueError(f"partner device ray column {name!r} must be contiguous")
         count = int(handoff.shape[0])
         if expected_count is None:
@@ -2412,10 +2432,14 @@ def _require_partner_device_triangle_column_layout(handoffs: dict) -> None:
     expected_device = None
     for name in _PARTNER_TRIANGLE_2D_COLUMNS:
         handoff = handoffs[name]
-        if _partner_dtype_token(handoff.dtype) not in expected_dtypes[name]:
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype not in expected_dtypes[name]:
             allowed = ", ".join(sorted(expected_dtypes[name]))
             raise ValueError(f"partner device triangle column {name!r} must use dtype {allowed}")
-        if handoff.strides not in (None, (1,)):
+        if not _partner_contiguous_column_strides(
+            handoff.strides,
+            itemsize=_partner_dtype_itemsize(dtype),
+        ):
             raise ValueError(f"partner device triangle column {name!r} must be contiguous")
         count = int(handoff.shape[0])
         if expected_count is None:
@@ -2435,8 +2459,11 @@ def _require_partner_device_triangle_aabb_layout(handoff, *, triangle_count: int
         raise ValueError("partner device triangle AABB buffer must use dtype float32")
     if tuple(handoff.shape) != (triangle_count, 6):
         raise ValueError("partner device triangle AABB buffer must have shape (triangle_count, 6)")
-    if handoff.strides not in (None, (6, 1)):
-        raise ValueError("partner device triangle AABB buffer must be contiguous with strides (6, 1)")
+    if not _partner_contiguous_aabb_strides(handoff.strides):
+        raise ValueError(
+            "partner device triangle AABB buffer must be contiguous with element strides (6, 1) "
+            "or byte strides (24, 4)"
+        )
     if (handoff.device_type, handoff.device_id) != expected_device:
         raise ValueError("partner device triangle AABB buffer must live on the same CUDA device as triangle columns")
 
