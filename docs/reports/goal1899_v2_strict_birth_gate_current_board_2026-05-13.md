@@ -18,8 +18,8 @@ blocks the v2.0 release label.
 | Direct device-pointer handoff | Implemented and fail-closed for selected partner descriptors; still bounded to specific primitives and contracts. | Goals1819, 1821, 1823, 1826 | Keep descriptor/lifetime/stream wording narrow; do not generalize to arbitrary partner code. |
 | Broad RT-core speedup | Not ready. Strong exact-row evidence exists for fixed-radius and segment/polygon subpaths, but the road-hazard prepared row still lacks RTX pod artifacts. | Goals1881, 1886, 1889, 1895, 1897, 1903, 1904, 1905 | Run Goal1903 on RTX pod, validate with Goal1905, then review results. |
 | Whole-application acceleration | Not ready. Some app-level prepared rows exist, but not all app claims have same-contract RTX evidence. | Goals1878, 1881, 1886, 1889, 1895 | Finish road-hazard pod row; then decide which app claims are allowed and which remain preview-only. |
-| Arbitrary PyTorch/CuPy acceleration boundary | Source doc written and linked; public wording scanner passes; still needs external review before final v2.0 release review. | Goal1814 plus Goals1900, 1906 | Complete external review and fold accepted wording into final v2.0 release gate. |
-| Package-install support | Blocked. No packaging metadata exists; source-tree-only remains the current validated mode; public wording scanner passes. | Goals1898, 1902, 1906 | Either create validated packaging metadata or get 3-AI consensus for source-tree-only v2.0. |
+| Arbitrary PyTorch/CuPy acceleration boundary | Source doc written and linked; public wording scanner passes; Gemini accepted with boundary; still needs final release consensus. | Goal1814 plus Goals1900, 1906, 1907, 1908 | Fold accepted wording into final v2.0 release gate after pod evidence. |
+| Package-install support | Blocked. No packaging metadata exists; source-tree-only remains the current validated mode; Gemini accepted source-tree policy with boundary, but final 3-AI consensus is still required. | Goals1898, 1902, 1906, 1907, 1908 | Either create validated packaging metadata or get 3-AI consensus for source-tree-only v2.0. |
 
 ## Newly Added Since The Last Board
 
@@ -38,6 +38,9 @@ blocks the v2.0 release label.
 - Goal1905: post-pod acceptance validator for the Goal1903 artifact set.
 - Goal1906: public v2 claim-boundary scanner for README, docs index,
   partner-boundary doc, and tutorials.
+- Goal1907: Gemini review accepted the v2 boundary and source-tree policy with
+  release still blocked.
+- Goal1908: one-command local non-pod preflight for current v2 guardrails.
 
 ## Immediate Next Hardware Step
 
@@ -77,6 +80,12 @@ Run Goal1906 after public doc edits:
 
 ```bash
 PYTHONPATH=src:. python3 scripts/goal1906_public_v2_claim_boundary_scan.py
+```
+
+Run Goal1908 before pod work or release-review assembly:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1908_v2_local_preflight.py
 ```
 
 ## Verdict
