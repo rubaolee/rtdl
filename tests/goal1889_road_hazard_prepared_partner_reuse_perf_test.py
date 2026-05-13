@@ -50,6 +50,10 @@ class Goal1889RoadHazardPreparedPartnerReusePerfTest(unittest.TestCase):
                 artifact = json.loads(path.read_text(encoding="utf-8"))
                 self.assertEqual(artifact["status"], "pass")
                 self.assertEqual(artifact["goal_extension"], "Goal1889")
+                self.assertEqual(
+                    artifact["source_commit_label"],
+                    "a63c706b7a0488c161d6f8e090de5e441a710f7f",
+                )
                 self.assertEqual(artifact["count"], count)
                 self.assertIn("NVIDIA GeForce GTX 1070", artifact["gpu"])
                 self.assertTrue(artifact["parity"]["strict_priority_flags_match"])

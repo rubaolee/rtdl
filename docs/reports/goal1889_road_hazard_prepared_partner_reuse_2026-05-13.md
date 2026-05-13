@@ -79,6 +79,7 @@ host for smoke validation only:
 - Disposable checkout: `/tmp/rtdl_goal1889_smoke`
 - OptiX library: built locally with `make build-optix OPTIX_PREFIX=/home/lestat/vendor/optix-dev`
 - Partner packages: isolated `PYTHONPATH=/tmp/rtdl_v2_partner_pydeps`
+- Source label recorded in artifacts: `a63c706b7a0488c161d6f8e090de5e441a710f7f`
 
 Artifacts:
 
@@ -90,10 +91,10 @@ new prepared row. They do not replace RTX 3090 pod timing evidence.
 
 | Count | Partner | Goal1869 unprepared partner median (s) | Goal1889 prepared reuse median (s) | Prepared/unprepared ratio | Prepared/v1.8 prepared ratio |
 | ---: | --- | ---: | ---: | ---: | ---: |
-| 64 | CuPy | 0.0021360031 | 0.0012973080 | 0.607x | 5.962x |
-| 64 | Torch | 0.0016321751 | 0.0008198121 | 0.502x | 3.767x |
-| 256 | CuPy | 0.0022091491 | 0.0013275420 | 0.601x | 2.460x |
-| 256 | Torch | 0.0017113100 | 0.0008016210 | 0.468x | 1.485x |
+| 64 | CuPy | 0.0021506679 | 0.0013114880 | 0.610x | 5.610x |
+| 64 | Torch | 0.0016408029 | 0.0008181380 | 0.499x | 3.500x |
+| 256 | CuPy | 0.0021917709 | 0.0012984910 | 0.592x | 2.464x |
+| 256 | Torch | 0.0017182761 | 0.0008294451 | 0.483x | 1.574x |
 
 ## Boundary
 

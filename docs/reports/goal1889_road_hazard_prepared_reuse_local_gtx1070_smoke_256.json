@@ -2,14 +2,14 @@
   "baseline": {
     "name": "v1_8_one_shot_native_optix_road_hazard_rows",
     "query_samples_s": [
-      0.03260035300627351,
-      0.02460472797974944,
-      0.0246521329972893
+      0.032063630991615355,
+      0.024734026053920388,
+      0.024609062005765736
     ],
     "query_summary": {
-      "max_s": 0.03260035300627351,
-      "median_s": 0.0246521329972893,
-      "min_s": 0.02460472797974944
+      "max_s": 0.032063630991615355,
+      "median_s": 0.024734026053920388,
+      "min_s": 0.024609062005765736
     },
     "row_count": 256
   },
@@ -22,7 +22,7 @@
     "whole_app_speedup_claim_authorized": false
   },
   "count": 256,
-  "git_commit": "f9d14d482ce4e8cf13ac7e7a6d5bf3969e3491a3",
+  "git_commit": "f01ec3f5bf660ae0ed841ca0455f91c99181cdd1",
   "goal": "Goal1869",
   "goal_extension": "Goal1889",
   "gpu": "NVIDIA GeForce GTX 1070, 580.126.09",
@@ -34,74 +34,74 @@
   },
   "partners": {
     "cupy": {
-      "column_build_s": 0.003010507090948522,
+      "column_build_s": 0.002991201006807387,
       "goal1889_prepared_reuse": {
         "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
         "prepared_scene_reused": true,
-        "query_median_ratio_vs_goal1869_unprepared_partner": 0.6009291202367398,
-        "query_median_ratio_vs_v1_8_one_shot_native": 0.05385099967552922,
-        "query_median_ratio_vs_v1_8_prepared_native": 2.4596225853485985,
+        "query_median_ratio_vs_goal1869_unprepared_partner": 0.5924392031536977,
+        "query_median_ratio_vs_v1_8_one_shot_native": 0.05249816691010123,
+        "query_median_ratio_vs_v1_8_prepared_native": 2.46392523455324,
         "query_samples_s": [
-          0.0013855440774932504,
-          0.0013275420060381293,
-          0.0012962030014023185
+          0.0013785259798169136,
+          0.001298491028137505,
+          0.0012903920141980052
         ],
         "query_summary": {
-          "max_s": 0.0013855440774932504,
-          "median_s": 0.0013275420060381293,
-          "min_s": 0.0012962030014023185
+          "max_s": 0.0013785259798169136,
+          "median_s": 0.001298491028137505,
+          "min_s": 0.0012903920141980052
         },
         "row_count": 256,
         "witness_output_columns_reused": true
       },
       "output_contract": "partner_owned_road_hazard_priority_columns",
-      "query_median_ratio_vs_v1_8_one_shot_native": 0.08961289753159954,
-      "query_median_ratio_vs_v1_8_prepared_native": 4.093032776277533,
+      "query_median_ratio_vs_v1_8_one_shot_native": 0.08861359381796603,
+      "query_median_ratio_vs_v1_8_prepared_native": 4.158950355474735,
       "query_samples_s": [
-        0.27065259707160294,
-        0.00220914906822145,
-        0.0019850600510835648
+        0.2709933309815824,
+        0.0021917709382250905,
+        0.0019924549851566553
       ],
       "query_summary": {
-        "max_s": 0.27065259707160294,
-        "median_s": 0.00220914906822145,
-        "min_s": 0.0019850600510835648
+        "max_s": 0.2709933309815824,
+        "median_s": 0.0021917709382250905,
+        "min_s": 0.0019924549851566553
       },
       "row_count": 256
     },
     "torch": {
-      "column_build_s": 0.011997092980891466,
+      "column_build_s": 0.011881337035447359,
       "goal1889_prepared_reuse": {
         "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
         "prepared_scene_reused": true,
-        "query_median_ratio_vs_goal1869_unprepared_partner": 0.46842536017416553,
-        "query_median_ratio_vs_v1_8_one_shot_native": 0.032517308138294725,
-        "query_median_ratio_vs_v1_8_prepared_native": 1.4852148705427628,
+        "query_median_ratio_vs_goal1869_unprepared_partner": 0.48271933665580863,
+        "query_median_ratio_vs_v1_8_one_shot_native": 0.033534576213139426,
+        "query_median_ratio_vs_v1_8_prepared_native": 1.573896641059762,
         "query_samples_s": [
-          0.0008249420206993818,
-          0.0008016210049390793,
-          0.0007987170247361064
+          0.0008294450817629695,
+          0.0008141039870679379,
+          0.0008638310246169567
         ],
         "query_summary": {
-          "max_s": 0.0008249420206993818,
-          "median_s": 0.0008016210049390793,
-          "min_s": 0.0007987170247361064
+          "max_s": 0.0008638310246169567,
+          "median_s": 0.0008294450817629695,
+          "min_s": 0.0008141039870679379
         },
         "row_count": 256,
         "witness_output_columns_reused": true
       },
       "output_contract": "partner_owned_road_hazard_priority_columns",
-      "query_median_ratio_vs_v1_8_one_shot_native": 0.06941833406757578,
-      "query_median_ratio_vs_v1_8_prepared_native": 3.1706542745476978,
+      "query_median_ratio_vs_v1_8_one_shot_native": 0.06947013236606771,
+      "query_median_ratio_vs_v1_8_prepared_native": 3.2604797892776167,
       "query_samples_s": [
-        0.09933862101752311,
-        0.0017113100038841367,
-        0.0014834050089120865
+        0.10122891108039767,
+        0.0017182760639116168,
+        0.0014778940239921212
       ],
       "query_summary": {
-        "max_s": 0.09933862101752311,
-        "median_s": 0.0017113100038841367,
-        "min_s": 0.0014834050089120865
+        "max_s": 0.10122891108039767,
+        "median_s": 0.0017182760639116168,
+        "min_s": 0.0014778940239921212
       },
       "row_count": 256
     }
@@ -109,17 +109,18 @@
   "prepared_baseline": {
     "name": "v1_8_prepared_native_optix_road_hazard_rows",
     "query_samples_s": [
-      0.0014332740101963282,
-      0.0005397340282797813,
-      0.000501252943649888
+      0.001416663988493383,
+      0.0005270009860396385,
+      0.0005029869498685002
     ],
     "query_summary": {
-      "max_s": 0.0014332740101963282,
-      "median_s": 0.0005397340282797813,
-      "min_s": 0.000501252943649888
+      "max_s": 0.001416663988493383,
+      "median_s": 0.0005270009860396385,
+      "min_s": 0.0005029869498685002
     },
     "row_count": 256
   },
+  "source_commit_label": "a63c706b7a0488c161d6f8e090de5e441a710f7f",
   "status": "pass",
   "threshold": 2
 }
