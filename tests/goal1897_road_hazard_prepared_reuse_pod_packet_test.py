@@ -37,6 +37,9 @@ class Goal1897RoadHazardPreparedReusePodPacketTest(unittest.TestCase):
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_2048.json", text)
         self.assertIn("REQUIRE_RTX=0", text)
         self.assertIn("must not be used for accepted RTX evidence", text)
+        self.assertIn("Focused tests passed: 14 tests", text)
+        self.assertIn("0.1093116635", text)
+        self.assertIn("only proves the packet mechanics", text)
         self.assertIn("does not authorize v2.0 release readiness", text)
         self.assertIn("development evidence only", text)
 
