@@ -26,6 +26,7 @@ class Goal1908V2LocalPreflightTest(unittest.TestCase):
             "tests.goal1906_public_v2_claim_boundary_scan_test",
             "tests.goal1907_gemini_review_v2_boundary_and_source_tree_test",
             "tests.goal1908_v2_local_preflight_test",
+            "tests.goal1909_v2_release_packet_skeleton_test",
         ):
             self.assertIn(module, modules)
 
