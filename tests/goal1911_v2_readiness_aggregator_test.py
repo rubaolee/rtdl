@@ -46,6 +46,10 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
             "docs/reviews/goal1936_claude_review_goal1933_1935_large_scale_perf_2026-05-13.md",
             SUPPORTING_REQUIRED,
         )
+        self.assertIn(
+            "docs/reports/goal1940_robot_segment_scaleup_pod_perf_2026-05-13.md",
+            SUPPORTING_REQUIRED,
+        )
         self.assertIn("goal1932_all_app_v2_pod_batch_runner.sh", payload["next_hardware_command"])
         self.assertIn("timeout --preserve-status", payload["next_hardware_command"])
         self.assertIn("goal1913_v2_pod_session_runbook.sh", payload["pod_session_runbook_command"])

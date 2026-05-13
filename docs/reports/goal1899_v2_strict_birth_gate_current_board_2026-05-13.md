@@ -123,6 +123,13 @@ blocks the v2.0 release label.
   is fixed. The refreshed OptiX compact-summary DB control remains seconds-scale
   and now reports six native operations with non-zero traversal, exact-filter,
   output-pack, raw-candidate, and emitted-count totals.
+- Goal1940: robot and segment/polygon any-hit rows were scaled on the RTX A5000
+  pod with source label `35666fb829a88f77ebdc6d18b9a66a45861d0e67`. Segment
+  any-hit now has a seconds-scale same-contract positive row at 1,048,576 rows
+  (`7.12s` v1.8 versus about `1.6s` v2 partner). Robot collision preserves exact
+  pose-flag parity through 8,388,608 poses with about `0.02x` v2/v1.8 ratios,
+  but its v1.8 baseline is still subsecond, so it remains a strong scaling
+  signal rather than a seconds-scale whole-app claim.
 
 ## Immediate Next Hardware Step
 
@@ -214,6 +221,9 @@ PYTHONPATH=src:. python3 scripts/goal1911_v2_readiness_aggregator.py
 
 ## Verdict
 
-v2.0 is still not born. The strongest next progress is completing the remaining
-all-app v2 families, then running Goal1925 and the final all-app batch on RTX
-hardware for a same-contract v1.8 versus v2.0 analysis.
+v2.0 is still not born. The fixed-radius and segment any-hit rows now have
+seconds-scale positive pod evidence, while robot has large exact-parity scaling
+evidence that remains subsecond on the v1.8 side. The strongest next progress is
+external review of the Goal1940 interpretation, then deciding whether more
+robot stress is technically meaningful or whether the remaining release gate is
+consensus and packaging/source-tree policy rather than more timing.

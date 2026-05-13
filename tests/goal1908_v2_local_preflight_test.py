@@ -36,6 +36,7 @@ class Goal1908V2LocalPreflightTest(unittest.TestCase):
             "tests.goal1937_fixed_radius_repeat3_pod_perf_test",
             "tests.goal1938_gemini_review_goal1937_repeat3_fixed_radius_test",
             "tests.goal1939_db_phase_totals_fix_test",
+            "tests.goal1940_robot_segment_scaleup_pod_perf_test",
         ):
             self.assertIn(module, modules)
 

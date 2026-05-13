@@ -1,0 +1,97 @@
+[setup] count=65536 output_capacity=131072
+[timing] v1_8_native_optix_rows iterations=3
+[timing] v1_8_native_optix_rows iter=1 elapsed_s=1.290733
+[timing] v1_8_native_optix_rows iter=2 elapsed_s=0.369504
+[timing] v1_8_native_optix_rows iter=3 elapsed_s=0.326196
+[setup] building caller-owned cupy columns
+[overflow] cupy tight_capacity=32768
+[timing] v2_0_partner_columns_cupy iterations=3
+[timing] v2_0_partner_columns_cupy iter=1 elapsed_s=0.114654
+[timing] v2_0_partner_columns_cupy iter=2 elapsed_s=0.076481
+[timing] v2_0_partner_columns_cupy iter=3 elapsed_s=0.073756
+[setup] building caller-owned torch columns
+[overflow] torch tight_capacity=32768
+[timing] v2_0_partner_columns_torch iterations=3
+[timing] v2_0_partner_columns_torch iter=1 elapsed_s=0.073219
+[timing] v2_0_partner_columns_torch iter=2 elapsed_s=0.075680
+[timing] v2_0_partner_columns_torch iter=3 elapsed_s=0.074531
+[artifact] wrote docs/reports/goal1940_robot_segment_scaleup/segment/segment_anyhit_rows_65536.json
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      1.290732502937317,
+      0.36950393952429295,
+      0.3261960204690695
+    ],
+    "query_summary": {
+      "max_s": 1.290732502937317,
+      "median_s": 0.36950393952429295,
+      "min_s": 0.3261960204690695
+    },
+    "row_count": 65536
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 65536,
+  "git_commit": "35666fb829a88f77ebdc6d18b9a66a45861d0e67",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A5000, 570.195.03",
+  "iterations": 3,
+  "output_capacity": 131072,
+  "parity": {
+    "expected_row_count": 65536,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.1340055651962757,
+      "overflow_check": {
+        "elapsed_s": 0.14900976791977882,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 32768
+      },
+      "query_median_ratio_vs_v1_8_native": 0.20698348681105277,
+      "query_samples_s": [
+        0.11465373076498508,
+        0.07648121379315853,
+        0.07375581003725529
+      ],
+      "query_summary": {
+        "max_s": 0.11465373076498508,
+        "median_s": 0.07648121379315853,
+        "min_s": 0.07375581003725529
+      },
+      "row_count": 65536
+    },
+    "torch": {
+      "column_build_s": 0.17849422805011272,
+      "overflow_check": {
+        "elapsed_s": 0.008938983082771301,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 32768
+      },
+      "query_median_ratio_vs_v1_8_native": 0.20170609721743593,
+      "query_samples_s": [
+        0.07321920059621334,
+        0.07568031921982765,
+        0.0745311975479126
+      ],
+      "query_summary": {
+        "max_s": 0.07568031921982765,
+        "median_s": 0.0745311975479126,
+        "min_s": 0.07321920059621334
+      },
+      "row_count": 65536
+    }
+  },
+  "source_commit_label": "35666fb829a88f77ebdc6d18b9a66a45861d0e67",
+  "status": "pass"
+}
