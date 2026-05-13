@@ -22,6 +22,11 @@ def _device_columns(torch):
         "x2": torch.tensor([0.0], dtype=torch.float64, device=device),
         "y2": torch.tensor([1.0], dtype=torch.float64, device=device),
     }
+    triangle_aabbs = torch.tensor(
+        [[0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4]],
+        dtype=torch.float32,
+        device=device,
+    )
     rays = {
         "ids": torch.tensor([101, 102], dtype=torch.uint32, device=device),
         "ox": torch.tensor([-0.25, 2.0], dtype=torch.float64, device=device),
@@ -30,7 +35,7 @@ def _device_columns(torch):
         "dy": torch.tensor([0.0, 0.0], dtype=torch.float64, device=device),
         "tmax": torch.tensor([2.0, 2.0], dtype=torch.float64, device=device),
     }
-    return rays, triangles
+    return rays, triangles, triangle_aabbs
 
 
 def main() -> int:
@@ -46,11 +51,17 @@ def main() -> int:
         raise RuntimeError("Goal1828 requires a CUDA-capable RTX pod with torch.cuda available")
 
     start = time.perf_counter()
-    rays, triangles = _device_columns(torch)
+    rays, triangles, triangle_aabbs = _device_columns(torch)
     ray_packet = rt.pack_optix_ray_any_hit_2d_device_ray_inputs(rays)
-    triangle_packet = rt.pack_optix_ray_any_hit_2d_device_triangle_inputs(triangles)
+    triangle_packet = rt.pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs(
+        triangles,
+        triangle_aabbs,
+    )
 
-    scene = rt.prepare_optix_ray_triangle_any_hit_2d_device_triangles(triangles)
+    scene = rt.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+        triangles,
+        triangle_aabbs,
+    )
     try:
         torch.cuda.synchronize()
         execute_start = time.perf_counter()
@@ -79,8 +90,19 @@ def main() -> int:
             "ray_column_true_zero_copy_observed": bool(
                 passed and ray_packet["metadata"].get("ray_columns_true_zero_copy_authorized")
             ),
-            "whole_primitive_true_zero_copy_authorized": False,
-            "true_zero_copy_authorized": False,
+            "triangle_scene_true_zero_copy_observed": bool(
+                passed and triangle_packet["metadata"].get("triangle_scene_true_zero_copy_authorized")
+            ),
+            "whole_primitive_true_zero_copy_authorized": bool(
+                passed
+                and ray_packet["metadata"].get("ray_columns_true_zero_copy_authorized")
+                and triangle_packet["metadata"].get("triangle_scene_true_zero_copy_authorized")
+            ),
+            "true_zero_copy_authorized": bool(
+                passed
+                and ray_packet["metadata"].get("ray_columns_true_zero_copy_authorized")
+                and triangle_packet["metadata"].get("triangle_scene_true_zero_copy_authorized")
+            ),
             "rt_core_speedup_claim_authorized": False,
             "v2_0_release_authorized": False,
         },

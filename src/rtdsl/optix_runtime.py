@@ -2356,6 +2356,9 @@ _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
 _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_device_columns"
 _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL = "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays"
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL = "rtdl_optix_prepare_ray_anyhit_2d_device_triangles"
+_OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL = (
+    "rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs"
+)
 
 
 def _partner_dtype_token(dtype) -> str:
@@ -2424,6 +2427,18 @@ def _require_partner_device_triangle_column_layout(handoffs: dict) -> None:
             expected_device = device
         elif device != expected_device:
             raise ValueError("partner device triangle columns must live on the same CUDA device")
+
+
+def _require_partner_device_triangle_aabb_layout(handoff, *, triangle_count: int, expected_device: tuple[str, int]) -> None:
+    dtype = _partner_dtype_token(handoff.dtype)
+    if dtype not in {"float32", "float"}:
+        raise ValueError("partner device triangle AABB buffer must use dtype float32")
+    if tuple(handoff.shape) != (triangle_count, 6):
+        raise ValueError("partner device triangle AABB buffer must have shape (triangle_count, 6)")
+    if handoff.strides not in (None, (6, 1)):
+        raise ValueError("partner device triangle AABB buffer must be contiguous with strides (6, 1)")
+    if (handoff.device_type, handoff.device_id) != expected_device:
+        raise ValueError("partner device triangle AABB buffer must live on the same CUDA device as triangle columns")
 
 
 def _partner_column_to_host_array(value, *, column_name: str):
@@ -2568,6 +2583,58 @@ def pack_optix_ray_any_hit_2d_device_triangle_inputs(triangle_columns: dict) -> 
             "true_zero_copy_authorized": False,
             "partner_tensor_handoff_authorized": True,
             "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": timings,
+        },
+    }
+
+
+def pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs(
+    triangle_columns: dict,
+    triangle_aabbs,
+) -> dict[str, object]:
+    """Validate partner-owned CUDA triangle columns plus OptiX AABBs.
+
+    This scene-preparation packet lets OptiX build its GAS directly from a
+    partner-owned contiguous `float32[:, 6]` AABB buffer and lets the any-hit
+    intersection shader read partner-owned triangle columns directly. The OptiX
+    GAS output is still native acceleration state, so this authorizes
+    triangle-scene zero-copy only, not a no-native-state claim.
+    """
+    triangle_handoffs, timings = _partner_device_descriptor_columns(
+        triangle_columns,
+        _PARTNER_TRIANGLE_2D_COLUMNS,
+        label="triangle",
+    )
+    _require_partner_device_triangle_column_layout(triangle_handoffs)
+    triangle_count = int(triangle_handoffs["ids"].shape[0])
+    expected_device = (triangle_handoffs["ids"].device_type, triangle_handoffs["ids"].device_id)
+    aabb_start = time.perf_counter()
+    aabb_handoff = _partner.prepare_direct_device_pointer_handoff(triangle_aabbs, access="read")
+    _require_partner_device_triangle_aabb_layout(
+        aabb_handoff,
+        triangle_count=triangle_count,
+        expected_device=expected_device,
+    )
+    timings["aabb_descriptor_validation_s"] = time.perf_counter() - aabb_start
+    descriptors = tuple(triangle_handoffs[name] for name in _PARTNER_TRIANGLE_2D_COLUMNS)
+    all_descriptors = (*descriptors, aabb_handoff)
+    return {
+        "triangles": triangle_handoffs,
+        "aabbs": aabb_handoff,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_triangle_columns_aabb_zero_copy_gas_build",
+            "native_symbol": _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in all_descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in all_descriptors})),
+            "triangle_count": triangle_count,
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "triangle_scene_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "native_acceleration_structure_required": True,
             "partner_phase_timings_s": timings,
         },
     }
@@ -2958,6 +3025,7 @@ class PreparedOptixRayTriangleAnyHit2D:
         self._packed_triangles = packed
         self._handle = ctypes.c_void_p()
         self._closed = False
+        self._triangle_scene_true_zero_copy = False
         if packed.count == 0:
             return
 
@@ -3313,6 +3381,7 @@ def prepare_optix_ray_triangle_any_hit_2d_device_triangles(
     prepared._packed_triangles = _DeviceTriangleScene2D(packet["metadata"]["triangle_count"])
     prepared._handle = ctypes.c_void_p()
     prepared._closed = False
+    prepared._triangle_scene_true_zero_copy = False
     if packet["metadata"]["triangle_count"] == 0:
         return prepared
 
@@ -3335,6 +3404,54 @@ def prepare_optix_ray_triangle_any_hit_2d_device_triangles(
         ctypes.c_void_p(triangles["y1"].data_ptr),
         ctypes.c_void_p(triangles["x2"].data_ptr),
         ctypes.c_void_p(triangles["y2"].data_ptr),
+        packet["metadata"]["triangle_count"],
+        ctypes.byref(prepared._handle),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return prepared
+
+
+def prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+    triangle_columns: dict,
+    triangle_aabbs,
+) -> PreparedOptixRayTriangleAnyHit2D:
+    packet = pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs(
+        triangle_columns,
+        triangle_aabbs,
+    )
+    prepared = PreparedOptixRayTriangleAnyHit2D.__new__(PreparedOptixRayTriangleAnyHit2D)
+    prepared._packed_triangles = _DeviceTriangleScene2D(packet["metadata"]["triangle_count"])
+    prepared._handle = ctypes.c_void_p()
+    prepared._closed = False
+    prepared._triangle_scene_true_zero_copy = bool(packet["metadata"]["triangle_scene_true_zero_copy_authorized"])
+    if packet["metadata"]["triangle_count"] == 0:
+        return prepared
+
+    lib = _load_optix_library()
+    prepare_symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL,
+    )
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{_OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL}. "
+            "Triangle-scene zero-copy partner preparation remains blocked; "
+            "rebuild the OptiX backend after the native borrowed-AABB ABI lands."
+        )
+    triangles = packet["triangles"]
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        ctypes.c_void_p(triangles["ids"].data_ptr),
+        ctypes.c_void_p(triangles["x0"].data_ptr),
+        ctypes.c_void_p(triangles["y0"].data_ptr),
+        ctypes.c_void_p(triangles["x1"].data_ptr),
+        ctypes.c_void_p(triangles["y1"].data_ptr),
+        ctypes.c_void_p(triangles["x2"].data_ptr),
+        ctypes.c_void_p(triangles["y2"].data_ptr),
+        ctypes.c_void_p(packet["aabbs"].data_ptr),
         packet["metadata"]["triangle_count"],
         ctypes.byref(prepared._handle),
         error,
@@ -4074,6 +4191,26 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_prepare_anyhit2d_device_triangles.restype = ctypes.c_int
+    optional_prepare_anyhit2d_device_triangle_columns_aabbs = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL,
+    )
+    if optional_prepare_anyhit2d_device_triangle_columns_aabbs is not None:
+        optional_prepare_anyhit2d_device_triangle_columns_aabbs.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_anyhit2d_device_triangle_columns_aabbs.restype = ctypes.c_int
     optional_count_anyhit2d_device_rays = _find_optional_backend_symbol(
         lib,
         _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL,

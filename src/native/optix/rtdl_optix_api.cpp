@@ -275,6 +275,36 @@ extern "C" int rtdl_optix_prepare_ray_anyhit_2d_device_triangles(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs(
+        const uint32_t* triangle_ids,
+        const double* triangle_x0,
+        const double* triangle_y0,
+        const double* triangle_x1,
+        const double* triangle_y1,
+        const double* triangle_x2,
+        const double* triangle_y2,
+        const void* triangle_aabbs,
+        size_t triangle_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_ray_anyhit_2d_device_triangle_columns_aabbs_optix(
+            triangle_ids,
+            triangle_x0,
+            triangle_y0,
+            triangle_x1,
+            triangle_y1,
+            triangle_x2,
+            triangle_y2,
+            triangle_aabbs,
+            triangle_count);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_count_prepared_ray_anyhit_2d(
         void* prepared,
         const RtdlRay2D* rays, size_t ray_count,

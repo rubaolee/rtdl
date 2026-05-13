@@ -427,32 +427,37 @@ OptixAabb aabb_for_triangle_3d(float x0, float y0, float z0,
 struct AccelHolder {
     CUdeviceptr output_buf   = 0;
     CUdeviceptr aabb_buf     = 0;
+    bool owns_aabb_buf       = true;
     OptixTraversableHandle handle = 0;
 
     AccelHolder() = default;
     ~AccelHolder() {
         if (output_buf) cuMemFree(output_buf);
-        if (aabb_buf)   cuMemFree(aabb_buf);
+        if (aabb_buf && owns_aabb_buf) cuMemFree(aabb_buf);
     }
     AccelHolder(const AccelHolder&)            = delete;
     AccelHolder& operator=(const AccelHolder&) = delete;
     AccelHolder(AccelHolder&& other) noexcept
         : output_buf(other.output_buf),
           aabb_buf(other.aabb_buf),
+          owns_aabb_buf(other.owns_aabb_buf),
           handle(other.handle) {
         other.output_buf = 0;
         other.aabb_buf = 0;
+        other.owns_aabb_buf = true;
         other.handle = 0;
     }
     AccelHolder& operator=(AccelHolder&& other) noexcept {
         if (this != &other) {
             if (output_buf) cuMemFree(output_buf);
-            if (aabb_buf) cuMemFree(aabb_buf);
+            if (aabb_buf && owns_aabb_buf) cuMemFree(aabb_buf);
             output_buf = other.output_buf;
             aabb_buf = other.aabb_buf;
+            owns_aabb_buf = other.owns_aabb_buf;
             handle = other.handle;
             other.output_buf = 0;
             other.aabb_buf = 0;
+            other.owns_aabb_buf = true;
             other.handle = 0;
         }
         return *this;
@@ -506,6 +511,46 @@ static AccelHolder build_custom_accel_from_device_aabbs(
     size_t aabb_bytes = sizeof(OptixAabb) * aabb_count;
     CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
     CU_CHECK(cuMemcpyDtoD(result.aabb_buf, source_aabbs, aabb_bytes));
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+    auto& cpp = build_input.customPrimitiveArray;
+    cpp.aabbBuffers   = &result.aabb_buf;
+    cpp.numPrimitives = static_cast<unsigned>(aabb_count);
+    cpp.strideInBytes = sizeof(OptixAabb);
+    uint32_t flags_arr = OPTIX_GEOMETRY_FLAG_NONE;
+    cpp.flags          = &flags_arr;
+    cpp.numSbtRecords  = 1;
+
+    OptixAccelBuildOptions accel_opts = {};
+    accel_opts.buildFlags = OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+    accel_opts.operation  = OPTIX_BUILD_OPERATION_BUILD;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(ctx, &accel_opts, &build_input, 1, &sizes));
+
+    DevPtr temp_buf(sizes.tempSizeInBytes);
+    CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
+                                 temp_buf.ptr, sizes.tempSizeInBytes,
+                                 result.output_buf, sizes.outputSizeInBytes,
+                                 &result.handle, nullptr, 0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    return result;
+}
+
+static AccelHolder build_custom_accel_from_borrowed_device_aabbs(
+        OptixDeviceContext ctx,
+        CUdeviceptr source_aabbs,
+        size_t aabb_count) {
+    AccelHolder result;
+    if (aabb_count == 0) return result;
+    if (!source_aabbs)
+        throw std::runtime_error("borrowed device AABB buffer must not be null when aabb_count is nonzero");
+    result.aabb_buf = source_aabbs;
+    result.owns_aabb_buf = false;
 
     OptixBuildInput build_input = {};
     build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
@@ -3970,6 +4015,7 @@ static RayAnyHitPipeline    g_rayanyhit;
 static RayAnyHitPipeline    g_rayanyhit3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
 static RayAnyHitPipeline    g_rayanyhit_count_device_ray_columns;
+static RayAnyHitPipeline    g_rayanyhit_count_device_columns;
 static RayAnyHitPipeline    g_rayanyhit_group_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
 static SegPolyPipeline     g_segpoly;

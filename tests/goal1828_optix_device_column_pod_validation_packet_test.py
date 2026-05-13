@@ -14,14 +14,15 @@ class Goal1828OptixDeviceColumnPodValidationPacketTest(unittest.TestCase):
     def test_pod_validation_script_exercises_device_ray_and_triangle_paths(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("pack_optix_ray_any_hit_2d_device_ray_inputs", text)
-        self.assertIn("pack_optix_ray_any_hit_2d_device_triangle_inputs", text)
-        self.assertIn("prepare_optix_ray_triangle_any_hit_2d_device_triangles", text)
+        self.assertIn("pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs", text)
+        self.assertIn("prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene", text)
         self.assertIn("count_device_rays", text)
         self.assertIn('parser.add_argument("--goal", default="Goal1828")', text)
         self.assertIn("torch.cuda.is_available", text)
         self.assertIn('"ray_column_true_zero_copy_observed"', text)
-        self.assertIn('"whole_primitive_true_zero_copy_authorized": False', text)
-        self.assertIn('"true_zero_copy_authorized": False', text)
+        self.assertIn('"triangle_scene_true_zero_copy_observed"', text)
+        self.assertIn('"whole_primitive_true_zero_copy_authorized"', text)
+        self.assertIn('"true_zero_copy_authorized"', text)
         self.assertIn('"v2_0_release_authorized": False', text)
 
     def test_report_is_ready_for_pod_without_overclaiming_release(self) -> None:

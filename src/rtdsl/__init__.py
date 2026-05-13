@@ -339,6 +339,7 @@ from .optix_runtime import pack_rays_2d_from_arrays
 from .optix_runtime import pack_triangles_2d_from_arrays
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_ray_inputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_inputs
+from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_partner_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs
 from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d
@@ -350,6 +351,7 @@ from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
 from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangles
+from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
 from .optix_runtime import prepare_optix_group_indices_2d
 from .optix_runtime import prepare_optix_pose_indices_2d
 from .optix_runtime import prepare_optix_rays_2d
@@ -1209,6 +1211,7 @@ __all__ = [
     "pack_triangles_2d_from_arrays",
     "pack_optix_ray_any_hit_2d_device_ray_inputs",
     "pack_optix_ray_any_hit_2d_device_triangle_inputs",
+    "pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs",
     "pack_optix_ray_triangle_any_hit_2d_partner_inputs",
     "pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs",
     "run_optix_partner_ray_triangle_any_hit_2d",
@@ -1220,6 +1223,7 @@ __all__ = [
     "prepare_optix_segment_polygon_hitcount_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangles",
+    "prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene",
     "prepare_optix_group_indices_2d",
     "prepare_optix_pose_indices_2d",
     "prepare_optix_rays_2d",

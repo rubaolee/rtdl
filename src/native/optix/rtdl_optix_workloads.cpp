@@ -2929,6 +2929,25 @@ struct RayAnyHitCountDeviceRayColumnsLaunchParams {
     uint32_t               ray_count;
 };
 
+struct RayAnyHitCountDeviceColumnsLaunchParams {
+    OptixTraversableHandle traversable;
+    const uint32_t*        ray_ids;
+    const double*          ray_ox;
+    const double*          ray_oy;
+    const double*          ray_dx;
+    const double*          ray_dy;
+    const double*          ray_tmax;
+    const uint32_t*        triangle_ids;
+    const double*          triangle_x0;
+    const double*          triangle_y0;
+    const double*          triangle_x1;
+    const double*          triangle_y1;
+    const double*          triangle_x2;
+    const double*          triangle_y2;
+    uint32_t*              hit_count;
+    uint32_t               ray_count;
+};
+
 struct RayAnyHitGroupFlagsLaunchParams {
     OptixTraversableHandle traversable;
     const GpuRay*          rays;
@@ -3069,6 +3088,80 @@ static void ensure_ray_anyhit_count_device_ray_columns_2d_pipeline()
         std::string src = ray_anyhit_count_device_ray_columns_kernel_source_2d();
         std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_count_device_ray_columns_kernel.cu");
         g_rayanyhit_count_device_ray_columns.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit_probe",
+            "__miss__rayhit_miss",
+            "__intersection__rayhit_isect",
+            "__anyhit__rayhit_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static std::string ray_anyhit_count_device_columns_kernel_source_2d()
+{
+    std::string src = ray_anyhit_count_device_ray_columns_kernel_source_2d();
+    const std::string old_triangle_field =
+        "    const GpuTriangle* triangles;\n";
+    const std::string new_triangle_fields =
+        "    const uint32_t* triangle_ids;\n"
+        "    const double* triangle_x0;\n"
+        "    const double* triangle_y0;\n"
+        "    const double* triangle_x1;\n"
+        "    const double* triangle_y1;\n"
+        "    const double* triangle_x2;\n"
+        "    const double* triangle_y2;\n";
+    size_t pos = src.find(old_triangle_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit count device triangle columns params");
+    src.replace(pos, old_triangle_field.size(), new_triangle_fields);
+
+    const std::string ray_loader_end =
+        "static __forceinline__ __device__ GpuRay load_ray_column(uint32_t idx) {\n"
+        "    GpuRay r;\n"
+        "    r.ox = static_cast<float>(params.ray_ox[idx]);\n"
+        "    r.oy = static_cast<float>(params.ray_oy[idx]);\n"
+        "    r.dx = static_cast<float>(params.ray_dx[idx]);\n"
+        "    r.dy = static_cast<float>(params.ray_dy[idx]);\n"
+        "    r.tmax = static_cast<float>(params.ray_tmax[idx]);\n"
+        "    r.id = params.ray_ids[idx];\n"
+        "    return r;\n"
+        "}\n";
+    const std::string triangle_loader =
+        ray_loader_end +
+        "\n"
+        "static __forceinline__ __device__ GpuTriangle load_triangle_column(uint32_t idx) {\n"
+        "    GpuTriangle t;\n"
+        "    t.x0 = static_cast<float>(params.triangle_x0[idx]);\n"
+        "    t.y0 = static_cast<float>(params.triangle_y0[idx]);\n"
+        "    t.x1 = static_cast<float>(params.triangle_x1[idx]);\n"
+        "    t.y1 = static_cast<float>(params.triangle_y1[idx]);\n"
+        "    t.x2 = static_cast<float>(params.triangle_x2[idx]);\n"
+        "    t.y2 = static_cast<float>(params.triangle_y2[idx]);\n"
+        "    t.id = params.triangle_ids[idx];\n"
+        "    return t;\n"
+        "}\n";
+    pos = src.find(ray_loader_end);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to insert OptiX 2-D any-hit device triangle columns loader");
+    src.replace(pos, ray_loader_end.size(), triangle_loader);
+
+    const std::string packed_triangle_read =
+        "const GpuTriangle t = params.triangles[prim];";
+    const std::string column_triangle_read =
+        "const GpuTriangle t = load_triangle_column(prim);";
+    pos = src.find(packed_triangle_read);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit count device triangle read");
+    src.replace(pos, packed_triangle_read.size(), column_triangle_read);
+    return src;
+}
+
+static void ensure_ray_anyhit_count_device_columns_2d_pipeline()
+{
+    std::call_once(g_rayanyhit_count_device_columns.init, [&]() {
+        std::string src = ray_anyhit_count_device_columns_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_count_device_columns_kernel.cu");
+        g_rayanyhit_count_device_columns.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit_probe",
             "__miss__rayhit_miss",
@@ -3309,6 +3402,14 @@ struct PreparedRayAnyHit2D {
     size_t triangle_count = 0;
     DevPtr d_triangles;
     AccelHolder accel;
+    bool triangle_columns_zero_copy = false;
+    const uint32_t* triangle_ids = nullptr;
+    const double* triangle_x0 = nullptr;
+    const double* triangle_y0 = nullptr;
+    const double* triangle_x1 = nullptr;
+    const double* triangle_y1 = nullptr;
+    const double* triangle_x2 = nullptr;
+    const double* triangle_y2 = nullptr;
 
     explicit PreparedRayAnyHit2D(const RtdlTriangle* source, size_t count)
         : triangles(count), triangle_count(count), d_triangles(sizeof(GpuTriangle) * count)
@@ -3346,6 +3447,17 @@ struct PreparedRayAnyHit2D {
             const double* triangle_y1,
             const double* triangle_x2,
             const double* triangle_y2,
+            size_t count);
+
+    PreparedRayAnyHit2D(
+            const uint32_t* triangle_ids,
+            const double* triangle_x0,
+            const double* triangle_y0,
+            const double* triangle_x1,
+            const double* triangle_y1,
+            const double* triangle_x2,
+            const double* triangle_y2,
+            const void* triangle_aabbs,
             size_t count);
 };
 
@@ -3452,6 +3564,42 @@ PreparedRayAnyHit2D::PreparedRayAnyHit2D(
     accel = build_custom_accel_from_device_aabbs(get_optix_context(), d_aabbs.ptr, count);
 }
 
+PreparedRayAnyHit2D::PreparedRayAnyHit2D(
+        const uint32_t* ids,
+        const double* x0,
+        const double* y0,
+        const double* x1,
+        const double* y1,
+        const double* x2,
+        const double* y2,
+        const void* aabbs,
+        size_t count)
+    : triangle_count(count),
+      d_triangles(0),
+      triangle_columns_zero_copy(true),
+      triangle_ids(ids),
+      triangle_x0(x0),
+      triangle_y0(y0),
+      triangle_x1(x1),
+      triangle_y1(y1),
+      triangle_x2(x2),
+      triangle_y2(y2)
+{
+    if (count == 0) return;
+    if (!triangle_ids || !triangle_x0 || !triangle_y0 || !triangle_x1
+            || !triangle_y1 || !triangle_x2 || !triangle_y2)
+        throw std::runtime_error("partner device triangle column pointers must not be null when triangle_count is nonzero");
+    if (!aabbs)
+        throw std::runtime_error("partner device triangle AABB buffer must not be null when triangle_count is nonzero");
+    if (count > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("partner device triangle column count exceeds uint32_t launch limit");
+
+    accel = build_custom_accel_from_borrowed_device_aabbs(
+        get_optix_context(),
+        reinterpret_cast<CUdeviceptr>(aabbs),
+        count);
+}
+
 static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_optix(
         const RtdlTriangle* triangles, size_t triangle_count)
 {
@@ -3478,6 +3626,30 @@ static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_device_triangles_optix(
         triangle_y1,
         triangle_x2,
         triangle_y2,
+        triangle_count);
+}
+
+static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_device_triangle_columns_aabbs_optix(
+        const uint32_t* triangle_ids,
+        const double* triangle_x0,
+        const double* triangle_y0,
+        const double* triangle_x1,
+        const double* triangle_y1,
+        const double* triangle_x2,
+        const double* triangle_y2,
+        const void* triangle_aabbs,
+        size_t triangle_count)
+{
+    ensure_ray_anyhit_count_2d_pipeline();
+    return new PreparedRayAnyHit2D(
+        triangle_ids,
+        triangle_x0,
+        triangle_y0,
+        triangle_x1,
+        triangle_y1,
+        triangle_x2,
+        triangle_y2,
+        triangle_aabbs,
         triangle_count);
 }
 
@@ -3605,32 +3777,58 @@ static void count_prepared_ray_anyhit_2d_device_rays_optix(
     if (ray_count > std::numeric_limits<uint32_t>::max())
         throw std::runtime_error("partner device ray column count exceeds uint32_t launch limit");
 
-    ensure_ray_anyhit_count_device_ray_columns_2d_pipeline();
-
     DevPtr d_hit_count(sizeof(uint32_t));
     uint32_t zero = 0u;
     upload(d_hit_count.ptr, &zero, 1);
 
-    RayAnyHitCountDeviceRayColumnsLaunchParams lp;
-    lp.traversable = prepared->accel.handle;
-    lp.ray_ids = ray_ids;
-    lp.ray_ox = ray_ox;
-    lp.ray_oy = ray_oy;
-    lp.ray_dx = ray_dx;
-    lp.ray_dy = ray_dy;
-    lp.ray_tmax = ray_tmax;
-    lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
-    lp.hit_count = reinterpret_cast<uint32_t*>(d_hit_count.ptr);
-    lp.ray_count = static_cast<uint32_t>(ray_count);
-
-    DevPtr d_params(sizeof(RayAnyHitCountDeviceRayColumnsLaunchParams));
-    upload(d_params.ptr, &lp, 1);
-
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_rayanyhit_count_device_ray_columns.pipe->pipeline, stream,
-                            d_params.ptr, sizeof(RayAnyHitCountDeviceRayColumnsLaunchParams),
-                            &g_rayanyhit_count_device_ray_columns.pipe->sbt,
-                            static_cast<unsigned>(ray_count), 1, 1));
+    if (prepared->triangle_columns_zero_copy) {
+        ensure_ray_anyhit_count_device_columns_2d_pipeline();
+        RayAnyHitCountDeviceColumnsLaunchParams lp;
+        lp.traversable = prepared->accel.handle;
+        lp.ray_ids = ray_ids;
+        lp.ray_ox = ray_ox;
+        lp.ray_oy = ray_oy;
+        lp.ray_dx = ray_dx;
+        lp.ray_dy = ray_dy;
+        lp.ray_tmax = ray_tmax;
+        lp.triangle_ids = prepared->triangle_ids;
+        lp.triangle_x0 = prepared->triangle_x0;
+        lp.triangle_y0 = prepared->triangle_y0;
+        lp.triangle_x1 = prepared->triangle_x1;
+        lp.triangle_y1 = prepared->triangle_y1;
+        lp.triangle_x2 = prepared->triangle_x2;
+        lp.triangle_y2 = prepared->triangle_y2;
+        lp.hit_count = reinterpret_cast<uint32_t*>(d_hit_count.ptr);
+        lp.ray_count = static_cast<uint32_t>(ray_count);
+
+        DevPtr d_params(sizeof(RayAnyHitCountDeviceColumnsLaunchParams));
+        upload(d_params.ptr, &lp, 1);
+        OPTIX_CHECK(optixLaunch(g_rayanyhit_count_device_columns.pipe->pipeline, stream,
+                                d_params.ptr, sizeof(RayAnyHitCountDeviceColumnsLaunchParams),
+                                &g_rayanyhit_count_device_columns.pipe->sbt,
+                                static_cast<unsigned>(ray_count), 1, 1));
+    } else {
+        ensure_ray_anyhit_count_device_ray_columns_2d_pipeline();
+        RayAnyHitCountDeviceRayColumnsLaunchParams lp;
+        lp.traversable = prepared->accel.handle;
+        lp.ray_ids = ray_ids;
+        lp.ray_ox = ray_ox;
+        lp.ray_oy = ray_oy;
+        lp.ray_dx = ray_dx;
+        lp.ray_dy = ray_dy;
+        lp.ray_tmax = ray_tmax;
+        lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
+        lp.hit_count = reinterpret_cast<uint32_t*>(d_hit_count.ptr);
+        lp.ray_count = static_cast<uint32_t>(ray_count);
+
+        DevPtr d_params(sizeof(RayAnyHitCountDeviceRayColumnsLaunchParams));
+        upload(d_params.ptr, &lp, 1);
+        OPTIX_CHECK(optixLaunch(g_rayanyhit_count_device_ray_columns.pipe->pipeline, stream,
+                                d_params.ptr, sizeof(RayAnyHitCountDeviceRayColumnsLaunchParams),
+                                &g_rayanyhit_count_device_ray_columns.pipe->sbt,
+                                static_cast<unsigned>(ray_count), 1, 1));
+    }
     CU_CHECK(cuStreamSynchronize(stream));
 
     uint32_t count = 0u;
