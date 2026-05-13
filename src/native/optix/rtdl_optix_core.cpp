@@ -495,6 +495,47 @@ static AccelHolder build_custom_accel(OptixDeviceContext ctx,
     return result;
 }
 
+static AccelHolder build_custom_accel_from_device_aabbs(
+        OptixDeviceContext ctx,
+        CUdeviceptr source_aabbs,
+        size_t aabb_count) {
+    AccelHolder result;
+    if (aabb_count == 0) return result;
+    if (!source_aabbs)
+        throw std::runtime_error("device AABB buffer must not be null when aabb_count is nonzero");
+    size_t aabb_bytes = sizeof(OptixAabb) * aabb_count;
+    CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
+    CU_CHECK(cuMemcpyDtoD(result.aabb_buf, source_aabbs, aabb_bytes));
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+    auto& cpp = build_input.customPrimitiveArray;
+    cpp.aabbBuffers   = &result.aabb_buf;
+    cpp.numPrimitives = static_cast<unsigned>(aabb_count);
+    cpp.strideInBytes = sizeof(OptixAabb);
+    uint32_t flags_arr = OPTIX_GEOMETRY_FLAG_NONE;
+    cpp.flags          = &flags_arr;
+    cpp.numSbtRecords  = 1;
+
+    OptixAccelBuildOptions accel_opts = {};
+    accel_opts.buildFlags = OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+    accel_opts.operation  = OPTIX_BUILD_OPERATION_BUILD;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(ctx, &accel_opts, &build_input, 1, &sizes));
+
+    DevPtr temp_buf(sizes.tempSizeInBytes);
+    CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
+                                 temp_buf.ptr, sizes.tempSizeInBytes,
+                                 result.output_buf, sizes.outputSizeInBytes,
+                                 &result.handle, nullptr, 0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    return result;
+}
+
 // ---------- Pipeline builder ------------------------------------------------
 
 struct PipelineHolder {
@@ -3487,6 +3528,59 @@ extern "C" __global__ void pack_ray2d_device_columns(
 }
 )CUDA";
 
+static const char* kPackTriangle2DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct GpuTriangle {
+    float x0, y0, x1, y1, x2, y2;
+    uint32_t id;
+};
+
+struct RtdlDeviceAabb {
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+};
+
+extern "C" __global__ void pack_triangle2d_device_columns(
+        const uint32_t* ids,
+        const double* x0,
+        const double* y0,
+        const double* x1,
+        const double* y1,
+        const double* x2,
+        const double* y2,
+        GpuTriangle* triangles,
+        RtdlDeviceAabb* aabbs,
+        uint32_t triangle_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= triangle_count) return;
+    GpuTriangle tri;
+    tri.x0 = static_cast<float>(x0[idx]);
+    tri.y0 = static_cast<float>(y0[idx]);
+    tri.x1 = static_cast<float>(x1[idx]);
+    tri.y1 = static_cast<float>(y1[idx]);
+    tri.x2 = static_cast<float>(x2[idx]);
+    tri.y2 = static_cast<float>(y2[idx]);
+    tri.id = ids[idx];
+    triangles[idx] = tri;
+
+    const float min_x = fminf(fminf(tri.x0, tri.x1), tri.x2);
+    const float min_y = fminf(fminf(tri.y0, tri.y1), tri.y2);
+    const float max_x = fmaxf(fmaxf(tri.x0, tri.x1), tri.x2);
+    const float max_y = fmaxf(fmaxf(tri.y0, tri.y1), tri.y2);
+    RtdlDeviceAabb aabb;
+    aabb.minX = min_x;
+    aabb.minY = min_y;
+    aabb.minZ = -1.0e-4f;
+    aabb.maxX = max_x;
+    aabb.maxY = max_y;
+    aabb.maxZ = 1.0e-4f;
+    aabbs[idx] = aabb;
+}
+)CUDA";
+
 // ---------- DB conjunctive_scan kernel --------------------------------------
 
 static const char* kDbScanKernelSrc = R"CUDA(
@@ -3886,6 +3980,7 @@ static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
 static KnnCuFunction      g_partner_ray2d_pack;
+static KnnCuFunction      g_partner_triangle2d_pack;
 static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;

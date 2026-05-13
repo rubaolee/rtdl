@@ -318,6 +318,17 @@ int  rtdl_optix_prepare_ray_anyhit_2d(
          const RtdlTriangle* triangles, size_t triangle_count,
          void** prepared_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_ray_anyhit_2d_device_triangles(
+         const uint32_t* triangle_ids,
+         const double* triangle_x0,
+         const double* triangle_y0,
+         const double* triangle_x1,
+         const double* triangle_y1,
+         const double* triangle_x2,
+         const double* triangle_y2,
+         size_t triangle_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_ray_anyhit_2d(
          void* prepared,
          const RtdlRay2D* rays, size_t ray_count,

@@ -3218,11 +3218,12 @@ static void run_ray_anyhit_optix(
 
 struct PreparedRayAnyHit2D {
     std::vector<GpuTriangle> triangles;
+    size_t triangle_count = 0;
     DevPtr d_triangles;
     AccelHolder accel;
 
     explicit PreparedRayAnyHit2D(const RtdlTriangle* source, size_t count)
-        : triangles(count), d_triangles(sizeof(GpuTriangle) * count)
+        : triangles(count), triangle_count(count), d_triangles(sizeof(GpuTriangle) * count)
     {
         for (size_t i = 0; i < count; ++i) {
             triangles[i] = {
@@ -3248,6 +3249,16 @@ struct PreparedRayAnyHit2D {
             accel = build_custom_accel(get_optix_context(), aabbs);
         }
     }
+
+    PreparedRayAnyHit2D(
+            const uint32_t* triangle_ids,
+            const double* triangle_x0,
+            const double* triangle_y0,
+            const double* triangle_x1,
+            const double* triangle_y1,
+            const double* triangle_x2,
+            const double* triangle_y2,
+            size_t count);
 };
 
 struct PreparedRays2D {
@@ -3285,11 +3296,101 @@ struct PreparedGroupIndices2D {
     }
 };
 
+static void ensure_pack_triangle2d_device_columns_kernel()
+{
+    (void)get_optix_context();
+    std::call_once(g_partner_triangle2d_pack.init, [&]() {
+        const std::string ptx = compile_to_ptx(
+            kPackTriangle2DDeviceColumnsKernelSrc,
+            "partner_triangle2d_device_columns_pack_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_partner_triangle2d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_partner_triangle2d_pack.fn,
+            g_partner_triangle2d_pack.module,
+            "pack_triangle2d_device_columns"));
+    });
+}
+
+PreparedRayAnyHit2D::PreparedRayAnyHit2D(
+        const uint32_t* triangle_ids,
+        const double* triangle_x0,
+        const double* triangle_y0,
+        const double* triangle_x1,
+        const double* triangle_y1,
+        const double* triangle_x2,
+        const double* triangle_y2,
+        size_t count)
+    : triangle_count(count), d_triangles(sizeof(GpuTriangle) * count)
+{
+    if (count == 0) return;
+    if (!triangle_ids || !triangle_x0 || !triangle_y0 || !triangle_x1
+            || !triangle_y1 || !triangle_x2 || !triangle_y2)
+        throw std::runtime_error("partner device triangle column pointers must not be null when triangle_count is nonzero");
+    if (count > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("partner device triangle column count exceeds uint32_t launch limit");
+
+    ensure_pack_triangle2d_device_columns_kernel();
+
+    DevPtr d_aabbs(sizeof(OptixAabb) * count);
+    CUdeviceptr d_triangle_ids = reinterpret_cast<CUdeviceptr>(triangle_ids);
+    CUdeviceptr d_triangle_x0 = reinterpret_cast<CUdeviceptr>(triangle_x0);
+    CUdeviceptr d_triangle_y0 = reinterpret_cast<CUdeviceptr>(triangle_y0);
+    CUdeviceptr d_triangle_x1 = reinterpret_cast<CUdeviceptr>(triangle_x1);
+    CUdeviceptr d_triangle_y1 = reinterpret_cast<CUdeviceptr>(triangle_y1);
+    CUdeviceptr d_triangle_x2 = reinterpret_cast<CUdeviceptr>(triangle_x2);
+    CUdeviceptr d_triangle_y2 = reinterpret_cast<CUdeviceptr>(triangle_y2);
+    uint32_t tc = static_cast<uint32_t>(count);
+    void* args[] = {
+        &d_triangle_ids,
+        &d_triangle_x0,
+        &d_triangle_y0,
+        &d_triangle_x1,
+        &d_triangle_y1,
+        &d_triangle_x2,
+        &d_triangle_y2,
+        &d_triangles.ptr,
+        &d_aabbs.ptr,
+        &tc,
+    };
+    const unsigned block = 256;
+    const unsigned grid = (tc + block - 1u) / block;
+    CU_CHECK(cuLaunchKernel(
+        g_partner_triangle2d_pack.fn,
+        grid, 1, 1,
+        block, 1, 1,
+        0, nullptr, args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    accel = build_custom_accel_from_device_aabbs(get_optix_context(), d_aabbs.ptr, count);
+}
+
 static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_optix(
         const RtdlTriangle* triangles, size_t triangle_count)
 {
     ensure_ray_anyhit_count_2d_pipeline();
     return new PreparedRayAnyHit2D(triangles, triangle_count);
+}
+
+static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_device_triangles_optix(
+        const uint32_t* triangle_ids,
+        const double* triangle_x0,
+        const double* triangle_y0,
+        const double* triangle_x1,
+        const double* triangle_y1,
+        const double* triangle_x2,
+        const double* triangle_y2,
+        size_t triangle_count)
+{
+    ensure_ray_anyhit_count_2d_pipeline();
+    return new PreparedRayAnyHit2D(
+        triangle_ids,
+        triangle_x0,
+        triangle_y0,
+        triangle_x1,
+        triangle_y1,
+        triangle_x2,
+        triangle_y2,
+        triangle_count);
 }
 
 static PreparedRays2D* prepare_rays_2d_optix(
@@ -3313,7 +3414,7 @@ static void count_prepared_ray_anyhit_2d_gpu_optix(
     if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
     *hit_count_out = 0;
-    if (ray_count == 0 || prepared->triangles.empty()) return;
+    if (ray_count == 0 || prepared->triangle_count == 0) return;
 
     ensure_ray_anyhit_count_2d_pipeline();
 
@@ -3410,7 +3511,7 @@ static void count_prepared_ray_anyhit_2d_device_rays_optix(
     if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
     *hit_count_out = 0;
-    if (ray_count == 0 || prepared->triangles.empty()) return;
+    if (ray_count == 0 || prepared->triangle_count == 0) return;
     if (!ray_ids || !ray_ox || !ray_oy || !ray_dx || !ray_dy || !ray_tmax)
         throw std::runtime_error("partner device ray column pointers must not be null when ray_count is nonzero");
     if (ray_count > std::numeric_limits<uint32_t>::max())
@@ -3465,7 +3566,7 @@ static void group_flags_prepared_ray_anyhit_2d_packed_optix(
 
     for (size_t i = 0; i < group_count; ++i)
         group_flags_out[i] = 0u;
-    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || group_count == 0)
+    if (prepared_rays->ray_count == 0 || prepared->triangle_count == 0 || group_count == 0)
         return;
 
     ensure_ray_anyhit_group_flags_2d_pipeline();
@@ -3515,7 +3616,7 @@ static void group_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
 
     for (size_t i = 0; i < group_count; ++i)
         group_flags_out[i] = 0u;
-    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || group_count == 0)
+    if (prepared_rays->ray_count == 0 || prepared->triangle_count == 0 || group_count == 0)
         return;
 
     ensure_ray_anyhit_group_flags_2d_pipeline();
@@ -3561,7 +3662,7 @@ static void count_groups_prepared_ray_anyhit_2d_prepared_indices_optix(
     if (prepared_group_indices->count != prepared_rays->ray_count)
         throw std::runtime_error("prepared group-index count must match prepared ray count");
     *colliding_group_count_out = 0;
-    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || group_count == 0)
+    if (prepared_rays->ray_count == 0 || prepared->triangle_count == 0 || group_count == 0)
         return;
 
     ensure_ray_anyhit_group_flags_2d_pipeline();

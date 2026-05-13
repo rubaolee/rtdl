@@ -121,6 +121,8 @@ The app-agnostic gate is paired with:
 - [Goal1821 OptiX Partner Device-Descriptor Fail-Closed Path](../reports/goal1821_optix_partner_device_descriptor_fail_closed_2026-05-13.md)
 - [Goal1823 OptiX Partner Device-Ray Columns Partial ABI](../reports/goal1823_optix_partner_device_ray_columns_partial_abi_2026-05-13.md)
 - [Goal1824 Gemini Review of Goal1823](../reviews/goal1824_gemini_review_goal1823_optix_device_ray_columns_2026-05-13.md)
+- [Goal1826 OptiX Partner Device-Triangle Scene Preparation](../reports/goal1826_optix_partner_device_triangle_scene_2026-05-13.md)
+- [Goal1827 Gemini Review of Goal1826](../reviews/goal1827_gemini_review_goal1826_optix_device_triangle_scene_2026-05-13.md)
 
 ## Claim Boundary
 
@@ -177,3 +179,10 @@ device-pointer handoff, but it is still partial: rays are GPU-packed into an
 RTDL-owned layout, triangle scene setup still uses the existing prepared-scene
 path, and RTX hardware evidence is still pending. v2.0 remains
 `needs-more-evidence`.
+
+Goal1826 extends that path to partner-owned CUDA triangle columns for OptiX
+scene preparation. Rays and triangles can now enter the narrow prepared
+ray/primitive any-hit path from device columns, but RTDL still performs GPU
+packing and OptiX GAS construction into backend-owned data, so true zero-copy
+and v2.0 release readiness remain blocked pending RTX pod evidence and broader
+claim review.

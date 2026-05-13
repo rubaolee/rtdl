@@ -57,6 +57,7 @@ _GENERIC_NATIVE_SYMBOL_FRAGMENTS = (
     "_run_ray_anyhit",
     "_run_ray_hitcount",
     "_prepare_ray_anyhit",
+    "_prepare_ray_anyhit_2d_device_triangles",
     "_prepare_rays_",
     "_count_prepared_ray_anyhit",
     "_count_prepared_ray_anyhit_2d_device_rays",

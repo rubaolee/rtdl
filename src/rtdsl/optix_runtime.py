@@ -2355,6 +2355,7 @@ _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
 _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_device_columns"
 _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL = "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays"
+_OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL = "rtdl_optix_prepare_ray_anyhit_2d_device_triangles"
 
 
 def _partner_dtype_token(dtype) -> str:
@@ -2392,6 +2393,37 @@ def _require_partner_device_ray_column_layout(handoffs: dict) -> None:
             expected_device = device
         elif device != expected_device:
             raise ValueError("partner device ray columns must live on the same CUDA device")
+
+
+def _require_partner_device_triangle_column_layout(handoffs: dict) -> None:
+    expected_dtypes = {
+        "ids": {"uint32"},
+        "x0": {"float64", "double"},
+        "y0": {"float64", "double"},
+        "x1": {"float64", "double"},
+        "y1": {"float64", "double"},
+        "x2": {"float64", "double"},
+        "y2": {"float64", "double"},
+    }
+    expected_count = None
+    expected_device = None
+    for name in _PARTNER_TRIANGLE_2D_COLUMNS:
+        handoff = handoffs[name]
+        if _partner_dtype_token(handoff.dtype) not in expected_dtypes[name]:
+            allowed = ", ".join(sorted(expected_dtypes[name]))
+            raise ValueError(f"partner device triangle column {name!r} must use dtype {allowed}")
+        if handoff.strides not in (None, (1,)):
+            raise ValueError(f"partner device triangle column {name!r} must be contiguous")
+        count = int(handoff.shape[0])
+        if expected_count is None:
+            expected_count = count
+        elif count != expected_count:
+            raise ValueError("partner device triangle columns must have matching lengths")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError("partner device triangle columns must live on the same CUDA device")
 
 
 def _partner_column_to_host_array(value, *, column_name: str):
@@ -2496,6 +2528,38 @@ def pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns: dict) -> dict[str, 
             "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
             "ray_count": int(ray_handoffs["ids"].shape[0]),
             "triangle_scene_transfer_mode": "prepared_scene_existing_path",
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": timings,
+        },
+    }
+
+
+def pack_optix_ray_any_hit_2d_device_triangle_inputs(triangle_columns: dict) -> dict[str, object]:
+    """Validate partner-owned CUDA triangle columns for a prepared OptiX scene.
+
+    The columns stay device-resident and are packed on GPU into RTDL's internal
+    triangle and AABB layouts before OptiX GAS construction.
+    """
+    triangle_handoffs, timings = _partner_device_descriptor_columns(
+        triangle_columns,
+        _PARTNER_TRIANGLE_2D_COLUMNS,
+        label="triangle",
+    )
+    _require_partner_device_triangle_column_layout(triangle_handoffs)
+    descriptors = tuple(triangle_handoffs[name] for name in _PARTNER_TRIANGLE_2D_COLUMNS)
+    return {
+        "triangles": triangle_handoffs,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_columns_gpu_pack_gas_build",
+            "native_symbol": _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
+            "triangle_count": int(triangle_handoffs["ids"].shape[0]),
             "direct_device_pointer_observed": True,
             "direct_device_handoff_authorized": True,
             "true_zero_copy_authorized": False,
@@ -2875,6 +2939,12 @@ def _call_ray_anyhit_optix_packed(compiled: CompiledKernel, packed, lib) -> Opti
         field_names=("ray_id", "any_hit"))
 
 
+@dataclass(frozen=True)
+class _DeviceTriangleScene2D:
+    count: int
+    dimension: int = 2
+
+
 class PreparedOptixRayTriangleAnyHit2D:
     """Prepared OptiX 2-D any-hit scene with scalar hit-count query output."""
 
@@ -3230,6 +3300,45 @@ class PreparedOptixRayTriangleAnyHit2D:
 
 def prepare_optix_ray_triangle_any_hit_2d(triangles) -> PreparedOptixRayTriangleAnyHit2D:
     return PreparedOptixRayTriangleAnyHit2D(triangles)
+
+
+def prepare_optix_ray_triangle_any_hit_2d_device_triangles(
+    triangle_columns: dict,
+) -> PreparedOptixRayTriangleAnyHit2D:
+    packet = pack_optix_ray_any_hit_2d_device_triangle_inputs(triangle_columns)
+    prepared = PreparedOptixRayTriangleAnyHit2D.__new__(PreparedOptixRayTriangleAnyHit2D)
+    prepared._packed_triangles = _DeviceTriangleScene2D(packet["metadata"]["triangle_count"])
+    prepared._handle = ctypes.c_void_p()
+    prepared._closed = False
+    if packet["metadata"]["triangle_count"] == 0:
+        return prepared
+
+    lib = _load_optix_library()
+    prepare_symbol = _find_optional_backend_symbol(lib, _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL)
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{_OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL}. "
+            "Direct device-triangle partner scene preparation remains blocked; "
+            "rebuild the OptiX backend after the native device-triangle ABI lands."
+        )
+    triangles = packet["triangles"]
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        ctypes.c_void_p(triangles["ids"].data_ptr),
+        ctypes.c_void_p(triangles["x0"].data_ptr),
+        ctypes.c_void_p(triangles["y0"].data_ptr),
+        ctypes.c_void_p(triangles["x1"].data_ptr),
+        ctypes.c_void_p(triangles["y1"].data_ptr),
+        ctypes.c_void_p(triangles["x2"].data_ptr),
+        ctypes.c_void_p(triangles["y2"].data_ptr),
+        packet["metadata"]["triangle_count"],
+        ctypes.byref(prepared._handle),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return prepared
 
 
 class OptixRay2DBuffer:

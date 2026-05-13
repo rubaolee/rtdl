@@ -77,9 +77,9 @@ Blocked wording before v2.0:
 ## Work Plan To Reach v2.0
 
 1. Finish a real device-memory descriptor path with lifetime and stream rules.
-2. Extend the partial Goal1823 device-ray path into a measured zero-copy or
-   direct device-pointer evidence packet on an RTX pod for one narrow OptiX
-   primitive.
+2. Validate the Goal1823/Goal1826 device-column OptiX path on an RTX pod and
+   decide, with reviewed evidence, exactly which direct device-pointer claims
+   it authorizes and which zero-copy claims remain blocked.
 3. Expand from aggregate any-hit to the minimum app-unlocking partner primitive
    set, starting with row output or grouped summaries for any-hit/count-hit.
 4. Rewrite selected learner apps through those partner primitives only where the
