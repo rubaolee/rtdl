@@ -17,6 +17,7 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         self.assertIn("v1_8_native_optix_rows", text)
         self.assertIn("v2_0_partner_columns_", text)
         self.assertIn("query_median_ratio_vs_v1_8_native", text)
+        self.assertIn("_canonical_rows", text)
         self.assertIn('"same_contract_timing_row": True', text)
         self.assertIn('"v2_0_release_authorized": False', text)
         self.assertIn('"whole_app_speedup_claim_authorized": False', text)

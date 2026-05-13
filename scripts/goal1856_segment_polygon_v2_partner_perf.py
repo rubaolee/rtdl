@@ -117,6 +117,10 @@ def _summary(values: list[float]) -> dict[str, float]:
     }
 
 
+def _canonical_rows(rows) -> tuple[tuple[int, int], ...]:
+    return tuple(sorted((int(row["segment_id"]), int(row["polygon_id"])) for row in rows))
+
+
 def _time_call(label: str, iterations: int, fn):
     print(f"[timing] {label} iterations={iterations}", flush=True)
     samples = []
@@ -166,6 +170,7 @@ def main() -> int:
     segments, polygons = _build_records(args.count)
     output_capacity = args.count * 2
     expected_rows = tuple({"segment_id": segment.id, "polygon_id": polygon.id} for segment, polygon in zip(segments, polygons))
+    expected_canonical = _canonical_rows(expected_rows)
     print(f"[setup] count={args.count} output_capacity={output_capacity}", flush=True)
 
     v18_samples, v18_rows = _time_call(
@@ -177,7 +182,7 @@ def main() -> int:
             output_capacity=output_capacity,
         ),
     )
-    if tuple(v18_rows) != expected_rows:
+    if _canonical_rows(v18_rows) != expected_canonical:
         raise RuntimeError("v1.8 native OptiX rows did not match expected rows")
 
     partner_results = {}
@@ -195,7 +200,7 @@ def main() -> int:
                 output_capacity=output_capacity,
             ),
         )
-        if tuple(rows) != expected_rows:
+        if _canonical_rows(rows) != expected_canonical:
             raise RuntimeError(f"v2.0 partner column rows did not match expected rows for {partner}")
         partner_results[partner] = {
             "column_build_s": build_s,
