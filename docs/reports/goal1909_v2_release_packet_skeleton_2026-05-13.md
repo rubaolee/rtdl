@@ -1,6 +1,6 @@
 # Goal1909 - v2 Release Packet Skeleton
 
-Status: skeleton-blocked-pod-and-consensus-pending
+Status: skeleton-blocked-consensus-and-policy-pending
 
 Date: 2026-05-13
 
@@ -17,20 +17,28 @@ which slots are still blocked.
 | Partner acceleration boundary wording | populated, needs final release consensus | Goal1900, Goal1907 |
 | Public wording scan | populated, local gate passes | Goal1906 |
 | Source-tree-only policy proposal | populated, needs final 3-AI consensus | Goal1902, Goal1907 |
-| Pod batch packet | populated before hardware | Goal1903, Goal1904 |
-| Post-pod artifact validator | populated before hardware | Goal1905 |
+| Pod evidence | populated with initial batch, repeat-3 fixed-radius, and robot/segment scale-up evidence | Goals1903, 1905, 1916, 1919, 1937, 1940 |
+| Post-pod artifact review | populated with Claude/Gemini reviews, plus Goal1941/1942 Gemini follow-up reviews | Goals1912, 1923, 1935, 1936, 1938, 1941, 1942 |
 | Local non-pod preflight | populated and passing | Goal1908 |
+| All-app rollup | populated, needs final release consensus | Goal1931, Goal1942 |
 
 ## Hard Missing Slots
 
 | Slot | Missing artifact or action |
 | --- | --- |
-| RTX pod batch execution | `docs/reports/goal1903_fixed_radius_batch_pod.json`, `goal1903_segment_polygon_batch_pod_512.json`, `goal1903_segment_polygon_batch_pod_2048.json`, `goal1889_road_hazard_prepared_reuse_pod_512.json`, `goal1889_road_hazard_prepared_reuse_pod_2048.json`, and `goal1903_v2_partner_pod_batch_summary.json` |
-| Post-pod acceptance | strict `PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py` pass |
-| Fresh external artifact review | Claude or Pro-class review after actual pod artifacts land |
 | Source-tree-only release exception consensus | final 3-AI consensus accepting source-tree-only v2.0, or validated packaging metadata instead |
 | Final v2.0 release consensus | Codex plus two distinct external AI reviews after all evidence exists |
 | Final release action | tag/package/public wording action explicitly requested by the user |
+
+## Evidence Boundaries Still Required In The Final Packet
+
+| Topic | Required wording |
+| --- | --- |
+| Positive rows | Name the row families explicitly; do not claim every app has the same speedup shape. |
+| Robot collision | Positive and exact-parity through 8,388,608 poses, but v1.8 remains subsecond, so not a seconds-scale whole-app claim. |
+| Control rows | `database_analytics`, `graph_analytics`, `polygon_pair_overlap_area_rows`, and `polygon_set_jaccard` are evidence-only controls, not v2 partner speedup rows. |
+| True zero-copy/direct pointer handoff | Bounded to selected OptiX partner input/output device-column contracts. |
+| Package install | Blocked unless source-tree-only v2.0 receives final 3-AI consensus or packaging metadata is added and validated. |
 
 ## Non-Authorized Claims
 
@@ -51,12 +59,12 @@ Local preflight:
 PYTHONPATH=src:. python3 scripts/goal1908_v2_local_preflight.py
 ```
 
-RTX pod batch:
+Optional additional RTX stress, if the team wants more robot scale evidence:
 
 ```bash
-OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch \
-OPTIX_PREFIX=/root/vendor/optix-sdk \
-bash scripts/goal1903_v2_partner_pod_batch_runner.sh
+PYTHONPATH=src:. python3 scripts/goal1928_robot_collision_v2_partner_perf.py \
+  --pose-count 16777216 --obstacle-count 16384 --partners cupy,torch --repeat 3 \
+  --output docs/reports/goal1940_robot_segment_scaleup_pod/robot_16777216x16384.json
 ```
 
 Post-pod acceptance:
@@ -67,6 +75,6 @@ PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py
 
 ## Boundary
 
-This skeleton exists to prevent release drift. It does not authorize v2.0,
-does not replace pod execution, and does not replace final 3-AI release
-consensus.
+This skeleton exists to prevent release drift. It does not authorize v2.0 and
+does not replace final 3-AI release consensus or the explicit user release
+action.

@@ -67,6 +67,8 @@ class Goal1899V2StrictBirthGateCurrentBoardTest(unittest.TestCase):
         self.assertIn("v2.0 is still not born", text)
         self.assertIn("external review of the Goal1900 partner-acceleration boundary document", text)
         self.assertIn("Claude or Pro-class review", text)
+        self.assertIn("Still not a broad claim", text)
+        self.assertIn("Use row-by-row claims only", text)
 
 
 if __name__ == "__main__":

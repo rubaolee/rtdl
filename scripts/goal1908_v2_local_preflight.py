@@ -51,6 +51,7 @@ TEST_MODULES = (
     "tests.goal1939_db_phase_totals_fix_test",
     "tests.goal1940_robot_segment_scaleup_pod_perf_test",
     "tests.goal1941_gemini_review_goal1940_robot_segment_scaleup_test",
+    "tests.goal1942_gemini_review_all_app_v2_rollup_test",
 )
 
 

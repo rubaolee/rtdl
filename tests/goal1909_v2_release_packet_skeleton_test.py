@@ -12,14 +12,17 @@ class Goal1909V2ReleasePacketSkeletonTest(unittest.TestCase):
     def test_skeleton_lists_populated_and_missing_slots(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("Status: skeleton-blocked-pod-and-consensus-pending", text)
-        for goal in ("Goal1900", "Goal1902", "Goal1903", "Goal1904", "Goal1905", "Goal1906", "Goal1907", "Goal1908"):
+        self.assertIn("Status: skeleton-blocked-consensus-and-policy-pending", text)
+        for goal in ("Goal1900", "Goal1902", "Goals1903", "1905", "Goal1906", "Goal1907", "Goal1908"):
             self.assertIn(goal, text)
         self.assertIn("Hard Missing Slots", text)
-        self.assertIn("RTX pod batch execution", text)
-        self.assertIn("Fresh external artifact review", text)
+        self.assertIn("Evidence Boundaries Still Required", text)
+        self.assertIn("All-app rollup", text)
+        self.assertIn("Goal1942", text)
         self.assertIn("final 3-AI consensus", text)
         self.assertIn("Final release action", text)
+        self.assertIn("database_analytics", text)
+        self.assertIn("Positive and exact-parity through 8,388,608 poses", text)
 
     def test_skeleton_keeps_claims_and_release_blocked(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -34,14 +37,14 @@ class Goal1909V2ReleasePacketSkeletonTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
         self.assertIn("does not authorize v2.0", text)
-        self.assertIn("does not replace pod execution", text)
+        self.assertIn("does not replace final 3-AI release", text)
         self.assertIn("does not replace final 3-AI release", text)
 
     def test_skeleton_records_current_commands(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("scripts/goal1908_v2_local_preflight.py", text)
-        self.assertIn("scripts/goal1903_v2_partner_pod_batch_runner.sh", text)
+        self.assertIn("scripts/goal1928_robot_collision_v2_partner_perf.py", text)
         self.assertIn("scripts/goal1905_v2_partner_pod_batch_acceptance.py", text)
 
 

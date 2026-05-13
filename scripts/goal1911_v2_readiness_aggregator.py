@@ -69,6 +69,7 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1939_db_phase_totals_fix_2026-05-13.md",
     "docs/reports/goal1940_robot_segment_scaleup_pod_perf_2026-05-13.md",
     "docs/reviews/goal1941_gemini_review_goal1940_robot_segment_scaleup_2026-05-13.md",
+    "docs/reviews/goal1942_gemini_review_all_app_v2_rollup_2026-05-13.md",
 )
 
 
