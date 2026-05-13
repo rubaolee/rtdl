@@ -183,3 +183,94 @@ def segment_polygon_anyhit_rows_optix_partner(
     if return_metadata:
         return {"rows": rows, "metadata": metadata}
     return rows
+
+
+def _column_length(columns: dict[str, object], name: str) -> int:
+    column = columns[name]
+    shape = getattr(column, "shape", None)
+    if shape is not None:
+        return int(shape[0])
+    values = getattr(column, "values", None)
+    if values is not None:
+        return len(values)
+    return len(column)  # type: ignore[arg-type]
+
+
+def segment_polygon_anyhit_rows_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Run segment/polygon rows from caller-supplied partner CUDA columns.
+
+    The caller owns the GPU-resident ray and triangle columns. The adapter only
+    allocates bounded witness output columns, invokes the generic native
+    all-witness contract, and names/deduplicates app rows in Python.
+    """
+    ray_count = _column_length(segment_ray_columns, "ids")
+    triangle_count = _column_length(polygon_triangle_columns, "ids")
+    if ray_count == 0 or triangle_count == 0:
+        rows: tuple[dict[str, int], ...] = ()
+        metadata = {
+            "adapter": "segment_polygon_anyhit_rows_optix_partner_columns",
+            "partner": partner,
+            "app_rows_emitted": 0,
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"rows": rows, "metadata": metadata}
+        return rows
+    if output_capacity is None:
+        output_capacity = max(1, ray_count * triangle_count)
+    if output_capacity <= 0:
+        raise ValueError("output_capacity must be positive")
+
+    runtime = _partner_module(partner)
+    witness_ray_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
+    witness_primitive_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
+
+    scene = _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+    )
+    try:
+        packet = scene.write_device_any_hit_all_witnesses(
+            segment_ray_columns,
+            witness_ray_ids,
+            witness_primitive_ids,
+        )
+        runtime["sync"]()
+    finally:
+        scene.close()
+
+    metadata = dict(packet["metadata"])
+    emitted_count = int(metadata["emitted_count"])
+    if metadata["overflowed"]:
+        raise RuntimeError("partner segment/polygon column adapter overflowed; increase output_capacity")
+    ray_ids = runtime["to_host"](witness_ray_ids)[:emitted_count]
+    primitive_ids = runtime["to_host"](witness_primitive_ids)[:emitted_count]
+    rows = tuple(
+        {"segment_id": segment_id, "polygon_id": polygon_id}
+        for segment_id, polygon_id in sorted(set(zip(ray_ids, primitive_ids)))
+    )
+    metadata.update(
+        {
+            "adapter": "segment_polygon_anyhit_rows_optix_partner_columns",
+            "partner": runtime["name"],
+            "app_rows_emitted": len(rows),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"rows": rows, "metadata": metadata}
+    return rows

@@ -64,11 +64,13 @@ class Goal1850SegmentPolygonPartnerAdapterTest(unittest.TestCase):
         self.assertIs(rt.segment_polygon_anyhit_rows_optix_partner, partner_adapters.segment_polygon_anyhit_rows_optix_partner)
         self.assertIn("write_device_any_hit_all_witnesses", adapter_source)
         self.assertIn("generic_ray_primitive_witness_pairs", adapter_source)
+        self.assertIn("caller_supplied_partner_device_columns", adapter_source)
         self.assertIn("whole_app_speedup_claim_authorized", adapter_source)
         self.assertIn("v2_0_release_authorized", adapter_source)
         self.assertIn("ids.append(int(polygon.id))", adapter_source)
         self.assertIn("sorted(set(zip(ray_ids, primitive_ids)))", adapter_source)
         self.assertIn("segment_polygon_anyhit_rows_optix_partner", init_source)
+        self.assertIn("segment_polygon_anyhit_rows_optix_partner_columns", init_source)
 
     def test_adapter_deduplicates_generic_witness_pairs_into_app_rows(self) -> None:
         scene = _FakeScene()
@@ -104,6 +106,54 @@ class Goal1850SegmentPolygonPartnerAdapterTest(unittest.TestCase):
         self.assertEqual(result["metadata"]["native_engine_row_contract"], "generic_ray_primitive_witness_pairs")
         self.assertFalse(result["metadata"]["v2_0_release_authorized"])
         self.assertFalse(result["metadata"]["whole_app_speedup_claim_authorized"])
+
+    def test_column_adapter_keeps_caller_supplied_partner_input_contract(self) -> None:
+        scene = _FakeScene()
+        segment_ray_columns = {
+            "ids": _FakeColumn([101, 102]),
+            "ox": _FakeColumn([-0.25, 2.0]),
+            "oy": _FakeColumn([0.25, 2.0]),
+            "dx": _FakeColumn([1.5, 1.0]),
+            "dy": _FakeColumn([0.0, 0.0]),
+            "tmax": _FakeColumn([1.0, 1.0]),
+        }
+        polygon_triangle_columns = {
+            "ids": _FakeColumn([11, 12]),
+            "x0": _FakeColumn([0.0, 0.25]),
+            "y0": _FakeColumn([0.0, 0.20]),
+            "x1": _FakeColumn([1.0, 0.75]),
+            "y1": _FakeColumn([0.0, 0.20]),
+            "x2": _FakeColumn([0.0, 0.25]),
+            "y2": _FakeColumn([1.0, 0.80]),
+        }
+        aabbs = _FakeColumn([0.0] * 12)
+
+        with mock.patch.object(partner_adapters, "_partner_module", side_effect=_fake_partner_module):
+            with mock.patch.object(
+                partner_adapters._optix,
+                "prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene",
+                return_value=scene,
+            ) as prepare_scene:
+                result = rt.segment_polygon_anyhit_rows_optix_partner_columns(
+                    segment_ray_columns,
+                    polygon_triangle_columns,
+                    aabbs,
+                    partner="torch",
+                    output_capacity=4,
+                    return_metadata=True,
+                )
+
+        prepare_scene.assert_called_once_with(polygon_triangle_columns, aabbs)
+        self.assertEqual(
+            result["rows"],
+            (
+                {"segment_id": 101, "polygon_id": 11},
+                {"segment_id": 101, "polygon_id": 12},
+            ),
+        )
+        self.assertEqual(result["metadata"]["adapter"], "segment_polygon_anyhit_rows_optix_partner_columns")
+        self.assertEqual(result["metadata"]["input_contract"], "caller_supplied_partner_device_columns")
+        self.assertFalse(result["metadata"]["v2_0_release_authorized"])
 
     def test_empty_inputs_return_empty_rows_without_native_scene(self) -> None:
         with mock.patch.object(
