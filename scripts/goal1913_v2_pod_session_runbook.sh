@@ -7,6 +7,7 @@ OUT_DIR="${OUT_DIR:-docs/reports/goal1903_v2_partner_pod_batch}"
 RUN_PREFLIGHT="${RUN_PREFLIGHT:-1}"
 RUN_BATCH="${RUN_BATCH:-1}"
 RUN_ACCEPTANCE="${RUN_ACCEPTANCE:-1}"
+RUN_MANIFEST="${RUN_MANIFEST:-1}"
 RUN_READINESS="${RUN_READINESS:-1}"
 
 RTDL_PYTHONPATH="src:."
@@ -57,6 +58,12 @@ if [[ "${RUN_ACCEPTANCE}" == "1" ]]; then
   run_step "strict post-pod acceptance" env PYTHONPATH="${RTDL_PYTHONPATH}" "${PYTHON_BIN}" \
     scripts/goal1905_v2_partner_pod_batch_acceptance.py \
     --output docs/reports/goal1905_v2_partner_pod_batch_acceptance.json
+fi
+
+if [[ "${RUN_MANIFEST}" == "1" ]]; then
+  run_step "post-pod artifact manifest" env PYTHONPATH="${RTDL_PYTHONPATH}" "${PYTHON_BIN}" \
+    scripts/goal1916_v2_post_pod_artifact_manifest.py \
+    --output docs/reports/goal1916_v2_post_pod_artifact_manifest.json
 fi
 
 if [[ "${RUN_READINESS}" == "1" ]]; then

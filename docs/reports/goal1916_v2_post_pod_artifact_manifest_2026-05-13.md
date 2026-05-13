@@ -23,6 +23,9 @@ After the Goal1903 pod run and strict Goal1905 acceptance:
 PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py
 ```
 
+The visible-progress Goal1913 pod runbook also runs this command
+automatically after strict Goal1905 acceptance.
+
 Pre-pod dry snapshot:
 
 ```bash

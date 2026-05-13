@@ -16,6 +16,7 @@ class Goal1913V2PodSessionRunbookTest(unittest.TestCase):
         self.assertIn("goal1908_v2_local_preflight.py", text)
         self.assertIn("goal1903_v2_partner_pod_batch_runner.sh", text)
         self.assertIn("goal1905_v2_partner_pod_batch_acceptance.py", text)
+        self.assertIn("goal1916_v2_post_pod_artifact_manifest.py", text)
         self.assertIn("goal1911_v2_readiness_aggregator.py", text)
         self.assertIn("GOAL1912_POST_POD_EXTERNAL_REVIEW_TEMPLATE", text)
 
@@ -28,6 +29,7 @@ class Goal1913V2PodSessionRunbookTest(unittest.TestCase):
         self.assertIn("OPTIX_PREFIX", text)
         self.assertIn("RUN_BATCH", text)
         self.assertIn("RUN_ACCEPTANCE", text)
+        self.assertIn("RUN_MANIFEST", text)
 
     def test_report_documents_command_progress_and_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")

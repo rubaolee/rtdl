@@ -15,7 +15,8 @@ It prints explicit phase progress and runs the current sequence:
 1. Goal1908 local non-pod preflight.
 2. Goal1903 RTX pod batch.
 3. Goal1905 strict post-pod acceptance.
-4. Goal1911 readiness aggregation.
+4. Goal1916 post-pod artifact manifest.
+5. Goal1911 readiness aggregation.
 
 ## Command
 
