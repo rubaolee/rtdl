@@ -50,7 +50,8 @@ PYTHONPATH=src;. py -3 -m unittest \
 Result: 12 tests passed.
 
 Pod smoke validation was run on the available RTX A4500 pod
-(`root@213.173.108.219 -p 17793`) with the new files staged into `/root/rtdl`.
+(`root@213.173.108.219 -p 17793`) after resetting `/root/rtdl` to clean
+`origin/main` commit `dc825ce03d075cecb05ffc5b80b04652ff66882a`.
 Both CuPy and Torch caller-supplied columns produced:
 
 ```text

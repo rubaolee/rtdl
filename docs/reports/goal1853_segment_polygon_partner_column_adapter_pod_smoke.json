@@ -1,9 +1,9 @@
 {
-  "git_commit": "de2534ebd6aadd9ced42e81af5a7eaf6c31731ad",
+  "git_commit": "dc825ce03d075cecb05ffc5b80b04652ff66882a",
   "gpu": "NVIDIA RTX A4500, 550.127.05",
   "results": {
     "cupy": {
-      "elapsed_s": 0.25146564096212387,
+      "elapsed_s": 0.24405533075332642,
       "metadata": {
         "adapter": "segment_polygon_anyhit_rows_optix_partner_columns",
         "app_rows_emitted": 2,
@@ -48,7 +48,7 @@
       ]
     },
     "torch": {
-      "elapsed_s": 0.0104479119181633,
+      "elapsed_s": 0.01048009842634201,
       "metadata": {
         "adapter": "segment_polygon_anyhit_rows_optix_partner_columns",
         "app_rows_emitted": 2,
