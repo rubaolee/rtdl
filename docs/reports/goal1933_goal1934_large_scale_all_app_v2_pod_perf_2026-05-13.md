@@ -153,3 +153,23 @@ Interpretation:
 - This packet improves the evidence quality, but it does not authorize v2.0
   release, whole-app speedup wording, arbitrary PyTorch/CuPy acceleration, or
   package-install claims.
+
+## External Review Follow-Up
+
+Gemini Goal1935 accepted the report's bounded interpretation. Claude Goal1936
+also accepted the packet with boundary notes that must carry into the next pod
+run:
+
+- The `524288 x 524288` fixed-radius rows are single-sample measurements
+  (`repeat=1`). The speedup gap is large enough that the result remains useful,
+  but the next large fixed-radius pod run should use `repeat >= 3`.
+- Some rows in the Goal1933 directory use reused provenance from their original
+  generators: robot collision from Goal1928, segment/polygon any-hit from
+  Goal1856, and graph analytics from Goal982. These are acceptable evidence
+  files, but future reports should label reused provenance explicitly.
+- The database artifact's primary warm-query timing is valid, but its
+  phase-total aggregation field has an all-zero schema anomaly. Future DB
+  evidence generation should fix or quarantine that aggregate field.
+- The polygon control rows do not activate RT cores (`rt_core_accelerated:
+  false`) and therefore remain exact/control evidence, not RT-core speedup
+  evidence.

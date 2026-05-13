@@ -107,6 +107,11 @@ blocks the v2.0 release label.
   a strong narrow v2 result, robot and segment/polygon rows remain positive but
   sub-second, and DB/graph/polygon exact metrics remain control evidence rather
   than v2 partner speedup claims.
+- Goal1936: Claude accepted the same packet with boundary notes: rerun the
+  `524288 x 524288` fixed-radius row at `repeat >= 3` for variance-backed
+  medians, label reused artifact provenance explicitly, investigate DB
+  phase-total aggregation, and keep polygon controls out of RT-core speedup
+  wording because their metadata says RT cores are inactive.
 
 ## Immediate Next Hardware Step
 
