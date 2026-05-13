@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import statistics
+import subprocess
 import time
 from pathlib import Path
 
@@ -75,6 +77,23 @@ def _time(call, *, repeat: int, partner: str | None = None) -> dict[str, float]:
 
 def _skipped(reason: str) -> dict[str, object]:
     return {"status": "skipped", "reason": reason}
+
+
+def _git_commit() -> str:
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    except Exception:
+        return "unknown"
+
+
+def _gpu_name() -> str:
+    try:
+        return subprocess.check_output(
+            ["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"],
+            text=True,
+        ).strip()
+    except Exception:
+        return "unknown"
 
 
 def _v1_service(households, clinics, *, radius: float):
@@ -278,6 +297,9 @@ def main() -> None:
         "goal": 1878,
         "status": "measurement",
         "date": "2026-05-13",
+        "git_commit": _git_commit(),
+        "source_commit_label": os.environ.get("RTDL_SOURCE_COMMIT_LABEL", ""),
+        "gpu": _gpu_name(),
         "results": results,
     }
     path = Path(args.output)

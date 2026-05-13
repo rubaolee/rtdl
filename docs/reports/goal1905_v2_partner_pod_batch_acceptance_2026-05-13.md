@@ -13,7 +13,8 @@ Goal1905 adds a local acceptance validator for the Goal1903 pod batch artifacts:
 The validator is meant to run immediately after the Goal1903 RTX pod batch. It
 does not collect timing evidence and does not authorize v2.0 release. It only
 checks that the expected artifacts exist, pass their local parity/status gates,
-and keep release and broad-speedup claims blocked.
+record consistent RTX/source provenance, and keep release and broad-speedup
+claims blocked.
 
 ## Default Command
 
@@ -36,6 +37,8 @@ The validator fails if:
 
 - any required artifact is missing, unless `--allow-missing` is used for a
   pre-pod board snapshot;
+- any timing artifact lacks RTX GPU provenance, a git commit, or the same
+  `source_commit_label` as the batch summary;
 - fixed-radius status is not `measurement` or has empty results;
 - segment/polygon status is not `pass`, strict count parity is false, or the
   same-contract timing row flag is missing;

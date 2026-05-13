@@ -32,6 +32,7 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1912_post_pod_external_review_template_2026-05-13.md",
     "scripts/goal1913_v2_pod_session_runbook.sh",
     "docs/reports/goal1913_v2_pod_session_runbook_2026-05-13.md",
+    "docs/reports/goal1914_v2_pod_artifact_provenance_hardening_2026-05-13.md",
 )
 
 

@@ -51,6 +51,8 @@ blocks the v2.0 release label.
   artifacts.
 - Goal1913: visible-progress pod session runbook for Goal1908, Goal1903,
   Goal1905, and Goal1911.
+- Goal1914: pod artifact provenance hardening so accepted artifacts must carry
+  RTX GPU provenance, git commit, and matching source labels.
 
 ## Immediate Next Hardware Step
 

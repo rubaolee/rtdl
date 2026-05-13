@@ -29,6 +29,8 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_512.json", text)
         self.assertIn("same-contract timing row flag", text)
         self.assertIn("prepared scene/output reuse", text)
+        self.assertIn("RTX GPU provenance", text)
+        self.assertIn("source_commit_label", text)
         self.assertIn("reported as warnings", text)
         self.assertIn("Local Linux Check", text)
         self.assertIn("blocked_missing_artifacts", text)
@@ -56,6 +58,7 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
                     "fixed_radius": {"requested": False},
                     "segment_polygon": {"requested": False},
                     "road_hazard": {"requested": True},
+                    "source_commit_label": "abc123",
                     "claim_boundary": {
                         "v2_0_release_authorized": False,
                         "whole_app_speedup_claim_authorized": False,
@@ -78,6 +81,9 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
                 "docs/reports/goal1903_fixed_radius_batch_pod.json",
                 {
                     "status": "measurement",
+                    "git_commit": "abc123",
+                    "source_commit_label": "abc123",
+                    "gpu": "NVIDIA RTX A4500, 550.127.05",
                     "results": [
                         {
                             "claim_boundaries": {
@@ -95,6 +101,9 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
                     f"docs/reports/goal1903_segment_polygon_batch_pod_{count}.json",
                     {
                         "status": "pass",
+                        "git_commit": "abc123",
+                        "source_commit_label": "abc123",
+                        "gpu": "NVIDIA RTX A4500, 550.127.05",
                         "parity": {"strict_counts_match": True},
                         "claim_boundary": {
                             "same_contract_timing_row": True,
@@ -110,6 +119,9 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
                     {
                         "status": "pass",
                         "goal_extension": "Goal1889",
+                        "git_commit": "abc123",
+                        "source_commit_label": "abc123",
+                        "gpu": "NVIDIA RTX A4500, 550.127.05",
                         "parity": {"strict_priority_flags_match": True},
                         "claim_boundary": {
                             "v2_0_release_authorized": False,
@@ -133,6 +145,7 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
                     "fixed_radius": {"requested": True},
                     "segment_polygon": {"requested": True},
                     "road_hazard": {"requested": True},
+                    "source_commit_label": "abc123",
                     "claim_boundary": {
                         "v2_0_release_authorized": False,
                         "whole_app_speedup_claim_authorized": False,

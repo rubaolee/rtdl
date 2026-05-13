@@ -176,11 +176,20 @@ def _check_boundary_false(boundary, path_text):
         if boundary.get(key):
             raise SystemExit(f"{path_text}: {key} unexpectedly true")
 
+def _check_provenance(data, path_text):
+    if "RTX" not in str(data.get("gpu", "")):
+        raise SystemExit(f"{path_text}: expected RTX GPU provenance")
+    if not data.get("git_commit") or data.get("git_commit") == "unknown":
+        raise SystemExit(f"{path_text}: expected git_commit provenance")
+    if data.get("source_commit_label") != source_commit_label:
+        raise SystemExit(f"{path_text}: source label mismatch")
+
 if run_fixed == "1":
     fixed_path = "docs/reports/goal1903_fixed_radius_batch_pod.json"
     fixed = _load_json(fixed_path)
     if fixed.get("status") != "measurement":
         raise SystemExit(f"{fixed_path}: expected status=measurement")
+    _check_provenance(fixed, fixed_path)
     if not fixed.get("results"):
         raise SystemExit(f"{fixed_path}: expected non-empty results")
     for result in fixed["results"]:
@@ -192,6 +201,7 @@ if run_segment == "1":
         segment = _load_json(segment_path)
         if segment.get("status") != "pass":
             raise SystemExit(f"{segment_path}: expected status=pass")
+        _check_provenance(segment, segment_path)
         if not segment.get("parity", {}).get("strict_counts_match"):
             raise SystemExit(f"{segment_path}: strict_counts_match failed")
         _check_boundary_false(segment.get("claim_boundary", {}), segment_path)

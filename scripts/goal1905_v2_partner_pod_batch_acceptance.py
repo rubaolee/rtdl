@@ -27,7 +27,32 @@ def _check_forbidden_claims(boundary: dict[str, Any], artifact: str, errors: lis
             errors.append(f"{artifact}: {key} unexpectedly true")
 
 
-def _validate_fixed_radius(base: pathlib.Path, errors: list[str], missing: list[str]) -> None:
+def _validate_pod_provenance(
+    data: dict[str, Any],
+    artifact: str,
+    expected_source_commit_label: str | None,
+    errors: list[str],
+) -> None:
+    gpu = str(data.get("gpu", ""))
+    if "RTX" not in gpu:
+        errors.append(f"{artifact}: expected RTX GPU provenance")
+    git_commit = str(data.get("git_commit", ""))
+    if not git_commit or git_commit == "unknown":
+        errors.append(f"{artifact}: expected git_commit provenance")
+    source_commit_label = str(data.get("source_commit_label", ""))
+    if expected_source_commit_label is None:
+        if not source_commit_label:
+            errors.append(f"{artifact}: expected source_commit_label provenance")
+    elif source_commit_label != expected_source_commit_label:
+        errors.append(f"{artifact}: source_commit_label mismatch")
+
+
+def _validate_fixed_radius(
+    base: pathlib.Path,
+    expected_source_commit_label: str | None,
+    errors: list[str],
+    missing: list[str],
+) -> None:
     artifact = "docs/reports/goal1903_fixed_radius_batch_pod.json"
     path = base / artifact
     try:
@@ -37,6 +62,7 @@ def _validate_fixed_radius(base: pathlib.Path, errors: list[str], missing: list[
         return
     if data.get("status") != "measurement":
         errors.append(f"{artifact}: expected status=measurement")
+    _validate_pod_provenance(data, artifact, expected_source_commit_label, errors)
     results = data.get("results")
     if not isinstance(results, list) or not results:
         errors.append(f"{artifact}: expected non-empty results")
@@ -45,7 +71,13 @@ def _validate_fixed_radius(base: pathlib.Path, errors: list[str], missing: list[
         _check_forbidden_claims(result.get("claim_boundaries", {}), f"{artifact} results[{index}]", errors)
 
 
-def _validate_segment(base: pathlib.Path, count: int, errors: list[str], missing: list[str]) -> None:
+def _validate_segment(
+    base: pathlib.Path,
+    count: int,
+    expected_source_commit_label: str | None,
+    errors: list[str],
+    missing: list[str],
+) -> None:
     artifact = f"docs/reports/goal1903_segment_polygon_batch_pod_{count}.json"
     path = base / artifact
     try:
@@ -55,6 +87,7 @@ def _validate_segment(base: pathlib.Path, count: int, errors: list[str], missing
         return
     if data.get("status") != "pass":
         errors.append(f"{artifact}: expected status=pass")
+    _validate_pod_provenance(data, artifact, expected_source_commit_label, errors)
     if not data.get("parity", {}).get("strict_counts_match"):
         errors.append(f"{artifact}: strict_counts_match failed")
     if not data.get("claim_boundary", {}).get("same_contract_timing_row"):
@@ -62,7 +95,13 @@ def _validate_segment(base: pathlib.Path, count: int, errors: list[str], missing
     _check_forbidden_claims(data.get("claim_boundary", {}), artifact, errors)
 
 
-def _validate_road_hazard(base: pathlib.Path, count: int, errors: list[str], missing: list[str]) -> None:
+def _validate_road_hazard(
+    base: pathlib.Path,
+    count: int,
+    expected_source_commit_label: str | None,
+    errors: list[str],
+    missing: list[str],
+) -> None:
     artifact = f"docs/reports/goal1889_road_hazard_prepared_reuse_pod_{count}.json"
     path = base / artifact
     try:
@@ -72,6 +111,7 @@ def _validate_road_hazard(base: pathlib.Path, count: int, errors: list[str], mis
         return
     if data.get("status") != "pass":
         errors.append(f"{artifact}: expected status=pass")
+    _validate_pod_provenance(data, artifact, expected_source_commit_label, errors)
     if data.get("goal_extension") != "Goal1889":
         errors.append(f"{artifact}: expected goal_extension=Goal1889")
     if not data.get("parity", {}).get("strict_priority_flags_match"):
@@ -88,18 +128,23 @@ def _validate_road_hazard(base: pathlib.Path, count: int, errors: list[str], mis
             errors.append(f"{artifact}: {partner} witness_output_columns_reused missing")
 
 
-def _validate_summary(base: pathlib.Path, errors: list[str], missing: list[str]) -> None:
+def _validate_summary(base: pathlib.Path, errors: list[str], missing: list[str]) -> str | None:
     artifact = "docs/reports/goal1903_v2_partner_pod_batch_summary.json"
     path = base / artifact
     try:
         data = _load(path)
     except FileNotFoundError:
         missing.append(artifact)
-        return
+        return None
+    source_commit_label = data.get("source_commit_label")
+    if not isinstance(source_commit_label, str) or not source_commit_label:
+        errors.append(f"{artifact}: expected source_commit_label")
+        source_commit_label = None
     for key in ("fixed_radius", "segment_polygon", "road_hazard"):
         if not data.get(key, {}).get("requested"):
             errors.append(f"{artifact}: expected {key}.requested=true")
     _check_forbidden_claims(data.get("claim_boundary", {}), artifact, errors)
+    return source_commit_label
 
 
 def _parse_counts(text: str) -> list[int]:
@@ -119,12 +164,12 @@ def main(argv: list[str] | None = None) -> int:
     errors: list[str] = []
     missing: list[str] = []
     warnings: list[str] = []
-    _validate_fixed_radius(base, errors, missing)
+    expected_source_commit_label = _validate_summary(base, errors, missing)
+    _validate_fixed_radius(base, expected_source_commit_label, errors, missing)
     for count in _parse_counts(args.segment_counts):
-        _validate_segment(base, count, errors, missing)
+        _validate_segment(base, count, expected_source_commit_label, errors, missing)
     for count in _parse_counts(args.road_hazard_counts):
-        _validate_road_hazard(base, count, errors, missing)
-    _validate_summary(base, errors, missing)
+        _validate_road_hazard(base, count, expected_source_commit_label, errors, missing)
 
     if missing and args.allow_missing:
         remaining_errors = []

@@ -28,6 +28,8 @@ class Goal1903V2PartnerPodBatchPacketTest(unittest.TestCase):
         self.assertIn("expected status=measurement", text)
         self.assertIn("expected status=pass", text)
         self.assertIn("strict_counts_match failed", text)
+        self.assertIn("expected RTX GPU provenance", text)
+        self.assertIn("source label mismatch", text)
         self.assertIn("unexpectedly true", text)
         self.assertNotIn('glob("goal1903_segment_polygon_batch_pod_*.json")', text)
         self.assertIn("v2_0_release_authorized", text)

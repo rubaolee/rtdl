@@ -37,6 +37,7 @@ class Goal1863SegmentPolygonHitcountV2PartnerPerfTest(unittest.TestCase):
         self.assertIn("[timing]", text)
         self.assertIn("[artifact]", text)
         self.assertIn("flush=True", text)
+        self.assertIn("RTDL_SOURCE_COMMIT_LABEL", text)
 
     def test_report_and_artifacts_keep_narrow_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

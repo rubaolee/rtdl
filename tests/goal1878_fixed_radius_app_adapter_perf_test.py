@@ -18,6 +18,8 @@ class Goal1878FixedRadiusAppAdapterPerfTest(unittest.TestCase):
         self.assertIn("goal1877_v2_native_optix_partner", script)
         self.assertIn("service_coverage_gap_flags_optix_partner_device_columns", script)
         self.assertIn("event_hotspot_flags_optix_partner_device_columns", script)
+        self.assertIn("RTDL_SOURCE_COMMIT_LABEL", script)
+        self.assertIn("nvidia-smi", script)
 
     def test_artifact_records_all_apps_partners_and_boundaries(self) -> None:
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
