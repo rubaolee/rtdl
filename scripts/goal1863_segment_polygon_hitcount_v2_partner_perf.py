@@ -193,6 +193,14 @@ def main() -> int:
     for partner in partners:
         print(f"[setup] building caller-owned {partner} columns", flush=True)
         ray_columns, triangle_columns, triangle_aabbs, runtime, build_s = _build_partner_columns(segments, polygons, partner)
+        prepared_partner_scene = rt.prepare_segment_polygon_anyhit_optix_partner_device_scene(
+            triangle_columns,
+            triangle_aabbs,
+        )
+        witness_outputs = rt.allocate_segment_polygon_witness_partner_device_output_columns(
+            output_capacity,
+            partner=partner,
+        )
         samples, result = _time_call(
             f"v2_0_partner_device_count_columns_{partner}",
             args.iterations,
@@ -207,6 +215,23 @@ def main() -> int:
         rows = _columns_to_rows(result, runtime)
         if _canonical_counts(rows) != expected_canonical:
             raise RuntimeError(f"v2.0 partner device count columns did not match expected rows for {partner}")
+        try:
+            prepared_samples, prepared_result = _time_call(
+                f"v2_0_prepared_partner_device_count_columns_{partner}",
+                args.iterations,
+                lambda: rt.segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
+                    prepared_partner_scene,
+                    ray_columns,
+                    partner=partner,
+                    output_capacity=output_capacity,
+                    witness_output_columns=witness_outputs,
+                ),
+            )
+        finally:
+            prepared_partner_scene.close()
+        prepared_rows = _columns_to_rows(prepared_result, runtime)
+        if _canonical_counts(prepared_rows) != expected_canonical:
+            raise RuntimeError(f"v2.0 prepared partner device count columns did not match expected rows for {partner}")
         partner_results[partner] = {
             "column_build_s": build_s,
             "query_samples_s": samples,
@@ -215,6 +240,20 @@ def main() -> int:
             "query_median_ratio_vs_v1_8_prepared_native": statistics.median(samples) / statistics.median(v18_prepared_samples),
             "row_count": len(rows),
             "output_contract": "partner_owned_device_count_columns",
+            "goal1886_prepared_reuse": {
+                "query_samples_s": prepared_samples,
+                "query_summary": _summary(prepared_samples),
+                "query_median_ratio_vs_v1_8_one_shot_native": statistics.median(prepared_samples)
+                / statistics.median(v18_one_shot_samples),
+                "query_median_ratio_vs_v1_8_prepared_native": statistics.median(prepared_samples)
+                / statistics.median(v18_prepared_samples),
+                "query_median_ratio_vs_goal1863_unprepared_partner": statistics.median(prepared_samples)
+                / statistics.median(samples),
+                "row_count": len(prepared_rows),
+                "output_contract": "prepared_partner_owned_device_count_columns",
+                "prepared_scene_reused": True,
+                "witness_output_columns_reused": True,
+            },
         }
 
     payload = {

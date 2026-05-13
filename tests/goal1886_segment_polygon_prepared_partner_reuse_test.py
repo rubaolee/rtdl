@@ -12,6 +12,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
 REPORT = ROOT / "docs" / "reports" / "goal1886_segment_polygon_prepared_partner_reuse_2026-05-13.md"
+RUNNER = ROOT / "scripts" / "goal1863_segment_polygon_hitcount_v2_partner_perf.py"
 
 
 class _FakeColumn:
@@ -149,6 +150,16 @@ class Goal1886SegmentPolygonPreparedPartnerReuseTest(unittest.TestCase):
         self.assertIn("generic_ray_primitive_witness_pairs", report)
         self.assertIn("reusable witness output columns", report)
         self.assertIn("does not authorize broad RT-core speedup wording", report)
+
+    def test_timing_runner_records_goal1886_prepared_reuse_rows(self) -> None:
+        runner = RUNNER.read_text(encoding="utf-8")
+
+        self.assertIn("prepare_segment_polygon_anyhit_optix_partner_device_scene", runner)
+        self.assertIn("allocate_segment_polygon_witness_partner_device_output_columns", runner)
+        self.assertIn("segment_polygon_hitcount_optix_prepared_partner_device_count_columns", runner)
+        self.assertIn("v2_0_prepared_partner_device_count_columns_", runner)
+        self.assertIn("goal1886_prepared_reuse", runner)
+        self.assertIn("query_median_ratio_vs_goal1863_unprepared_partner", runner)
 
 
 if __name__ == "__main__":
