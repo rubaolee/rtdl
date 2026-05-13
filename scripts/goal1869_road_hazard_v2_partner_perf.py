@@ -216,15 +216,6 @@ def main() -> int:
     for partner in partners:
         print(f"[setup] building caller-owned {partner} columns", flush=True)
         ray_columns, triangle_columns, triangle_aabbs, runtime, build_s = _build_partner_columns(roads, hazards, partner)
-        print(f"[setup] preparing reusable {partner} triangle scene and witness outputs", flush=True)
-        prepared_partner_scene = rt.prepare_segment_polygon_anyhit_optix_partner_device_scene(
-            triangle_columns,
-            triangle_aabbs,
-        )
-        witness_output_columns = rt.allocate_segment_polygon_witness_partner_device_output_columns(
-            output_capacity,
-            partner=partner,
-        )
         samples, result = _time_call(
             f"v2_0_partner_road_hazard_priority_flags_{partner}",
             args.iterations,
@@ -240,6 +231,15 @@ def main() -> int:
         flags = _columns_to_flags(result, runtime)
         if flags != expected_flags:
             raise RuntimeError(f"v2.0 partner priority flags did not match expected flags for {partner}")
+        print(f"[setup] preparing reusable {partner} triangle scene and witness outputs", flush=True)
+        prepared_partner_scene = rt.prepare_segment_polygon_anyhit_optix_partner_device_scene(
+            triangle_columns,
+            triangle_aabbs,
+        )
+        witness_output_columns = rt.allocate_segment_polygon_witness_partner_device_output_columns(
+            output_capacity,
+            partner=partner,
+        )
         try:
             prepared_samples, prepared_result = _time_call(
                 f"v2_0_prepared_partner_road_hazard_priority_flags_{partner}",
