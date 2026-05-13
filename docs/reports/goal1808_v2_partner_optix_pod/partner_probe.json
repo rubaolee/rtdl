@@ -1,0 +1,8 @@
+{
+  "cupy": "14.0.1",
+  "cupy_device_count": 1,
+  "numpy": "2.4.4",
+  "torch": "2.5.1+cu121",
+  "torch_cuda": "12.1",
+  "torch_cuda_available": true
+}

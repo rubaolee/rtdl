@@ -1,0 +1,24 @@
+{
+  "backend": "optix",
+  "example": "rtdl_partner_anyhit",
+  "hit_count": 1,
+  "partner_input": "torch-cuda",
+  "partner_phase_timing_keys": [
+    "descriptor_validation",
+    "framework_to_host_staging",
+    "optix_count_and_scalar_copyback",
+    "optix_prepare",
+    "packet_packing"
+  ],
+  "ray_count": 2,
+  "rt_core_speedup_claim_authorized": false,
+  "source_devices": [
+    "cuda:0"
+  ],
+  "source_protocols": [
+    "torch"
+  ],
+  "transfer_mode": "host_stage",
+  "triangle_count": 1,
+  "true_zero_copy_authorized": false
+}

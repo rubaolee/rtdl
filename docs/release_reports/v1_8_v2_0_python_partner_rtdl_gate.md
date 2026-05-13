@@ -109,6 +109,8 @@ The app-agnostic gate is paired with:
 - [Goal1805 Gemini Review of Goal1804](../reviews/goal1805_gemini_review_goal1804_v2_partner_optix_pod_packet_2026-05-12.md)
 - [Goal1806 v2.0 Partner OptiX Local Dry Run](../reports/goal1806_v2_partner_optix_local_dryrun_2026-05-12.md)
 - [Goal1807 Gemini Review of Goal1806](../reviews/goal1807_gemini_review_goal1806_v2_partner_optix_local_dryrun_2026-05-12.md)
+- [Goal1808 v2.0 Partner OptiX Pod Hardware Evidence](../reports/goal1808_v2_partner_optix_pod_hardware_evidence_2026-05-13.md)
+- [Goal1809 Gemini Review of Goal1808](../reviews/goal1809_gemini_review_goal1808_v2_partner_optix_pod_hardware_evidence_2026-05-13.md)
 
 ## Claim Boundary
 
