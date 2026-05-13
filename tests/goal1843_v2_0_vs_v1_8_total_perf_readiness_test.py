@@ -33,9 +33,13 @@ class Goal1843V20VsV18TotalPerfReadinessTest(unittest.TestCase):
         self.assertIn("Goal1850 lifts the witness contract to the first app-level adapter", text)
         self.assertIn("Goal1853 adds the stronger caller-supplied PyTorch/CuPy GPU-column version", text)
         self.assertIn("Goal1856 adds the first same-contract v2.0-vs-v1.8 timing row", text)
+        self.assertIn("Goal1859 adds a second app-level OptiX partner adapter", text)
+        self.assertIn("host/Python count materialization remains explicit", text)
+        self.assertIn("whole_app_true_zero_copy_authorized: false", text)
         self.assertIn("first v2.0 OptiX app adapter and timing row exist", text)
         self.assertIn("first narrow same-contract timing row", text)
         self.assertIn("segment_polygon_anyhit_rows", text)
+        self.assertIn("segment_polygon_hitcount", text)
 
 
 if __name__ == "__main__":
