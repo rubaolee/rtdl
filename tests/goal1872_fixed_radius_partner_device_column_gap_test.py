@@ -15,20 +15,23 @@ class Goal1872FixedRadiusPartnerDeviceColumnGapTest(unittest.TestCase):
     def test_report_identifies_fixed_radius_apps_as_blocked(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("Status: needs-implementation", report)
+        self.assertIn("Status: partially-narrowed", report)
         self.assertIn("service_coverage_gaps", report)
         self.assertIn("event_hotspot_screening", report)
         self.assertIn("fixed-radius count-threshold primitive", report)
+        self.assertIn("Goal1873 narrows the gap", report)
         self.assertIn("caller-owned query point CUDA columns", report)
         self.assertIn("Torch reference behavior and CuPy conformance", report)
         self.assertIn("No v2.0 release wording", report)
 
-    def test_current_partner_adapters_do_not_yet_expose_fixed_radius_device_columns(self) -> None:
+    def test_current_partner_adapters_expose_reference_but_not_native_bridge(self) -> None:
         adapter_text = PARTNER_ADAPTERS.read_text(encoding="utf-8")
 
-        self.assertNotIn("fixed_radius", adapter_text)
-        self.assertNotIn("service_coverage_gaps_optix_partner", adapter_text)
-        self.assertNotIn("event_hotspot_screening_optix_partner", adapter_text)
+        self.assertIn("fixed_radius_count_threshold_2d_partner_columns", adapter_text)
+        self.assertIn("service_coverage_gap_flags_partner_columns", adapter_text)
+        self.assertIn("event_hotspot_flags_partner_columns", adapter_text)
+        self.assertIn("not_called_partner_reference_only", adapter_text)
+        self.assertNotIn("prepare_optix_fixed_radius_count_threshold_2d_device", adapter_text)
 
     def test_current_optix_fixed_radius_path_is_host_packed(self) -> None:
         runtime_text = OPTIX_RUNTIME.read_text(encoding="utf-8")

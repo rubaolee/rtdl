@@ -1,6 +1,6 @@
 # Goal1872 - Fixed-Radius Partner Device-Column Gap
 
-Status: needs-implementation
+Status: partially-narrowed
 
 Date: 2026-05-13
 
@@ -19,7 +19,7 @@ ray/triangle any-hit witness contract used by Goals1850-1869.
 
 ## Current State
 
-The current fixed-radius OptiX path is host-packed:
+The current fixed-radius native OptiX path is host-packed:
 
 - `prepare_optix_fixed_radius_count_threshold_2d(search_points, max_radius=...)`
 - `PreparedOptixFixedRadiusCountThreshold2D.run(query_points, radius=..., threshold=...)`
@@ -29,10 +29,21 @@ Those APIs accept Python/packed point records and call native OptiX through
 `PackedPoints`. They do not yet expose a caller-owned Torch/CuPy CUDA column
 descriptor path.
 
+Goal1873 narrows the gap by adding a partner-reference/conformance path:
+
+- `fixed_radius_count_threshold_2d_partner_columns(...)`
+- `service_coverage_gap_flags_partner_columns(...)`
+- `event_hotspot_flags_partner_columns(...)`
+
+Those functions operate on caller-owned PyTorch/CuPy point columns, but they do
+not call the native RTDL engine. They are protocol reference work, not RT-core
+evidence.
+
 ## Required v2.0 Contract
 
-Before `service_coverage_gaps` or `event_hotspot_screening` can become true
-Python+partner+RTDL app rows, RTDL needs a fixed-radius partner contract with:
+Before `service_coverage_gaps` or `event_hotspot_screening` can become native
+Python+partner+RTDL app rows with RT-core timing evidence, RTDL still needs a
+fixed-radius native device-column bridge with:
 
 - caller-owned query point CUDA columns;
 - caller-owned search point CUDA columns or a prepared device-column scene;
@@ -45,10 +56,10 @@ Python+partner+RTDL app rows, RTDL needs a fixed-radius partner contract with:
 
 ## Boundary
 
-This goal does not add implementation code. It prevents overclaiming:
-`service_coverage_gaps` and `event_hotspot_screening` remain blocked for v2.0
-partner-device timing until the fixed-radius device-column contract exists and
-is validated on NVIDIA hardware.
+This goal prevents overclaiming: `service_coverage_gaps` and
+`event_hotspot_screening` have a partner reference path after Goal1873, but they
+remain blocked for native RT-core v2.0 timing until the fixed-radius
+device-column bridge exists and is validated on NVIDIA hardware.
 
 No v2.0 release wording, whole-app speedup wording, broad RT-core speedup
 wording, or package-install claim is authorized.

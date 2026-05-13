@@ -54,6 +54,14 @@ def _partner_module(partner: str):
             "slice": lambda value, count: value[: int(count)],
             "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
             "greater_equal_uint32": lambda value, threshold: value.to(torch.int64).ge(int(threshold)).to(torch.uint32),
+            "invert_binary_uint32": lambda value: (1 - value.to(torch.int64)).to(torch.uint32),
+            "fixed_radius_count_threshold_2d": lambda query, search, radius, threshold: _torch_fixed_radius_count_threshold_2d(
+                torch,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
         }
     if partner == "cupy":
         import cupy
@@ -90,8 +98,50 @@ def _partner_module(partner: str):
             "slice": lambda value, count: value[: int(count)],
             "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
             "greater_equal_uint32": lambda value, threshold: (value >= int(threshold)).astype(cupy.uint32, copy=False),
+            "invert_binary_uint32": lambda value: (1 - value).astype(cupy.uint32, copy=False),
+            "fixed_radius_count_threshold_2d": lambda query, search, radius, threshold: _cupy_fixed_radius_count_threshold_2d(
+                cupy,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
         }
     raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _torch_fixed_radius_count_threshold_2d(torch, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].to(torch.float64)
+    qy = query_columns["y"].to(torch.float64)
+    sx = search_columns["x"].to(torch.float64)
+    sy = search_columns["y"].to(torch.float64)
+    if int(qx.numel()) == 0:
+        return torch.zeros((0,), dtype=torch.uint32, device=qx.device)
+    if int(sx.numel()) == 0:
+        return torch.zeros_like(query_columns["ids"], dtype=torch.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    within = (dx * dx + dy * dy).le(radius_sq)
+    counts = torch.sum(within.to(torch.int64), dim=1)
+    return counts.to(torch.uint32)
+
+
+def _cupy_fixed_radius_count_threshold_2d(cupy, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].astype(cupy.float64, copy=False)
+    qy = query_columns["y"].astype(cupy.float64, copy=False)
+    sx = search_columns["x"].astype(cupy.float64, copy=False)
+    sy = search_columns["y"].astype(cupy.float64, copy=False)
+    if int(qx.size) == 0:
+        return cupy.zeros((0,), dtype=cupy.uint32)
+    if int(sx.size) == 0:
+        return cupy.zeros_like(query_columns["ids"], dtype=cupy.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    within = (dx * dx + dy * dy) <= radius_sq
+    counts = cupy.sum(within.astype(cupy.int64, copy=False), axis=1)
+    return counts.astype(cupy.uint32, copy=False)
 
 
 def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict) -> dict[str, object]:
@@ -107,6 +157,19 @@ def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict)
         "dx": partner["tensor"]([segment.x1 - segment.x0 for segment in segments], partner["float64"], device),
         "dy": partner["tensor"]([segment.y1 - segment.y0 for segment in segments], partner["float64"], device),
         "tmax": partner["tensor"]([1.0 for _ in segments], partner["float64"], device),
+    }
+
+
+def _point_columns(points, partner: dict) -> dict[str, object]:
+    device = partner["device"]
+    return {
+        "ids": partner["tensor"](
+            [_require_uint32_id(point.id, "point") for point in points],
+            partner["uint32"],
+            device,
+        ),
+        "x": partner["tensor"]([point.x for point in points], partner["float64"], device),
+        "y": partner["tensor"]([point.y for point in points], partner["float64"], device),
     }
 
 
@@ -550,6 +613,151 @@ def road_hazard_priority_flags_optix_partner_device_columns(
             "whole_app_speedup_claim_authorized": False,
         }
     )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def fixed_radius_count_threshold_2d_partner_columns(
+    query_point_columns: dict[str, object],
+    search_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned fixed-radius count and threshold columns.
+
+    This is the protocol-first partner reference path for fixed-radius apps. It
+    uses PyTorch/CuPy tensor operations over caller-owned point columns and does
+    not call the native RTDL engine yet.
+    """
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _partner_module(partner)
+    neighbor_counts = runtime["fixed_radius_count_threshold_2d"](
+        query_point_columns,
+        search_point_columns,
+        radius,
+        threshold,
+    )
+    threshold_flags = runtime["greater_equal_uint32"](neighbor_counts, threshold)
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_point_columns["ids"],
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_fixed_radius_count_threshold_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "radius": radius,
+        "threshold": threshold,
+        "app_count_materialization": "partner_gpu_fixed_radius_count_threshold",
+        "app_count_host_materialization": False,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def service_coverage_gap_flags_partner_columns(
+    household_point_columns: dict[str, object],
+    clinic_point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned service coverage flags.
+
+    A household is uncovered when the fixed-radius neighbor count is zero. This
+    remains a partner-reference app adapter until fixed-radius native
+    device-column handoff exists.
+    """
+    result = fixed_radius_count_threshold_2d_partner_columns(
+        household_point_columns,
+        clinic_point_columns,
+        radius=radius,
+        threshold=1,
+        partner=partner,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    covered_flags = result["columns"]["threshold_flags"]
+    uncovered_flags = runtime["invert_binary_uint32"](covered_flags)
+    runtime["sync"]()
+    columns = {
+        "household_ids": result["columns"]["query_ids"],
+        "nearby_clinic_counts": result["columns"]["neighbor_counts"],
+        "covered_flags": covered_flags,
+        "uncovered_flags": uncovered_flags,
+    }
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "service_coverage_gap_flags_partner_columns",
+            "app": "service_coverage_gaps",
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_fixed_radius_counts",
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def event_hotspot_flags_partner_columns(
+    event_point_columns: dict[str, object],
+    *,
+    radius: float,
+    hotspot_threshold: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned event hotspot flags.
+
+    The self-neighbor is included in the fixed-radius count, so the partner
+    threshold is `hotspot_threshold + 1`, matching the existing app summary
+    semantics.
+    """
+    hotspot_threshold = int(hotspot_threshold)
+    if hotspot_threshold < 0:
+        raise ValueError("hotspot_threshold must be non-negative")
+    result = fixed_radius_count_threshold_2d_partner_columns(
+        event_point_columns,
+        event_point_columns,
+        radius=radius,
+        threshold=hotspot_threshold + 1,
+        partner=partner,
+        return_metadata=True,
+    )
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "event_hotspot_flags_partner_columns",
+            "app": "event_hotspot_screening",
+            "hotspot_threshold_excluding_self": hotspot_threshold,
+            "fixed_radius_threshold_including_self": hotspot_threshold + 1,
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_fixed_radius_counts",
+        }
+    )
+    columns = {
+        "event_ids": result["columns"]["query_ids"],
+        "neighbor_counts_including_self": result["columns"]["neighbor_counts"],
+        "hotspot_flags": result["columns"]["threshold_flags"],
+    }
     if return_metadata:
         return {"columns": columns, "metadata": metadata}
     return columns
