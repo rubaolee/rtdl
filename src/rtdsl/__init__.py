@@ -377,7 +377,9 @@ from .partner_adapters import road_hazard_priority_flags_optix_partner_device_co
 from .partner_adapters import fixed_radius_count_threshold_2d_partner_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_device_columns
 from .partner_adapters import service_coverage_gap_flags_partner_columns
+from .partner_adapters import service_coverage_gap_flags_optix_partner_device_columns
 from .partner_adapters import event_hotspot_flags_partner_columns
+from .partner_adapters import event_hotspot_flags_optix_partner_device_columns
 from .reduction_runtime import reduce_rows
 from .reduction_runtime import run_generic_scalar_reduction
 from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
@@ -1262,7 +1264,9 @@ __all__ = [
     "fixed_radius_count_threshold_2d_partner_columns",
     "fixed_radius_count_threshold_2d_optix_partner_device_columns",
     "service_coverage_gap_flags_partner_columns",
+    "service_coverage_gap_flags_optix_partner_device_columns",
     "event_hotspot_flags_partner_columns",
+    "event_hotspot_flags_optix_partner_device_columns",
     "triangle_match_apple_rt",
     "triangle_match_hiprt",
     "VulkanRowView",

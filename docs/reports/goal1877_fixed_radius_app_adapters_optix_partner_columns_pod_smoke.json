@@ -1,0 +1,44 @@
+{
+  "goal": 1877,
+  "status": "pass-with-boundary",
+  "date": "2026-05-13",
+  "pod": {
+    "ssh_target": "root@213.192.2.116 -p 40189",
+    "key_used_by_codex": "C:\\Users\\Lestat\\.ssh\\id_ed25519_rtdl_codex_current_pod",
+    "checkout": "/root/rtdl",
+    "base_commit_before_patch": "95907895"
+  },
+  "commands": [
+    "PYTHONPATH=src:. python3 -m unittest tests.goal1877_fixed_radius_app_adapters_optix_partner_columns_test tests.goal1875_fixed_radius_optix_partner_device_columns_test",
+    "Torch CUDA service/hotspot smoke",
+    "CuPy CUDA service/hotspot smoke"
+  ],
+  "observed": {
+    "torch": {
+      "service_coverage_gaps": {
+        "nearby_clinic_counts": [1, 0, 1],
+        "uncovered_flags": [0, 1, 0]
+      },
+      "event_hotspot_screening": {
+        "neighbor_counts_including_self": [2, 2, 1],
+        "hotspot_flags": [1, 1, 0]
+      }
+    },
+    "cupy": {
+      "service_coverage_gaps": {
+        "nearby_clinic_counts": [1, 0, 1],
+        "uncovered_flags": [0, 1, 0]
+      },
+      "event_hotspot_screening": {
+        "neighbor_counts_including_self": [2, 2, 1],
+        "hotspot_flags": [1, 1, 0]
+      }
+    }
+  },
+  "claim_boundaries": {
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false
+  }
+}
