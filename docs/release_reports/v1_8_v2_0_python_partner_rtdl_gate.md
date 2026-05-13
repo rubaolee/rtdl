@@ -123,6 +123,7 @@ The app-agnostic gate is paired with:
 - [Goal1824 Gemini Review of Goal1823](../reviews/goal1824_gemini_review_goal1823_optix_device_ray_columns_2026-05-13.md)
 - [Goal1826 OptiX Partner Device-Triangle Scene Preparation](../reports/goal1826_optix_partner_device_triangle_scene_2026-05-13.md)
 - [Goal1827 Gemini Review of Goal1826](../reviews/goal1827_gemini_review_goal1826_optix_device_triangle_scene_2026-05-13.md)
+- [Goal1828 OptiX Device-Column Pod Validation Packet](../reports/goal1828_optix_device_column_pod_validation_packet_2026-05-13.md)
 
 ## Claim Boundary
 
@@ -186,3 +187,7 @@ ray/primitive any-hit path from device columns, but RTDL still performs GPU
 packing and OptiX GAS construction into backend-owned data, so true zero-copy
 and v2.0 release readiness remain blocked pending RTX pod evidence and broader
 claim review.
+
+Goal1828 prepares the RTX pod validation command for the Goal1823/Goal1826
+device-column path. It is `ready-for-pod` only; it does not itself provide
+hardware evidence.
