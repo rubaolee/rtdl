@@ -1,0 +1,72 @@
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      0.6307088881731033,
+      0.0075929611921310425,
+      0.015422098338603973,
+      0.006479896605014801,
+      0.006356127560138702
+    ],
+    "query_summary": {
+      "max_s": 0.6307088881731033,
+      "median_s": 0.0075929611921310425,
+      "min_s": 0.006356127560138702
+    },
+    "row_count": 2048
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 2048,
+  "git_commit": "46a116924627ffc731a1acac4874061fb7770038",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A4500, 550.127.05",
+  "iterations": 5,
+  "output_capacity": 4096,
+  "parity": {
+    "expected_row_count": 2048,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.00704299658536911,
+      "query_median_ratio_vs_v1_8_native": 0.28010911481586875,
+      "query_samples_s": [
+        0.1363944634795189,
+        0.0026731938123703003,
+        0.00212685763835907,
+        0.002107881009578705,
+        0.0021121278405189514
+      ],
+      "query_summary": {
+        "max_s": 0.1363944634795189,
+        "median_s": 0.00212685763835907,
+        "min_s": 0.002107881009578705
+      },
+      "row_count": 2048
+    },
+    "torch": {
+      "column_build_s": 0.018384717404842377,
+      "query_median_ratio_vs_v1_8_native": 0.28929850555877185,
+      "query_samples_s": [
+        0.012860029935836792,
+        0.0025889500975608826,
+        0.0021966323256492615,
+        0.002090729773044586,
+        0.002072282135486603
+      ],
+      "query_summary": {
+        "max_s": 0.012860029935836792,
+        "median_s": 0.0021966323256492615,
+        "min_s": 0.002072282135486603
+      },
+      "row_count": 2048
+    }
+  },
+  "status": "pass"
+}

@@ -8,6 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "goal1856_segment_polygon_v2_partner_perf.py"
 REPORT = ROOT / "docs" / "reports" / "goal1856_segment_polygon_v2_partner_perf_2026-05-13.md"
 ARTIFACT = ROOT / "docs" / "reports" / "goal1856_segment_polygon_v2_partner_perf_pod_512.json"
+ARTIFACT_2048 = ROOT / "docs" / "reports" / "goal1856_segment_polygon_v2_partner_perf_pod_2048.json"
 
 
 class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
@@ -43,6 +44,7 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         self.assertIn("Status: pass-with-boundary", report)
         self.assertIn("not an all-app performance table", report)
         self.assertIn("does not authorize v2.0 release wording", report)
+        self.assertIn("goal1856_segment_polygon_v2_partner_perf_pod_2048.json", report)
         self.assertEqual(artifact["status"], "pass")
         self.assertEqual(artifact["goal"], "Goal1856")
         self.assertIn("NVIDIA RTX A4500", artifact["gpu"])
@@ -59,6 +61,18 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         self.assertFalse(boundary["whole_app_speedup_claim_authorized"])
         self.assertFalse(boundary["broad_rt_core_speedup_claim_authorized"])
         self.assertFalse(boundary["package_install_claim_authorized"])
+
+    def test_scaled_artifact_keeps_same_contract_boundaries(self) -> None:
+        import json
+
+        artifact = json.loads(ARTIFACT_2048.read_text(encoding="utf-8"))
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["count"], 2048)
+        self.assertTrue(artifact["parity"]["strict_rows_match"])
+        self.assertEqual(artifact["baseline"]["row_count"], 2048)
+        self.assertLess(artifact["partners"]["cupy"]["query_median_ratio_vs_v1_8_native"], 0.5)
+        self.assertLess(artifact["partners"]["torch"]["query_median_ratio_vs_v1_8_native"], 0.5)
+        self.assertFalse(artifact["claim_boundary"]["v2_0_release_authorized"])
 
 
 if __name__ == "__main__":
