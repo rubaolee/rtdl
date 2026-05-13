@@ -62,3 +62,22 @@ $env:PYTHONPATH='src;.'; py -3 scripts\goal1908_v2_local_preflight.py --output s
 Both passed. Goal1908 remains a non-pod preflight; its readiness snapshot still
 correctly reports v2.0 as blocked on missing RTX pod artifacts and final
 reviews.
+
+## Local Linux Cross-OS Check
+
+Codex also created a clean temporary checkout on the local Linux host:
+
+`/tmp/rtdl_goal1915_check`
+
+The checkout was cloned from the public repository and advanced with a local
+bundle through commit `652c7132` (`Add Goal1915 Gemini review for pod
+provenance`). This avoided modifying the existing dirty Linux working tree.
+
+Codex ran:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1908_v2_local_preflight.py --output scratch/goal1908_linux_goal1915.json
+```
+
+Result: pass. This is Linux mechanics coverage only. It is not RTX evidence and
+does not replace the required Goal1903 pod run.
