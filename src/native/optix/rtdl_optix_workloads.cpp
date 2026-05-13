@@ -5286,10 +5286,20 @@ struct FixedRadiusCountRtLaunchParams {
     OptixTraversableHandle traversable;
     const GpuPoint* query_points;
     const GpuPoint* search_points;
+    const uint32_t* query_ids;
+    const double* query_x;
+    const double* query_y;
+    const uint32_t* search_ids;
+    const double* search_x;
+    const double* search_y;
     GpuFixedRadiusCountRecord* output;
+    uint32_t* query_ids_out;
+    uint32_t* neighbor_counts_out;
+    uint32_t* threshold_flags_out;
     uint32_t* threshold_reached_count;
     uint32_t query_count;
     uint32_t threshold;
+    uint32_t use_device_columns;
     float radius;
     float trace_tmax;
 };
@@ -5366,10 +5376,20 @@ static void run_fixed_radius_count_threshold_rt(
     lp.traversable = accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
     lp.search_points = reinterpret_cast<const GpuPoint*>(d_search.ptr);
+    lp.query_ids = nullptr;
+    lp.query_x = nullptr;
+    lp.query_y = nullptr;
+    lp.search_ids = nullptr;
+    lp.search_x = nullptr;
+    lp.search_y = nullptr;
     lp.output = reinterpret_cast<GpuFixedRadiusCountRecord*>(d_output.ptr);
+    lp.query_ids_out = nullptr;
+    lp.neighbor_counts_out = nullptr;
+    lp.threshold_flags_out = nullptr;
     lp.threshold_reached_count = nullptr;
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
+    lp.use_device_columns = 0u;
     lp.radius = radius_f;
     lp.trace_tmax = 2.0f * aabb_radius;
 
@@ -5404,11 +5424,17 @@ static void run_fixed_radius_count_threshold_rt(
     *row_count_out = query_count;
 }
 
+static void ensure_pack_point2d_fixed_radius_aabbs_kernel();
+
 struct PreparedFixedRadiusCountThreshold2D {
     std::vector<GpuPoint> search_points;
     DevPtr d_search;
     AccelHolder accel;
     float max_radius = 0.0f;
+    bool search_columns_zero_copy = false;
+    const uint32_t* search_ids = nullptr;
+    const double* search_x = nullptr;
+    const double* search_y = nullptr;
 
     PreparedFixedRadiusCountThreshold2D(
             const RtdlPoint* source,
@@ -5451,7 +5477,74 @@ struct PreparedFixedRadiusCountThreshold2D {
             g_optix_last_copy_s = 0.0;
         }
     }
+
+    PreparedFixedRadiusCountThreshold2D(
+            const uint32_t* ids,
+            const double* x,
+            const double* y,
+            size_t count,
+            double radius_bound)
+        : search_points(),
+          d_search(0),
+          max_radius(static_cast<float>(radius_bound)),
+          search_columns_zero_copy(true),
+          search_ids(ids),
+          search_x(x),
+          search_y(y)
+    {
+        if (count == 0) return;
+        if (!search_ids || !search_x || !search_y)
+            throw std::runtime_error("partner device fixed-radius search column pointers must not be null when search_count is nonzero");
+        if (count > std::numeric_limits<uint32_t>::max())
+            throw std::runtime_error("partner device fixed-radius search column count exceeds uint32_t launch limit");
+
+        ensure_pack_point2d_fixed_radius_aabbs_kernel();
+
+        constexpr float kRadiusPad = 1.0e-4f;
+        float aabb_radius = max_radius + kRadiusPad;
+        DevPtr d_aabbs(sizeof(OptixAabb) * count);
+        CUdeviceptr d_x = reinterpret_cast<CUdeviceptr>(search_x);
+        CUdeviceptr d_y = reinterpret_cast<CUdeviceptr>(search_y);
+        uint32_t point_count = static_cast<uint32_t>(count);
+        void* args[] = {
+            &d_x,
+            &d_y,
+            &d_aabbs.ptr,
+            &point_count,
+            &aabb_radius,
+        };
+        const unsigned block = 256;
+        const unsigned grid = (point_count + block - 1u) / block;
+        CU_CHECK(cuLaunchKernel(
+            g_partner_point2d_aabb_pack.fn,
+            grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+
+        auto t_start_bvh = std::chrono::steady_clock::now();
+        accel = build_custom_accel_from_device_aabbs(get_optix_context(), d_aabbs.ptr, count);
+        auto t_end_bvh = std::chrono::steady_clock::now();
+        g_optix_last_bvh_build_s = std::chrono::duration<double>(t_end_bvh - t_start_bvh).count();
+        g_optix_last_traversal_s = 0.0;
+        g_optix_last_copy_s = 0.0;
+    }
 };
+
+static void ensure_pack_point2d_fixed_radius_aabbs_kernel()
+{
+    (void)get_optix_context();
+    std::call_once(g_partner_point2d_aabb_pack.init, [&]() {
+        const std::string ptx = compile_to_ptx(
+            kPackPoint2DDeviceAabbsKernelSrc,
+            "partner_point2d_fixed_radius_aabb_pack_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_partner_point2d_aabb_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_partner_point2d_aabb_pack.fn,
+            g_partner_point2d_aabb_pack.module,
+            "pack_point2d_fixed_radius_aabbs"));
+    });
+}
 
 static PreparedFixedRadiusCountThreshold2D* prepare_fixed_radius_count_threshold_2d_optix(
         const RtdlPoint* search_points,
@@ -5469,6 +5562,26 @@ static PreparedFixedRadiusCountThreshold2D* prepare_fixed_radius_count_threshold
             nullptr, 3).release();
     });
     return new PreparedFixedRadiusCountThreshold2D(search_points, search_count, max_radius);
+}
+
+static PreparedFixedRadiusCountThreshold2D* prepare_fixed_radius_count_threshold_2d_device_search_columns_optix(
+        const uint32_t* search_ids,
+        const double* search_x,
+        const double* search_y,
+        size_t search_count,
+        double max_radius)
+{
+    std::call_once(g_frn_count_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusCountRtKernelSrc, "frn_count_rt_kernel.cu");
+        g_frn_count_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn_count_probe",
+            "__miss__frn_count_miss",
+            "__intersection__frn_count_isect",
+            "__anyhit__frn_count_anyhit",
+            nullptr, 3).release();
+    });
+    return new PreparedFixedRadiusCountThreshold2D(search_ids, search_x, search_y, search_count, max_radius);
 }
 
 static void run_prepared_fixed_radius_count_threshold_2d_optix(
@@ -5512,10 +5625,20 @@ static void run_prepared_fixed_radius_count_threshold_2d_optix(
     lp.traversable = prepared->accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.query_ids = nullptr;
+    lp.query_x = nullptr;
+    lp.query_y = nullptr;
+    lp.search_ids = nullptr;
+    lp.search_x = nullptr;
+    lp.search_y = nullptr;
     lp.output = reinterpret_cast<GpuFixedRadiusCountRecord*>(d_output.ptr);
+    lp.query_ids_out = nullptr;
+    lp.neighbor_counts_out = nullptr;
+    lp.threshold_flags_out = nullptr;
     lp.threshold_reached_count = nullptr;
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
+    lp.use_device_columns = 0u;
     lp.radius = static_cast<float>(radius);
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 
@@ -5549,6 +5672,82 @@ static void run_prepared_fixed_radius_count_threshold_2d_optix(
     }
     *rows_out = out;
     *row_count_out = query_count;
+}
+
+static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix(
+        PreparedFixedRadiusCountThreshold2D* prepared,
+        const uint32_t* query_ids,
+        const double* query_x,
+        const double* query_y,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius handle must not be null");
+    if (!prepared->search_columns_zero_copy)
+        throw std::runtime_error("fixed-radius device-column output requires a device-search-column prepared scene");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_count_threshold radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("fixed_radius_count_threshold radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold query_count exceeds uint32 limit");
+    if (threshold > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold threshold exceeds uint32 limit");
+    if (query_count == 0) return;
+    if (!query_ids || !query_x || !query_y)
+        throw std::runtime_error("partner device fixed-radius query column pointers must not be null when query_count is nonzero");
+    if (!query_ids_out || !neighbor_counts_out || !threshold_flags_out)
+        throw std::runtime_error("partner device fixed-radius output column pointers must not be null when query_count is nonzero");
+    if (!prepared->accel.handle) {
+        CUstream stream = 0;
+        CU_CHECK(cuMemcpyDtoD(
+            reinterpret_cast<CUdeviceptr>(query_ids_out),
+            reinterpret_cast<CUdeviceptr>(query_ids),
+            sizeof(uint32_t) * query_count));
+        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(neighbor_counts_out), 0u, query_count));
+        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(threshold_flags_out), threshold == 0 ? 1u : 0u, query_count));
+        CU_CHECK(cuStreamSynchronize(stream));
+        return;
+    }
+
+    FixedRadiusCountRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = nullptr;
+    lp.search_points = nullptr;
+    lp.query_ids = query_ids;
+    lp.query_x = query_x;
+    lp.query_y = query_y;
+    lp.search_ids = prepared->search_ids;
+    lp.search_x = prepared->search_x;
+    lp.search_y = prepared->search_y;
+    lp.output = nullptr;
+    lp.query_ids_out = query_ids_out;
+    lp.neighbor_counts_out = neighbor_counts_out;
+    lp.threshold_flags_out = threshold_flags_out;
+    lp.threshold_reached_count = nullptr;
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.threshold = static_cast<uint32_t>(threshold);
+    lp.use_device_columns = 1u;
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(FixedRadiusCountRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_frn_count_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusCountRtLaunchParams),
+                             &g_frn_count_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_copy_s = 0.0;
 }
 
 static void count_prepared_fixed_radius_threshold_reached_2d_optix(
@@ -5592,10 +5791,20 @@ static void count_prepared_fixed_radius_threshold_reached_2d_optix(
     lp.traversable = prepared->accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.query_ids = nullptr;
+    lp.query_x = nullptr;
+    lp.query_y = nullptr;
+    lp.search_ids = nullptr;
+    lp.search_x = nullptr;
+    lp.search_y = nullptr;
     lp.output = nullptr;
+    lp.query_ids_out = nullptr;
+    lp.neighbor_counts_out = nullptr;
+    lp.threshold_flags_out = nullptr;
     lp.threshold_reached_count = reinterpret_cast<uint32_t*>(d_threshold_reached_count.ptr);
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
+    lp.use_device_columns = 0u;
     lp.radius = static_cast<float>(radius);
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 

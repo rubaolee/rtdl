@@ -553,12 +553,32 @@ int  rtdl_optix_prepare_fixed_radius_count_threshold_2d(
          double max_radius,
          void** prepared_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns(
+         const uint32_t* search_ids,
+         const double* search_x,
+         const double* search_y,
+         size_t search_count,
+         double max_radius,
+         void** prepared_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
          void* prepared,
          const RtdlPoint* query_points, size_t query_count,
          double radius,
          size_t threshold,
          RtdlFixedRadiusCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns(
+         void* prepared,
+         const uint32_t* query_ids,
+         const double* query_x,
+         const double* query_y,
+         size_t query_count,
+         double radius,
+         size_t threshold,
+         uint32_t* query_ids_out,
+         uint32_t* neighbor_counts_out,
+         uint32_t* threshold_flags_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d(
          void* prepared,

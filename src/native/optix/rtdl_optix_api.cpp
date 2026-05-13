@@ -2754,6 +2754,30 @@ extern "C" int rtdl_optix_prepare_fixed_radius_count_threshold_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns(
+        const uint32_t* search_ids,
+        const double* search_x,
+        const double* search_y,
+        size_t search_count,
+        double max_radius,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if ((!search_ids || !search_x || !search_y) && search_count != 0)
+            throw std::runtime_error("search device column pointers must not be null when search_count is nonzero");
+        if (max_radius < 0.0)
+            throw std::runtime_error("fixed_radius_count_threshold max_radius must be non-negative");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_count_threshold search_count exceeds uint32 limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_fixed_radius_count_threshold_2d_device_search_columns_optix(
+            search_ids, search_x, search_y, search_count, max_radius);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
         void* prepared,
         const RtdlPoint* query_points, size_t query_count,
@@ -2766,6 +2790,27 @@ extern "C" int rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
         run_prepared_fixed_radius_count_threshold_2d_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared),
             query_points, query_count, radius, threshold, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns(
+        void* prepared,
+        const uint32_t* query_ids,
+        const double* query_x,
+        const double* query_y,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared),
+            query_ids, query_x, query_y, query_count, radius, threshold,
+            query_ids_out, neighbor_counts_out, threshold_flags_out);
     }, error_out, error_size);
 }
 

@@ -3415,10 +3415,20 @@ struct FixedRadiusCountParams {
     OptixTraversableHandle traversable;
     const GpuPoint* query_points;
     const GpuPoint* search_points;
+    const uint32_t* query_ids;
+    const double* query_x;
+    const double* query_y;
+    const uint32_t* search_ids;
+    const double* search_x;
+    const double* search_y;
     FixedRadiusCountRecord* output;
+    uint32_t* query_ids_out;
+    uint32_t* neighbor_counts_out;
+    uint32_t* threshold_flags_out;
     uint32_t* threshold_reached_count;
     uint32_t query_count;
     uint32_t threshold;
+    uint32_t use_device_columns;
     float radius;
     float trace_tmax;
 };
@@ -3430,10 +3440,12 @@ __constant__ FixedRadiusCountParams params;
 extern "C" __global__ void __raygen__frn_count_probe() {
     const uint32_t idx = optixGetLaunchIndex().x;
     if (idx >= params.query_count) return;
-    const GpuPoint query = params.query_points[idx];
+    const uint32_t query_id = params.use_device_columns ? params.query_ids[idx] : params.query_points[idx].id;
+    const float query_x = params.use_device_columns ? static_cast<float>(params.query_x[idx]) : params.query_points[idx].x;
+    const float query_y = params.use_device_columns ? static_cast<float>(params.query_y[idx]) : params.query_points[idx].y;
     unsigned int p0 = idx, p1 = 0u, p2 = 0u;
     optixTrace(params.traversable,
-               make_float3(query.x, query.y, -params.radius),
+               make_float3(query_x, query_y, -params.radius),
                make_float3(0.0f, 0.0f, 1.0f),
                0.0f, params.trace_tmax, 0.0f,
                OptixVisibilityMask(255),
@@ -3441,7 +3453,16 @@ extern "C" __global__ void __raygen__frn_count_probe() {
                0, 1, 0,
                p0, p1, p2);
     if (params.output) {
-        params.output[idx] = {query.id, p1, p2};
+        params.output[idx] = {query_id, p1, p2};
+    }
+    if (params.query_ids_out) {
+        params.query_ids_out[idx] = query_id;
+    }
+    if (params.neighbor_counts_out) {
+        params.neighbor_counts_out[idx] = p1;
+    }
+    if (params.threshold_flags_out) {
+        params.threshold_flags_out[idx] = p2 ? 1u : 0u;
     }
     if (params.threshold_reached_count && p2 != 0u) {
         atomicAdd(params.threshold_reached_count, 1u);
@@ -3453,10 +3474,12 @@ extern "C" __global__ void __miss__frn_count_miss() {}
 extern "C" __global__ void __intersection__frn_count_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t qidx = optixGetPayload_0();
-    const GpuPoint query = params.query_points[qidx];
-    const GpuPoint target = params.search_points[prim];
-    const float dx = target.x - query.x;
-    const float dy = target.y - query.y;
+    const float query_x = params.use_device_columns ? static_cast<float>(params.query_x[qidx]) : params.query_points[qidx].x;
+    const float query_y = params.use_device_columns ? static_cast<float>(params.query_y[qidx]) : params.query_points[qidx].y;
+    const float target_x = params.use_device_columns ? static_cast<float>(params.search_x[prim]) : params.search_points[prim].x;
+    const float target_y = params.use_device_columns ? static_cast<float>(params.search_y[prim]) : params.search_points[prim].y;
+    const float dx = target_x - query_x;
+    const float dy = target_y - query_y;
     const float radius_sq = params.radius * params.radius;
     if ((dx * dx + dy * dy) > radius_sq) {
         return;
@@ -3539,6 +3562,36 @@ extern "C" __global__ void knn_rows(
         }
         query_out[slot].neighbor_rank = slot + 1;
     }
+}
+)CUDA";
+
+static const char* kPackPoint2DDeviceAabbsKernelSrc = R"CUDA(
+#include <stdint.h>
+
+struct RtdlDeviceAabb {
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+};
+
+extern "C" __global__ void pack_point2d_fixed_radius_aabbs(
+        const double* x,
+        const double* y,
+        RtdlDeviceAabb* aabbs,
+        uint32_t point_count,
+        float aabb_radius)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= point_count) return;
+    const float px = static_cast<float>(x[idx]);
+    const float py = static_cast<float>(y[idx]);
+    RtdlDeviceAabb aabb;
+    aabb.minX = px - aabb_radius;
+    aabb.minY = py - aabb_radius;
+    aabb.minZ = -aabb_radius;
+    aabb.maxX = px + aabb_radius;
+    aabb.maxY = py + aabb_radius;
+    aabb.maxZ = aabb_radius;
+    aabbs[idx] = aabb;
 }
 )CUDA";
 
@@ -4031,6 +4084,7 @@ static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;
+static KnnCuFunction      g_partner_point2d_aabb_pack;
 static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
 static KnnCuFunction      g_collect_k_i64;

@@ -20,6 +20,7 @@ class Goal1872FixedRadiusPartnerDeviceColumnGapTest(unittest.TestCase):
         self.assertIn("event_hotspot_screening", report)
         self.assertIn("fixed-radius count-threshold primitive", report)
         self.assertIn("Goal1873 narrows the gap", report)
+        self.assertIn("Goal1875 narrows the native gap", report)
         self.assertIn("caller-owned query point CUDA columns", report)
         self.assertIn("Torch reference behavior and CuPy conformance", report)
         self.assertIn("No v2.0 release wording", report)
@@ -28,10 +29,11 @@ class Goal1872FixedRadiusPartnerDeviceColumnGapTest(unittest.TestCase):
         adapter_text = PARTNER_ADAPTERS.read_text(encoding="utf-8")
 
         self.assertIn("fixed_radius_count_threshold_2d_partner_columns", adapter_text)
+        self.assertIn("fixed_radius_count_threshold_2d_optix_partner_device_columns", adapter_text)
         self.assertIn("service_coverage_gap_flags_partner_columns", adapter_text)
         self.assertIn("event_hotspot_flags_partner_columns", adapter_text)
         self.assertIn("not_called_partner_reference_only", adapter_text)
-        self.assertNotIn("prepare_optix_fixed_radius_count_threshold_2d_device", adapter_text)
+        self.assertIn("generic_fixed_radius_count_threshold_2d_device_columns", adapter_text)
 
     def test_current_optix_fixed_radius_path_is_host_packed(self) -> None:
         runtime_text = OPTIX_RUNTIME.read_text(encoding="utf-8")
@@ -39,7 +41,8 @@ class Goal1872FixedRadiusPartnerDeviceColumnGapTest(unittest.TestCase):
         self.assertIn("PreparedOptixFixedRadiusCountThreshold2D", runtime_text)
         self.assertIn("PackedPoints", runtime_text)
         self.assertIn("pack_points(records=query_points, dimension=2)", runtime_text)
-        self.assertNotIn("prepare_optix_fixed_radius_count_threshold_2d_device", runtime_text)
+        self.assertIn("prepare_optix_fixed_radius_count_threshold_2d_device_search_columns", runtime_text)
+        self.assertIn("write_device_count_threshold_columns", runtime_text)
 
     def test_goal1843_keeps_fixed_radius_apps_not_rewritten_for_partner(self) -> None:
         text = GOAL1843.read_text(encoding="utf-8")

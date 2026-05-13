@@ -350,6 +350,7 @@ from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d_device_desc
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
+from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
 from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
 from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
@@ -374,6 +375,7 @@ from .partner_adapters import segment_polygon_hitcount_optix_partner_device_coun
 from .partner_adapters import segment_polygon_hitcount_optix_partner_columns
 from .partner_adapters import road_hazard_priority_flags_optix_partner_device_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_partner_columns
+from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_device_columns
 from .partner_adapters import service_coverage_gap_flags_partner_columns
 from .partner_adapters import event_hotspot_flags_partner_columns
 from .reduction_runtime import reduce_rows
@@ -1233,6 +1235,7 @@ __all__ = [
     "prepare_optix",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_count_threshold_2d",
+    "prepare_optix_fixed_radius_count_threshold_2d_device_search_columns",
     "prepare_optix_segment_polygon_anyhit_rows_2d",
     "prepare_optix_segment_polygon_hitcount_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
@@ -1257,6 +1260,7 @@ __all__ = [
     "segment_polygon_hitcount_optix_partner_columns",
     "road_hazard_priority_flags_optix_partner_device_columns",
     "fixed_radius_count_threshold_2d_partner_columns",
+    "fixed_radius_count_threshold_2d_optix_partner_device_columns",
     "service_coverage_gap_flags_partner_columns",
     "event_hotspot_flags_partner_columns",
     "triangle_match_apple_rt",

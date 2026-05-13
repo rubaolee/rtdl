@@ -749,6 +749,7 @@ class PreparedOptixFixedRadiusCountThreshold2D:
         self._max_radius = float(max_radius)
         self._handle = ctypes.c_void_p()
         self._closed = False
+        self._search_scene_true_zero_copy = False
         if packed.count == 0:
             return
 
@@ -876,6 +877,116 @@ class PreparedOptixFixedRadiusCountThreshold2D:
         _check_status(status, error)
         return int(threshold_reached_count.value)
 
+    def write_device_count_threshold_columns(
+        self,
+        query_point_columns: dict,
+        *,
+        radius: float,
+        threshold: int,
+        query_ids_out,
+        neighbor_counts_out,
+        threshold_flags_out,
+    ) -> dict[str, object]:
+        """Write fixed-radius count-threshold columns into partner-owned CUDA buffers."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius count handle is closed")
+        if not getattr(self, "_search_scene_true_zero_copy", False):
+            raise RuntimeError(
+                "write_device_count_threshold_columns requires a device-search-column prepared scene"
+            )
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        query_packet = pack_optix_fixed_radius_count_threshold_2d_device_point_inputs(
+            query_point_columns,
+            label="query",
+            native_symbol=_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL,
+        )
+        query_handoffs = query_packet["points"]
+        query_count = int(query_packet["metadata"]["point_count"])
+        expected_device = (query_handoffs["ids"].device_type, query_handoffs["ids"].device_id)
+        outputs = {}
+        for name, value in {
+            "query_ids": query_ids_out,
+            "neighbor_counts": neighbor_counts_out,
+            "threshold_flags": threshold_flags_out,
+        }.items():
+            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            _require_partner_device_any_hit_output_layout(
+                handoff,
+                ray_count=query_count,
+                expected_device=expected_device,
+            )
+            outputs[name] = handoff
+        if query_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy",
+                    "native_symbol": _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL,
+                    "query_count": 0,
+                    "direct_device_handoff_authorized": True,
+                    "true_zero_copy_authorized": bool(getattr(self, "_search_scene_true_zero_copy", False)),
+                    "rt_core_speedup_claim_authorized": False,
+                    "v2_0_release_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL}. "
+                "Fixed-radius partner output remains blocked; rebuild the OptiX backend."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = write_symbol(
+            self._handle,
+            ctypes.c_void_p(query_handoffs["ids"].data_ptr),
+            ctypes.c_void_p(query_handoffs["x"].data_ptr),
+            ctypes.c_void_p(query_handoffs["y"].data_ptr),
+            query_count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.c_void_p(outputs["query_ids"].data_ptr),
+            ctypes.c_void_p(outputs["neighbor_counts"].data_ptr),
+            ctypes.c_void_p(outputs["threshold_flags"].data_ptr),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        metadata = {
+            "backend": "optix",
+            "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy",
+            "native_symbol": _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL,
+            "source_protocols": tuple(
+                sorted({handoff.source_protocol for handoff in (*query_handoffs.values(), *outputs.values())})
+            ),
+            "source_devices": tuple(
+                sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in (*query_handoffs.values(), *outputs.values())})
+            ),
+            "query_count": query_count,
+            "radius": float(radius),
+            "threshold": int(threshold),
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "query_point_columns_true_zero_copy_authorized": True,
+            "search_point_columns_true_zero_copy_authorized": bool(getattr(self, "_search_scene_true_zero_copy", False)),
+            "output_columns_true_zero_copy_authorized": True,
+            "native_acceleration_structure_required": True,
+            "true_zero_copy_authorized": bool(getattr(self, "_search_scene_true_zero_copy", False)),
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+        }
+        return {"metadata": metadata}
+
     def close(self) -> None:
         if self._closed:
             return
@@ -907,6 +1018,55 @@ def prepare_optix_fixed_radius_count_threshold_2d(
     max_radius: float,
 ) -> PreparedOptixFixedRadiusCountThreshold2D:
     return PreparedOptixFixedRadiusCountThreshold2D(search_points, max_radius=max_radius)
+
+
+def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+    search_point_columns: dict,
+    *,
+    max_radius: float,
+) -> PreparedOptixFixedRadiusCountThreshold2D:
+    """Prepare an OptiX fixed-radius scene from caller-owned CUDA point columns."""
+    if max_radius < 0:
+        raise ValueError("max_radius must be non-negative")
+    packet = pack_optix_fixed_radius_count_threshold_2d_device_point_inputs(
+        search_point_columns,
+        label="search",
+        native_symbol=_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL,
+    )
+    prepared = PreparedOptixFixedRadiusCountThreshold2D.__new__(PreparedOptixFixedRadiusCountThreshold2D)
+    prepared._packed_search = _DevicePointScene2D(packet["metadata"]["point_count"])
+    prepared._max_radius = float(max_radius)
+    prepared._handle = ctypes.c_void_p()
+    prepared._closed = False
+    prepared._search_scene_true_zero_copy = True
+    if packet["metadata"]["point_count"] == 0:
+        return prepared
+
+    lib = _load_optix_library()
+    prepare_symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL,
+    )
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL}. "
+            "Direct device-search fixed-radius preparation remains blocked; rebuild the OptiX backend."
+        )
+    points = packet["points"]
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        ctypes.c_void_p(points["ids"].data_ptr),
+        ctypes.c_void_p(points["x"].data_ptr),
+        ctypes.c_void_p(points["y"].data_ptr),
+        packet["metadata"]["point_count"],
+        ctypes.c_double(float(max_radius)),
+        ctypes.byref(prepared._handle),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return prepared
 
 
 class PreparedOptixSegmentPolygonHitcount2D:
@@ -2353,6 +2513,7 @@ def pack_triangles_2d_from_arrays(
 
 _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
+_PARTNER_POINT_2D_COLUMNS = ("ids", "x", "y")
 _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_device_columns"
 _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL = "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays"
 _OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL = "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags"
@@ -2363,6 +2524,12 @@ _OPTIX_PARTNER_PREPARED_DEVICE_ALL_WITNESSES_SYMBOL = (
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL = "rtdl_optix_prepare_ray_anyhit_2d_device_triangles"
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL = (
     "rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs"
+)
+_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL = (
+    "rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns"
+)
+_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL = (
+    "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns"
 )
 
 
@@ -2456,6 +2623,37 @@ def _require_partner_device_triangle_column_layout(handoffs: dict) -> None:
             expected_device = device
         elif device != expected_device:
             raise ValueError("partner device triangle columns must live on the same CUDA device")
+
+
+def _require_partner_device_point_column_layout(handoffs: dict, *, label: str) -> None:
+    expected_dtypes = {
+        "ids": {"uint32"},
+        "x": {"float64", "double"},
+        "y": {"float64", "double"},
+    }
+    expected_count = None
+    expected_device = None
+    for name in _PARTNER_POINT_2D_COLUMNS:
+        handoff = handoffs[name]
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype not in expected_dtypes[name]:
+            allowed = ", ".join(sorted(expected_dtypes[name]))
+            raise ValueError(f"partner device {label} point column {name!r} must use dtype {allowed}")
+        if not _partner_contiguous_column_strides(
+            handoff.strides,
+            itemsize=_partner_dtype_itemsize(dtype),
+        ):
+            raise ValueError(f"partner device {label} point column {name!r} must be contiguous")
+        count = int(handoff.shape[0])
+        if expected_count is None:
+            expected_count = count
+        elif count != expected_count:
+            raise ValueError(f"partner device {label} point columns must have matching lengths")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError(f"partner device {label} point columns must live on the same CUDA device")
 
 
 def _require_partner_device_triangle_aabb_layout(handoff, *, triangle_count: int, expected_device: tuple[str, int]) -> None:
@@ -2589,6 +2787,39 @@ def _partner_device_descriptor_columns(columns: dict, required: tuple[str, ...],
         handoffs[name] = handoff
     validation_seconds = time.perf_counter() - validation_start
     return handoffs, {"descriptor_validation_s": validation_seconds}
+
+
+def pack_optix_fixed_radius_count_threshold_2d_device_point_inputs(
+    point_columns: dict,
+    *,
+    label: str,
+    native_symbol: str,
+) -> dict[str, object]:
+    """Validate caller-owned CUDA point columns for fixed-radius OptiX handoff."""
+    point_handoffs, timings = _partner_device_descriptor_columns(
+        point_columns,
+        _PARTNER_POINT_2D_COLUMNS,
+        label=label,
+    )
+    _require_partner_device_point_column_layout(point_handoffs, label=label)
+    descriptors = tuple(point_handoffs[name] for name in _PARTNER_POINT_2D_COLUMNS)
+    return {
+        "points": point_handoffs,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": f"device_{label}_point_columns_zero_copy",
+            "native_symbol": native_symbol,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
+            "point_count": int(point_handoffs["ids"].shape[0]),
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            f"{label}_point_columns_true_zero_copy_authorized": True,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": timings,
+        },
+    }
 
 
 def pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns: dict) -> dict[str, object]:
@@ -3221,6 +3452,12 @@ def _call_ray_anyhit_optix_packed(compiled: CompiledKernel, packed, lib) -> Opti
 
 @dataclass(frozen=True)
 class _DeviceTriangleScene2D:
+    count: int
+    dimension: int = 2
+
+
+@dataclass(frozen=True)
+class _DevicePointScene2D:
     count: int
     dimension: int = 2
 
@@ -4967,6 +5204,23 @@ def _register_argtypes(lib) -> None:
         ]
         optional_prepare_frn_count.restype = ctypes.c_int
 
+    optional_prepare_frn_count_device_search = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL,
+    )
+    if optional_prepare_frn_count_device_search is not None:
+        optional_prepare_frn_count_device_search.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_frn_count_device_search.restype = ctypes.c_int
+
     optional_run_prepared_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_fixed_radius_count_threshold_2d")
     if optional_run_prepared_frn_count is not None:
         optional_run_prepared_frn_count.argtypes = [
@@ -4979,6 +5233,27 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_run_prepared_frn_count.restype = ctypes.c_int
+
+    optional_write_prepared_frn_count_device_query = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL,
+    )
+    if optional_write_prepared_frn_count_device_query is not None:
+        optional_write_prepared_frn_count_device_query.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_write_prepared_frn_count_device_query.restype = ctypes.c_int
 
     optional_count_prepared_frn_threshold = _find_optional_backend_symbol(
         lib, "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d"

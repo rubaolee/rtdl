@@ -39,6 +39,18 @@ Those functions operate on caller-owned PyTorch/CuPy point columns, but they do
 not call the native RTDL engine. They are protocol reference work, not RT-core
 evidence.
 
+Goal1875 narrows the native gap further by adding an OptiX fixed-radius
+device-column bridge:
+
+- `fixed_radius_count_threshold_2d_optix_partner_device_columns(...)`
+- `rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns`
+- `rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns`
+
+That bridge is accepted only for the generic fixed-radius count-threshold
+subpath. App-level `service_coverage_gaps` and `event_hotspot_screening`
+adapters, timing rows, and external review still remain before those apps can
+be accepted as v2.0 performance evidence.
+
 ## Required v2.0 Contract
 
 Before `service_coverage_gaps` or `event_hotspot_screening` can become native
@@ -57,9 +69,10 @@ fixed-radius native device-column bridge with:
 ## Boundary
 
 This goal prevents overclaiming: `service_coverage_gaps` and
-`event_hotspot_screening` have a partner reference path after Goal1873, but they
-remain blocked for native RT-core v2.0 timing until the fixed-radius
-device-column bridge exists and is validated on NVIDIA hardware.
+`event_hotspot_screening` have a partner reference path after Goal1873 and a
+generic OptiX fixed-radius device-column bridge after Goal1875, but they remain
+blocked as app-level RT-core v2.0 timing rows until their app adapters, timing
+artifacts, and external reviews exist.
 
 No v2.0 release wording, whole-app speedup wording, broad RT-core speedup
 wording, or package-install claim is authorized.

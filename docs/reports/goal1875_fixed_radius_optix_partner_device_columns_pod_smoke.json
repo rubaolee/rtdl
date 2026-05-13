@@ -1,0 +1,54 @@
+{
+  "goal": 1875,
+  "status": "pass-with-boundary",
+  "date": "2026-05-13",
+  "pod": {
+    "ssh_target": "root@213.192.2.116 -p 40189",
+    "key_used_by_codex": "C:\\Users\\Lestat\\.ssh\\id_ed25519_rtdl_codex_current_pod",
+    "checkout": "/root/rtdl",
+    "base_commit_before_patch": "6fadd554"
+  },
+  "commands": [
+    "PYTHONPATH=src:. python3 -m py_compile src/rtdsl/optix_runtime.py src/rtdsl/partner_adapters.py src/rtdsl/__init__.py",
+    "make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX=/usr/local/cuda",
+    "Torch CUDA smoke through fixed_radius_count_threshold_2d_optix_partner_device_columns",
+    "CuPy CUDA smoke through fixed_radius_count_threshold_2d_optix_partner_device_columns"
+  ],
+  "fixture": {
+    "query_ids": [10, 11, 12],
+    "query_x": [0.0, 2.0, 5.0],
+    "query_y": [0.0, 0.0, 0.0],
+    "search_ids": [1, 2, 3],
+    "search_x": [0.0, 1.0, 6.0],
+    "search_y": [0.0, 0.0, 0.0],
+    "radius": 1.1,
+    "threshold": 2
+  },
+  "expected": {
+    "query_ids": [10, 11, 12],
+    "neighbor_counts": [2, 1, 1],
+    "threshold_flags": [1, 0, 0]
+  },
+  "observed": {
+    "torch": {
+      "query_ids": [10, 11, 12],
+      "neighbor_counts": [2, 1, 1],
+      "threshold_flags": [1, 0, 0],
+      "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+      "true_zero_copy_authorized": true
+    },
+    "cupy": {
+      "query_ids": [10, 11, 12],
+      "neighbor_counts": [2, 1, 1],
+      "threshold_flags": [1, 0, 0],
+      "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+      "true_zero_copy_authorized": true
+    }
+  },
+  "claim_boundaries": {
+    "v2_0_release_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false
+  }
+}

@@ -673,6 +673,88 @@ def fixed_radius_count_threshold_2d_partner_columns(
     return columns
 
 
+def fixed_radius_count_threshold_2d_optix_partner_device_columns(
+    query_point_columns: dict[str, object],
+    search_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return OptiX-written fixed-radius count-threshold columns.
+
+    This is the first native RTDL fixed-radius partner bridge: caller-owned
+    PyTorch/CuPy point columns are handed directly to OptiX, and OptiX writes
+    caller-owned output columns without app-row host materialization.
+    """
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _partner_module(partner)
+    query_count = _column_length(query_point_columns, "ids")
+    search_count = _column_length(search_point_columns, "ids")
+    neighbor_counts = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+    threshold_flags = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+    query_ids_out = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+
+    if query_count and search_count:
+        with _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+            search_point_columns,
+            max_radius=radius,
+        ) as prepared:
+            native_result = prepared.write_device_count_threshold_columns(
+                query_point_columns,
+                radius=radius,
+                threshold=threshold,
+                query_ids_out=query_ids_out,
+                neighbor_counts_out=neighbor_counts,
+                threshold_flags_out=threshold_flags,
+            )
+        native_metadata = native_result["metadata"]
+    else:
+        query_ids_out = query_point_columns["ids"]
+        if threshold == 0:
+            threshold_flags = runtime["greater_equal_uint32"](neighbor_counts, 0)
+        native_metadata = {
+            "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy_empty_shortcut",
+            "native_symbol": "not_called_empty_input",
+            "direct_device_handoff_authorized": True,
+            "true_zero_copy_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+        }
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_ids_out,
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_2d_optix_partner_device_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+        "app_count_materialization": "native_optix_device_columns",
+        "app_count_host_materialization": False,
+        "query_count": query_count,
+        "search_count": search_count,
+        "radius": radius,
+        "threshold": threshold,
+        "direct_device_handoff_authorized": bool(native_metadata["direct_device_handoff_authorized"]),
+        "true_zero_copy_authorized": bool(native_metadata["true_zero_copy_authorized"]),
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "native_metadata": native_metadata,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def service_coverage_gap_flags_partner_columns(
     household_point_columns: dict[str, object],
     clinic_point_columns: dict[str, object],
