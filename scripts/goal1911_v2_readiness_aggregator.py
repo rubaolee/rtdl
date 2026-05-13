@@ -34,6 +34,8 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1913_v2_pod_session_runbook_2026-05-13.md",
     "docs/reports/goal1914_v2_pod_artifact_provenance_hardening_2026-05-13.md",
     "docs/reviews/goal1915_gemini_review_goal1914_pod_provenance_2026-05-13.md",
+    "scripts/goal1916_v2_post_pod_artifact_manifest.py",
+    "docs/reports/goal1916_v2_post_pod_artifact_manifest_2026-05-13.md",
 )
 
 
@@ -62,6 +64,7 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
     if missing_pod:
         blockers.append("RTX pod batch artifacts missing")
     blockers.append("strict Goal1905 post-pod acceptance not passed on pod artifacts")
+    blockers.append("Goal1916 post-pod artifact manifest not passed on pod artifacts")
     blockers.append("fresh Claude or Pro-class review of actual pod artifacts missing")
     blockers.append("final source-tree-only or packaging decision lacks 3-AI release consensus")
     blockers.append("final v2.0 release consensus missing")
@@ -80,6 +83,7 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
             "bash scripts/goal1903_v2_partner_pod_batch_runner.sh"
         ),
         "post_pod_acceptance_command": "PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py",
+        "post_pod_manifest_command": "PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py",
         "pod_session_runbook_command": (
             "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch "
             "OPTIX_PREFIX=/root/vendor/optix-sdk "

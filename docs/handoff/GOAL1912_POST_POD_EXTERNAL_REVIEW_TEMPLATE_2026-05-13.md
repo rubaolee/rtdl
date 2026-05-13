@@ -22,6 +22,7 @@ Required artifacts after pod:
 - `docs/reports/goal1889_road_hazard_prepared_reuse_pod_2048.json`
 - `docs/reports/goal1903_v2_partner_pod_batch_summary.json`
 - `docs/reports/goal1905_v2_partner_pod_batch_acceptance.json`
+- `docs/reports/goal1916_v2_post_pod_artifact_manifest.json`
 
 Supporting reports:
 

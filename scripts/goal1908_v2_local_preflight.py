@@ -28,6 +28,7 @@ TEST_MODULES = (
     "tests.goal1913_v2_pod_session_runbook_test",
     "tests.goal1914_v2_pod_artifact_provenance_hardening_test",
     "tests.goal1915_gemini_review_goal1914_pod_provenance_test",
+    "tests.goal1916_v2_post_pod_artifact_manifest_test",
 )
 
 
@@ -73,6 +74,13 @@ def main(argv: Iterable[str] | None = None) -> int:
             "scripts/goal1911_v2_readiness_aggregator.py",
             "--output",
             "scratch/goal1908_readiness_aggregator.json",
+        ],
+        [
+            args.python,
+            "scripts/goal1916_v2_post_pod_artifact_manifest.py",
+            "--allow-missing",
+            "--output",
+            "scratch/goal1908_pre_pod_artifact_manifest.json",
         ],
     ]
     runs = [_run(command, root=root) for command in commands]

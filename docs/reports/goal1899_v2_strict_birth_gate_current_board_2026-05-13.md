@@ -55,6 +55,8 @@ blocks the v2.0 release label.
   RTX GPU provenance, git commit, and matching source labels.
 - Goal1915: Gemini accepted the Goal1914 provenance hardening as a pre-pod
   guardrail while keeping actual pod artifacts and post-pod review required.
+- Goal1916: post-pod artifact manifest generator for reviewer-ready commit,
+  GPU, source-label, partner, and claim-boundary summaries.
 
 ## Immediate Next Hardware Step
 
@@ -87,6 +89,7 @@ Then validate:
 
 ```bash
 PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py
+PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py
 ```
 
 ## Immediate Next Non-Hardware Step
