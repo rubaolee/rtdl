@@ -58,8 +58,11 @@ The artifact preserves the device-output boundary:
 
 ## Boundary
 
-The counting step currently uses partner tensor primitives to deduplicate
-generic `(ray_id, primitive_id)` witness pairs and count unique primitive hits
-per input segment ID. That is acceptable as a Python+partner+RTDL app adapter,
-but broad performance claims remain blocked until it is measured on the RTX pod
-against the same v1.8 app contract and reviewed.
+The counting step currently uses partner tensor primitives to map generic
+`ray_id` witnesses back to compact input-segment positions, deduplicate
+`(segment_position, primitive_id)` witness pairs, and count unique primitive hits
+per input segment. This preserves non-contiguous segment IDs without using raw
+application IDs as composite-key multipliers. That is acceptable as a
+Python+partner+RTDL app adapter, but broad performance claims remain blocked
+until it is measured on the RTX pod against the same v1.8 app contract and
+reviewed.

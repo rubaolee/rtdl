@@ -25,15 +25,18 @@ def _partner_module(partner: str):
         def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
             if int(witness_ray_ids.numel()) == 0:
                 return torch.zeros_like(segment_ids, dtype=torch.uint32)
+            segment_ids_i64 = segment_ids.to(torch.int64)
             ray_ids = witness_ray_ids.to(torch.int64)
             primitive_ids = witness_primitive_ids.to(torch.int64)
+            segment_matches = segment_ids_i64.reshape(-1, 1).eq(ray_ids.reshape(1, -1))
+            if not bool(torch.all(torch.any(segment_matches, dim=0)).item()):
+                raise ValueError("witness ray IDs must be present in segment_ray_columns['ids']")
+            segment_positions = torch.argmax(segment_matches.to(torch.int64), dim=0)
             primitive_modulus = torch.max(primitive_ids) + 1
-            unique_pairs = torch.unique(ray_ids * primitive_modulus + primitive_ids)
-            unique_ray_ids = torch.div(unique_pairs, primitive_modulus, rounding_mode="floor")
+            unique_pairs = torch.unique(segment_positions * primitive_modulus + primitive_ids)
+            unique_positions = torch.div(unique_pairs, primitive_modulus, rounding_mode="floor")
             return (
-                segment_ids.to(torch.int64).reshape(-1, 1)
-                .eq(unique_ray_ids.reshape(1, -1))
-                .sum(dim=1)
+                torch.bincount(unique_positions, minlength=int(segment_ids.numel()))
                 .to(torch.uint32)
             )
 
@@ -60,16 +63,17 @@ def _partner_module(partner: str):
         def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
             if int(witness_ray_ids.size) == 0:
                 return cupy.zeros_like(segment_ids, dtype=cupy.uint32)
+            segment_ids_i64 = segment_ids.astype(cupy.int64, copy=False)
             ray_ids = witness_ray_ids.astype(cupy.int64, copy=False)
             primitive_ids = witness_primitive_ids.astype(cupy.int64, copy=False)
+            segment_matches = segment_ids_i64.reshape(-1, 1) == ray_ids.reshape(1, -1)
+            if not bool(cupy.all(cupy.any(segment_matches, axis=0)).item()):
+                raise ValueError("witness ray IDs must be present in segment_ray_columns['ids']")
+            segment_positions = cupy.argmax(segment_matches, axis=0).astype(cupy.int64, copy=False)
             primitive_modulus = cupy.max(primitive_ids) + cupy.asarray(1, dtype=cupy.int64)
-            unique_pairs = cupy.unique(ray_ids * primitive_modulus + primitive_ids)
-            unique_ray_ids = unique_pairs // primitive_modulus
-            return cupy.sum(
-                segment_ids.astype(cupy.int64, copy=False).reshape(-1, 1)
-                == unique_ray_ids.reshape(1, -1),
-                axis=1,
-            ).astype(cupy.uint32, copy=False)
+            unique_pairs = cupy.unique(segment_positions * primitive_modulus + primitive_ids)
+            unique_positions = unique_pairs // primitive_modulus
+            return cupy.bincount(unique_positions, minlength=int(segment_ids.size)).astype(cupy.uint32, copy=False)
 
         return {
             "name": "cupy",
