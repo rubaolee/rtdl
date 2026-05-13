@@ -27,6 +27,7 @@ TEST_MODULES = (
     "tests.goal1912_post_pod_external_review_template_test",
     "tests.goal1913_v2_pod_session_runbook_test",
     "tests.goal1914_v2_pod_artifact_provenance_hardening_test",
+    "tests.goal1915_gemini_review_goal1914_pod_provenance_test",
 )
 
 

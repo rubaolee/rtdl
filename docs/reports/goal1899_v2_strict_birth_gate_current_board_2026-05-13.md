@@ -53,6 +53,8 @@ blocks the v2.0 release label.
   Goal1905, and Goal1911.
 - Goal1914: pod artifact provenance hardening so accepted artifacts must carry
   RTX GPU provenance, git commit, and matching source labels.
+- Goal1915: Gemini accepted the Goal1914 provenance hardening as a pre-pod
+  guardrail while keeping actual pod artifacts and post-pod review required.
 
 ## Immediate Next Hardware Step
 
