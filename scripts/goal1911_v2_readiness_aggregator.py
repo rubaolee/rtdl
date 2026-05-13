@@ -16,6 +16,13 @@ REQUIRED_POD_ARTIFACTS = (
     "docs/reports/goal1903_v2_partner_pod_batch_summary.json",
 )
 
+GOAL1905_ACCEPTANCE = "docs/reports/goal1905_v2_partner_pod_batch_acceptance.json"
+GOAL1916_MANIFEST = "docs/reports/goal1916_v2_post_pod_artifact_manifest.json"
+POST_POD_REVIEW_CANDIDATES = (
+    "docs/reviews/goal1912_claude_review_goal1903_post_pod_artifacts_2026-05-13.md",
+    "docs/reviews/goal1912_gemini_review_goal1903_post_pod_artifacts_2026-05-13.md",
+)
+
 SUPPORTING_REQUIRED = (
     "docs/reports/goal1899_v2_strict_birth_gate_current_board_2026-05-13.md",
     "docs/reports/goal1900_partner_acceleration_boundary_doc_2026-05-13.md",
@@ -53,6 +60,11 @@ def _read_json_if_exists(root: pathlib.Path, path_text: str) -> dict | None:
 def aggregate(root: pathlib.Path) -> dict[str, object]:
     missing_supporting = [path for path in SUPPORTING_REQUIRED if not _exists(root, path)]
     missing_pod = [path for path in REQUIRED_POD_ARTIFACTS if not _exists(root, path)]
+    acceptance = _read_json_if_exists(root, GOAL1905_ACCEPTANCE)
+    acceptance_status = acceptance.get("status") if acceptance else "not-run"
+    manifest = _read_json_if_exists(root, GOAL1916_MANIFEST)
+    manifest_status = manifest.get("status") if manifest else "not-run"
+    post_pod_reviews = [path for path in POST_POD_REVIEW_CANDIDATES if _exists(root, path)]
     local_preflight = _read_json_if_exists(root, "scratch/goal1908_final_preflight_post_commit.json")
     if local_preflight is None:
         local_preflight = _read_json_if_exists(root, "scratch/goal1908_final_preflight.json")
@@ -63,9 +75,12 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         blockers.append("supporting gate files missing")
     if missing_pod:
         blockers.append("RTX pod batch artifacts missing")
-    blockers.append("strict Goal1905 post-pod acceptance not passed on pod artifacts")
-    blockers.append("Goal1916 post-pod artifact manifest not passed on pod artifacts")
-    blockers.append("fresh Claude or Pro-class review of actual pod artifacts missing")
+    if acceptance_status != "pass":
+        blockers.append("strict Goal1905 post-pod acceptance not passed on pod artifacts")
+    if manifest_status != "pass":
+        blockers.append("Goal1916 post-pod artifact manifest not passed on pod artifacts")
+    if not post_pod_reviews:
+        blockers.append("fresh Claude or Pro-class review of actual pod artifacts missing")
     blockers.append("final source-tree-only or packaging decision lacks 3-AI release consensus")
     blockers.append("final v2.0 release consensus missing")
     blockers.append("explicit user-requested release action missing")
@@ -74,6 +89,9 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         "goal": "Goal1911",
         "status": "blocked",
         "local_preflight_status": local_preflight_status,
+        "goal1905_acceptance_status": acceptance_status,
+        "goal1916_manifest_status": manifest_status,
+        "post_pod_review_files": post_pod_reviews,
         "missing_supporting_files": missing_supporting,
         "missing_pod_artifacts": missing_pod,
         "blockers": blockers,

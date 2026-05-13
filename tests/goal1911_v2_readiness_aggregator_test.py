@@ -46,6 +46,32 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
             self.assertIn("final v2.0 release consensus missing", payload["blockers"])
             self.assertIn("explicit user-requested release action missing", payload["blockers"])
 
+    def test_acceptance_manifest_and_review_clear_their_specific_blockers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            for relative in (*SUPPORTING_REQUIRED, *REQUIRED_POD_ARTIFACTS):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("{}\n", encoding="utf-8")
+            for relative in (
+                "docs/reports/goal1905_v2_partner_pod_batch_acceptance.json",
+                "docs/reports/goal1916_v2_post_pod_artifact_manifest.json",
+            ):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps({"status": "pass"}), encoding="utf-8")
+            review = root / "docs/reviews/goal1912_gemini_review_goal1903_post_pod_artifacts_2026-05-13.md"
+            review.parent.mkdir(parents=True, exist_ok=True)
+            review.write_text("Verdict: accept-with-boundary\n", encoding="utf-8")
+
+            payload = aggregate(root)
+
+            self.assertEqual(payload["goal1905_acceptance_status"], "pass")
+            self.assertEqual(payload["goal1916_manifest_status"], "pass")
+            self.assertNotIn("strict Goal1905 post-pod acceptance not passed on pod artifacts", payload["blockers"])
+            self.assertNotIn("Goal1916 post-pod artifact manifest not passed on pod artifacts", payload["blockers"])
+            self.assertNotIn("fresh Claude or Pro-class review of actual pod artifacts missing", payload["blockers"])
+
     def test_main_writes_json_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)

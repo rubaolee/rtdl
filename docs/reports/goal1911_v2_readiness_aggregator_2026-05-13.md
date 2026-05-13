@@ -30,6 +30,12 @@ The generated JSON goes to:
 Before the next RTX pod run, the expected status is `blocked` with missing
 Goal1903 pod artifacts and the remaining consensus/release-action blockers.
 
+The JSON also reports the strict Goal1905 acceptance status, the Goal1916
+post-pod manifest status, and any post-pod external review files that are
+present. These fields let the board clear those specific blockers
+automatically after a real pod run instead of leaving stale unconditional
+blocker text.
+
 ## Boundary
 
 Goal1911 is an aggregator, not evidence. It does not replace Goal1903 pod
