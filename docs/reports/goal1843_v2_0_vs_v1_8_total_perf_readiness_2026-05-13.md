@@ -44,7 +44,11 @@ The v2.0 side is only partially born:
   timing row.
 - Goal1863 adds the first same-contract timing row for
   `segment_polygon_hitcount` device count columns, at 512 and 2048 synthetic
-  rows on the RTX A4500 pod.
+  rows on the RTX A4500 pod. Goal1864 reviewed that timing row with verdict
+  `accept-with-boundary`.
+- Goal1865 lifts `road_hazard_screening` to a Python+partner priority-flag app
+  adapter over the same device count columns, but it has local contract evidence
+  only and no pod timing row yet.
 - No all-app v2.0 partner timing harness exists yet.
 
 ## Current Evidence Inventory
@@ -61,7 +65,8 @@ The v2.0 side is only partially born:
 | Goal1856 | first same-contract v2.0-vs-v1.8 timing row for `segment_polygon_anyhit_rows` | pod validated on RTX A4500 at 512 and 2048 rows; Claude accepted with boundary | not v2.0 release |
 | Goal1859 | second app-level adapter for `segment_polygon_hitcount` over generic witness rows | pod correctness-smoked on RTX A4500 for Torch/CuPy; host/Python count materialization remains explicit | not v2.0 release |
 | Goal1861 | device-count-column adapter for `segment_polygon_hitcount` | pod correctness-smoked on RTX A4500 for Torch/CuPy; app count columns stay partner-owned | not v2.0 release |
-| Goal1863 | same-contract timing row for `segment_polygon_hitcount` device count columns | pod timed on RTX A4500 at 512 and 2048 rows; external review pending | not v2.0 release |
+| Goal1863 | same-contract timing row for `segment_polygon_hitcount` device count columns | pod timed on RTX A4500 at 512 and 2048 rows; Goal1864 Gemini review accepted with boundary | not v2.0 release |
+| Goal1865 | app-level priority-flag adapter for `road_hazard_screening` over Goal1861 device count columns | local contract test only; pod timing still needed | not v2.0 release |
 
 ## Engine Readiness
 
@@ -80,8 +85,8 @@ The v2.0 side is only partially born:
 | `service_coverage_gaps` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
 | `event_hotspot_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
 | `facility_knn_assignment` | available | CPU control rerun needed | available | not yet covered by Goal1838 any-hit slice |
-| `road_hazard_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
-| `segment_polygon_hitcount` | available | CPU control rerun needed | available | Goal1863 same-contract timing row exists for device count columns; external review pending |
+| `road_hazard_screening` | available | CPU control rerun needed | available | Goal1865 local priority-flag partner adapter exists; pod correctness and timing still needed |
+| `segment_polygon_hitcount` | available | CPU control rerun needed | available | Goal1863 same-contract timing row exists for device count columns; Goal1864 Gemini review accepted with boundary |
 | `segment_polygon_anyhit_rows` | available | CPU control rerun needed | available | first v2.0 OptiX app adapter and timing row exist: Goal1850 record adapter, Goal1853 caller-supplied PyTorch/CuPy GPU-column adapter, Goal1856 narrow 512/2048-row timing evidence |
 | `polygon_pair_overlap_area_rows` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
 | `polygon_set_jaccard` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
@@ -135,6 +140,8 @@ Goal1843 now says the comparison is beyond plan-only but still not all-app
 execution-ready. The first app-level v2.0 OptiX adapter exists, has pod
 correctness evidence, and has a first narrow same-contract timing row. A second
 count-style adapter also exists with partner-owned device count columns and a
-first narrow same-contract timing row. The next implementation goal should scale
-both timed rows to real datasets and broaden coverage before any total
-v2.0-vs-v1.8 table is attempted.
+first narrow same-contract timing row. `road_hazard_screening` now has a local
+partner priority-flag adapter over those count columns, but it is not yet pod
+timed. The next implementation goal should scale the timed rows to real
+datasets, pod-validate the road-hazard adapter, and broaden coverage before any
+total v2.0-vs-v1.8 table is attempted.

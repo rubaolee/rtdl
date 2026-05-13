@@ -38,11 +38,14 @@ class Goal1843V20VsV18TotalPerfReadinessTest(unittest.TestCase):
         self.assertIn("Goal1861 upgrades that hit-count path", text)
         self.assertIn("app count columns stay partner-owned", text)
         self.assertIn("Goal1863 adds the first same-contract timing row", text)
-        self.assertIn("external review pending", text)
+        self.assertIn("Goal1864 reviewed that timing row", text)
+        self.assertIn("Goal1865 lifts `road_hazard_screening`", text)
+        self.assertIn("Goal1864 Gemini review accepted with boundary", text)
         self.assertIn("first v2.0 OptiX app adapter and timing row exist", text)
         self.assertIn("first narrow same-contract timing row", text)
         self.assertIn("segment_polygon_anyhit_rows", text)
         self.assertIn("segment_polygon_hitcount", text)
+        self.assertIn("Goal1865 local priority-flag partner adapter exists", text)
 
 
 if __name__ == "__main__":

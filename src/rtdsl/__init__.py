@@ -372,6 +372,7 @@ from .partner_adapters import segment_polygon_anyhit_rows_optix_partner
 from .partner_adapters import segment_polygon_anyhit_rows_optix_partner_columns
 from .partner_adapters import segment_polygon_hitcount_optix_partner_device_count_columns
 from .partner_adapters import segment_polygon_hitcount_optix_partner_columns
+from .partner_adapters import road_hazard_priority_flags_optix_partner_device_columns
 from .reduction_runtime import reduce_rows
 from .reduction_runtime import run_generic_scalar_reduction
 from .reduction_runtime import V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES
@@ -1251,6 +1252,7 @@ __all__ = [
     "segment_polygon_anyhit_rows_optix_partner_columns",
     "segment_polygon_hitcount_optix_partner_device_count_columns",
     "segment_polygon_hitcount_optix_partner_columns",
+    "road_hazard_priority_flags_optix_partner_device_columns",
     "triangle_match_apple_rt",
     "triangle_match_hiprt",
     "VulkanRowView",

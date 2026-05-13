@@ -53,6 +53,7 @@ def _partner_module(partner: str):
             "to_host": lambda value: [int(item) for item in value.detach().cpu().tolist()],
             "slice": lambda value, count: value[: int(count)],
             "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
+            "greater_equal_uint32": lambda value, threshold: value.ge(int(threshold)).to(torch.uint32),
         }
     if partner == "cupy":
         import cupy
@@ -88,6 +89,7 @@ def _partner_module(partner: str):
             "to_host": lambda value: [int(item) for item in cupy.asnumpy(value).tolist()],
             "slice": lambda value, count: value[: int(count)],
             "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
+            "greater_equal_uint32": lambda value, threshold: (value >= int(threshold)).astype(cupy.uint32, copy=False),
         }
     raise ValueError("partner must be 'torch' or 'cupy'")
 
@@ -484,6 +486,66 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
             "app_count_materialization": "partner_gpu_from_generic_witness_pairs",
             "app_count_host_materialization": False,
             "whole_app_true_zero_copy_authorized": True,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def road_hazard_priority_flags_optix_partner_device_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    threshold: int = 2,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return partner-owned road hazard priority columns.
+
+    This app adapter reuses the generic segment/polygon hit-count partner
+    column path, then applies the road-hazard priority threshold with the
+    selected partner tensor library. The native engine still sees only generic
+    ray/primitive witness IDs.
+    """
+    threshold = int(threshold)
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    hitcount_result = segment_polygon_hitcount_optix_partner_device_count_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    hitcount_columns = hitcount_result["columns"]
+    priority_flags = runtime["greater_equal_uint32"](
+        hitcount_columns["hit_counts"],
+        threshold,
+    )
+    runtime["sync"]()
+    columns = {
+        "road_ids": hitcount_columns["segment_ids"],
+        "hit_counts": hitcount_columns["hit_counts"],
+        "priority_flags": priority_flags,
+    }
+    metadata = dict(hitcount_result["metadata"])
+    metadata.update(
+        {
+            "adapter": "road_hazard_priority_flags_optix_partner_device_columns",
+            "app": "road_hazard_screening",
+            "partner": runtime["name"],
+            "priority_threshold": threshold,
+            "app_priority_materialization": "partner_gpu_threshold_from_hit_counts",
+            "app_priority_host_materialization": False,
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
