@@ -90,10 +90,10 @@ new prepared row. They do not replace RTX 3090 pod timing evidence.
 
 | Count | Partner | Goal1869 unprepared partner median (s) | Goal1889 prepared reuse median (s) | Prepared/unprepared ratio | Prepared/v1.8 prepared ratio |
 | ---: | --- | ---: | ---: | ---: | ---: |
-| 64 | CuPy | 0.0023815640 | 0.0014490860 | 0.608x | 4.686x |
-| 64 | Torch | 0.0017355350 | 0.0008779970 | 0.506x | 2.839x |
-| 256 | CuPy | 0.0022965010 | 0.0014187499 | 0.618x | 2.357x |
-| 256 | Torch | 0.0018809200 | 0.0009218870 | 0.490x | 1.531x |
+| 64 | CuPy | 0.0021360031 | 0.0012973080 | 0.607x | 5.962x |
+| 64 | Torch | 0.0016321751 | 0.0008198121 | 0.502x | 3.767x |
+| 256 | CuPy | 0.0022091491 | 0.0013275420 | 0.601x | 2.460x |
+| 256 | Torch | 0.0017113100 | 0.0008016210 | 0.468x | 1.485x |
 
 ## Boundary
 
