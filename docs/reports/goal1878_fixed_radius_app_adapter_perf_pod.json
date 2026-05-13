@@ -1,0 +1,203 @@
+{
+  "goal": 1878,
+  "status": "measurement",
+  "date": "2026-05-13",
+  "results": [
+    {
+      "size": 256,
+      "partner": "torch",
+      "service_coverage_gaps": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.0008466592989861965,
+          "min_s": 0.0008067190647125244,
+          "max_s": 0.5474774478934705,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.0002564499154686928,
+          "min_s": 0.00023742904886603355,
+          "max_s": 0.056520352605730295,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.000659469049423933,
+          "min_s": 0.0006461390294134617,
+          "max_s": 0.35400587785989046,
+          "repeat": 5
+        }
+      },
+      "event_hotspot_screening": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.0009301393292844296,
+          "min_s": 0.0009210691787302494,
+          "max_s": 0.0009578890167176723,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.0001893988810479641,
+          "min_s": 0.00018417974933981895,
+          "max_s": 0.0007257699035108089,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.0005840691737830639,
+          "min_s": 0.0005770092830061913,
+          "max_s": 0.0006303293630480766,
+          "repeat": 5
+        }
+      },
+      "claim_boundaries": {
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false
+      }
+    },
+    {
+      "size": 1024,
+      "partner": "torch",
+      "service_coverage_gaps": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.002618377096951008,
+          "min_s": 0.002612366806715727,
+          "max_s": 0.003426915965974331,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.00024591991677880287,
+          "min_s": 0.00023768888786435127,
+          "max_s": 0.001096447929739952,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.0006520189344882965,
+          "min_s": 0.000632129143923521,
+          "max_s": 0.0007312200032174587,
+          "repeat": 5
+        }
+      },
+      "event_hotspot_screening": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.0031157671473920345,
+          "min_s": 0.0030048061162233353,
+          "max_s": 0.06786676030606031,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.00020360900089144707,
+          "min_s": 0.00020129000768065453,
+          "max_s": 0.0005979789420962334,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.0005803890526294708,
+          "min_s": 0.0005698488093912601,
+          "max_s": 0.0005955500528216362,
+          "repeat": 5
+        }
+      },
+      "claim_boundaries": {
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false
+      }
+    },
+    {
+      "size": 256,
+      "partner": "cupy",
+      "service_coverage_gaps": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.0008662287145853043,
+          "min_s": 0.0008179987780749798,
+          "max_s": 0.001291619148105383,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.00026139989495277405,
+          "min_s": 0.0002215891145169735,
+          "max_s": 0.6477203378453851,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.0006345496512949467,
+          "min_s": 0.0006004190072417259,
+          "max_s": 0.0009521082974970341,
+          "repeat": 5
+        }
+      },
+      "event_hotspot_screening": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.0009616590104997158,
+          "min_s": 0.0009252591989934444,
+          "max_s": 0.00098012899979949,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.0002061990089714527,
+          "min_s": 0.00019791023805737495,
+          "max_s": 0.0007134499028325081,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.0005817688070237637,
+          "min_s": 0.0005668103694915771,
+          "max_s": 0.0005895798094570637,
+          "repeat": 5
+        }
+      },
+      "claim_boundaries": {
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false
+      }
+    },
+    {
+      "size": 1024,
+      "partner": "cupy",
+      "service_coverage_gaps": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.002667806576937437,
+          "min_s": 0.0026277569122612476,
+          "max_s": 0.003777964971959591,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.0002229791134595871,
+          "min_s": 0.00022048968821763992,
+          "max_s": 0.001238109078258276,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.0006143893115222454,
+          "min_s": 0.00059855030849576,
+          "max_s": 0.0006513297557830811,
+          "repeat": 5
+        }
+      },
+      "event_hotspot_screening": {
+        "v1_8_prepared_optix": {
+          "median_s": 0.0030320659279823303,
+          "min_s": 0.003017325885593891,
+          "max_s": 0.003129857126623392,
+          "repeat": 5
+        },
+        "goal1873_partner_reference": {
+          "median_s": 0.0002058497630059719,
+          "min_s": 0.0001992490142583847,
+          "max_s": 0.001132648903876543,
+          "repeat": 5
+        },
+        "goal1877_v2_native_optix_partner": {
+          "median_s": 0.0005769990384578705,
+          "min_s": 0.000566328875720501,
+          "max_s": 0.0005871793255209923,
+          "repeat": 5
+        }
+      },
+      "claim_boundaries": {
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false
+      }
+    }
+  ]
+}
