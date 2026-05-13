@@ -25,6 +25,8 @@ class Goal1899V2StrictBirthGateCurrentBoardTest(unittest.TestCase):
 
         self.assertIn("Goal1897", text)
         self.assertIn("Goal1903", text)
+        self.assertIn("Goal1904", text)
+        self.assertIn("Gemini review accepted Goal1903", text)
         self.assertIn("goal1903_fixed_radius_batch_pod.json", text)
         self.assertIn("goal1903_segment_polygon_batch_pod_512.json", text)
         self.assertIn("goal1903_segment_polygon_batch_pod_2048.json", text)
@@ -36,6 +38,7 @@ class Goal1899V2StrictBirthGateCurrentBoardTest(unittest.TestCase):
         self.assertIn("Source doc written and linked", text)
         self.assertIn("v2.0 is still not born", text)
         self.assertIn("external review of the Goal1900 partner-acceleration boundary document", text)
+        self.assertIn("Claude or Pro-class review", text)
 
 
 if __name__ == "__main__":
