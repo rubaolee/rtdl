@@ -44,6 +44,7 @@ SUPPORTING_REQUIRED = (
     "scripts/goal1916_v2_post_pod_artifact_manifest.py",
     "docs/reports/goal1916_v2_post_pod_artifact_manifest_2026-05-13.md",
     "docs/reviews/goal1917_gemini_review_goal1916_post_pod_manifest_2026-05-13.md",
+    "docs/reports/goal1918_fixed_radius_reference_oom_guard_2026-05-13.md",
 )
 
 

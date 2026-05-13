@@ -30,6 +30,7 @@ TEST_MODULES = (
     "tests.goal1915_gemini_review_goal1914_pod_provenance_test",
     "tests.goal1916_v2_post_pod_artifact_manifest_test",
     "tests.goal1917_gemini_review_goal1916_post_pod_manifest_test",
+    "tests.goal1918_fixed_radius_reference_oom_guard_test",
 )
 
 

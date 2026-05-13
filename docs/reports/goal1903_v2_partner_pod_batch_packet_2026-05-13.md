@@ -41,6 +41,12 @@ Before writing the final summary it also validates the requested fixed-radius
 and segment/polygon artifacts, including status, parity where applicable, and
 the false release/speedup claim-boundary flags.
 
+For fixed-radius rows, the runner passes
+`--max-reference-pairs "${FIXED_RADIUS_MAX_REFERENCE_PAIRS:-50000000}"` to the
+Goal1878 script. This keeps the optional dense Torch/CuPy reference baseline
+from materializing very large pair matrices on the default 16384-size RTX pod
+row while still timing the v1.8 and v2 native OptiX paths.
+
 After the pod run, execute the Goal1905 acceptance validator:
 
 ```bash

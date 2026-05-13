@@ -11,6 +11,7 @@ RUN_ROAD_HAZARD="${RUN_ROAD_HAZARD:-1}"
 FIXED_RADIUS_SIZES="${FIXED_RADIUS_SIZES:-4096,16384}"
 FIXED_RADIUS_REPEAT="${FIXED_RADIUS_REPEAT:-7}"
 FIXED_RADIUS_PARTNER="${FIXED_RADIUS_PARTNER:-both}"
+FIXED_RADIUS_MAX_REFERENCE_PAIRS="${FIXED_RADIUS_MAX_REFERENCE_PAIRS:-50000000}"
 SEGMENT_POLYGON_COUNTS="${SEGMENT_POLYGON_COUNTS:-512 2048}"
 SEGMENT_POLYGON_ITERATIONS="${SEGMENT_POLYGON_ITERATIONS:-5}"
 SEGMENT_POLYGON_PARTNERS="${SEGMENT_POLYGON_PARTNERS:-cupy,torch}"
@@ -52,6 +53,7 @@ echo "[goal1903] output: ${OUT_DIR}"
   echo "run_fixed_radius=${RUN_FIXED_RADIUS}"
   echo "run_segment_polygon=${RUN_SEGMENT_POLYGON}"
   echo "run_road_hazard=${RUN_ROAD_HAZARD}"
+  echo "fixed_radius_max_reference_pairs=${FIXED_RADIUS_MAX_REFERENCE_PAIRS}"
   if command -v nvidia-smi >/dev/null 2>&1; then
     nvidia-smi
   else
@@ -115,6 +117,7 @@ if [[ "${RUN_FIXED_RADIUS}" == "1" ]]; then
     --sizes "${FIXED_RADIUS_SIZES}" \
     --repeat "${FIXED_RADIUS_REPEAT}" \
     --partner "${FIXED_RADIUS_PARTNER}" \
+    --max-reference-pairs "${FIXED_RADIUS_MAX_REFERENCE_PAIRS}" \
     --output "${FIXED_RADIUS_ARTIFACT}" \
     2>&1 | tee "${OUT_DIR}/fixed_radius.log"
 fi
