@@ -49,9 +49,10 @@ The v2.0 side is only partially born:
 - Goal1865 lifts `road_hazard_screening` to a Python+partner priority-flag app
   adapter over the same device count columns, but it has local contract evidence
   only and no pod timing row yet.
-- Goal1868 adds the pod-smoke runner for that road-hazard adapter.
-- Goal1869 adds the pod-ready same-contract timing harness for the road-hazard
-  priority-flag app row.
+- Goal1868 pod-validates that road-hazard adapter on an RTX 3090 for Torch and
+  CuPy.
+- Goal1869 adds RTX 3090 same-contract timing rows for the road-hazard
+  priority-flag app at 512 and 2048 synthetic rows.
 - No all-app v2.0 partner timing harness exists yet.
 
 ## Current Evidence Inventory
@@ -70,8 +71,8 @@ The v2.0 side is only partially born:
 | Goal1861 | device-count-column adapter for `segment_polygon_hitcount` | pod correctness-smoked on RTX A4500 for Torch/CuPy; app count columns stay partner-owned | not v2.0 release |
 | Goal1863 | same-contract timing row for `segment_polygon_hitcount` device count columns | pod timed on RTX A4500 at 512 and 2048 rows; Goal1864 Gemini review accepted with boundary | not v2.0 release |
 | Goal1865 | app-level priority-flag adapter for `road_hazard_screening` over Goal1861 device count columns | local contract test only; pod timing still needed | not v2.0 release |
-| Goal1868 | road-hazard priority-flag pod-smoke runner | ready for pod; no hardware artifact yet | not v2.0 release |
-| Goal1869 | same-contract v2.0-vs-v1.8 timing harness for `road_hazard_screening` priority flags | ready for pod; no timing artifact yet | not v2.0 release |
+| Goal1868 | road-hazard priority-flag pod-smoke runner | pod validated on RTX 3090 for Torch/CuPy | not v2.0 release |
+| Goal1869 | same-contract v2.0-vs-v1.8 timing harness for `road_hazard_screening` priority flags | pod timed on RTX 3090 at 512 and 2048 rows | not v2.0 release |
 
 ## Engine Readiness
 
@@ -90,7 +91,7 @@ The v2.0 side is only partially born:
 | `service_coverage_gaps` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
 | `event_hotspot_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
 | `facility_knn_assignment` | available | CPU control rerun needed | available | not yet covered by Goal1838 any-hit slice |
-| `road_hazard_screening` | available | CPU control rerun needed | available | Goal1865 local priority-flag partner adapter exists; Goal1868/1869 pod smoke and timing harnesses are ready, but pod artifacts are still needed |
+| `road_hazard_screening` | available | CPU control rerun needed | available | Goal1865 local priority-flag partner adapter exists; Goal1868/1869 pod smoke and timing artifacts exist for RTX 3090 |
 | `segment_polygon_hitcount` | available | CPU control rerun needed | available | Goal1863 same-contract timing row exists for device count columns; Goal1864 Gemini review accepted with boundary |
 | `segment_polygon_anyhit_rows` | available | CPU control rerun needed | available | first v2.0 OptiX app adapter and timing row exist: Goal1850 record adapter, Goal1853 caller-supplied PyTorch/CuPy GPU-column adapter, Goal1856 narrow 512/2048-row timing evidence |
 | `polygon_pair_overlap_area_rows` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
@@ -146,8 +147,7 @@ execution-ready. The first app-level v2.0 OptiX adapter exists, has pod
 correctness evidence, and has a first narrow same-contract timing row. A second
 count-style adapter also exists with partner-owned device count columns and a
 first narrow same-contract timing row. `road_hazard_screening` now has a local
-partner priority-flag adapter over those count columns plus pod-ready smoke and
-timing harnesses, but it is not yet pod validated or timed. The next
-implementation goal should run the Goal1868/1869 pod commands, scale the timed
-rows to real datasets, and broaden coverage before any total v2.0-vs-v1.8 table
-is attempted.
+partner priority-flag adapter over those count columns plus RTX 3090 pod smoke
+and timing rows. The next implementation goal should scale the timed rows to
+real datasets and broaden coverage before any total v2.0-vs-v1.8 table is
+attempted.

@@ -1,0 +1,94 @@
+{
+  "baseline": {
+    "name": "v1_8_one_shot_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      0.217718165833503,
+      0.20614131074398756,
+      0.2065786002203822,
+      0.2057578917592764,
+      0.20583001105114818
+    ],
+    "query_summary": {
+      "max_s": 0.217718165833503,
+      "median_s": 0.20614131074398756,
+      "min_s": 0.2057578917592764
+    },
+    "row_count": 512
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 512,
+  "git_commit": "0a96e139a7d584e56e6dd05539ad66e3370aa9d7",
+  "goal": "Goal1869",
+  "gpu": "NVIDIA GeForce RTX 3090, 580.126.20",
+  "iterations": 5,
+  "output_capacity": 393216,
+  "parity": {
+    "expected_row_count": 512,
+    "strict_priority_flags_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.00655403221026063,
+      "output_contract": "partner_owned_road_hazard_priority_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": 0.007564072170905307,
+      "query_median_ratio_vs_v1_8_prepared_native": 1.6283613350366641,
+      "query_samples_s": [
+        2.737574460916221,
+        0.0024844272993505,
+        0.0015548779629170895,
+        0.0015592677518725395,
+        0.0015422780998051167
+      ],
+      "query_summary": {
+        "max_s": 2.737574460916221,
+        "median_s": 0.0015592677518725395,
+        "min_s": 0.0015422780998051167
+      },
+      "row_count": 512
+    },
+    "torch": {
+      "column_build_s": 0.0674333949573338,
+      "output_contract": "partner_owned_road_hazard_priority_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": 0.006232075661440726,
+      "query_median_ratio_vs_v1_8_prepared_native": 1.3416147829930805,
+      "query_samples_s": [
+        0.1439087288454175,
+        0.0018119080923497677,
+        0.0012846882455050945,
+        0.0012597590684890747,
+        0.0012639481574296951
+      ],
+      "query_summary": {
+        "max_s": 0.1439087288454175,
+        "median_s": 0.0012846882455050945,
+        "min_s": 0.0012597590684890747
+      },
+      "row_count": 512
+    }
+  },
+  "prepared_baseline": {
+    "name": "v1_8_prepared_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      0.0016015279106795788,
+      0.0009575686417520046,
+      0.0009995577856898308,
+      0.000878448598086834,
+      0.0009014392271637917
+    ],
+    "query_summary": {
+      "max_s": 0.0016015279106795788,
+      "median_s": 0.0009575686417520046,
+      "min_s": 0.000878448598086834
+    },
+    "row_count": 512
+  },
+  "status": "pass",
+  "threshold": 2
+}

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import pathlib
+import json
 import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal1869_road_hazard_v2_partner_perf.py"
 REPORT = ROOT / "docs" / "reports" / "goal1869_road_hazard_v2_partner_perf_plan_2026-05-13.md"
+ARTIFACT_512 = ROOT / "docs" / "reports" / "goal1869_road_hazard_v2_partner_perf_pod_512.json"
+ARTIFACT_2048 = ROOT / "docs" / "reports" / "goal1869_road_hazard_v2_partner_perf_pod_2048.json"
 
 
 class Goal1869RoadHazardV2PartnerPerfPlanTest(unittest.TestCase):
@@ -37,13 +40,36 @@ class Goal1869RoadHazardV2PartnerPerfPlanTest(unittest.TestCase):
     def test_report_keeps_pod_timing_pending(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("Status: ready-for-pod", report)
+        self.assertIn("Status: pass-with-boundary", report)
         self.assertIn("road_hazard_priority_flags_optix_partner_device_columns", report)
         self.assertIn("goal1869_road_hazard_v2_partner_perf_pod_512.json", report)
         self.assertIn("goal1869_road_hazard_v2_partner_perf_pod_2048.json", report)
-        self.assertIn("does not contain pod timing evidence", report)
-        self.assertIn("yet and does not authorize", report)
+        self.assertIn("NVIDIA GeForce RTX 3090", report)
+        self.assertIn("Observed Timing", report)
         self.assertIn("does not authorize v2.0 release wording", report)
+
+    def test_pod_artifacts_record_same_contract_timing_boundaries(self) -> None:
+        for path, count in ((ARTIFACT_512, 512), (ARTIFACT_2048, 2048)):
+            with self.subTest(path=path.name):
+                artifact = json.loads(path.read_text(encoding="utf-8"))
+                self.assertEqual(artifact["status"], "pass")
+                self.assertEqual(artifact["goal"], "Goal1869")
+                self.assertEqual(artifact["count"], count)
+                self.assertIn("NVIDIA GeForce RTX 3090", artifact["gpu"])
+                self.assertTrue(artifact["parity"]["strict_priority_flags_match"])
+                self.assertEqual(artifact["baseline"]["row_count"], count)
+                self.assertEqual(artifact["prepared_baseline"]["row_count"], count)
+                for partner in ("cupy", "torch"):
+                    result = artifact["partners"][partner]
+                    self.assertEqual(result["row_count"], count)
+                    self.assertEqual(result["output_contract"], "partner_owned_road_hazard_priority_columns")
+                    self.assertIn("query_median_ratio_vs_v1_8_one_shot_native", result)
+                    self.assertIn("query_median_ratio_vs_v1_8_prepared_native", result)
+                boundary = artifact["claim_boundary"]
+                self.assertTrue(boundary["same_contract_timing_row"])
+                self.assertTrue(boundary["partner_output_columns_true_zero_copy_authorized"])
+                self.assertFalse(boundary["v2_0_release_authorized"])
+                self.assertFalse(boundary["whole_app_speedup_claim_authorized"])
 
 
 if __name__ == "__main__":
