@@ -2507,9 +2507,10 @@ def _partner_device_descriptor_columns(columns: dict, required: tuple[str, ...],
 def pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns: dict) -> dict[str, object]:
     """Validate partner-owned CUDA ray columns for a prepared OptiX scene.
 
-    This is a partial direct-device path: ray columns stay device-resident and
-    are packed on GPU into OptiX's ray layout, while the triangle scene must
-    already be prepared through the existing OptiX scene handle.
+    This is a ray-side true zero-copy path: the OptiX raygen reads these
+    partner-owned columns directly. The prepared triangle scene is a separate
+    native handle and may still have been built through RTDL-owned layout
+    construction, so whole-primitive zero-copy is not implied.
     """
     ray_handoffs, timings = _partner_device_descriptor_columns(
         ray_columns,
@@ -2522,7 +2523,7 @@ def pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns: dict) -> dict[str, 
         "rays": ray_handoffs,
         "metadata": {
             "backend": "optix",
-            "transfer_mode": "device_columns_gpu_pack",
+            "transfer_mode": "device_ray_columns_zero_copy",
             "native_symbol": _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL,
             "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
             "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
@@ -2530,6 +2531,8 @@ def pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns: dict) -> dict[str, 
             "triangle_scene_transfer_mode": "prepared_scene_existing_path",
             "direct_device_pointer_observed": True,
             "direct_device_handoff_authorized": True,
+            "ray_columns_true_zero_copy_authorized": True,
+            "triangle_scene_true_zero_copy_authorized": False,
             "true_zero_copy_authorized": False,
             "partner_tensor_handoff_authorized": True,
             "rt_core_speedup_claim_authorized": False,
@@ -3038,10 +3041,10 @@ class PreparedOptixRayTriangleAnyHit2D:
     def count_device_rays(self, ray_columns: dict) -> int:
         """Count any-hit intersections from partner-owned CUDA ray columns.
 
-        The ray columns are read from device pointers and packed on GPU. The
-        prepared triangle scene is still the existing OptiX prepared-scene path,
-        so this method is direct-device for rays only and never authorizes true
-        zero-copy wording.
+        The ray columns are read directly by the OptiX raygen from partner
+        device pointers. The prepared triangle scene is still the existing OptiX
+        prepared-scene path, so this method authorizes ray-column true zero-copy
+        wording only, not whole-primitive true zero-copy.
         """
         if self._closed:
             raise RuntimeError("prepared OptiX any-hit handle is closed")

@@ -84,12 +84,14 @@ class Goal1823OptixPartnerDeviceRayColumnsPartialAbiTest(unittest.TestCase):
         packet = rt.pack_optix_ray_any_hit_2d_device_ray_inputs(_ray_columns())
         metadata = packet["metadata"]
         self.assertEqual(metadata["backend"], "optix")
-        self.assertEqual(metadata["transfer_mode"], "device_columns_gpu_pack")
+        self.assertEqual(metadata["transfer_mode"], "device_ray_columns_zero_copy")
         self.assertEqual(metadata["native_symbol"], "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays")
         self.assertEqual(metadata["ray_count"], 3)
         self.assertEqual(metadata["triangle_scene_transfer_mode"], "prepared_scene_existing_path")
         self.assertTrue(metadata["direct_device_pointer_observed"])
         self.assertTrue(metadata["direct_device_handoff_authorized"])
+        self.assertTrue(metadata["ray_columns_true_zero_copy_authorized"])
+        self.assertFalse(metadata["triangle_scene_true_zero_copy_authorized"])
         self.assertFalse(metadata["true_zero_copy_authorized"])
         self.assertFalse(metadata["rt_core_speedup_claim_authorized"])
 

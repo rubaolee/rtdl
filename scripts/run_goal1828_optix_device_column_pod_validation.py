@@ -75,6 +75,10 @@ def main() -> int:
         "triangle_metadata": triangle_packet["metadata"],
         "claim_boundary": {
             "direct_device_column_execution_observed": passed,
+            "ray_column_true_zero_copy_observed": bool(
+                passed and ray_packet["metadata"].get("ray_columns_true_zero_copy_authorized")
+            ),
+            "whole_primitive_true_zero_copy_authorized": False,
             "true_zero_copy_authorized": False,
             "rt_core_speedup_claim_authorized": False,
             "v2_0_release_authorized": False,

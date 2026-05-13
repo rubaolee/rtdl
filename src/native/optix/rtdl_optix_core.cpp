@@ -3969,6 +3969,7 @@ static RayHitCount3DPipeline g_rayhit3d;
 static RayAnyHitPipeline    g_rayanyhit;
 static RayAnyHitPipeline    g_rayanyhit3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
+static RayAnyHitPipeline    g_rayanyhit_count_device_ray_columns;
 static RayAnyHitPipeline    g_rayanyhit_group_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
 static SegPolyPipeline     g_segpoly;
