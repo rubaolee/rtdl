@@ -23,6 +23,7 @@ TEST_MODULES = (
     "tests.goal1908_v2_local_preflight_test",
     "tests.goal1909_v2_release_packet_skeleton_test",
     "tests.goal1910_gemini_review_v2_release_skeleton_test",
+    "tests.goal1911_v2_readiness_aggregator_test",
 )
 
 
@@ -62,6 +63,12 @@ def main(argv: Iterable[str] | None = None) -> int:
             "--allow-missing",
             "--output",
             "scratch/goal1908_pre_pod_acceptance_snapshot.json",
+        ],
+        [
+            args.python,
+            "scripts/goal1911_v2_readiness_aggregator.py",
+            "--output",
+            "scratch/goal1908_readiness_aggregator.json",
         ],
     ]
     runs = [_run(command, root=root) for command in commands]

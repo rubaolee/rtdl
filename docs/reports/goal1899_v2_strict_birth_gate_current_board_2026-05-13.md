@@ -44,6 +44,9 @@ blocks the v2.0 release label.
 - Goal1909: v2 release packet skeleton listing populated and missing slots
   without authorizing release.
 - Goal1910: Gemini review accepted the Goal1909 skeleton boundary.
+- Goal1911: machine-readable v2 readiness aggregator; current status is
+  blocked only by pod artifacts, post-pod review, final consensus, and release
+  action.
 
 ## Immediate Next Hardware Step
 
@@ -89,6 +92,12 @@ Run Goal1908 before pod work or release-review assembly:
 
 ```bash
 PYTHONPATH=src:. python3 scripts/goal1908_v2_local_preflight.py
+```
+
+For a machine-readable readiness snapshot:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1911_v2_readiness_aggregator.py
 ```
 
 ## Verdict

@@ -28,6 +28,7 @@ class Goal1908V2LocalPreflightTest(unittest.TestCase):
             "tests.goal1908_v2_local_preflight_test",
             "tests.goal1909_v2_release_packet_skeleton_test",
             "tests.goal1910_gemini_review_v2_release_skeleton_test",
+            "tests.goal1911_v2_readiness_aggregator_test",
         ):
             self.assertIn(module, modules)
 
@@ -36,6 +37,7 @@ class Goal1908V2LocalPreflightTest(unittest.TestCase):
 
         self.assertIn("goal1906_public_v2_claim_boundary_scan.py", text)
         self.assertIn("goal1905_v2_partner_pod_batch_acceptance.py", text)
+        self.assertIn("goal1911_v2_readiness_aggregator.py", text)
         self.assertIn("--allow-missing", text)
         self.assertIn("v2_0_release_authorized", text)
         self.assertIn("pod_evidence_collected", text)
