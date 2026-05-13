@@ -54,6 +54,9 @@ TEST_MODULES = (
     "tests.goal1942_gemini_review_all_app_v2_rollup_test",
     "tests.goal1943_v2_source_tree_only_release_decision_packet_test",
     "tests.goal1944_gemini_review_v2_source_tree_only_policy_test",
+    "tests.goal1945_claude_review_v2_source_tree_only_policy_test",
+    "tests.goal1946_all_app_v2_perf_deep_dive_test",
+    "tests.goal1947_v2_source_tree_only_policy_consensus_test",
 )
 
 

@@ -16,17 +16,16 @@ which slots are still blocked.
 | --- | --- | --- |
 | Partner acceleration boundary wording | populated, needs final release consensus | Goal1900, Goal1907 |
 | Public wording scan | populated, local gate passes | Goal1906 |
-| Source-tree-only policy proposal | populated, needs final 3-AI consensus | Goal1902, Goal1907 |
+| Source-tree-only policy consensus | populated and accepted with boundary | Goals1902, 1907, 1943, 1944, 1945, 1947 |
 | Pod evidence | populated with initial batch, repeat-3 fixed-radius, and robot/segment scale-up evidence | Goals1903, 1905, 1916, 1919, 1937, 1940 |
 | Post-pod artifact review | populated with Claude/Gemini reviews, plus Goal1941/1942 Gemini follow-up reviews | Goals1912, 1923, 1935, 1936, 1938, 1941, 1942 |
 | Local non-pod preflight | populated and passing | Goal1908 |
-| All-app rollup | populated, needs final release consensus | Goal1931, Goal1942 |
+| All-app rollup | populated, needs final release consensus | Goal1931, Goal1942, Goal1946 |
 
 ## Hard Missing Slots
 
 | Slot | Missing artifact or action |
 | --- | --- |
-| Source-tree-only release exception consensus | final 3-AI consensus accepting source-tree-only v2.0, or validated packaging metadata instead |
 | Final v2.0 release consensus | Codex plus two distinct external AI reviews after all evidence exists |
 | Final release action | tag/package/public wording action explicitly requested by the user |
 

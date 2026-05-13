@@ -18,6 +18,7 @@ REQUIRED_POD_ARTIFACTS = (
 
 GOAL1905_ACCEPTANCE = "docs/reports/goal1905_v2_partner_pod_batch_acceptance.json"
 GOAL1916_MANIFEST = "docs/reports/goal1916_v2_post_pod_artifact_manifest.json"
+SOURCE_TREE_POLICY_CONSENSUS = "docs/reports/goal1947_v2_source_tree_only_policy_consensus_2026-05-13.md"
 POST_POD_REVIEW_CANDIDATES = (
     "docs/reviews/goal1912_claude_review_goal1903_post_pod_artifacts_2026-05-13.md",
     "docs/reviews/goal1912_gemini_review_goal1903_post_pod_artifacts_2026-05-13.md",
@@ -72,6 +73,8 @@ SUPPORTING_REQUIRED = (
     "docs/reviews/goal1942_gemini_review_all_app_v2_rollup_2026-05-13.md",
     "docs/reports/goal1943_v2_source_tree_only_release_decision_packet_2026-05-13.md",
     "docs/reviews/goal1944_gemini_review_v2_source_tree_only_policy_2026-05-13.md",
+    "docs/reviews/goal1945_claude_review_v2_source_tree_only_policy_2026-05-13.md",
+    SOURCE_TREE_POLICY_CONSENSUS,
 )
 
 
@@ -97,6 +100,7 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
     decisive_post_pod_reviews = [
         path for path in POST_POD_DECISIVE_REVIEW_CANDIDATES if _exists(root, path)
     ]
+    source_tree_policy_consensus = _exists(root, SOURCE_TREE_POLICY_CONSENSUS)
     local_preflight = _read_json_if_exists(root, "scratch/goal1908_final_preflight_post_commit.json")
     if local_preflight is None:
         local_preflight = _read_json_if_exists(root, "scratch/goal1908_final_preflight.json")
@@ -113,7 +117,8 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         blockers.append("Goal1916 post-pod artifact manifest not passed on pod artifacts")
     if not decisive_post_pod_reviews:
         blockers.append("fresh Claude or Pro-class review of actual pod artifacts missing")
-    blockers.append("final source-tree-only or packaging decision lacks 3-AI release consensus")
+    if not source_tree_policy_consensus:
+        blockers.append("final source-tree-only or packaging decision lacks 3-AI release consensus")
     blockers.append("final v2.0 release consensus missing")
     blockers.append("explicit user-requested release action missing")
     pod_evidence_collected = (
@@ -130,13 +135,15 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         "goal1916_manifest_status": manifest_status,
         "post_pod_review_files": post_pod_reviews,
         "decisive_post_pod_review_files": decisive_post_pod_reviews,
+        "source_tree_policy_consensus": source_tree_policy_consensus,
+        "source_tree_policy_consensus_file": SOURCE_TREE_POLICY_CONSENSUS if source_tree_policy_consensus else None,
         "missing_supporting_files": missing_supporting,
         "missing_pod_artifacts": missing_pod,
         "blockers": blockers,
-        "next_policy_review_handoff": "docs/handoff/GOAL1944_EXTERNAL_REVIEW_SOURCE_TREE_ONLY_POLICY.md",
+        "next_policy_review_handoff": None,
         "next_required_external_review": (
-            "Claude or another distinct non-Codex, non-Gemini AI review of "
-            "docs/reports/goal1943_v2_source_tree_only_release_decision_packet_2026-05-13.md"
+            "Final v2.0 release consensus over Goal1909 plus Goal1946, using "
+            "distinct non-Codex, non-Gemini external review before explicit release action"
         ),
         "optional_hardware_command": (
             "PYTHONPATH=src:. python3 scripts/goal1928_robot_collision_v2_partner_perf.py "

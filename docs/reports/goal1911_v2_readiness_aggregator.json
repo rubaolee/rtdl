@@ -1,6 +1,5 @@
 {
   "blockers": [
-    "final source-tree-only or packaging decision lacks 3-AI release consensus",
     "final v2.0 release consensus missing",
     "explicit user-requested release action missing"
   ],
@@ -21,13 +20,16 @@
   "local_preflight_status": "pass",
   "missing_pod_artifacts": [],
   "missing_supporting_files": [],
-  "next_hardware_command": "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1903_v2_partner_pod_batch_runner.sh",
-  "pod_session_runbook_command": "OUT_DIR=docs/reports/goal1903_v2_partner_pod_batch OPTIX_PREFIX=/root/vendor/optix-sdk bash scripts/goal1913_v2_pod_session_runbook.sh",
+  "next_policy_review_handoff": null,
+  "next_required_external_review": "Final v2.0 release consensus over Goal1909 plus Goal1946, using distinct non-Codex, non-Gemini external review before explicit release action",
+  "optional_hardware_command": "PYTHONPATH=src:. python3 scripts/goal1928_robot_collision_v2_partner_perf.py --pose-count 16777216 --obstacle-count 16384 --partners cupy,torch --repeat 3 --output docs/reports/goal1940_robot_segment_scaleup_pod/robot_16777216x16384.json",
   "post_pod_acceptance_command": "PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py",
   "post_pod_manifest_command": "PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py",
   "post_pod_review_files": [
     "docs/reviews/goal1912_claude_review_goal1903_post_pod_artifacts_2026-05-13.md",
     "docs/reviews/goal1912_gemini_review_goal1903_post_pod_artifacts_2026-05-13.md"
   ],
+  "source_tree_policy_consensus": true,
+  "source_tree_policy_consensus_file": "docs/reports/goal1947_v2_source_tree_only_policy_consensus_2026-05-13.md",
   "status": "blocked"
 }

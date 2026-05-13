@@ -13,12 +13,14 @@ class Goal1909V2ReleasePacketSkeletonTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("Status: skeleton-blocked-consensus-and-policy-pending", text)
-        for goal in ("Goal1900", "Goal1902", "Goals1903", "1905", "Goal1906", "Goal1907", "Goal1908"):
+        for goal in ("Goal1900", "Goals1902", "Goals1903", "1905", "Goal1906", "Goal1907", "Goal1908"):
             self.assertIn(goal, text)
         self.assertIn("Hard Missing Slots", text)
         self.assertIn("Evidence Boundaries Still Required", text)
         self.assertIn("All-app rollup", text)
         self.assertIn("Goal1942", text)
+        self.assertIn("Goal1946", text)
+        self.assertIn("1947", text)
         self.assertIn("final 3-AI consensus", text)
         self.assertIn("Final release action", text)
         self.assertIn("database_analytics", text)

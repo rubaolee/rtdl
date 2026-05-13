@@ -66,7 +66,20 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
             "docs/reviews/goal1944_gemini_review_v2_source_tree_only_policy_2026-05-13.md",
             SUPPORTING_REQUIRED,
         )
-        self.assertIn("GOAL1944_EXTERNAL_REVIEW_SOURCE_TREE_ONLY_POLICY", payload["next_policy_review_handoff"])
+        self.assertIn(
+            "docs/reviews/goal1945_claude_review_v2_source_tree_only_policy_2026-05-13.md",
+            SUPPORTING_REQUIRED,
+        )
+        self.assertIn(
+            "docs/reports/goal1947_v2_source_tree_only_policy_consensus_2026-05-13.md",
+            SUPPORTING_REQUIRED,
+        )
+        self.assertTrue(payload["source_tree_policy_consensus"])
+        self.assertNotIn(
+            "final source-tree-only or packaging decision lacks 3-AI release consensus",
+            payload["blockers"],
+        )
+        self.assertIsNone(payload["next_policy_review_handoff"])
         self.assertIn("distinct non-Codex, non-Gemini", payload["next_required_external_review"])
         self.assertIn("goal1928_robot_collision_v2_partner_perf.py", payload["optional_hardware_command"])
         self.assertFalse(payload["claim_boundary"]["v2_0_release_authorized"])
@@ -133,8 +146,11 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
         self.assertIn("machine-readable readiness aggregator", text)
         self.assertIn("expected status is still", text)
         self.assertIn("`blocked`", text)
-        self.assertIn("pod evidence has now been collected", text)
-        self.assertIn("explicit user release action", text)
+        self.assertIn("pod evidence has now", text)
+        self.assertIn("been collected", text)
+        self.assertIn("package/source-tree policy blocker is closed", text)
+        self.assertIn("explicit", text)
+        self.assertIn("user release action", text)
 
 
 if __name__ == "__main__":

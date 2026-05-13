@@ -19,7 +19,7 @@ blocks the v2.0 release label.
 | Broad RT-core speedup | Still not a broad claim. Strong positive rows now exist for fixed-radius and segment any-hit; robot is positive but subsecond; DB/graph/exact polygon remain controls. | Goals1881, 1886, 1889, 1895, 1897, 1903, 1904, 1905, 1937, 1940, 1941, 1942 | Final release wording must say which rows are positive, which are controls, and which claims remain out of scope. |
 | Whole-application acceleration | Not ready as a blanket claim. Implemented v2 rows have pod timing, but four active rows are evidence-only controls and robot remains positive-subsecond. | Goals1878, 1881, 1886, 1889, 1895, 1931, 1937, 1940, 1942 | Use row-by-row claims only; do not turn the rollup into whole-app acceleration marketing. |
 | Arbitrary PyTorch/CuPy acceleration boundary | Source doc written and linked; public wording scanner passes; Gemini accepted with boundary; still needs final release consensus. | Goal1814 plus Goals1900, 1906, 1907, 1908 | Fold accepted wording into final v2.0 release gate without expanding beyond reviewed RTDL primitive calls. |
-| Package-install support | Blocked. No packaging metadata exists; source-tree-only remains the current validated mode; Gemini accepted source-tree policy with boundary, but final 3-AI consensus is still required. | Goals1898, 1902, 1906, 1907, 1908 | Either create validated packaging metadata or get 3-AI consensus for source-tree-only v2.0. |
+| Package-install support | Source-tree-only v2.0 policy accepted with boundary by Codex, Gemini, and Claude; package-install claims remain blocked. | Goals1898, 1902, 1906, 1907, 1908, 1943, 1944, 1945, 1947 | Keep source-tree-only wording and do not add install claims before a dedicated packaging goal. |
 
 ## Newly Added Since The Last Board
 
@@ -133,17 +133,21 @@ blocks the v2.0 release label.
 - Goal1941: Gemini reviewed Goal1940 as `accept-with-boundary`, accepted the
   segment and robot interpretations, and kept the release/whole-app/broad
   RT-core/package-install/arbitrary-partner boundaries intact.
+- Goal1945: Claude reviewed the source-tree-only v2.0 policy as
+  `accept-with-boundary`, agreeing that package-install support should remain
+  out of scope for v2.0.
+- Goal1946: current all-app performance deep dive explains the 16 row outcomes,
+  the `288x` descriptive geometric mean across positive rows, and why four rows
+  remain controls rather than speedup evidence.
+- Goal1947: source-tree-only policy consensus closes the package/source-tree
+  blocker without authorizing release or install claims.
 
 ## Immediate Next Step
 
-The next required step is not another pod run. It is a distinct non-Codex,
-non-Gemini review of the source-tree-only policy packet:
-
-`docs/reports/goal1943_v2_source_tree_only_release_decision_packet_2026-05-13.md`
-
-Use the handoff:
-
-`docs/handoff/GOAL1944_EXTERNAL_REVIEW_SOURCE_TREE_ONLY_POLICY.md`
+The next required step is not another pod run or package-policy review. The
+source-tree-only policy now has 3-AI consensus in Goal1947. The remaining hard
+gate is final v2.0 release consensus over the complete evidence packet, followed
+by explicit user release action.
 
 Optional hardware stress remains possible if the team wants to push robot beyond
 the current subsecond v1.8 baseline, but it is not the primary release blocker:
@@ -182,8 +186,7 @@ PYTHONPATH=src:. python3 scripts/goal1911_v2_readiness_aggregator.py
 
 v2.0 is still not born. The fixed-radius and segment any-hit rows now have
 seconds-scale positive pod evidence, while robot has large exact-parity scaling
-evidence that remains subsecond on the v1.8 side. Goal1931 now rolls this up as
-11 positive rows, 1 positive-subsecond robot row, and 4 control rows. The
-strongest next progress is deciding whether more robot stress is technically
-meaningful or whether the remaining release gate is consensus and
-packaging/source-tree policy rather than more timing.
+evidence that remains subsecond on the v1.8 side. Goal1931/1946 now roll this
+up as 11 positive rows, 1 positive-subsecond robot row, and 4 control rows. The
+remaining release gate is final release consensus and explicit user release
+action, not another package-policy decision.
