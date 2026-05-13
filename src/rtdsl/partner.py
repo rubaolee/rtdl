@@ -14,6 +14,7 @@ V2_0_PARTNER_ENGINE_BOUNDARY = "python-adapter-only"
 FALLBACK_MODES = ("error", "copy", "host_stage")
 DEVICE_TYPES = ("cpu", "cuda")
 ACCESS_MODES = ("read", "write", "readwrite")
+DIRECT_DEVICE_HANDOFF_STATUS = "descriptor_only_claims_blocked"
 
 
 @dataclass(frozen=True)
@@ -65,6 +66,56 @@ class RtdlOutputSpec:
 
 
 @dataclass(frozen=True)
+class RtdlDevicePointerHandoff:
+    descriptor: RtdlTensorDescriptor
+    data_ptr: int
+    device_type: str
+    device_id: int
+    dtype: str
+    shape: tuple[int, ...]
+    strides: tuple[int, ...] | None
+    byte_offset: int
+    access_mode: str
+    stream_handle: int
+    source_protocol: str
+    transfer_mode: str = "device_descriptor_only"
+    direct_device_pointer_observed: bool = True
+    direct_device_handoff_authorized: bool = False
+    true_zero_copy_authorized: bool = False
+
+    def __post_init__(self) -> None:
+        _validate_device(self.device_type, self.device_id)
+        _validate_access_mode(self.access_mode)
+        if self.device_type != "cuda":
+            raise ValueError("direct device-pointer handoff descriptors require device_type='cuda'")
+        if int(self.data_ptr) <= 0:
+            raise ValueError("direct device-pointer handoff descriptors require a non-zero data_ptr")
+        if self.stream_handle != 0:
+            raise ValueError("direct device-pointer handoff stream_handle remains reserved; expected 0")
+        if self.direct_device_handoff_authorized:
+            raise ValueError("direct device-pointer handoff is not authorized until native execution evidence exists")
+        if self.true_zero_copy_authorized:
+            raise ValueError("true zero-copy is not authorized until measured evidence exists")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "data_ptr": int(self.data_ptr),
+            "device": f"{self.device_type}:{self.device_id}",
+            "dtype": self.dtype,
+            "shape": self.shape,
+            "strides": self.strides,
+            "byte_offset": int(self.byte_offset),
+            "access_mode": self.access_mode,
+            "stream_handle": int(self.stream_handle),
+            "source_protocol": self.source_protocol,
+            "transfer_mode": self.transfer_mode,
+            "direct_device_pointer_observed": self.direct_device_pointer_observed,
+            "direct_device_handoff_authorized": self.direct_device_handoff_authorized,
+            "true_zero_copy_authorized": self.true_zero_copy_authorized,
+        }
+
+
+@dataclass(frozen=True)
 class RtdlPartnerProtocolContract:
     version: str = V2_0_PARTNER_PROTOCOL_VERSION
     selection_order: tuple[str, ...] = V2_0_PARTNER_PROTOCOL_ORDER
@@ -77,6 +128,7 @@ class RtdlPartnerProtocolContract:
     fallback_modes: tuple[str, ...] = FALLBACK_MODES
     stream_policy: str = "stream_handle_reserved_zero"
     zero_copy_claim: str = "measured_evidence_required"
+    direct_device_handoff_status: str = DIRECT_DEVICE_HANDOFF_STATUS
 
 
 class PartnerAdapter(Protocol):
@@ -331,12 +383,15 @@ def validate_v2_0_partner_protocol_contract(contract: RtdlPartnerProtocolContrac
         errors.append("stream handles remain reserved until v2.0 stream evidence exists")
     if contract.zero_copy_claim != "measured_evidence_required":
         errors.append("zero-copy claims require measured evidence")
+    if contract.direct_device_handoff_status != DIRECT_DEVICE_HANDOFF_STATUS:
+        errors.append("direct device-pointer handoff remains descriptor-only until native execution evidence exists")
     return {
         "status": "accept" if not errors else "reject",
         "version": contract.version,
         "reference_partner": contract.reference_partner,
         "conformance_partner": contract.conformance_partner,
         "engine_boundary": contract.engine_boundary,
+        "direct_device_handoff_status": contract.direct_device_handoff_status,
         "errors": tuple(errors),
     }
 
@@ -358,6 +413,40 @@ def run_ray_triangle_any_hit_2d(ray_columns: dict, triangle_columns: dict, *, ba
 
         return run_optix_partner_ray_triangle_any_hit_2d(ray_columns, triangle_columns)
     raise ValueError("partner ray_triangle_any_hit_2d backend must be one of: embree, optix")
+
+
+def prepare_direct_device_pointer_handoff(
+    obj: Any,
+    *,
+    access: str = "read",
+    stream: int | None = None,
+) -> RtdlDevicePointerHandoff:
+    """Extract CUDA device-pointer metadata without authorizing zero-copy use.
+
+    This is the first narrow API for the v2.0 direct device-pointer blocker. It
+    proves the public Python descriptor path can observe partner-owned CUDA
+    pointers and lifetime owners. It does not pass those pointers to native
+    backends yet and it deliberately keeps both claim flags false.
+    """
+    ctx = auto(obj)
+    descriptor = ctx.tensor(obj, access=access, stream=stream)
+    if descriptor.device_type != "cuda":
+        raise ValueError("direct device-pointer handoff requires a CUDA partner tensor")
+    if descriptor.data_ptr is None or int(descriptor.data_ptr) <= 0:
+        raise ValueError("direct device-pointer handoff requires an observable non-zero data_ptr")
+    return RtdlDevicePointerHandoff(
+        descriptor=descriptor,
+        data_ptr=int(descriptor.data_ptr),
+        device_type=descriptor.device_type,
+        device_id=descriptor.device_id,
+        dtype=descriptor.dtype,
+        shape=descriptor.shape,
+        strides=descriptor.strides,
+        byte_offset=descriptor.byte_offset,
+        access_mode=descriptor.access_mode,
+        stream_handle=descriptor.stream_handle,
+        source_protocol=descriptor.source_protocol,
+    )
 
 
 def _normalize_name(name: str) -> str:

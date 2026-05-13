@@ -117,6 +117,7 @@ The app-agnostic gate is paired with:
 - [Goal1813 3-AI Consensus for v2.0 Release Readiness](../reviews/goal1813_3ai_consensus_v2_0_release_readiness_2026-05-13.md)
 - [Goal1814 v2.0 Strict Birth Gate](../reports/goal1814_v2_0_strict_birth_gate_2026-05-13.md)
 - [Goal1818 3-AI Consensus for Goal1814](../reviews/goal1818_3ai_consensus_goal1814_strict_v2_birth_gate_2026-05-13.md)
+- [Goal1819 Partner Direct Device-Pointer Descriptor](../reports/goal1819_partner_direct_device_pointer_descriptor_2026-05-13.md)
 
 ## Claim Boundary
 
@@ -157,3 +158,8 @@ preview evidence, but v2.0 remains `needs-more-evidence` until true zero-copy,
 direct device-pointer handoff, broad RT-core evidence, whole-application evidence,
 arbitrary PyTorch/CuPy acceleration boundaries, and package-install/source-tree
 scope are resolved by new reviewed evidence.
+
+Goal1819 starts the direct device-pointer blocker with a descriptor-only CUDA
+pointer observation API. It does not satisfy the blocker yet because the native
+backend still does not execute from those pointers and the claim flags remain
+false.
