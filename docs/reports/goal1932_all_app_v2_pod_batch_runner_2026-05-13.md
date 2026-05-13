@@ -8,7 +8,11 @@ Goal1932 packages the remaining v2.0 all-app comparison work into a single RTX-p
 
 ## What It Runs
 
-The runner writes to `docs/reports/goal1932_all_app_v2_pod_batch` by default and prints `[goal1932]` progress banners before and after every long step.
+The runner writes to `docs/reports/goal1932_all_app_v2_pod_batch` by default
+and prints `[goal1932]` progress banners before and after every long step. Each
+step is wrapped in GNU `timeout --preserve-status` through
+`STEP_TIMEOUT_SECONDS`, defaulting to `2700` seconds. Set it to `0` only for a
+manual debugging run where another watchdog is already active.
 
 Implemented or harness-ready v2 rows:
 
@@ -37,8 +41,15 @@ bash scripts/goal1932_all_app_v2_pod_batch_runner.sh
 Optional scale knobs:
 
 ```bash
-FIXED_REPEAT=7 SEGMENT_ITERATIONS=7 ROBOT_REPEAT=7 POLYGON_COPIES=4096 DB_COPIES=20000 GRAPH_COPIES=20000
+FIXED_QUERY_COUNT=524288 FIXED_SEARCH_COUNT=524288 FIXED_REPEAT=1 \
+SEGMENT_ITERATIONS=7 ROBOT_REPEAT=7 \
+POLYGON_COPIES=8192 DB_COPIES=100000 GRAPH_COPIES=100000 \
+STEP_TIMEOUT_SECONDS=2700
 ```
+
+Use the fixed-radius override when the goal is seconds-scale evidence rather
+than quick smoke coverage. The default runner remains a compact all-app packet;
+the large knobs are the preferred pod form for performance interpretation.
 
 ## Expected Outputs
 

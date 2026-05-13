@@ -7,6 +7,7 @@ import statistics
 import subprocess
 import time
 from dataclasses import dataclass
+from dataclasses import replace
 from pathlib import Path
 
 from rtdsl.optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
@@ -283,6 +284,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--apps", default=",".join(SCENARIOS))
     parser.add_argument("--partners", default="cupy,torch")
     parser.add_argument("--repeat", type=int, default=5)
+    parser.add_argument(
+        "--query-count-override",
+        type=int,
+        default=None,
+        help="Override every scenario's query count for large-scale pod runs.",
+    )
+    parser.add_argument(
+        "--search-count-override",
+        type=int,
+        default=None,
+        help="Override every scenario's search count for large-scale pod runs.",
+    )
     parser.add_argument("--output", default="docs/reports/goal1925_fixed_radius_family_v2_partner_perf.json")
     return parser.parse_args()
 
@@ -295,8 +308,19 @@ def main() -> int:
     for app in requested_apps:
         if app not in SCENARIOS:
             raise SystemExit(f"unknown app {app!r}; expected one of {', '.join(SCENARIOS)}")
+        scenario = SCENARIOS[app]
+        if args.query_count_override is not None or args.search_count_override is not None:
+            scenario = replace(
+                scenario,
+                query_count=args.query_count_override
+                if args.query_count_override is not None
+                else scenario.query_count,
+                search_count=args.search_count_override
+                if args.search_count_override is not None
+                else scenario.search_count,
+            )
         for partner in partners:
-            results.append(run_case(SCENARIOS[app], repeat=args.repeat, partner=partner))
+            results.append(run_case(scenario, repeat=args.repeat, partner=partner))
     commit = _git_commit()
     payload = {
         "goal": "Goal1925",

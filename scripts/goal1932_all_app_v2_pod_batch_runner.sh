@@ -4,12 +4,15 @@ set -euo pipefail
 OUT_DIR="${OUT_DIR:-docs/reports/goal1932_all_app_v2_pod_batch}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 FIXED_REPEAT="${FIXED_REPEAT:-5}"
+FIXED_QUERY_COUNT="${FIXED_QUERY_COUNT:-}"
+FIXED_SEARCH_COUNT="${FIXED_SEARCH_COUNT:-}"
 SEGMENT_ITERATIONS="${SEGMENT_ITERATIONS:-5}"
 ROBOT_REPEAT="${ROBOT_REPEAT:-5}"
 POLYGON_COPIES="${POLYGON_COPIES:-4096}"
 DB_COPIES="${DB_COPIES:-20000}"
 GRAPH_COPIES="${GRAPH_COPIES:-20000}"
 PARTNERS="${PARTNERS:-cupy,torch}"
+STEP_TIMEOUT_SECONDS="${STEP_TIMEOUT_SECONDS:-2700}"
 
 mkdir -p "$OUT_DIR"
 export PYTHONPATH="${PYTHONPATH:-src:.}"
@@ -18,9 +21,26 @@ run_step() {
   local name="$1"
   shift
   echo "[goal1932] $(date -Iseconds) start ${name}" | tee -a "$OUT_DIR/progress.log"
-  "$@"
+  if [[ "$STEP_TIMEOUT_SECONDS" == "0" ]]; then
+    "$@"
+  else
+    timeout --preserve-status "${STEP_TIMEOUT_SECONDS}s" "$@"
+  fi
   echo "[goal1932] $(date -Iseconds) done ${name}" | tee -a "$OUT_DIR/progress.log"
 }
+
+fixed_radius_args=(
+  --apps facility_knn_assignment,hausdorff_distance,ann_candidate_search,outlier_detection,dbscan_clustering,barnes_hut_force_app
+  --partners "$PARTNERS"
+  --repeat "$FIXED_REPEAT"
+  --output "$OUT_DIR/goal1925_fixed_radius_family_v2_partner_perf_pod.json"
+)
+if [[ -n "$FIXED_QUERY_COUNT" ]]; then
+  fixed_radius_args+=(--query-count-override "$FIXED_QUERY_COUNT")
+fi
+if [[ -n "$FIXED_SEARCH_COUNT" ]]; then
+  fixed_radius_args+=(--search-count-override "$FIXED_SEARCH_COUNT")
+fi
 
 run_step "goal1930_matrix_refresh" \
   "$PYTHON_BIN" scripts/goal1930_all_app_v2_matrix.py \
@@ -29,10 +49,7 @@ run_step "goal1930_matrix_refresh" \
 
 run_step "goal1925_fixed_radius_six_app_family" \
   "$PYTHON_BIN" scripts/goal1925_fixed_radius_family_v2_partner_perf.py \
-    --apps facility_knn_assignment,hausdorff_distance,ann_candidate_search,outlier_detection,dbscan_clustering,barnes_hut_force_app \
-    --partners "$PARTNERS" \
-    --repeat "$FIXED_REPEAT" \
-    --output "$OUT_DIR/goal1925_fixed_radius_family_v2_partner_perf_pod.json"
+    "${fixed_radius_args[@]}"
 
 run_step "goal1928_robot_collision_pose_flags" \
   "$PYTHON_BIN" scripts/goal1928_robot_collision_v2_partner_perf.py \
