@@ -18,7 +18,7 @@ blocks the v2.0 release label.
 | Direct device-pointer handoff | Implemented and fail-closed for selected partner descriptors; still bounded to specific primitives and contracts. | Goals1819, 1821, 1823, 1826 | Keep descriptor/lifetime/stream wording narrow; do not generalize to arbitrary partner code. |
 | Broad RT-core speedup | Not ready. Strong exact-row evidence exists for fixed-radius and segment/polygon subpaths, but the road-hazard prepared row still lacks RTX pod artifacts. | Goals1881, 1886, 1889, 1895, 1897 | Run Goal1897 on RTX pod and review results. |
 | Whole-application acceleration | Not ready. Some app-level prepared rows exist, but not all app claims have same-contract RTX evidence. | Goals1878, 1881, 1886, 1889, 1895 | Finish road-hazard pod row; then decide which app claims are allowed and which remain preview-only. |
-| Arbitrary PyTorch/CuPy acceleration boundary | Still blocked as a public-rule task. Existing reports block overclaims, but a user-facing positive/negative rule still needs final wording. | Goal1814 plus partner reports | Write a dedicated user-facing boundary doc before v2.0 release review. |
+| Arbitrary PyTorch/CuPy acceleration boundary | Source doc written and linked; still needs external review before final v2.0 release review. | Goal1814 plus Goal1900 | Complete external review and fold accepted wording into final v2.0 release gate. |
 | Package-install support | Blocked. No packaging metadata exists; source-tree-only remains the current validated mode. | Goal1898 | Either create validated packaging metadata or get 3-AI consensus for source-tree-only v2.0. |
 
 ## Newly Added Since The Last Board
@@ -28,6 +28,8 @@ blocks the v2.0 release label.
 - Goal1896: Gemini Flash interim review of Goal1889 labeled local smoke.
 - Goal1897: one-command road-hazard RTX pod packet, local dry-run passed.
 - Goal1898: package-install gate audit.
+- Goal1900: user-facing partner acceleration boundary doc, linked from the
+  front page, docs index, and tutorial ladder.
 
 ## Immediate Next Hardware Step
 
@@ -47,15 +49,11 @@ Expected accepted artifacts:
 
 ## Immediate Next Non-Hardware Step
 
-Write the v2.0 partner acceleration boundary document:
-
-- positive rule: what RTDL does accelerate in partner programs;
-- negative rule: arbitrary PyTorch/CuPy code is not optimized by RTDL;
-- examples that distinguish partner-owned columns from partner program
-  acceleration;
-- claim examples that are allowed, blocked, and pending.
+Obtain external review for Goal1900, then decide whether the accepted wording is
+enough for the final v2.0 release packet or needs a second Claude/Pro-class
+review.
 
 ## Verdict
 
 v2.0 is still not born. The strongest next progress is Goal1897 pod execution
-plus a user-facing partner-acceleration boundary document.
+plus external review of the Goal1900 partner-acceleration boundary document.

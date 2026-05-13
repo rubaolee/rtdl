@@ -27,8 +27,10 @@ class Goal1899V2StrictBirthGateCurrentBoardTest(unittest.TestCase):
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_512.json", text)
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_2048.json", text)
         self.assertIn("Goal1898", text)
+        self.assertIn("Goal1900", text)
+        self.assertIn("Source doc written and linked", text)
         self.assertIn("v2.0 is still not born", text)
-        self.assertIn("partner-acceleration boundary document", text)
+        self.assertIn("external review of the Goal1900 partner-acceleration boundary document", text)
 
 
 if __name__ == "__main__":
