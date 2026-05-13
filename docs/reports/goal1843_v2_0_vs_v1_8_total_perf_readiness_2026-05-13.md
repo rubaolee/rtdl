@@ -32,6 +32,8 @@ The v2.0 side is only partially born:
 - Goal1853 adds the stronger caller-supplied PyTorch/CuPy GPU-column version of
   that adapter, so the input tensors can be owned by the learner/user rather
   than packed internally by RTDL.
+- Goal1856 adds the first same-contract v2.0-vs-v1.8 timing row for that app,
+  at 512 and 2048 synthetic rows on the RTX A4500 pod.
 - No all-app v2.0 partner timing harness exists yet.
 
 ## Current Evidence Inventory
@@ -45,13 +47,14 @@ The v2.0 side is only partially born:
 | Goal1848 | v2.0 preview, OptiX bounded all-hit witness rows into partner-owned CUDA outputs | pod validated on RTX A4500 for Torch/CuPy | not v2.0 release |
 | Goal1850 | first app-level segment/polygon partner adapter over generic witness rows | pod validated on RTX A4500 for Torch/CuPy; Claude accepted with boundary | not v2.0 release |
 | Goal1853 | caller-supplied PyTorch/CuPy GPU-column segment/polygon partner adapter | pod validated on RTX A4500 for Torch/CuPy; Claude accepted with boundary | not v2.0 release |
+| Goal1856 | first same-contract v2.0-vs-v1.8 timing row for `segment_polygon_anyhit_rows` | pod validated on RTX A4500 at 512 and 2048 rows; review pending | not v2.0 release |
 
 ## Engine Readiness
 
 | Engine | v1.8 comparison baseline | v2.0 partner comparison readiness | What remains before total comparison |
 | --- | --- | --- | --- |
 | Embree | ready as CPU same-surface app-wall evidence | no GPU partner zero-copy claim is applicable; Embree can still be timed as the CPU RT fallback/control | define whether v2.0 Embree rows are unchanged control rows or partner-host rows, then rerun the same app-command harness on the v2.0 release candidate |
-| OptiX | ready as same-contract primary/subpath evidence | one app-level row adapter is execution-proven for Torch/CuPy GPU columns: `segment_polygon_anyhit_rows` | expand to count/reduce-style app adapters, add a v2.0 app harness, then run pod timings with Torch and CuPy |
+| OptiX | ready as same-contract primary/subpath evidence | one app-level row adapter is execution- and timing-proven for Torch/CuPy GPU columns: `segment_polygon_anyhit_rows` | expand to count/reduce-style app adapters, add a v2.0 app harness, then run pod timings with Torch and CuPy |
 
 ## Public App Matrix
 
@@ -65,7 +68,7 @@ The v2.0 side is only partially born:
 | `facility_knn_assignment` | available | CPU control rerun needed | available | not yet covered by Goal1838 any-hit slice |
 | `road_hazard_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
 | `segment_polygon_hitcount` | available | CPU control rerun needed | available | candidate after count-output partner adapter; not covered by Goal1853 row witness path |
-| `segment_polygon_anyhit_rows` | available | CPU control rerun needed | available | first v2.0 OptiX app adapter exists: Goal1850 record adapter plus Goal1853 caller-supplied PyTorch/CuPy GPU-column adapter; perf comparison harness still needed |
+| `segment_polygon_anyhit_rows` | available | CPU control rerun needed | available | first v2.0 OptiX app adapter and timing row exist: Goal1850 record adapter, Goal1853 caller-supplied PyTorch/CuPy GPU-column adapter, Goal1856 narrow 512/2048-row timing evidence |
 | `polygon_pair_overlap_area_rows` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
 | `polygon_set_jaccard` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
 | `hausdorff_distance` | available | CPU control rerun needed | available | not yet covered by Goal1838 any-hit slice |
@@ -83,10 +86,10 @@ The v2.0 side is only partially born:
    `v2.0 source-tree Python+partner+RTDL app`, with identical datasets,
    identical output semantics, and explicit warm/cold timing phases.
 
-2. Extend from the first v2.0 partner app adapter to a timing harness:
-   `segment_polygon_anyhit_rows` now has both a record adapter (Goal1850) and a
-   caller-supplied GPU-column adapter (Goal1853), but it still needs an accepted
-   same-contract timing row against the v1.8 app path.
+2. Extend from the first timing row to broader benchmark coverage:
+   `segment_polygon_anyhit_rows` now has a first same-contract timing row
+   (Goal1856), but it still needs larger real-data rows, repeated environment
+   checks, and external review before any public performance wording.
 
 3. Extend the same pattern from rows to compact outputs:
    hit counts, selected rows, compact summaries, or domain-level metrics must be
@@ -113,7 +116,8 @@ The v2.0 side is only partially born:
 ## Boundary
 
 Goal1843 now says the comparison is beyond plan-only but still not all-app
-execution-ready. The first app-level v2.0 OptiX adapter exists and has pod
-correctness evidence. The next implementation goal should create the first
-same-contract v2.0-vs-v1.8 timing row for `segment_polygon_anyhit_rows`, then
-expand only after that row proves parity and useful timing telemetry.
+execution-ready. The first app-level v2.0 OptiX adapter exists, has pod
+correctness evidence, and has a first narrow same-contract timing row. The next
+implementation goal should scale the row to real datasets and repeat the same
+pattern for count/reduce-oriented apps before any total v2.0-vs-v1.8 table is
+attempted.

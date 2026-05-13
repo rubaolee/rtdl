@@ -32,8 +32,9 @@ class Goal1843V20VsV18TotalPerfReadinessTest(unittest.TestCase):
         self.assertIn("prepared 2-D ray/triangle any-hit primitive", text)
         self.assertIn("Goal1850 lifts the witness contract to the first app-level adapter", text)
         self.assertIn("Goal1853 adds the stronger caller-supplied PyTorch/CuPy GPU-column version", text)
-        self.assertIn("first v2.0 OptiX app adapter exists", text)
-        self.assertIn("perf comparison harness still needed", text)
+        self.assertIn("Goal1856 adds the first same-contract v2.0-vs-v1.8 timing row", text)
+        self.assertIn("first v2.0 OptiX app adapter and timing row exist", text)
+        self.assertIn("first narrow same-contract timing row", text)
         self.assertIn("segment_polygon_anyhit_rows", text)
 
 
