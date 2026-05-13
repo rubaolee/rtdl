@@ -24,8 +24,13 @@ class Goal1899V2StrictBirthGateCurrentBoardTest(unittest.TestCase):
             self.assertIn(blocker, text)
 
         self.assertIn("Goal1897", text)
+        self.assertIn("Goal1903", text)
+        self.assertIn("goal1903_fixed_radius_batch_pod.json", text)
+        self.assertIn("goal1903_segment_polygon_batch_pod_512.json", text)
+        self.assertIn("goal1903_segment_polygon_batch_pod_2048.json", text)
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_512.json", text)
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_2048.json", text)
+        self.assertIn("goal1903_v2_partner_pod_batch_summary.json", text)
         self.assertIn("Goal1898", text)
         self.assertIn("Goal1900", text)
         self.assertIn("Source doc written and linked", text)
