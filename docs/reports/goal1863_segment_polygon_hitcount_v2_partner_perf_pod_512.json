@@ -1,0 +1,75 @@
+{
+  "baseline": {
+    "name": "v1_8_native_optix_hitcount_rows",
+    "query_samples_s": [
+      0.18724721670150757,
+      0.17868641763925552,
+      0.17987672239542007,
+      0.17994436621665955,
+      0.17796985805034637
+    ],
+    "query_summary": {
+      "max_s": 0.18724721670150757,
+      "median_s": 0.17987672239542007,
+      "min_s": 0.17796985805034637
+    },
+    "row_count": 512
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 512,
+  "git_commit": "92ad75826216572fb4f2b4c6898b7a4f29f604a0",
+  "goal": "Goal1863",
+  "gpu": "NVIDIA RTX A4500, 550.127.05",
+  "iterations": 5,
+  "output_capacity": 1024,
+  "parity": {
+    "expected_row_count": 512,
+    "strict_counts_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.12153144925832748,
+      "output_contract": "partner_owned_device_count_columns",
+      "query_median_ratio_vs_v1_8_native": 0.0078227965494253,
+      "query_samples_s": [
+        2.2250799387693405,
+        0.0020027831196784973,
+        0.001407139003276825,
+        0.0013875141739845276,
+        0.0013846233487129211
+      ],
+      "query_summary": {
+        "max_s": 2.2250799387693405,
+        "median_s": 0.001407139003276825,
+        "min_s": 0.0013846233487129211
+      },
+      "row_count": 512
+    },
+    "torch": {
+      "column_build_s": 0.014418140053749084,
+      "output_contract": "partner_owned_device_count_columns",
+      "query_median_ratio_vs_v1_8_native": 0.006200604780462124,
+      "query_samples_s": [
+        0.1305762156844139,
+        0.001502297818660736,
+        0.0011153444647789001,
+        0.0010959282517433167,
+        0.0010448470711708069
+      ],
+      "query_summary": {
+        "max_s": 0.1305762156844139,
+        "median_s": 0.0011153444647789001,
+        "min_s": 0.0010448470711708069
+      },
+      "row_count": 512
+    }
+  },
+  "status": "pass"
+}

@@ -37,6 +37,8 @@ class Goal1843V20VsV18TotalPerfReadinessTest(unittest.TestCase):
         self.assertIn("host/Python count materialization remains explicit", text)
         self.assertIn("Goal1861 upgrades that hit-count path", text)
         self.assertIn("app count columns stay partner-owned", text)
+        self.assertIn("Goal1863 adds the first same-contract timing row", text)
+        self.assertIn("external review pending", text)
         self.assertIn("first v2.0 OptiX app adapter and timing row exist", text)
         self.assertIn("first narrow same-contract timing row", text)
         self.assertIn("segment_polygon_anyhit_rows", text)
