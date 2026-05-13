@@ -18,8 +18,8 @@ blocks the v2.0 release label.
 | Direct device-pointer handoff | Implemented and fail-closed for selected partner descriptors; still bounded to specific primitives and contracts. | Goals1819, 1821, 1823, 1826 | Keep descriptor/lifetime/stream wording narrow; do not generalize to arbitrary partner code. |
 | Broad RT-core speedup | Not ready. Strong exact-row evidence exists for fixed-radius and segment/polygon subpaths, but the road-hazard prepared row still lacks RTX pod artifacts. | Goals1881, 1886, 1889, 1895, 1897, 1903, 1904, 1905 | Run Goal1903 on RTX pod, validate with Goal1905, then review results. |
 | Whole-application acceleration | Not ready. Some app-level prepared rows exist, but not all app claims have same-contract RTX evidence. | Goals1878, 1881, 1886, 1889, 1895 | Finish road-hazard pod row; then decide which app claims are allowed and which remain preview-only. |
-| Arbitrary PyTorch/CuPy acceleration boundary | Source doc written and linked; still needs external review before final v2.0 release review. | Goal1814 plus Goal1900 | Complete external review and fold accepted wording into final v2.0 release gate. |
-| Package-install support | Blocked. No packaging metadata exists; source-tree-only remains the current validated mode. | Goal1898 | Either create validated packaging metadata or get 3-AI consensus for source-tree-only v2.0. |
+| Arbitrary PyTorch/CuPy acceleration boundary | Source doc written and linked; public wording scanner passes; still needs external review before final v2.0 release review. | Goal1814 plus Goals1900, 1906 | Complete external review and fold accepted wording into final v2.0 release gate. |
+| Package-install support | Blocked. No packaging metadata exists; source-tree-only remains the current validated mode; public wording scanner passes. | Goals1898, 1902, 1906 | Either create validated packaging metadata or get 3-AI consensus for source-tree-only v2.0. |
 
 ## Newly Added Since The Last Board
 
@@ -36,6 +36,8 @@ blocks the v2.0 release label.
 - Goal1904: Gemini review accepted Goal1903's batch structure and constrained
   claim boundaries, without authorizing v2.0 release or broad speedup claims.
 - Goal1905: post-pod acceptance validator for the Goal1903 artifact set.
+- Goal1906: public v2 claim-boundary scanner for README, docs index,
+  partner-boundary doc, and tutorials.
 
 ## Immediate Next Hardware Step
 
@@ -70,6 +72,12 @@ review.
 
 Goal1903 has one Gemini review. After pod artifacts land, collect a fresh
 Claude or Pro-class review before using it for key release consensus.
+
+Run Goal1906 after public doc edits:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1906_public_v2_claim_boundary_scan.py
+```
 
 ## Verdict
 
