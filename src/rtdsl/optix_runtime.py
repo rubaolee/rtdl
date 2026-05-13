@@ -4052,6 +4052,44 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_anyhit2d.restype = ctypes.c_int
+    optional_prepare_anyhit2d_device_triangles = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL,
+    )
+    if optional_prepare_anyhit2d_device_triangles is not None:
+        optional_prepare_anyhit2d_device_triangles.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_anyhit2d_device_triangles.restype = ctypes.c_int
+    optional_count_anyhit2d_device_rays = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL,
+    )
+    if optional_count_anyhit2d_device_rays is not None:
+        optional_count_anyhit2d_device_rays.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_anyhit2d_device_rays.restype = ctypes.c_int
     optional_destroy_anyhit2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_ray_anyhit_2d")
     if optional_destroy_anyhit2d is not None:
         optional_destroy_anyhit2d.argtypes = [ctypes.c_void_p]

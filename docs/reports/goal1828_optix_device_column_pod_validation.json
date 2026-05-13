@@ -1,0 +1,58 @@
+{
+  "claim_boundary": {
+    "direct_device_column_execution_observed": true,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "device": "NVIDIA RTX 4000 Ada Generation",
+  "elapsed_s": 1.0397346466779709,
+  "execute_s": 0.3707297220826149,
+  "expected_count": 1,
+  "goal": "Goal1828",
+  "observed_count": 1,
+  "python": "3.12.3",
+  "ray_metadata": {
+    "backend": "optix",
+    "direct_device_handoff_authorized": true,
+    "direct_device_pointer_observed": true,
+    "native_symbol": "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays",
+    "partner_phase_timings_s": {
+      "descriptor_validation_s": 0.0002572163939476013
+    },
+    "partner_tensor_handoff_authorized": true,
+    "ray_count": 2,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "torch"
+    ],
+    "transfer_mode": "device_columns_gpu_pack",
+    "triangle_scene_transfer_mode": "prepared_scene_existing_path",
+    "true_zero_copy_authorized": false
+  },
+  "status": "pass",
+  "torch_version": "2.8.0+cu128",
+  "triangle_metadata": {
+    "backend": "optix",
+    "direct_device_handoff_authorized": true,
+    "direct_device_pointer_observed": true,
+    "native_symbol": "rtdl_optix_prepare_ray_anyhit_2d_device_triangles",
+    "partner_phase_timings_s": {
+      "descriptor_validation_s": 0.00013978034257888794
+    },
+    "partner_tensor_handoff_authorized": true,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "torch"
+    ],
+    "transfer_mode": "device_columns_gpu_pack_gas_build",
+    "triangle_count": 1,
+    "true_zero_copy_authorized": false
+  }
+}
