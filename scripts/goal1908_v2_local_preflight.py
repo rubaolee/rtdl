@@ -22,6 +22,7 @@ TEST_MODULES = (
     "tests.goal1907_gemini_review_v2_boundary_and_source_tree_test",
     "tests.goal1908_v2_local_preflight_test",
     "tests.goal1909_v2_release_packet_skeleton_test",
+    "tests.goal1910_gemini_review_v2_release_skeleton_test",
 )
 
 
