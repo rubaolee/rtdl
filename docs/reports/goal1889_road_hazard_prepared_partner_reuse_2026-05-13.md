@@ -1,6 +1,6 @@
 # Goal1889 - Road Hazard Prepared Partner Reuse Timing Row
 
-Status: implementation-ready-for-pod
+Status: local-smoke-pass-pod-pending
 
 Date: 2026-05-13
 
@@ -68,6 +68,32 @@ Artifacts to collect:
 
 Each artifact must include strict priority-flag parity, the dual v1.8 baselines,
 the Goal1869 unprepared partner row, and the nested Goal1889 prepared reuse row.
+
+## Local Linux Smoke
+
+The RTX pod was unavailable, so Codex used the standing local Linux development
+host for smoke validation only:
+
+- Host: `192.168.1.20`
+- GPU: `NVIDIA GeForce GTX 1070, 580.126.09`
+- Disposable checkout: `/tmp/rtdl_goal1889_smoke`
+- OptiX library: built locally with `make build-optix OPTIX_PREFIX=/home/lestat/vendor/optix-dev`
+- Partner packages: isolated `PYTHONPATH=/tmp/rtdl_v2_partner_pydeps`
+
+Artifacts:
+
+- `docs/reports/goal1889_road_hazard_prepared_reuse_local_gtx1070_smoke_64.json`
+- `docs/reports/goal1889_road_hazard_prepared_reuse_local_gtx1070_smoke_256.json`
+
+These artifacts prove Linux/CUDA/OptiX/Torch/CuPy functional portability for the
+new prepared row. They do not replace RTX 3090 pod timing evidence.
+
+| Count | Partner | Goal1869 unprepared partner median (s) | Goal1889 prepared reuse median (s) | Prepared/unprepared ratio | Prepared/v1.8 prepared ratio |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| 64 | CuPy | 0.0023815640 | 0.0014490860 | 0.608x | 4.686x |
+| 64 | Torch | 0.0017355350 | 0.0008779970 | 0.506x | 2.839x |
+| 256 | CuPy | 0.0022965010 | 0.0014187499 | 0.618x | 2.357x |
+| 256 | Torch | 0.0018809200 | 0.0009218870 | 0.490x | 1.531x |
 
 ## Boundary
 
