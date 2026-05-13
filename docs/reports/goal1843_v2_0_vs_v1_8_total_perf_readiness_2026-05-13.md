@@ -38,6 +38,10 @@ The v2.0 side is only partially born:
   `segment_polygon_hitcount`, but it is correctness evidence only: app counts
   are still materialized in Python from generic witness pairs, so it is not a
   whole-app zero-copy or timing row.
+- Goal1861 upgrades that hit-count path to partner-owned device count columns,
+  with app aggregation performed by PyTorch/CuPy tensor operations from generic
+  witness pairs. It has pod correctness evidence but still no same-contract
+  timing row.
 - No all-app v2.0 partner timing harness exists yet.
 
 ## Current Evidence Inventory
@@ -53,13 +57,14 @@ The v2.0 side is only partially born:
 | Goal1853 | caller-supplied PyTorch/CuPy GPU-column segment/polygon partner adapter | pod validated on RTX A4500 for Torch/CuPy; Claude accepted with boundary | not v2.0 release |
 | Goal1856 | first same-contract v2.0-vs-v1.8 timing row for `segment_polygon_anyhit_rows` | pod validated on RTX A4500 at 512 and 2048 rows; Claude accepted with boundary | not v2.0 release |
 | Goal1859 | second app-level adapter for `segment_polygon_hitcount` over generic witness rows | pod correctness-smoked on RTX A4500 for Torch/CuPy; host/Python count materialization remains explicit | not v2.0 release |
+| Goal1861 | device-count-column adapter for `segment_polygon_hitcount` | pod correctness-smoked on RTX A4500 for Torch/CuPy; app count columns stay partner-owned | not v2.0 release |
 
 ## Engine Readiness
 
 | Engine | v1.8 comparison baseline | v2.0 partner comparison readiness | What remains before total comparison |
 | --- | --- | --- | --- |
 | Embree | ready as CPU same-surface app-wall evidence | no GPU partner zero-copy claim is applicable; Embree can still be timed as the CPU RT fallback/control | define whether v2.0 Embree rows are unchanged control rows or partner-host rows, then rerun the same app-command harness on the v2.0 release candidate |
-| OptiX | ready as same-contract primary/subpath evidence | one app-level row adapter is execution- and timing-proven for Torch/CuPy GPU columns: `segment_polygon_anyhit_rows`; one count-style app adapter is correctness-smoked only: `segment_polygon_hitcount` | replace Python count materialization with an accepted compact output path where needed, expand to more app adapters, add a v2.0 app harness, then run pod timings with Torch and CuPy |
+| OptiX | ready as same-contract primary/subpath evidence | one app-level row adapter is execution- and timing-proven for Torch/CuPy GPU columns: `segment_polygon_anyhit_rows`; one count-style app adapter now has partner-owned device count columns: `segment_polygon_hitcount` | add same-contract timing for the count-column path, expand to more app adapters, add a v2.0 app harness, then run pod timings with Torch and CuPy |
 
 ## Public App Matrix
 
@@ -72,7 +77,7 @@ The v2.0 side is only partially born:
 | `event_hotspot_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
 | `facility_knn_assignment` | available | CPU control rerun needed | available | not yet covered by Goal1838 any-hit slice |
 | `road_hazard_screening` | available | CPU control rerun needed | available | candidate after any-hit/count partner app adapter |
-| `segment_polygon_hitcount` | available | CPU control rerun needed | available | Goal1859 correctness adapter exists over generic witness rows, but counts are Python-materialized; no same-contract timing row yet |
+| `segment_polygon_hitcount` | available | CPU control rerun needed | available | Goal1861 device count columns exist over generic witness rows; no same-contract timing row yet |
 | `segment_polygon_anyhit_rows` | available | CPU control rerun needed | available | first v2.0 OptiX app adapter and timing row exist: Goal1850 record adapter, Goal1853 caller-supplied PyTorch/CuPy GPU-column adapter, Goal1856 narrow 512/2048-row timing evidence |
 | `polygon_pair_overlap_area_rows` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
 | `polygon_set_jaccard` | available | CPU control rerun needed | available | not yet covered beyond candidate discovery subphase |
@@ -99,9 +104,9 @@ The v2.0 side is only partially born:
 3. Extend the same pattern from rows to compact outputs:
    hit counts, selected rows, compact summaries, or domain-level metrics must be
    produced without quietly falling back to RTDL-owned staging buffers in the
-   measured path. Goal1859 deliberately does not satisfy this yet for
-   `segment_polygon_hitcount`; it proves the adapter boundary while marking
-   `whole_app_true_zero_copy_authorized: false`.
+   measured path. Goal1861 now satisfies this as correctness evidence for
+   `segment_polygon_hitcount`, but it still needs same-contract timing before it
+   can enter the performance table.
 
 4. Add a v2.0 app performance harness:
    it must print progress for long rows, record exact commands, hardware,
@@ -125,8 +130,7 @@ The v2.0 side is only partially born:
 Goal1843 now says the comparison is beyond plan-only but still not all-app
 execution-ready. The first app-level v2.0 OptiX adapter exists, has pod
 correctness evidence, and has a first narrow same-contract timing row. A second
-count-style adapter also exists, but it is correctness-only because it
-materializes app counts in Python from generic witness IDs. The next
-implementation goal should scale the timed row to real datasets and add compact
-device-side output contracts for count/reduce-oriented apps before any total
-v2.0-vs-v1.8 table is attempted.
+count-style adapter also exists with partner-owned device count columns, but it
+is correctness-only until timed against the same v1.8 app contract. The next
+implementation goal should scale the timed row to real datasets and add timing
+for the count-column path before any total v2.0-vs-v1.8 table is attempted.

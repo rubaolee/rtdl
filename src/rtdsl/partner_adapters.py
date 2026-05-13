@@ -21,6 +21,22 @@ def _partner_module(partner: str):
 
         if not torch.cuda.is_available():
             raise RuntimeError("Torch partner adapter requires torch.cuda to be available")
+
+        def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
+            if int(witness_ray_ids.numel()) == 0:
+                return torch.zeros_like(segment_ids, dtype=torch.uint32)
+            ray_ids = witness_ray_ids.to(torch.int64)
+            primitive_ids = witness_primitive_ids.to(torch.int64)
+            primitive_modulus = torch.max(primitive_ids) + 1
+            unique_pairs = torch.unique(ray_ids * primitive_modulus + primitive_ids)
+            unique_ray_ids = torch.div(unique_pairs, primitive_modulus, rounding_mode="floor")
+            return (
+                segment_ids.to(torch.int64).reshape(-1, 1)
+                .eq(unique_ray_ids.reshape(1, -1))
+                .sum(dim=1)
+                .to(torch.uint32)
+            )
+
         return {
             "name": "torch",
             "module": torch,
@@ -32,12 +48,29 @@ def _partner_module(partner: str):
             "zeros": lambda shape, dtype, device: torch.zeros(shape, dtype=dtype, device=device),
             "sync": torch.cuda.synchronize,
             "to_host": lambda value: [int(item) for item in value.detach().cpu().tolist()],
+            "slice": lambda value, count: value[: int(count)],
+            "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
         }
     if partner == "cupy":
         import cupy
 
         if int(cupy.cuda.runtime.getDeviceCount()) <= 0:
             raise RuntimeError("CuPy partner adapter requires a CUDA device")
+
+        def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
+            if int(witness_ray_ids.size) == 0:
+                return cupy.zeros_like(segment_ids, dtype=cupy.uint32)
+            ray_ids = witness_ray_ids.astype(cupy.int64, copy=False)
+            primitive_ids = witness_primitive_ids.astype(cupy.int64, copy=False)
+            primitive_modulus = cupy.max(primitive_ids) + cupy.asarray(1, dtype=cupy.int64)
+            unique_pairs = cupy.unique(ray_ids * primitive_modulus + primitive_ids)
+            unique_ray_ids = unique_pairs // primitive_modulus
+            return cupy.sum(
+                segment_ids.astype(cupy.int64, copy=False).reshape(-1, 1)
+                == unique_ray_ids.reshape(1, -1),
+                axis=1,
+            ).astype(cupy.uint32, copy=False)
+
         return {
             "name": "cupy",
             "module": cupy,
@@ -49,6 +82,8 @@ def _partner_module(partner: str):
             "zeros": lambda shape, dtype, device: cupy.zeros(shape, dtype=dtype),
             "sync": cupy.cuda.runtime.deviceSynchronize,
             "to_host": lambda value: [int(item) for item in cupy.asnumpy(value).tolist()],
+            "slice": lambda value, count: value[: int(count)],
+            "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
         }
     raise ValueError("partner must be 'torch' or 'cupy'")
 
@@ -212,43 +247,39 @@ def _column_length(columns: dict[str, object], name: str) -> int:
         raise ValueError(f"{name} column must expose shape[0] or a length") from exc
 
 
-def segment_polygon_anyhit_rows_optix_partner_columns(
+def _segment_polygon_all_witness_columns_optix_partner_columns(
     segment_ray_columns: dict[str, object],
     polygon_triangle_columns: dict[str, object],
     polygon_triangle_aabbs,
     *,
     partner: str = "torch",
     output_capacity: int | None = None,
-    return_metadata: bool = False,
 ):
-    """Run segment/polygon rows from caller-supplied partner CUDA columns.
-
-    The caller owns the GPU-resident ray and triangle columns. The adapter only
-    allocates bounded witness output columns, invokes the generic native
-    all-witness contract, and names/deduplicates app rows in Python.
-    """
     ray_count = _column_length(segment_ray_columns, "ids")
     triangle_count = _column_length(polygon_triangle_columns, "ids")
+    runtime = _partner_module(partner)
     if ray_count == 0 or triangle_count == 0:
-        rows: tuple[dict[str, int], ...] = ()
         metadata = {
-            "adapter": "segment_polygon_anyhit_rows_optix_partner_columns",
-            "partner": partner,
-            "app_rows_emitted": 0,
             "input_contract": "caller_supplied_partner_device_columns",
             "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "emitted_count": 0,
+            "overflowed": False,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
-        if return_metadata:
-            return {"rows": rows, "metadata": metadata}
-        return rows
+        empty = runtime["zeros"]((0,), runtime["uint32"], runtime["device"])
+        return {
+            "runtime": runtime,
+            "witness_ray_ids": empty,
+            "witness_primitive_ids": empty,
+            "emitted_count": 0,
+            "metadata": metadata,
+        }
     if output_capacity is None:
         output_capacity = max(1, ray_count * triangle_count)
     if output_capacity <= 0:
         raise ValueError("output_capacity must be positive")
 
-    runtime = _partner_module(partner)
     witness_ray_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
     witness_primitive_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
 
@@ -270,6 +301,42 @@ def segment_polygon_anyhit_rows_optix_partner_columns(
     emitted_count = int(metadata["emitted_count"])
     if metadata["overflowed"]:
         raise RuntimeError("partner segment/polygon column adapter overflowed; increase output_capacity")
+    return {
+        "runtime": runtime,
+        "witness_ray_ids": witness_ray_ids,
+        "witness_primitive_ids": witness_primitive_ids,
+        "emitted_count": emitted_count,
+        "metadata": metadata,
+    }
+
+
+def segment_polygon_anyhit_rows_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Run segment/polygon rows from caller-supplied partner CUDA columns.
+
+    The caller owns the GPU-resident ray and triangle columns. The adapter only
+    allocates bounded witness output columns, invokes the generic native
+    all-witness contract, and names/deduplicates app rows in Python.
+    """
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    witness_ray_ids = witness_result["witness_ray_ids"]
+    witness_primitive_ids = witness_result["witness_primitive_ids"]
     ray_ids = runtime["to_host"](witness_ray_ids)[:emitted_count]
     primitive_ids = runtime["to_host"](witness_primitive_ids)[:emitted_count]
     rows = tuple(
@@ -361,3 +428,61 @@ def segment_polygon_hitcount_optix_partner_columns(
     if return_metadata:
         return {"rows": rows, "metadata": metadata}
     return rows
+
+
+def segment_polygon_hitcount_optix_partner_device_count_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return partner-owned segment IDs and hit-count columns.
+
+    This adapter keeps the native call on the same generic bounded witness
+    contract as the row adapters, then performs duplicate-pair removal and
+    per-segment counting with PyTorch/CuPy tensor operations. It avoids
+    materializing app hit-count rows on the host.
+    """
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
+    witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
+    hit_counts = runtime["count_unique_pairs_by_ids"](
+        segment_ray_columns["ids"],
+        witness_ray_ids,
+        witness_primitive_ids,
+    )
+    runtime["sync"]()
+    columns = {
+        "segment_ids": segment_ray_columns["ids"],
+        "hit_counts": hit_counts,
+    }
+    metadata.update(
+        {
+            "adapter": "segment_polygon_hitcount_optix_partner_device_count_columns",
+            "partner": runtime["name"],
+            "app_columns_emitted": 2,
+            "app_rows_emitted": _column_length(segment_ray_columns, "ids"),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_count_materialization": "partner_gpu_from_generic_witness_pairs",
+            "app_count_host_materialization": False,
+            "whole_app_true_zero_copy_authorized": True,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
