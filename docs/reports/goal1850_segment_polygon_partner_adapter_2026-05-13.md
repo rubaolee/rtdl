@@ -44,8 +44,9 @@ PYTHONPATH=src;. py -3 -m unittest \
 Result: 10 tests passed.
 
 Pod smoke validation was run on the available RTX A4500 pod
-(`root@213.173.108.219 -p 17793`) using the already-built OptiX backend and the
-new adapter files staged into `/root/rtdl`. Both CuPy and Torch produced:
+(`root@213.173.108.219 -p 17793`) after resetting `/root/rtdl` to clean
+`origin/main` commit `de2534ebd6aadd9ced42e81af5a7eaf6c31731ad`, using the
+already-built OptiX backend. Both CuPy and Torch produced:
 
 ```text
 [{"segment_id": 101, "polygon_id": 11},
