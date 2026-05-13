@@ -21,8 +21,9 @@ class Goal1919PostPodEvidenceIntegrationTest(unittest.TestCase):
         self.assertIn("Goal1905 post-pod acceptance: `pass`", text)
         self.assertIn("Goal1916 post-pod artifact manifest: `pass`", text)
         self.assertIn("v2_0_release_authorized: false", text)
-        self.assertIn("Claude is quota-blocked", text)
+        self.assertIn("Fresh Claude or Pro-class review of actual pod artifacts has landed", text)
         self.assertIn("Treat it as advisory", text)
+        self.assertIn("Goal1923 records integration", text)
 
     def test_copied_post_pod_gates_pass_but_readiness_stays_blocked(self) -> None:
         acceptance = json.loads(ACCEPTANCE.read_text(encoding="utf-8"))
@@ -34,7 +35,8 @@ class Goal1919PostPodEvidenceIntegrationTest(unittest.TestCase):
         self.assertEqual(readiness["status"], "blocked")
         self.assertTrue(readiness["claim_boundary"]["pod_evidence_collected"])
         self.assertFalse(readiness["claim_boundary"]["v2_0_release_authorized"])
-        self.assertIn("fresh Claude or Pro-class review", " ".join(readiness["blockers"]))
+        self.assertNotIn("fresh Claude or Pro-class review", " ".join(readiness["blockers"]))
+        self.assertIn("final v2.0 release consensus missing", readiness["blockers"])
 
 
 if __name__ == "__main__":

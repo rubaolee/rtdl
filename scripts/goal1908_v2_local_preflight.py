@@ -35,6 +35,7 @@ TEST_MODULES = (
     "tests.goal1920_gemini_followup_goal1912_post_pod_review_correction_test",
     "tests.goal1921_v2_post_pod_performance_report_test",
     "tests.goal1922_numba_triton_strategy_preplanning_test",
+    "tests.goal1923_claude_post_pod_review_integration_test",
 )
 
 

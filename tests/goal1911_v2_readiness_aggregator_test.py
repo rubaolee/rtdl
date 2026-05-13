@@ -16,7 +16,7 @@ REPORT = ROOT / "docs" / "reports" / "goal1911_v2_readiness_aggregator_2026-05-1
 
 
 class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
-    def test_current_repo_reports_post_pod_evidence_but_still_blocks_on_review(self) -> None:
+    def test_current_repo_reports_post_pod_review_but_still_blocks_release(self) -> None:
         payload = aggregate(ROOT)
 
         self.assertEqual(payload["status"], "blocked")
@@ -25,12 +25,17 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
         self.assertEqual(payload["goal1905_acceptance_status"], "pass")
         self.assertEqual(payload["goal1916_manifest_status"], "pass")
         self.assertNotIn("RTX pod batch artifacts missing", payload["blockers"])
-        self.assertIn("fresh Claude or Pro-class review", " ".join(payload["blockers"]))
+        self.assertNotIn("fresh Claude or Pro-class review", " ".join(payload["blockers"]))
         self.assertIn(
             "docs/reviews/goal1912_gemini_review_goal1903_post_pod_artifacts_2026-05-13.md",
             payload["post_pod_review_files"],
         )
-        self.assertFalse(payload["decisive_post_pod_review_files"])
+        self.assertIn(
+            "docs/reviews/goal1912_claude_review_goal1903_post_pod_artifacts_2026-05-13.md",
+            payload["decisive_post_pod_review_files"],
+        )
+        self.assertIn("final v2.0 release consensus missing", payload["blockers"])
+        self.assertIn("explicit user-requested release action missing", payload["blockers"])
         self.assertIn("docs/handoff/GOAL1912_POST_POD_EXTERNAL_REVIEW_TEMPLATE_2026-05-13.md", SUPPORTING_REQUIRED)
         self.assertIn("scripts/goal1913_v2_pod_session_runbook.sh", SUPPORTING_REQUIRED)
         self.assertIn("goal1913_v2_pod_session_runbook.sh", payload["pod_session_runbook_command"])
