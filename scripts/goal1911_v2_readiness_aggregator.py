@@ -57,6 +57,10 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1925_fixed_radius_family_v2_partner_perf_2026-05-13.md",
     "docs/reports/goal1927_robot_collision_partner_pose_flags_adapter_2026-05-13.md",
     "docs/reports/goal1928_robot_collision_v2_partner_perf_2026-05-13.md",
+    "docs/reports/goal1930_all_app_v2_matrix_2026-05-13.md",
+    "docs/reports/goal1931_current_all_app_v18_v2_perf_analysis_2026-05-13.md",
+    "scripts/goal1932_all_app_v2_pod_batch_runner.sh",
+    "docs/reports/goal1932_all_app_v2_pod_batch_runner_2026-05-13.md",
 )
 
 

@@ -40,6 +40,9 @@ TEST_MODULES = (
     "tests.goal1925_fixed_radius_family_v2_partner_perf_test",
     "tests.goal1927_robot_collision_partner_pose_flags_adapter_test",
     "tests.goal1928_robot_collision_v2_partner_perf_test",
+    "tests.goal1930_all_app_v2_matrix_test",
+    "tests.goal1931_current_all_app_v18_v2_perf_analysis_test",
+    "tests.goal1932_all_app_v2_pod_batch_runner_test",
 )
 
 

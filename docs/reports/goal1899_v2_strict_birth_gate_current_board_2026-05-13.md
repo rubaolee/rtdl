@@ -88,6 +88,16 @@ blocks the v2.0 release label.
 - Goal1928: robot collision v2 partner perf harness compares v1.8 prepared
   OptiX pose flags to the Goal1927 v2 partner adapter with scalar count parity;
   pod timing is still needed.
+- Goal1930: all 16 active app rows now have a machine-readable v2 matrix
+  decision: 4 already pod-timed, 7 harness-ready pending pod timing, 1
+  implemented row needing a current rerun, and 4 explicit evidence-only
+  control/fallback rows that must not be marketed as v2 partner speedups.
+- Goal1931: current all-app v1.8-vs-v2 analysis report now consumes Goal1930
+  plus accepted pod artifacts, showing 4 measured positive rows, 8 pending-pod
+  rows, and 4 control rows with explanation rather than empty `n/a` cells.
+- Goal1932: all-app pod batch runner now packages the pending fixed-radius,
+  robot, segment-anyhit reruns, and the DB/graph/polygon evidence-only control
+  rows with visible progress output for the next RTX pod session.
 
 ## Immediate Next Hardware Step
 
@@ -136,11 +146,19 @@ PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py
 
 ## Immediate Next Non-Hardware Step
 
-Continue the all-app implementation plan from Goal1924. Family A now has a
-runner; Family B has a robot timing runner but still needs the
-`segment_polygon_anyhit_rows` rerun; Family D, Family E, and Family F still need
-implementation or explicit exclusion/control-row decisions before the final
-v2.0 matrix.
+Continue the all-app implementation plan from Goal1924 using the Goal1930
+matrix. Family A has a runner, Family B has the robot runner and needs the
+`segment_polygon_anyhit_rows` rerun, and Families D/E/F are explicit
+evidence-only control rows until a reviewed partner continuation exists.
+
+For the next all-app hardware session, run:
+
+```bash
+OUT_DIR=docs/reports/goal1932_all_app_v2_pod_batch \
+PARTNERS=cupy,torch \
+PYTHONPATH=src:. \
+bash scripts/goal1932_all_app_v2_pod_batch_runner.sh
+```
 
 Keep the external review of the Goal1900 partner-acceleration boundary document
 as part of the final release packet history; later all-app performance reports
