@@ -5,6 +5,7 @@ import pathlib
 import unittest
 
 import rtdsl as rt
+from rtdsl import partner_adapters
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -55,6 +56,10 @@ class Goal1853SegmentPolygonPartnerColumnAdapterTest(unittest.TestCase):
                 self.assertIs(metadata["exact_row_semantics_authorized"], True)
                 self.assertIs(metadata["v2_0_release_authorized"], False)
                 self.assertIs(metadata["whole_app_speedup_claim_authorized"], False)
+
+    def test_column_length_failure_is_explicit_for_unsupported_column_objects(self) -> None:
+        with self.assertRaisesRegex(ValueError, "ids column must expose shape"):
+            partner_adapters._column_length({"ids": object()}, "ids")
 
 
 if __name__ == "__main__":

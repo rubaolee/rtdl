@@ -206,7 +206,10 @@ def _column_length(columns: dict[str, object], name: str) -> int:
     values = getattr(column, "values", None)
     if values is not None:
         return len(values)
-    return len(column)  # type: ignore[arg-type]
+    try:
+        return len(column)  # type: ignore[arg-type]
+    except TypeError as exc:
+        raise ValueError(f"{name} column must expose shape[0] or a length") from exc
 
 
 def segment_polygon_anyhit_rows_optix_partner_columns(
