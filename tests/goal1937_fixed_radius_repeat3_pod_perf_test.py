@@ -16,6 +16,14 @@ class Goal1937FixedRadiusRepeat3PodPerfTest(unittest.TestCase):
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))
 
         self.assertEqual(payload["status"], "pass")
+        self.assertEqual(
+            payload["source_commit_label"],
+            "47490311d15acc668030b20324be05aeb709c4ac",
+        )
+        self.assertEqual(
+            payload["git_commit"],
+            "47490311d15acc668030b20324be05aeb709c4ac",
+        )
         self.assertEqual(len(payload["results"]), 12)
         for row in payload["results"]:
             with self.subTest(app=row["app"], partner=row["partner"]):
@@ -45,6 +53,7 @@ class Goal1937FixedRadiusRepeat3PodPerfTest(unittest.TestCase):
 
         self.assertIn("Status: fixed-radius-repeat3-evidence-collected-release-still-blocked", text)
         self.assertIn("resolves the Goal1936 single-repeat caveat", text)
+        self.assertIn("47490311d15acc668030b20324be05aeb709c4ac", text)
         self.assertIn("do not authorize v2.0", text)
         self.assertIn("whole-app speedup", text)
         self.assertIn("package-install", text)

@@ -1,128 +1,127 @@
 [goal1925] start app=facility_knn_assignment partner=cupy
 [goal1925] timing facility_knn_assignment:v1_8_prepared_optix:cupy repeat=3
-[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.682708
-[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.328406
-[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.365337
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.564564
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.268718
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.553787
 [goal1925] timing facility_knn_assignment:v2_prepared_partner:cupy repeat=3
-[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=1 elapsed_s=0.000815
-[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=2 elapsed_s=0.000440
-[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=3 elapsed_s=0.000410
+[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=1 elapsed_s=0.000853
+[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=2 elapsed_s=0.000480
+[goal1925] facility_knn_assignment:v2_prepared_partner:cupy iter=3 elapsed_s=0.000441
 [goal1925] start app=facility_knn_assignment partner=torch
 [goal1925] timing facility_knn_assignment:v1_8_prepared_optix:torch repeat=3
-[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=1 elapsed_s=1.423761
-[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=2 elapsed_s=1.455003
-[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=3 elapsed_s=1.304051
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=1 elapsed_s=1.348240
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=2 elapsed_s=1.515235
+[goal1925] facility_knn_assignment:v1_8_prepared_optix:torch iter=3 elapsed_s=1.338220
 [goal1925] timing facility_knn_assignment:v2_prepared_partner:torch repeat=3
-[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=1 elapsed_s=0.000751
-[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=2 elapsed_s=0.000452
-[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=3 elapsed_s=0.000419
+[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=1 elapsed_s=0.000827
+[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=2 elapsed_s=0.000445
+[goal1925] facility_knn_assignment:v2_prepared_partner:torch iter=3 elapsed_s=0.000401
 [goal1925] start app=hausdorff_distance partner=cupy
 [goal1925] timing hausdorff_distance:v1_8_prepared_optix:cupy repeat=3
-[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.429343
-[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.136224
-[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.337785
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.425012
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.055892
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.383386
 [goal1925] timing hausdorff_distance:v2_prepared_partner:cupy repeat=3
-[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=1 elapsed_s=0.000681
-[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=2 elapsed_s=0.000397
-[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=3 elapsed_s=0.000354
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=1 elapsed_s=0.000821
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=2 elapsed_s=0.000418
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=3 elapsed_s=0.000355
 [goal1925] timing hausdorff_distance:v1_8_prepared_optix:cupy repeat=3
-[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.401202
-[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.366652
-[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.378323
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.363279
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.385530
+[goal1925] hausdorff_distance:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.411351
 [goal1925] timing hausdorff_distance:v2_prepared_partner:cupy repeat=3
-[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=1 elapsed_s=0.000872
-[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=2 elapsed_s=0.000342
-[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=3 elapsed_s=0.000325
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=1 elapsed_s=0.000587
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=2 elapsed_s=0.000333
+[goal1925] hausdorff_distance:v2_prepared_partner:cupy iter=3 elapsed_s=0.000307
 [goal1925] start app=hausdorff_distance partner=torch
 [goal1925] timing hausdorff_distance:v1_8_prepared_optix:torch repeat=3
-[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=1 elapsed_s=1.170082
-[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=2 elapsed_s=1.352306
-[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=3 elapsed_s=1.374766
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=1 elapsed_s=1.154010
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=2 elapsed_s=1.392166
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=3 elapsed_s=1.326599
 [goal1925] timing hausdorff_distance:v2_prepared_partner:torch repeat=3
-[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=1 elapsed_s=0.000633
-[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=2 elapsed_s=0.000361
-[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=3 elapsed_s=0.000342
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=1 elapsed_s=0.000620
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=2 elapsed_s=0.000368
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=3 elapsed_s=0.000327
 [goal1925] timing hausdorff_distance:v1_8_prepared_optix:torch repeat=3
-[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=1 elapsed_s=1.402586
-[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=2 elapsed_s=1.374851
-[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=3 elapsed_s=1.084693
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=1 elapsed_s=1.408584
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=2 elapsed_s=1.374602
+[goal1925] hausdorff_distance:v1_8_prepared_optix:torch iter=3 elapsed_s=1.075589
 [goal1925] timing hausdorff_distance:v2_prepared_partner:torch repeat=3
-[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=1 elapsed_s=0.000543
-[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=2 elapsed_s=0.000307
-[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=3 elapsed_s=0.000285
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=1 elapsed_s=0.000667
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=2 elapsed_s=0.000319
+[goal1925] hausdorff_distance:v2_prepared_partner:torch iter=3 elapsed_s=0.000278
 [goal1925] start app=ann_candidate_search partner=cupy
 [goal1925] timing ann_candidate_search:v1_8_prepared_optix:cupy repeat=3
-[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.398177
-[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.360990
-[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.380117
+[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.404765
+[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.380058
+[goal1925] ann_candidate_search:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.346614
 [goal1925] timing ann_candidate_search:v2_prepared_partner:cupy repeat=3
-[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=1 elapsed_s=0.000567
-[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=2 elapsed_s=0.000397
-[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=3 elapsed_s=0.000341
+[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=1 elapsed_s=0.000732
+[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=2 elapsed_s=0.000389
+[goal1925] ann_candidate_search:v2_prepared_partner:cupy iter=3 elapsed_s=0.000328
 [goal1925] start app=ann_candidate_search partner=torch
 [goal1925] timing ann_candidate_search:v1_8_prepared_optix:torch repeat=3
-[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=1 elapsed_s=1.169294
-[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=2 elapsed_s=1.343490
-[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=3 elapsed_s=1.358180
+[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=1 elapsed_s=1.119263
+[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=2 elapsed_s=1.328173
+[goal1925] ann_candidate_search:v1_8_prepared_optix:torch iter=3 elapsed_s=1.341951
 [goal1925] timing ann_candidate_search:v2_prepared_partner:torch repeat=3
-[goal1925] ann_candidate_search:v2_prepared_partner:torch iter=1 elapsed_s=0.000584
-[goal1925] ann_candidate_search:v2_prepared_partner:torch iter=2 elapsed_s=0.000336
+[goal1925] ann_candidate_search:v2_prepared_partner:torch iter=1 elapsed_s=0.000594
+[goal1925] ann_candidate_search:v2_prepared_partner:torch iter=2 elapsed_s=0.000350
 [goal1925] ann_candidate_search:v2_prepared_partner:torch iter=3 elapsed_s=0.000308
 [goal1925] start app=outlier_detection partner=cupy
 [goal1925] timing outlier_detection:v1_8_prepared_optix:cupy repeat=3
-[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.417147
-[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.353595
-[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.352730
+[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.383626
+[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.324988
+[goal1925] outlier_detection:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.357974
 [goal1925] timing outlier_detection:v2_prepared_partner:cupy repeat=3
-[goal1925] outlier_detection:v2_prepared_partner:cupy iter=1 elapsed_s=0.000665
-[goal1925] outlier_detection:v2_prepared_partner:cupy iter=2 elapsed_s=0.000443
-[goal1925] outlier_detection:v2_prepared_partner:cupy iter=3 elapsed_s=0.000423
+[goal1925] outlier_detection:v2_prepared_partner:cupy iter=1 elapsed_s=0.000668
+[goal1925] outlier_detection:v2_prepared_partner:cupy iter=2 elapsed_s=0.000439
+[goal1925] outlier_detection:v2_prepared_partner:cupy iter=3 elapsed_s=0.000420
 [goal1925] start app=outlier_detection partner=torch
 [goal1925] timing outlier_detection:v1_8_prepared_optix:torch repeat=3
-[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=1 elapsed_s=1.406314
-[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=2 elapsed_s=1.392411
-[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=3 elapsed_s=1.057064
+[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=1 elapsed_s=1.403201
+[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=2 elapsed_s=1.386685
+[goal1925] outlier_detection:v1_8_prepared_optix:torch iter=3 elapsed_s=1.258397
 [goal1925] timing outlier_detection:v2_prepared_partner:torch repeat=3
-[goal1925] outlier_detection:v2_prepared_partner:torch iter=1 elapsed_s=0.000646
-[goal1925] outlier_detection:v2_prepared_partner:torch iter=2 elapsed_s=0.000415
-[goal1925] outlier_detection:v2_prepared_partner:torch iter=3 elapsed_s=0.000394
+[goal1925] outlier_detection:v2_prepared_partner:torch iter=1 elapsed_s=0.000751
+[goal1925] outlier_detection:v2_prepared_partner:torch iter=2 elapsed_s=0.000473
+[goal1925] outlier_detection:v2_prepared_partner:torch iter=3 elapsed_s=0.000439
 [goal1925] start app=dbscan_clustering partner=cupy
 [goal1925] timing dbscan_clustering:v1_8_prepared_optix:cupy repeat=3
-[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.421227
-[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.084967
-[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.319673
+[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.451826
+[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.072908
+[goal1925] dbscan_clustering:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.338143
 [goal1925] timing dbscan_clustering:v2_prepared_partner:cupy repeat=3
-[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=1 elapsed_s=0.000639
-[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=2 elapsed_s=0.000455
-[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=3 elapsed_s=0.000412
+[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=1 elapsed_s=0.000653
+[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=2 elapsed_s=0.000450
+[goal1925] dbscan_clustering:v2_prepared_partner:cupy iter=3 elapsed_s=0.000411
 [goal1925] start app=dbscan_clustering partner=torch
 [goal1925] timing dbscan_clustering:v1_8_prepared_optix:torch repeat=3
-[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=1 elapsed_s=1.136362
-[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=2 elapsed_s=1.315482
-[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=3 elapsed_s=1.339231
+[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=1 elapsed_s=1.148310
+[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=2 elapsed_s=1.363232
+[goal1925] dbscan_clustering:v1_8_prepared_optix:torch iter=3 elapsed_s=1.337720
 [goal1925] timing dbscan_clustering:v2_prepared_partner:torch repeat=3
-[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=1 elapsed_s=0.000634
-[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=2 elapsed_s=0.000418
-[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=3 elapsed_s=0.000396
+[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=1 elapsed_s=0.000653
+[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=2 elapsed_s=0.000436
+[goal1925] dbscan_clustering:v2_prepared_partner:torch iter=3 elapsed_s=0.000402
 [goal1925] start app=barnes_hut_force_app partner=cupy
 [goal1925] timing barnes_hut_force_app:v1_8_prepared_optix:cupy repeat=3
-[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.398777
-[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.415423
-[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.376969
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=1 elapsed_s=1.389610
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=2 elapsed_s=1.373772
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:cupy iter=3 elapsed_s=1.353325
 [goal1925] timing barnes_hut_force_app:v2_prepared_partner:cupy repeat=3
-[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=1 elapsed_s=0.000633
-[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=2 elapsed_s=0.000423
-[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=3 elapsed_s=0.000388
+[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=1 elapsed_s=0.000642
+[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=2 elapsed_s=0.000418
+[goal1925] barnes_hut_force_app:v2_prepared_partner:cupy iter=3 elapsed_s=0.000392
 [goal1925] start app=barnes_hut_force_app partner=torch
 [goal1925] timing barnes_hut_force_app:v1_8_prepared_optix:torch repeat=3
-[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=1 elapsed_s=1.399346
-[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=2 elapsed_s=1.369663
-[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=3 elapsed_s=1.353515
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=1 elapsed_s=1.387936
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=2 elapsed_s=1.341965
+[goal1925] barnes_hut_force_app:v1_8_prepared_optix:torch iter=3 elapsed_s=1.351208
 [goal1925] timing barnes_hut_force_app:v2_prepared_partner:torch repeat=3
-[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=1 elapsed_s=0.000629
-[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=2 elapsed_s=0.000397
-[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=3 elapsed_s=0.000386
-fatal: not a git repository (or any of the parent directories): .git
+[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=1 elapsed_s=0.000656
+[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=2 elapsed_s=0.000415
+[goal1925] barnes_hut_force_app:v2_prepared_partner:torch iter=3 elapsed_s=0.000377
 {
   "claim_boundary": {
     "broad_rt_core_speedup_claim_authorized": false,
@@ -131,7 +130,7 @@ fatal: not a git repository (or any of the parent directories): .git
     "v2_0_release_authorized": false,
     "whole_app_speedup_claim_authorized": false
   },
-  "git_commit": "unknown",
+  "git_commit": "47490311d15acc668030b20324be05aeb709c4ac",
   "goal": "Goal1925",
   "gpu": "NVIDIA RTX A5000, 570.195.03",
   "results": [
@@ -148,16 +147,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 131072
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.6827075332403183,
-          "median_s": 1.36533734947443,
-          "min_s": 1.3284055385738611
+          "max_s": 1.5645643901079893,
+          "median_s": 1.5537867676466703,
+          "min_s": 1.2687176186591387
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0008149370551109314,
-          "median_s": 0.000440400093793869,
-          "min_s": 0.00041045062243938446
+          "max_s": 0.0008533075451850891,
+          "median_s": 0.0004798397421836853,
+          "min_s": 0.0004407484084367752
         },
-        "v2_vs_v1_8_prepared_ratio": 0.00032255771364007266
+        "v2_vs_v1_8_prepared_ratio": 0.00030881955759633575
       },
       "partner": "cupy",
       "query_count": 524288,
@@ -180,16 +179,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 131072
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.4550032950937748,
-          "median_s": 1.423761311918497,
-          "min_s": 1.3040514439344406
+          "max_s": 1.5152349304407835,
+          "median_s": 1.3482398614287376,
+          "min_s": 1.3382196128368378
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0007505044341087341,
-          "median_s": 0.00045216456055641174,
-          "min_s": 0.00041948817670345306
+          "max_s": 0.0008272323757410049,
+          "median_s": 0.00044537149369716644,
+          "min_s": 0.0004013068974018097
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0003175845254195921
+        "v2_vs_v1_8_prepared_ratio": 0.0003303355036730658
       },
       "partner": "torch",
       "query_count": 524288,
@@ -212,16 +211,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 262144
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.4293429479002953,
-          "median_s": 1.337785355746746,
-          "min_s": 1.1362240798771381
+          "max_s": 1.425012070685625,
+          "median_s": 1.3833856079727411,
+          "min_s": 1.0558920130133629
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0006814859807491302,
-          "median_s": 0.00039692223072052,
-          "min_s": 0.00035395100712776184
+          "max_s": 0.0008212607353925705,
+          "median_s": 0.0004184357821941376,
+          "min_s": 0.0003549642860889435
         },
-        "v2_vs_v1_8_prepared_ratio": 0.00029670098346902573
+        "v2_vs_v1_8_prepared_ratio": 0.00030247226787860485
       },
       "partner": "cupy",
       "query_count": 524288,
@@ -238,16 +237,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 262144
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.4012022335082293,
-          "median_s": 1.378323145210743,
-          "min_s": 1.366651725023985
+          "max_s": 1.4113514628261328,
+          "median_s": 1.3855295088142157,
+          "min_s": 1.363278964534402
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0008715111762285233,
-          "median_s": 0.00034173019230365753,
-          "min_s": 0.00032465532422065735
+          "max_s": 0.00058707594871521,
+          "median_s": 0.0003328714519739151,
+          "min_s": 0.0003070104867219925
         },
-        "v2_vs_v1_8_prepared_ratio": 0.00024793183912717915
+        "v2_vs_v1_8_prepared_ratio": 0.00024024854747323142
       },
       "search_count": 524288,
       "status": "pass",
@@ -266,16 +265,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 262144
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.3747658170759678,
-          "median_s": 1.3523057457059622,
-          "min_s": 1.170082276687026
+          "max_s": 1.3921658862382174,
+          "median_s": 1.3265994768589735,
+          "min_s": 1.1540099941194057
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0006330423057079315,
-          "median_s": 0.0003611277788877487,
-          "min_s": 0.00034221261739730835
+          "max_s": 0.0006201770156621933,
+          "median_s": 0.00036765076220035553,
+          "min_s": 0.00032662227749824524
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0002670459546847702
+        "v2_vs_v1_8_prepared_ratio": 0.0002771377259026609
       },
       "partner": "torch",
       "query_count": 524288,
@@ -292,16 +291,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 262144
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.4025861471891403,
-          "median_s": 1.3748506736010313,
-          "min_s": 1.08469314314425
+          "max_s": 1.4085838831961155,
+          "median_s": 1.3746020160615444,
+          "min_s": 1.0755893010646105
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0005434602499008179,
-          "median_s": 0.000307498499751091,
-          "min_s": 0.0002847537398338318
+          "max_s": 0.0006673615425825119,
+          "median_s": 0.0003190264105796814,
+          "min_s": 0.00027795881032943726
         },
-        "v2_vs_v1_8_prepared_ratio": 0.00022365956220226152
+        "v2_vs_v1_8_prepared_ratio": 0.00023208638344190946
       },
       "search_count": 524288,
       "status": "pass",
@@ -320,16 +319,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 262144
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.3981767445802689,
-          "median_s": 1.3801166210323572,
-          "min_s": 1.360989548265934
+          "max_s": 1.4047653805464506,
+          "median_s": 1.3800578452646732,
+          "min_s": 1.346613859757781
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0005665645003318787,
-          "median_s": 0.0003973469138145447,
-          "min_s": 0.0003407783806324005
+          "max_s": 0.0007319692522287369,
+          "median_s": 0.00038875825703144073,
+          "min_s": 0.0003281421959400177
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0002879082156965261
+        "v2_vs_v1_8_prepared_ratio": 0.00028169707405045985
       },
       "partner": "cupy",
       "query_count": 524288,
@@ -352,16 +351,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 262144
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.35817982070148,
-          "median_s": 1.3434902038425207,
-          "min_s": 1.1692936830222607
+          "max_s": 1.3419510424137115,
+          "median_s": 1.328173205256462,
+          "min_s": 1.1192631050944328
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0005835257470607758,
-          "median_s": 0.00033621490001678467,
-          "min_s": 0.00030836835503578186
+          "max_s": 0.0005938149988651276,
+          "median_s": 0.00034959055483341217,
+          "min_s": 0.00030848197638988495
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0002502548206568052
+        "v2_vs_v1_8_prepared_ratio": 0.00026321157018516147
       },
       "partner": "torch",
       "query_count": 524288,
@@ -384,16 +383,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 524286
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.417146522551775,
-          "median_s": 1.3535953685641289,
-          "min_s": 1.35273009352386
+          "max_s": 1.3836256954818964,
+          "median_s": 1.3579741176217794,
+          "min_s": 1.3249876517802477
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0006654337048530579,
-          "median_s": 0.00044318661093711853,
-          "min_s": 0.00042282603681087494
+          "max_s": 0.0006679147481918335,
+          "median_s": 0.0004385523498058319,
+          "min_s": 0.0004195142537355423
         },
-        "v2_vs_v1_8_prepared_ratio": 0.00032741439667250294
+        "v2_vs_v1_8_prepared_ratio": 0.0003229460297622379
       },
       "partner": "cupy",
       "query_count": 524288,
@@ -416,16 +415,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 524286
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.4063144028186798,
-          "median_s": 1.3924105297774076,
-          "min_s": 1.0570639688521624
+          "max_s": 1.4032005742192268,
+          "median_s": 1.3866847418248653,
+          "min_s": 1.2583973370492458
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0006455797702074051,
-          "median_s": 0.00041515007615089417,
-          "min_s": 0.00039380043745040894
+          "max_s": 0.0007509980350732803,
+          "median_s": 0.0004730056971311569,
+          "min_s": 0.00043866224586963654
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0002981520659839168
+        "v2_vs_v1_8_prepared_ratio": 0.00034110543143979895
       },
       "partner": "torch",
       "query_count": 524288,
@@ -448,16 +447,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 524286
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.4212272353470325,
-          "median_s": 1.3196733873337507,
-          "min_s": 1.0849665310233831
+          "max_s": 1.4518261272460222,
+          "median_s": 1.3381431624293327,
+          "min_s": 1.072907917201519
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0006385613232851028,
-          "median_s": 0.00045542605221271515,
-          "min_s": 0.00041205994784832
+          "max_s": 0.0006526913493871689,
+          "median_s": 0.00045020692050457,
+          "min_s": 0.0004109479486942291
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0003451051272109468
+        "v2_vs_v1_8_prepared_ratio": 0.0003364415207168429
       },
       "partner": "cupy",
       "query_count": 524288,
@@ -480,16 +479,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 524286
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.3392313811928034,
-          "median_s": 1.3154822625219822,
-          "min_s": 1.1363616921007633
+          "max_s": 1.3632323779165745,
+          "median_s": 1.337719528004527,
+          "min_s": 1.1483102347701788
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.00063367560505867,
-          "median_s": 0.0004184376448392868,
-          "min_s": 0.0003958083689212799
+          "max_s": 0.0006530005484819412,
+          "median_s": 0.0004358813166618347,
+          "min_s": 0.0004015415906906128
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0003180868771556656
+        "v2_vs_v1_8_prepared_ratio": 0.0003258390922288754
       },
       "partner": "torch",
       "query_count": 524288,
@@ -512,16 +511,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 131072
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.4154227189719677,
-          "median_s": 1.3987765368074179,
-          "min_s": 1.3769692089408636
+          "max_s": 1.3896104078739882,
+          "median_s": 1.373772319406271,
+          "min_s": 1.353324817493558
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0006328411400318146,
-          "median_s": 0.00042256899178028107,
-          "min_s": 0.00038765184581279755
+          "max_s": 0.0006416812539100647,
+          "median_s": 0.0004176255315542221,
+          "min_s": 0.00039183907210826874
         },
-        "v2_vs_v1_8_prepared_ratio": 0.0003020989991330259
+        "v2_vs_v1_8_prepared_ratio": 0.0003039990875159831
       },
       "partner": "cupy",
       "query_count": 524288,
@@ -544,16 +543,16 @@ fatal: not a git repository (or any of the parent directories): .git
           "threshold_reached_count": 131072
         },
         "v1_8_prepared_optix": {
-          "max_s": 1.3993458729237318,
-          "median_s": 1.3696631845086813,
-          "min_s": 1.3535147085785866
+          "max_s": 1.3879363797605038,
+          "median_s": 1.351207872852683,
+          "min_s": 1.3419646974653006
         },
         "v2_prepared_native_optix_partner": {
-          "max_s": 0.0006287451833486557,
-          "median_s": 0.0003971736878156662,
-          "min_s": 0.0003860741853713989
+          "max_s": 0.0006561055779457092,
+          "median_s": 0.0004147849977016449,
+          "min_s": 0.00037708692252635956
         },
-        "v2_vs_v1_8_prepared_ratio": 0.00028997909289511813
+        "v2_vs_v1_8_prepared_ratio": 0.0003069734909299683
       },
       "partner": "torch",
       "query_count": 524288,
@@ -564,6 +563,6 @@ fatal: not a git repository (or any of the parent directories): .git
       "threshold": 1
     }
   ],
-  "source_commit_label": "unknown",
+  "source_commit_label": "47490311d15acc668030b20324be05aeb709c4ac",
   "status": "pass"
 }

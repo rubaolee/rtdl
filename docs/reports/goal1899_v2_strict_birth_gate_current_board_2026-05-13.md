@@ -116,9 +116,9 @@ blocks the v2.0 release label.
   pod with `repeat=3`; all 12 rows pass parity, v1.8 remains seconds-scale, and
   v2 prepared partner medians remain below `0.003` seconds with ratios under
   `0.001x`.
-- Goal1938: Gemini accepted Goal1937 with boundary. The remaining fixed-radius
-  provenance caveat is `source_commit_label: unknown` because the pod checkout
-  lacked usable `.git` metadata; the run log itself is now tracked.
+- Goal1938: Gemini accepted Goal1937 with boundary. Its fixed-radius provenance
+  caveat was resolved by rerunning the repeat-3 packet with explicit source
+  label `47490311d15acc668030b20324be05aeb709c4ac`; the run log is tracked.
 - Goal1939: the DB control artifact's native phase-total aggregation anomaly
   is fixed. The refreshed OptiX compact-summary DB control remains seconds-scale
   and now reports six native operations with non-zero traversal, exact-filter,

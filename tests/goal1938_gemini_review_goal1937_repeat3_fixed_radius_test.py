@@ -24,7 +24,8 @@ class Goal1938GeminiReviewGoal1937Repeat3FixedRadiusTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("Gemini Goal1938", text)
-        self.assertIn("source_commit_label: unknown", text)
+        self.assertIn("provenance", text)
+        self.assertIn("was resolved", text)
         self.assertIn("run log is tracked", text)
         self.assertTrue(LOG.exists())
 
