@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 from rtdsl.optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
+from rtdsl.partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from rtdsl.partner_adapters import event_hotspot_flags_optix_partner_device_columns
 from rtdsl.partner_adapters import event_hotspot_flags_optix_prepared_partner_device_columns
 from rtdsl.partner_adapters import event_hotspot_flags_partner_columns
@@ -72,6 +73,10 @@ def _time(call, *, repeat: int, partner: str | None = None) -> dict[str, float]:
     }
 
 
+def _skipped(reason: str) -> dict[str, object]:
+    return {"status": "skipped", "reason": reason}
+
+
 def _v1_service(households, clinics, *, radius: float):
     prepared = prepare_optix_fixed_radius_count_threshold_2d(clinics, max_radius=radius)
     try:
@@ -90,7 +95,8 @@ def _v1_hotspot(events, *, radius: float, hotspot_threshold: int):
         prepared.close()
 
 
-def run_case(size: int, *, repeat: int, partner: str) -> dict[str, object]:
+def run_case(size: int, *, repeat: int, partner: str, max_reference_pairs: int | None = None) -> dict[str, object]:
+    print(f"[goal1878] start case partner={partner} size={size}", flush=True)
     radius = 1.1
     hotspot_radius = 2.1
     households = _points(size, spacing=2.0)
@@ -110,29 +116,49 @@ def run_case(size: int, *, repeat: int, partner: str) -> dict[str, object]:
         max_radius=hotspot_radius,
         partner=partner,
     )
+    service_outputs = allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
+        len(households),
+        partner=partner,
+    )
+    hotspot_outputs = allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
+        len(events),
+        partner=partner,
+    )
 
+    print(f"[goal1878] timing v1.8 host-packed OptiX partner={partner} size={size}", flush=True)
     v1_service = _time(lambda: _v1_service(households, clinics, radius=radius), repeat=repeat)
     v1_hotspot = _time(lambda: _v1_hotspot(events, radius=hotspot_radius, hotspot_threshold=1), repeat=repeat)
-    ref_service = _time(
-        lambda: service_coverage_gap_flags_partner_columns(
-            household_cols,
-            clinic_cols,
-            radius=radius,
+    service_pairs = len(households) * len(clinics)
+    hotspot_pairs = len(events) * len(events)
+    if max_reference_pairs is not None and service_pairs > max_reference_pairs:
+        ref_service = _skipped(f"dense partner reference would materialize {service_pairs} pairs")
+    else:
+        print(f"[goal1878] timing dense partner reference service partner={partner} size={size}", flush=True)
+        ref_service = _time(
+            lambda: service_coverage_gap_flags_partner_columns(
+                household_cols,
+                clinic_cols,
+                radius=radius,
+                partner=partner,
+            ),
+            repeat=repeat,
             partner=partner,
-        ),
-        repeat=repeat,
-        partner=partner,
-    )
-    ref_hotspot = _time(
-        lambda: event_hotspot_flags_partner_columns(
-            event_cols,
-            radius=hotspot_radius,
-            hotspot_threshold=1,
+        )
+    if max_reference_pairs is not None and hotspot_pairs > max_reference_pairs:
+        ref_hotspot = _skipped(f"dense partner reference would materialize {hotspot_pairs} pairs")
+    else:
+        print(f"[goal1878] timing dense partner reference hotspot partner={partner} size={size}", flush=True)
+        ref_hotspot = _time(
+            lambda: event_hotspot_flags_partner_columns(
+                event_cols,
+                radius=hotspot_radius,
+                hotspot_threshold=1,
+                partner=partner,
+            ),
+            repeat=repeat,
             partner=partner,
-        ),
-        repeat=repeat,
-        partner=partner,
-    )
+        )
+    print(f"[goal1878] timing unprepared v2 native OptiX partner={partner} size={size}", flush=True)
     native_service = _time(
         lambda: service_coverage_gap_flags_optix_partner_device_columns(
             household_cols,
@@ -153,12 +179,14 @@ def run_case(size: int, *, repeat: int, partner: str) -> dict[str, object]:
         repeat=repeat,
         partner=partner,
     )
+    print(f"[goal1878] timing prepared v2 native OptiX with reusable outputs partner={partner} size={size}", flush=True)
     prepared_native_service = _time(
         lambda: service_coverage_gap_flags_optix_prepared_partner_device_columns(
             service_prepared,
             household_cols,
             radius=radius,
             partner=partner,
+            fixed_radius_output_columns=service_outputs,
         ),
         repeat=repeat,
         partner=partner,
@@ -170,12 +198,14 @@ def run_case(size: int, *, repeat: int, partner: str) -> dict[str, object]:
             radius=hotspot_radius,
             hotspot_threshold=1,
             partner=partner,
+            fixed_radius_output_columns=hotspot_outputs,
         ),
         repeat=repeat,
         partner=partner,
     )
     service_prepared.close()
     hotspot_prepared.close()
+    print(f"[goal1878] done case partner={partner} size={size}", flush=True)
     return {
         "size": size,
         "partner": partner,
@@ -204,11 +234,21 @@ def main() -> None:
     parser.add_argument("--sizes", default="256,1024")
     parser.add_argument("--repeat", type=int, default=5)
     parser.add_argument("--partner", choices=("torch", "cupy", "both"), default="both")
+    parser.add_argument("--max-reference-pairs", type=int, default=None)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     sizes = [int(item) for item in args.sizes.split(",") if item.strip()]
     partners = ("torch", "cupy") if args.partner == "both" else (args.partner,)
-    results = [run_case(size, repeat=args.repeat, partner=partner) for partner in partners for size in sizes]
+    results = [
+        run_case(
+            size,
+            repeat=args.repeat,
+            partner=partner,
+            max_reference_pairs=args.max_reference_pairs,
+        )
+        for partner in partners
+        for size in sizes
+    ]
     payload = {
         "goal": 1878,
         "status": "measurement",

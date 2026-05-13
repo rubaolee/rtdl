@@ -769,6 +769,23 @@ def prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
     )
 
 
+def allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
+    query_count: int,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Allocate reusable partner-owned output columns for prepared fixed-radius runs."""
+    query_count = int(query_count)
+    if query_count < 0:
+        raise ValueError("query_count must be non-negative")
+    runtime = _partner_module(partner)
+    return {
+        "query_ids": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "neighbor_counts": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "threshold_flags": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+    }
+
+
 def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
     prepared,
     query_point_columns: dict[str, object],
@@ -776,6 +793,7 @@ def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
     radius: float,
     threshold: int = 1,
     partner: str = "torch",
+    output_columns: dict[str, object] | None = None,
     return_metadata: bool = False,
 ):
     """Return fixed-radius columns through a reusable prepared OptiX scene."""
@@ -787,9 +805,15 @@ def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
         raise ValueError("threshold must be non-negative")
     runtime = _partner_module(partner)
     query_count = _column_length(query_point_columns, "ids")
-    neighbor_counts = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
-    threshold_flags = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
-    query_ids_out = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+    output_reuse_authorized = output_columns is not None
+    if output_columns is None:
+        output_columns = allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
+            query_count,
+            partner=partner,
+        )
+    query_ids_out = output_columns["query_ids"]
+    neighbor_counts = output_columns["neighbor_counts"]
+    threshold_flags = output_columns["threshold_flags"]
 
     native_result = prepared.write_device_count_threshold_columns(
         query_point_columns,
@@ -815,6 +839,7 @@ def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
         "query_count": query_count,
         "radius": radius,
         "threshold": threshold,
+        "output_columns_reused": output_reuse_authorized,
         "direct_device_handoff_authorized": bool(native_result["metadata"]["direct_device_handoff_authorized"]),
         "true_zero_copy_authorized": bool(native_result["metadata"]["true_zero_copy_authorized"]),
         "rt_core_speedup_claim_authorized": False,
@@ -922,6 +947,7 @@ def service_coverage_gap_flags_optix_prepared_partner_device_columns(
     *,
     radius: float,
     partner: str = "torch",
+    fixed_radius_output_columns: dict[str, object] | None = None,
     return_metadata: bool = False,
 ):
     """Return service coverage columns through a reusable prepared scene."""
@@ -931,6 +957,7 @@ def service_coverage_gap_flags_optix_prepared_partner_device_columns(
         radius=radius,
         threshold=1,
         partner=partner,
+        output_columns=fixed_radius_output_columns,
         return_metadata=True,
     )
     runtime = _partner_module(partner)
@@ -1055,6 +1082,7 @@ def event_hotspot_flags_optix_prepared_partner_device_columns(
     radius: float,
     hotspot_threshold: int,
     partner: str = "torch",
+    fixed_radius_output_columns: dict[str, object] | None = None,
     return_metadata: bool = False,
 ):
     """Return event hotspot columns through a reusable prepared scene."""
@@ -1067,6 +1095,7 @@ def event_hotspot_flags_optix_prepared_partner_device_columns(
         radius=radius,
         threshold=hotspot_threshold + 1,
         partner=partner,
+        output_columns=fixed_radius_output_columns,
         return_metadata=True,
     )
     metadata = dict(result["metadata"])

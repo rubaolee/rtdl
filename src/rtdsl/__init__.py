@@ -376,6 +376,7 @@ from .partner_adapters import segment_polygon_hitcount_optix_partner_columns
 from .partner_adapters import road_hazard_priority_flags_optix_partner_device_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_partner_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_device_columns
+from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns
 from .partner_adapters import service_coverage_gap_flags_partner_columns
@@ -1267,6 +1268,7 @@ __all__ = [
     "road_hazard_priority_flags_optix_partner_device_columns",
     "fixed_radius_count_threshold_2d_partner_columns",
     "fixed_radius_count_threshold_2d_optix_partner_device_columns",
+    "allocate_fixed_radius_count_threshold_2d_partner_device_output_columns",
     "prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene",
     "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
     "service_coverage_gap_flags_partner_columns",
