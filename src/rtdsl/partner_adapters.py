@@ -786,6 +786,14 @@ def allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
     }
 
 
+def _require_fixed_radius_output_column_lengths(output_columns: dict[str, object], query_count: int) -> None:
+    for name in ("query_ids", "neighbor_counts", "threshold_flags"):
+        if name not in output_columns:
+            raise ValueError(f"output_columns must include {name!r}")
+        if _column_length(output_columns, name) != query_count:
+            raise ValueError(f"output_columns[{name!r}] length must match query point count")
+
+
 def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
     prepared,
     query_point_columns: dict[str, object],
@@ -811,6 +819,7 @@ def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
             query_count,
             partner=partner,
         )
+    _require_fixed_radius_output_column_lengths(output_columns, query_count)
     query_ids_out = output_columns["query_ids"]
     neighbor_counts = output_columns["neighbor_counts"]
     threshold_flags = output_columns["threshold_flags"]

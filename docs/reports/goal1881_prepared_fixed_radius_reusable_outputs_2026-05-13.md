@@ -2,7 +2,7 @@
 
 Date: 2026-05-13
 
-Status: implementation-ready; pod timing pending
+Status: measured-with-boundary
 
 ## Summary
 
@@ -15,6 +15,7 @@ This does not change the native ABI. The native OptiX ABI is unchanged. The nati
 - Added `allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(query_count, partner=...)`.
 - Extended `fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(...)` with optional `output_columns`.
 - Extended `service_coverage_gap_flags_optix_prepared_partner_device_columns(...)` and `event_hotspot_flags_optix_prepared_partner_device_columns(...)` with optional `fixed_radius_output_columns`.
+- Added a Python-side reused-output length guard so mismatched buffers fail before entering the native OptiX call.
 - Updated the Goal1878 timing harness so prepared v2.0 rows reuse the fixed-radius output buffers instead of allocating `query_ids`, `neighbor_counts`, and `threshold_flags` on every measured call.
 
 ## Performance Intent
@@ -35,13 +36,50 @@ The correct public wording remains narrow:
 - not allowed: whole-app speedup;
 - not allowed: broad RT-core speedup.
 
-## Next Validation
+## Pod Validation
 
-Next validation requires an NVIDIA pod with OptiX, PyTorch, and CuPy:
+Pod command:
 
 ```powershell
 $env:PYTHONPATH='src;.'
 py -3 scripts\goal1878_fixed_radius_app_adapter_perf.py --sizes 256,1024,4096,16384 --repeat 7 --partner both --max-reference-pairs 16777216 --output docs\reports\goal1881_fixed_radius_reusable_outputs_pod.json
 ```
 
-The runner should print progress regularly if expanded for long-size sweeps. If large dense partner-reference rows become memory-bound, the report must mark those rows as skipped or bounded rather than hanging silently.
+Hardware:
+
+- Host: `213.192.2.116:40189`
+- GPU: NVIDIA GeForce RTX 3090
+- Driver: `580.126.20`
+- Validation clone commit: `cf0c41a4` on the pod, equivalent to local Goal1881 plus the fair `v1_8_reused_prepared_optix` harness correction.
+
+Local artifact:
+
+- `docs/reports/goal1881_fixed_radius_reusable_outputs_pod.json`
+
+The pod run passed the Goal1881/1879/1878 test slice and produced timing rows for Torch and CuPy at sizes 256, 1024, 4096, and 16384.
+
+## Timing Results
+
+The strongest exact-subpath result is at size 16384:
+
+| Partner | App Adapter | v1.8 reused prepared OptiX median | v2.0 prepared partner-device reusable-output median | Speedup vs reused v1.8 | Speedup vs app-wall v1.8 |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Torch | service coverage gaps | 0.036172174 s | 0.000294579 s | 122.8x | 148.5x |
+| Torch | event hotspot screening | 0.033575908 s | 0.000220870 s | 152.0x | 452.9x |
+| CuPy | service coverage gaps | 0.033959968 s | 0.000265950 s | 127.7x | 162.1x |
+| CuPy | event hotspot screening | 0.033781507 s | 0.000229210 s | 147.4x | 460.4x |
+
+For size 4096, the v2.0 prepared reusable-output path also beats both the reused v1.8 prepared OptiX path and the dense Torch/CuPy reference path:
+
+| Partner | App Adapter | v1.8 reused prepared OptiX median | Dense partner reference median | v2.0 prepared reusable-output median |
+| --- | --- | ---: | ---: | ---: |
+| Torch | service coverage gaps | 0.008046330 s | 0.001129388 s | 0.000293410 s |
+| Torch | event hotspot screening | 0.007920130 s | 0.002049197 s | 0.000209859 s |
+| CuPy | service coverage gaps | 0.007904800 s | 0.001064489 s | 0.000270170 s |
+| CuPy | event hotspot screening | 0.007886230 s | 0.001988027 s | 0.000229680 s |
+
+Dense partner-reference rows for size 16384 were intentionally skipped because they would materialize 134,217,728 or 268,435,456 pairwise distances. This is an explicit benchmark safety boundary, not a v2.0 claim expansion.
+
+## Remaining Validation
+
+The runner now prints progress regularly. If larger dense partner-reference rows become memory-bound, the report must keep marking those rows as skipped or bounded rather than hanging silently.
