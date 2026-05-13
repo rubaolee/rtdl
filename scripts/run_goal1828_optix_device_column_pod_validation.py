@@ -11,19 +11,40 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def _torch_device_columns(torch):
+def _torch_device_columns(torch, *, all_witnesses: bool = False):
     device = torch.device("cuda:0")
+    if all_witnesses:
+        triangle_ids = [11, 12]
+        triangle_x0 = [0.0, 0.25]
+        triangle_y0 = [0.0, 0.20]
+        triangle_x1 = [1.0, 0.75]
+        triangle_y1 = [0.0, 0.20]
+        triangle_x2 = [0.0, 0.25]
+        triangle_y2 = [1.0, 0.80]
+        triangle_aabb_values = [
+            [0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4],
+            [0.25, 0.20, -1.0e-4, 0.75, 0.80, 1.0e-4],
+        ]
+    else:
+        triangle_ids = [11]
+        triangle_x0 = [0.0]
+        triangle_y0 = [0.0]
+        triangle_x1 = [1.0]
+        triangle_y1 = [0.0]
+        triangle_x2 = [0.0]
+        triangle_y2 = [1.0]
+        triangle_aabb_values = [[0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4]]
     triangles = {
-        "ids": torch.tensor([11], dtype=torch.uint32, device=device),
-        "x0": torch.tensor([0.0], dtype=torch.float64, device=device),
-        "y0": torch.tensor([0.0], dtype=torch.float64, device=device),
-        "x1": torch.tensor([1.0], dtype=torch.float64, device=device),
-        "y1": torch.tensor([0.0], dtype=torch.float64, device=device),
-        "x2": torch.tensor([0.0], dtype=torch.float64, device=device),
-        "y2": torch.tensor([1.0], dtype=torch.float64, device=device),
+        "ids": torch.tensor(triangle_ids, dtype=torch.uint32, device=device),
+        "x0": torch.tensor(triangle_x0, dtype=torch.float64, device=device),
+        "y0": torch.tensor(triangle_y0, dtype=torch.float64, device=device),
+        "x1": torch.tensor(triangle_x1, dtype=torch.float64, device=device),
+        "y1": torch.tensor(triangle_y1, dtype=torch.float64, device=device),
+        "x2": torch.tensor(triangle_x2, dtype=torch.float64, device=device),
+        "y2": torch.tensor(triangle_y2, dtype=torch.float64, device=device),
     }
     triangle_aabbs = torch.tensor(
-        [[0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4]],
+        triangle_aabb_values,
         dtype=torch.float32,
         device=device,
     )
@@ -38,18 +59,39 @@ def _torch_device_columns(torch):
     return rays, triangles, triangle_aabbs
 
 
-def _cupy_device_columns(cupy):
+def _cupy_device_columns(cupy, *, all_witnesses: bool = False):
+    if all_witnesses:
+        triangle_ids = [11, 12]
+        triangle_x0 = [0.0, 0.25]
+        triangle_y0 = [0.0, 0.20]
+        triangle_x1 = [1.0, 0.75]
+        triangle_y1 = [0.0, 0.20]
+        triangle_x2 = [0.0, 0.25]
+        triangle_y2 = [1.0, 0.80]
+        triangle_aabb_values = [
+            [0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4],
+            [0.25, 0.20, -1.0e-4, 0.75, 0.80, 1.0e-4],
+        ]
+    else:
+        triangle_ids = [11]
+        triangle_x0 = [0.0]
+        triangle_y0 = [0.0]
+        triangle_x1 = [1.0]
+        triangle_y1 = [0.0]
+        triangle_x2 = [0.0]
+        triangle_y2 = [1.0]
+        triangle_aabb_values = [[0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4]]
     triangles = {
-        "ids": cupy.asarray([11], dtype=cupy.uint32),
-        "x0": cupy.asarray([0.0], dtype=cupy.float64),
-        "y0": cupy.asarray([0.0], dtype=cupy.float64),
-        "x1": cupy.asarray([1.0], dtype=cupy.float64),
-        "y1": cupy.asarray([0.0], dtype=cupy.float64),
-        "x2": cupy.asarray([0.0], dtype=cupy.float64),
-        "y2": cupy.asarray([1.0], dtype=cupy.float64),
+        "ids": cupy.asarray(triangle_ids, dtype=cupy.uint32),
+        "x0": cupy.asarray(triangle_x0, dtype=cupy.float64),
+        "y0": cupy.asarray(triangle_y0, dtype=cupy.float64),
+        "x1": cupy.asarray(triangle_x1, dtype=cupy.float64),
+        "y1": cupy.asarray(triangle_y1, dtype=cupy.float64),
+        "x2": cupy.asarray(triangle_x2, dtype=cupy.float64),
+        "y2": cupy.asarray(triangle_y2, dtype=cupy.float64),
     }
     triangle_aabbs = cupy.asarray(
-        [[0.0, 0.0, -1.0e-4, 1.0, 1.0, 1.0e-4]],
+        triangle_aabb_values,
         dtype=cupy.float32,
     )
     rays = {
@@ -109,15 +151,19 @@ def main() -> int:
     parser.add_argument("--partner", choices=("torch", "cupy"), default="torch")
     parser.add_argument("--output-flags", action="store_true")
     parser.add_argument("--output-witnesses", action="store_true")
+    parser.add_argument("--output-all-witnesses", action="store_true")
     args = parser.parse_args()
-    if args.output_flags and args.output_witnesses:
-        raise SystemExit("--output-flags and --output-witnesses are mutually exclusive")
+    if sum(bool(value) for value in (args.output_flags, args.output_witnesses, args.output_all_witnesses)) > 1:
+        raise SystemExit("--output-flags, --output-witnesses, and --output-all-witnesses are mutually exclusive")
 
     import rtdsl as rt
 
     partner = _partner_runtime(args.partner)
     start = time.perf_counter()
-    rays, triangles, triangle_aabbs = partner["factory"](partner["module"])
+    rays, triangles, triangle_aabbs = partner["factory"](
+        partner["module"],
+        all_witnesses=args.output_all_witnesses,
+    )
     ray_packet = rt.pack_optix_ray_any_hit_2d_device_ray_inputs(rays)
     triangle_packet = rt.pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs(
         triangles,
@@ -133,7 +179,20 @@ def main() -> int:
     try:
         partner["sync"]()
         execute_start = time.perf_counter()
-        if args.output_witnesses:
+        if args.output_all_witnesses:
+            witness_ray_ids = partner["zeros"]((4,), partner["uint32_dtype"])
+            witness_primitive_ids = partner["zeros"]((4,), partner["uint32_dtype"])
+            output_packet = scene.write_device_any_hit_all_witnesses(
+                rays,
+                witness_ray_ids,
+                witness_primitive_ids,
+            )
+            partner["sync"]()
+            emitted_count = int(output_packet["metadata"]["emitted_count"])
+            observed_witness_ray_ids = partner["to_host_list"](witness_ray_ids)[:emitted_count]
+            observed_witness_primitive_ids = partner["to_host_list"](witness_primitive_ids)[:emitted_count]
+            observed_count = emitted_count
+        elif args.output_witnesses:
             witness_ray_ids = partner["zeros"]((2,), partner["uint32_dtype"])
             witness_primitive_ids = partner["zeros"]((2,), partner["uint32_dtype"])
             output_packet = scene.write_device_any_hit_witnesses(
@@ -162,8 +221,14 @@ def main() -> int:
     finally:
         scene.close()
 
-    expected_count = 1
+    expected_count = 2 if args.output_all_witnesses else 1
+    observed_all_witness_pairs_sorted = sorted(
+        zip(observed_witness_ray_ids or [], observed_witness_primitive_ids or [])
+    )
+    expected_all_witness_pairs_sorted = [(101, 11), (101, 12)] if args.output_all_witnesses else None
     passed = observed_count == expected_count
+    if args.output_all_witnesses:
+        passed = passed and observed_all_witness_pairs_sorted == expected_all_witness_pairs_sorted
     result = {
         "goal": args.goal,
         "status": "pass" if passed else "fail",
@@ -182,6 +247,8 @@ def main() -> int:
         "observed_flags": observed_flags,
         "observed_witness_ray_ids": observed_witness_ray_ids,
         "observed_witness_primitive_ids": observed_witness_primitive_ids,
+        "observed_all_witness_pairs_sorted": observed_all_witness_pairs_sorted,
+        "expected_all_witness_pairs_sorted": expected_all_witness_pairs_sorted,
         "claim_boundary": {
             "direct_device_column_execution_observed": passed,
             "ray_column_true_zero_copy_observed": bool(
@@ -207,8 +274,16 @@ def main() -> int:
             ),
             "first_hit_witness_identity_observed": bool(
                 passed
+                and not args.output_all_witnesses
                 and observed_witness_ray_ids == [101, 102]
                 and observed_witness_primitive_ids == [11, 0xFFFFFFFF]
+            ),
+            "bounded_all_hit_witness_identity_observed": bool(
+                passed
+                and args.output_all_witnesses
+                and observed_all_witness_pairs_sorted == expected_all_witness_pairs_sorted
+                and output_packet is not None
+                and not output_packet["metadata"].get("overflowed")
             ),
             "true_zero_copy_authorized": bool(
                 passed

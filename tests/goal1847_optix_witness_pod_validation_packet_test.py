@@ -16,7 +16,7 @@ class Goal1847OptixWitnessPodValidationPacketTest(unittest.TestCase):
     def test_runner_exposes_mutually_exclusive_witness_mode(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("--output-witnesses", text)
-        self.assertIn("--output-flags and --output-witnesses are mutually exclusive", text)
+        self.assertIn("--output-flags, --output-witnesses, and --output-all-witnesses are mutually exclusive", text)
         self.assertIn("write_device_any_hit_witnesses", text)
         self.assertIn("observed_witness_ray_ids", text)
         self.assertIn("observed_witness_primitive_ids", text)

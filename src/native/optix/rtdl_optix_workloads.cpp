@@ -2987,6 +2987,29 @@ struct RayAnyHitWitnessDeviceColumnsLaunchParams {
     uint32_t               ray_count;
 };
 
+struct RayAnyHitAllWitnessesDeviceColumnsLaunchParams {
+    OptixTraversableHandle traversable;
+    const uint32_t*        ray_ids;
+    const double*          ray_ox;
+    const double*          ray_oy;
+    const double*          ray_dx;
+    const double*          ray_dy;
+    const double*          ray_tmax;
+    const uint32_t*        triangle_ids;
+    const double*          triangle_x0;
+    const double*          triangle_y0;
+    const double*          triangle_x1;
+    const double*          triangle_y1;
+    const double*          triangle_x2;
+    const double*          triangle_y2;
+    uint32_t*              witness_ray_ids;
+    uint32_t*              witness_primitive_ids;
+    uint32_t*              emitted_count;
+    uint32_t*              overflowed;
+    uint32_t               ray_count;
+    uint32_t               witness_capacity;
+};
+
 struct RayAnyHitGroupFlagsLaunchParams {
     OptixTraversableHandle traversable;
     const GpuRay*          rays;
@@ -3297,6 +3320,72 @@ static void ensure_ray_anyhit_witness_device_columns_2d_pipeline()
         std::string src = ray_anyhit_witness_device_columns_kernel_source_2d();
         std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_witness_device_columns_kernel.cu");
         g_rayanyhit_witness_device_columns.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit_probe",
+            "__miss__rayhit_miss",
+            "__intersection__rayhit_isect",
+            "__anyhit__rayhit_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static std::string ray_anyhit_all_witnesses_device_columns_kernel_source_2d()
+{
+    std::string src = ray_anyhit_count_device_columns_kernel_source_2d();
+    const std::string old_output_field =
+        "    uint32_t* hit_count;\n";
+    const std::string new_output_field =
+        "    uint32_t* witness_ray_ids;\n"
+        "    uint32_t* witness_primitive_ids;\n"
+        "    uint32_t* emitted_count;\n"
+        "    uint32_t* overflowed;\n"
+        "    uint32_t witness_capacity;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D all-witness output params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_final_write =
+        "    if (p1 != 0u) atomicAdd(params.hit_count, 1u);\n";
+    const std::string new_final_write =
+        "    (void)p1;\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D all-witness raygen output path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+
+    const std::string old_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit_anyhit() {\n"
+        "    optixSetPayload_1(1u);\n"
+        "    optixTerminateRay();\n"
+        "}\n";
+    const std::string new_anyhit =
+        "extern \"C\" __global__ void __anyhit__rayhit_anyhit() {\n"
+        "    const uint32_t idx = optixGetLaunchIndex().x;\n"
+        "    const uint32_t prim = optixGetPrimitiveIndex();\n"
+        "    const GpuTriangle t = load_triangle_column(prim);\n"
+        "    const uint32_t slot = atomicAdd(params.emitted_count, 1u);\n"
+        "    if (slot < params.witness_capacity) {\n"
+        "        params.witness_ray_ids[slot] = params.ray_ids[idx];\n"
+        "        params.witness_primitive_ids[slot] = t.id;\n"
+        "    } else {\n"
+        "        atomicExch(params.overflowed, 1u);\n"
+        "    }\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    pos = src.find(old_anyhit);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D all-witness identity write");
+    src.replace(pos, old_anyhit.size(), new_anyhit);
+    return src;
+}
+
+static void ensure_ray_anyhit_all_witnesses_device_columns_2d_pipeline()
+{
+    std::call_once(g_rayanyhit_all_witnesses_device_columns.init, [&]() {
+        std::string src = ray_anyhit_all_witnesses_device_columns_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_all_witnesses_device_columns_kernel.cu");
+        g_rayanyhit_all_witnesses_device_columns.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit_probe",
             "__miss__rayhit_miss",
@@ -4095,6 +4184,86 @@ static void write_prepared_ray_anyhit_2d_device_witnesses_optix(
                             &g_rayanyhit_witness_device_columns.pipe->sbt,
                             static_cast<unsigned>(ray_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
+}
+
+static void write_prepared_ray_anyhit_2d_device_all_witnesses_optix(
+        PreparedRayAnyHit2D* prepared,
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_tmax,
+        size_t ray_count,
+        uint32_t* witness_ray_ids_out,
+        uint32_t* witness_primitive_ids_out,
+        size_t witness_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
+    if (!emitted_count_out || !overflowed_out)
+        throw std::runtime_error("partner device all-witness counters must not be null");
+    *emitted_count_out = 0;
+    *overflowed_out = 0u;
+    if ((!witness_ray_ids_out || !witness_primitive_ids_out) && witness_capacity != 0)
+        throw std::runtime_error("partner device all-witness output pointers must not be null when witness_capacity is nonzero");
+    if (ray_count == 0 || prepared->triangle_count == 0) return;
+    if (!ray_ids || !ray_ox || !ray_oy || !ray_dx || !ray_dy || !ray_tmax)
+        throw std::runtime_error("partner device ray column pointers must not be null when ray_count is nonzero");
+    if (ray_count > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("partner device ray column count exceeds uint32_t launch limit");
+    if (witness_capacity > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("partner device all-witness capacity exceeds uint32_t launch limit");
+    if (!prepared->triangle_columns_zero_copy) {
+        throw std::runtime_error(
+            "partner device all-witness output currently requires a triangle-column zero-copy prepared scene");
+    }
+
+    ensure_ray_anyhit_all_witnesses_device_columns_2d_pipeline();
+
+    CUstream stream = 0;
+    DevPtr d_emitted_count(sizeof(uint32_t));
+    DevPtr d_overflowed(sizeof(uint32_t));
+    CU_CHECK(cuMemsetD32(d_emitted_count.ptr, 0u, 1));
+    CU_CHECK(cuMemsetD32(d_overflowed.ptr, 0u, 1));
+
+    RayAnyHitAllWitnessesDeviceColumnsLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.ray_ids = ray_ids;
+    lp.ray_ox = ray_ox;
+    lp.ray_oy = ray_oy;
+    lp.ray_dx = ray_dx;
+    lp.ray_dy = ray_dy;
+    lp.ray_tmax = ray_tmax;
+    lp.triangle_ids = prepared->triangle_ids;
+    lp.triangle_x0 = prepared->triangle_x0;
+    lp.triangle_y0 = prepared->triangle_y0;
+    lp.triangle_x1 = prepared->triangle_x1;
+    lp.triangle_y1 = prepared->triangle_y1;
+    lp.triangle_x2 = prepared->triangle_x2;
+    lp.triangle_y2 = prepared->triangle_y2;
+    lp.witness_ray_ids = witness_ray_ids_out;
+    lp.witness_primitive_ids = witness_primitive_ids_out;
+    lp.emitted_count = reinterpret_cast<uint32_t*>(d_emitted_count.ptr);
+    lp.overflowed = reinterpret_cast<uint32_t*>(d_overflowed.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+    lp.witness_capacity = static_cast<uint32_t>(witness_capacity);
+
+    DevPtr d_params(sizeof(RayAnyHitAllWitnessesDeviceColumnsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_all_witnesses_device_columns.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitAllWitnessesDeviceColumnsLaunchParams),
+                            &g_rayanyhit_all_witnesses_device_columns.pipe->sbt,
+                            static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    uint32_t emitted_count = 0u;
+    uint32_t overflowed = 0u;
+    download(&emitted_count, d_emitted_count.ptr, 1);
+    download(&overflowed, d_overflowed.ptr, 1);
+    *emitted_count_out = static_cast<size_t>(emitted_count);
+    *overflowed_out = overflowed != 0u ? 1u : 0u;
 }
 
 static void group_flags_prepared_ray_anyhit_2d_packed_optix(

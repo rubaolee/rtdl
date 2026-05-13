@@ -2357,6 +2357,9 @@ _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_
 _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL = "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays"
 _OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL = "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags"
 _OPTIX_PARTNER_PREPARED_DEVICE_WITNESSES_SYMBOL = "rtdl_optix_write_prepared_ray_anyhit_2d_device_witnesses"
+_OPTIX_PARTNER_PREPARED_DEVICE_ALL_WITNESSES_SYMBOL = (
+    "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses"
+)
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL = "rtdl_optix_prepare_ray_anyhit_2d_device_triangles"
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL = (
     "rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs"
@@ -2488,6 +2491,26 @@ def _require_partner_device_any_hit_output_layout(
         raise ValueError("partner device any-hit output buffer must be contiguous")
     if (handoff.device_type, handoff.device_id) != expected_device:
         raise ValueError("partner device any-hit output buffer must live on the same CUDA device as ray columns")
+
+
+def _require_partner_device_bounded_witness_output_layout(
+    handoff,
+    *,
+    witness_capacity: int,
+    expected_device: tuple[str, int],
+) -> None:
+    dtype = _partner_dtype_token(handoff.dtype)
+    if dtype != "uint32":
+        raise ValueError("partner device bounded-witness output buffer must use dtype uint32")
+    if tuple(handoff.shape) != (witness_capacity,):
+        raise ValueError("partner device bounded-witness output buffer must have shape (witness_capacity,)")
+    if not _partner_contiguous_column_strides(
+        handoff.strides,
+        itemsize=_partner_dtype_itemsize(dtype),
+    ):
+        raise ValueError("partner device bounded-witness output buffer must be contiguous")
+    if (handoff.device_type, handoff.device_id) != expected_device:
+        raise ValueError("partner device bounded-witness output buffer must live on the same CUDA device as ray columns")
 
 
 def _partner_column_to_host_array(value, *, column_name: str):
@@ -2764,6 +2787,59 @@ def pack_optix_ray_any_hit_2d_device_witness_outputs(
             "witness_row_capacity": ray_count,
             "witness_no_hit_primitive_id": 0xFFFFFFFF,
             "witness_contract": "one first-hit witness row per ray; not all-hit collection",
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "ray_columns_true_zero_copy_authorized": True,
+            "witness_outputs_true_zero_copy_authorized": True,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+        },
+    }
+
+
+def pack_optix_ray_any_hit_2d_device_all_witness_outputs(
+    ray_columns: dict,
+    witness_ray_ids,
+    witness_primitive_ids,
+) -> dict[str, object]:
+    """Validate partner-owned CUDA output columns for bounded all-hit witnesses."""
+    ray_packet = pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns)
+    ray_handoffs = ray_packet["rays"]
+    ray_count = int(ray_packet["metadata"]["ray_count"])
+    expected_device = (ray_handoffs["ids"].device_type, ray_handoffs["ids"].device_id)
+    witness_ray_handoff = _partner.prepare_direct_device_pointer_handoff(witness_ray_ids, access="write")
+    witness_primitive_handoff = _partner.prepare_direct_device_pointer_handoff(witness_primitive_ids, access="write")
+    if tuple(witness_ray_handoff.shape) != tuple(witness_primitive_handoff.shape):
+        raise ValueError("partner device bounded-witness output buffers must have matching shapes")
+    if len(witness_ray_handoff.shape) != 1:
+        raise ValueError("partner device bounded-witness output buffers must be one-dimensional")
+    witness_capacity = int(witness_ray_handoff.shape[0])
+    _require_partner_device_bounded_witness_output_layout(
+        witness_ray_handoff,
+        witness_capacity=witness_capacity,
+        expected_device=expected_device,
+    )
+    _require_partner_device_bounded_witness_output_layout(
+        witness_primitive_handoff,
+        witness_capacity=witness_capacity,
+        expected_device=expected_device,
+    )
+    descriptors = (*ray_handoffs.values(), witness_ray_handoff, witness_primitive_handoff)
+    return {
+        "rays": ray_handoffs,
+        "witness_ray_ids": witness_ray_handoff,
+        "witness_primitive_ids": witness_primitive_handoff,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+            "native_symbol": _OPTIX_PARTNER_PREPARED_DEVICE_ALL_WITNESSES_SYMBOL,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(
+                sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})
+            ),
+            "ray_count": ray_count,
+            "witness_row_capacity": witness_capacity,
+            "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
             "direct_device_pointer_observed": True,
             "direct_device_handoff_authorized": True,
             "ray_columns_true_zero_copy_authorized": True,
@@ -3383,6 +3459,71 @@ class PreparedOptixRayTriangleAnyHit2D:
             and metadata["witness_outputs_true_zero_copy_authorized"]
             and metadata["triangle_scene_true_zero_copy_authorized"]
         )
+        metadata["v2_0_release_authorized"] = False
+        return {"metadata": metadata}
+
+    def write_device_any_hit_all_witnesses(
+        self,
+        ray_columns: dict,
+        witness_ray_ids,
+        witness_primitive_ids,
+    ) -> dict[str, object]:
+        """Write bounded all-hit witness rows into partner-owned CUDA buffers."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX any-hit handle is closed")
+        if not getattr(self, "_triangle_scene_true_zero_copy", False):
+            raise RuntimeError(
+                "write_device_any_hit_all_witnesses requires a triangle-column zero-copy prepared scene"
+            )
+        packet = pack_optix_ray_any_hit_2d_device_all_witness_outputs(
+            ray_columns,
+            witness_ray_ids,
+            witness_primitive_ids,
+        )
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(lib, _OPTIX_PARTNER_PREPARED_DEVICE_ALL_WITNESSES_SYMBOL)
+        if write_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_PREPARED_DEVICE_ALL_WITNESSES_SYMBOL}. "
+                "Partner-owned bounded all-witness output remains blocked; rebuild the "
+                "OptiX backend after the native all-witness ABI lands."
+            )
+        rays = packet["rays"]
+        emitted_count = ctypes.c_size_t()
+        overflowed = ctypes.c_uint32()
+        error = ctypes.create_string_buffer(4096)
+        status = write_symbol(
+            self._handle,
+            ctypes.c_void_p(rays["ids"].data_ptr),
+            ctypes.c_void_p(rays["ox"].data_ptr),
+            ctypes.c_void_p(rays["oy"].data_ptr),
+            ctypes.c_void_p(rays["dx"].data_ptr),
+            ctypes.c_void_p(rays["dy"].data_ptr),
+            ctypes.c_void_p(rays["tmax"].data_ptr),
+            packet["metadata"]["ray_count"],
+            ctypes.c_void_p(packet["witness_ray_ids"].data_ptr),
+            ctypes.c_void_p(packet["witness_primitive_ids"].data_ptr),
+            packet["metadata"]["witness_row_capacity"],
+            ctypes.byref(emitted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        metadata = dict(packet["metadata"])
+        metadata["emitted_count"] = int(emitted_count.value)
+        metadata["overflowed"] = bool(overflowed.value)
+        metadata["triangle_scene_true_zero_copy_authorized"] = bool(
+            getattr(self, "_triangle_scene_true_zero_copy", False)
+        )
+        metadata["true_zero_copy_authorized"] = bool(
+            metadata["ray_columns_true_zero_copy_authorized"]
+            and metadata["witness_outputs_true_zero_copy_authorized"]
+            and metadata["triangle_scene_true_zero_copy_authorized"]
+        )
+        metadata["exact_row_semantics_authorized"] = not metadata["overflowed"]
         metadata["v2_0_release_authorized"] = False
         return {"metadata": metadata}
 
@@ -4507,6 +4648,29 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_write_anyhit2d_device_witnesses.restype = ctypes.c_int
+    optional_write_anyhit2d_device_all_witnesses = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_DEVICE_ALL_WITNESSES_SYMBOL,
+    )
+    if optional_write_anyhit2d_device_all_witnesses is not None:
+        optional_write_anyhit2d_device_all_witnesses.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_write_anyhit2d_device_all_witnesses.restype = ctypes.c_int
     optional_destroy_anyhit2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_ray_anyhit_2d")
     if optional_destroy_anyhit2d is not None:
         optional_destroy_anyhit2d.argtypes = [ctypes.c_void_p]

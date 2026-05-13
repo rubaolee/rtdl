@@ -390,6 +390,21 @@ int  rtdl_optix_write_prepared_ray_anyhit_2d_device_witnesses(
          uint32_t* witness_ray_ids_out,
          uint32_t* witness_primitive_ids_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses(
+         void* prepared,
+         const uint32_t* ray_ids,
+         const double* ray_ox,
+         const double* ray_oy,
+         const double* ray_dx,
+         const double* ray_dy,
+         const double* ray_tmax,
+         size_t ray_count,
+         uint32_t* witness_ray_ids_out,
+         uint32_t* witness_primitive_ids_out,
+         size_t witness_capacity,
+         size_t* emitted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_group_flags_prepared_ray_anyhit_2d_packed(
          void* prepared,
          void* prepared_rays,

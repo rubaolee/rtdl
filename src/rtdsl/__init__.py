@@ -340,6 +340,7 @@ from .optix_runtime import pack_triangles_2d_from_arrays
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_ray_inputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_output_flags
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_witness_outputs
+from .optix_runtime import pack_optix_ray_any_hit_2d_device_all_witness_outputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_inputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_partner_inputs
@@ -1214,6 +1215,7 @@ __all__ = [
     "pack_optix_ray_any_hit_2d_device_ray_inputs",
     "pack_optix_ray_any_hit_2d_device_output_flags",
     "pack_optix_ray_any_hit_2d_device_witness_outputs",
+    "pack_optix_ray_any_hit_2d_device_all_witness_outputs",
     "pack_optix_ray_any_hit_2d_device_triangle_inputs",
     "pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs",
     "pack_optix_ray_triangle_any_hit_2d_partner_inputs",

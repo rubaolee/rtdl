@@ -1,0 +1,127 @@
+{
+  "claim_boundary": {
+    "bounded_all_hit_witness_identity_observed": true,
+    "direct_device_column_execution_observed": true,
+    "first_hit_witness_identity_observed": false,
+    "output_flags_true_zero_copy_observed": false,
+    "ray_column_true_zero_copy_observed": true,
+    "rt_core_speedup_claim_authorized": false,
+    "triangle_scene_true_zero_copy_observed": true,
+    "true_zero_copy_authorized": true,
+    "v2_0_release_authorized": false,
+    "whole_primitive_true_zero_copy_authorized": true,
+    "witness_outputs_true_zero_copy_observed": true
+  },
+  "cupy_version": "14.0.1",
+  "device": "NVIDIA RTX A4500",
+  "elapsed_s": 0.4416400268673897,
+  "execute_s": 0.17139167338609695,
+  "expected_all_witness_pairs_sorted": [
+    [
+      101,
+      11
+    ],
+    [
+      101,
+      12
+    ]
+  ],
+  "expected_count": 2,
+  "goal": "Goal1848-CuPy",
+  "observed_all_witness_pairs_sorted": [
+    [
+      101,
+      11
+    ],
+    [
+      101,
+      12
+    ]
+  ],
+  "observed_count": 2,
+  "observed_flags": null,
+  "observed_witness_primitive_ids": [
+    11,
+    12
+  ],
+  "observed_witness_ray_ids": [
+    101,
+    101
+  ],
+  "output_metadata": {
+    "backend": "optix",
+    "direct_device_handoff_authorized": true,
+    "direct_device_pointer_observed": true,
+    "emitted_count": 2,
+    "exact_row_semantics_authorized": true,
+    "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+    "overflowed": false,
+    "partner_tensor_handoff_authorized": true,
+    "ray_columns_true_zero_copy_authorized": true,
+    "ray_count": 2,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "cupy"
+    ],
+    "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+    "triangle_scene_true_zero_copy_authorized": true,
+    "true_zero_copy_authorized": true,
+    "v2_0_release_authorized": false,
+    "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+    "witness_outputs_true_zero_copy_authorized": true,
+    "witness_row_capacity": 4
+  },
+  "partner": "cupy",
+  "partner_version": "14.0.1",
+  "python": "3.11.10",
+  "ray_metadata": {
+    "backend": "optix",
+    "direct_device_handoff_authorized": true,
+    "direct_device_pointer_observed": true,
+    "native_symbol": "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays",
+    "partner_phase_timings_s": {
+      "descriptor_validation_s": 0.00026442110538482666
+    },
+    "partner_tensor_handoff_authorized": true,
+    "ray_columns_true_zero_copy_authorized": true,
+    "ray_count": 2,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "cupy"
+    ],
+    "transfer_mode": "device_ray_columns_zero_copy",
+    "triangle_scene_transfer_mode": "prepared_scene_existing_path",
+    "triangle_scene_true_zero_copy_authorized": false,
+    "true_zero_copy_authorized": false
+  },
+  "status": "pass",
+  "triangle_metadata": {
+    "backend": "optix",
+    "direct_device_handoff_authorized": true,
+    "direct_device_pointer_observed": true,
+    "native_acceleration_structure_required": true,
+    "native_symbol": "rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs",
+    "partner_phase_timings_s": {
+      "aabb_descriptor_validation_s": 2.8856098651885986e-05,
+      "descriptor_validation_s": 0.00017777830362319946
+    },
+    "partner_tensor_handoff_authorized": true,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "cupy"
+    ],
+    "transfer_mode": "device_triangle_columns_aabb_zero_copy_gas_build",
+    "triangle_count": 2,
+    "triangle_scene_true_zero_copy_authorized": true,
+    "true_zero_copy_authorized": false
+  }
+}
