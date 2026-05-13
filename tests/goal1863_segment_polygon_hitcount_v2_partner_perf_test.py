@@ -18,10 +18,12 @@ class Goal1863SegmentPolygonHitcountV2PartnerPerfTest(unittest.TestCase):
 
         self.assertIn("segment_polygon_hitcount_reference", text)
         self.assertIn("segment_polygon_hitcount_optix_partner_device_count_columns", text)
-        self.assertIn("v1_8_native_optix_hitcount_rows", text)
+        self.assertIn("v1_8_one_shot_native_optix_hitcount_rows", text)
+        self.assertIn("v1_8_prepared_native_optix_hitcount_rows", text)
         self.assertIn("v2_0_partner_device_count_columns_", text)
         self.assertIn("partner_owned_device_count_columns", text)
-        self.assertIn("query_median_ratio_vs_v1_8_native", text)
+        self.assertIn("query_median_ratio_vs_v1_8_one_shot_native", text)
+        self.assertIn("query_median_ratio_vs_v1_8_prepared_native", text)
         self.assertIn('"same_contract_timing_row": True', text)
         self.assertIn('"partner_output_columns_true_zero_copy_authorized": True', text)
         self.assertIn('"v2_0_release_authorized": False', text)
@@ -49,10 +51,13 @@ class Goal1863SegmentPolygonHitcountV2PartnerPerfTest(unittest.TestCase):
         self.assertEqual(artifact["count"], 512)
         self.assertTrue(artifact["parity"]["strict_counts_match"])
         self.assertEqual(artifact["baseline"]["row_count"], 512)
+        self.assertEqual(artifact["prepared_baseline"]["row_count"], 512)
         for partner in ("cupy", "torch"):
             with self.subTest(partner=partner):
                 self.assertEqual(artifact["partners"][partner]["row_count"], 512)
                 self.assertEqual(artifact["partners"][partner]["output_contract"], "partner_owned_device_count_columns")
+                self.assertIn("query_median_ratio_vs_v1_8_one_shot_native", artifact["partners"][partner])
+                self.assertIn("query_median_ratio_vs_v1_8_prepared_native", artifact["partners"][partner])
         boundary = artifact["claim_boundary"]
         self.assertTrue(boundary["same_contract_timing_row"])
         self.assertTrue(boundary["partner_output_columns_true_zero_copy_authorized"])
@@ -65,6 +70,7 @@ class Goal1863SegmentPolygonHitcountV2PartnerPerfTest(unittest.TestCase):
         self.assertEqual(artifact["count"], 2048)
         self.assertTrue(artifact["parity"]["strict_counts_match"])
         self.assertEqual(artifact["baseline"]["row_count"], 2048)
+        self.assertEqual(artifact["prepared_baseline"]["row_count"], 2048)
         self.assertFalse(artifact["claim_boundary"]["v2_0_release_authorized"])
 
 

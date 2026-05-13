@@ -170,13 +170,24 @@ def main() -> int:
     expected_canonical = _canonical_counts(expected_rows)
     print(f"[setup] count={args.count} output_capacity={output_capacity}", flush=True)
 
-    v18_samples, v18_rows = _time_call(
-        "v1_8_native_optix_hitcount_rows",
+    v18_one_shot_samples, v18_rows = _time_call(
+        "v1_8_one_shot_native_optix_hitcount_rows",
         args.iterations,
         lambda: rt.run_optix(segment_polygon_hitcount_reference, segments=segments, polygons=polygons),
     )
     if _canonical_counts(v18_rows) != expected_canonical:
         raise RuntimeError("v1.8 native OptiX hitcount rows did not match expected rows")
+    prepared = rt.prepare_optix_segment_polygon_hitcount_2d(polygons)
+    try:
+        v18_prepared_samples, v18_prepared_rows = _time_call(
+            "v1_8_prepared_native_optix_hitcount_rows",
+            args.iterations,
+            lambda: prepared.run(segments),
+        )
+    finally:
+        prepared.close()
+    if _canonical_counts(v18_prepared_rows) != expected_canonical:
+        raise RuntimeError("v1.8 prepared native OptiX hitcount rows did not match expected rows")
 
     partner_results = {}
     for partner in partners:
@@ -200,7 +211,8 @@ def main() -> int:
             "column_build_s": build_s,
             "query_samples_s": samples,
             "query_summary": _summary(samples),
-            "query_median_ratio_vs_v1_8_native": statistics.median(samples) / statistics.median(v18_samples),
+            "query_median_ratio_vs_v1_8_one_shot_native": statistics.median(samples) / statistics.median(v18_one_shot_samples),
+            "query_median_ratio_vs_v1_8_prepared_native": statistics.median(samples) / statistics.median(v18_prepared_samples),
             "row_count": len(rows),
             "output_contract": "partner_owned_device_count_columns",
         }
@@ -214,10 +226,16 @@ def main() -> int:
         "iterations": args.iterations,
         "output_capacity": output_capacity,
         "baseline": {
-            "name": "v1_8_native_optix_hitcount_rows",
-            "query_samples_s": v18_samples,
-            "query_summary": _summary(v18_samples),
+            "name": "v1_8_one_shot_native_optix_hitcount_rows",
+            "query_samples_s": v18_one_shot_samples,
+            "query_summary": _summary(v18_one_shot_samples),
             "row_count": len(v18_rows),
+        },
+        "prepared_baseline": {
+            "name": "v1_8_prepared_native_optix_hitcount_rows",
+            "query_samples_s": v18_prepared_samples,
+            "query_summary": _summary(v18_prepared_samples),
+            "row_count": len(v18_prepared_rows),
         },
         "partners": partner_results,
         "parity": {
