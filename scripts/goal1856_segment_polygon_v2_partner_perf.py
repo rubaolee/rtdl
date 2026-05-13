@@ -156,6 +156,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--count", type=int, default=512)
     parser.add_argument("--iterations", type=int, default=5)
     parser.add_argument("--partners", default="cupy,torch")
+    parser.add_argument("--skip-overflow-check", action="store_true")
     parser.add_argument("--output", default=None)
     return parser.parse_args()
 
@@ -189,6 +190,30 @@ def main() -> int:
     for partner in partners:
         print(f"[setup] building caller-owned {partner} columns", flush=True)
         ray_columns, triangle_columns, triangle_aabbs, build_s = _build_partner_columns(segments, polygons, partner)
+        overflow_check = {"status": "skipped"}
+        if not args.skip_overflow_check:
+            tight_capacity = max(1, args.count // 2)
+            print(f"[overflow] {partner} tight_capacity={tight_capacity}", flush=True)
+            t_overflow = time.perf_counter()
+            try:
+                rt.segment_polygon_anyhit_rows_optix_partner_columns(
+                    ray_columns,
+                    triangle_columns,
+                    triangle_aabbs,
+                    partner=partner,
+                    output_capacity=tight_capacity,
+                )
+            except RuntimeError as exc:
+                if "overflowed" not in str(exc):
+                    raise
+                overflow_check = {
+                    "status": "pass",
+                    "tight_capacity": tight_capacity,
+                    "elapsed_s": time.perf_counter() - t_overflow,
+                    "message": str(exc),
+                }
+            else:
+                raise RuntimeError(f"expected overflow for {partner} with capacity {tight_capacity}")
         samples, rows = _time_call(
             f"v2_0_partner_columns_{partner}",
             args.iterations,
@@ -208,6 +233,7 @@ def main() -> int:
             "query_summary": _summary(samples),
             "query_median_ratio_vs_v1_8_native": statistics.median(samples) / statistics.median(v18_samples),
             "row_count": len(rows),
+            "overflow_check": overflow_check,
         }
 
     payload = {

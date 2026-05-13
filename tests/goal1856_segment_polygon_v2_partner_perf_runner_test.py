@@ -21,6 +21,9 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         self.assertIn("v2_0_partner_columns_", text)
         self.assertIn("query_median_ratio_vs_v1_8_native", text)
         self.assertIn("_canonical_rows", text)
+        self.assertIn("--skip-overflow-check", text)
+        self.assertIn("[overflow]", text)
+        self.assertIn('"overflow_check"', text)
         self.assertIn('"same_contract_timing_row": True', text)
         self.assertIn('"v2_0_release_authorized": False', text)
         self.assertIn('"whole_app_speedup_claim_authorized": False', text)
@@ -56,6 +59,7 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         for partner in ("cupy", "torch"):
             with self.subTest(partner=partner):
                 self.assertEqual(artifact["partners"][partner]["row_count"], 512)
+                self.assertEqual(artifact["partners"][partner]["overflow_check"]["status"], "pass")
                 self.assertLess(artifact["partners"][partner]["query_median_ratio_vs_v1_8_native"], 1.0)
         boundary = artifact["claim_boundary"]
         self.assertTrue(boundary["same_contract_timing_row"])
@@ -72,6 +76,8 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         self.assertEqual(artifact["count"], 2048)
         self.assertTrue(artifact["parity"]["strict_rows_match"])
         self.assertEqual(artifact["baseline"]["row_count"], 2048)
+        self.assertEqual(artifact["partners"]["cupy"]["overflow_check"]["status"], "pass")
+        self.assertEqual(artifact["partners"]["torch"]["overflow_check"]["status"], "pass")
         self.assertLess(artifact["partners"]["cupy"]["query_median_ratio_vs_v1_8_native"], 0.5)
         self.assertLess(artifact["partners"]["torch"]["query_median_ratio_vs_v1_8_native"], 0.5)
         self.assertFalse(artifact["claim_boundary"]["v2_0_release_authorized"])

@@ -24,7 +24,9 @@ semantic.
 ## Pod Evidence
 
 The harness was run on the available RTX A4500 pod after resetting `/root/rtdl`
-to clean `origin/main` commit `bd8409b86d3ee45649d7411e2b6330c850acfc02`.
+to clean `origin/main` commit `cb1937db4f...` and rebuilding
+`build/librtdl_optix.so` with the corrected all-witness launch parameter
+layout.
 
 Command shape:
 
@@ -50,17 +52,17 @@ bounded output capacity 1024.
 
 | Path | Median query time (s) | Ratio vs v1.8 native query |
 | --- | ---: | ---: |
-| v1.8 native OptiX rows | 0.0017824918 | 1.000x |
-| v2.0 CuPy caller-supplied columns | 0.0010686070 | 0.600x |
-| v2.0 Torch caller-supplied columns | 0.0011038482 | 0.619x |
+| v1.8 native OptiX rows | 0.0019464493 | 1.000x |
+| v2.0 CuPy caller-supplied columns | 0.0011272132 | 0.579x |
+| v2.0 Torch caller-supplied columns | 0.0010540113 | 0.542x |
 
 The same harness was also run at 2048 rows:
 
 | Path | Median query time (s) | Ratio vs v1.8 native query |
 | --- | ---: | ---: |
-| v1.8 native OptiX rows | 0.0075929612 | 1.000x |
-| v2.0 CuPy caller-supplied columns | 0.0021268576 | 0.280x |
-| v2.0 Torch caller-supplied columns | 0.0021966323 | 0.289x |
+| v1.8 native OptiX rows | 0.0075653195 | 1.000x |
+| v2.0 CuPy caller-supplied columns | 0.0021255687 | 0.281x |
+| v2.0 Torch caller-supplied columns | 0.0021432191 | 0.283x |
 
 The first iteration includes one-time initialization effects and is retained in
 the artifact rather than hidden. The median is the working comparison statistic
@@ -69,12 +71,17 @@ for this narrow row.
 Column-build phase for the 512-row artifact:
 
 - CuPy caller column build: 0.0042869225 s
-- Torch caller column build: 0.0152883157 s
+- Torch caller column build: 0.0157439113 s
 
 Column-build phase for the 2048-row artifact:
 
 - CuPy caller column build: 0.0070429966 s
-- Torch caller column build: 0.0183847174 s
+- Torch caller column build: 0.0184309483 s
+
+Overflow checks are now part of both artifacts:
+
+- 512-row artifact: CuPy and Torch both fail closed at tight capacity 256.
+- 2048-row artifact: CuPy and Torch both fail closed at tight capacity 1024.
 
 Those build timings are reported separately because the Goal1853 adapter target
 is caller-supplied GPU columns: in the intended v2.0 shape, a learner or partner
