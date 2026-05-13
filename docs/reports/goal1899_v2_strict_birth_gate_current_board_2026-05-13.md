@@ -47,6 +47,8 @@ blocks the v2.0 release label.
 - Goal1911: machine-readable v2 readiness aggregator; current status is
   blocked only by pod artifacts, post-pod review, final consensus, and release
   action.
+- Goal1912: post-pod external review handoff template, waiting for actual pod
+  artifacts.
 
 ## Immediate Next Hardware Step
 

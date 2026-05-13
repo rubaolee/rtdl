@@ -28,6 +28,8 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1908_v2_local_preflight_2026-05-13.md",
     "docs/reports/goal1909_v2_release_packet_skeleton_2026-05-13.md",
     "docs/reviews/goal1910_gemini_review_v2_release_skeleton_2026-05-13.md",
+    "docs/handoff/GOAL1912_POST_POD_EXTERNAL_REVIEW_TEMPLATE_2026-05-13.md",
+    "docs/reports/goal1912_post_pod_external_review_template_2026-05-13.md",
 )
 
 
