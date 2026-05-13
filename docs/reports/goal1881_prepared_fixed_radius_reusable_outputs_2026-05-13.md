@@ -78,6 +78,8 @@ For size 4096, the v2.0 prepared reusable-output path also beats both the reused
 | CuPy | service coverage gaps | 0.007904800 s | 0.001064489 s | 0.000270170 s |
 | CuPy | event hotspot screening | 0.007886230 s | 0.001988027 s | 0.000229680 s |
 
+At sizes 256 and 1024, the dense partner tensor reference remains slightly faster than the v2.0 prepared native path for some rows. This goal therefore supports a larger repeated prepared fixed-radius subpath claim, not an "always faster for every batch size" claim.
+
 Dense partner-reference rows for size 16384 were intentionally skipped because they would materialize 134,217,728 or 268,435,456 pairwise distances. This is an explicit benchmark safety boundary, not a v2.0 claim expansion.
 
 ## Remaining Validation

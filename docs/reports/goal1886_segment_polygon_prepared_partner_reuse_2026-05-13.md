@@ -2,7 +2,7 @@
 
 Date: 2026-05-13
 
-Status: implementation-ready; pod timing pending
+Status: measured-with-boundary
 
 ## Summary
 
@@ -28,11 +28,46 @@ Goal1863 showed that v2.0 partner device count columns are faster than the v1.8 
 
 The expected win is the exact repeated-query subpath where one prepared triangle scene is reused for many ray batches.
 
+## Pod Validation
+
+Pod commands:
+
+```powershell
+$env:PYTHONPATH='src:.'
+python3 scripts/goal1863_segment_polygon_hitcount_v2_partner_perf.py --count 512 --iterations 5 --partners cupy,torch --output docs/reports/goal1886_segment_polygon_prepared_reuse_pod_512.json
+python3 scripts/goal1863_segment_polygon_hitcount_v2_partner_perf.py --count 2048 --iterations 5 --partners cupy,torch --output docs/reports/goal1886_segment_polygon_prepared_reuse_pod_2048.json
+```
+
+Hardware:
+
+- Host: `213.192.2.116:40189`
+- GPU: NVIDIA GeForce RTX 3090
+- Driver: `580.126.20`
+- Validation clone commit: `61a62ed3`
+
+Artifacts:
+
+- `docs/reports/goal1886_segment_polygon_prepared_reuse_pod_512.json`
+- `docs/reports/goal1886_segment_polygon_prepared_reuse_pod_2048.json`
+
+## Timing Results
+
+The Goal1886 prepared partner reuse row improves the v2.0 unprepared partner path and beats the fair v1.8 prepared native row path at 2048 synthetic rows.
+
+| Count | Partner | v1.8 prepared native rows | Goal1863 unprepared partner columns | Goal1886 prepared partner reuse | Speedup vs v1.8 prepared | Speedup vs unprepared partner |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| 512 | CuPy | 0.000983399 s | 0.001503688 s | 0.001030499 s | 0.95x | 1.46x |
+| 512 | Torch | 0.000983399 s | 0.001158919 s | 0.000722539 s | 1.36x | 1.60x |
+| 2048 | CuPy | 0.003603125 s | 0.001586638 s | 0.001079589 s | 3.34x | 1.47x |
+| 2048 | Torch | 0.003603125 s | 0.001283818 s | 0.000795269 s | 4.53x | 1.61x |
+
+The one-shot v1.8 app-wall row remains much slower at 2048 rows, but the fair repeated-query comparison is the reused prepared native row above.
+
 ## Boundaries
 
 This goal does not change the native ABI and does not authorize broad RT-core speedup wording.
 
-Allowed wording after pod evidence:
+Allowed wording:
 
 - exact segment/polygon prepared partner-device hitcount timing rows;
 - exact road-hazard prepared partner-device priority timing rows;
@@ -47,16 +82,4 @@ Not allowed:
 
 ## Next Validation
 
-Next validation requires the NVIDIA pod:
-
-```powershell
-$env:PYTHONPATH='src;.'
-py -3 -m unittest tests.goal1886_segment_polygon_prepared_partner_reuse_test tests.goal1863_segment_polygon_hitcount_v2_partner_perf_test tests.goal1865_road_hazard_partner_priority_flags_test
-```
-
-Then extend or add a timing runner that compares:
-
-- v1.8 one-shot native OptiX rows;
-- v1.8 reused prepared native OptiX rows;
-- Goal1863 v2.0 unprepared partner device count columns;
-- Goal1886 v2.0 prepared partner device count columns with reusable witness outputs.
+The timing row is now measured for segment/polygon hitcount. Road-hazard prepared priority flags reuse the same prepared hitcount path plus a partner tensor threshold; a separate road-hazard app timing row can be added if we need public wording for that app specifically.

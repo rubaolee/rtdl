@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pathlib
+import json
 import unittest
 from unittest import mock
 
@@ -13,6 +14,7 @@ ADAPTER = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
 REPORT = ROOT / "docs" / "reports" / "goal1886_segment_polygon_prepared_partner_reuse_2026-05-13.md"
 RUNNER = ROOT / "scripts" / "goal1863_segment_polygon_hitcount_v2_partner_perf.py"
+ARTIFACT_2048 = ROOT / "docs" / "reports" / "goal1886_segment_polygon_prepared_reuse_pod_2048.json"
 
 
 class _FakeColumn:
@@ -146,10 +148,11 @@ class Goal1886SegmentPolygonPreparedPartnerReuseTest(unittest.TestCase):
     def test_report_keeps_pod_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("Status: implementation-ready; pod timing pending", report)
+        self.assertIn("Status: measured-with-boundary", report)
         self.assertIn("generic_ray_primitive_witness_pairs", report)
         self.assertIn("reusable witness output columns", report)
         self.assertIn("does not authorize broad RT-core speedup wording", report)
+        self.assertIn("Speedup vs v1.8 prepared", report)
 
     def test_timing_runner_records_goal1886_prepared_reuse_rows(self) -> None:
         runner = RUNNER.read_text(encoding="utf-8")
@@ -160,6 +163,22 @@ class Goal1886SegmentPolygonPreparedPartnerReuseTest(unittest.TestCase):
         self.assertIn("v2_0_prepared_partner_device_count_columns_", runner)
         self.assertIn("goal1886_prepared_reuse", runner)
         self.assertIn("query_median_ratio_vs_goal1863_unprepared_partner", runner)
+
+    def test_pod_artifact_records_prepared_reuse_speedups_and_boundaries(self) -> None:
+        artifact = json.loads(ARTIFACT_2048.read_text(encoding="utf-8"))
+
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["count"], 2048)
+        self.assertIn("NVIDIA GeForce RTX 3090", artifact["gpu"])
+        prepared_baseline = artifact["prepared_baseline"]["query_summary"]["median_s"]
+        for partner in ("cupy", "torch"):
+            row = artifact["partners"][partner]["goal1886_prepared_reuse"]
+            self.assertTrue(row["prepared_scene_reused"])
+            self.assertTrue(row["witness_output_columns_reused"])
+            self.assertLess(row["query_summary"]["median_s"], prepared_baseline)
+            self.assertLess(row["query_median_ratio_vs_goal1863_unprepared_partner"], 1.0)
+        self.assertFalse(artifact["claim_boundary"]["v2_0_release_authorized"])
+        self.assertFalse(artifact["claim_boundary"]["whole_app_speedup_claim_authorized"])
 
 
 if __name__ == "__main__":
