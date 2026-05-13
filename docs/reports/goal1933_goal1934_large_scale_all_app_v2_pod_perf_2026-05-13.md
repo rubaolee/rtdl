@@ -162,7 +162,9 @@ run:
 
 - The `524288 x 524288` fixed-radius rows are single-sample measurements
   (`repeat=1`). The speedup gap is large enough that the result remains useful,
-  but the next large fixed-radius pod run should use `repeat >= 3`.
+  but the next large fixed-radius pod run should use `repeat >= 3`. Goal1937
+  now provides that repeat-3 follow-up and preserves the same positive
+  fixed-radius conclusion.
 - Some rows in the Goal1933 directory use reused provenance from their original
   generators: robot collision from Goal1928, segment/polygon any-hit from
   Goal1856, and graph analytics from Goal982. These are acceptable evidence

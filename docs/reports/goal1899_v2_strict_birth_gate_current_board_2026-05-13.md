@@ -112,6 +112,10 @@ blocks the v2.0 release label.
   medians, label reused artifact provenance explicitly, investigate DB
   phase-total aggregation, and keep polygon controls out of RT-core speedup
   wording because their metadata says RT cores are inactive.
+- Goal1937: the fixed-radius `524288 x 524288` rows were rerun on the RTX A5000
+  pod with `repeat=3`; all 12 rows pass parity, v1.8 remains seconds-scale, and
+  v2 prepared partner medians remain below `0.003` seconds with ratios under
+  `0.001x`.
 
 ## Immediate Next Hardware Step
 
