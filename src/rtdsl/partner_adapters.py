@@ -755,6 +755,78 @@ def fixed_radius_count_threshold_2d_optix_partner_device_columns(
     return columns
 
 
+def prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+    search_point_columns: dict[str, object],
+    *,
+    max_radius: float,
+    partner: str = "torch",
+):
+    """Prepare a reusable OptiX fixed-radius scene from partner point columns."""
+    _partner_module(partner)
+    return _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+        search_point_columns,
+        max_radius=max_radius,
+    )
+
+
+def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
+    prepared,
+    query_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return fixed-radius columns through a reusable prepared OptiX scene."""
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _partner_module(partner)
+    query_count = _column_length(query_point_columns, "ids")
+    neighbor_counts = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+    threshold_flags = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+    query_ids_out = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+
+    native_result = prepared.write_device_count_threshold_columns(
+        query_point_columns,
+        radius=radius,
+        threshold=threshold,
+        query_ids_out=query_ids_out,
+        neighbor_counts_out=neighbor_counts,
+        threshold_flags_out=threshold_flags,
+    )
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_ids_out,
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+        "app_count_materialization": "native_optix_prepared_device_columns",
+        "app_count_host_materialization": False,
+        "query_count": query_count,
+        "radius": radius,
+        "threshold": threshold,
+        "direct_device_handoff_authorized": bool(native_result["metadata"]["direct_device_handoff_authorized"]),
+        "true_zero_copy_authorized": bool(native_result["metadata"]["true_zero_copy_authorized"]),
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "native_metadata": native_result["metadata"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def service_coverage_gap_flags_partner_columns(
     household_point_columns: dict[str, object],
     clinic_point_columns: dict[str, object],
@@ -844,6 +916,49 @@ def service_coverage_gap_flags_optix_partner_device_columns(
     return columns
 
 
+def service_coverage_gap_flags_optix_prepared_partner_device_columns(
+    prepared,
+    household_point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return service coverage columns through a reusable prepared scene."""
+    result = fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
+        prepared,
+        household_point_columns,
+        radius=radius,
+        threshold=1,
+        partner=partner,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    covered_flags = result["columns"]["threshold_flags"]
+    uncovered_flags = runtime["invert_binary_uint32"](covered_flags)
+    runtime["sync"]()
+    columns = {
+        "household_ids": result["columns"]["query_ids"],
+        "nearby_clinic_counts": result["columns"]["neighbor_counts"],
+        "covered_flags": covered_flags,
+        "uncovered_flags": uncovered_flags,
+    }
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "service_coverage_gap_flags_optix_prepared_partner_device_columns",
+            "app": "service_coverage_gaps",
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_prepared_native_fixed_radius_counts",
+            "app_flag_host_materialization": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def event_hotspot_flags_partner_columns(
     event_point_columns: dict[str, object],
     *,
@@ -919,6 +1034,50 @@ def event_hotspot_flags_optix_partner_device_columns(
             "app_flag_materialization": "partner_gpu_threshold_flags_from_native_fixed_radius_counts",
             "app_flag_host_materialization": False,
             "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    columns = {
+        "event_ids": result["columns"]["query_ids"],
+        "neighbor_counts_including_self": result["columns"]["neighbor_counts"],
+        "hotspot_flags": result["columns"]["threshold_flags"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def event_hotspot_flags_optix_prepared_partner_device_columns(
+    prepared,
+    event_point_columns: dict[str, object],
+    *,
+    radius: float,
+    hotspot_threshold: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return event hotspot columns through a reusable prepared scene."""
+    hotspot_threshold = int(hotspot_threshold)
+    if hotspot_threshold < 0:
+        raise ValueError("hotspot_threshold must be non-negative")
+    result = fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
+        prepared,
+        event_point_columns,
+        radius=radius,
+        threshold=hotspot_threshold + 1,
+        partner=partner,
+        return_metadata=True,
+    )
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "event_hotspot_flags_optix_prepared_partner_device_columns",
+            "app": "event_hotspot_screening",
+            "hotspot_threshold_excluding_self": hotspot_threshold,
+            "fixed_radius_threshold_including_self": hotspot_threshold + 1,
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_prepared_native_fixed_radius_counts",
+            "app_flag_host_materialization": False,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }

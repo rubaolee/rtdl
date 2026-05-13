@@ -8,8 +8,11 @@ from pathlib import Path
 
 from rtdsl.optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from rtdsl.partner_adapters import event_hotspot_flags_optix_partner_device_columns
+from rtdsl.partner_adapters import event_hotspot_flags_optix_prepared_partner_device_columns
 from rtdsl.partner_adapters import event_hotspot_flags_partner_columns
+from rtdsl.partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
 from rtdsl.partner_adapters import service_coverage_gap_flags_optix_partner_device_columns
+from rtdsl.partner_adapters import service_coverage_gap_flags_optix_prepared_partner_device_columns
 from rtdsl.partner_adapters import service_coverage_gap_flags_partner_columns
 from rtdsl.reference import Point
 
@@ -97,6 +100,16 @@ def run_case(size: int, *, repeat: int, partner: str) -> dict[str, object]:
     household_cols = make_columns(households)
     clinic_cols = make_columns(clinics)
     event_cols = make_columns(events)
+    service_prepared = prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+        clinic_cols,
+        max_radius=radius,
+        partner=partner,
+    )
+    hotspot_prepared = prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+        event_cols,
+        max_radius=hotspot_radius,
+        partner=partner,
+    )
 
     v1_service = _time(lambda: _v1_service(households, clinics, radius=radius), repeat=repeat)
     v1_hotspot = _time(lambda: _v1_hotspot(events, radius=hotspot_radius, hotspot_threshold=1), repeat=repeat)
@@ -140,6 +153,29 @@ def run_case(size: int, *, repeat: int, partner: str) -> dict[str, object]:
         repeat=repeat,
         partner=partner,
     )
+    prepared_native_service = _time(
+        lambda: service_coverage_gap_flags_optix_prepared_partner_device_columns(
+            service_prepared,
+            household_cols,
+            radius=radius,
+            partner=partner,
+        ),
+        repeat=repeat,
+        partner=partner,
+    )
+    prepared_native_hotspot = _time(
+        lambda: event_hotspot_flags_optix_prepared_partner_device_columns(
+            hotspot_prepared,
+            event_cols,
+            radius=hotspot_radius,
+            hotspot_threshold=1,
+            partner=partner,
+        ),
+        repeat=repeat,
+        partner=partner,
+    )
+    service_prepared.close()
+    hotspot_prepared.close()
     return {
         "size": size,
         "partner": partner,
@@ -147,11 +183,13 @@ def run_case(size: int, *, repeat: int, partner: str) -> dict[str, object]:
             "v1_8_prepared_optix": v1_service,
             "goal1873_partner_reference": ref_service,
             "goal1877_v2_native_optix_partner": native_service,
+            "goal1879_v2_prepared_native_optix_partner": prepared_native_service,
         },
         "event_hotspot_screening": {
             "v1_8_prepared_optix": v1_hotspot,
             "goal1873_partner_reference": ref_hotspot,
             "goal1877_v2_native_optix_partner": native_hotspot,
+            "goal1879_v2_prepared_native_optix_partner": prepared_native_hotspot,
         },
         "claim_boundaries": {
             "v2_0_release_authorized": False,
