@@ -2355,6 +2355,7 @@ _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
 _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_device_columns"
 _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL = "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays"
+_OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL = "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags"
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL = "rtdl_optix_prepare_ray_anyhit_2d_device_triangles"
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL = (
     "rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs"
@@ -2466,6 +2467,26 @@ def _require_partner_device_triangle_aabb_layout(handoff, *, triangle_count: int
         )
     if (handoff.device_type, handoff.device_id) != expected_device:
         raise ValueError("partner device triangle AABB buffer must live on the same CUDA device as triangle columns")
+
+
+def _require_partner_device_any_hit_output_layout(
+    handoff,
+    *,
+    ray_count: int,
+    expected_device: tuple[str, int],
+) -> None:
+    dtype = _partner_dtype_token(handoff.dtype)
+    if dtype != "uint32":
+        raise ValueError("partner device any-hit output buffer must use dtype uint32")
+    if tuple(handoff.shape) != (ray_count,):
+        raise ValueError("partner device any-hit output buffer must have shape (ray_count,)")
+    if not _partner_contiguous_column_strides(
+        handoff.strides,
+        itemsize=_partner_dtype_itemsize(dtype),
+    ):
+        raise ValueError("partner device any-hit output buffer must be contiguous")
+    if (handoff.device_type, handoff.device_id) != expected_device:
+        raise ValueError("partner device any-hit output buffer must live on the same CUDA device as ray columns")
 
 
 def _partner_column_to_host_array(value, *, column_name: str):
@@ -2663,6 +2684,42 @@ def pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs(
             "rt_core_speedup_claim_authorized": False,
             "native_acceleration_structure_required": True,
             "partner_phase_timings_s": timings,
+        },
+    }
+
+
+def pack_optix_ray_any_hit_2d_device_output_flags(ray_columns: dict, output_flags) -> dict[str, object]:
+    """Validate partner-owned CUDA rays plus a writable any-hit output vector."""
+    ray_packet = pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns)
+    ray_handoffs = ray_packet["rays"]
+    ray_count = int(ray_packet["metadata"]["ray_count"])
+    expected_device = (ray_handoffs["ids"].device_type, ray_handoffs["ids"].device_id)
+    output_handoff = _partner.prepare_direct_device_pointer_handoff(output_flags, access="write")
+    _require_partner_device_any_hit_output_layout(
+        output_handoff,
+        ray_count=ray_count,
+        expected_device=expected_device,
+    )
+    return {
+        "rays": ray_handoffs,
+        "output": output_handoff,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+            "native_symbol": _OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL,
+            "source_protocols": tuple(
+                sorted({handoff.source_protocol for handoff in (*ray_handoffs.values(), output_handoff)})
+            ),
+            "source_devices": tuple(
+                sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in (*ray_handoffs.values(), output_handoff)})
+            ),
+            "ray_count": ray_count,
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "ray_columns_true_zero_copy_authorized": True,
+            "output_flags_true_zero_copy_authorized": True,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
         },
     }
 
@@ -3174,6 +3231,53 @@ class PreparedOptixRayTriangleAnyHit2D:
         )
         _check_status(status, error)
         return int(hit_count.value)
+
+    def write_device_any_hit_flags(self, ray_columns: dict, output_flags) -> dict[str, object]:
+        """Write one any-hit flag per partner-owned CUDA ray into partner output."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX any-hit handle is closed")
+        if not getattr(self, "_triangle_scene_true_zero_copy", False):
+            raise RuntimeError(
+                "write_device_any_hit_flags requires a triangle-column zero-copy prepared scene"
+            )
+        packet = pack_optix_ray_any_hit_2d_device_output_flags(ray_columns, output_flags)
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(lib, _OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL)
+        if write_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL}. "
+                "Partner-owned any-hit output remains blocked; rebuild the "
+                "OptiX backend after the native output ABI lands."
+            )
+        rays = packet["rays"]
+        error = ctypes.create_string_buffer(4096)
+        status = write_symbol(
+            self._handle,
+            ctypes.c_void_p(rays["ids"].data_ptr),
+            ctypes.c_void_p(rays["ox"].data_ptr),
+            ctypes.c_void_p(rays["oy"].data_ptr),
+            ctypes.c_void_p(rays["dx"].data_ptr),
+            ctypes.c_void_p(rays["dy"].data_ptr),
+            ctypes.c_void_p(rays["tmax"].data_ptr),
+            packet["metadata"]["ray_count"],
+            ctypes.c_void_p(packet["output"].data_ptr),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        metadata = dict(packet["metadata"])
+        metadata["triangle_scene_true_zero_copy_authorized"] = bool(
+            getattr(self, "_triangle_scene_true_zero_copy", False)
+        )
+        metadata["true_zero_copy_authorized"] = bool(
+            metadata["ray_columns_true_zero_copy_authorized"]
+            and metadata["output_flags_true_zero_copy_authorized"]
+            and metadata["triangle_scene_true_zero_copy_authorized"]
+        )
+        metadata["v2_0_release_authorized"] = False
+        return {"metadata": metadata}
 
     def pose_flags_packed(self, rays: "OptixRay2DBuffer", pose_indices, *, pose_count: int) -> tuple[bool, ...]:
         """Return one native collision flag per pose index for packed 2-D rays."""
@@ -4257,6 +4361,25 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_anyhit2d_device_rays.restype = ctypes.c_int
+    optional_write_anyhit2d_device_flags = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL,
+    )
+    if optional_write_anyhit2d_device_flags is not None:
+        optional_write_anyhit2d_device_flags.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_write_anyhit2d_device_flags.restype = ctypes.c_int
     optional_destroy_anyhit2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_ray_anyhit_2d")
     if optional_destroy_anyhit2d is not None:
         optional_destroy_anyhit2d.argtypes = [ctypes.c_void_p]

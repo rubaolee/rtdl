@@ -2948,6 +2948,25 @@ struct RayAnyHitCountDeviceColumnsLaunchParams {
     uint32_t               ray_count;
 };
 
+struct RayAnyHitFlagsDeviceColumnsLaunchParams {
+    OptixTraversableHandle traversable;
+    const uint32_t*        ray_ids;
+    const double*          ray_ox;
+    const double*          ray_oy;
+    const double*          ray_dx;
+    const double*          ray_dy;
+    const double*          ray_tmax;
+    const uint32_t*        triangle_ids;
+    const double*          triangle_x0;
+    const double*          triangle_y0;
+    const double*          triangle_x1;
+    const double*          triangle_y1;
+    const double*          triangle_x2;
+    const double*          triangle_y2;
+    uint32_t*              any_hit_flags;
+    uint32_t               ray_count;
+};
+
 struct RayAnyHitGroupFlagsLaunchParams {
     OptixTraversableHandle traversable;
     const GpuRay*          rays;
@@ -3162,6 +3181,44 @@ static void ensure_ray_anyhit_count_device_columns_2d_pipeline()
         std::string src = ray_anyhit_count_device_columns_kernel_source_2d();
         std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_count_device_columns_kernel.cu");
         g_rayanyhit_count_device_columns.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit_probe",
+            "__miss__rayhit_miss",
+            "__intersection__rayhit_isect",
+            "__anyhit__rayhit_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static std::string ray_anyhit_flags_device_columns_kernel_source_2d()
+{
+    std::string src = ray_anyhit_count_device_columns_kernel_source_2d();
+    const std::string old_output_field =
+        "    uint32_t* hit_count;\n";
+    const std::string new_output_field =
+        "    uint32_t* any_hit_flags;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit flags output params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_final_write =
+        "    if (p1 != 0u) atomicAdd(params.hit_count, 1u);\n";
+    const std::string new_final_write =
+        "    params.any_hit_flags[idx] = p1 ? 1u : 0u;\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit flags output write");
+    src.replace(pos, old_final_write.size(), new_final_write);
+    return src;
+}
+
+static void ensure_ray_anyhit_flags_device_columns_2d_pipeline()
+{
+    std::call_once(g_rayanyhit_flags_device_columns.init, [&]() {
+        std::string src = ray_anyhit_flags_device_columns_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_flags_device_columns_kernel.cu");
+        g_rayanyhit_flags_device_columns.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit_probe",
             "__miss__rayhit_miss",
@@ -3834,6 +3891,66 @@ static void count_prepared_ray_anyhit_2d_device_rays_optix(
     uint32_t count = 0u;
     download(&count, d_hit_count.ptr, 1);
     *hit_count_out = static_cast<size_t>(count);
+}
+
+static void write_prepared_ray_anyhit_2d_device_flags_optix(
+        PreparedRayAnyHit2D* prepared,
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_tmax,
+        size_t ray_count,
+        uint32_t* any_hit_flags_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
+    if (!any_hit_flags_out && ray_count != 0)
+        throw std::runtime_error("partner device any-hit output pointer must not be null when ray_count is nonzero");
+    if (ray_count == 0) return;
+    if (!ray_ids || !ray_ox || !ray_oy || !ray_dx || !ray_dy || !ray_tmax)
+        throw std::runtime_error("partner device ray column pointers must not be null when ray_count is nonzero");
+    if (ray_count > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("partner device ray column count exceeds uint32_t launch limit");
+
+    CUstream stream = 0;
+    if (prepared->triangle_count == 0) {
+        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(any_hit_flags_out), 0u, ray_count));
+        CU_CHECK(cuStreamSynchronize(stream));
+        return;
+    }
+    if (!prepared->triangle_columns_zero_copy) {
+        throw std::runtime_error(
+            "partner device any-hit output currently requires a triangle-column zero-copy prepared scene");
+    }
+
+    ensure_ray_anyhit_flags_device_columns_2d_pipeline();
+
+    RayAnyHitFlagsDeviceColumnsLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.ray_ids = ray_ids;
+    lp.ray_ox = ray_ox;
+    lp.ray_oy = ray_oy;
+    lp.ray_dx = ray_dx;
+    lp.ray_dy = ray_dy;
+    lp.ray_tmax = ray_tmax;
+    lp.triangle_ids = prepared->triangle_ids;
+    lp.triangle_x0 = prepared->triangle_x0;
+    lp.triangle_y0 = prepared->triangle_y0;
+    lp.triangle_x1 = prepared->triangle_x1;
+    lp.triangle_y1 = prepared->triangle_y1;
+    lp.triangle_x2 = prepared->triangle_x2;
+    lp.triangle_y2 = prepared->triangle_y2;
+    lp.any_hit_flags = any_hit_flags_out;
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayAnyHitFlagsDeviceColumnsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_flags_device_columns.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitFlagsDeviceColumnsLaunchParams),
+                            &g_rayanyhit_flags_device_columns.pipe->sbt,
+                            static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
 }
 
 static void group_flags_prepared_ray_anyhit_2d_packed_optix(

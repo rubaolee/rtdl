@@ -75,6 +75,9 @@ def _partner_runtime(partner_name: str):
             "device": torch.cuda.get_device_name(0),
             "sync": torch.cuda.synchronize,
             "factory": _torch_device_columns,
+            "zeros": lambda shape, dtype: torch.zeros(shape, dtype=dtype, device=torch.device("cuda:0")),
+            "uint32_dtype": torch.uint32,
+            "to_host_list": lambda value: [int(item) for item in value.detach().cpu().tolist()],
         }
     if partner_name == "cupy":
         import cupy
@@ -92,6 +95,9 @@ def _partner_runtime(partner_name: str):
             "device": str(device_name),
             "sync": cupy.cuda.runtime.deviceSynchronize,
             "factory": _cupy_device_columns,
+            "zeros": lambda shape, dtype: cupy.zeros(shape, dtype=dtype),
+            "uint32_dtype": cupy.uint32,
+            "to_host_list": lambda value: [int(item) for item in cupy.asnumpy(value).tolist()],
         }
     raise ValueError(f"unsupported partner: {partner_name!r}")
 
@@ -101,6 +107,7 @@ def main() -> int:
     parser.add_argument("--output", default="docs/reports/goal1828_optix_device_column_pod_validation.json")
     parser.add_argument("--goal", default="Goal1828")
     parser.add_argument("--partner", choices=("torch", "cupy"), default="torch")
+    parser.add_argument("--output-flags", action="store_true")
     args = parser.parse_args()
 
     import rtdsl as rt
@@ -118,10 +125,19 @@ def main() -> int:
         triangles,
         triangle_aabbs,
     )
+    output_packet = None
+    observed_flags = None
     try:
         partner["sync"]()
         execute_start = time.perf_counter()
-        observed_count = scene.count_device_rays(rays)
+        if args.output_flags:
+            output_flags = partner["zeros"]((2,), partner["uint32_dtype"])
+            output_packet = scene.write_device_any_hit_flags(rays, output_flags)
+            partner["sync"]()
+            observed_flags = partner["to_host_list"](output_flags)
+            observed_count = sum(observed_flags)
+        else:
+            observed_count = scene.count_device_rays(rays)
         partner["sync"]()
         execute_seconds = time.perf_counter() - execute_start
     finally:
@@ -143,6 +159,8 @@ def main() -> int:
         "execute_s": execute_seconds,
         "ray_metadata": ray_packet["metadata"],
         "triangle_metadata": triangle_packet["metadata"],
+        "output_metadata": None if output_packet is None else output_packet["metadata"],
+        "observed_flags": observed_flags,
         "claim_boundary": {
             "direct_device_column_execution_observed": passed,
             "ray_column_true_zero_copy_observed": bool(
@@ -156,10 +174,19 @@ def main() -> int:
                 and ray_packet["metadata"].get("ray_columns_true_zero_copy_authorized")
                 and triangle_packet["metadata"].get("triangle_scene_true_zero_copy_authorized")
             ),
+            "output_flags_true_zero_copy_observed": bool(
+                passed
+                and output_packet is not None
+                and output_packet["metadata"].get("output_flags_true_zero_copy_authorized")
+            ),
             "true_zero_copy_authorized": bool(
                 passed
                 and ray_packet["metadata"].get("ray_columns_true_zero_copy_authorized")
                 and triangle_packet["metadata"].get("triangle_scene_true_zero_copy_authorized")
+                and (
+                    output_packet is None
+                    or output_packet["metadata"].get("output_flags_true_zero_copy_authorized")
+                )
             ),
             "rt_core_speedup_claim_authorized": False,
             "v2_0_release_authorized": False,
