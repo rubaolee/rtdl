@@ -1,0 +1,109 @@
+{
+  "git_commit": "cb1937db4b36741897b3d0767ae15e147f0a6411",
+  "gpu": "NVIDIA RTX A4500, 550.127.05",
+  "results": {
+    "cupy": {
+      "metadata": {
+        "adapter": "segment_polygon_hitcount_optix_partner_columns",
+        "app_count_host_materialization": true,
+        "app_count_materialization": "python_from_generic_witness_pairs",
+        "app_rows_emitted": 3,
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "emitted_count": 4,
+        "exact_row_semantics_authorized": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+        "overflowed": false,
+        "partner": "cupy",
+        "partner_tensor_handoff_authorized": true,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 3,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "whole_app_true_zero_copy_authorized": false,
+        "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+        "witness_outputs_true_zero_copy_authorized": true,
+        "witness_row_capacity": 8
+      },
+      "rows": [
+        {
+          "hit_count": 2,
+          "segment_id": 101
+        },
+        {
+          "hit_count": 2,
+          "segment_id": 102
+        },
+        {
+          "hit_count": 0,
+          "segment_id": 103
+        }
+      ]
+    },
+    "torch": {
+      "metadata": {
+        "adapter": "segment_polygon_hitcount_optix_partner_columns",
+        "app_count_host_materialization": true,
+        "app_count_materialization": "python_from_generic_witness_pairs",
+        "app_rows_emitted": 3,
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "emitted_count": 4,
+        "exact_row_semantics_authorized": true,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+        "overflowed": false,
+        "partner": "torch",
+        "partner_tensor_handoff_authorized": true,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 3,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "torch"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false,
+        "whole_app_true_zero_copy_authorized": false,
+        "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+        "witness_outputs_true_zero_copy_authorized": true,
+        "witness_row_capacity": 8
+      },
+      "rows": [
+        {
+          "hit_count": 2,
+          "segment_id": 101
+        },
+        {
+          "hit_count": 2,
+          "segment_id": 102
+        },
+        {
+          "hit_count": 0,
+          "segment_id": 103
+        }
+      ]
+    }
+  },
+  "status": "pass"
+}

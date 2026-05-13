@@ -290,3 +290,74 @@ def segment_polygon_anyhit_rows_optix_partner_columns(
     if return_metadata:
         return {"rows": rows, "metadata": metadata}
     return rows
+
+
+def segment_polygon_hitcount_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Run segment/polygon hit counts from caller-supplied partner CUDA columns.
+
+    This is an app-layer adapter over generic ray/primitive witness rows. The
+    native engine emits witness IDs only; Python deduplicates polygon hits and
+    materializes one hit-count row per input segment ID.
+    """
+    runtime = _partner_module(partner)
+    segment_ids = runtime["to_host"](segment_ray_columns["ids"])
+    if not segment_ids:
+        rows: tuple[dict[str, int], ...] = ()
+        metadata = {
+            "adapter": "segment_polygon_hitcount_optix_partner_columns",
+            "partner": runtime["name"],
+            "app_rows_emitted": 0,
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_count_host_materialization": False,
+            "whole_app_true_zero_copy_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"rows": rows, "metadata": metadata}
+        return rows
+    witness_result = segment_polygon_anyhit_rows_optix_partner_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+        return_metadata=True,
+    )
+    counts = {int(segment_id): 0 for segment_id in segment_ids}
+    seen_pairs = set()
+    for row in witness_result["rows"]:
+        pair = (int(row["segment_id"]), int(row["polygon_id"]))
+        if pair in seen_pairs:
+            continue
+        seen_pairs.add(pair)
+        if pair[0] in counts:
+            counts[pair[0]] += 1
+    rows = tuple({"segment_id": segment_id, "hit_count": counts[segment_id]} for segment_id in segment_ids)
+    metadata = dict(witness_result["metadata"])
+    metadata.update(
+        {
+            "adapter": "segment_polygon_hitcount_optix_partner_columns",
+            "partner": runtime["name"],
+            "app_rows_emitted": len(rows),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_count_materialization": "python_from_generic_witness_pairs",
+            "app_count_host_materialization": True,
+            "whole_app_true_zero_copy_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"rows": rows, "metadata": metadata}
+    return rows
