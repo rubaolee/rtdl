@@ -54,7 +54,8 @@ execution evidence for this bounded all-witness output contract.
 
 ## Pod Validation
 
-The contract was built and validated on an NVIDIA RTX A4500 pod:
+The contract was built and validated from clean `origin/main` commit
+`8dfaa4c7` on an NVIDIA RTX A4500 pod:
 
 ```text
 GPU: NVIDIA RTX A4500

@@ -14,8 +14,8 @@
   },
   "cupy_version": "14.0.1",
   "device": "NVIDIA RTX A4500",
-  "elapsed_s": 0.4416400268673897,
-  "execute_s": 0.17139167338609695,
+  "elapsed_s": 0.3418887108564377,
+  "execute_s": 0.07059474289417267,
   "expected_all_witness_pairs_sorted": [
     [
       101,
@@ -83,7 +83,7 @@
     "direct_device_pointer_observed": true,
     "native_symbol": "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays",
     "partner_phase_timings_s": {
-      "descriptor_validation_s": 0.00026442110538482666
+      "descriptor_validation_s": 0.00027192384004592896
     },
     "partner_tensor_handoff_authorized": true,
     "ray_columns_true_zero_copy_authorized": true,
@@ -108,8 +108,8 @@
     "native_acceleration_structure_required": true,
     "native_symbol": "rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs",
     "partner_phase_timings_s": {
-      "aabb_descriptor_validation_s": 2.8856098651885986e-05,
-      "descriptor_validation_s": 0.00017777830362319946
+      "aabb_descriptor_validation_s": 2.888590097427368e-05,
+      "descriptor_validation_s": 0.00017617642879486084
     },
     "partner_tensor_handoff_authorized": true,
     "rt_core_speedup_claim_authorized": false,
