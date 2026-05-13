@@ -93,6 +93,22 @@ class Goal1859SegmentPolygonHitcountPartnerAdapterTest(unittest.TestCase):
         self.assertFalse(result["metadata"]["whole_app_true_zero_copy_authorized"])
         self.assertFalse(result["metadata"]["v2_0_release_authorized"])
 
+    def test_hitcount_empty_input_metadata_is_complete(self) -> None:
+        segment_ray_columns = {"ids": _FakeColumn([])}
+        with mock.patch.object(partner_adapters, "_partner_module", side_effect=_fake_partner_module):
+            result = rt.segment_polygon_hitcount_optix_partner_columns(
+                segment_ray_columns,
+                {"ids": _FakeColumn([11])},
+                _FakeColumn([0.0] * 6),
+                partner="torch",
+                return_metadata=True,
+            )
+
+        self.assertEqual(result["rows"], ())
+        self.assertEqual(result["metadata"]["app_count_materialization"], "none_empty_input")
+        self.assertFalse(result["metadata"]["app_count_host_materialization"])
+        self.assertFalse(result["metadata"]["whole_app_true_zero_copy_authorized"])
+
     def test_report_and_pod_artifact_keep_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
         artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))

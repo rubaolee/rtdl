@@ -384,6 +384,7 @@ def segment_polygon_hitcount_optix_partner_columns(
             "app_rows_emitted": 0,
             "input_contract": "caller_supplied_partner_device_columns",
             "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_count_materialization": "none_empty_input",
             "app_count_host_materialization": False,
             "whole_app_true_zero_copy_authorized": False,
             "v2_0_release_authorized": False,

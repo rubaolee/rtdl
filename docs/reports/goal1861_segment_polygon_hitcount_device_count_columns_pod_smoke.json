@@ -1,5 +1,5 @@
 {
-  "git_commit": "133037b16d7003ccd3e4c6c5695eb550676aa9f6",
+  "git_commit": "2874570b6d9138f5774fe48cab8b4aea4bc0fc8d",
   "gpu": "NVIDIA RTX A4500, 550.127.05",
   "results": {
     "cupy": {
