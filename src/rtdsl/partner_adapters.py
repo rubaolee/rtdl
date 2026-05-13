@@ -318,14 +318,21 @@ def _column_length(columns: dict[str, object], name: str) -> int:
 
 def _segment_polygon_all_witness_columns_optix_partner_columns(
     segment_ray_columns: dict[str, object],
-    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object] | None,
     polygon_triangle_aabbs,
     *,
     partner: str = "torch",
     output_capacity: int | None = None,
+    prepared_scene=None,
+    witness_output_columns: dict[str, object] | None = None,
 ):
     ray_count = _column_length(segment_ray_columns, "ids")
-    triangle_count = _column_length(polygon_triangle_columns, "ids")
+    if prepared_scene is not None:
+        triangle_count = int(getattr(getattr(prepared_scene, "_packed_triangles", None), "count", 0))
+    elif polygon_triangle_columns is not None:
+        triangle_count = _column_length(polygon_triangle_columns, "ids")
+    else:
+        raise ValueError("polygon_triangle_columns are required when prepared_scene is not supplied")
     runtime = _partner_module(partner)
     if ray_count == 0 or triangle_count == 0:
         metadata = {
@@ -349,13 +356,23 @@ def _segment_polygon_all_witness_columns_optix_partner_columns(
     if output_capacity <= 0:
         raise ValueError("output_capacity must be positive")
 
-    witness_ray_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
-    witness_primitive_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
+    output_reuse_authorized = witness_output_columns is not None
+    if witness_output_columns is None:
+        witness_output_columns = allocate_segment_polygon_witness_partner_device_output_columns(
+            output_capacity,
+            partner=partner,
+        )
+    _require_segment_polygon_witness_output_lengths(witness_output_columns, output_capacity)
+    witness_ray_ids = witness_output_columns["witness_ray_ids"]
+    witness_primitive_ids = witness_output_columns["witness_primitive_ids"]
 
-    scene = _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
-        polygon_triangle_columns,
-        polygon_triangle_aabbs,
-    )
+    scene_reuse_authorized = prepared_scene is not None
+    scene = prepared_scene
+    if scene is None:
+        scene = _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+            polygon_triangle_columns,
+            polygon_triangle_aabbs,
+        )
     try:
         packet = scene.write_device_any_hit_all_witnesses(
             segment_ray_columns,
@@ -364,9 +381,12 @@ def _segment_polygon_all_witness_columns_optix_partner_columns(
         )
         runtime["sync"]()
     finally:
-        scene.close()
+        if not scene_reuse_authorized:
+            scene.close()
 
     metadata = dict(packet["metadata"])
+    metadata["prepared_scene_reused"] = scene_reuse_authorized
+    metadata["witness_output_columns_reused"] = output_reuse_authorized
     emitted_count = int(metadata["emitted_count"])
     if metadata["overflowed"]:
         raise RuntimeError("partner segment/polygon column adapter overflowed; increase output_capacity")
@@ -377,6 +397,44 @@ def _segment_polygon_all_witness_columns_optix_partner_columns(
         "emitted_count": emitted_count,
         "metadata": metadata,
     }
+
+
+def prepare_segment_polygon_anyhit_optix_partner_device_scene(
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+):
+    """Prepare a reusable OptiX scene from partner-owned triangle columns."""
+    return _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+    )
+
+
+def allocate_segment_polygon_witness_partner_device_output_columns(
+    output_capacity: int,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Allocate reusable partner-owned witness output columns."""
+    output_capacity = int(output_capacity)
+    if output_capacity <= 0:
+        raise ValueError("output_capacity must be positive")
+    runtime = _partner_module(partner)
+    return {
+        "witness_ray_ids": runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"]),
+        "witness_primitive_ids": runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"]),
+    }
+
+
+def _require_segment_polygon_witness_output_lengths(
+    witness_output_columns: dict[str, object],
+    output_capacity: int,
+) -> None:
+    for name in ("witness_ray_ids", "witness_primitive_ids"):
+        if name not in witness_output_columns:
+            raise ValueError(f"witness_output_columns must include {name!r}")
+        if _column_length(witness_output_columns, name) != output_capacity:
+            raise ValueError(f"witness_output_columns[{name!r}] length must match output_capacity")
 
 
 def segment_polygon_anyhit_rows_optix_partner_columns(
@@ -558,6 +616,60 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
     return columns
 
 
+def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
+    prepared_scene,
+    segment_ray_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return partner-owned hit-count columns through a reusable triangle scene."""
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        None,
+        None,
+        partner=partner,
+        output_capacity=output_capacity,
+        prepared_scene=prepared_scene,
+        witness_output_columns=witness_output_columns,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
+    witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
+    hit_counts = runtime["count_unique_pairs_by_ids"](
+        segment_ray_columns["ids"],
+        witness_ray_ids,
+        witness_primitive_ids,
+    )
+    runtime["sync"]()
+    columns = {
+        "segment_ids": segment_ray_columns["ids"],
+        "hit_counts": hit_counts,
+    }
+    metadata.update(
+        {
+            "adapter": "segment_polygon_hitcount_optix_prepared_partner_device_count_columns",
+            "partner": runtime["name"],
+            "app_columns_emitted": 2,
+            "app_rows_emitted": _column_length(segment_ray_columns, "ids"),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_count_materialization": "partner_gpu_from_prepared_generic_witness_pairs",
+            "app_count_host_materialization": False,
+            "whole_app_true_zero_copy_authorized": True,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def road_hazard_priority_flags_optix_partner_device_columns(
     segment_ray_columns: dict[str, object],
     polygon_triangle_columns: dict[str, object],
@@ -606,6 +718,60 @@ def road_hazard_priority_flags_optix_partner_device_columns(
             "partner": runtime["name"],
             "priority_threshold": threshold,
             "app_priority_materialization": "partner_gpu_threshold_from_hit_counts",
+            "app_priority_host_materialization": False,
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def road_hazard_priority_flags_optix_prepared_partner_device_columns(
+    prepared_scene,
+    segment_ray_columns: dict[str, object],
+    *,
+    threshold: int = 2,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return road hazard priority columns through a reusable triangle scene."""
+    threshold = int(threshold)
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    hitcount_result = segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
+        prepared_scene,
+        segment_ray_columns,
+        partner=partner,
+        output_capacity=output_capacity,
+        witness_output_columns=witness_output_columns,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    hitcount_columns = hitcount_result["columns"]
+    priority_flags = runtime["greater_equal_uint32"](
+        hitcount_columns["hit_counts"],
+        threshold,
+    )
+    runtime["sync"]()
+    columns = {
+        "road_ids": hitcount_columns["segment_ids"],
+        "hit_counts": hitcount_columns["hit_counts"],
+        "priority_flags": priority_flags,
+    }
+    metadata = dict(hitcount_result["metadata"])
+    metadata.update(
+        {
+            "adapter": "road_hazard_priority_flags_optix_prepared_partner_device_columns",
+            "app": "road_hazard_screening",
+            "partner": runtime["name"],
+            "priority_threshold": threshold,
+            "app_priority_materialization": "partner_gpu_threshold_from_prepared_hit_counts",
             "app_priority_host_materialization": False,
             "input_contract": "caller_supplied_partner_device_columns",
             "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
