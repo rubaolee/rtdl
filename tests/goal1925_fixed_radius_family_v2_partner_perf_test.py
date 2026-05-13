@@ -40,6 +40,7 @@ class Goal1925FixedRadiusFamilyV2PartnerPerfTest(unittest.TestCase):
         self.assertIn("--apps", text)
         self.assertIn("--partners", text)
         self.assertIn("--repeat", text)
+        self.assertIn("--source-commit-label", text)
         self.assertIn("--query-count-override", text)
         self.assertIn("--search-count-override", text)
         self.assertIn("replace(", text)

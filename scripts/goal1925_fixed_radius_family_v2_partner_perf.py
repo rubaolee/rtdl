@@ -285,6 +285,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--partners", default="cupy,torch")
     parser.add_argument("--repeat", type=int, default=5)
     parser.add_argument(
+        "--source-commit-label",
+        default=None,
+        help="Explicit source label for copied-source pod runs that lack .git metadata.",
+    )
+    parser.add_argument(
         "--query-count-override",
         type=int,
         default=None,
@@ -321,7 +326,7 @@ def main() -> int:
             )
         for partner in partners:
             results.append(run_case(scenario, repeat=args.repeat, partner=partner))
-    commit = _git_commit()
+    commit = args.source_commit_label or _git_commit()
     payload = {
         "goal": "Goal1925",
         "status": "pass" if all(item["status"] == "pass" for item in results) else "fail",

@@ -16,6 +16,7 @@ DB_COPIES="${DB_COPIES:-20000}"
 GRAPH_COPIES="${GRAPH_COPIES:-20000}"
 PARTNERS="${PARTNERS:-cupy,torch}"
 STEP_TIMEOUT_SECONDS="${STEP_TIMEOUT_SECONDS:-2700}"
+SOURCE_COMMIT_LABEL="${SOURCE_COMMIT_LABEL:-}"
 
 mkdir -p "$OUT_DIR"
 export PYTHONPATH="${PYTHONPATH:-src:.}"
@@ -38,6 +39,9 @@ fixed_radius_args=(
   --repeat "$FIXED_REPEAT"
   --output "$OUT_DIR/goal1925_fixed_radius_family_v2_partner_perf_pod.json"
 )
+if [[ -n "$SOURCE_COMMIT_LABEL" ]]; then
+  fixed_radius_args+=(--source-commit-label "$SOURCE_COMMIT_LABEL")
+fi
 if [[ -n "$FIXED_QUERY_COUNT" ]]; then
   fixed_radius_args+=(--query-count-override "$FIXED_QUERY_COUNT")
 fi
