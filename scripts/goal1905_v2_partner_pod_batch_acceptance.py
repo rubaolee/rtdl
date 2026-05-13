@@ -118,12 +118,26 @@ def main(argv: list[str] | None = None) -> int:
     base = pathlib.Path(args.base_dir)
     errors: list[str] = []
     missing: list[str] = []
+    warnings: list[str] = []
     _validate_fixed_radius(base, errors, missing)
     for count in _parse_counts(args.segment_counts):
         _validate_segment(base, count, errors, missing)
     for count in _parse_counts(args.road_hazard_counts):
         _validate_road_hazard(base, count, errors, missing)
     _validate_summary(base, errors, missing)
+
+    if missing and args.allow_missing:
+        remaining_errors = []
+        for error in errors:
+            is_partial_summary_request_error = (
+                "docs/reports/goal1903_v2_partner_pod_batch_summary.json: expected" in error
+                and ".requested=true" in error
+            )
+            if is_partial_summary_request_error:
+                warnings.append(error)
+            else:
+                remaining_errors.append(error)
+        errors = remaining_errors
 
     status = "pass"
     if errors:
@@ -136,6 +150,7 @@ def main(argv: list[str] | None = None) -> int:
         "status": status,
         "missing_artifacts": missing,
         "errors": errors,
+        "warnings": warnings,
         "claim_boundary": {
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,

@@ -45,6 +45,10 @@ The validator fails if:
   `whole_app_speedup_claim_authorized`, or
   `broad_rt_core_speedup_claim_authorized` to true.
 
+In `--allow-missing` mode, stale partial Goal1903 summary request flags are
+reported as warnings while the validator stays in `blocked_missing_artifacts`.
+Strict post-pod mode still fails them.
+
 ## Boundary
 
 Passing Goal1905 means the batch artifacts are structurally usable for review.

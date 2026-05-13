@@ -29,6 +29,7 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_512.json", text)
         self.assertIn("same-contract timing row flag", text)
         self.assertIn("prepared scene/output reuse", text)
+        self.assertIn("reported as warnings", text)
         self.assertIn("does not replace external review", text)
 
     def test_allow_missing_records_blocker_without_authorizing_release(self) -> None:
@@ -39,7 +40,32 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
             payload = json.loads((root / "docs/reports/goal1905_v2_partner_pod_batch_acceptance.json").read_text())
             self.assertEqual(payload["status"], "blocked_missing_artifacts")
             self.assertTrue(payload["missing_artifacts"])
+            self.assertEqual(payload["warnings"], [])
             self.assertFalse(payload["claim_boundary"]["v2_0_release_authorized"])
+
+    def test_allow_missing_demotes_partial_summary_request_flags_to_warnings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            _write_json(
+                root,
+                "docs/reports/goal1903_v2_partner_pod_batch_summary.json",
+                {
+                    "fixed_radius": {"requested": False},
+                    "segment_polygon": {"requested": False},
+                    "road_hazard": {"requested": True},
+                    "claim_boundary": {
+                        "v2_0_release_authorized": False,
+                        "whole_app_speedup_claim_authorized": False,
+                        "broad_rt_core_speedup_claim_authorized": False,
+                    },
+                },
+            )
+            rc = main(["--base-dir", str(root), "--allow-missing"])
+            self.assertEqual(rc, 0)
+            payload = json.loads((root / "docs/reports/goal1905_v2_partner_pod_batch_acceptance.json").read_text())
+            self.assertEqual(payload["status"], "blocked_missing_artifacts")
+            self.assertFalse(payload["errors"])
+            self.assertEqual(len(payload["warnings"]), 2)
 
     def test_complete_fixture_passes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
