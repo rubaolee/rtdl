@@ -2353,6 +2353,7 @@ def pack_triangles_2d_from_arrays(
 
 _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
+_OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_device_columns"
 
 
 def _partner_column_to_host_array(value, *, column_name: str):
@@ -2413,6 +2414,95 @@ def _partner_host_stage_columns(columns: dict, required: tuple[str, ...], *, lab
         for timing_name, seconds in column_timings.items():
             timings[timing_name] += float(seconds)
     return arrays, descriptors, timings
+
+
+def _partner_device_descriptor_columns(columns: dict, required: tuple[str, ...], *, label: str):
+    missing = [name for name in required if name not in columns]
+    unexpected = [name for name in columns if name not in required]
+    if missing:
+        raise ValueError(f"missing {label} partner device columns: {', '.join(missing)}")
+    if unexpected:
+        raise ValueError(f"unexpected {label} partner device columns: {', '.join(unexpected)}")
+    handoffs = {}
+    validation_start = time.perf_counter()
+    for name in required:
+        handoff = _partner.prepare_direct_device_pointer_handoff(columns[name], access="read")
+        if len(handoff.shape) != 1:
+            raise ValueError(f"partner device column {label}.{name!r} must be one-dimensional")
+        handoffs[name] = handoff
+    validation_seconds = time.perf_counter() - validation_start
+    return handoffs, {"descriptor_validation_s": validation_seconds}
+
+
+def pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs(
+    ray_columns: dict,
+    triangle_columns: dict,
+) -> dict[str, object]:
+    """Validate partner-owned CUDA columns for future direct OptiX execution.
+
+    This packet contains device pointer descriptors only. It does not host-stage
+    data, does not execute native code, and does not authorize zero-copy claims.
+    """
+    ray_handoffs, ray_timings = _partner_device_descriptor_columns(
+        ray_columns,
+        _PARTNER_RAY_2D_COLUMNS,
+        label="rays",
+    )
+    triangle_handoffs, triangle_timings = _partner_device_descriptor_columns(
+        triangle_columns,
+        _PARTNER_TRIANGLE_2D_COLUMNS,
+        label="triangles",
+    )
+    descriptors = (*ray_handoffs.values(), *triangle_handoffs.values())
+    return {
+        "rays": ray_handoffs,
+        "triangles": triangle_handoffs,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_descriptor_only",
+            "native_symbol": _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
+            "ray_count": int(ray_handoffs["ids"].shape[0]),
+            "triangle_count": int(triangle_handoffs["ids"].shape[0]),
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": False,
+            "true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": {
+                "descriptor_validation": float(
+                    ray_timings["descriptor_validation_s"] + triangle_timings["descriptor_validation_s"]
+                ),
+            },
+        },
+    }
+
+
+def run_optix_partner_ray_triangle_any_hit_2d_device_descriptors(
+    ray_columns: dict,
+    triangle_columns: dict,
+) -> dict[str, object]:
+    """Fail-closed direct-device OptiX partner entrypoint.
+
+    The Python contract is now explicit, but the native backend must provide the
+    matching device-column ABI before this function may execute. There is no
+    silent host-stage fallback from this path.
+    """
+    packet = pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs(ray_columns, triangle_columns)
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(lib, _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL)
+    if symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{_OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL}. "
+            "Direct device-pointer partner execution remains blocked; use the "
+            "host-stage partner path or rebuild after the native device-column ABI lands."
+        )
+    raise RuntimeError(
+        "Direct device-pointer partner execution ABI is detected but not yet wired "
+        "through the Python safety contract."
+    )
 
 
 def pack_optix_ray_triangle_any_hit_2d_partner_inputs(ray_columns: dict, triangle_columns: dict) -> dict[str, object]:

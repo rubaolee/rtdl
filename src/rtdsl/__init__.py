@@ -338,7 +338,9 @@ from .optix_runtime import OptixRowView
 from .optix_runtime import pack_rays_2d_from_arrays
 from .optix_runtime import pack_triangles_2d_from_arrays
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_partner_inputs
+from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs
 from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d
+from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d_device_descriptors
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
@@ -1203,7 +1205,9 @@ __all__ = [
     "pack_rays_2d_from_arrays",
     "pack_triangles_2d_from_arrays",
     "pack_optix_ray_triangle_any_hit_2d_partner_inputs",
+    "pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs",
     "run_optix_partner_ray_triangle_any_hit_2d",
+    "run_optix_partner_ray_triangle_any_hit_2d_device_descriptors",
     "prepare_optix",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_count_threshold_2d",
