@@ -47,7 +47,7 @@ The v2.0 side is only partially born:
 | Goal1848 | v2.0 preview, OptiX bounded all-hit witness rows into partner-owned CUDA outputs | pod validated on RTX A4500 for Torch/CuPy | not v2.0 release |
 | Goal1850 | first app-level segment/polygon partner adapter over generic witness rows | pod validated on RTX A4500 for Torch/CuPy; Claude accepted with boundary | not v2.0 release |
 | Goal1853 | caller-supplied PyTorch/CuPy GPU-column segment/polygon partner adapter | pod validated on RTX A4500 for Torch/CuPy; Claude accepted with boundary | not v2.0 release |
-| Goal1856 | first same-contract v2.0-vs-v1.8 timing row for `segment_polygon_anyhit_rows` | pod validated on RTX A4500 at 512 and 2048 rows; review pending | not v2.0 release |
+| Goal1856 | first same-contract v2.0-vs-v1.8 timing row for `segment_polygon_anyhit_rows` | pod validated on RTX A4500 at 512 and 2048 rows; Claude accepted with boundary | not v2.0 release |
 
 ## Engine Readiness
 

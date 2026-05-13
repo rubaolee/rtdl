@@ -92,3 +92,18 @@ The result is useful engineering evidence: the caller-supplied partner-column
 shape can preserve row semantics and reduce the median measured query phase for
 this small synthetic row on the RTX A4500. It must be scaled, reviewed, and
 repeated across the remaining app surface before any public release conclusion.
+
+## External Review
+
+Claude reviewed Goal1856 in
+`docs/reviews/goal1857_claude_review_goal1856_v2_partner_perf_row_2026-05-13.md`
+with verdict `accept-with-boundary`.
+
+The review accepts this as an internal engineering data point and keeps all
+public/release claims blocked. The highest-priority follow-up gaps are:
+
+- column-build amortization/accounting,
+- broader scale sweep,
+- overlapping/multi-hit geometry parity,
+- overflow-boundary testing,
+- additional GPU-class evidence.

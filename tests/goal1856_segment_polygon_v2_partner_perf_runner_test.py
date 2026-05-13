@@ -42,6 +42,8 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
 
         self.assertIn("Status: pass-with-boundary", report)
+        self.assertIn("Claude reviewed Goal1856", report)
+        self.assertIn("accept-with-boundary", report)
         self.assertIn("not an all-app performance table", report)
         self.assertIn("does not authorize v2.0 release wording", report)
         self.assertIn("goal1856_segment_polygon_v2_partner_perf_pod_2048.json", report)
