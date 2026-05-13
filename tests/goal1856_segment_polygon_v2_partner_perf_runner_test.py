@@ -6,6 +6,8 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "goal1856_segment_polygon_v2_partner_perf.py"
+REPORT = ROOT / "docs" / "reports" / "goal1856_segment_polygon_v2_partner_perf_2026-05-13.md"
+ARTIFACT = ROOT / "docs" / "reports" / "goal1856_segment_polygon_v2_partner_perf_pod_512.json"
 
 
 class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
@@ -31,6 +33,32 @@ class Goal1856SegmentPolygonV2PartnerPerfRunnerTest(unittest.TestCase):
         self.assertIn("[timing]", text)
         self.assertIn("[artifact]", text)
         self.assertIn("flush=True", text)
+
+    def test_report_and_artifact_preserve_narrow_claim_boundary(self) -> None:
+        import json
+
+        report = REPORT.read_text(encoding="utf-8")
+        artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertIn("Status: pass-with-boundary", report)
+        self.assertIn("not an all-app performance table", report)
+        self.assertIn("does not authorize v2.0 release wording", report)
+        self.assertEqual(artifact["status"], "pass")
+        self.assertEqual(artifact["goal"], "Goal1856")
+        self.assertIn("NVIDIA RTX A4500", artifact["gpu"])
+        self.assertEqual(artifact["count"], 512)
+        self.assertTrue(artifact["parity"]["strict_rows_match"])
+        self.assertEqual(artifact["baseline"]["row_count"], 512)
+        for partner in ("cupy", "torch"):
+            with self.subTest(partner=partner):
+                self.assertEqual(artifact["partners"][partner]["row_count"], 512)
+                self.assertLess(artifact["partners"][partner]["query_median_ratio_vs_v1_8_native"], 1.0)
+        boundary = artifact["claim_boundary"]
+        self.assertTrue(boundary["same_contract_timing_row"])
+        self.assertFalse(boundary["v2_0_release_authorized"])
+        self.assertFalse(boundary["whole_app_speedup_claim_authorized"])
+        self.assertFalse(boundary["broad_rt_core_speedup_claim_authorized"])
+        self.assertFalse(boundary["package_install_claim_authorized"])
 
 
 if __name__ == "__main__":
