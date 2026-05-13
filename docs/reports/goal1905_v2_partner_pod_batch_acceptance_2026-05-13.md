@@ -54,3 +54,19 @@ Strict post-pod mode still fails them.
 Passing Goal1905 means the batch artifacts are structurally usable for review.
 It does not replace external review, final release consensus, or exact public
 claim selection.
+
+## Local Linux Check
+
+Codex copied the Goal1905 validator into the disposable local Linux checkout at
+`/tmp/rtdl_goal1889_smoke` on `192.168.1.20` and ran:
+
+```bash
+PYTHONPATH=src:. python3 -m unittest tests.goal1905_v2_partner_pod_batch_acceptance_test
+PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py --allow-missing --output /tmp/goal1905_local_snapshot.json
+```
+
+Result: tests passed, and the pre-pod snapshot reported
+`blocked_missing_artifacts` with no errors. The disposable checkout had a stale
+partial Goal1903 summary from an earlier dry run, so the missing fixed-radius
+and segment/polygon request flags were reported as warnings, as intended for
+`--allow-missing` mode.

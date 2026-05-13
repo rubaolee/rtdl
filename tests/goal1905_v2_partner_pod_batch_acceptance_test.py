@@ -30,6 +30,9 @@ class Goal1905V2PartnerPodBatchAcceptanceTest(unittest.TestCase):
         self.assertIn("same-contract timing row flag", text)
         self.assertIn("prepared scene/output reuse", text)
         self.assertIn("reported as warnings", text)
+        self.assertIn("Local Linux Check", text)
+        self.assertIn("blocked_missing_artifacts", text)
+        self.assertIn("/tmp/rtdl_goal1889_smoke", text)
         self.assertIn("does not replace external review", text)
 
     def test_allow_missing_records_blocker_without_authorizing_release(self) -> None:
