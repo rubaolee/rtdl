@@ -1,0 +1,82 @@
+{
+  "claim_boundary": {
+    "exact_partner_reference_path": true,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1979",
+  "gpu": "NVIDIA RTX 2000 Ada Generation, 565.57.01",
+  "results": [
+    {
+      "body_count": 512,
+      "cpu_python_reference_wall_s": {
+        "max_s": 0.10355351120233536,
+        "median_s": 0.10355351120233536,
+        "min_s": 0.10355351120233536
+      },
+      "force_row_count": 512,
+      "matches_cpu_force_row_count": true,
+      "matches_shape": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_pairwise_inverse_square_force_2d",
+      "rt_core_accelerated": false,
+      "v2_partner_exact_force_wall_s": {
+        "max_s": 0.012217625975608826,
+        "median_s": 0.002056434750556946,
+        "min_s": 0.001884758472442627
+      },
+      "v2_vs_cpu_python_reference_ratio": 0.019858667530247575,
+      "validation_skipped": true
+    },
+    {
+      "body_count": 2048,
+      "force_row_count": 2048,
+      "matches_shape": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_pairwise_inverse_square_force_2d",
+      "rt_core_accelerated": false,
+      "v2_partner_exact_force_wall_s": {
+        "max_s": 0.0071172043681144714,
+        "median_s": 0.006754979491233826,
+        "min_s": 0.006704665720462799
+      },
+      "validation_skipped": true
+    },
+    {
+      "body_count": 4096,
+      "force_row_count": 4096,
+      "matches_shape": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_pairwise_inverse_square_force_2d",
+      "rt_core_accelerated": false,
+      "v2_partner_exact_force_wall_s": {
+        "max_s": 0.01615884155035019,
+        "median_s": 0.015607886016368866,
+        "min_s": 0.015556573867797852
+      },
+      "validation_skipped": true
+    },
+    {
+      "body_count": 8192,
+      "force_row_count": 8192,
+      "matches_shape": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_pairwise_inverse_square_force_2d",
+      "rt_core_accelerated": false,
+      "v2_partner_exact_force_wall_s": {
+        "max_s": 0.04967278242111206,
+        "median_s": 0.03559591621160507,
+        "min_s": 0.0351145938038826
+      },
+      "validation_skipped": true
+    }
+  ],
+  "source": "pod direct uncommitted goal1979 workspace",
+  "status": "pass",
+  "validation_row": {
+    "body_count": 256,
+    "matches_oracle": true,
+    "max_relative_error": 5.8563066919301175e-15
+  }
+}

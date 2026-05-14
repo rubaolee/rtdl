@@ -12,10 +12,10 @@ that v2.0 can claim broad whole-app acceleration.
 
 Current classification from the refreshed Goal1931 analysis:
 
-- `positive`: 10 apps
+- `positive`: 9 apps
 - `positive-subsecond`: 1 app
 - `positive-bounded`: 3 apps
-- `positive-bounded-exact`: 2 apps
+- `positive-bounded-exact`: 3 apps
 
 The important change is that there are no longer blank “control” rows in the
 all-app matrix. The remaining question is quality of the v2 path.
@@ -39,7 +39,7 @@ all-app matrix. The remaining question is quality of the v2 path.
 | `outlier_detection` | positive | v2/v1.8 `0.000323x` | Healthy count-threshold shape; avoid returning full neighbor rows. |
 | `dbscan_clustering` | positive threshold proxy | v2/v1.8 `0.000326x` | Core-point detection is accelerated; full transitive cluster labeling is still app/graph logic. |
 | `robot_collision_screening` | positive-subsecond | v2/v1.8 `0.0187x` | Strong ratio but v1.8 is subsecond; keep exact pose-flag parity and scale evidence. |
-| `barnes_hut_force_app` | positive threshold proxy | v2/v1.8 `0.000304x` | Node coverage is accelerated; force-vector accumulation is still app logic. |
+| `barnes_hut_force_app` | positive bounded exact force row | v2/CPU exact `0.01986x` | Goal1979 replaces node coverage as the representative row with exact pairwise force-vector partner output; bounded because this is not hierarchical Barnes-Hut tree opening or RT-core acceleration. |
 
 ## What Is Still Unoptimized
 
@@ -56,11 +56,11 @@ The remaining debt is not one bug. It is four patterns:
    Goal1975 removes `hausdorff_distance` from this bucket by adding exact
    directed Hausdorff partner reductions. Goal1978 removes
    `facility_knn_assignment` from this bucket by adding exact K=3 ranked
-   nearest-depot rows. `ann_candidate_search`, `dbscan_clustering`, and
-   `barnes_hut_force_app` still have strong v2 rows because they map to
+   nearest-depot rows. Goal1979 removes `barnes_hut_force_app` from this bucket
+   by adding exact force-vector partner output. `ann_candidate_search` and
+   `dbscan_clustering` still have strong v2 rows because they map to
    fixed-radius count/threshold outputs. The real richer semantics still need
-   additional partner contracts: ANN indexing, cluster expansion, and vector
-   accumulation.
+   additional partner contracts: ANN indexing and cluster expansion.
 
 3. **Row materialization**
 
@@ -107,9 +107,9 @@ The remaining debt is not one bug. It is four patterns:
 
    Keep the current fixed-radius threshold rows, but document exactly which app
    semantics they cover. Goal1975 adds the exact Hausdorff row and Goal1978
-   adds the exact facility KNN top-k row; future rows for ANN indexing, full
-   DBSCAN labeling, and Barnes-Hut force-vector accumulation should appear only
-   when those continuations are actually implemented.
+   adds the exact facility KNN top-k row; Goal1979 adds exact Barnes-Hut force
+   vectors. Future rows for ANN indexing and full DBSCAN labeling should appear
+   only when those continuations are actually implemented.
 
 ## Release Meaning
 

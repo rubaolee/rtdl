@@ -408,6 +408,45 @@ def _force_summary(force_rows: tuple[dict[str, object], ...]) -> dict[str, objec
     }
 
 
+def _partner_column_to_list(column, partner: str) -> list[object]:
+    if partner == "torch":
+        return column.detach().cpu().tolist()
+    if partner == "cupy":
+        import cupy
+
+        return cupy.asnumpy(column).tolist()
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _run_partner_exact_forces(
+    bodies: tuple[Body, ...],
+    *,
+    partner: str,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    columns = rt.weighted_point_rows_to_partner_columns(bodies, partner=partner)
+    result = rt.pairwise_inverse_square_force_2d_partner_columns(
+        columns,
+        columns,
+        softening=SOFTENING,
+        partner=partner,
+        exclude_equal_ids=True,
+        return_metadata=True,
+    )
+    force_columns = result["columns"]
+    ids = _partner_column_to_list(force_columns["source_ids"], partner)
+    force_x = _partner_column_to_list(force_columns["force_x"], partner)
+    force_y = _partner_column_to_list(force_columns["force_y"], partner)
+    rows = tuple(
+        {
+            "body_id": int(body_id),
+            "force_x": float(fx),
+            "force_y": float(fy),
+        }
+        for body_id, fx, fy in zip(ids, force_x, force_y)
+    )
+    return rows, result["metadata"]
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     *,
@@ -416,6 +455,8 @@ def run_app(
     output_mode: str = "full",
     optix_summary_mode: str = "rows",
     node_radius: float = NODE_DISCOVERY_RADIUS,
+    partner: str = "cupy",
+    skip_validation: bool = False,
     require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"full", "candidate_summary", "force_summary"}:
@@ -427,6 +468,45 @@ def run_app(
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
     nodes = build_one_level_quadtree(bodies)
+    if backend == "partner_exact_force":
+        force_rows, partner_metadata = _run_partner_exact_forces(bodies, partner=partner)
+        exact_forces = None if skip_validation else brute_force_forces(bodies)
+        error_rows = _force_error_rows(force_rows, exact_forces) if exact_forces is not None else ()
+        payload = {
+            "app": "barnes_hut_force_app",
+            "backend": backend,
+            "partner": partner,
+            "theta": theta,
+            "body_count": len(bodies),
+            "node_count": len(nodes),
+            "output_mode": output_mode,
+            "optix_summary_mode": None,
+            "node_radius": None,
+            "force_row_count": len(force_rows),
+            "partner_reference_contract": partner_metadata["partner_reference_contract"],
+            "partner_metadata": partner_metadata,
+            "validation_skipped": skip_validation,
+            "native_continuation_active": False,
+            "native_continuation_backend": "none",
+            "rtdl_role": "Partner exact-force mode computes generic weighted-point pairwise inverse-square force vectors outside the native engine.",
+            "rt_core_accelerated": False,
+            "boundary": (
+                "Exact all-pairs force-vector reference path only; this is not "
+                "Barnes-Hut tree opening acceleration and not an RT-core claim."
+            ),
+        }
+        if exact_forces is not None:
+            payload["max_relative_error"] = max((row["relative_error"] for row in error_rows), default=0.0)
+            payload["matches_oracle"] = payload["max_relative_error"] < 1.0e-12
+        if output_mode == "full":
+            payload["force_rows"] = force_rows
+            if exact_forces is not None:
+                payload["exact_force_rows"] = [
+                    {"body_id": body_id, "force_x": force[0], "force_y": force[1]}
+                    for body_id, force in sorted(exact_forces.items())
+                ]
+                payload["error_rows"] = error_rows
+        return payload
     if backend == "optix" and optix_summary_mode == "node_coverage_prepared":
         coverage = _run_optix_node_coverage(bodies, nodes, radius=node_radius)
         oracle = node_coverage_oracle(bodies, nodes, radius=node_radius)
@@ -523,9 +603,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "partner_exact_force"),
         default="cpu_python_reference",
     )
+    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
     parser.add_argument("--theta", type=float, default=THETA)
     parser.add_argument("--body-count", type=int, default=None, help="use a generated scalable body fixture")
     parser.add_argument(
@@ -551,6 +632,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
     )
+    parser.add_argument(
+        "--skip-validation",
+        action="store_true",
+        help="Skip CPU oracle validation for large partner_exact_force timing runs.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -561,6 +647,8 @@ def main(argv: list[str] | None = None) -> int:
                 output_mode=args.output_mode,
                 optix_summary_mode=args.optix_summary_mode,
                 node_radius=args.node_radius,
+                partner=args.partner,
+                skip_validation=args.skip_validation,
                 require_rt_core=args.require_rt_core,
             ),
             indent=2,

@@ -7,9 +7,9 @@
     "whole_app_speedup_claim_authorized": false
   },
   "classification_counts": {
-    "positive": 10,
+    "positive": 9,
     "positive-bounded": 3,
-    "positive-bounded-exact": 2,
+    "positive-bounded-exact": 3,
     "positive-subsecond": 1
   },
   "goal": "Goal1931",
@@ -258,19 +258,19 @@
     },
     {
       "app": "barnes_hut_force_app",
-      "artifact": "docs/reports/goal1937_fixed_radius_repeat3_pod/fixed_radius_524288_repeat3.json",
+      "artifact": "docs/reports/goal1979_pod_exact_pairwise_force_barnes_hut_cupy_perf.json",
       "claim_class": "implemented-needs-hardware",
-      "classification": "positive",
-      "insight": "Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling.",
+      "classification": "positive-bounded-exact",
+      "insight": "Goal1979 upgrades Barnes-Hut from node-coverage threshold proxy to exact all-pairs force-vector partner reference rows; this is not hierarchical Barnes-Hut tree-opening or RT-core acceleration.",
       "label": "barnes hut force app",
       "matrix_state": "harness-ready-pod-needed",
       "partner": "cupy",
-      "ratio_vs_v18_prepared": 0.0003039990875159831,
+      "ratio_vs_v18_prepared": 0.019858667530247575,
       "ratio_vs_v18_reused_prepared": null,
-      "size": 524288,
-      "v18_prepared_s": 1.373772319406271,
+      "size": 512,
+      "v18_prepared_s": 0.10355351120233536,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 0.0004176255315542221
+      "v2_prepared_partner_s": 0.002056434750556946
     }
   ],
   "status": "current-evidence-analysis-external-review-needed"

@@ -433,6 +433,44 @@ def _goal1978_exact_facility_top_k_rows() -> list[dict[str, object]]:
     ]
 
 
+def _goal1979_exact_barnes_force_rows() -> list[dict[str, object]]:
+    path = "docs/reports/goal1979_pod_exact_pairwise_force_barnes_hut_cupy_perf.json"
+    artifact = _read_json(ROOT / path)
+    if not artifact:
+        return []
+    candidates = [
+        row
+        for row in artifact.get("results", [])
+        if isinstance(row, dict) and isinstance(row.get("v2_vs_cpu_python_reference_ratio"), (int, float))
+    ]
+    if not candidates:
+        return []
+    result = min(candidates, key=lambda row: int(row.get("body_count", 0) or 0))
+    v18 = _median(result, "cpu_python_reference_wall_s")
+    v2 = _median(result, "v2_partner_exact_force_wall_s")
+    ratio = result.get("v2_vs_cpu_python_reference_ratio")
+    return [
+        {
+            "app": "barnes_hut_force_app",
+            "label": "barnes hut force app",
+            "size": int(result.get("body_count", 0) or 0),
+            "partner": str(result.get("partner", "cupy")),
+            "v18_prepared_s": v18,
+            "v18_reused_prepared_s": None,
+            "v2_prepared_partner_s": v2,
+            "ratio_vs_v18_prepared": float(ratio) if isinstance(ratio, (int, float)) else _ratio(v2, v18),
+            "ratio_vs_v18_reused_prepared": None,
+            "classification": "positive-bounded-exact",
+            "insight": (
+                "Goal1979 upgrades Barnes-Hut from node-coverage threshold proxy to exact all-pairs "
+                "force-vector partner reference rows; this is not hierarchical Barnes-Hut tree-opening "
+                "or RT-core acceleration."
+            ),
+            "artifact": path,
+        }
+    ]
+
+
 def _best_measured(rows: list[dict[str, object]]) -> dict[str, dict[str, object]]:
     best: dict[str, dict[str, object]] = {}
     for row in rows:
@@ -475,8 +513,10 @@ def build_analysis() -> dict[str, object]:
     measured_rows.extend(_goal1972_graph_metric_table_rows())
     exact_hausdorff_rows = _goal1975_exact_hausdorff_rows()
     exact_facility_top_k_rows = _goal1978_exact_facility_top_k_rows()
+    exact_barnes_force_rows = _goal1979_exact_barnes_force_rows()
     measured_rows.extend(exact_hausdorff_rows)
     measured_rows.extend(exact_facility_top_k_rows)
+    measured_rows.extend(exact_barnes_force_rows)
     best = _best_measured(measured_rows)
     if exact_hausdorff_rows:
         # For Hausdorff, exact semantics are more important than keeping the
@@ -486,6 +526,10 @@ def build_analysis() -> dict[str, object]:
         # Same for facility KNN: ranked fallback rows are the authored app
         # semantics, while the older fixed-radius row is only coverage.
         best["facility_knn_assignment"] = exact_facility_top_k_rows[0]
+    if exact_barnes_force_rows:
+        # Force vectors are the authored Barnes-Hut app output; node coverage
+        # is only a candidate/proxy row.
+        best["barnes_hut_force_app"] = exact_barnes_force_rows[0]
     rows: list[dict[str, object]] = []
     for matrix_row in matrix["rows"]:
         app = str(matrix_row["app"])
@@ -591,6 +635,7 @@ def to_markdown(payload: dict[str, object]) -> str:
             "- Database remains a bounded control/fallback row. Graph and the two polygon control rows now have positive bounded v2 evidence after Goal1972 and Goal1969, but their claims stay narrow.",
             "- Hausdorff now has an exact partner-reference row after Goal1975, so the table prefers that semantic match over the faster but weaker fixed-radius threshold proxy.",
             "- Facility KNN now has an exact partner-reference K=3 top-k row after Goal1978, so the table no longer treats service coverage as the best semantic representative for that app.",
+            "- Barnes-Hut now has exact partner-reference force-vector rows after Goal1979, so node coverage stays useful but no longer stands in for force output.",
             "",
             "## Release Boundary",
             "",
