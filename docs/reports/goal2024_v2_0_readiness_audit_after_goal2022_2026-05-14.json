@@ -1,0 +1,50 @@
+{
+  "goal": "Goal2024",
+  "date": "2026-05-14",
+  "status": "release-positioning-audit",
+  "verdict": "accept-with-boundary",
+  "release_authorized": false,
+  "position": "v2.0 release-candidate preparation lane",
+  "current_matrix": "docs/reports/goal2015_current_all_app_v18_v2_perf_analysis_after_goal2009_2026-05-14.json",
+  "matrix_row_count": 16,
+  "classification_counts": {
+    "positive": 7,
+    "positive-bounded": 3,
+    "positive-bounded-exact": 5,
+    "positive-subsecond": 1
+  },
+  "recent_goals": {
+    "Goal2020": {
+      "purpose": "keep polygon AABB extent payload device-resident on the CuPy path",
+      "review": "docs/reviews/goal2021_external_review_goal2020_cupy_extent_device_payload_2026-05-14.md",
+      "review_verdict": "accept"
+    },
+    "Goal2022": {
+      "purpose": "add a generic compressed repeated metric-table continuation pattern for graph analytics",
+      "review": "docs/reviews/goal2023_external_review_goal2022_graph_compressed_metric_pattern_2026-05-14.md",
+      "review_verdict": "accept-with-boundary"
+    }
+  },
+  "allowed_claims": [
+    "Python + RTDL + partner tensor continuation is demonstrated across the current app matrix",
+    "native RTDL engine remains app-agnostic",
+    "current 16-row evidence matrix has no remaining negative row in its measured or bounded contract",
+    "CuPy and Torch are useful continuation partners for reducing, filtering, ranking, grouping, and summarizing generic RTDL outputs"
+  ],
+  "blocked_claims": [
+    "v2.0 release is authorized",
+    "whole-app speedup is authorized for every app",
+    "broad RT-core acceleration is authorized for every workload",
+    "arbitrary PyTorch/CuPy acceleration is proven",
+    "package-install support is proven",
+    "bounded rows can be marketed as broad domain solver claims"
+  ],
+  "next_steps": [
+    "track Goal2023 external review",
+    "produce final v2.0 release matrix after Goal2022",
+    "refresh front-page, tutorial, examples, and claim-boundary docs",
+    "run final pre-release gate",
+    "obtain final 3-AI release consensus",
+    "wait for explicit user release action"
+  ]
+}
