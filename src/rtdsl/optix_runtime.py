@@ -3036,6 +3036,13 @@ def pack_optix_ray_any_hit_2d_device_all_witness_outputs(
     """Validate partner-owned CUDA output columns for bounded all-hit witnesses."""
     ray_packet = pack_optix_ray_any_hit_2d_device_ray_inputs(ray_columns)
     ray_handoffs = ray_packet["rays"]
+    for name in ("ox", "oy", "dx", "dy", "tmax"):
+        dtype = _partner_dtype_token(ray_handoffs[name].dtype)
+        if dtype not in {"float32", "float"}:
+            raise ValueError(
+                "partner device bounded all-witness ray column "
+                f"{name!r} must use dtype float32"
+            )
     ray_count = int(ray_packet["metadata"]["ray_count"])
     expected_device = (ray_handoffs["ids"].device_type, ray_handoffs["ids"].device_id)
     witness_ray_handoff = _partner.prepare_direct_device_pointer_handoff(witness_ray_ids, access="write")

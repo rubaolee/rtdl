@@ -1,0 +1,86 @@
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      0.9103678837418556,
+      0.025320738554000854,
+      0.0241222083568573,
+      0.02389059215784073,
+      0.031422972679138184
+    ],
+    "query_summary": {
+      "max_s": 0.9103678837418556,
+      "median_s": 0.025320738554000854,
+      "min_s": 0.02389059215784073
+    },
+    "row_count": 2048
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "whole_app_true_zero_copy_authorized": false
+  },
+  "count": 2048,
+  "git_commit": "49bf5ee5-plus-goal2000-exact-filter",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "iterations": 5,
+  "output_capacity": 4194304,
+  "parity": {
+    "expected_row_count": 2048,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.008244402706623077,
+      "overflow_check": {
+        "elapsed_s": 0.06859918497502804,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 1024
+      },
+      "query_median_ratio_vs_v1_8_native": 1.8698917049091186,
+      "query_samples_s": [
+        0.047816092148423195,
+        0.047347038984298706,
+        0.06546067632734776,
+        0.04572160169482231,
+        0.044064586982131004
+      ],
+      "query_summary": {
+        "max_s": 0.06546067632734776,
+        "median_s": 0.047347038984298706,
+        "min_s": 0.044064586982131004
+      },
+      "row_count": 2048
+    },
+    "torch": {
+      "column_build_s": 0.024520594626665115,
+      "overflow_check": {
+        "elapsed_s": 0.00994890183210373,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 1024
+      },
+      "query_median_ratio_vs_v1_8_native": 2.046752795063222,
+      "query_samples_s": [
+        0.05453797988593578,
+        0.04545692168176174,
+        0.05235193111002445,
+        0.04490566439926624,
+        0.05182529240846634
+      ],
+      "query_summary": {
+        "max_s": 0.05453797988593578,
+        "median_s": 0.05182529240846634,
+        "min_s": 0.04490566439926624
+      },
+      "row_count": 2048
+    }
+  },
+  "source_commit_label": "49bf5ee5-plus-goal2000-exact-filter",
+  "status": "pass"
+}

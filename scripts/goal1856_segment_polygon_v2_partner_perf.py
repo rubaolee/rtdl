@@ -62,11 +62,11 @@ def _build_partner_columns(segments, polygons, partner: str):
     t0 = time.perf_counter()
     ray_columns = {
         "ids": runtime["tensor"]([segment.id for segment in segments], runtime["uint32"]),
-        "ox": runtime["tensor"]([segment.x0 for segment in segments], runtime["float64"]),
-        "oy": runtime["tensor"]([segment.y0 for segment in segments], runtime["float64"]),
-        "dx": runtime["tensor"]([segment.x1 - segment.x0 for segment in segments], runtime["float64"]),
-        "dy": runtime["tensor"]([segment.y1 - segment.y0 for segment in segments], runtime["float64"]),
-        "tmax": runtime["tensor"]([1.0 for _ in segments], runtime["float64"]),
+        "ox": runtime["tensor"]([segment.x0 for segment in segments], runtime["float32"]),
+        "oy": runtime["tensor"]([segment.y0 for segment in segments], runtime["float32"]),
+        "dx": runtime["tensor"]([segment.x1 - segment.x0 for segment in segments], runtime["float32"]),
+        "dy": runtime["tensor"]([segment.y1 - segment.y0 for segment in segments], runtime["float32"]),
+        "tmax": runtime["tensor"]([1.0 for _ in segments], runtime["float32"]),
     }
     triangle_ids = []
     x0 = []
@@ -157,6 +157,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--iterations", type=int, default=5)
     parser.add_argument("--partners", default="cupy,torch")
     parser.add_argument(
+        "--output-capacity",
+        type=int,
+        default=None,
+        help="Bounded generic witness candidate capacity; defaults to count*count for exact-filter timing.",
+    )
+    parser.add_argument(
         "--source-commit-label",
         default=None,
         help="Explicit source label for copied-source pod runs that lack .git metadata.",
@@ -174,7 +180,9 @@ def main() -> int:
         raise ValueError("--iterations must be positive")
     partners = tuple(part.strip() for part in args.partners.split(",") if part.strip())
     segments, polygons = _build_records(args.count)
-    output_capacity = args.count * 2
+    output_capacity = int(args.output_capacity) if args.output_capacity is not None else args.count * args.count
+    if output_capacity <= 0:
+        raise ValueError("--output-capacity must be positive")
     expected_rows = tuple({"segment_id": segment.id, "polygon_id": polygon.id} for segment, polygon in zip(segments, polygons))
     expected_canonical = _canonical_rows(expected_rows)
     print(f"[setup] count={args.count} output_capacity={output_capacity}", flush=True)
@@ -265,6 +273,7 @@ def main() -> int:
         "claim_boundary": {
             "same_contract_timing_row": True,
             "v2_0_release_authorized": False,
+            "whole_app_true_zero_copy_authorized": False,
             "whole_app_speedup_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,
             "package_install_claim_authorized": False,

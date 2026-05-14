@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from .reference import Polygon as _CanonicalPolygon
+from .reference import Ray2D as _CanonicalRay2D
 from .reference import Segment as _CanonicalSegment
+from .reference import Triangle as _CanonicalTriangle
+from .reference import _finite_ray_hits_triangle
 from .runtime import _normalize_records
 from . import optix_runtime as _optix
 
@@ -59,6 +62,7 @@ def _partner_module(partner: str):
             "zeros": lambda shape, dtype, device: torch.zeros(shape, dtype=dtype, device=device),
             "sync": torch.cuda.synchronize,
             "to_host": lambda value: [int(item) for item in value.detach().cpu().tolist()],
+            "to_host_float": lambda value: [float(item) for item in value.detach().cpu().tolist()],
             "slice": lambda value, count: value[: int(count)],
             "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
             "greater_equal_uint32": lambda value, threshold: value.to(torch.int64).ge(int(threshold)).to(torch.uint32),
@@ -96,6 +100,7 @@ def _partner_module(partner: str):
             "zeros": lambda shape, dtype, device: cupy.zeros(shape, dtype=dtype),
             "sync": cupy.cuda.runtime.deviceSynchronize,
             "to_host": lambda value: [int(item) for item in cupy.asnumpy(value).tolist()],
+            "to_host_float": lambda value: [float(item) for item in cupy.asnumpy(value).tolist()],
             "slice": lambda value, count: value[: int(count)],
             "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
             "greater_equal_uint32": lambda value, threshold: (value >= int(threshold)).astype(cupy.uint32, copy=False),
@@ -1871,7 +1876,11 @@ def segment_polygon_anyhit_rows_optix_partner(
             "adapter": "segment_polygon_anyhit_rows_optix_partner",
             "partner": partner,
             "app_rows_emitted": 0,
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": False,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
@@ -1908,18 +1917,24 @@ def segment_polygon_anyhit_rows_optix_partner(
     emitted_count = int(metadata["emitted_count"])
     if metadata["overflowed"]:
         raise RuntimeError("partner segment/polygon adapter overflowed; increase output_capacity")
-    ray_ids = runtime["to_host"](witness_ray_ids)[:emitted_count]
-    primitive_ids = runtime["to_host"](witness_primitive_ids)[:emitted_count]
-    rows = tuple(
-        {"segment_id": segment_id, "polygon_id": polygon_id}
-        for segment_id, polygon_id in sorted(set(zip(ray_ids, primitive_ids)))
+    rows = _exact_segment_triangle_rows_from_witness_columns(
+        runtime,
+        rays,
+        triangles,
+        witness_ray_ids,
+        witness_primitive_ids,
+        emitted_count,
     )
     metadata.update(
         {
             "adapter": "segment_polygon_anyhit_rows_optix_partner",
             "partner": runtime["name"],
             "app_rows_emitted": len(rows),
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": False,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
@@ -2024,6 +2039,102 @@ def _segment_polygon_all_witness_columns_optix_partner_columns(
         "emitted_count": emitted_count,
         "metadata": metadata,
     }
+
+
+def _exact_segment_triangle_rows_from_witness_columns(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+) -> tuple[dict[str, int], ...]:
+    emitted_count = int(emitted_count)
+    if emitted_count <= 0:
+        return ()
+
+    def to_host_int(value) -> list[int]:
+        if isinstance(value, (list, tuple)):
+            return [int(item) for item in value]
+        if hasattr(value, "values") and not callable(value.values):
+            return [int(item) for item in value.values]
+        if "to_host" in runtime:
+            return runtime["to_host"](value)
+        if hasattr(value, "tolist"):
+            return [int(item) for item in value.tolist()]
+        return [int(item) for item in value]
+
+    def to_host_float(value) -> list[float]:
+        if isinstance(value, (list, tuple)):
+            return [float(item) for item in value]
+        if hasattr(value, "values") and not callable(value.values):
+            return [float(item) for item in value.values]
+        if "to_host_float" in runtime:
+            return runtime["to_host_float"](value)
+        if "to_host" in runtime:
+            return [float(item) for item in runtime["to_host"](value)]
+        if hasattr(value, "tolist"):
+            return [float(item) for item in value.tolist()]
+        return [float(item) for item in value]
+
+    def slice_values(value, count: int):
+        if "slice" in runtime:
+            return runtime["slice"](value, count)
+        if hasattr(value, "values") and not callable(value.values):
+            return value.values[: int(count)]
+        if hasattr(value, "tolist"):
+            return value.tolist()[: int(count)]
+        return value[: int(count)]
+
+    segment_ids = to_host_int(segment_ray_columns["ids"])
+    ray_ox = to_host_float(segment_ray_columns["ox"])
+    ray_oy = to_host_float(segment_ray_columns["oy"])
+    ray_dx = to_host_float(segment_ray_columns["dx"])
+    ray_dy = to_host_float(segment_ray_columns["dy"])
+    ray_tmax = to_host_float(segment_ray_columns["tmax"])
+    rays_by_id = {
+        int(segment_id): _CanonicalRay2D(
+            int(segment_id),
+            float(ox),
+            float(oy),
+            float(dx),
+            float(dy),
+            float(tmax),
+        )
+        for segment_id, ox, oy, dx, dy, tmax in zip(segment_ids, ray_ox, ray_oy, ray_dx, ray_dy, ray_tmax)
+    }
+
+    triangle_ids = to_host_int(polygon_triangle_columns["ids"])
+    x0 = to_host_float(polygon_triangle_columns["x0"])
+    y0 = to_host_float(polygon_triangle_columns["y0"])
+    x1 = to_host_float(polygon_triangle_columns["x1"])
+    y1 = to_host_float(polygon_triangle_columns["y1"])
+    x2 = to_host_float(polygon_triangle_columns["x2"])
+    y2 = to_host_float(polygon_triangle_columns["y2"])
+    triangles_by_id = {
+        int(triangle_id): _CanonicalTriangle(
+            int(triangle_id),
+            float(ax),
+            float(ay),
+            float(bx),
+            float(by),
+            float(cx),
+            float(cy),
+        )
+        for triangle_id, ax, ay, bx, by, cx, cy in zip(triangle_ids, x0, y0, x1, y1, x2, y2)
+    }
+
+    candidate_ray_ids = to_host_int(slice_values(witness_ray_ids, emitted_count))
+    candidate_primitive_ids = to_host_int(slice_values(witness_primitive_ids, emitted_count))
+    exact_pairs: set[tuple[int, int]] = set()
+    for ray_id, primitive_id in zip(candidate_ray_ids, candidate_primitive_ids):
+        ray = rays_by_id.get(int(ray_id))
+        triangle = triangles_by_id.get(int(primitive_id))
+        if ray is None or triangle is None:
+            continue
+        if _finite_ray_hits_triangle(ray, triangle):
+            exact_pairs.add((int(ray_id), int(primitive_id)))
+    return tuple({"segment_id": segment_id, "polygon_id": polygon_id} for segment_id, polygon_id in sorted(exact_pairs))
 
 
 def prepare_segment_polygon_anyhit_optix_partner_device_scene(
@@ -2263,11 +2374,13 @@ def segment_polygon_anyhit_rows_optix_partner_columns(
     metadata = dict(witness_result["metadata"])
     witness_ray_ids = witness_result["witness_ray_ids"]
     witness_primitive_ids = witness_result["witness_primitive_ids"]
-    ray_ids = runtime["to_host"](witness_ray_ids)[:emitted_count]
-    primitive_ids = runtime["to_host"](witness_primitive_ids)[:emitted_count]
-    rows = tuple(
-        {"segment_id": segment_id, "polygon_id": polygon_id}
-        for segment_id, polygon_id in sorted(set(zip(ray_ids, primitive_ids)))
+    rows = _exact_segment_triangle_rows_from_witness_columns(
+        runtime,
+        segment_ray_columns,
+        polygon_triangle_columns,
+        witness_ray_ids,
+        witness_primitive_ids,
+        emitted_count,
     )
     metadata.update(
         {
@@ -2275,7 +2388,11 @@ def segment_polygon_anyhit_rows_optix_partner_columns(
             "partner": runtime["name"],
             "app_rows_emitted": len(rows),
             "input_contract": "caller_supplied_partner_device_columns",
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": False,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
@@ -2383,14 +2500,29 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
     runtime = witness_result["runtime"]
     emitted_count = witness_result["emitted_count"]
     metadata = dict(witness_result["metadata"])
-    witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
-    witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
-    hit_counts = _count_unique_pairs_for_runtime(
+    exact_rows = _exact_segment_triangle_rows_from_witness_columns(
         runtime,
-        segment_ray_columns["ids"],
-        witness_ray_ids,
-        witness_primitive_ids,
+        segment_ray_columns,
+        polygon_triangle_columns,
+        witness_result["witness_ray_ids"],
+        witness_result["witness_primitive_ids"],
+        emitted_count,
     )
+    ids_column = segment_ray_columns["ids"]
+    if "to_host" in runtime:
+        segment_ids = runtime["to_host"](ids_column)
+    elif hasattr(ids_column, "values") and not callable(ids_column.values):
+        segment_ids = [int(item) for item in ids_column.values]
+    elif hasattr(ids_column, "tolist"):
+        segment_ids = [int(item) for item in ids_column.tolist()]
+    else:
+        segment_ids = [int(item) for item in ids_column]
+    counts = {int(segment_id): 0 for segment_id in segment_ids}
+    for row in exact_rows:
+        segment_id = int(row["segment_id"])
+        if segment_id in counts:
+            counts[segment_id] += 1
+    hit_counts = runtime["tensor"]([counts[int(segment_id)] for segment_id in segment_ids], runtime["uint32"], runtime["device"])
     runtime["sync"]()
     columns = {
         "segment_ids": segment_ray_columns["ids"],
@@ -2403,10 +2535,13 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
             "app_columns_emitted": 2,
             "app_rows_emitted": _column_length(segment_ray_columns, "ids"),
             "input_contract": "caller_supplied_partner_device_columns",
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
-            "app_count_materialization": "partner_gpu_from_generic_witness_pairs",
-            "app_count_host_materialization": False,
-            "whole_app_true_zero_copy_authorized": True,
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_count_materialization": "partner_columns_from_host_exact_filter",
+            "app_count_host_materialization": True,
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": False,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
@@ -2486,7 +2621,7 @@ def road_hazard_priority_flags_optix_partner_device_columns(
     This app adapter reuses the generic segment/polygon hit-count partner
     column path, then applies the road-hazard priority threshold with the
     selected partner tensor library. The native engine still sees only generic
-    ray/primitive witness IDs.
+    ray/primitive candidate witness IDs.
     """
     threshold = int(threshold)
     if threshold < 0:
@@ -2521,7 +2656,7 @@ def road_hazard_priority_flags_optix_partner_device_columns(
             "app_priority_materialization": "partner_gpu_threshold_from_hit_counts",
             "app_priority_host_materialization": False,
             "input_contract": "caller_supplied_partner_device_columns",
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }

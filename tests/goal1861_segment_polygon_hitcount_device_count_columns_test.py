@@ -35,6 +35,10 @@ def _fake_count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primit
     return _FakeColumn(counts)
 
 
+def _fake_tensor(values, dtype, device):
+    return _FakeColumn(values)
+
+
 class Goal1861SegmentPolygonHitcountDeviceCountColumnsTest(unittest.TestCase):
     def test_adapter_is_exported_and_documents_partner_gpu_materialization(self) -> None:
         adapter_source = ADAPTER.read_text(encoding="utf-8")
@@ -43,24 +47,44 @@ class Goal1861SegmentPolygonHitcountDeviceCountColumnsTest(unittest.TestCase):
         self.assertIsNotNone(rt.segment_polygon_hitcount_optix_partner_device_count_columns)
         self.assertIn("segment_polygon_hitcount_optix_partner_device_count_columns", adapter_source)
         self.assertIn("segment_polygon_hitcount_optix_partner_device_count_columns", init_source)
-        self.assertIn("partner_gpu_from_generic_witness_pairs", adapter_source)
+        self.assertIn("partner_columns_from_host_exact_filter", adapter_source)
         self.assertIn("app_count_host_materialization", adapter_source)
 
     def test_adapter_keeps_counts_in_partner_columns(self) -> None:
         runtime = {
             "name": "fake",
+            "device": "cuda:0",
+            "uint32": "uint32",
+            "tensor": _fake_tensor,
+            "to_host": lambda value: [int(item) for item in value.values],
             "slice": lambda value, count: value[:count],
             "sync": lambda: None,
             "count_unique_pairs_by_ids": _fake_count_unique_pairs_by_ids,
         }
-        segment_ray_columns = {"ids": _FakeColumn([101, 102, 103])}
+        segment_ray_columns = {
+            "ids": _FakeColumn([101, 102, 103]),
+            "ox": _FakeColumn([-0.25, -0.25, 2.0]),
+            "oy": _FakeColumn([0.25, 0.25, 2.0]),
+            "dx": _FakeColumn([1.5, 1.5, 1.0]),
+            "dy": _FakeColumn([0.0, 0.0, 0.0]),
+            "tmax": _FakeColumn([1.0, 1.0, 1.0]),
+        }
+        polygon_triangle_columns = {
+            "ids": _FakeColumn([11, 12]),
+            "x0": _FakeColumn([0.0, 0.25]),
+            "y0": _FakeColumn([0.0, 0.20]),
+            "x1": _FakeColumn([1.0, 0.75]),
+            "y1": _FakeColumn([0.0, 0.20]),
+            "x2": _FakeColumn([0.0, 0.25]),
+            "y2": _FakeColumn([1.0, 0.80]),
+        }
         witness_result = {
             "runtime": runtime,
             "witness_ray_ids": _FakeColumn([101, 101, 101, 102]),
             "witness_primitive_ids": _FakeColumn([11, 12, 12, 12]),
             "emitted_count": 4,
             "metadata": {
-                "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+                "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
                 "true_zero_copy_authorized": True,
                 "v2_0_release_authorized": False,
                 "whole_app_speedup_claim_authorized": False,
@@ -74,7 +98,7 @@ class Goal1861SegmentPolygonHitcountDeviceCountColumnsTest(unittest.TestCase):
         ):
             result = rt.segment_polygon_hitcount_optix_partner_device_count_columns(
                 segment_ray_columns,
-                {"ids": _FakeColumn([11, 12])},
+                polygon_triangle_columns,
                 _FakeColumn([]),
                 partner="torch",
                 return_metadata=True,
@@ -84,17 +108,17 @@ class Goal1861SegmentPolygonHitcountDeviceCountColumnsTest(unittest.TestCase):
         self.assertEqual(result["columns"]["hit_counts"].values, [2, 1, 0])
         metadata = result["metadata"]
         self.assertEqual(metadata["adapter"], "segment_polygon_hitcount_optix_partner_device_count_columns")
-        self.assertEqual(metadata["app_count_materialization"], "partner_gpu_from_generic_witness_pairs")
-        self.assertFalse(metadata["app_count_host_materialization"])
-        self.assertTrue(metadata["whole_app_true_zero_copy_authorized"])
+        self.assertEqual(metadata["app_count_materialization"], "partner_columns_from_host_exact_filter")
+        self.assertTrue(metadata["app_count_host_materialization"])
+        self.assertFalse(metadata["whole_app_true_zero_copy_authorized"])
         self.assertFalse(metadata["v2_0_release_authorized"])
 
     def test_report_keeps_release_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
         artifact = json.loads(ARTIFACT.read_text(encoding="utf-8"))
         self.assertIn("Status: pass-with-boundary", report)
-        self.assertIn("partner GPU tensor operations", report)
-        self.assertIn("whole_app_true_zero_copy_authorized: true", report)
+        self.assertIn("candidate witness IDs", report)
+        self.assertIn("whole_app_true_zero_copy_authorized: false", report)
         self.assertIn("v2_0_release_authorized: false", report)
         self.assertEqual(artifact["status"], "pass")
         self.assertIn("NVIDIA RTX A4500", artifact["gpu"])
@@ -105,9 +129,10 @@ class Goal1861SegmentPolygonHitcountDeviceCountColumnsTest(unittest.TestCase):
                 self.assertEqual(result["columns"]["hit_counts"], [2, 2, 0])
                 metadata = result["metadata"]
                 self.assertEqual(metadata["adapter"], "segment_polygon_hitcount_optix_partner_device_count_columns")
-                self.assertEqual(metadata["app_count_materialization"], "partner_gpu_from_generic_witness_pairs")
-                self.assertFalse(metadata["app_count_host_materialization"])
-                self.assertTrue(metadata["whole_app_true_zero_copy_authorized"])
+                self.assertIn(metadata["app_count_materialization"], {
+                    "partner_gpu_from_generic_witness_pairs",
+                    "partner_columns_from_host_exact_filter",
+                })
                 self.assertFalse(metadata["v2_0_release_authorized"])
 
 

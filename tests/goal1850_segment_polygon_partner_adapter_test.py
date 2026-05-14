@@ -69,7 +69,7 @@ class Goal1850SegmentPolygonPartnerAdapterTest(unittest.TestCase):
         self.assertIn("whole_app_speedup_claim_authorized", adapter_source)
         self.assertIn("v2_0_release_authorized", adapter_source)
         self.assertIn('ids.append(_require_uint32_id(polygon.id, "polygon"))', adapter_source)
-        self.assertIn("sorted(set(zip(ray_ids, primitive_ids)))", adapter_source)
+        self.assertIn("_exact_segment_triangle_rows_from_witness_columns", adapter_source)
         self.assertIn("segment_polygon_anyhit_rows_optix_partner", init_source)
         self.assertIn("segment_polygon_anyhit_rows_optix_partner_columns", init_source)
 
@@ -104,7 +104,11 @@ class Goal1850SegmentPolygonPartnerAdapterTest(unittest.TestCase):
         )
         self.assertTrue(scene.closed)
         self.assertEqual(result["metadata"]["adapter"], "segment_polygon_anyhit_rows_optix_partner")
-        self.assertEqual(result["metadata"]["native_engine_row_contract"], "generic_ray_primitive_witness_pairs")
+        self.assertEqual(result["metadata"]["native_engine_row_contract"], "generic_ray_primitive_candidate_witness_pairs")
+        self.assertEqual(
+            result["metadata"]["app_exact_filter"],
+            "host_segment_triangle_filter_from_generic_witness_candidates",
+        )
         self.assertFalse(result["metadata"]["v2_0_release_authorized"])
         self.assertFalse(result["metadata"]["whole_app_speedup_claim_authorized"])
 

@@ -40,7 +40,7 @@ class Goal1865RoadHazardPartnerPriorityFlagsTest(unittest.TestCase):
         self.assertIsNotNone(rt.road_hazard_priority_flags_optix_partner_device_columns)
         self.assertIn("road_hazard_priority_flags_optix_partner_device_columns", adapter_source)
         self.assertIn("partner_gpu_threshold_from_hit_counts", adapter_source)
-        self.assertIn("generic_ray_primitive_witness_pairs", adapter_source)
+        self.assertIn("generic_ray_primitive_candidate_witness_pairs", adapter_source)
         self.assertIn("road_hazard_priority_flags_optix_partner_device_columns", init_source)
 
     def test_adapter_thresholds_hit_counts_in_partner_columns(self) -> None:
@@ -51,11 +51,11 @@ class Goal1865RoadHazardPartnerPriorityFlagsTest(unittest.TestCase):
             },
             "metadata": {
                 "adapter": "segment_polygon_hitcount_optix_partner_device_count_columns",
-                "app_count_materialization": "partner_gpu_from_generic_witness_pairs",
-                "app_count_host_materialization": False,
+                "app_count_materialization": "partner_columns_from_host_exact_filter",
+                "app_count_host_materialization": True,
                 "input_contract": "caller_supplied_partner_device_columns",
-                "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
-                "whole_app_true_zero_copy_authorized": True,
+                "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+                "whole_app_true_zero_copy_authorized": False,
                 "v2_0_release_authorized": False,
                 "whole_app_speedup_claim_authorized": False,
             },
@@ -86,7 +86,7 @@ class Goal1865RoadHazardPartnerPriorityFlagsTest(unittest.TestCase):
         self.assertEqual(metadata["adapter"], "road_hazard_priority_flags_optix_partner_device_columns")
         self.assertEqual(metadata["app"], "road_hazard_screening")
         self.assertEqual(metadata["priority_threshold"], 2)
-        self.assertEqual(metadata["app_count_materialization"], "partner_gpu_from_generic_witness_pairs")
+        self.assertEqual(metadata["app_count_materialization"], "partner_columns_from_host_exact_filter")
         self.assertEqual(metadata["app_priority_materialization"], "partner_gpu_threshold_from_hit_counts")
         self.assertFalse(metadata["app_priority_host_materialization"])
         self.assertFalse(metadata["v2_0_release_authorized"])
@@ -100,11 +100,11 @@ class Goal1865RoadHazardPartnerPriorityFlagsTest(unittest.TestCase):
             },
             "metadata": {
                 "adapter": "segment_polygon_hitcount_optix_partner_device_count_columns",
-                "app_count_materialization": "partner_gpu_from_generic_witness_pairs",
-                "app_count_host_materialization": False,
+                "app_count_materialization": "partner_columns_from_host_exact_filter",
+                "app_count_host_materialization": True,
                 "input_contract": "caller_supplied_partner_device_columns",
-                "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
-                "whole_app_true_zero_copy_authorized": True,
+                "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+                "whole_app_true_zero_copy_authorized": False,
                 "v2_0_release_authorized": False,
                 "whole_app_speedup_claim_authorized": False,
             },
@@ -132,7 +132,7 @@ class Goal1865RoadHazardPartnerPriorityFlagsTest(unittest.TestCase):
         self.assertEqual(columns["priority_flags"].shape, columns["road_ids"].shape)
 
         metadata = result["metadata"]
-        self.assertEqual(metadata["native_engine_row_contract"], "generic_ray_primitive_witness_pairs")
+        self.assertEqual(metadata["native_engine_row_contract"], "generic_ray_primitive_candidate_witness_pairs")
         self.assertEqual(metadata["app_priority_materialization"], "partner_gpu_threshold_from_hit_counts")
         self.assertFalse(metadata["app_priority_host_materialization"])
         self.assertFalse(metadata["v2_0_release_authorized"])
@@ -152,7 +152,7 @@ class Goal1865RoadHazardPartnerPriorityFlagsTest(unittest.TestCase):
 
         self.assertIn("Status: pass-with-boundary", report)
         self.assertIn("road_hazard_priority_flags_optix_partner_device_columns", report)
-        self.assertIn("native_engine_row_contract: generic_ray_primitive_witness_pairs", report)
+        self.assertIn("native_engine_row_contract: generic_ray_primitive_candidate_witness_pairs", report)
         self.assertIn("v2_0_release_authorized: false", report)
         self.assertIn("whole_app_speedup_claim_authorized: false", report)
         self.assertIn("No pod timing was run", report)

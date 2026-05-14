@@ -18,9 +18,9 @@ library. It returns partner-owned columns:
 - `hit_counts`
 - `priority_flags`
 
-The native engine still sees only the generic ray/primitive witness contract.
-No road, hazard, segment, polygon, or priority semantic is added to the native
-OptiX ABI.
+The native engine still sees only the generic ray/primitive candidate-witness
+contract. No road, hazard, segment, polygon, or priority semantic is added to
+the native OptiX ABI.
 
 ## Contract
 
@@ -29,10 +29,11 @@ The intended metadata boundary is:
 - `adapter: road_hazard_priority_flags_optix_partner_device_columns`
 - `app: road_hazard_screening`
 - `input_contract: caller_supplied_partner_device_columns`
-- `native_engine_row_contract: generic_ray_primitive_witness_pairs`
-- `app_count_materialization: partner_gpu_from_generic_witness_pairs`
+- `native_engine_row_contract: generic_ray_primitive_candidate_witness_pairs`
+- `app_count_materialization: partner_columns_from_host_exact_filter`
 - `app_priority_materialization: partner_gpu_threshold_from_hit_counts`
 - `app_priority_host_materialization: false`
+- `whole_app_true_zero_copy_authorized: false`
 - `v2_0_release_authorized: false`
 - `whole_app_speedup_claim_authorized: false`
 
@@ -43,7 +44,10 @@ through the partner count-column path grows v2.0 app coverage without inventing 
 new native primitive and without reopening the generic engine boundary.
 
 This does not finish the app matrix. It proves that one more public app can be
-expressed as Python+partner orchestration over the generic witness/count slice.
+expressed as Python+partner orchestration over the generic candidate-witness
+slice. Goal2000 supersedes the older stronger zero-copy wording: exact
+segment/polygon hit-count semantics currently require an app-side exact filter
+before the priority threshold can run in partner columns.
 
 ## Boundary
 
