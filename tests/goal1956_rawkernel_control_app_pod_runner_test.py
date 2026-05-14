@@ -8,6 +8,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "goal1956_rawkernel_control_app_pod_runner.sh"
 REPORT = ROOT / "docs" / "reports" / "goal1956_l4_rawkernel_control_app_partial_no_optix_2026-05-14.md"
 SUMMARY = ROOT / "docs" / "reports" / "goal1956_rawkernel_control_app_pod_no_optix" / "summary.json"
+OPTIX_REPORT = ROOT / "docs" / "reports" / "goal1956_l4_rawkernel_control_app_optix_v800_pod_2026-05-14.md"
+OPTIX_SUMMARY = ROOT / "docs" / "reports" / "goal1956_rawkernel_control_app_pod_optix_v800" / "summary.json"
 
 
 class Goal1956RawKernelControlAppPodRunnerTest(unittest.TestCase):
@@ -55,6 +57,15 @@ class Goal1956RawKernelControlAppPodRunnerTest(unittest.TestCase):
         self.assertIn("cpu_all_pairs", text)
         self.assertIn("does not authorize", text)
         self.assertTrue(SUMMARY.exists())
+
+    def test_optix_v800_pod_report_documents_mixed_performance(self) -> None:
+        text = OPTIX_REPORT.read_text(encoding="utf-8")
+
+        self.assertIn("pass-with-mixed-performance", text)
+        self.assertIn("optix-sdk-v8.0.0", text)
+        self.assertIn("polygon rows remain negative", text)
+        self.assertIn("does not authorize", text)
+        self.assertTrue(OPTIX_SUMMARY.exists())
 
 
 if __name__ == "__main__":
