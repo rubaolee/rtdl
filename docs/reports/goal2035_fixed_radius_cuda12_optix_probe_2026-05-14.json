@@ -1,0 +1,56 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "fixed_radius_family_true_zero_copy_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal2035",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "status": "development-evidence-not-release-authorization",
+  "toolchain_repair": {
+    "build_command": "make build-optix CUDA_PREFIX=/usr/local/cuda-12",
+    "linked_nvrtc": "libnvrtc.so.12",
+    "ptx_compiler": "nvcc",
+    "rtdl_nvcc": "/usr/local/cuda-12/bin/nvcc",
+    "rtdl_nvcc_ccbin": "/usr/bin/g++",
+    "rtdl_optix_ptx_arch": "compute_86"
+  },
+  "small_probe": {
+    "app": "facility_knn_assignment",
+    "query_count": 256,
+    "search_count": 1024,
+    "v1_8_prepared_optix_median_s": 0.0010057538747787476,
+    "v2_prepared_native_optix_partner_median_s": 0.0005373619496822357,
+    "v2_vs_v1_8_prepared_ratio": 0.5342877250166679,
+    "parity": {
+      "counts_match": true,
+      "summary_match": true
+    }
+  },
+  "large_probe": {
+    "query_count": 8192,
+    "search_count": 32768,
+    "repeat": 3,
+    "status": "pass",
+    "ratios": {
+      "facility_knn_assignment": 0.01779721669113186,
+      "hausdorff_distance_forward": 0.013554102463426485,
+      "hausdorff_distance_reverse": 0.0046240962762120474,
+      "ann_candidate_search": 0.027291526766873887,
+      "outlier_detection": 0.012889285069799269,
+      "dbscan_clustering": 0.01693515131522845,
+      "barnes_hut_force_app": 0.01939065405393273
+    },
+    "all_rows_passed_parity": true
+  },
+  "artifacts": {
+    "directory": "docs/reports/goal2035_fixed_radius_cuda12_probe",
+    "build_override_log": "build_optix_cuda12_override.log",
+    "large_probe_json": "fixed_radius_cuda12_large_probe.json",
+    "large_probe_log": "fixed_radius_cuda12_large_probe.log",
+    "small_probe_json": "fixed_radius_cuda12_nvcc_gpp_probe.json",
+    "small_probe_log": "fixed_radius_cuda12_nvcc_gpp_probe.log"
+  }
+}

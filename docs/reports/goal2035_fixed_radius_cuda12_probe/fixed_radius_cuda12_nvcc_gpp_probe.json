@@ -1,0 +1,48 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "fixed_radius_family_true_zero_copy_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "git_commit": "1ab52667_cuda12_fixed_radius_nvcc_gpp_probe",
+  "goal": "Goal1925",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "results": [
+    {
+      "app": "facility_knn_assignment",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 192,
+          "threshold_reached_count": 64
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.0010057538747787476,
+          "median_s": 0.0010057538747787476,
+          "min_s": 0.0010057538747787476
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0005373619496822357,
+          "median_s": 0.0005373619496822357,
+          "min_s": 0.0005373619496822357
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.5342877250166679
+      },
+      "partner": "cupy",
+      "query_count": 256,
+      "radius": 1.1,
+      "result_kind": "coverage_threshold_decision",
+      "search_count": 1024,
+      "status": "pass",
+      "threshold": 1
+    }
+  ],
+  "source_commit_label": "1ab52667_cuda12_fixed_radius_nvcc_gpp_probe",
+  "status": "pass"
+}
