@@ -64,6 +64,7 @@ TEST_MODULES = (
     "tests.goal1954_gemini_review_goal1953_rawkernel_control_apps_test",
     "tests.goal1955_rawkernel_control_app_perf_test",
     "tests.goal1956_rawkernel_control_app_pod_runner_test",
+    "tests.goal1957_partner_identity_payload_contract_test",
 )
 
 

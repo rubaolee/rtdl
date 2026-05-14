@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import json
 import math
 from pathlib import Path
@@ -140,8 +141,73 @@ void rtdl_user_polygon_pair_summary(
 }
 """
 
+POLYGON_EXTENT_RAWKERNEL_SOURCE = r"""
+extern "C" __global__
+void rtdl_user_pair_extent_summary(
+    const int pair_count,
+    const int* left_index,
+    const int* right_index,
+    const int* left_min_x,
+    const int* left_min_y,
+    const int* left_max_x,
+    const int* left_max_y,
+    const int* left_area,
+    const int* right_min_x,
+    const int* right_min_y,
+    const int* right_max_x,
+    const int* right_max_y,
+    const int* right_area,
+    int* overlap_pair_count,
+    int* total_intersection_area,
+    int* total_union_area,
+    int* set_intersection_area
+) {
+    int pair = blockDim.x * blockIdx.x + threadIdx.x;
+    if (pair >= pair_count) {
+        return;
+    }
+    int li = left_index[pair];
+    int ri = right_index[pair];
+    int ix0 = max(left_min_x[li], right_min_x[ri]);
+    int iy0 = max(left_min_y[li], right_min_y[ri]);
+    int ix1 = min(left_max_x[li], right_max_x[ri]);
+    int iy1 = min(left_max_y[li], right_max_y[ri]);
+    int width = max(0, ix1 - ix0);
+    int height = max(0, iy1 - iy0);
+    int intersection_area = width * height;
+    if (intersection_area > 0) {
+        atomicAdd(overlap_pair_count, 1);
+        atomicAdd(total_intersection_area, intersection_area);
+        atomicAdd(total_union_area, left_area[li] + right_area[ri] - intersection_area);
+        atomicAdd(set_intersection_area, intersection_area);
+    }
+}
+"""
+
 
 REGION_ORDER = ("central", "east", "south", "west")
+
+
+@dataclass(frozen=True)
+class PartnerPairPayloadTable:
+    """Compact identity-preserving table handed from RTDL discovery to partner code."""
+
+    left_index: np.ndarray
+    right_index: np.ndarray
+    left_min_x: np.ndarray
+    left_min_y: np.ndarray
+    left_max_x: np.ndarray
+    left_max_y: np.ndarray
+    left_area: np.ndarray
+    right_min_x: np.ndarray
+    right_min_y: np.ndarray
+    right_max_x: np.ndarray
+    right_max_y: np.ndarray
+    right_area: np.ndarray
+
+    @property
+    def pair_count(self) -> int:
+        return int(len(self.left_index))
 
 
 def _load_cupy():
@@ -446,6 +512,57 @@ def _candidate_indices(
     )
 
 
+def _axis_aligned_extent_columns(polygons: tuple[Any, ...]) -> dict[str, np.ndarray]:
+    min_x: list[int] = []
+    min_y: list[int] = []
+    max_x: list[int] = []
+    max_y: list[int] = []
+    area: list[int] = []
+    for polygon in polygons:
+        xs = [float(x) for x, _y in polygon.vertices]
+        ys = [float(y) for _x, y in polygon.vertices]
+        x0 = int(min(xs))
+        y0 = int(min(ys))
+        x1 = int(max(xs))
+        y1 = int(max(ys))
+        min_x.append(x0)
+        min_y.append(y0)
+        max_x.append(x1)
+        max_y.append(y1)
+        area.append(max(0, x1 - x0) * max(0, y1 - y0))
+    return {
+        "min_x": np.asarray(min_x, dtype=np.int32),
+        "min_y": np.asarray(min_y, dtype=np.int32),
+        "max_x": np.asarray(max_x, dtype=np.int32),
+        "max_y": np.asarray(max_y, dtype=np.int32),
+        "area": np.asarray(area, dtype=np.int32),
+    }
+
+
+def _partner_pair_payload_table(
+    left: tuple[Any, ...],
+    right: tuple[Any, ...],
+    candidate_pairs: set[tuple[int, int]],
+) -> PartnerPairPayloadTable:
+    left_indices, right_indices = _candidate_indices(left, right, candidate_pairs)
+    left_columns = _axis_aligned_extent_columns(left)
+    right_columns = _axis_aligned_extent_columns(right)
+    return PartnerPairPayloadTable(
+        left_index=left_indices,
+        right_index=right_indices,
+        left_min_x=left_columns["min_x"],
+        left_min_y=left_columns["min_y"],
+        left_max_x=left_columns["max_x"],
+        left_max_y=left_columns["max_y"],
+        left_area=left_columns["area"],
+        right_min_x=right_columns["min_x"],
+        right_min_y=right_columns["min_y"],
+        right_max_x=right_columns["max_x"],
+        right_max_y=right_columns["max_y"],
+        right_area=right_columns["area"],
+    )
+
+
 def _polygon_pair_cpu_summary(
     left_masks: np.ndarray,
     right_masks: np.ndarray,
@@ -473,6 +590,72 @@ def _polygon_pair_cpu_summary(
         "total_intersection_area": total_intersection_area,
         "total_union_area": total_union_area,
         "set_intersection_area": set_intersection_area,
+    }
+
+
+def _pair_extent_cpu_summary(table: PartnerPairPayloadTable) -> dict[str, int]:
+    overlap_pair_count = 0
+    total_intersection_area = 0
+    total_union_area = 0
+    set_intersection_area = 0
+    for li, ri in zip(table.left_index, table.right_index):
+        left_i = int(li)
+        right_i = int(ri)
+        width = max(0, min(int(table.left_max_x[left_i]), int(table.right_max_x[right_i])) - max(int(table.left_min_x[left_i]), int(table.right_min_x[right_i])))
+        height = max(0, min(int(table.left_max_y[left_i]), int(table.right_max_y[right_i])) - max(int(table.left_min_y[left_i]), int(table.right_min_y[right_i])))
+        intersection_area = width * height
+        if intersection_area <= 0:
+            continue
+        overlap_pair_count += 1
+        total_intersection_area += intersection_area
+        total_union_area += int(table.left_area[left_i]) + int(table.right_area[right_i]) - intersection_area
+        set_intersection_area += intersection_area
+    return {
+        "overlap_pair_count": overlap_pair_count,
+        "total_intersection_area": total_intersection_area,
+        "total_union_area": total_union_area,
+        "set_intersection_area": set_intersection_area,
+    }
+
+
+def _pair_extent_cupy_summary(table: PartnerPairPayloadTable) -> dict[str, int]:
+    cp = _load_cupy()
+    pair_count = table.pair_count
+    kernel = cp.RawKernel(POLYGON_EXTENT_RAWKERNEL_SOURCE, "rtdl_user_pair_extent_summary")
+    overlap_pair_count = cp.zeros(1, dtype=cp.int32)
+    total_intersection_area = cp.zeros(1, dtype=cp.int32)
+    total_union_area = cp.zeros(1, dtype=cp.int32)
+    set_intersection_area = cp.zeros(1, dtype=cp.int32)
+    grid, block = _blocks(pair_count)
+    kernel(
+        grid,
+        block,
+        (
+            np.int32(pair_count),
+            cp.asarray(table.left_index),
+            cp.asarray(table.right_index),
+            cp.asarray(table.left_min_x),
+            cp.asarray(table.left_min_y),
+            cp.asarray(table.left_max_x),
+            cp.asarray(table.left_max_y),
+            cp.asarray(table.left_area),
+            cp.asarray(table.right_min_x),
+            cp.asarray(table.right_min_y),
+            cp.asarray(table.right_max_x),
+            cp.asarray(table.right_max_y),
+            cp.asarray(table.right_area),
+            overlap_pair_count,
+            total_intersection_area,
+            total_union_area,
+            set_intersection_area,
+        ),
+    )
+    cp.cuda.Stream.null.synchronize()
+    return {
+        "overlap_pair_count": int(cp.asnumpy(overlap_pair_count)[0]),
+        "total_intersection_area": int(cp.asnumpy(total_intersection_area)[0]),
+        "total_union_area": int(cp.asnumpy(total_union_area)[0]),
+        "set_intersection_area": int(cp.asnumpy(set_intersection_area)[0]),
     }
 
 
@@ -539,21 +722,13 @@ def _polygon_summary_inputs(app: str, copies: int, candidate_backend: str) -> di
             for left_polygon in left
             for right_polygon in right
         }
-    left_cells, all_left_cells = _polygon_cells(left)
-    right_cells, all_right_cells = _polygon_cells(right)
-    del left_cells, right_cells
-    all_cells = sorted(set(all_left_cells) | set(all_right_cells))
-    left_masks = _polygon_masks(left, all_cells)
-    right_masks = _polygon_masks(right, all_cells)
-    left_indices, right_indices = _candidate_indices(left, right, candidate_pairs)
+    pair_payload_table = _partner_pair_payload_table(left, right, candidate_pairs)
     return {
         "case": case,
         "candidate_pairs": candidate_pairs,
-        "left_masks": left_masks,
-        "right_masks": right_masks,
-        "left_indices": left_indices,
-        "right_indices": right_indices,
-        "cell_count": len(all_cells),
+        "pair_payload_table": pair_payload_table,
+        "left_set_area": int(pair_payload_table.left_area.sum()),
+        "right_set_area": int(pair_payload_table.right_area.sum()),
     }
 
 
@@ -568,20 +743,11 @@ def run_polygon_pair_overlap_rawkernel(
     inputs = _polygon_summary_inputs("polygon_pair_overlap_area_rows", copies, candidate_backend)
     input_sec = time.perf_counter() - start
     continuation_start = time.perf_counter()
+    pair_payload_table = inputs["pair_payload_table"]
     summary_with_set = (
-        _polygon_pair_cupy_summary(
-            inputs["left_masks"],
-            inputs["right_masks"],
-            inputs["left_indices"],
-            inputs["right_indices"],
-        )
+        _pair_extent_cupy_summary(pair_payload_table)
         if partner == "cupy"
-        else _polygon_pair_cpu_summary(
-            inputs["left_masks"],
-            inputs["right_masks"],
-            inputs["left_indices"],
-            inputs["right_indices"],
-        )
+        else _pair_extent_cpu_summary(pair_payload_table)
     )
     continuation_sec = time.perf_counter() - continuation_start
     summary = {
@@ -605,11 +771,11 @@ def run_polygon_pair_overlap_rawkernel(
         "candidate_backend": candidate_backend,
         "copies": copies,
         "candidate_pair_count": len(inputs["candidate_pairs"]),
-        "cell_count": inputs["cell_count"],
+        "pair_payload_row_count": pair_payload_table.pair_count,
         "summary": summary,
         "matches_v1_8_python_rtdl_oracle": None if oracle is None else summary == oracle,
         "run_phases": {
-            "candidate_and_mask_construction_sec": input_sec,
+            "candidate_and_payload_construction_sec": input_sec,
             "partner_rawkernel_continuation_sec": continuation_sec,
         },
         "fairness_note": FAIRNESS_NOTE,
@@ -627,24 +793,15 @@ def run_polygon_set_jaccard_rawkernel(
     inputs = _polygon_summary_inputs("polygon_set_jaccard", copies, candidate_backend)
     input_sec = time.perf_counter() - start
     continuation_start = time.perf_counter()
+    pair_payload_table = inputs["pair_payload_table"]
     summary_with_set = (
-        _polygon_pair_cupy_summary(
-            inputs["left_masks"],
-            inputs["right_masks"],
-            inputs["left_indices"],
-            inputs["right_indices"],
-        )
+        _pair_extent_cupy_summary(pair_payload_table)
         if partner == "cupy"
-        else _polygon_pair_cpu_summary(
-            inputs["left_masks"],
-            inputs["right_masks"],
-            inputs["left_indices"],
-            inputs["right_indices"],
-        )
+        else _pair_extent_cpu_summary(pair_payload_table)
     )
     continuation_sec = time.perf_counter() - continuation_start
-    left_area = int(inputs["left_masks"].any(axis=0).sum())
-    right_area = int(inputs["right_masks"].any(axis=0).sum())
+    left_area = int(inputs["left_set_area"])
+    right_area = int(inputs["right_set_area"])
     intersection_area = int(summary_with_set["set_intersection_area"])
     union_area = left_area + right_area - intersection_area
     summary = {
@@ -676,11 +833,11 @@ def run_polygon_set_jaccard_rawkernel(
         "candidate_backend": candidate_backend,
         "copies": copies,
         "candidate_pair_count": len(inputs["candidate_pairs"]),
-        "cell_count": inputs["cell_count"],
+        "pair_payload_row_count": pair_payload_table.pair_count,
         "summary": summary,
         "matches_v1_8_python_rtdl_oracle": matches,
         "run_phases": {
-            "candidate_and_mask_construction_sec": input_sec,
+            "candidate_and_payload_construction_sec": input_sec,
             "partner_rawkernel_continuation_sec": continuation_sec,
         },
         "fairness_note": FAIRNESS_NOTE,
