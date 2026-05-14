@@ -32,8 +32,8 @@ all-app matrix. The remaining question is quality of the v2 path.
 | `road_hazard_screening` | positive | v2/v1.8 `0.247x` | Smaller row counts are overhead-sensitive; improve batching/reuse before marketing broad speedups. |
 | `segment_polygon_hitcount` | positive | v2/v1.8 `0.345x` | Healthy compact count row; avoid host witness materialization. |
 | `segment_polygon_anyhit_rows` | positive row output | v2/v1.8 `0.222x` | Row materialization remains heavier than compact counts; needs device-resident row paging/compaction for larger arbitrary outputs. |
-| `polygon_pair_overlap_area_rows` | positive bounded extent row | v2/v1.8 `0.292x` | Goal1969 fixed the candidate-table bottleneck with CuPy extent columns; still bounded to the authored axis-aligned control app. |
-| `polygon_set_jaccard` | positive bounded extent row | v2/v1.8 `0.281x` | Goal1969 makes this a clear speedup for the authored extent case; arbitrary polygon/set overlay remains a future broader contract. |
+| `polygon_pair_overlap_area_rows` | positive bounded AABB extent row | v2/v1.8 `0.292x` | Goal1969 fixed the candidate-table bottleneck; Goals1993-1994 replace the app-local extent RawKernel and handoff with reusable AABB pair-payload and overlap-summary partner adapters. Still bounded to axis-aligned extent semantics. |
+| `polygon_set_jaccard` | positive bounded AABB extent row | v2/v1.8 `0.281x` | Goal1969 makes this a clear speedup for the authored extent case; Goals1993-1994 make the continuation generic AABB partner algebra, but arbitrary polygon/set overlay remains a future broader contract. |
 | `hausdorff_distance` | positive bounded exact partner row | v2/CPU exact `0.00824x` | Goal1975 replaces the threshold proxy with exact min-distance then max-distance partner reductions; bounded because it is partner-reference evidence, not an RT-core speedup claim. |
 | `ann_candidate_search` | positive bounded exact quality row | v2/CPU exact `0.01881x` | Goal1983 replaces the coverage proxy as the semantic representative with exact candidate-subset rerank plus exact full-search quality comparison; bounded because it is not an ANN index or recall/latency optimizer. |
 | `outlier_detection` | positive | v2/v1.8 `0.000323x` | Healthy count-threshold shape; avoid returning full neighbor rows. |
@@ -71,13 +71,15 @@ The remaining debt is not one bug. It is four patterns:
    heavier than compact count/flag paths. We should add device-resident
    compaction/paging and grouped reductions before expecting count-like ratios.
 
-4. **Exact polygon/set reductions**
+4. **Exact polygon/set reductions beyond AABB**
 
    Goal1957 proved the bad handoff was the problem and brought polygon from
    catastrophic slowdown into a clear speedup for the authored axis-aligned
-   extent rows. To generalize beyond that case, RTDL still needs a reusable
-   identity-preserving reduction contract for arbitrary shape/set summaries
-   rather than only a bounded extent reducer.
+   extent rows. Goals1993-1994 then moved the extent continuation into public
+   reusable partner adapters: `aabb_pair_payload_to_partner_columns` and
+   `aabb_pair_overlap_summary_2d_partner_columns`. To generalize beyond that
+   case, RTDL still needs reusable contracts for arbitrary polygon topology,
+   clipping, and set summaries rather than only a bounded AABB extent reducer.
 
 ## Prioritized Work
 
@@ -104,9 +106,11 @@ The remaining debt is not one bug. It is four patterns:
 
 4. **Shape/set reduction contract**
 
-   Replace the bounded extent reducer with a more general exact shape/set
-   reduction contract. Goal1969 has made the authored extent-control rows faster
-   than v1.8; the next target is broadening beyond axis-aligned extent summaries.
+   Build on the reusable AABB pair-payload and overlap-summary adapters from
+   Goals1993-1994 with a more general exact shape/set reduction contract.
+   Goal1969 made the authored extent-control rows faster than v1.8; the next
+   target is broadening beyond axis-aligned extent summaries without putting
+   polygon-specific logic into the native engine.
 
 5. **Semantic honesty for proxy apps**
 

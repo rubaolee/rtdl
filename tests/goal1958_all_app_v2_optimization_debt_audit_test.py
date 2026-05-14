@@ -22,7 +22,10 @@ class Goal1958AllAppV2OptimizationDebtAuditTest(unittest.TestCase):
             "Metric-table graph continuation is fixed",
             "Threshold proxies for richer app semantics",
             "Row materialization",
-            "Exact polygon/set reductions",
+            "Exact polygon/set reductions beyond AABB",
+            "Goals1993-1994",
+            "aabb_pair_payload_to_partner_columns",
+            "aabb_pair_overlap_summary_2d_partner_columns",
             "Partner reduction primitive set",
         ):
             self.assertIn(phrase, text)
