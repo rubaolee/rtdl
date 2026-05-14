@@ -50,6 +50,54 @@ accelerated by RTDL.
 The public claim must name the exact primitive, backend, partner, output
 contract, and evidence artifact.
 
+## User-Owned Partner Continuations
+
+v2.0 does not restrict users from doing normal partner work after an RTDL
+primitive returns. If the partner is CuPy, users may continue with ordinary CuPy
+operations, including `cupy.RawKernel`. If the partner is PyTorch, users may
+continue with ordinary PyTorch tensor operations.
+
+That user continuation belongs to the user's application unless RTDL ships,
+measures, and reviews that exact continuation contract.
+
+Allowed architecture:
+
+```text
+Python + CuPy + RTDL
+  -> RTDL runs the generic RT primitive
+  -> RTDL reads or writes selected CuPy-owned device columns
+  -> user code continues with CuPy operations or CuPy RawKernel
+```
+
+Blocked claim:
+
+```text
+RTDL v2.0 accelerates arbitrary CuPy RawKernel programs.
+```
+
+Allowed claim:
+
+```text
+RTDL v2.0 can interoperate with CuPy-owned device arrays, so users can continue
+with normal CuPy code, including RawKernel, subject to their own correctness and
+performance responsibility.
+```
+
+The same boundary applies to user C/C++ continuations in v1.8-style Python
+apps: RTDL does not forbid them, but their performance is not automatically an
+RTDL speedup claim.
+
+For the current four all-app control rows, the intended interpretation is:
+
+- `database_analytics`: v2 users may write CuPy scans, reductions, or RawKernel
+  grouping continuations, but those are not official speedup rows until reviewed.
+- `graph_analytics`: v2 users may write CuPy graph continuations for BFS or
+  triangle counting, but RTDL does not claim to accelerate those graph programs.
+- `polygon_pair_overlap_area_rows`: v2 users may use RTDL for candidate
+  discovery and CuPy or RawKernel for exact area refinement.
+- `polygon_set_jaccard`: v2 users may use RTDL for candidate hits and CuPy or
+  RawKernel for exact set intersection/union reduction.
+
 ## Current Release Boundary
 
 Before v2.0 release, every public performance statement must stay inside the

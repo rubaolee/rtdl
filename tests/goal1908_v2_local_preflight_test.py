@@ -46,6 +46,7 @@ class Goal1908V2LocalPreflightTest(unittest.TestCase):
             "tests.goal1947_v2_source_tree_only_policy_consensus_test",
             "tests.goal1948_user_owned_native_continuation_example_test",
             "tests.goal1950_gemini_final_v2_release_review_test",
+            "tests.goal1952_partner_rawkernel_and_user_continuation_boundary_test",
         ):
             self.assertIn(module, modules)
 
