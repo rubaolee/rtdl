@@ -11,31 +11,26 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
 EXAMPLE = ROOT / "examples" / "rtdl_control_apps_cupy_rawkernel.py"
-REPORT = ROOT / "docs" / "reports" / "goal1993_aabb_pair_overlap_partner_summary_2026-05-14.md"
+REPORT = ROOT / "docs" / "reports" / "goal1994_aabb_pair_payload_adapter_2026-05-14.md"
 
 
-class Goal1993AabbPairOverlapPartnerSummaryTest(unittest.TestCase):
-    def test_generic_aabb_partner_summary_is_public(self) -> None:
+class Goal1994AabbPairPayloadAdapterTest(unittest.TestCase):
+    def test_public_payload_adapter_is_exported(self) -> None:
         adapters = ADAPTERS.read_text(encoding="utf-8")
         init_text = INIT.read_text(encoding="utf-8")
 
-        self.assertIn("def aabb_pair_overlap_summary_2d_partner_columns", adapters)
         self.assertIn("def aabb_pair_payload_to_partner_columns", adapters)
-        self.assertIn("generic_aabb_pair_overlap_summary_2d", adapters)
-        self.assertIn("_cupy_aabb_pair_overlap_summary_2d", adapters)
-        self.assertIn("not_called_partner_reference_only", adapters)
+        self.assertIn("_AABB_PAIR_PAYLOAD_FIELDS", adapters)
+        self.assertIn("generic_aabb_pair_payload_columns", adapters)
+        self.assertIn("caller_supplied_aabb_pair_payload", adapters)
         self.assertIn("from .partner_adapters import aabb_pair_payload_to_partner_columns", init_text)
-        self.assertIn("from .partner_adapters import aabb_pair_overlap_summary_2d_partner_columns", init_text)
         self.assertIn('"aabb_pair_payload_to_partner_columns"', init_text)
-        self.assertIn('"aabb_pair_overlap_summary_2d_partner_columns"', init_text)
 
-    def test_polygon_control_path_uses_generic_aabb_summary_not_app_extent_kernel(self) -> None:
+    def test_polygon_example_uses_public_payload_adapter(self) -> None:
         text = EXAMPLE.read_text(encoding="utf-8")
 
-        self.assertIn("aabb_pair_overlap_summary_2d_partner_columns", text)
-        self.assertIn("aabb_pair_payload_to_partner_columns", text)
+        self.assertIn("aabb_pair_payload_to_partner_columns(table.__dict__, partner=\"cupy\")", text)
         self.assertNotIn("def _pair_extent_partner_columns", text)
-        self.assertIn('"aabb_pair_overlap_summary_2d_partner_columns"', text)
         self.assertNotIn("POLYGON_EXTENT_RAWKERNEL_SOURCE", text)
         self.assertNotIn("rtdl_user_pair_extent_summary", text)
 
@@ -65,11 +60,9 @@ class Goal1993AabbPairOverlapPartnerSummaryTest(unittest.TestCase):
     def test_report_records_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("generic 2D AABB", report)
-        self.assertIn("pair-overlap summary", report)
-        self.assertIn("not arbitrary polygon", report)
-        self.assertIn("overlay", report)
-        self.assertIn("does not customize the RTDL native engine", report)
+        self.assertIn("generic 2D AABB pair payload", report)
+        self.assertIn("does not claim arbitrary polygon clipping", report)
+        self.assertIn("does not customize the native RTDL engine", report)
 
 
 if __name__ == "__main__":

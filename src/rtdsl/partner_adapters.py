@@ -10,6 +10,21 @@ _CUPY_PAIRWISE_FORCE_2D_KERNEL = None
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
 _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
 
+_AABB_PAIR_PAYLOAD_FIELDS = (
+    "left_index",
+    "right_index",
+    "left_min_x",
+    "left_min_y",
+    "left_max_x",
+    "left_max_y",
+    "left_area",
+    "right_min_x",
+    "right_min_y",
+    "right_max_x",
+    "right_max_y",
+    "right_area",
+)
+
 
 def _require_uint32_id(value: int, label: str) -> int:
     item = int(value)
@@ -316,25 +331,48 @@ def partner_metric_table_reduce_batch(metric_tables, *, partner: str = "torch") 
     return results
 
 
+def aabb_pair_payload_to_partner_columns(payload, *, partner: str = "torch") -> dict[str, object]:
+    """Convert caller-supplied 2D AABB pair payload arrays into partner columns."""
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    source = dict(payload)
+    row_count = None
+    columns: dict[str, object] = {}
+    for name in _AABB_PAIR_PAYLOAD_FIELDS:
+        if name not in source:
+            raise ValueError(f"aabb pair payload requires {name!r}")
+        values = source[name]
+        length = len(values)
+        if row_count is None:
+            row_count = int(length)
+        elif int(length) != row_count and name in ("left_index", "right_index"):
+            raise ValueError("left_index and right_index must have the same length")
+        if runtime["name"] == "torch":
+            columns[name] = module.as_tensor(values, device=runtime["device"])
+        else:
+            columns[name] = module.asarray(values)
+    if int(len(columns["left_index"])) != int(len(columns["right_index"])):
+        raise ValueError("left_index and right_index must have the same length")
+    columns["_metadata"] = {
+        "adapter": "aabb_pair_payload_to_partner_columns",
+        "partner": runtime["name"],
+        "pair_count": int(len(columns["left_index"])),
+        "input_contract": "caller_supplied_aabb_pair_payload",
+        "partner_reference_contract": "generic_aabb_pair_payload_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
 def aabb_pair_overlap_summary_2d_partner_columns(pair_columns: dict[str, object], *, partner: str = "torch") -> dict[str, object]:
     """Summarize 2D axis-aligned box pair overlaps from partner/caller columns."""
     runtime = _partner_module(partner)
     module = runtime["module"]
-    required = (
-        "left_index",
-        "right_index",
-        "left_min_x",
-        "left_min_y",
-        "left_max_x",
-        "left_max_y",
-        "left_area",
-        "right_min_x",
-        "right_min_y",
-        "right_max_x",
-        "right_max_y",
-        "right_area",
-    )
-    for name in required:
+    for name in _AABB_PAIR_PAYLOAD_FIELDS:
         if name not in pair_columns:
             raise ValueError(f"aabb pair summary requires {name!r}")
     if runtime["name"] == "torch":

@@ -25,6 +25,7 @@ from rtdsl.partner_adapters import metric_table_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_metric_table_reduce_batch
 from rtdsl.partner_adapters import columnar_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_columnar_predicate_reduce_batch
+from rtdsl.partner_adapters import aabb_pair_payload_to_partner_columns
 from rtdsl.partner_adapters import aabb_pair_overlap_summary_2d_partner_columns
 from rtdsl.reference import _polygon_unit_cells
 
@@ -749,30 +750,10 @@ def _pair_extent_cpu_summary(table: PartnerPairPayloadTable) -> dict[str, int]:
     }
 
 
-def _pair_extent_partner_columns(table: PartnerPairPayloadTable, *, partner: str):
-    cp = _load_cupy()
-    if partner != "cupy":
-        raise ValueError("only cupy partner columns are currently used for pair extents")
-    return {
-        "left_index": cp.asarray(table.left_index),
-        "right_index": cp.asarray(table.right_index),
-        "left_min_x": cp.asarray(table.left_min_x),
-        "left_min_y": cp.asarray(table.left_min_y),
-        "left_max_x": cp.asarray(table.left_max_x),
-        "left_max_y": cp.asarray(table.left_max_y),
-        "left_area": cp.asarray(table.left_area),
-        "right_min_x": cp.asarray(table.right_min_x),
-        "right_min_y": cp.asarray(table.right_min_y),
-        "right_max_x": cp.asarray(table.right_max_x),
-        "right_max_y": cp.asarray(table.right_max_y),
-        "right_area": cp.asarray(table.right_area),
-    }
-
-
 def _pair_extent_cupy_summary(table: PartnerPairPayloadTable) -> dict[str, int]:
     cp = _load_cupy()
     summary_columns = aabb_pair_overlap_summary_2d_partner_columns(
-        _pair_extent_partner_columns(table, partner="cupy"),
+        aabb_pair_payload_to_partner_columns(table.__dict__, partner="cupy"),
         partner="cupy",
     )
     cp.cuda.Stream.null.synchronize()

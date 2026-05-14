@@ -392,6 +392,7 @@ from .partner_adapters import partner_group_max_by_key
 from .partner_adapters import partner_metric_table_reduce_by_key
 from .partner_adapters import metric_table_payload_to_partner_columns
 from .partner_adapters import partner_metric_table_reduce_batch
+from .partner_adapters import aabb_pair_payload_to_partner_columns
 from .partner_adapters import aabb_pair_overlap_summary_2d_partner_columns
 from .partner_adapters import partner_group_min_by_key
 from .partner_adapters import partner_group_sum_by_key
@@ -1316,6 +1317,7 @@ __all__ = [
     "partner_metric_table_reduce_by_key",
     "metric_table_payload_to_partner_columns",
     "partner_metric_table_reduce_batch",
+    "aabb_pair_payload_to_partner_columns",
     "aabb_pair_overlap_summary_2d_partner_columns",
     "partner_group_min_by_key",
     "partner_group_sum_by_key",
