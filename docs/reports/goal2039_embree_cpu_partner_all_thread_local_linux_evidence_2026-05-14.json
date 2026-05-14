@@ -1,0 +1,85 @@
+{
+  "goal": "Goal2039",
+  "date": "2026-05-14",
+  "status": "embree_cpu_partner_local_linux_evidence_collected",
+  "source": {
+    "windows_base_commit": "8df10007",
+    "linux_checkout": "/home/lestat/work/rtdl_goal2037_8df10007",
+    "linux_checkout_git_commit": "unknown",
+    "note": "The Linux tree was deployed from a git archive of 8df10007, then received the Goal2039 robot validation-path repair for examples/rtdl_robot_collision_screening_app.py and scripts/goal2037_embree_cpu_partner_all_thread_runner.py."
+  },
+  "environment": {
+    "host": "192.168.1.20",
+    "user": "lestat",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "logical_cpu_count": 8,
+    "numpy": "2.4.4",
+    "torch": null,
+    "numba": null,
+    "thread_env": {
+      "OMP_NUM_THREADS": "8",
+      "TBB_NUM_THREADS": "8",
+      "MKL_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8",
+      "NUMEXPR_NUM_THREADS": "8",
+      "RTDL_EMBREE_THREADS": "8"
+    }
+  },
+  "artifacts": {
+    "smoke": "docs/reports/goal2037_embree_cpu_partner_all_thread_local_linux_smoke_8df10007",
+    "large_repaired": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired"
+  },
+  "smoke": {
+    "scale": "smoke",
+    "row_count": 16,
+    "status_counts": {
+      "pass": 16
+    }
+  },
+  "large": {
+    "scale": "large",
+    "row_count": 16,
+    "status_counts": {
+      "pass": 16
+    },
+    "median_seconds_by_app": {
+      "database_analytics": 1.718904,
+      "graph_analytics": 1.006331,
+      "service_coverage_gaps": 1.030201,
+      "event_hotspot_screening": 1.8192,
+      "facility_knn_assignment": 72.139829,
+      "road_hazard_screening": 0.856886,
+      "segment_polygon_hitcount": 0.260264,
+      "segment_polygon_anyhit_rows": 0.28103,
+      "polygon_pair_overlap_area_rows": 20.513456,
+      "polygon_set_jaccard": 6.213745,
+      "hausdorff_distance": 109.705274,
+      "ann_candidate_search": 42.42301,
+      "outlier_detection": 1.059823,
+      "dbscan_clustering": 1.065992,
+      "robot_collision_screening": 0.856429,
+      "barnes_hut_force_app": 3.375587
+    }
+  },
+  "interpretation": {
+    "accepted_evidence": [
+      "Embree v2 CPU-partner all-thread local Linux matrix completed for 16 rows.",
+      "NumPy-host partner continuation is viable for the local CPU Embree path when Torch and Numba are unavailable.",
+      "The initial robot large-scale stall was explained and repaired as CPU-oracle validation-path contamination, not an Embree execution hang."
+    ],
+    "weak_rows": [
+      "facility_knn_assignment",
+      "polygon_pair_overlap_area_rows",
+      "hausdorff_distance",
+      "ann_candidate_search"
+    ],
+    "claim_boundary": {
+      "v2_0_release_authorized": false,
+      "true_host_zero_copy_for_every_row_authorized": false,
+      "broad_all_app_speedup_claim_authorized": false,
+      "embree_equals_optix_performance_authorized": false
+    }
+  },
+  "verdict": "accept-with-boundary"
+}

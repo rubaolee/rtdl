@@ -1,0 +1,75 @@
+{
+  "app": "event_hotspot_screening",
+  "attempts": [
+    {
+      "elapsed_sec": 1.8111414399463683,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 1.81919992598705,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 1.821094837039709,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_event_hotspot_screening.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "20000",
+    "--embree-summary-mode",
+    "count_summary"
+  ],
+  "cpu_partner_continuation": "numpy-threshold-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "copies",
+    "embree_summary_mode",
+    "event_count",
+    "hotspot_count",
+    "hotspot_threshold",
+    "hotspots",
+    "k_max",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "neighbor_count_by_event",
+    "optix_performance",
+    "optix_summary_mode",
+    "radius",
+    "rows",
+    "rt_core_accelerated",
+    "summary_boundary",
+    "summary_rows"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 1.821094837039709,
+    "median_s": 1.81919992598705,
+    "min_s": 1.8111414399463683
+  }
+}

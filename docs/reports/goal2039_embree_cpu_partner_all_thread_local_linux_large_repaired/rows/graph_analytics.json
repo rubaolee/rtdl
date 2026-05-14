@@ -1,0 +1,78 @@
+{
+  "app": "graph_analytics",
+  "attempts": [
+    {
+      "elapsed_sec": 1.0063309370307252,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 1.0109701490728185,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 1.0044084289111197,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_graph_analytics_app.py",
+    "--backend",
+    "embree",
+    "--scenario",
+    "visibility_edges",
+    "--copies",
+    "20000",
+    "--output-mode",
+    "summary"
+  ],
+  "cpu_partner_continuation": "numpy-or-numba-graph-continuation-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "copies",
+    "data_flow",
+    "graph_phase_totals_sec",
+    "honesty_boundary",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_graph_mode",
+    "optix_performance",
+    "output_mode",
+    "phase_contract",
+    "ray_tracing_accelerated",
+    "ray_tracing_note",
+    "rt_core_accelerated",
+    "scenario",
+    "sections",
+    "unifies",
+    "visibility_query_repeats",
+    "visibility_ray_batches"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 1.0109701490728185,
+    "median_s": 1.0063309370307252,
+    "min_s": 1.0044084289111197
+  }
+}

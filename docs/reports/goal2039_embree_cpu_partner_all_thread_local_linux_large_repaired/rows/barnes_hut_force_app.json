@@ -1,0 +1,73 @@
+{
+  "app": "barnes_hut_force_app",
+  "attempts": [
+    {
+      "elapsed_sec": 3.3458526289323345,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 3.399051930056885,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 3.3755867080762982,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_barnes_hut_force_app.py",
+    "--backend",
+    "embree",
+    "--body-count",
+    "200000",
+    "--output-mode",
+    "candidate_summary"
+  ],
+  "cpu_partner_continuation": "numpy-or-numba-node-coverage-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "body_count",
+    "body_count_with_candidates",
+    "boundary",
+    "candidate_row_count",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "node_count",
+    "node_count_seen",
+    "node_radius",
+    "optix_performance",
+    "optix_summary_mode",
+    "output_mode",
+    "rt_core_accelerated",
+    "rtdl_role",
+    "theta"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 3.399051930056885,
+    "median_s": 3.3755867080762982,
+    "min_s": 3.3458526289323345
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "app": "robot_collision_screening",
+  "attempts": [
+    {
+      "elapsed_sec": 2.6691766909789294,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_robot_collision_screening_app.py",
+    "--backend",
+    "embree",
+    "--pose-count",
+    "512",
+    "--obstacle-count",
+    "128",
+    "--output-mode",
+    "hit_count"
+  ],
+  "cpu_partner_continuation": "numpy-compact-flag-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "boundary",
+    "edge_ray_count",
+    "hit_edge_count",
+    "matches_oracle",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "obstacle_triangle_count",
+    "optix_summary_mode",
+    "oracle_hit_edge_count",
+    "output_mode",
+    "pose_count",
+    "rtdl_role"
+  ],
+  "repeats": 1,
+  "status": "pass",
+  "timeout_sec": 180,
+  "timing": {
+    "max_s": 2.6691766909789294,
+    "median_s": 2.6691766909789294,
+    "min_s": 2.6691766909789294
+  }
+}

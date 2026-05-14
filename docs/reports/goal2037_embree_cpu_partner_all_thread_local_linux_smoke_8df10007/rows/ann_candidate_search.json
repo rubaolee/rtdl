@@ -1,0 +1,59 @@
+{
+  "app": "ann_candidate_search",
+  "attempts": [
+    {
+      "elapsed_sec": 0.23739591205958277,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_ann_candidate_app.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "128",
+    "--output-mode",
+    "rerank_summary"
+  ],
+  "cpu_partner_continuation": "numpy-threshold-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "approximate_row_count",
+    "backend",
+    "boundary",
+    "candidate_count",
+    "candidate_radius",
+    "copies",
+    "k",
+    "max_neighbor_rank",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_performance",
+    "optix_summary_mode",
+    "output_mode",
+    "query_count",
+    "query_count_with_candidate",
+    "rt_core_accelerated",
+    "rtdl_role",
+    "search_count"
+  ],
+  "repeats": 1,
+  "status": "pass",
+  "timeout_sec": 180,
+  "timing": {
+    "max_s": 0.23739591205958277,
+    "median_s": 0.23739591205958277,
+    "min_s": 0.23739591205958277
+  }
+}

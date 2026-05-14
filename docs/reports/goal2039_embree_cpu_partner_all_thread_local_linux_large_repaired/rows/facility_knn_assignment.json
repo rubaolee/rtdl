@@ -1,0 +1,73 @@
+{
+  "app": "facility_knn_assignment",
+  "attempts": [
+    {
+      "elapsed_sec": 69.53815802594181,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 72.13982879603282,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 73.07147181301843,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_facility_knn_assignment.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "20000",
+    "--output-mode",
+    "summary"
+  ],
+  "cpu_partner_continuation": "numpy-threshold-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "boundary",
+    "copies",
+    "customer_count",
+    "depot_count",
+    "k",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_summary_mode",
+    "output_mode",
+    "partner",
+    "partner_reference_contract",
+    "primary_depot_load",
+    "row_count",
+    "rt_core_accelerated",
+    "service_radius"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 73.07147181301843,
+    "median_s": 72.13982879603282,
+    "min_s": 69.53815802594181
+  }
+}

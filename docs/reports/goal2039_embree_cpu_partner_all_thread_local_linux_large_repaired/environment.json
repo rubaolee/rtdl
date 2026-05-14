@@ -1,0 +1,27 @@
+{
+  "git_commit": "unknown",
+  "logical_cpu_count": 8,
+  "machine": "x86_64",
+  "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+  "python_modules": {
+    "numba": null,
+    "numpy": "2.4.4",
+    "torch": null
+  },
+  "thread_env": {
+    "MKL_NUM_THREADS": "8",
+    "NUMEXPR_NUM_THREADS": "8",
+    "OMP_NUM_THREADS": "8",
+    "OPENBLAS_NUM_THREADS": "8",
+    "RTDL_EMBREE_THREADS": "8",
+    "TBB_NUM_THREADS": "8"
+  },
+  "tools": {
+    "g++": "/usr/bin/g++",
+    "gcc": "/usr/bin/gcc",
+    "make": "/usr/bin/make",
+    "nproc": "/usr/bin/nproc"
+  }
+}

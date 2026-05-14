@@ -1,0 +1,55 @@
+{
+  "app": "database_analytics",
+  "attempts": [
+    {
+      "elapsed_sec": 0.24001213896553963,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_database_analytics_app.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "128",
+    "--output-mode",
+    "compact_summary"
+  ],
+  "cpu_partner_continuation": "numpy-columnar-predicate-reduction-target",
+  "last_payload_summary_keys": [
+    "app",
+    "copies",
+    "data_flow",
+    "execution_mode",
+    "honesty_boundary",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_performance",
+    "output_mode",
+    "requested_backend",
+    "retired_compatibility_helpers",
+    "rt_core_accelerated",
+    "rt_core_claim_scope",
+    "scenario",
+    "sections"
+  ],
+  "repeats": 1,
+  "status": "pass",
+  "timeout_sec": 180,
+  "timing": {
+    "max_s": 0.24001213896553963,
+    "median_s": 0.24001213896553963,
+    "min_s": 0.24001213896553963
+  }
+}

@@ -1,0 +1,1272 @@
+{
+  "artifact_dir": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired",
+  "claim_boundary": {
+    "broad_all_app_speedup_claim_authorized": false,
+    "true_host_zero_copy_for_every_row_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "continuation_counts": {
+    "numpy-columnar-predicate-reduction-target": 1,
+    "numpy-compact-flag-target": 1,
+    "numpy-compact-row-materialization-target": 1,
+    "numpy-grouped-count-flags-target": 1,
+    "numpy-grouped-count-target": 1,
+    "numpy-or-numba-graph-continuation-target": 1,
+    "numpy-or-numba-node-coverage-target": 1,
+    "numpy-threshold-count-target": 6,
+    "numpy-threshold-or-exact-distance-target": 1,
+    "numpy-tiled-exact-continuation-target": 2
+  },
+  "environment": {
+    "git_commit": "unknown",
+    "logical_cpu_count": 8,
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+    "python_modules": {
+      "numba": null,
+      "numpy": "2.4.4",
+      "torch": null
+    },
+    "thread_env": {
+      "MKL_NUM_THREADS": "8",
+      "NUMEXPR_NUM_THREADS": "8",
+      "OMP_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8",
+      "RTDL_EMBREE_THREADS": "8",
+      "TBB_NUM_THREADS": "8"
+    },
+    "tools": {
+      "g++": "/usr/bin/g++",
+      "gcc": "/usr/bin/gcc",
+      "make": "/usr/bin/make",
+      "nproc": "/usr/bin/nproc"
+    }
+  },
+  "goal": "Goal2037",
+  "row_count": 16,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/database_analytics.json",
+      "attempts": [
+        {
+          "elapsed_sec": 1.7189042509999126,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.715640096925199,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.7347091999836266,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_database_analytics_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "compact_summary"
+      ],
+      "cpu_partner_continuation": "numpy-columnar-predicate-reduction-target",
+      "last_payload_summary_keys": [
+        "app",
+        "copies",
+        "data_flow",
+        "execution_mode",
+        "honesty_boundary",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_performance",
+        "output_mode",
+        "requested_backend",
+        "retired_compatibility_helpers",
+        "rt_core_accelerated",
+        "rt_core_claim_scope",
+        "scenario",
+        "sections"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 1.7347091999836266,
+        "median_s": 1.7189042509999126,
+        "min_s": 1.715640096925199
+      }
+    },
+    {
+      "app": "graph_analytics",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/graph_analytics.json",
+      "attempts": [
+        {
+          "elapsed_sec": 1.0063309370307252,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.0109701490728185,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.0044084289111197,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_analytics_app.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "visibility_edges",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "cpu_partner_continuation": "numpy-or-numba-graph-continuation-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "copies",
+        "data_flow",
+        "graph_phase_totals_sec",
+        "honesty_boundary",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_graph_mode",
+        "optix_performance",
+        "output_mode",
+        "phase_contract",
+        "ray_tracing_accelerated",
+        "ray_tracing_note",
+        "rt_core_accelerated",
+        "scenario",
+        "sections",
+        "unifies",
+        "visibility_query_repeats",
+        "visibility_ray_batches"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 1.0109701490728185,
+        "median_s": 1.0063309370307252,
+        "min_s": 1.0044084289111197
+      }
+    },
+    {
+      "app": "service_coverage_gaps",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/service_coverage_gaps.json",
+      "attempts": [
+        {
+          "elapsed_sec": 1.0342817530035973,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.030200926004909,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.021248809993267,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--embree-summary-mode",
+        "gap_summary"
+      ],
+      "cpu_partner_continuation": "numpy-threshold-count-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "clinic_count",
+        "clinic_loads",
+        "copies",
+        "coverage_summary_rows",
+        "covered_household_count",
+        "embree_summary_mode",
+        "household_count",
+        "k_max",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "nearby_clinics_by_household",
+        "optix_performance",
+        "optix_summary_mode",
+        "radius",
+        "rows",
+        "rt_core_accelerated",
+        "summary_boundary",
+        "uncovered_household_ids"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 1.0342817530035973,
+        "median_s": 1.030200926004909,
+        "min_s": 1.021248809993267
+      }
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/event_hotspot_screening.json",
+      "attempts": [
+        {
+          "elapsed_sec": 1.8111414399463683,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.81919992598705,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.821094837039709,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--embree-summary-mode",
+        "count_summary"
+      ],
+      "cpu_partner_continuation": "numpy-threshold-count-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "copies",
+        "embree_summary_mode",
+        "event_count",
+        "hotspot_count",
+        "hotspot_threshold",
+        "hotspots",
+        "k_max",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "neighbor_count_by_event",
+        "optix_performance",
+        "optix_summary_mode",
+        "radius",
+        "rows",
+        "rt_core_accelerated",
+        "summary_boundary",
+        "summary_rows"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 1.821094837039709,
+        "median_s": 1.81919992598705,
+        "min_s": 1.8111414399463683
+      }
+    },
+    {
+      "app": "facility_knn_assignment",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/facility_knn_assignment.json",
+      "attempts": [
+        {
+          "elapsed_sec": 69.53815802594181,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 72.13982879603282,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 73.07147181301843,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_facility_knn_assignment.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "cpu_partner_continuation": "numpy-threshold-count-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "boundary",
+        "copies",
+        "customer_count",
+        "depot_count",
+        "k",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_summary_mode",
+        "output_mode",
+        "partner",
+        "partner_reference_contract",
+        "primary_depot_load",
+        "row_count",
+        "rt_core_accelerated",
+        "service_radius"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 73.07147181301843,
+        "median_s": 72.13982879603282,
+        "min_s": 69.53815802594181
+      }
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/road_hazard_screening.json",
+      "attempts": [
+        {
+          "elapsed_sec": 0.8492270429851487,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.856886115972884,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.8571336519671604,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_road_hazard_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "cpu_partner_continuation": "numpy-grouped-count-flags-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "boundary",
+        "copies",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_mode",
+        "optix_performance",
+        "output_mode",
+        "priority_segment_count",
+        "priority_segments",
+        "row_count",
+        "rt_core_accelerated",
+        "run_phases",
+        "summary_materializes_rows"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 0.8571336519671604,
+        "median_s": 0.856886115972884,
+        "min_s": 0.8492270429851487
+      }
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/segment_polygon_hitcount.json",
+      "attempts": [
+        {
+          "elapsed_sec": 0.26025345199741423,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.26026370900217444,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.26056848804000765,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "512"
+      ],
+      "cpu_partner_continuation": "numpy-grouped-count-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "boundary",
+        "dataset",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_mode",
+        "optix_performance",
+        "row_count",
+        "rows",
+        "rt_core_accelerated"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 0.26056848804000765,
+        "median_s": 0.26026370900217444,
+        "min_s": 0.26025345199741423
+      }
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/segment_polygon_anyhit_rows.json",
+      "attempts": [
+        {
+          "elapsed_sec": 0.2810296629322693,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.28033749503083527,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.28104006708599627,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_segment_polygon_anyhit_rows.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "512",
+        "--output-mode",
+        "rows",
+        "--output-capacity",
+        "8192"
+      ],
+      "cpu_partner_continuation": "numpy-compact-row-materialization-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "boundary",
+        "dataset",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "native_output_capacity",
+        "optix_mode",
+        "optix_performance",
+        "output_mode",
+        "row_count",
+        "rows",
+        "rt_core_accelerated",
+        "summary_source"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 0.28104006708599627,
+        "median_s": 0.2810296629322693,
+        "min_s": 0.28033749503083527
+      }
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/polygon_pair_overlap_area_rows.json",
+      "attempts": [
+        {
+          "elapsed_sec": 20.368989465059713,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 20.534650500980206,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 20.51345584797673,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary"
+      ],
+      "cpu_partner_continuation": "numpy-tiled-exact-continuation-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "backend_mode",
+        "boundary",
+        "candidate_row_count",
+        "copies",
+        "generic_area_summary",
+        "left_polygon_count",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_performance",
+        "output_mode",
+        "primitive_contract",
+        "right_polygon_count",
+        "row_count",
+        "rt_core_accelerated",
+        "rt_core_candidate_discovery_active",
+        "run_phases",
+        "summary"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 20.534650500980206,
+        "median_s": 20.51345584797673,
+        "min_s": 20.368989465059713
+      }
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/polygon_set_jaccard.json",
+      "attempts": [
+        {
+          "elapsed_sec": 6.213745136978105,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 6.326050415984355,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 6.200832861009985,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_polygon_set_jaccard.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "2000",
+        "--output-mode",
+        "summary"
+      ],
+      "cpu_partner_continuation": "numpy-tiled-exact-continuation-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "backend_mode",
+        "boundary",
+        "candidate_row_count",
+        "copies",
+        "generic_jaccard_summary",
+        "left_polygon_count",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_performance",
+        "output_mode",
+        "primitive_contract",
+        "right_polygon_count",
+        "row_count",
+        "rt_core_accelerated",
+        "rt_core_candidate_discovery_active",
+        "run_phases",
+        "summary"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 6.326050415984355,
+        "median_s": 6.213745136978105,
+        "min_s": 6.200832861009985
+      }
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/hausdorff_distance.json",
+      "attempts": [
+        {
+          "elapsed_sec": 107.48180397797842,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 109.70527422102168,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 110.79201764403842,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--embree-result-mode",
+        "directed_summary"
+      ],
+      "cpu_partner_continuation": "numpy-threshold-or-exact-distance-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "copies",
+        "directed_a_to_b",
+        "directed_b_to_a",
+        "embree_result_mode",
+        "hausdorff_distance",
+        "hausdorff_threshold",
+        "matches_oracle",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_performance",
+        "optix_summary_mode",
+        "oracle",
+        "partner",
+        "point_count_a",
+        "point_count_b",
+        "rt_core_accelerated",
+        "rtdl_role",
+        "run_phases",
+        "witness_direction"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 110.79201764403842,
+        "median_s": 109.70527422102168,
+        "min_s": 107.48180397797842
+      }
+    },
+    {
+      "app": "ann_candidate_search",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/ann_candidate_search.json",
+      "attempts": [
+        {
+          "elapsed_sec": 42.634366054902785,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 42.37322036491241,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 42.42300992400851,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_ann_candidate_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "rerank_summary"
+      ],
+      "cpu_partner_continuation": "numpy-threshold-count-target",
+      "last_payload_summary_keys": [
+        "app",
+        "approximate_row_count",
+        "backend",
+        "boundary",
+        "candidate_count",
+        "candidate_radius",
+        "copies",
+        "k",
+        "max_neighbor_rank",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "optix_performance",
+        "optix_summary_mode",
+        "output_mode",
+        "query_count",
+        "query_count_with_candidate",
+        "rt_core_accelerated",
+        "rtdl_role",
+        "search_count"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 42.634366054902785,
+        "median_s": 42.42300992400851,
+        "min_s": 42.37322036491241
+      }
+    },
+    {
+      "app": "outlier_detection",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/outlier_detection.json",
+      "attempts": [
+        {
+          "elapsed_sec": 1.114535917993635,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.0598227039445192,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.0479846158996224,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_outlier_detection_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "density_count"
+      ],
+      "cpu_partner_continuation": "numpy-threshold-count-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "boundary",
+        "copies",
+        "density_rows",
+        "embree_summary_mode",
+        "generic_primitive",
+        "k_max",
+        "matches_oracle",
+        "min_neighbors_including_self",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "native_summary_row_count",
+        "neighbor_row_count",
+        "optix_summary_mode",
+        "oracle_density_rows",
+        "oracle_outlier_count",
+        "outlier_count",
+        "outlier_point_ids",
+        "output_mode",
+        "point_count",
+        "radius",
+        "rtdl_role",
+        "summary_mode",
+        "summary_primitive",
+        "threshold_reached_count"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 1.114535917993635,
+        "median_s": 1.0598227039445192,
+        "min_s": 1.0479846158996224
+      }
+    },
+    {
+      "app": "dbscan_clustering",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/dbscan_clustering.json",
+      "attempts": [
+        {
+          "elapsed_sec": 1.0724807500373572,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.0629221010021865,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 1.06599242601078,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_dbscan_clustering_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "core_count"
+      ],
+      "cpu_partner_continuation": "numpy-threshold-count-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "boundary",
+        "cluster_rows",
+        "cluster_sizes",
+        "copies",
+        "core_count",
+        "core_flag_rows",
+        "embree_summary_mode",
+        "epsilon",
+        "generic_primitive",
+        "k_max",
+        "matches_oracle",
+        "min_points",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "neighbor_row_count",
+        "noise_point_ids",
+        "optix_summary_mode",
+        "oracle_cluster_rows",
+        "oracle_core_count",
+        "oracle_core_flag_rows",
+        "output_mode",
+        "partner",
+        "partner_metadata",
+        "partner_reference_contract",
+        "point_count",
+        "rtdl_role",
+        "summary_mode",
+        "summary_primitive",
+        "threshold_reached_count",
+        "validation_skipped"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 1.0724807500373572,
+        "median_s": 1.06599242601078,
+        "min_s": 1.0629221010021865
+      }
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/robot_collision_screening.json",
+      "attempts": [
+        {
+          "elapsed_sec": 0.8587551839882508,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.8564292270457372,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 0.8562661299947649,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "embree",
+        "--pose-count",
+        "20000",
+        "--obstacle-count",
+        "1024",
+        "--output-mode",
+        "hit_count",
+        "--skip-validation"
+      ],
+      "cpu_partner_continuation": "numpy-compact-flag-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "boundary",
+        "edge_ray_count",
+        "hit_edge_count",
+        "matches_oracle",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "obstacle_triangle_count",
+        "optix_summary_mode",
+        "oracle_hit_edge_count",
+        "output_mode",
+        "pose_count",
+        "rtdl_role",
+        "validation_mode"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 0.8587551839882508,
+        "median_s": 0.8564292270457372,
+        "min_s": 0.8562661299947649
+      }
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_large_repaired/rows/barnes_hut_force_app.json",
+      "attempts": [
+        {
+          "elapsed_sec": 3.3458526289323345,
+          "repeat": 1,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 3.399051930056885,
+          "repeat": 2,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        },
+        {
+          "elapsed_sec": 3.3755867080762982,
+          "repeat": 3,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_json": true,
+          "stdout_tail": ""
+        }
+      ],
+      "backend": "embree",
+      "claim_boundary": {
+        "broad_speedup_claim_authorized": false,
+        "true_host_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "embree",
+        "--body-count",
+        "200000",
+        "--output-mode",
+        "candidate_summary"
+      ],
+      "cpu_partner_continuation": "numpy-or-numba-node-coverage-target",
+      "last_payload_summary_keys": [
+        "app",
+        "backend",
+        "body_count",
+        "body_count_with_candidates",
+        "boundary",
+        "candidate_row_count",
+        "native_continuation_active",
+        "native_continuation_backend",
+        "node_count",
+        "node_count_seen",
+        "node_radius",
+        "optix_performance",
+        "optix_summary_mode",
+        "output_mode",
+        "rt_core_accelerated",
+        "rtdl_role",
+        "theta"
+      ],
+      "repeats": 3,
+      "status": "pass",
+      "timeout_sec": 900,
+      "timing": {
+        "max_s": 3.399051930056885,
+        "median_s": 3.3755867080762982,
+        "min_s": 3.3458526289323345
+      }
+    }
+  ],
+  "scale": "large",
+  "status": "embree-cpu-partner-local-linux-artifact",
+  "status_counts": {
+    "pass": 16
+  }
+}

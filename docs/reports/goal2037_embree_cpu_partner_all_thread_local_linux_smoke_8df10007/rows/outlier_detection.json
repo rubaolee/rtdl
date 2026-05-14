@@ -1,0 +1,66 @@
+{
+  "app": "outlier_detection",
+  "attempts": [
+    {
+      "elapsed_sec": 0.2082720739999786,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_outlier_detection_app.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "128",
+    "--output-mode",
+    "density_count"
+  ],
+  "cpu_partner_continuation": "numpy-threshold-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "boundary",
+    "copies",
+    "density_rows",
+    "embree_summary_mode",
+    "generic_primitive",
+    "k_max",
+    "matches_oracle",
+    "min_neighbors_including_self",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "native_summary_row_count",
+    "neighbor_row_count",
+    "optix_summary_mode",
+    "oracle_density_rows",
+    "oracle_outlier_count",
+    "outlier_count",
+    "outlier_point_ids",
+    "output_mode",
+    "point_count",
+    "radius",
+    "rtdl_role",
+    "summary_mode",
+    "summary_primitive",
+    "threshold_reached_count"
+  ],
+  "repeats": 1,
+  "status": "pass",
+  "timeout_sec": 180,
+  "timing": {
+    "max_s": 0.2082720739999786,
+    "median_s": 0.2082720739999786,
+    "min_s": 0.2082720739999786
+  }
+}

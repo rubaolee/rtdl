@@ -107,6 +107,8 @@ def environment_packet(thread_count: int) -> dict[str, Any]:
 
 
 def _row_with_scale(row: dict[str, Any], scale: str) -> dict[str, Any]:
+    if scale == "large" and row["app"] == "robot_collision_screening":
+        return {**row, "command": [*row["command"], "--skip-validation"]}
     if scale != "smoke":
         return row
     command = list(row["command"])

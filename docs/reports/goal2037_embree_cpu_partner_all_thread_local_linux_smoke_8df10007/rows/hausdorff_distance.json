@@ -1,0 +1,61 @@
+{
+  "app": "hausdorff_distance",
+  "attempts": [
+    {
+      "elapsed_sec": 0.22874846798367798,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_hausdorff_distance_app.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "128",
+    "--embree-result-mode",
+    "directed_summary"
+  ],
+  "cpu_partner_continuation": "numpy-threshold-or-exact-distance-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "copies",
+    "directed_a_to_b",
+    "directed_b_to_a",
+    "embree_result_mode",
+    "hausdorff_distance",
+    "hausdorff_threshold",
+    "matches_oracle",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_performance",
+    "optix_summary_mode",
+    "oracle",
+    "partner",
+    "point_count_a",
+    "point_count_b",
+    "rt_core_accelerated",
+    "rtdl_role",
+    "run_phases",
+    "witness_direction"
+  ],
+  "repeats": 1,
+  "status": "pass",
+  "timeout_sec": 180,
+  "timing": {
+    "max_s": 0.22874846798367798,
+    "median_s": 0.22874846798367798,
+    "min_s": 0.22874846798367798
+  }
+}

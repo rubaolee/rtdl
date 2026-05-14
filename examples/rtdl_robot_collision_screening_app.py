@@ -447,8 +447,6 @@ def run_app(
             "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
         }
 
-    oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
-    oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
     rows = _run_backend(backend, edge_rays, obstacle_triangles)
     summary = _summarize_collisions(rows, poses, ray_metadata)
 
@@ -462,9 +460,47 @@ def run_app(
         "obstacle_triangle_count": len(obstacle_triangles),
         "native_continuation_active": False,
         "native_continuation_backend": "none",
+        "validation_mode": "skipped" if skip_validation else "cpu_oracle",
         "rtdl_role": "RTDL emits per-edge ray/triangle any-hit rows; rt.reduce_rows(any) converts edge rows into pose collision flags, and Python maps witnesses back to pose/link summaries.",
         "boundary": "Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine. Compact output modes reduce app-interface row volume but do not replace a native OptiX pose-level summary ABI.",
     }
+    if skip_validation:
+        hit_edge_count = sum(1 for row in rows if bool(row["any_hit"]))
+        if output_mode == "hit_count":
+            payload.update(
+                {
+                    "hit_edge_count": int(hit_edge_count),
+                    "oracle_hit_edge_count": None,
+                    "matches_oracle": None,
+                }
+            )
+            return payload
+        if output_mode == "pose_flags":
+            payload.update(
+                {
+                    "pose_collision_flags": summary["pose_collision_flags"],
+                    "colliding_pose_ids": summary["colliding_pose_ids"],
+                    "colliding_pose_count": len(summary["colliding_pose_ids"]),
+                    "oracle_colliding_pose_ids": None,
+                    "matches_oracle": None,
+                }
+            )
+            return payload
+        payload.update(
+            {
+                "rows": rows,
+                "edge_any_hit_rows": summary["edge_any_hit_rows"],
+                "pose_collision_flags": summary["pose_collision_flags"],
+                "colliding_pose_ids": summary["colliding_pose_ids"],
+                "pose_summaries": summary["pose_summaries"],
+                "oracle": None,
+                "matches_oracle": None,
+            }
+        )
+        return payload
+
+    oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
+    oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
     payload.update(_compact_collision_payload(mode=output_mode, summary=summary, rows=rows, oracle_summary=oracle_summary))
     return payload
 

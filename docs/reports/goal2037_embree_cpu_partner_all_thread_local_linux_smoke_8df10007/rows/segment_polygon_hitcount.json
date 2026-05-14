@@ -1,0 +1,49 @@
+{
+  "app": "segment_polygon_hitcount",
+  "attempts": [
+    {
+      "elapsed_sec": 0.22916031500790268,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_segment_polygon_hitcount.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "128"
+  ],
+  "cpu_partner_continuation": "numpy-grouped-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "boundary",
+    "dataset",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_mode",
+    "optix_performance",
+    "row_count",
+    "rows",
+    "rt_core_accelerated"
+  ],
+  "repeats": 1,
+  "status": "pass",
+  "timeout_sec": 180,
+  "timing": {
+    "max_s": 0.22916031500790268,
+    "median_s": 0.22916031500790268,
+    "min_s": 0.22916031500790268
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "app": "polygon_set_jaccard",
+  "attempts": [
+    {
+      "elapsed_sec": 5.64392082800623,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_polygon_set_jaccard.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "128",
+    "--output-mode",
+    "summary"
+  ],
+  "cpu_partner_continuation": "numpy-tiled-exact-continuation-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "backend_mode",
+    "boundary",
+    "candidate_row_count",
+    "copies",
+    "generic_jaccard_summary",
+    "left_polygon_count",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_performance",
+    "output_mode",
+    "primitive_contract",
+    "right_polygon_count",
+    "row_count",
+    "rt_core_accelerated",
+    "rt_core_candidate_discovery_active",
+    "run_phases",
+    "summary"
+  ],
+  "repeats": 1,
+  "status": "pass",
+  "timeout_sec": 180,
+  "timing": {
+    "max_s": 5.64392082800623,
+    "median_s": 5.64392082800623,
+    "min_s": 5.64392082800623
+  }
+}

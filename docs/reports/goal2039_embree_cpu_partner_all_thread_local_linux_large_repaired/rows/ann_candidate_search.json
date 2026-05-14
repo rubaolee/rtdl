@@ -1,0 +1,75 @@
+{
+  "app": "ann_candidate_search",
+  "attempts": [
+    {
+      "elapsed_sec": 42.634366054902785,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 42.37322036491241,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 42.42300992400851,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_ann_candidate_app.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "20000",
+    "--output-mode",
+    "rerank_summary"
+  ],
+  "cpu_partner_continuation": "numpy-threshold-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "approximate_row_count",
+    "backend",
+    "boundary",
+    "candidate_count",
+    "candidate_radius",
+    "copies",
+    "k",
+    "max_neighbor_rank",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_performance",
+    "optix_summary_mode",
+    "output_mode",
+    "query_count",
+    "query_count_with_candidate",
+    "rt_core_accelerated",
+    "rtdl_role",
+    "search_count"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 42.634366054902785,
+    "median_s": 42.42300992400851,
+    "min_s": 42.37322036491241
+  }
+}

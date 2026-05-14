@@ -1,0 +1,76 @@
+{
+  "app": "service_coverage_gaps",
+  "attempts": [
+    {
+      "elapsed_sec": 1.0342817530035973,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 1.030200926004909,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 1.021248809993267,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_service_coverage_gaps.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "20000",
+    "--embree-summary-mode",
+    "gap_summary"
+  ],
+  "cpu_partner_continuation": "numpy-threshold-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "clinic_count",
+    "clinic_loads",
+    "copies",
+    "coverage_summary_rows",
+    "covered_household_count",
+    "embree_summary_mode",
+    "household_count",
+    "k_max",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "nearby_clinics_by_household",
+    "optix_performance",
+    "optix_summary_mode",
+    "radius",
+    "rows",
+    "rt_core_accelerated",
+    "summary_boundary",
+    "uncovered_household_ids"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 1.0342817530035973,
+    "median_s": 1.030200926004909,
+    "min_s": 1.021248809993267
+  }
+}
