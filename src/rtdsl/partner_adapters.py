@@ -532,6 +532,39 @@ def partner_compact_columns_by_mask(columns: dict[str, object], mask, *, partner
     return partner_take_columns_by_indices(columns, indices, partner=partner)
 
 
+def partner_page_columns(columns: dict[str, object], *, offset: int = 0, limit: int | None = None, partner: str = "torch"):
+    """Return a bounded page of partner-owned columns without Python row materialization."""
+    runtime = _partner_module(partner)
+    if runtime["name"] not in ("torch", "cupy"):
+        raise ValueError("partner must be 'torch' or 'cupy'")
+    offset = int(offset)
+    if offset < 0:
+        raise ValueError("offset must be non-negative")
+    if limit is not None and int(limit) < 0:
+        raise ValueError("limit must be non-negative")
+    data_names = [name for name in columns if not str(name).startswith("_")]
+    if not data_names:
+        raise ValueError("partner page requires at least one data column")
+    row_count = _column_length(columns, data_names[0])
+    end = row_count if limit is None else min(row_count, offset + int(limit))
+    sliced = {
+        name: column[offset:end]
+        for name, column in columns.items()
+        if not str(name).startswith("_")
+    }
+    sliced["_metadata"] = {
+        "adapter": "partner_page_columns",
+        "partner": runtime["name"],
+        "offset": offset,
+        "limit": None if limit is None else int(limit),
+        "row_count": max(0, end - offset),
+        "source_row_count": row_count,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return sliced
+
+
 def columnar_rows_to_partner_columns(
     rows,
     *,
