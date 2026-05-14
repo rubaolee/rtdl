@@ -74,13 +74,30 @@ class Goal1911V2ReadinessAggregatorTest(unittest.TestCase):
             "docs/reports/goal1947_v2_source_tree_only_policy_consensus_2026-05-13.md",
             SUPPORTING_REQUIRED,
         )
+        self.assertIn(
+            "docs/reports/goal1946_all_app_v2_perf_deep_dive_2026-05-13.md",
+            SUPPORTING_REQUIRED,
+        )
+        self.assertIn(
+            "docs/reports/goal1948_user_owned_native_continuation_example_2026-05-13.md",
+            SUPPORTING_REQUIRED,
+        )
+        self.assertIn(
+            "docs/reviews/goal1950_gemini_final_v2_release_review_2026-05-13.md",
+            SUPPORTING_REQUIRED,
+        )
         self.assertTrue(payload["source_tree_policy_consensus"])
+        self.assertIn(
+            "docs/reviews/goal1950_gemini_final_v2_release_review_2026-05-13.md",
+            payload["final_release_review_files"],
+        )
+        self.assertIn("final Claude v2.0 release review missing", payload["blockers"])
         self.assertNotIn(
             "final source-tree-only or packaging decision lacks 3-AI release consensus",
             payload["blockers"],
         )
         self.assertIsNone(payload["next_policy_review_handoff"])
-        self.assertIn("distinct non-Codex, non-Gemini", payload["next_required_external_review"])
+        self.assertIn("distinct Claude final release review", payload["next_required_external_review"])
         self.assertIn("goal1928_robot_collision_v2_partner_perf.py", payload["optional_hardware_command"])
         self.assertFalse(payload["claim_boundary"]["v2_0_release_authorized"])
         self.assertTrue(payload["claim_boundary"]["pod_evidence_collected"])

@@ -1,5 +1,6 @@
 {
   "blockers": [
+    "final Claude v2.0 release review missing",
     "final v2.0 release consensus missing",
     "explicit user-requested release action missing"
   ],
@@ -14,6 +15,10 @@
   "decisive_post_pod_review_files": [
     "docs/reviews/goal1912_claude_review_goal1903_post_pod_artifacts_2026-05-13.md"
   ],
+  "final_release_consensus_file": null,
+  "final_release_review_files": [
+    "docs/reviews/goal1950_gemini_final_v2_release_review_2026-05-13.md"
+  ],
   "goal": "Goal1911",
   "goal1905_acceptance_status": "pass",
   "goal1916_manifest_status": "pass",
@@ -21,7 +26,7 @@
   "missing_pod_artifacts": [],
   "missing_supporting_files": [],
   "next_policy_review_handoff": null,
-  "next_required_external_review": "Final v2.0 release consensus over Goal1909 plus Goal1946, using distinct non-Codex, non-Gemini external review before explicit release action",
+  "next_required_external_review": "Final v2.0 release consensus over Goal1909 plus Goal1946 still needs the distinct Claude final release review before explicit release action",
   "optional_hardware_command": "PYTHONPATH=src:. python3 scripts/goal1928_robot_collision_v2_partner_perf.py --pose-count 16777216 --obstacle-count 16384 --partners cupy,torch --repeat 3 --output docs/reports/goal1940_robot_segment_scaleup_pod/robot_16777216x16384.json",
   "post_pod_acceptance_command": "PYTHONPATH=src:. python3 scripts/goal1905_v2_partner_pod_batch_acceptance.py",
   "post_pod_manifest_command": "PYTHONPATH=src:. python3 scripts/goal1916_v2_post_pod_artifact_manifest.py",

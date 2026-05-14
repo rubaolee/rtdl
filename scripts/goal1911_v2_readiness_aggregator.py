@@ -19,6 +19,10 @@ REQUIRED_POD_ARTIFACTS = (
 GOAL1905_ACCEPTANCE = "docs/reports/goal1905_v2_partner_pod_batch_acceptance.json"
 GOAL1916_MANIFEST = "docs/reports/goal1916_v2_post_pod_artifact_manifest.json"
 SOURCE_TREE_POLICY_CONSENSUS = "docs/reports/goal1947_v2_source_tree_only_policy_consensus_2026-05-13.md"
+FINAL_RELEASE_HANDOFF = "HANDOFF_GOAL1949_FINAL_V2_RELEASE_REVIEW.md"
+FINAL_RELEASE_GEMINI_REVIEW = "docs/reviews/goal1950_gemini_final_v2_release_review_2026-05-13.md"
+FINAL_RELEASE_CLAUDE_REVIEW = "docs/reviews/goal1949_claude_final_v2_release_review_2026-05-13.md"
+FINAL_RELEASE_CONSENSUS = "docs/reports/goal1951_final_v2_release_consensus_2026-05-13.md"
 POST_POD_REVIEW_CANDIDATES = (
     "docs/reviews/goal1912_claude_review_goal1903_post_pod_artifacts_2026-05-13.md",
     "docs/reviews/goal1912_gemini_review_goal1903_post_pod_artifacts_2026-05-13.md",
@@ -74,7 +78,11 @@ SUPPORTING_REQUIRED = (
     "docs/reports/goal1943_v2_source_tree_only_release_decision_packet_2026-05-13.md",
     "docs/reviews/goal1944_gemini_review_v2_source_tree_only_policy_2026-05-13.md",
     "docs/reviews/goal1945_claude_review_v2_source_tree_only_policy_2026-05-13.md",
+    "docs/reports/goal1946_all_app_v2_perf_deep_dive_2026-05-13.md",
     SOURCE_TREE_POLICY_CONSENSUS,
+    "docs/reports/goal1948_user_owned_native_continuation_example_2026-05-13.md",
+    FINAL_RELEASE_HANDOFF,
+    FINAL_RELEASE_GEMINI_REVIEW,
 )
 
 
@@ -101,6 +109,9 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         path for path in POST_POD_DECISIVE_REVIEW_CANDIDATES if _exists(root, path)
     ]
     source_tree_policy_consensus = _exists(root, SOURCE_TREE_POLICY_CONSENSUS)
+    final_release_gemini_review = _exists(root, FINAL_RELEASE_GEMINI_REVIEW)
+    final_release_claude_review = _exists(root, FINAL_RELEASE_CLAUDE_REVIEW)
+    final_release_consensus = _exists(root, FINAL_RELEASE_CONSENSUS)
     local_preflight = _read_json_if_exists(root, "scratch/goal1908_final_preflight_post_commit.json")
     if local_preflight is None:
         local_preflight = _read_json_if_exists(root, "scratch/goal1908_final_preflight.json")
@@ -119,7 +130,12 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         blockers.append("fresh Claude or Pro-class review of actual pod artifacts missing")
     if not source_tree_policy_consensus:
         blockers.append("final source-tree-only or packaging decision lacks 3-AI release consensus")
-    blockers.append("final v2.0 release consensus missing")
+    if not final_release_gemini_review:
+        blockers.append("final Gemini v2.0 release review missing")
+    if not final_release_claude_review:
+        blockers.append("final Claude v2.0 release review missing")
+    if not final_release_consensus:
+        blockers.append("final v2.0 release consensus missing")
     blockers.append("explicit user-requested release action missing")
     pod_evidence_collected = (
         not missing_pod
@@ -137,13 +153,17 @@ def aggregate(root: pathlib.Path) -> dict[str, object]:
         "decisive_post_pod_review_files": decisive_post_pod_reviews,
         "source_tree_policy_consensus": source_tree_policy_consensus,
         "source_tree_policy_consensus_file": SOURCE_TREE_POLICY_CONSENSUS if source_tree_policy_consensus else None,
+        "final_release_review_files": [
+            path for path in (FINAL_RELEASE_GEMINI_REVIEW, FINAL_RELEASE_CLAUDE_REVIEW) if _exists(root, path)
+        ],
+        "final_release_consensus_file": FINAL_RELEASE_CONSENSUS if final_release_consensus else None,
         "missing_supporting_files": missing_supporting,
         "missing_pod_artifacts": missing_pod,
         "blockers": blockers,
         "next_policy_review_handoff": None,
         "next_required_external_review": (
-            "Final v2.0 release consensus over Goal1909 plus Goal1946, using "
-            "distinct non-Codex, non-Gemini external review before explicit release action"
+            "Final v2.0 release consensus over Goal1909 plus Goal1946 still needs "
+            "the distinct Claude final release review before explicit release action"
         ),
         "optional_hardware_command": (
             "PYTHONPATH=src:. python3 scripts/goal1928_robot_collision_v2_partner_perf.py "
