@@ -388,6 +388,8 @@ from .partner_adapters import fixed_radius_count_threshold_2d_optix_prepared_par
 from .partner_adapters import partner_group_any_by_key
 from .partner_adapters import partner_group_count_by_key
 from .partner_adapters import partner_group_count_unique_pairs_by_key
+from .partner_adapters import partner_group_max_by_key
+from .partner_adapters import partner_group_min_by_key
 from .partner_adapters import partner_group_sum_by_key
 from .partner_adapters import partner_unique_pair_keys
 from .partner_adapters import service_coverage_gap_flags_partner_columns
@@ -1291,6 +1293,8 @@ __all__ = [
     "partner_group_any_by_key",
     "partner_group_count_by_key",
     "partner_group_count_unique_pairs_by_key",
+    "partner_group_max_by_key",
+    "partner_group_min_by_key",
     "partner_group_sum_by_key",
     "partner_unique_pair_keys",
     "service_coverage_gap_flags_partner_columns",

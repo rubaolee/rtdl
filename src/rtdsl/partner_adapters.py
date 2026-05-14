@@ -135,6 +135,50 @@ def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "
     raise ValueError("partner must be 'torch' or 'cupy'")
 
 
+def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
+    """Compute max(values) per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.full((group_count,), initial, dtype=values.dtype, device=values.device)
+        if int(keys.numel()) == 0:
+            return out
+        return out.scatter_reduce(0, keys.to(torch.int64), values, reduce="amax", include_self=True)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out = cupy.full((group_count,), initial, dtype=values.dtype)
+        if int(keys.size) == 0:
+            return out
+        cupy.maximum.at(out, keys.astype(cupy.int64, copy=False), values)
+        return out
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_group_min_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
+    """Compute min(values) per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.full((group_count,), initial, dtype=values.dtype, device=values.device)
+        if int(keys.numel()) == 0:
+            return out
+        return out.scatter_reduce(0, keys.to(torch.int64), values, reduce="amin", include_self=True)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out = cupy.full((group_count,), initial, dtype=values.dtype)
+        if int(keys.size) == 0:
+            return out
+        cupy.minimum.at(out, keys.astype(cupy.int64, copy=False), values)
+        return out
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
 def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "torch"):
     """Reduce binary/int flags to one any-hit flag per integer key."""
     runtime = _partner_module(partner)

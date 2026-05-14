@@ -68,6 +68,7 @@ TEST_MODULES = (
     "tests.goal1958_all_app_v2_optimization_debt_audit_test",
     "tests.goal1960_shared_partner_reduction_primitives_test",
     "tests.goal1962_partner_unique_pair_group_counts_test",
+    "tests.goal1964_partner_group_min_max_reductions_test",
 )
 
 
