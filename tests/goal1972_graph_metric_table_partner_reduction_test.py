@@ -22,12 +22,18 @@ class Goal1972GraphMetricTablePartnerReductionTest(unittest.TestCase):
         init_text = INIT.read_text(encoding="utf-8")
 
         self.assertIn("def partner_metric_table_reduce_by_key", adapters)
+        self.assertIn("def metric_table_payload_to_partner_columns", adapters)
+        self.assertIn("def partner_metric_table_reduce_batch", adapters)
+        self.assertIn("caller_supplied_metric_table_payload", adapters)
+        self.assertIn("generic_metric_table_batch_reductions", adapters)
         self.assertIn("metric_keys and values must have the same length", adapters)
         self.assertIn("metric_keys must be present in output_metric_keys", adapters)
         self.assertIn("torch.searchsorted", adapters)
         self.assertIn("cupy.searchsorted", adapters)
         self.assertIn("reduce must be 'sum', 'max', or 'min'", adapters)
         self.assertIn("from .partner_adapters import partner_metric_table_reduce_by_key", init_text)
+        self.assertIn("from .partner_adapters import metric_table_payload_to_partner_columns", init_text)
+        self.assertIn('"partner_metric_table_reduce_batch"', init_text)
         self.assertIn('"partner_metric_table_reduce_by_key"', init_text)
 
     def test_graph_control_path_uses_metric_table_not_closed_form_rawkernel(self) -> None:
@@ -35,9 +41,10 @@ class Goal1972GraphMetricTablePartnerReductionTest(unittest.TestCase):
 
         self.assertIn("GRAPH_SUM_METRIC_IDS", text)
         self.assertIn("GRAPH_MAX_METRIC_IDS", text)
-        self.assertIn("partner_metric_table_reduce_by_key(", text)
-        self.assertIn('reduce="sum"', text)
-        self.assertIn('reduce="max"', text)
+        self.assertIn("metric_table_payload_to_partner_columns", text)
+        self.assertIn("partner_metric_table_reduce_batch", text)
+        self.assertIn('"reduce": "sum"', text)
+        self.assertIn('"reduce": "max"', text)
         self.assertNotIn("GRAPH_RAWKERNEL_SOURCE", text)
         self.assertNotIn("rtdl_user_graph_summary", text)
 

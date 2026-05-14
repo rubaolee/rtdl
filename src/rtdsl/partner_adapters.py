@@ -244,6 +244,77 @@ def partner_metric_table_reduce_by_key(
     raise ValueError("partner must be 'torch' or 'cupy'")
 
 
+def metric_table_payload_to_partner_columns(
+    payload,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Convert caller-supplied metric table arrays into partner-owned columns."""
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    source = dict(payload)
+    required = ("metric_keys", "values", "output_metric_keys")
+    for name in required:
+        if name not in source:
+            raise ValueError(f"metric table payload requires {name!r}")
+    metric_len = len(source["metric_keys"])
+    if len(source["values"]) != metric_len:
+        raise ValueError("metric_keys and values must have the same length")
+    if runtime["name"] == "torch":
+        columns = {
+            "metric_keys": module.as_tensor(source["metric_keys"], device=runtime["device"]),
+            "values": module.as_tensor(source["values"], device=runtime["device"]),
+            "output_metric_keys": module.as_tensor(source["output_metric_keys"], device=runtime["device"]),
+        }
+    else:
+        columns = {
+            "metric_keys": module.asarray(source["metric_keys"]),
+            "values": module.asarray(source["values"]),
+            "output_metric_keys": module.asarray(source["output_metric_keys"]),
+        }
+    columns["_metadata"] = {
+        "adapter": "metric_table_payload_to_partner_columns",
+        "partner": runtime["name"],
+        "row_count": int(metric_len),
+        "output_metric_count": int(len(source["output_metric_keys"])),
+        "input_contract": "caller_supplied_metric_table_payload",
+        "partner_reference_contract": "generic_metric_table_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
+def partner_metric_table_reduce_batch(metric_tables, *, partner: str = "torch") -> dict[str, object]:
+    """Reduce multiple generic metric tables in one public partner-adapter call."""
+    runtime = _partner_module(partner)
+    results: dict[str, object] = {}
+    tables = tuple(metric_tables)
+    for table in tables:
+        name = str(table["name"])
+        columns = table["columns"]
+        results[name] = partner_metric_table_reduce_by_key(
+            columns["metric_keys"],
+            columns["values"],
+            columns["output_metric_keys"],
+            partner=partner,
+            reduce=str(table.get("reduce", "sum")),
+            initial=table.get("initial", 0),
+        )
+    results["_metadata"] = {
+        "adapter": "partner_metric_table_reduce_batch",
+        "partner": runtime["name"],
+        "metric_table_count": len(tables),
+        "partner_reference_contract": "generic_metric_table_batch_reductions",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return results
+
+
 def partner_mask_indices(mask, *, partner: str = "torch"):
     """Return partner-owned indices where mask is true/non-zero."""
     runtime = _partner_module(partner)

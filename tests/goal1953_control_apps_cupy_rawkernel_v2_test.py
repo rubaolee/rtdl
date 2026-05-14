@@ -25,7 +25,7 @@ class Goal1953ControlAppsCuPyRawKernelV2Test(unittest.TestCase):
             self.assertIn(app, text)
         self.assertIn("cp.RawKernel", text)
         self.assertIn("DB_RAWKERNEL_SOURCE", text)
-        self.assertIn("partner_metric_table_reduce_by_key", text)
+        self.assertIn("partner_metric_table_reduce_batch", text)
         self.assertIn("POLYGON_PAIR_RAWKERNEL_SOURCE", text)
         self.assertIn("fairness_note", text)
         self.assertIn("not absolutely fair", text)
@@ -37,7 +37,8 @@ class Goal1953ControlAppsCuPyRawKernelV2Test(unittest.TestCase):
         self.assertNotIn("rtdl_user_graph_summary", text)
         self.assertIn("GRAPH_SUM_METRIC_IDS", text)
         self.assertIn("GRAPH_MAX_METRIC_IDS", text)
-        self.assertIn("partner_metric_table_reduce_by_key(", text)
+        self.assertIn("metric_table_payload_to_partner_columns", text)
+        self.assertIn("partner_metric_table_reduce_batch", text)
 
     def test_cpu_fallback_all_apps_match_v1_8_oracles(self) -> None:
         completed = subprocess.run(

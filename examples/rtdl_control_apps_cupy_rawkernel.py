@@ -21,7 +21,8 @@ from examples import rtdl_polygon_pair_overlap_area_rows
 from examples import rtdl_polygon_set_jaccard
 from examples import rtdl_sales_risk_screening
 from examples import rtdl_v0_7_db_app_demo
-from rtdsl.partner_adapters import partner_metric_table_reduce_by_key
+from rtdsl.partner_adapters import metric_table_payload_to_partner_columns
+from rtdsl.partner_adapters import partner_metric_table_reduce_batch
 from rtdsl.partner_adapters import columnar_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_columnar_predicate_reduce_batch
 from rtdsl.reference import _polygon_unit_cells
@@ -536,27 +537,40 @@ def _graph_cpu_continuation(copies: int) -> dict[str, object]:
 def _graph_cupy_continuation(copies: int) -> dict[str, object]:
     cp = _load_cupy()
     sum_keys, sum_row_values, max_keys, max_row_values = _graph_metric_rows(copies)
-    sum_output_keys = cp.asarray(GRAPH_SUM_METRIC_IDS)
-    max_output_keys = cp.asarray(GRAPH_MAX_METRIC_IDS)
-    sum_values = partner_metric_table_reduce_by_key(
-        cp.asarray(sum_keys),
-        cp.asarray(sum_row_values),
-        sum_output_keys,
+    reductions = partner_metric_table_reduce_batch(
+        (
+            {
+                "name": "sum_values",
+                "columns": metric_table_payload_to_partner_columns(
+                    {
+                        "metric_keys": sum_keys,
+                        "values": sum_row_values,
+                        "output_metric_keys": GRAPH_SUM_METRIC_IDS,
+                    },
+                    partner="cupy",
+                ),
+                "reduce": "sum",
+            },
+            {
+                "name": "max_values",
+                "columns": metric_table_payload_to_partner_columns(
+                    {
+                        "metric_keys": max_keys,
+                        "values": max_row_values,
+                        "output_metric_keys": GRAPH_MAX_METRIC_IDS,
+                    },
+                    partner="cupy",
+                ),
+                "reduce": "max",
+                "initial": 0,
+            },
+        ),
         partner="cupy",
-        reduce="sum",
-    )
-    max_values = partner_metric_table_reduce_by_key(
-        cp.asarray(max_keys),
-        cp.asarray(max_row_values),
-        max_output_keys,
-        partner="cupy",
-        reduce="max",
-        initial=0,
     )
     cp.cuda.Stream.null.synchronize()
     return _graph_summary_from_values(
-        cp.asnumpy(sum_values).astype(int).tolist(),
-        cp.asnumpy(max_values).astype(int).tolist(),
+        cp.asnumpy(reductions["sum_values"]).astype(int).tolist(),
+        cp.asnumpy(reductions["max_values"]).astype(int).tolist(),
     )
 
 
@@ -596,7 +610,7 @@ def run_graph_analytics_rawkernel(
         }
     return {
         "app": "graph_analytics",
-        "v2_control_app_path": "cupy_rawkernel" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
+        "v2_control_app_path": "partner_metric_table_reduce_batch" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
         "partner": partner,
         "copies": copies,
         "summary": summary,
