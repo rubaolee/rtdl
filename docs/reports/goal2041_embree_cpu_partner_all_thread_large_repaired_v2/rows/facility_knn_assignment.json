@@ -1,0 +1,77 @@
+{
+  "app": "facility_knn_assignment",
+  "attempts": [
+    {
+      "elapsed_sec": 0.9807848769705743,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 0.9728771030204371,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 0.9809676971053705,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_facility_knn_assignment.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "20000",
+    "--output-mode",
+    "summary",
+    "--optix-summary-mode",
+    "coverage_threshold_prepared"
+  ],
+  "cpu_partner_continuation": "generic-prepared-fixed-radius-threshold-count-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "boundary",
+    "copies",
+    "coverage_threshold",
+    "customer_count",
+    "depot_count",
+    "k",
+    "matches_oracle",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_summary_mode",
+    "oracle_coverage_threshold",
+    "oracle_decision_matches",
+    "oracle_identity_matches",
+    "output_mode",
+    "rt_core_accelerated",
+    "rtdl_role",
+    "service_radius"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 0.9809676971053705,
+    "median_s": 0.9807848769705743,
+    "min_s": 0.9728771030204371
+  }
+}

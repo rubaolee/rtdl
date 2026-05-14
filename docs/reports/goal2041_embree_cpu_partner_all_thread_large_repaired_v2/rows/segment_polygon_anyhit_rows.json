@@ -1,0 +1,72 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "attempts": [
+    {
+      "elapsed_sec": 0.28008202998898923,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 0.2790814850013703,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 0.28110332100186497,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_segment_polygon_anyhit_rows.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "512",
+    "--output-mode",
+    "rows",
+    "--output-capacity",
+    "8192"
+  ],
+  "cpu_partner_continuation": "numpy-compact-row-materialization-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "boundary",
+    "dataset",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "native_output_capacity",
+    "optix_mode",
+    "optix_performance",
+    "output_mode",
+    "row_count",
+    "rows",
+    "rt_core_accelerated",
+    "summary_source"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 0.28110332100186497,
+    "median_s": 0.28008202998898923,
+    "min_s": 0.2790814850013703
+  }
+}

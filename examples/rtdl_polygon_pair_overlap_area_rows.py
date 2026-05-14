@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import time
 from pathlib import Path
@@ -136,6 +137,57 @@ def _first_vertex_points(polygons: tuple[rt.Polygon, ...]) -> tuple[rt.Point, ..
         rt.Point(id=polygon.id, x=polygon.vertices[0][0], y=polygon.vertices[0][1])
         for polygon in polygons
     )
+
+
+def _bbox(polygon: rt.Polygon) -> tuple[float, float, float, float]:
+    xs = [vertex[0] for vertex in polygon.vertices]
+    ys = [vertex[1] for vertex in polygon.vertices]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def _bbox_candidate_pairs_partner(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    """CPU-partner grid broadphase for generic bbox-overlap candidates."""
+    all_bboxes = [_bbox(polygon) for polygon in (*left, *right)]
+    max_span = max(
+        max(max_x - min_x, max_y - min_y)
+        for min_x, min_y, max_x, max_y in all_bboxes
+    )
+    cell_size = max(1.0, max_span)
+    bins: dict[tuple[int, int], list[tuple[float, float, float, float, int]]] = {}
+    for polygon in right:
+        min_x, min_y, max_x, max_y = _bbox(polygon)
+        ix0 = math.floor(min_x / cell_size)
+        ix1 = math.floor(max_x / cell_size)
+        iy0 = math.floor(min_y / cell_size)
+        iy1 = math.floor(max_y / cell_size)
+        entry = (min_x, min_y, max_x, max_y, polygon.id)
+        for ix in range(ix0, ix1 + 1):
+            for iy in range(iy0, iy1 + 1):
+                bins.setdefault((ix, iy), []).append(entry)
+
+    pairs: set[tuple[int, int]] = set()
+    for left_polygon in left:
+        left_min_x, left_min_y, left_max_x, left_max_y = _bbox(left_polygon)
+        ix0 = math.floor(left_min_x / cell_size)
+        ix1 = math.floor(left_max_x / cell_size)
+        iy0 = math.floor(left_min_y / cell_size)
+        iy1 = math.floor(left_max_y / cell_size)
+        seen_right_ids: set[int] = set()
+        for ix in range(ix0, ix1 + 1):
+            for iy in range(iy0, iy1 + 1):
+                for right_min_x, right_min_y, right_max_x, right_max_y, right_id in bins.get((ix, iy), ()):
+                    if right_id in seen_right_ids:
+                        continue
+                    seen_right_ids.add(right_id)
+                    if right_max_x < left_min_x or right_min_x > left_max_x:
+                        continue
+                    if right_max_y < left_min_y or right_min_y > left_max_y:
+                        continue
+                    pairs.add((left_polygon.id, int(right_id)))
+    return pairs
 
 
 def _positive_candidate_pairs_backend(
@@ -288,10 +340,15 @@ def run_case(
     *,
     copies: int = 1,
     output_mode: str = "rows",
+    candidate_mode: str = "rt_positive",
     require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError("output_mode must be 'rows' or 'summary'")
+    if candidate_mode not in {"rt_positive", "partner_bbox"}:
+        raise ValueError("candidate_mode must be 'rt_positive' or 'partner_bbox'")
+    if candidate_mode == "partner_bbox" and backend not in {"embree", "optix"}:
+        raise ValueError("partner_bbox candidate mode requires backend 'embree' or 'optix'")
     _enforce_rt_core_requirement(backend, require_rt_core)
     input_start = time.perf_counter()
     case = make_authored_polygon_pair_overlap_case(copies=copies)
@@ -316,8 +373,14 @@ def run_case(
         run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
     elif backend == "embree":
         candidate_start = time.perf_counter()
-        candidate_pairs = _positive_candidate_pairs_embree(case["left"], case["right"])
+        candidate_pairs = (
+            _bbox_candidate_pairs_partner(case["left"], case["right"])
+            if candidate_mode == "partner_bbox"
+            else _positive_candidate_pairs_embree(case["left"], case["right"])
+        )
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
         if output_mode == "summary":
             generic_area_summary = rt.run_generic_polygon_pair_exact_area_summary(
                 left=case["left"],
@@ -339,8 +402,14 @@ def run_case(
         candidate_row_count = len(candidate_pairs)
     elif backend == "optix":
         candidate_start = time.perf_counter()
-        candidate_pairs = _positive_candidate_pairs_optix(case["left"], case["right"])
+        candidate_pairs = (
+            _bbox_candidate_pairs_partner(case["left"], case["right"])
+            if candidate_mode == "partner_bbox"
+            else _positive_candidate_pairs_optix(case["left"], case["right"])
+        )
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
         if output_mode == "summary":
             generic_area_summary = rt.run_generic_polygon_pair_exact_area_summary(
                 left=case["left"],
@@ -374,18 +443,27 @@ def run_case(
             if output_mode == "summary"
             else "native_polygon_pair_exact_rows"
         )
-    boundary = (
-        "Embree and OptiX modes use native LSI/PIP positive candidate discovery. "
-        "Summary mode then uses a backend-neutral native exact-area summary; rows mode "
-        "uses native exact row refinement. These modes are RT-candidate plus native "
-        "summary/row pipelines, not monolithic GPU area-overlay kernels."
-    )
+    if candidate_mode == "partner_bbox":
+        boundary = (
+            "Partner-bbox mode uses a CPU-partner generic bounding-box broadphase "
+            "to produce candidate pairs, then uses the backend-neutral native exact-area "
+            "summary. This is not RT candidate discovery, not a monolithic polygon overlay "
+            "engine, and not an app-custom native engine path."
+        )
+    else:
+        boundary = (
+            "Embree and OptiX modes use native LSI/PIP positive candidate discovery. "
+            "Summary mode then uses a backend-neutral native exact-area summary; rows mode "
+            "uses native exact row refinement. These modes are RT-candidate plus native "
+            "summary/row pipelines, not monolithic GPU area-overlay kernels."
+        )
     payload: dict[str, object] = {
         "app": "polygon_pair_overlap_area_rows",
         "backend": backend,
         "backend_mode": backend_mode,
         "copies": copies,
         "output_mode": output_mode,
+        "candidate_mode": candidate_mode,
         "left_polygon_count": len(case["left"]),
         "right_polygon_count": len(case["right"]),
         "row_count": summary["overlap_pair_count"],
@@ -394,7 +472,7 @@ def run_case(
         "generic_area_summary": generic_area_summary,
         "run_phases": run_phases,
         "rt_core_accelerated": False,
-        "rt_core_candidate_discovery_active": backend == "optix",
+        "rt_core_candidate_discovery_active": backend == "optix" and candidate_mode == "rt_positive",
         "native_continuation_active": backend in {"embree", "optix"},
         "native_continuation_backend": native_continuation_backend,
         "optix_performance": {
@@ -405,7 +483,19 @@ def run_case(
     }
     if output_mode == "rows":
         payload["rows"] = rows
-    return rt.attach_polygon_pair_primitive_contract(payload, backend=backend, output_mode=output_mode)
+    payload = rt.attach_polygon_pair_primitive_contract(payload, backend=backend, output_mode=output_mode)
+    if candidate_mode == "partner_bbox":
+        primitive_contract = dict(payload["primitive_contract"])
+        primitive_contract["candidate_primitive"] = "CPU_PARTNER_BBOX_BROADPHASE"
+        primitive_contract["backend_contract_role"] = "exact_area_summary_after_partner_candidates"
+        primitive_contract["claim_boundary"] = (
+            "partner_bbox candidate discovery only: a CPU partner emits generic bbox-overlap "
+            "candidate pairs before backend-neutral exact grid-cell area summary. This is not "
+            "RT candidate discovery, a generic polygon overlay engine, or public whole-app "
+            "speedup wording."
+        )
+        payload["primitive_contract"] = primitive_contract
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -413,6 +503,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
+    parser.add_argument(
+        "--candidate-mode",
+        choices=("rt_positive", "partner_bbox"),
+        default="rt_positive",
+        help="For Embree/OptiX summary paths, choose RT-positive candidate discovery or CPU-partner bbox broadphase.",
+    )
     parser.add_argument(
         "--require-rt-core",
         action="store_true",
@@ -425,6 +521,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.backend,
                 copies=args.copies,
                 output_mode=args.output_mode,
+                candidate_mode=args.candidate_mode,
                 require_rt_core=args.require_rt_core,
             ),
             indent=2,

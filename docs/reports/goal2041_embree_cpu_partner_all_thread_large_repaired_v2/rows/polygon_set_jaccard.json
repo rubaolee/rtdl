@@ -1,0 +1,78 @@
+{
+  "app": "polygon_set_jaccard",
+  "attempts": [
+    {
+      "elapsed_sec": 0.3945408270228654,
+      "repeat": 1,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 0.39600280299782753,
+      "repeat": 2,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    },
+    {
+      "elapsed_sec": 0.39582170895300806,
+      "repeat": 3,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_json": true,
+      "stdout_tail": ""
+    }
+  ],
+  "backend": "embree",
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "true_host_zero_copy_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "examples/rtdl_polygon_set_jaccard.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "2000",
+    "--output-mode",
+    "summary",
+    "--candidate-mode",
+    "partner_bbox"
+  ],
+  "cpu_partner_continuation": "cpu-partner-bbox-candidate-plus-native-jaccard-summary-target",
+  "last_payload_summary_keys": [
+    "app",
+    "backend",
+    "backend_mode",
+    "boundary",
+    "candidate_mode",
+    "candidate_row_count",
+    "copies",
+    "generic_jaccard_summary",
+    "left_polygon_count",
+    "native_continuation_active",
+    "native_continuation_backend",
+    "optix_performance",
+    "output_mode",
+    "primitive_contract",
+    "right_polygon_count",
+    "row_count",
+    "rt_core_accelerated",
+    "rt_core_candidate_discovery_active",
+    "run_phases",
+    "summary"
+  ],
+  "repeats": 3,
+  "status": "pass",
+  "timeout_sec": 900,
+  "timing": {
+    "max_s": 0.39600280299782753,
+    "median_s": 0.39582170895300806,
+    "min_s": 0.3945408270228654
+  }
+}

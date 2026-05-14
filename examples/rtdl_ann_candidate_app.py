@@ -335,9 +335,10 @@ def _run_partner_exact_quality(
     }
 
 
-def _run_optix_candidate_threshold(
+def _run_prepared_candidate_threshold(
     case: dict[str, tuple[rt.Point, ...]],
     *,
+    backend: str,
     radius: float,
 ) -> dict[str, object]:
     result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
@@ -345,9 +346,8 @@ def _run_optix_candidate_threshold(
         query_points=case["query_points"],
         radius=radius,
         threshold=1,
-        backend="optix",
+        backend=backend,
         max_radius=radius,
-        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
     )
     covered_count = int(result["threshold_reached_count"])
     within_candidate_radius = int(covered_count) == len(case["query_points"])
@@ -388,8 +388,8 @@ def run_app(
             raise ValueError("partner_exact_quality supports output_mode 'quality_summary' or 'rerank_summary'")
         payload = _run_partner_exact_quality(case, partner=partner)
         return {**payload, "copies": copies, "output_mode": output_mode}
-    if backend == "optix" and optix_summary_mode == "candidate_threshold_prepared":
-        coverage = _run_optix_candidate_threshold(case, radius=candidate_radius)
+    if backend in {"embree", "optix"} and optix_summary_mode == "candidate_threshold_prepared":
+        coverage = _run_prepared_candidate_threshold(case, backend=backend, radius=candidate_radius)
         oracle = expected_tiled_candidate_threshold(copies=copies, radius=candidate_radius)
         return {
             "app": "ann_candidate_search",
@@ -412,12 +412,14 @@ def run_app(
                 else None
             ),
             "rtdl_role": (
-                "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
+                f"RTDL/{backend} uses prepared fixed-radius threshold traversal to answer "
                 "the bounded ANN candidate-coverage decision: every query has at "
                 "least one Python-selected candidate within the acceptance radius."
             ),
             "optix_performance": _optix_performance(),
-            "rt_core_accelerated": True,
+            "rt_core_accelerated": backend == "optix",
+            "native_continuation_active": True,
+            "native_continuation_backend": f"{backend}_threshold_count",
             "boundary": (
                 "Candidate-threshold decision only; this is not a full ANN index, "
                 "not nearest-neighbor ranking, and not a recall/latency optimizer. "

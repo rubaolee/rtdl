@@ -1,0 +1,68 @@
+{
+  "goal": "Goal2041",
+  "date": "2026-05-14",
+  "status": "embree_cpu_partner_weak_rows_repaired_with_boundary",
+  "baseline_artifact": "docs/reports/goal2039_embree_cpu_partner_all_thread_local_linux_evidence_2026-05-14.json",
+  "repaired_artifact": "docs/reports/goal2041_embree_cpu_partner_all_thread_large_repaired_v2",
+  "environment": {
+    "host": "192.168.1.20",
+    "logical_cpu_count": 8,
+    "numpy": "2.4.4",
+    "torch": null,
+    "numba": null
+  },
+  "status_counts": {
+    "pass": 16
+  },
+  "repair_rows": {
+    "facility_knn_assignment": {
+      "before_median_s": 72.139829,
+      "after_median_s": 0.980785,
+      "speedup_x": 73.55,
+      "repair": "generic prepared fixed-radius threshold-reached count on Embree",
+      "boundary": "Coverage decision only; not exact K=3 fallback ranking."
+    },
+    "polygon_pair_overlap_area_rows": {
+      "before_median_s": 20.513456,
+      "after_median_s": 3.265121,
+      "speedup_x": 6.28,
+      "repair": "CPU-partner bbox broadphase candidates plus native exact-area summary",
+      "boundary": "Partner candidate policy; not RT candidate discovery and not broad polygon overlay."
+    },
+    "polygon_set_jaccard": {
+      "before_median_s": 6.213745,
+      "after_median_s": 0.395822,
+      "speedup_x": 15.7,
+      "repair": "CPU-partner bbox broadphase candidates plus native Jaccard set-area summary",
+      "boundary": "Diagnostic Jaccard summary; not fused GPU Jaccard and not broad polygon overlay."
+    },
+    "hausdorff_distance": {
+      "before_median_s": 109.705274,
+      "after_median_s": 1.199686,
+      "speedup_x": 91.44,
+      "repair": "generic prepared fixed-radius threshold-reached count on Embree for Hausdorff <= radius decision",
+      "boundary": "Threshold decision only; not exact Hausdorff distance/witness."
+    },
+    "ann_candidate_search": {
+      "before_median_s": 42.42301,
+      "after_median_s": 0.758911,
+      "speedup_x": 55.9,
+      "repair": "generic prepared fixed-radius threshold-reached count on Embree for candidate coverage",
+      "boundary": "Candidate coverage decision only; not exact ANN ranking or recall optimizer."
+    }
+  },
+  "design_findings": [
+    "The Embree CPU path was slow when app examples asked KNN/exact-distance rows to answer a decision-summary question.",
+    "Generic fixed-radius threshold/count is the right engine primitive for coverage, ANN candidate coverage, and Hausdorff threshold decisions.",
+    "Exact polygon overlap/Jaccard was slow because candidate discovery used multiple positive RT probes; a CPU partner bbox broadphase is a faster app-level candidate policy before native exact summary.",
+    "The richer exact semantics remain separate requirements: exact ranked KNN, exact Hausdorff distance/witness, and broad polygon overlay need future generic partner primitives or spatial-index adapters."
+  ],
+  "claim_boundary": {
+    "v2_0_release_authorized": false,
+    "broad_all_app_speedup_claim_authorized": false,
+    "exact_ranked_knn_solved": false,
+    "exact_hausdorff_distance_solved": false,
+    "generic_polygon_overlay_solved": false
+  },
+  "verdict": "accept-with-boundary"
+}

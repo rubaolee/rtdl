@@ -172,9 +172,10 @@ def _coverage_threshold_from_count_rows(
     }
 
 
-def _run_optix_coverage_threshold(
+def _run_prepared_coverage_threshold(
     case: dict[str, tuple[rt.Point, ...]],
     *,
+    backend: str,
     radius: float,
 ) -> dict[str, object]:
     result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
@@ -182,9 +183,8 @@ def _run_optix_coverage_threshold(
         query_points=case["customers"],
         radius=radius,
         threshold=1,
-        backend="optix",
+        backend=backend,
         max_radius=radius,
-        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
     )
     covered_count = int(result["threshold_reached_count"])
     all_customers_covered = int(covered_count) == len(case["customers"])
@@ -262,8 +262,8 @@ def run_case(
         raise ValueError("service_radius must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     case = make_facility_knn_case(copies=copies)
-    if backend == "optix" and optix_summary_mode == "coverage_threshold_prepared":
-        coverage = _run_optix_coverage_threshold(case, radius=service_radius)
+    if backend in {"embree", "optix"} and optix_summary_mode == "coverage_threshold_prepared":
+        coverage = _run_prepared_coverage_threshold(case, backend=backend, radius=service_radius)
         oracle = facility_coverage_oracle(case["customers"], case["depots"], radius=service_radius)
         return {
             "app": "facility_knn_assignment",
@@ -285,10 +285,10 @@ def run_case(
                 else None
             ),
             "native_continuation_active": True,
-            "native_continuation_backend": "optix_threshold_count",
-            "rt_core_accelerated": True,
+            "native_continuation_backend": f"{backend}_threshold_count",
+            "rt_core_accelerated": backend == "optix",
             "rtdl_role": (
-                "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
+                f"RTDL/{backend} uses prepared fixed-radius threshold traversal to answer "
                 "the bounded facility-coverage decision: every customer has at least "
                 "one depot within the service radius."
             ),

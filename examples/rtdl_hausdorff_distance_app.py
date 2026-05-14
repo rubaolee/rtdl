@@ -219,10 +219,11 @@ def _directed_threshold_from_count_rows(
     }
 
 
-def _run_optix_directed_threshold(
+def _run_prepared_directed_threshold(
     source: tuple[Point, ...],
     target: tuple[Point, ...],
     *,
+    backend: str,
     radius: float,
     label: str,
 ) -> dict[str, object]:
@@ -231,9 +232,8 @@ def _run_optix_directed_threshold(
         query_points=source,
         radius=radius,
         threshold=1,
-        backend="optix",
+        backend=backend,
         max_radius=radius,
-        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
     )
     covered_count = int(result["threshold_reached_count"])
     run_phases = result["run_phases"]
@@ -253,8 +253,8 @@ def _run_optix_directed_threshold(
         "generic_primitive": result["primitive"],
         "summary_primitive": result["summary_primitive"],
         "run_phases": {
-            "optix_prepare_sec": prepare_sec,
-            "optix_query_sec": query_sec,
+            "scene_prepare_sec": prepare_sec,
+            "query_fixed_radius_threshold_reached_count_sec": query_sec,
         },
     }
 
@@ -267,6 +267,8 @@ def _native_continuation_backend(
 ) -> str:
     if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
         return "optix_threshold_count"
+    if backend == "embree" and optix_summary_mode == "directed_threshold_prepared":
+        return "embree_threshold_count"
     if backend == "embree" and embree_result_mode == "directed_summary":
         return "embree_directed_hausdorff"
     return "none"
@@ -376,24 +378,28 @@ def run_app(
             "run_phases": run_phases,
         }
 
-    if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
-        directed_ab = _run_optix_directed_threshold(
+    if backend in {"embree", "optix"} and optix_summary_mode == "directed_threshold_prepared":
+        directed_ab = _run_prepared_directed_threshold(
             points_a,
             points_b,
+            backend=backend,
             radius=hausdorff_threshold,
             label="a_to_b",
         )
-        directed_ba = _run_optix_directed_threshold(
+        directed_ba = _run_prepared_directed_threshold(
             points_b,
             points_a,
+            backend=backend,
             radius=hausdorff_threshold,
             label="b_to_a",
         )
-        run_phases["optix_prepare_sec"] = float(directed_ab["run_phases"]["optix_prepare_sec"]) + float(
-            directed_ba["run_phases"]["optix_prepare_sec"]
+        run_phases["scene_prepare_sec"] = float(directed_ab["run_phases"]["scene_prepare_sec"]) + float(
+            directed_ba["run_phases"]["scene_prepare_sec"]
         )
-        run_phases["optix_query_sec"] = float(directed_ab["run_phases"]["optix_query_sec"]) + float(
-            directed_ba["run_phases"]["optix_query_sec"]
+        run_phases["query_fixed_radius_threshold_reached_count_sec"] = float(
+            directed_ab["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
+        ) + float(
+            directed_ba["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
         )
         postprocess_start = time.perf_counter()
         within_threshold = bool(directed_ab["within_threshold"] and directed_ba["within_threshold"])
@@ -425,7 +431,7 @@ def run_app(
                 else None
             ),
             "rtdl_role": (
-                "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
+                f"RTDL/{backend} uses prepared fixed-radius threshold traversal to answer "
                 "the Hausdorff decision subproblem: every source point has at least "
                 "one target within the threshold. Python combines the two directed "
                 "decisions and validates against the deterministic oracle."
@@ -433,7 +439,7 @@ def run_app(
             "optix_performance": _optix_performance(),
             "native_continuation_active": native_continuation_backend != "none",
             "native_continuation_backend": native_continuation_backend,
-            "rt_core_accelerated": True,
+            "rt_core_accelerated": backend == "optix",
             "run_phases": run_phases,
         }
 

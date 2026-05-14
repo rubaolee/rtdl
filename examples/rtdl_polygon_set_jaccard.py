@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import rtdsl as rt
 from rtdsl.reference import _polygon_set_unit_cells
 from rtdsl.reference import _polygon_unit_cells
+from examples.rtdl_polygon_pair_overlap_area_rows import _bbox_candidate_pairs_partner
 from examples.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_embree
 from examples.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_optix
 from examples.rtdl_polygon_pair_overlap_area_rows import _shift_vertices
@@ -191,11 +192,16 @@ def run_case(
     *,
     copies: int = 1,
     output_mode: str = "rows",
+    candidate_mode: str = "rt_positive",
     require_rt_core: bool = False,
     collection_capacity: int | None = None,
 ) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError("output_mode must be 'rows' or 'summary'")
+    if candidate_mode not in {"rt_positive", "partner_bbox"}:
+        raise ValueError("candidate_mode must be 'rt_positive' or 'partner_bbox'")
+    if candidate_mode == "partner_bbox" and backend not in {"embree", "optix"}:
+        raise ValueError("partner_bbox candidate mode requires backend 'embree' or 'optix'")
     _enforce_rt_core_requirement(backend, require_rt_core)
     input_start = time.perf_counter()
     case = make_authored_polygon_set_jaccard_case(copies=copies)
@@ -213,13 +219,22 @@ def run_case(
         candidate_row_count = None
     elif backend == "embree":
         candidate_start = time.perf_counter()
-        collection = _collect_candidate_pairs_bounded(
-            case["left"],
-            case["right"],
-            backend=backend,
-            collection_capacity=collection_capacity,
-        )
+        if candidate_mode == "partner_bbox":
+            candidate_pairs = _bbox_candidate_pairs_partner(case["left"], case["right"])
+            collection = rt.collect_k_bounded_candidate_pairs(candidate_pairs, k=collection_capacity)
+            collection["backend"] = backend
+            collection["native_collection"] = False
+            collection["native_collection_backend"] = "cpu_partner_bbox_broadphase"
+        else:
+            collection = _collect_candidate_pairs_bounded(
+                case["left"],
+                case["right"],
+                backend=backend,
+                collection_capacity=collection_capacity,
+            )
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
         generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
             left=case["left"],
             right=case["right"],
@@ -235,13 +250,22 @@ def run_case(
         candidate_row_count = generic_jaccard_summary["candidate_pair_count"]
     elif backend == "optix":
         candidate_start = time.perf_counter()
-        collection = _collect_candidate_pairs_bounded(
-            case["left"],
-            case["right"],
-            backend=backend,
-            collection_capacity=collection_capacity,
-        )
+        if candidate_mode == "partner_bbox":
+            candidate_pairs = _bbox_candidate_pairs_partner(case["left"], case["right"])
+            collection = rt.collect_k_bounded_candidate_pairs(candidate_pairs, k=collection_capacity)
+            collection["backend"] = backend
+            collection["native_collection"] = False
+            collection["native_collection_backend"] = "cpu_partner_bbox_broadphase"
+        else:
+            collection = _collect_candidate_pairs_bounded(
+                case["left"],
+                case["right"],
+                backend=backend,
+                collection_capacity=collection_capacity,
+            )
         run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
         generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
             left=case["left"],
             right=case["right"],
@@ -281,6 +305,7 @@ def run_case(
         "backend_mode": backend_mode,
         "copies": copies,
         "output_mode": output_mode,
+        "candidate_mode": candidate_mode,
         "left_polygon_count": len(case["left"]),
         "right_polygon_count": len(case["right"]),
         "row_count": len(rows),
@@ -289,7 +314,7 @@ def run_case(
         "generic_jaccard_summary": generic_jaccard_summary,
         "run_phases": run_phases,
         "rt_core_accelerated": False,
-        "rt_core_candidate_discovery_active": backend == "optix",
+        "rt_core_candidate_discovery_active": backend == "optix" and candidate_mode == "rt_positive",
         "native_continuation_active": backend in {"embree", "optix"},
         "native_continuation_backend": (
             "native_polygon_pair_area_summary" if backend in {"embree", "optix"} else None
@@ -299,15 +324,33 @@ def run_case(
             "note": rt.optix_app_performance_support("polygon_set_jaccard").note,
         },
         "boundary": (
-            "Embree mode uses native Embree bounded candidate discovery and a backend-neutral native "
-            "polygon-pair set-area summary. OptiX mode uses native OptiX bounded candidate discovery "
-            "and the same backend-neutral native polygon-pair set-area summary. These modes are "
-            "RT-candidate plus native summary-reduction pipelines, not monolithic GPU Jaccard kernels."
+            "Partner-bbox mode uses a CPU-partner generic bounding-box broadphase before "
+            "backend-neutral native polygon-pair set-area summary. RT-positive mode uses "
+            "native bounded candidate discovery. Neither mode is a monolithic GPU Jaccard kernel."
+            if candidate_mode == "partner_bbox"
+            else (
+                "Embree mode uses native Embree bounded candidate discovery and a backend-neutral native "
+                "polygon-pair set-area summary. OptiX mode uses native OptiX bounded candidate discovery "
+                "and the same backend-neutral native polygon-pair set-area summary. These modes are "
+                "RT-candidate plus native summary-reduction pipelines, not monolithic GPU Jaccard kernels."
+            )
         ),
     }
     if output_mode == "rows":
         payload["rows"] = rows
-    return rt.attach_polygon_jaccard_diagnostic_contract(payload, backend=backend, output_mode=output_mode)
+    payload = rt.attach_polygon_jaccard_diagnostic_contract(payload, backend=backend, output_mode=output_mode)
+    if candidate_mode == "partner_bbox":
+        primitive_contract = dict(payload["primitive_contract"])
+        primitive_contract["candidate_primitive"] = "CPU_PARTNER_BBOX_BROADPHASE"
+        primitive_contract["backend_contract_role"] = "jaccard_summary_after_partner_candidates"
+        primitive_contract["claim_boundary"] = (
+            "polygon_set_jaccard partner_bbox mode remains diagnostic: a CPU partner emits "
+            "generic bbox-overlap candidate pairs, then backend-neutral native polygon-pair "
+            "set-area summary computes the Jaccard ratio. This is not RT candidate discovery, "
+            "not a generic polygon overlay engine, and not public whole-app speedup wording."
+        )
+        payload["primitive_contract"] = primitive_contract
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -315,6 +358,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
+    parser.add_argument(
+        "--candidate-mode",
+        choices=("rt_positive", "partner_bbox"),
+        default="rt_positive",
+        help="For Embree/OptiX summary paths, choose RT-positive candidate discovery or CPU-partner bbox broadphase.",
+    )
     parser.add_argument(
         "--collection-capacity",
         type=int,
@@ -333,6 +382,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.backend,
                 copies=args.copies,
                 output_mode=args.output_mode,
+                candidate_mode=args.candidate_mode,
                 require_rt_core=args.require_rt_core,
                 collection_capacity=args.collection_capacity,
             ),
