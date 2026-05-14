@@ -71,6 +71,7 @@ TEST_MODULES = (
     "tests.goal1964_partner_group_min_max_reductions_test",
     "tests.goal1965_partner_column_compaction_primitives_test",
     "tests.goal1967_unique_pair_group_count_sparse_mapping_test",
+    "tests.goal1968_pod_control_perf_after_partner_algebra_test",
 )
 
 
