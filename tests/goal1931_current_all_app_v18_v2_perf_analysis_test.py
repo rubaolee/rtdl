@@ -71,7 +71,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertIn("upgrades Hausdorff", text)
         self.assertIn("upgrades facility KNN", text)
         self.assertIn("upgrades Barnes-Hut", text)
-        self.assertIn("upgrades DBSCAN", text)
+        self.assertIn("DBSCAN now also has a Goal1985 spatial-bucket", text)
         self.assertIn("upgrades ANN candidate search", text)
 
 

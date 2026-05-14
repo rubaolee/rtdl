@@ -226,19 +226,19 @@
     },
     {
       "app": "dbscan_clustering",
-      "artifact": "docs/reports/goal1981_pod_exact_radius_graph_components_dbscan_cupy_perf.json",
+      "artifact": "docs/reports/goal1985_pod_spatial_bucket_dbscan_cupy_perf.json",
       "claim_class": "implemented-needs-hardware",
       "classification": "positive-bounded-exact",
-      "insight": "Goal1981 upgrades DBSCAN from core-point threshold proxy to exact radius-graph component labels; current dense labeling is semantically correct but still needs a sparse/spatial-bucket partner implementation for larger rows.",
+      "insight": "Goal1985 keeps DBSCAN exact but replaces dense radius-graph timing with a generic spatial-bucket candidate graph; timing rows skip the O(n^2) Python oracle after a separate validation row. This is faster but still host-bucket-index bounded, not a true zero-copy claim.",
       "label": "dbscan clustering",
       "matrix_state": "harness-ready-pod-needed",
       "partner": "cupy",
-      "ratio_vs_v18_prepared": 0.5959621529745329,
+      "ratio_vs_v18_prepared": 0.2889054769234848,
       "ratio_vs_v18_reused_prepared": null,
       "size": 512,
-      "v18_prepared_s": 0.11799339950084686,
+      "v18_prepared_s": 0.008993059396743774,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 0.07031960040330887
+      "v2_prepared_partner_s": 0.0025981441140174866
     },
     {
       "app": "robot_collision_screening",

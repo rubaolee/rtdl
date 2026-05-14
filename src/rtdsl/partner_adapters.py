@@ -917,6 +917,146 @@ def radius_graph_components_2d_partner_columns(
     return columns
 
 
+def _partner_float_column_to_host(column, *, partner: str) -> list[float]:
+    if partner == "torch":
+        return [float(item) for item in column.detach().cpu().tolist()]
+    if partner == "cupy":
+        import cupy
+
+        return [float(item) for item in cupy.asnumpy(column).tolist()]
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def radius_graph_components_2d_spatial_bucket_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Label radius-graph components with a generic sparse spatial-bucket index."""
+    import math
+
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    runtime = _partner_module(partner)
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    ids = runtime["to_host"](point_columns["ids"])
+    xs = _partner_float_column_to_host(point_columns["x"], partner=runtime["name"])
+    ys = _partner_float_column_to_host(point_columns["y"], partner=runtime["name"])
+    cell_size = radius if radius > 0.0 else 1.0
+    radius_sq = radius * radius
+
+    cells: dict[tuple[int, int], list[int]] = {}
+    for index, (x, y) in enumerate(zip(xs, ys)):
+        key = (math.floor(x / cell_size), math.floor(y / cell_size))
+        cells.setdefault(key, []).append(index)
+
+    neighbor_counts = [1 for _ in range(point_count)]
+    within_pairs: list[tuple[int, int]] = []
+    neighbor_offsets = tuple((dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+    for cell_key, left_indices in cells.items():
+        cx, cy = cell_key
+        for ox, oy in neighbor_offsets:
+            other_key = (cx + ox, cy + oy)
+            if other_key not in cells or other_key < cell_key:
+                continue
+            right_indices = cells[other_key]
+            for left_offset, left in enumerate(left_indices):
+                start = left_offset + 1 if other_key == cell_key else 0
+                for right in right_indices[start:]:
+                    dx = xs[left] - xs[right]
+                    dy = ys[left] - ys[right]
+                    if dx * dx + dy * dy <= radius_sq:
+                        neighbor_counts[left] += 1
+                        neighbor_counts[right] += 1
+                        within_pairs.append((left, right))
+
+    is_core_host = [count >= min_neighbors for count in neighbor_counts]
+    parent = list(range(point_count))
+
+    def find(item: int) -> int:
+        while parent[item] != item:
+            parent[item] = parent[parent[item]]
+            item = parent[item]
+        return item
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return
+        if left_root < right_root:
+            parent[right_root] = left_root
+        else:
+            parent[left_root] = right_root
+
+    for left, right in within_pairs:
+        if is_core_host[left] and is_core_host[right]:
+            union(left, right)
+
+    component_roots: list[int] = [-1 for _ in range(point_count)]
+    for index, is_core in enumerate(is_core_host):
+        if is_core:
+            component_roots[index] = find(index)
+    for left, right in within_pairs:
+        if component_roots[left] == -1 and is_core_host[right]:
+            component_roots[left] = find(right)
+        if component_roots[right] == -1 and is_core_host[left]:
+            component_roots[right] = find(left)
+
+    dense_by_root: dict[int, int] = {}
+    next_label = 1
+    dense_labels: list[int] = []
+    for root in component_roots:
+        if root < 0:
+            dense_labels.append(-1)
+            continue
+        if root not in dense_by_root:
+            dense_by_root[root] = next_label
+            next_label += 1
+        dense_labels.append(dense_by_root[root])
+
+    device = runtime["device"]
+    label_dtype = runtime["module"].int64
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": runtime["tensor"](dense_labels, label_dtype, device),
+        "is_core": runtime["tensor"]([1 if item else 0 for item in is_core_host], runtime["uint32"], device),
+        "neighbor_counts": runtime["tensor"](neighbor_counts, runtime["uint32"], device),
+    }
+    metadata = {
+        "adapter": "radius_graph_components_2d_spatial_bucket_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": len(cells),
+        "candidate_edge_count": len(within_pairs),
+        "component_label_policy": "dense_positive_labels_by_lowest_component_seed_noise_minus_one",
+        "host_bucket_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    runtime["sync"]()
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def _polygon_triangle_columns(polygons: tuple[_CanonicalPolygon, ...], partner: dict) -> tuple[dict[str, object], object]:
     ids: list[int] = []
     x0: list[float] = []

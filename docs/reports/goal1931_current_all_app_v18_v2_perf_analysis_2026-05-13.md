@@ -23,7 +23,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 | `hausdorff_distance` | `positive-bounded-exact` | cupy | 512 | 0.325964 | 0.002686 | 0.008241 | Goal1975 upgrades Hausdorff from a fixed-radius threshold proxy to exact partner-reference directed Hausdorff via min-distance then max-distance reductions; the CPU baseline is limited to a small exact row and this is not an RT-core claim. |
 | `ann_candidate_search` | `positive-bounded-exact` | cupy | 384 | 0.128558 | 0.004728 | 0.036774 | Goal1983 upgrades ANN candidate search from a fixed-radius coverage proxy to an exact partner top-k quality reference over the candidate subset and the full search set. This measures rerank/quality semantics, not an ANN index build or recall-latency optimizer. |
 | `outlier_detection` | `positive` | cupy | 524288 | 1.357974 | 0.000439 | 0.000323 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
-| `dbscan_clustering` | `positive-bounded-exact` | cupy | 512 | 0.117993 | 0.070320 | 0.595962 | Goal1981 upgrades DBSCAN from core-point threshold proxy to exact radius-graph component labels; current dense labeling is semantically correct but still needs a sparse/spatial-bucket partner implementation for larger rows. |
+| `dbscan_clustering` | `positive-bounded-exact` | cupy | 512 | 0.008993 | 0.002598 | 0.288905 | Goal1985 keeps DBSCAN exact but replaces dense radius-graph timing with a generic spatial-bucket candidate graph; timing rows skip the O(n^2) Python oracle after a separate validation row. This is faster but still host-bucket-index bounded, not a true zero-copy claim. |
 | `robot_collision_screening` | `positive-subsecond` | cupy | 8388608 | 0.524696 | 0.009835 | 0.018745 | Goal1940 proves exact pose-flag parity and strong ratios through 8,388,608 poses, but the v1.8 baseline remains subsecond, so this is not a seconds-scale whole-app claim. |
 | `barnes_hut_force_app` | `positive-bounded-exact` | cupy | 512 | 0.103554 | 0.002056 | 0.019859 | Goal1979 upgrades Barnes-Hut from node-coverage threshold proxy to exact all-pairs force-vector partner reference rows; this is not hierarchical Barnes-Hut tree-opening or RT-core acceleration. |
 
@@ -38,6 +38,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 - Barnes-Hut now has exact partner-reference force-vector rows after Goal1979, so node coverage stays useful but no longer stands in for force output.
 - DBSCAN now has exact partner-reference radius-graph component labels after Goal1981, but the dense implementation is still marked as optimization debt.
 - ANN candidate search now has an exact partner-reference top-k quality row after Goal1983, but ANN index construction and recall/latency optimization remain outside this slice.
+- DBSCAN now also has a Goal1985 spatial-bucket candidate graph timing row; it fixes the dense timing path but remains bounded by a host-built sparse index.
 
 ## Release Boundary
 

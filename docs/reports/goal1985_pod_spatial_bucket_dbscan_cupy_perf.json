@@ -1,0 +1,160 @@
+{
+  "claim_boundary": {
+    "exact_partner_reference_path": true,
+    "host_bucket_index_used": true,
+    "native_engine_customization": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1985",
+  "gpu": "NVIDIA RTX 2000 Ada Generation",
+  "results": [
+    {
+      "candidate_edge_count": 576,
+      "cell_count": 339,
+      "cluster_count": 128,
+      "copies": 64,
+      "host_bucket_index_used": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+      "point_count": 512,
+      "spatial_vs_dense_exact_ratio": 0.2889054769234848,
+      "v2_dense_exact_cluster_wall_s": {
+        "max_s": 0.1396665871143341,
+        "median_s": 0.008993059396743774,
+        "min_s": 0.008540049195289612,
+        "repeats": 3
+      },
+      "v2_spatial_bucket_exact_cluster_wall_s": {
+        "max_s": 0.002617381513118744,
+        "median_s": 0.0025981441140174866,
+        "min_s": 0.002503044903278351,
+        "repeats": 5
+      },
+      "validation_matches_oracle": true,
+      "validation_skipped_for_timing": true,
+      "validation_wall_s": {
+        "max_s": 0.7189155295491219,
+        "median_s": 0.7189155295491219,
+        "min_s": 0.7189155295491219,
+        "repeats": 1
+      }
+    },
+    {
+      "candidate_edge_count": 2304,
+      "cell_count": 1354,
+      "cluster_count": 512,
+      "copies": 256,
+      "host_bucket_index_used": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+      "point_count": 2048,
+      "spatial_vs_dense_exact_ratio": 0.28066999885778104,
+      "v2_dense_exact_cluster_wall_s": {
+        "max_s": 0.035863690078258514,
+        "median_s": 0.032810188829898834,
+        "min_s": 0.03259565681219101,
+        "repeats": 3
+      },
+      "v2_spatial_bucket_exact_cluster_wall_s": {
+        "max_s": 0.009561367332935333,
+        "median_s": 0.009208835661411285,
+        "min_s": 0.009057119488716125,
+        "repeats": 5
+      },
+      "validation_matches_oracle": null,
+      "validation_skipped_for_timing": true,
+      "validation_wall_s": null
+    },
+    {
+      "candidate_edge_count": 4608,
+      "cell_count": 2707,
+      "cluster_count": 1024,
+      "copies": 512,
+      "host_bucket_index_used": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+      "point_count": 4096,
+      "spatial_vs_dense_exact_ratio": 0.2563103510842914,
+      "v2_dense_exact_cluster_wall_s": {
+        "max_s": 0.07460468262434006,
+        "median_s": 0.07296823710203171,
+        "min_s": 0.07156141102313995,
+        "repeats": 3
+      },
+      "v2_spatial_bucket_exact_cluster_wall_s": {
+        "max_s": 0.029284797608852386,
+        "median_s": 0.018702514469623566,
+        "min_s": 0.01798802614212036,
+        "repeats": 5
+      },
+      "validation_matches_oracle": null,
+      "validation_skipped_for_timing": true,
+      "validation_wall_s": null
+    },
+    {
+      "candidate_edge_count": 9216,
+      "cell_count": 5414,
+      "cluster_count": 2048,
+      "copies": 1024,
+      "host_bucket_index_used": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+      "point_count": 8192,
+      "spatial_vs_dense_exact_ratio": null,
+      "v2_spatial_bucket_exact_cluster_wall_s": {
+        "max_s": 0.047931842505931854,
+        "median_s": 0.037251539528369904,
+        "min_s": 0.03571458160877228,
+        "repeats": 5
+      },
+      "validation_matches_oracle": null,
+      "validation_skipped_for_timing": true,
+      "validation_wall_s": null
+    },
+    {
+      "candidate_edge_count": 18432,
+      "cell_count": 10826,
+      "cluster_count": 4096,
+      "copies": 2048,
+      "host_bucket_index_used": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+      "point_count": 16384,
+      "spatial_vs_dense_exact_ratio": null,
+      "v2_spatial_bucket_exact_cluster_wall_s": {
+        "max_s": 0.08893703669309616,
+        "median_s": 0.08778394013643265,
+        "min_s": 0.07344462722539902,
+        "repeats": 5
+      },
+      "validation_matches_oracle": null,
+      "validation_skipped_for_timing": true,
+      "validation_wall_s": null
+    },
+    {
+      "candidate_edge_count": 36864,
+      "cell_count": 21651,
+      "cluster_count": 8192,
+      "copies": 4096,
+      "host_bucket_index_used": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+      "point_count": 32768,
+      "spatial_vs_dense_exact_ratio": null,
+      "v2_spatial_bucket_exact_cluster_wall_s": {
+        "max_s": 0.18797392398118973,
+        "median_s": 0.1689753755927086,
+        "min_s": 0.16808020323514938,
+        "repeats": 3
+      },
+      "validation_matches_oracle": null,
+      "validation_skipped_for_timing": true,
+      "validation_wall_s": null
+    }
+  ],
+  "source_commit_label": "working-tree-after-5f1eab82-dbscan-spatial-bucket-skip-validation",
+  "status": "pass"
+}

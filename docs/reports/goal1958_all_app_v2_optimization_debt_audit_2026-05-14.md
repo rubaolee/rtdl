@@ -37,7 +37,7 @@ all-app matrix. The remaining question is quality of the v2 path.
 | `hausdorff_distance` | positive bounded exact partner row | v2/CPU exact `0.00824x` | Goal1975 replaces the threshold proxy with exact min-distance then max-distance partner reductions; bounded because it is partner-reference evidence, not an RT-core speedup claim. |
 | `ann_candidate_search` | positive bounded exact quality row | v2/CPU exact `0.01881x` | Goal1983 replaces the coverage proxy as the semantic representative with exact candidate-subset rerank plus exact full-search quality comparison; bounded because it is not an ANN index or recall/latency optimizer. |
 | `outlier_detection` | positive | v2/v1.8 `0.000323x` | Healthy count-threshold shape; avoid returning full neighbor rows. |
-| `dbscan_clustering` | positive bounded exact cluster row | v2/CPU exact `0.596x` | Goal1981 replaces core-count proxy with exact radius-graph component labels; dense implementation is correct but still needs sparse/spatial-bucket optimization. |
+| `dbscan_clustering` | positive bounded exact spatial-bucket row | spatial/dense exact `0.256x` | Goal1985 replaces the dense timing row with a generic spatial-bucket candidate graph and separates validation from timing; still host-index bounded, not true zero-copy. |
 | `robot_collision_screening` | positive-subsecond | v2/v1.8 `0.0187x` | Strong ratio but v1.8 is subsecond; keep exact pose-flag parity and scale evidence. |
 | `barnes_hut_force_app` | positive bounded exact force row | v2/CPU exact `0.01986x` | Goal1979 replaces node coverage as the representative row with exact pairwise force-vector partner output; bounded because this is not hierarchical Barnes-Hut tree opening or RT-core acceleration. |
 
@@ -62,7 +62,8 @@ The remaining debt is not one bug. It is four patterns:
    labels. Goal1983 removes `ann_candidate_search` from this bucket by adding
    exact candidate-subset rerank plus exact full-search quality comparison.
    The remaining richer semantics need a true ANN indexing contract and a
-   faster sparse/spatial DBSCAN component implementation.
+   fully partner/device-side sparse DBSCAN index; Goal1985 fixes the dense
+   timing path but still uses a host-built bucket index.
 
 3. **Row materialization**
 

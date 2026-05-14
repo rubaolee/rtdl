@@ -345,9 +345,15 @@ def _run_partner_exact_clusters(
     points: tuple[rt.Point, ...],
     *,
     partner: str,
+    spatial_bucket: bool = False,
 ) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
     point_columns = rt.point_rows_to_partner_columns(points, partner=partner)
-    result = rt.radius_graph_components_2d_partner_columns(
+    adapter = (
+        rt.radius_graph_components_2d_spatial_bucket_partner_columns
+        if spatial_bucket
+        else rt.radius_graph_components_2d_partner_columns
+    )
+    result = adapter(
         point_columns,
         radius=EPSILON,
         min_neighbors=MIN_POINTS,
@@ -527,6 +533,7 @@ def run_app(
     embree_summary_mode: str = "rows",
     output_mode: str = "full",
     partner: str = "cupy",
+    skip_validation: bool = False,
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
@@ -539,9 +546,13 @@ def run_app(
     core_flag_rows: tuple[dict[str, object], ...] = ()
     scalar_core_count: dict[str, int | str | None] | None = None
     partner_metadata: dict[str, object] | None = None
-    if backend == "partner_exact_clusters":
+    if backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"}:
         neighbor_rows = ()
-        cluster_rows, partner_metadata = _run_partner_exact_clusters(points, partner=partner)
+        cluster_rows, partner_metadata = _run_partner_exact_clusters(
+            points,
+            partner=partner,
+            spatial_bucket=backend == "partner_spatial_exact_clusters",
+        )
     elif output_mode == "core_count" and backend == "optix":
         neighbor_rows = ()
         cluster_rows = ()
@@ -593,7 +604,11 @@ def run_app(
     else:
         neighbor_rows = _run_rows(backend, case)
         cluster_rows = cluster_from_neighbor_rows(points, neighbor_rows)
-    if output_mode in {"core_flags", "core_count"} or core_flag_rows:
+    validation_skipped = skip_validation and backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"}
+    if validation_skipped:
+        oracle_rows = ()
+        oracle_core_flag_rows = ()
+    elif output_mode in {"core_flags", "core_count"} or core_flag_rows:
         oracle_rows = ()
         oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=copies)
     else:
@@ -606,6 +621,8 @@ def run_app(
         core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in core_flag_rows]
         oracle_core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in oracle_core_flag_rows]
         matches_oracle = core_flags == oracle_core_flags
+    elif validation_skipped:
+        matches_oracle = None
     else:
         matches_oracle = cluster_rows == oracle_rows
     native_continuation_backend = _native_continuation_backend(
@@ -621,7 +638,7 @@ def run_app(
         "output_mode": output_mode,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else "not_applicable",
         "embree_summary_mode": embree_summary_mode if backend == "embree" else "not_applicable",
-        "partner": partner if backend == "partner_exact_clusters" else None,
+        "partner": partner if backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"} else None,
         "epsilon": EPSILON,
         "min_points": MIN_POINTS,
         "k_max": K_MAX,
@@ -641,6 +658,7 @@ def run_app(
         "oracle_cluster_rows": oracle_rows,
         "oracle_core_flag_rows": oracle_core_flag_rows,
         "oracle_core_count": sum(1 for row in oracle_core_flag_rows if bool(row.get("is_core", False))),
+        "validation_skipped": validation_skipped,
         "summary_mode": scalar_core_count["summary_mode"] if scalar_core_count is not None else None,
         "generic_primitive": (
             scalar_core_count.get("generic_primitive") if scalar_core_count is not None else None
@@ -653,8 +671,8 @@ def run_app(
         ),
         "partner_metadata": partner_metadata,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The partner_exact_clusters path computes generic radius-graph component labels over point columns outside the native engine.",
-        "boundary": "Bounded app-level DBSCAN demo only. The partner_exact_clusters path is an exact radius-graph component reference, not a native engine DBSCAN continuation and not an RT-core claim. Embree/OptiX rt_core_flags remains a fixed-radius core predicate prototype.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The partner exact-cluster paths compute generic radius-graph component labels over point columns outside the native engine.",
+        "boundary": "Bounded app-level DBSCAN demo only. The partner exact-cluster paths are exact radius-graph component references, not a native engine DBSCAN continuation and not an RT-core claim. The spatial-bucket path uses a host-built sparse bucket index as an explicit transitional debt, not a true zero-copy claim.",
     }
 
 
@@ -664,7 +682,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy", "partner_exact_clusters"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy", "partner_exact_clusters", "partner_spatial_exact_clusters"),
         default="cpu_python_reference",
     )
     parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
@@ -687,6 +705,11 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="when backend=embree, use native fixed-radius threshold counts for core flags only; prepared mode reuses an Embree BVH handle inside the run",
     )
+    parser.add_argument(
+        "--skip-validation",
+        action="store_true",
+        help="For partner exact-cluster timing rows, skip the O(n^2) Python oracle after separate validation has been recorded.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -697,6 +720,7 @@ def main(argv: list[str] | None = None) -> int:
                 embree_summary_mode=args.embree_summary_mode,
                 output_mode=args.output_mode,
                 partner=args.partner,
+                skip_validation=args.skip_validation,
             ),
             indent=2,
             sort_keys=True,

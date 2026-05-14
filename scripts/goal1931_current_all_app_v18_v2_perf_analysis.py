@@ -509,6 +509,45 @@ def _goal1981_exact_dbscan_component_rows() -> list[dict[str, object]]:
     ]
 
 
+def _goal1985_spatial_bucket_dbscan_rows() -> list[dict[str, object]]:
+    path = "docs/reports/goal1985_pod_spatial_bucket_dbscan_cupy_perf.json"
+    artifact = _read_json(ROOT / path)
+    if not artifact:
+        return []
+    candidates = [
+        row
+        for row in artifact.get("results", [])
+        if isinstance(row, dict) and isinstance(row.get("spatial_vs_dense_exact_ratio"), (int, float))
+    ]
+    if not candidates:
+        return []
+    result = min(candidates, key=lambda row: int(row.get("copies", 0) or 0))
+    dense = _median(result, "v2_dense_exact_cluster_wall_s")
+    spatial = _median(result, "v2_spatial_bucket_exact_cluster_wall_s")
+    ratio = result.get("spatial_vs_dense_exact_ratio")
+    return [
+        {
+            "app": "dbscan_clustering",
+            "label": "dbscan clustering",
+            "size": int(result.get("point_count", 0) or 0),
+            "partner": str(result.get("partner", "cupy")),
+            "v18_prepared_s": dense,
+            "v18_reused_prepared_s": None,
+            "v2_prepared_partner_s": spatial,
+            "ratio_vs_v18_prepared": float(ratio) if isinstance(ratio, (int, float)) else _ratio(spatial, dense),
+            "ratio_vs_v18_reused_prepared": None,
+            "classification": "positive-bounded-exact",
+            "insight": (
+                "Goal1985 keeps DBSCAN exact but replaces dense radius-graph timing with a generic "
+                "spatial-bucket candidate graph; timing rows skip the O(n^2) Python oracle after "
+                "a separate validation row. This is faster but still host-bucket-index bounded, "
+                "not a true zero-copy claim."
+            ),
+            "artifact": path,
+        }
+    ]
+
+
 def _goal1983_exact_ann_quality_rows() -> list[dict[str, object]]:
     path = "docs/reports/goal1983_pod_exact_ann_candidate_quality_cupy_perf.json"
     artifact = _read_json(ROOT / path)
@@ -591,11 +630,13 @@ def build_analysis() -> dict[str, object]:
     exact_facility_top_k_rows = _goal1978_exact_facility_top_k_rows()
     exact_barnes_force_rows = _goal1979_exact_barnes_force_rows()
     exact_dbscan_component_rows = _goal1981_exact_dbscan_component_rows()
+    spatial_bucket_dbscan_rows = _goal1985_spatial_bucket_dbscan_rows()
     exact_ann_quality_rows = _goal1983_exact_ann_quality_rows()
     measured_rows.extend(exact_hausdorff_rows)
     measured_rows.extend(exact_facility_top_k_rows)
     measured_rows.extend(exact_barnes_force_rows)
     measured_rows.extend(exact_dbscan_component_rows)
+    measured_rows.extend(spatial_bucket_dbscan_rows)
     measured_rows.extend(exact_ann_quality_rows)
     best = _best_measured(measured_rows)
     if exact_hausdorff_rows:
@@ -614,6 +655,10 @@ def build_analysis() -> dict[str, object]:
         # Full component labels are the DBSCAN app semantics; core counts are
         # only the density predicate.
         best["dbscan_clustering"] = exact_dbscan_component_rows[0]
+    if spatial_bucket_dbscan_rows:
+        # Prefer the sparse candidate graph timing for DBSCAN once validation
+        # has established exact label parity on a smaller row.
+        best["dbscan_clustering"] = spatial_bucket_dbscan_rows[0]
     if exact_ann_quality_rows:
         # ANN quality is the authored app semantic row; fixed-radius coverage
         # remains only a bounded candidate-proxy decision.
@@ -726,6 +771,7 @@ def to_markdown(payload: dict[str, object]) -> str:
             "- Barnes-Hut now has exact partner-reference force-vector rows after Goal1979, so node coverage stays useful but no longer stands in for force output.",
             "- DBSCAN now has exact partner-reference radius-graph component labels after Goal1981, but the dense implementation is still marked as optimization debt.",
             "- ANN candidate search now has an exact partner-reference top-k quality row after Goal1983, but ANN index construction and recall/latency optimization remain outside this slice.",
+            "- DBSCAN now also has a Goal1985 spatial-bucket candidate graph timing row; it fixes the dense timing path but remains bounded by a host-built sparse index.",
             "",
             "## Release Boundary",
             "",
