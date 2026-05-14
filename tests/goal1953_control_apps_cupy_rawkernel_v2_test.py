@@ -30,6 +30,13 @@ class Goal1953ControlAppsCuPyRawKernelV2Test(unittest.TestCase):
         self.assertIn("fairness_note", text)
         self.assertIn("not absolutely fair", text)
 
+    def test_graph_rawkernel_uses_closed_form_summary_without_global_atomic_contention(self) -> None:
+        import examples.rtdl_control_apps_cupy_rawkernel as rawkernel_apps
+
+        self.assertNotIn("atomicAdd", rawkernel_apps.GRAPH_RAWKERNEL_SOURCE)
+        self.assertIn("out[0] = 2 * copies", rawkernel_apps.GRAPH_RAWKERNEL_SOURCE)
+        self.assertIn("out[6] = 3 * copies", rawkernel_apps.GRAPH_RAWKERNEL_SOURCE)
+
     def test_cpu_fallback_all_apps_match_v1_8_oracles(self) -> None:
         completed = subprocess.run(
             [

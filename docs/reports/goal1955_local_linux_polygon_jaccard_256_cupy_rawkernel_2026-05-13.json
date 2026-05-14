@@ -1,0 +1,69 @@
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "cpu_all_pairs",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA GeForce GTX 1070, 580.126.09"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "polygon_set_jaccard",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 256,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+CuPy RawKernel+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "sha256": "3d2321515871c8acede2d25683acf145102508d60c11ccab9130ae1c9553035f",
+        "summary": {
+          "intersection_area": 1280,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 3328,
+          "right_area": 2816,
+          "union_area": 4864
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 0.027967554051429033,
+        "median_s": 0.027709731948561966,
+        "min_s": 0.027650986099615693
+      },
+      "v2_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "candidate_backend": "cpu_all_pairs",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "18548ce3fd4d9366914dfe9afab7a5acb9dbc0c9b187fe348cd2bbd679cf2fc6",
+        "summary": {
+          "intersection_area": 1280,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 3328,
+          "right_area": 2816,
+          "union_area": 4864
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.46979502402246,
+        "median_s": 0.4077257430180907,
+        "min_s": 0.40233435994014144
+      },
+      "v2_vs_v1_8_ratio": 14.714171316234989,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "status": "rawkernel-control-app-perf-smoke"
+}

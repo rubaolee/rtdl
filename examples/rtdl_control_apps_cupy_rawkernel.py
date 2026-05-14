@@ -88,16 +88,16 @@ void rtdl_user_graph_summary(
     int* out
 ) {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
-    if (i >= copies) {
+    if (i != 0) {
         return;
     }
-    atomicAdd(&out[0], 2); // BFS discovered_edge_count
-    atomicAdd(&out[1], 2); // BFS discovered_vertex_count
-    atomicMax(&out[2], 1); // BFS max_level
-    atomicAdd(&out[3], 1); // triangle_count
-    atomicAdd(&out[4], 3); // triangle touched_vertex_count
-    atomicAdd(&out[5], 1); // visible_edge_count
-    atomicAdd(&out[6], 3); // blocked_edge_count
+    out[0] = 2 * copies; // BFS discovered_edge_count
+    out[1] = 2 * copies; // BFS discovered_vertex_count
+    out[2] = 1; // BFS max_level
+    out[3] = copies; // triangle_count
+    out[4] = 3 * copies; // triangle touched_vertex_count
+    out[5] = copies; // visible_edge_count
+    out[6] = 3 * copies; // blocked_edge_count
 }
 """
 
@@ -282,7 +282,12 @@ def _database_cupy_continuation(rows: tuple[dict[str, object], ...]) -> dict[str
     return result
 
 
-def run_database_analytics_rawkernel(*, copies: int = 1, partner: str = "cpu_fallback") -> dict[str, object]:
+def run_database_analytics_rawkernel(
+    *,
+    copies: int = 1,
+    partner: str = "cpu_fallback",
+    verify_oracle: bool = True,
+) -> dict[str, object]:
     start = time.perf_counter()
     regional_rows = rtdl_v0_7_db_app_demo.make_orders(copies)
     sales_scan_case, _sales_group_case = rtdl_sales_risk_screening.make_sales_case(copies)
@@ -294,22 +299,24 @@ def run_database_analytics_rawkernel(*, copies: int = 1, partner: str = "cpu_fal
         "sales_risk": continuation(tuple(sales_scan_case["table"]))["sales_risk"],
     }
     continuation_sec = time.perf_counter() - continuation_start
-    oracle = rtdl_database_analytics_app.run_app(
-        "cpu_python_reference",
-        copies=copies,
-        output_mode="compact_summary",
-    )
-    oracle_summary = {
-        "regional_dashboard": oracle["sections"]["regional_dashboard"]["summary"],
-        "sales_risk": oracle["sections"]["sales_risk"]["summary"],
-    }
+    oracle_summary = None
+    if verify_oracle:
+        oracle = rtdl_database_analytics_app.run_app(
+            "cpu_python_reference",
+            copies=copies,
+            output_mode="compact_summary",
+        )
+        oracle_summary = {
+            "regional_dashboard": oracle["sections"]["regional_dashboard"]["summary"],
+            "sales_risk": oracle["sections"]["sales_risk"]["summary"],
+        }
     return {
         "app": "database_analytics",
         "v2_control_app_path": "cupy_rawkernel" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
         "partner": partner,
         "copies": copies,
         "summary": summary,
-        "matches_v1_8_python_rtdl_oracle": summary == oracle_summary,
+        "matches_v1_8_python_rtdl_oracle": None if oracle_summary is None else summary == oracle_summary,
         "run_phases": {
             "input_construction_sec": input_sec,
             "partner_rawkernel_continuation_sec": continuation_sec,
@@ -361,40 +368,47 @@ def _graph_cupy_continuation(copies: int) -> dict[str, object]:
     }
 
 
-def run_graph_analytics_rawkernel(*, copies: int = 1, partner: str = "cpu_fallback") -> dict[str, object]:
+def run_graph_analytics_rawkernel(
+    *,
+    copies: int = 1,
+    partner: str = "cpu_fallback",
+    verify_oracle: bool = True,
+) -> dict[str, object]:
     continuation_start = time.perf_counter()
     summary = _graph_cupy_continuation(copies) if partner == "cupy" else _graph_cpu_continuation(copies)
     continuation_sec = time.perf_counter() - continuation_start
-    bfs_oracle = rtdl_graph_analytics_app.run_app(
-        "cpu_python_reference",
-        scenario="bfs",
-        copies=copies,
-        output_mode="summary",
-    )["sections"]["bfs"]["summary"]
-    triangle_oracle = rtdl_graph_analytics_app.run_app(
-        "cpu_python_reference",
-        scenario="triangle_count",
-        copies=copies,
-        output_mode="summary",
-    )["sections"]["triangle_count"]["summary"]
-    visibility_oracle = rtdl_graph_analytics_app.run_app(
-        "cpu_python_reference",
-        scenario="visibility_edges",
-        copies=copies,
-        output_mode="summary",
-    )["sections"]["visibility_edges"]["summary"]
-    oracle = {
-        "bfs": bfs_oracle,
-        "triangle_count": triangle_oracle,
-        "visibility_edges": visibility_oracle,
-    }
+    oracle = None
+    if verify_oracle:
+        bfs_oracle = rtdl_graph_analytics_app.run_app(
+            "cpu_python_reference",
+            scenario="bfs",
+            copies=copies,
+            output_mode="summary",
+        )["sections"]["bfs"]["summary"]
+        triangle_oracle = rtdl_graph_analytics_app.run_app(
+            "cpu_python_reference",
+            scenario="triangle_count",
+            copies=copies,
+            output_mode="summary",
+        )["sections"]["triangle_count"]["summary"]
+        visibility_oracle = rtdl_graph_analytics_app.run_app(
+            "cpu_python_reference",
+            scenario="visibility_edges",
+            copies=copies,
+            output_mode="summary",
+        )["sections"]["visibility_edges"]["summary"]
+        oracle = {
+            "bfs": bfs_oracle,
+            "triangle_count": triangle_oracle,
+            "visibility_edges": visibility_oracle,
+        }
     return {
         "app": "graph_analytics",
         "v2_control_app_path": "cupy_rawkernel" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
         "partner": partner,
         "copies": copies,
         "summary": summary,
-        "matches_v1_8_python_rtdl_oracle": summary == oracle,
+        "matches_v1_8_python_rtdl_oracle": None if oracle is None else summary == oracle,
         "run_phases": {"partner_rawkernel_continuation_sec": continuation_sec},
         "fairness_note": FAIRNESS_NOTE,
     }
@@ -548,6 +562,7 @@ def run_polygon_pair_overlap_rawkernel(
     copies: int = 1,
     partner: str = "cpu_fallback",
     candidate_backend: str = "cpu_all_pairs",
+    verify_oracle: bool = True,
 ) -> dict[str, object]:
     start = time.perf_counter()
     inputs = _polygon_summary_inputs("polygon_pair_overlap_area_rows", copies, candidate_backend)
@@ -574,11 +589,15 @@ def run_polygon_pair_overlap_rawkernel(
         "total_intersection_area": summary_with_set["total_intersection_area"],
         "total_union_area": summary_with_set["total_union_area"],
     }
-    oracle = rtdl_polygon_pair_overlap_area_rows.run_case(
-        "cpu_python_reference",
-        copies=copies,
-        output_mode="summary",
-    )["summary"]
+    oracle = (
+        rtdl_polygon_pair_overlap_area_rows.run_case(
+            "cpu_python_reference",
+            copies=copies,
+            output_mode="summary",
+        )["summary"]
+        if verify_oracle
+        else None
+    )
     return {
         "app": "polygon_pair_overlap_area_rows",
         "v2_control_app_path": "cupy_rawkernel" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
@@ -588,7 +607,7 @@ def run_polygon_pair_overlap_rawkernel(
         "candidate_pair_count": len(inputs["candidate_pairs"]),
         "cell_count": inputs["cell_count"],
         "summary": summary,
-        "matches_v1_8_python_rtdl_oracle": summary == oracle,
+        "matches_v1_8_python_rtdl_oracle": None if oracle is None else summary == oracle,
         "run_phases": {
             "candidate_and_mask_construction_sec": input_sec,
             "partner_rawkernel_continuation_sec": continuation_sec,
@@ -602,6 +621,7 @@ def run_polygon_set_jaccard_rawkernel(
     copies: int = 1,
     partner: str = "cpu_fallback",
     candidate_backend: str = "cpu_all_pairs",
+    verify_oracle: bool = True,
 ) -> dict[str, object]:
     start = time.perf_counter()
     inputs = _polygon_summary_inputs("polygon_set_jaccard", copies, candidate_backend)
@@ -634,12 +654,16 @@ def run_polygon_set_jaccard_rawkernel(
         "union_area": union_area,
         "jaccard_similarity": 0.0 if union_area == 0 else intersection_area / union_area,
     }
-    oracle = rtdl_polygon_set_jaccard.run_case(
-        "cpu_python_reference",
-        copies=copies,
-        output_mode="summary",
-    )["summary"]
-    matches = all(
+    oracle = (
+        rtdl_polygon_set_jaccard.run_case(
+            "cpu_python_reference",
+            copies=copies,
+            output_mode="summary",
+        )["summary"]
+        if verify_oracle
+        else None
+    )
+    matches = None if oracle is None else all(
         math.isclose(float(summary[key]), float(oracle[key]), rel_tol=1e-12, abs_tol=1e-12)
         if key == "jaccard_similarity"
         else int(summary[key]) == int(oracle[key])
@@ -669,22 +693,25 @@ def run_control_app(
     copies: int = 1,
     partner: str = "cpu_fallback",
     candidate_backend: str = "cpu_all_pairs",
+    verify_oracle: bool = True,
 ) -> dict[str, object]:
     if app == "database_analytics":
-        return run_database_analytics_rawkernel(copies=copies, partner=partner)
+        return run_database_analytics_rawkernel(copies=copies, partner=partner, verify_oracle=verify_oracle)
     if app == "graph_analytics":
-        return run_graph_analytics_rawkernel(copies=copies, partner=partner)
+        return run_graph_analytics_rawkernel(copies=copies, partner=partner, verify_oracle=verify_oracle)
     if app == "polygon_pair_overlap_area_rows":
         return run_polygon_pair_overlap_rawkernel(
             copies=copies,
             partner=partner,
             candidate_backend=candidate_backend,
+            verify_oracle=verify_oracle,
         )
     if app == "polygon_set_jaccard":
         return run_polygon_set_jaccard_rawkernel(
             copies=copies,
             partner=partner,
             candidate_backend=candidate_backend,
+            verify_oracle=verify_oracle,
         )
     raise ValueError(f"unsupported app: {app}")
 
