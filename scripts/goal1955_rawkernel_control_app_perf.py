@@ -39,6 +39,10 @@ def _timed(fn: Callable[[], dict[str, object]]) -> tuple[dict[str, object], floa
     return payload, time.perf_counter() - start
 
 
+def _progress(message: str) -> None:
+    print(f"[goal1955-perf] {message}", file=sys.stderr, flush=True)
+
+
 def _summary(values: list[float]) -> dict[str, float]:
     return {
         "min_s": min(values),
@@ -194,7 +198,12 @@ def run_one(
     include_v1_8: bool,
     source_commit_label: str | None,
 ) -> dict[str, object]:
-    for _ in range(warmups):
+    _progress(
+        f"app={app} copies={copies} partner={partner} candidate_backend={candidate_backend} "
+        f"warmups={warmups} repeats={repeats} include_v1_8={include_v1_8}"
+    )
+    for index in range(warmups):
+        _progress(f"app={app} warmup {index + 1}/{warmups} start")
         rawkernel_apps.run_control_app(
             app,
             copies=copies,
@@ -202,10 +211,12 @@ def run_one(
             candidate_backend=candidate_backend,
             verify_oracle=False,
         )
+        _progress(f"app={app} warmup {index + 1}/{warmups} done")
 
     v2_times: list[float] = []
     v2_payload: dict[str, object] | None = None
-    for _ in range(repeats):
+    for index in range(repeats):
+        _progress(f"app={app} v2 repeat {index + 1}/{repeats} start")
         v2_payload, elapsed = _timed(
             lambda: rawkernel_apps.run_control_app(
                 app,
@@ -216,14 +227,17 @@ def run_one(
             )
         )
         v2_times.append(elapsed)
+        _progress(f"app={app} v2 repeat {index + 1}/{repeats} done elapsed_s={elapsed:.6f}")
     assert v2_payload is not None
 
     v1_8_payload = None
     v1_8_times: list[float] = []
     if include_v1_8:
-        for _ in range(repeats):
+        for index in range(repeats):
+            _progress(f"app={app} v1_8 repeat {index + 1}/{repeats} start")
             v1_8_payload, elapsed = _timed(lambda: _v1_8_payload(app, copies))
             v1_8_times.append(elapsed)
+            _progress(f"app={app} v1_8 repeat {index + 1}/{repeats} done elapsed_s={elapsed:.6f}")
 
     v1_summary = _summary(v1_8_times) if v1_8_times else None
     v2_summary = _summary(v2_times)

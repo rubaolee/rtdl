@@ -43,6 +43,9 @@ class Goal1955RawKernelControlAppPerfTest(unittest.TestCase):
             )
             payload = json.loads(completed.stdout)
 
+            self.assertIn("[goal1955-perf] app=database_analytics", completed.stderr)
+            self.assertIn("v2 repeat 1/1 done", completed.stderr)
+            self.assertIn("v1_8 repeat 1/1 done", completed.stderr)
             self.assertEqual(payload["goal"], "Goal1955")
             self.assertEqual(payload["source_commit_label"], "local-test")
             self.assertTrue(payload["all_match_v1_8_python_rtdl_oracle"])
