@@ -1,6 +1,6 @@
 # Goal1946 - All-App v1.8 vs v2.0 Performance Deep Dive
 
-Status: codex-analysis-awaiting-external-review
+Status: codex-analysis-refreshed-after-goal1957-1997-awaiting-external-review
 
 Date: 2026-05-13
 
@@ -20,6 +20,11 @@ This report is based on already collected artifacts:
 - `docs/reports/goal1937_fixed_radius_repeat3_pod/fixed_radius_524288_repeat3.json`
 - `docs/reports/goal1940_robot_segment_scaleup_pod/segment_1048576_segment_anyhit_rows_1048576.json`
 - `docs/reports/goal1940_robot_segment_scaleup_pod/robot_8388608x16384_robot_collision_8388608x16384.json`
+- `docs/reports/goal1958_all_app_v2_optimization_debt_audit_2026-05-14.md`
+- `docs/reports/goal1993_aabb_pair_overlap_summary_2026-05-14.md`
+- `docs/reports/goal1994_aabb_pair_payload_columns_2026-05-14.md`
+- `docs/reports/goal1996_partner_column_page_contract_2026-05-14.md`
+- `docs/reports/goal1997_ray_primitive_witness_pair_paging_2026-05-14.md`
 
 It does not authorize v2.0 release, package-install support, whole-app speedup,
 broad RT-core speedup, or arbitrary PyTorch/CuPy acceleration.
@@ -63,31 +68,34 @@ number is better for v2.0. `Ratio` is the inverse, matching Goal1931.
 | `graph_analytics` | `positive-bounded` | CuPy | 1,000 | 18.060916 | 0.000054 | 0.000003 | 334,999x | Goal1991 uses generic metric-table payload/batch reductions; this is not a broad graph traversal claim. |
 | `service_coverage_gaps` | `positive` | CuPy | 16,384 | 0.038096 | 0.000228 | 0.005983 | 167.1x | Fixed-radius count-threshold row; partner-owned threshold columns avoid dense pair materialization. |
 | `event_hotspot_screening` | `positive` | CuPy | 16,384 | 0.094140 | 0.000188 | 0.001998 | 500.6x | Same fixed-radius pattern, with larger v1.8 native work and tiny partner continuation. |
-| `facility_knn_assignment` | `positive` | CuPy | 524,288 | 1.553787 | 0.000480 | 0.000309 | 3238.1x | This is radius-threshold assignment evidence, not a full ranked KNN implementation claim. |
+| `facility_knn_assignment` | `positive-bounded-exact` | CuPy | 524,288 | 1.553787 | 0.000480 | 0.000309 | 3238.1x | Goal1978 adds an exact K=3 ranked nearest-depot partner-reference row; the older fixed-radius threshold row remains useful but is no longer the semantic representative. |
 | `road_hazard_screening` | `positive` | CuPy | 2,048 | 0.004491 | 0.001108 | 0.246651 | 4.1x | Positive but small; prepared reuse and compact outputs matter, while tiny rows expose fixed overhead. |
 | `segment_polygon_hitcount` | `positive` | Torch | 2,048 | 0.002544 | 0.000878 | 0.345241 | 2.9x | Positive compact count row; not the exact polygon area/Jaccard continuation. |
 | `segment_polygon_anyhit_rows` | `positive` | Torch | 1,048,576 | 7.121871 | 1.582755 | 0.222239 | 4.5x | Seconds-scale same-contract any-hit row with strict row-count parity. |
 | `polygon_pair_overlap_area_rows` | `positive-bounded` | CuPy | 2,048 | 0.279780 | 0.081689 | 0.291976 | 3.4x | Goals1993-1994 replace the app-local extent RawKernel with generic AABB pair-payload and overlap-summary partner adapters; still bounded to AABB extent semantics. |
 | `polygon_set_jaccard` | `positive-bounded` | CuPy | 2,048 | 0.233212 | 0.065533 | 0.281000 | 3.6x | Same generic AABB pair summary path; not arbitrary polygon topology or GIS overlay. |
-| `hausdorff_distance` | `positive` | Torch | 524,288 | 1.326599 | 0.000368 | 0.000277 | 3608.3x | Fixed-radius threshold surrogate, not a claim about all exact Hausdorff formulations. |
-| `ann_candidate_search` | `positive` | Torch | 524,288 | 1.328173 | 0.000350 | 0.000263 | 3799.2x | Candidate coverage threshold is an ideal partner-output contract. |
+| `hausdorff_distance` | `positive-bounded-exact` | Torch | 524,288 | 1.326599 | 0.000368 | 0.000277 | 3608.3x | Goal1975 adds exact min-distance then max-distance partner reductions; bounded because this is partner-reference evidence, not a universal Hausdorff implementation claim. |
+| `ann_candidate_search` | `positive-bounded-exact` | Torch | 524,288 | 1.328173 | 0.000350 | 0.000263 | 3799.2x | Goal1983 adds exact candidate-subset rerank plus exact full-search quality comparison; bounded because this is not an ANN index/recall-latency optimizer. |
 | `outlier_detection` | `positive` | CuPy | 524,288 | 1.357974 | 0.000439 | 0.000323 | 3096.5x | Native fixed-radius counts plus partner scalar reduction. |
-| `dbscan_clustering` | `positive` | Torch | 524,288 | 1.337720 | 0.000436 | 0.000326 | 3069.0x | Core-point count evidence only; not full DBSCAN cluster expansion. |
+| `dbscan_clustering` | `positive-bounded-exact` | Torch | 524,288 | 1.337720 | 0.000436 | 0.000326 | 3069.0x | Goal1985 uses a generic spatial-bucket candidate graph with exact dense validation; still host-index bounded rather than true zero-copy sparse clustering. |
 | `robot_collision_screening` | `positive-subsecond` | CuPy | 8,388,608 poses | 0.524696 | 0.009835 | 0.018745 | 53.3x | Exact pose-flag parity and true device-column handoff, but v1.8 is still subsecond. |
-| `barnes_hut_force_app` | `positive` | CuPy | 524,288 | 1.373772 | 0.000418 | 0.000304 | 3289.5x | Node coverage threshold evidence, not a full N-body force integration claim. |
+| `barnes_hut_force_app` | `positive-bounded-exact` | CuPy | 524,288 | 1.373772 | 0.000418 | 0.000304 | 3289.5x | Goal1979 adds exact pairwise force-vector partner output; bounded because this is not hierarchical Barnes-Hut tree opening or an RT-core speedup claim. |
 
 ## Family Analysis
 
-### Fixed-Radius Threshold Family
+### Fixed-Radius And Exact Partner-Reference Family
 
 Rows:
 
 - `service_coverage_gaps`
 - `event_hotspot_screening`
+- `outlier_detection`
+
+Exact bounded rows that used to be represented by threshold proxies:
+
 - `facility_knn_assignment`
 - `hausdorff_distance`
 - `ann_candidate_search`
-- `outlier_detection`
 - `dbscan_clustering`
 - `barnes_hut_force_app`
 
@@ -100,10 +108,13 @@ This is the strongest current v2.0 family. The winning shape is:
 
 At 524,288 queries by 524,288 search points, v1.8 prepared OptiX rows are
 seconds-scale, while v2 prepared partner continuations are sub-millisecond for
-the measured threshold outputs. This is why these rows show thousand-fold
-speedups. The speedup is real for this contract, but it is not evidence for
-ranked KNN, full DBSCAN labeling, arbitrary Hausdorff algorithms, or every
-possible fixed-radius post-processing program.
+the measured fixed-radius outputs. The speedup is real for those contracts, but
+the row table now distinguishes them from the later exact bounded rows:
+Goal1975 for directed Hausdorff, Goal1978 for ranked facility KNN, Goal1979 for
+force vectors, Goal1983 for ANN quality comparison, and Goal1985 for the
+spatial-bucket DBSCAN path. Those exact rows are valuable v2 evidence, but they
+remain bounded partner-reference contracts rather than broad RT-core speedup
+claims.
 
 ### Segment / Polygon Compact Output Family
 
@@ -187,10 +198,11 @@ Allowed technical summary, pending final consensus:
 ```text
 Current v2.0 evidence shows strong speedups for selected OptiX RTDL primitive
 contracts that hand compact outputs to Torch or CuPy device tensors. The
-strongest rows are fixed-radius threshold workloads; segment any-hit and robot
-collision also show positive measured results. Database, graph, and AABB polygon
-metrics now have bounded partner contracts, but they must stay narrowly worded
-until final review consensus.
+strongest broad rows remain fixed-radius threshold workloads; segment any-hit
+and robot collision also show positive measured results. Database, graph, AABB
+polygon metrics, and the later exact partner-reference rows for Hausdorff,
+facility KNN, ANN quality, DBSCAN, and force vectors have useful bounded
+contracts, but they must stay narrowly worded until final review consensus.
 ```
 
 Still blocked:
@@ -205,7 +217,7 @@ Still blocked:
 ## Next Work
 
 Before a final v2.0 release packet, this report needs external review. The
-review should check that the row classifications are fair, that the fixed-radius
-speedups are not overgeneralized, that bounded rows stay out of broad marketing
-claims, and that the source-tree-only package policy remains a separate
-consensus question.
+review should check that the row classifications are fair after Goals1957-1997,
+that the fixed-radius speedups are not overgeneralized, that exact bounded rows
+stay out of broad marketing claims, and that the source-tree-only package policy
+remains a separate consensus question.
