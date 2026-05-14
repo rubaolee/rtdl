@@ -110,6 +110,95 @@ def _partner_module(partner: str):
     raise ValueError("partner must be 'torch' or 'cupy'")
 
 
+def partner_group_count_by_key(keys, group_count: int, *, partner: str = "torch"):
+    """Count rows per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        if int(keys.numel()) == 0:
+            return torch.zeros((group_count,), dtype=torch.uint32, device=keys.device)
+        return torch.bincount(keys.to(torch.int64), minlength=group_count).to(torch.uint32)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(keys.size) == 0:
+            return cupy.zeros((group_count,), dtype=cupy.uint32)
+        return cupy.bincount(keys.astype(cupy.int64, copy=False), minlength=group_count).astype(cupy.uint32, copy=False)
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "torch"):
+    """Sum values per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.zeros((group_count,), dtype=values.dtype, device=values.device)
+        if int(keys.numel()) == 0:
+            return out
+        out.scatter_add_(0, keys.to(torch.int64), values)
+        return out
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out = cupy.zeros((group_count,), dtype=values.dtype)
+        if int(keys.size) == 0:
+            return out
+        cupy.add.at(out, keys.astype(cupy.int64, copy=False), values)
+        return out
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "torch"):
+    """Reduce binary/int flags to one any-hit flag per integer key."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.zeros((int(group_count),), dtype=torch.int64, device=flags.device)
+        if int(keys.numel()) == 0:
+            return out.to(torch.uint32)
+        out.scatter_add_(0, keys.to(torch.int64), flags.to(torch.int64))
+        return out.gt(0).to(torch.uint32)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        sums = partner_group_sum_by_key(keys, flags, group_count, partner=partner)
+        return (sums > 0).astype(cupy.uint32, copy=False)
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_unique_pair_keys(left_keys, right_keys, *, partner: str = "torch"):
+    """Return unique left/right key pairs without host materialization."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        if int(left_keys.numel()) == 0:
+            return left_keys, right_keys
+        right_i64 = right_keys.to(torch.int64)
+        modulus = torch.max(right_i64) + 1
+        encoded = left_keys.to(torch.int64) * modulus + right_i64
+        unique = torch.unique(encoded)
+        return (
+            torch.div(unique, modulus, rounding_mode="floor").to(left_keys.dtype),
+            (unique % modulus).to(right_keys.dtype),
+        )
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(left_keys.size) == 0:
+            return left_keys, right_keys
+        right_i64 = right_keys.astype(cupy.int64, copy=False)
+        modulus = cupy.max(right_i64) + cupy.asarray(1, dtype=cupy.int64)
+        encoded = left_keys.astype(cupy.int64, copy=False) * modulus + right_i64
+        unique = cupy.unique(encoded)
+        return (
+            (unique // modulus).astype(left_keys.dtype, copy=False),
+            (unique % modulus).astype(right_keys.dtype, copy=False),
+        )
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
 def _torch_fixed_radius_count_threshold_2d(torch, query_columns, search_columns, radius, threshold):
     qx = query_columns["x"].to(torch.float64)
     qy = query_columns["y"].to(torch.float64)
@@ -461,23 +550,21 @@ def _require_robot_collision_output_column_lengths(
 
 def _scatter_ray_flags_to_pose_flags(runtime: dict, ray_flags, pose_indices, pose_flags) -> None:
     if runtime["name"] == "torch":
-        torch = runtime["module"]
-        pose_flags.zero_()
-        if int(ray_flags.numel()) == 0:
-            return
-        temp = torch.zeros_like(pose_flags, dtype=torch.int64)
-        temp.scatter_add_(0, pose_indices.to(torch.int64), ray_flags.to(torch.int64))
-        pose_flags.copy_(temp.gt(0).to(torch.uint32))
+        pose_flags.copy_(
+            partner_group_any_by_key(
+                pose_indices,
+                ray_flags,
+                _column_length({"pose_flags": pose_flags}, "pose_flags"),
+                partner=runtime["name"],
+            )
+        )
         return
     if runtime["name"] == "cupy":
-        cupy = runtime["module"]
-        pose_flags.fill(0)
-        if int(ray_flags.size) == 0:
-            return
-        cupy.maximum.at(
-            pose_flags,
-            pose_indices.astype(cupy.int64, copy=False),
-            ray_flags.astype(cupy.uint32, copy=False),
+        pose_flags[...] = partner_group_any_by_key(
+            pose_indices,
+            ray_flags,
+            _column_length({"pose_flags": pose_flags}, "pose_flags"),
+            partner=runtime["name"],
         )
         return
     raise ValueError("partner must be 'torch' or 'cupy'")

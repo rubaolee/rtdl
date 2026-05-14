@@ -66,6 +66,7 @@ TEST_MODULES = (
     "tests.goal1956_rawkernel_control_app_pod_runner_test",
     "tests.goal1957_partner_identity_payload_contract_test",
     "tests.goal1958_all_app_v2_optimization_debt_audit_test",
+    "tests.goal1960_shared_partner_reduction_primitives_test",
 )
 
 

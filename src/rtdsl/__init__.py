@@ -385,6 +385,10 @@ from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_devi
 from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns
+from .partner_adapters import partner_group_any_by_key
+from .partner_adapters import partner_group_count_by_key
+from .partner_adapters import partner_group_sum_by_key
+from .partner_adapters import partner_unique_pair_keys
 from .partner_adapters import service_coverage_gap_flags_partner_columns
 from .partner_adapters import service_coverage_gap_flags_optix_partner_device_columns
 from .partner_adapters import service_coverage_gap_flags_optix_prepared_partner_device_columns
@@ -1283,6 +1287,10 @@ __all__ = [
     "allocate_fixed_radius_count_threshold_2d_partner_device_output_columns",
     "prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene",
     "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
+    "partner_group_any_by_key",
+    "partner_group_count_by_key",
+    "partner_group_sum_by_key",
+    "partner_unique_pair_keys",
     "service_coverage_gap_flags_partner_columns",
     "service_coverage_gap_flags_optix_partner_device_columns",
     "service_coverage_gap_flags_optix_prepared_partner_device_columns",
