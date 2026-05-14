@@ -1,0 +1,112 @@
+{
+  "claim_boundary": {
+    "ann_index_claim_authorized": false,
+    "exact_partner_reference_path": true,
+    "native_engine_customization": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1983",
+  "gpu": "NVIDIA RTX 2000 Ada Generation",
+  "results": [
+    {
+      "candidate_count": 384,
+      "copies": 128,
+      "cpu_python_reference_wall_s": {
+        "max_s": 0.1443534567952156,
+        "median_s": 0.12855754047632217,
+        "min_s": 0.128323033452034,
+        "repeats": 3
+      },
+      "exact_partner_reference_path": true,
+      "matches_cpu_quality": true,
+      "mean_distance_ratio": 3.6666666666637027,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+      "query_count": 384,
+      "recall_at_1": 0.6666666666666666,
+      "rt_core_speedup_claim_authorized": false,
+      "search_count": 768,
+      "v2_partner_exact_quality_wall_s": {
+        "max_s": 0.6814870238304138,
+        "median_s": 0.004727564752101898,
+        "min_s": 0.004637040197849274,
+        "repeats": 5
+      },
+      "v2_vs_cpu_python_reference_ratio": 0.036773920336260826,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "candidate_count": 1536,
+      "copies": 512,
+      "cpu_python_reference_wall_s": {
+        "max_s": 2.249649204313755,
+        "median_s": 2.249649204313755,
+        "min_s": 2.249649204313755,
+        "repeats": 1
+      },
+      "exact_partner_reference_path": true,
+      "matches_cpu_quality": true,
+      "mean_distance_ratio": 3.666666666691557,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+      "query_count": 1536,
+      "recall_at_1": 0.6666666666666666,
+      "rt_core_speedup_claim_authorized": false,
+      "search_count": 3072,
+      "v2_partner_exact_quality_wall_s": {
+        "max_s": 0.053241945803165436,
+        "median_s": 0.042325012385845184,
+        "min_s": 0.0421166867017746,
+        "repeats": 5
+      },
+      "v2_vs_cpu_python_reference_ratio": 0.018814049899284733,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "candidate_count": 3072,
+      "copies": 1024,
+      "exact_partner_reference_path": true,
+      "matches_cpu_quality": null,
+      "mean_distance_ratio": 3.6666666666715773,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+      "query_count": 3072,
+      "recall_at_1": 0.6666666666666666,
+      "rt_core_speedup_claim_authorized": false,
+      "search_count": 6144,
+      "v2_partner_exact_quality_wall_s": {
+        "max_s": 0.1660059168934822,
+        "median_s": 0.15795829892158508,
+        "min_s": 0.154806487262249,
+        "repeats": 5
+      },
+      "v2_vs_cpu_python_reference_ratio": null,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "candidate_count": 6144,
+      "copies": 2048,
+      "exact_partner_reference_path": true,
+      "matches_cpu_quality": null,
+      "mean_distance_ratio": 3.6666666666388052,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+      "query_count": 6144,
+      "recall_at_1": 0.6666666666666666,
+      "rt_core_speedup_claim_authorized": false,
+      "search_count": 12288,
+      "v2_partner_exact_quality_wall_s": {
+        "max_s": 0.641358457505703,
+        "median_s": 0.6321970447897911,
+        "min_s": 0.6318505927920341,
+        "repeats": 3
+      },
+      "v2_vs_cpu_python_reference_ratio": null,
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "source_commit_label": "working-tree-after-308a15ef-ann-partner-exact-quality",
+  "status": "pass"
+}

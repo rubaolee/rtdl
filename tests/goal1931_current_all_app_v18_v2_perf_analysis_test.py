@@ -49,7 +49,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertEqual(classes["facility_knn_assignment"], "positive-bounded-exact")
         self.assertEqual(classes["segment_polygon_anyhit_rows"], "positive")
         self.assertEqual(classes["hausdorff_distance"], "positive-bounded-exact")
-        self.assertEqual(classes["ann_candidate_search"], "positive")
+        self.assertEqual(classes["ann_candidate_search"], "positive-bounded-exact")
         self.assertEqual(classes["outlier_detection"], "positive")
         self.assertEqual(classes["dbscan_clustering"], "positive-bounded-exact")
         self.assertEqual(classes["barnes_hut_force_app"], "positive-bounded-exact")
@@ -72,6 +72,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertIn("upgrades facility KNN", text)
         self.assertIn("upgrades Barnes-Hut", text)
         self.assertIn("upgrades DBSCAN", text)
+        self.assertIn("upgrades ANN candidate search", text)
 
 
 if __name__ == "__main__":

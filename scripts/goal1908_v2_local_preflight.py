@@ -78,6 +78,7 @@ TEST_MODULES = (
     "tests.goal1978_exact_top_k_partner_facility_assignment_test",
     "tests.goal1979_exact_pairwise_force_partner_barnes_hut_reference_test",
     "tests.goal1981_exact_radius_graph_components_dbscan_partner_reference_test",
+    "tests.goal1983_exact_ann_candidate_quality_partner_reference_test",
 )
 
 

@@ -12,10 +12,10 @@ that v2.0 can claim broad whole-app acceleration.
 
 Current classification from the refreshed Goal1931 analysis:
 
-- `positive`: 8 apps
+- `positive`: 7 apps
 - `positive-subsecond`: 1 app
 - `positive-bounded`: 3 apps
-- `positive-bounded-exact`: 4 apps
+- `positive-bounded-exact`: 5 apps
 
 The important change is that there are no longer blank “control” rows in the
 all-app matrix. The remaining question is quality of the v2 path.
@@ -35,7 +35,7 @@ all-app matrix. The remaining question is quality of the v2 path.
 | `polygon_pair_overlap_area_rows` | positive bounded extent row | v2/v1.8 `0.292x` | Goal1969 fixed the candidate-table bottleneck with CuPy extent columns; still bounded to the authored axis-aligned control app. |
 | `polygon_set_jaccard` | positive bounded extent row | v2/v1.8 `0.281x` | Goal1969 makes this a clear speedup for the authored extent case; arbitrary polygon/set overlay remains a future broader contract. |
 | `hausdorff_distance` | positive bounded exact partner row | v2/CPU exact `0.00824x` | Goal1975 replaces the threshold proxy with exact min-distance then max-distance partner reductions; bounded because it is partner-reference evidence, not an RT-core speedup claim. |
-| `ann_candidate_search` | positive threshold proxy | v2/v1.8 `0.000263x` | Not an ANN index; needs candidate-generation/index contract if public app promises ANN behavior. |
+| `ann_candidate_search` | positive bounded exact quality row | v2/CPU exact `0.01881x` | Goal1983 replaces the coverage proxy as the semantic representative with exact candidate-subset rerank plus exact full-search quality comparison; bounded because it is not an ANN index or recall/latency optimizer. |
 | `outlier_detection` | positive | v2/v1.8 `0.000323x` | Healthy count-threshold shape; avoid returning full neighbor rows. |
 | `dbscan_clustering` | positive bounded exact cluster row | v2/CPU exact `0.596x` | Goal1981 replaces core-count proxy with exact radius-graph component labels; dense implementation is correct but still needs sparse/spatial-bucket optimization. |
 | `robot_collision_screening` | positive-subsecond | v2/v1.8 `0.0187x` | Strong ratio but v1.8 is subsecond; keep exact pose-flag parity and scale evidence. |
@@ -59,8 +59,9 @@ The remaining debt is not one bug. It is four patterns:
    nearest-depot rows. Goal1979 removes `barnes_hut_force_app` from this bucket
    by adding exact force-vector partner output. Goal1981 removes
    `dbscan_clustering` from this bucket by adding exact radius-graph component
-   labels. `ann_candidate_search` still maps to fixed-radius count/threshold
-   output. The remaining richer semantics need an ANN/indexing contract and a
+   labels. Goal1983 removes `ann_candidate_search` from this bucket by adding
+   exact candidate-subset rerank plus exact full-search quality comparison.
+   The remaining richer semantics need a true ANN indexing contract and a
    faster sparse/spatial DBSCAN component implementation.
 
 3. **Row materialization**
@@ -109,9 +110,9 @@ The remaining debt is not one bug. It is four patterns:
    Keep the current fixed-radius threshold rows, but document exactly which app
    semantics they cover. Goal1975 adds the exact Hausdorff row and Goal1978
    adds the exact facility KNN top-k row; Goal1979 adds exact Barnes-Hut force
-   vectors; Goal1981 adds exact DBSCAN component labels. Future rows for ANN
-   indexing should appear only when those continuations are actually
-   implemented.
+   vectors; Goal1981 adds exact DBSCAN component labels; Goal1983 adds exact
+   ANN candidate-subset quality comparison. Future rows for ANN indexing should
+   appear only when those continuations are actually implemented.
 
 ## Release Meaning
 

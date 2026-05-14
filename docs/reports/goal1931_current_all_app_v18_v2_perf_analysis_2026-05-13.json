@@ -7,9 +7,9 @@
     "whole_app_speedup_claim_authorized": false
   },
   "classification_counts": {
-    "positive": 8,
+    "positive": 7,
     "positive-bounded": 3,
-    "positive-bounded-exact": 4,
+    "positive-bounded-exact": 5,
     "positive-subsecond": 1
   },
   "goal": "Goal1931",
@@ -194,19 +194,19 @@
     },
     {
       "app": "ann_candidate_search",
-      "artifact": "docs/reports/goal1937_fixed_radius_repeat3_pod/fixed_radius_524288_repeat3.json",
+      "artifact": "docs/reports/goal1983_pod_exact_ann_candidate_quality_cupy_perf.json",
       "claim_class": "implemented-needs-hardware",
-      "classification": "positive",
-      "insight": "Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling.",
+      "classification": "positive-bounded-exact",
+      "insight": "Goal1983 upgrades ANN candidate search from a fixed-radius coverage proxy to an exact partner top-k quality reference over the candidate subset and the full search set. This measures rerank/quality semantics, not an ANN index build or recall-latency optimizer.",
       "label": "ann candidate search",
       "matrix_state": "harness-ready-pod-needed",
-      "partner": "torch",
-      "ratio_vs_v18_prepared": 0.00026321157018516147,
+      "partner": "cupy",
+      "ratio_vs_v18_prepared": 0.036773920336260826,
       "ratio_vs_v18_reused_prepared": null,
-      "size": 524288,
-      "v18_prepared_s": 1.328173205256462,
+      "size": 384,
+      "v18_prepared_s": 0.12855754047632217,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 0.00034959055483341217
+      "v2_prepared_partner_s": 0.004727564752101898
     },
     {
       "app": "outlier_detection",

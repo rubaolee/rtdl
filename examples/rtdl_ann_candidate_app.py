@@ -241,6 +241,100 @@ def _candidate_threshold_from_count_rows(
     }
 
 
+def _partner_column_to_list(column, partner: str) -> list[object]:
+    if partner == "torch":
+        return column.detach().cpu().tolist()
+    if partner == "cupy":
+        import cupy
+
+        return cupy.asnumpy(column).tolist()
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _run_partner_exact_top_k(
+    query_points: tuple[rt.Point, ...],
+    candidate_points: tuple[rt.Point, ...],
+    *,
+    partner: str,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    query_columns = rt.point_rows_to_partner_columns(query_points, partner=partner)
+    candidate_columns = rt.point_rows_to_partner_columns(candidate_points, partner=partner)
+    result = rt.top_k_nearest_points_2d_partner_columns(
+        query_columns,
+        candidate_columns,
+        k=K,
+        partner=partner,
+        return_metadata=True,
+    )
+    columns = result["columns"]
+    query_ids = _partner_column_to_list(columns["query_ids"], partner)
+    neighbor_ids = _partner_column_to_list(columns["neighbor_ids"], partner)
+    distances = _partner_column_to_list(columns["distances"], partner)
+    ranks = _partner_column_to_list(columns["neighbor_rank"], partner)
+    rows = tuple(
+        {
+            "query_id": int(query_id),
+            "neighbor_id": int(neighbor_id),
+            "distance": float(distance),
+            "neighbor_rank": int(rank),
+        }
+        for query_id, neighbor_id, distance, rank in zip(query_ids, neighbor_ids, distances, ranks)
+    )
+    return tuple(sorted(rows, key=lambda row: (int(row["query_id"]), int(row["neighbor_rank"])))), result["metadata"]
+
+
+def _run_partner_exact_quality(
+    case: dict[str, tuple[rt.Point, ...]],
+    *,
+    partner: str,
+) -> dict[str, object]:
+    approximate_rows, approximate_metadata = _run_partner_exact_top_k(
+        case["query_points"],
+        case["candidate_points"],
+        partner=partner,
+    )
+    exact_rows, exact_metadata = _run_partner_exact_top_k(
+        case["query_points"],
+        case["search_points"],
+        partner=partner,
+    )
+    evaluation = evaluate_approximation(approximate_rows, exact_rows)
+    return {
+        "app": "ann_candidate_search",
+        "backend": "partner_exact_quality",
+        "partner": partner,
+        "k": K,
+        "query_count": len(case["query_points"]),
+        "search_count": len(case["search_points"]),
+        "candidate_count": len(case["candidate_points"]),
+        **_approximate_summary(approximate_rows),
+        **{key: value for key, value in evaluation.items() if key != "comparison_rows"},
+        "approximate_metadata": approximate_metadata,
+        "exact_metadata": exact_metadata,
+        "native_continuation_active": False,
+        "native_continuation_backend": "partner_exact_top_k_quality_reference",
+        "rtdl_role": (
+            "RTDL keeps the candidate-set program boundary; v2 partner point-column "
+            "algebra computes exact candidate-subset top-k and exact full-set top-k "
+            "so Python can evaluate recall and distance quality without a host-side "
+            "exact nearest-neighbor loop."
+        ),
+        "rt_core_accelerated": False,
+        "boundary": (
+            "Exact partner quality reference only; this is not an ANN index, not a "
+            "training/build phase, and not a recall/latency optimizer. Candidate-set "
+            "construction remains user policy outside the app-agnostic RTDL engine."
+        ),
+        "claim_boundary": {
+            "exact_partner_reference_path": True,
+            "native_engine_customization": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+        },
+    }
+
+
 def _run_optix_candidate_threshold(
     case: dict[str, tuple[rt.Point, ...]],
     *,
@@ -278,6 +372,7 @@ def run_app(
     output_mode: str = "full",
     optix_summary_mode: str = "rows",
     candidate_radius: float = 0.2,
+    partner: str = "cupy",
     require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"full", "rerank_summary", "quality_summary"}:
@@ -288,6 +383,11 @@ def run_app(
         raise ValueError("candidate_radius must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     case = make_ann_case(copies=copies)
+    if backend == "partner_exact_quality":
+        if output_mode not in {"quality_summary", "rerank_summary"}:
+            raise ValueError("partner_exact_quality supports output_mode 'quality_summary' or 'rerank_summary'")
+        payload = _run_partner_exact_quality(case, partner=partner)
+        return {**payload, "copies": copies, "output_mode": output_mode}
     if backend == "optix" and optix_summary_mode == "candidate_threshold_prepared":
         coverage = _run_optix_candidate_threshold(case, radius=candidate_radius)
         oracle = expected_tiled_candidate_threshold(copies=copies, radius=candidate_radius)
@@ -367,7 +467,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy", "partner_exact_quality"),
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1)
@@ -390,6 +490,12 @@ def main(argv: list[str] | None = None) -> int:
         help="acceptance radius for --optix-summary-mode candidate_threshold_prepared",
     )
     parser.add_argument(
+        "--partner",
+        choices=("torch", "cupy"),
+        default="cupy",
+        help="Partner runtime for --backend partner_exact_quality.",
+    )
+    parser.add_argument(
         "--require-rt-core",
         action="store_true",
         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
@@ -403,6 +509,7 @@ def main(argv: list[str] | None = None) -> int:
                 output_mode=args.output_mode,
                 optix_summary_mode=args.optix_summary_mode,
                 candidate_radius=args.candidate_radius,
+                partner=args.partner,
                 require_rt_core=args.require_rt_core,
             ),
             indent=2,
