@@ -40,13 +40,14 @@ class Goal1958AllAppV2OptimizationDebtAuditTest(unittest.TestCase):
         analysis = json.loads(ANALYSIS.read_text(encoding="utf-8"))
         classes = {row["app"]: row["classification"] for row in analysis["rows"]}
 
+        self.assertEqual(classes["facility_knn_assignment"], "positive-bounded-exact")
         self.assertEqual(classes["graph_analytics"], "positive-bounded")
         self.assertEqual(classes["polygon_pair_overlap_area_rows"], "positive-bounded")
         self.assertEqual(classes["polygon_set_jaccard"], "positive-bounded")
         self.assertEqual(classes["hausdorff_distance"], "positive-bounded-exact")
-        self.assertEqual(analysis["classification_counts"]["positive"], 11)
+        self.assertEqual(analysis["classification_counts"]["positive"], 10)
         self.assertEqual(analysis["classification_counts"]["positive-bounded"], 3)
-        self.assertEqual(analysis["classification_counts"]["positive-bounded-exact"], 1)
+        self.assertEqual(analysis["classification_counts"]["positive-bounded-exact"], 2)
         self.assertFalse(analysis["claim_boundary"]["v2_0_release_authorized"])
 
 

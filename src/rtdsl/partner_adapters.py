@@ -533,6 +533,100 @@ def directed_hausdorff_2d_partner_columns(
     return columns
 
 
+def top_k_nearest_points_2d_partner_columns(
+    query_point_columns: dict[str, object],
+    candidate_point_columns: dict[str, object],
+    *,
+    k: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Compute exact ranked nearest candidate points from generic point columns."""
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    runtime = _partner_module(partner)
+    query_count = _column_length(query_point_columns, "ids")
+    candidate_count = _column_length(candidate_point_columns, "ids")
+    if query_count <= 0 or candidate_count <= 0:
+        raise ValueError("top-k nearest points requires non-empty query and candidate columns")
+    if k > candidate_count:
+        raise ValueError("k must be <= candidate point count")
+
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        qx = query_point_columns["x"].to(torch.float64)
+        qy = query_point_columns["y"].to(torch.float64)
+        cx = candidate_point_columns["x"].to(torch.float64)
+        cy = candidate_point_columns["y"].to(torch.float64)
+        candidate_ids_i64 = candidate_point_columns["ids"].to(torch.int64)
+        candidate_id_order = torch.argsort(candidate_ids_i64)
+        dx = qx.reshape(-1, 1) - cx.reshape(1, -1)
+        dy = qy.reshape(-1, 1) - cy.reshape(1, -1)
+        distance_sq_by_id = (dx * dx + dy * dy)[:, candidate_id_order]
+        rank_order_by_id = torch.argsort(distance_sq_by_id, dim=1, stable=True)[:, :k]
+        nearest_indices = candidate_id_order[rank_order_by_id]
+        nearest_distance_sq = torch.gather(dx * dx + dy * dy, 1, nearest_indices)
+        query_ids = query_point_columns["ids"].reshape(-1, 1).expand(query_count, k).reshape(-1)
+        neighbor_ids = candidate_point_columns["ids"][nearest_indices].reshape(-1)
+        distances = torch.sqrt(nearest_distance_sq).reshape(-1)
+        neighbor_rank = (
+            torch.arange(1, k + 1, dtype=torch.int64, device=query_ids.device)
+            .to(query_point_columns["ids"].dtype)
+            .reshape(1, k)
+            .expand(query_count, k)
+            .reshape(-1)
+        )
+    elif runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        qx = query_point_columns["x"].astype(cupy.float64, copy=False)
+        qy = query_point_columns["y"].astype(cupy.float64, copy=False)
+        cx = candidate_point_columns["x"].astype(cupy.float64, copy=False)
+        cy = candidate_point_columns["y"].astype(cupy.float64, copy=False)
+        candidate_ids_i64 = candidate_point_columns["ids"].astype(cupy.int64, copy=False)
+        candidate_id_order = cupy.argsort(candidate_ids_i64)
+        dx = qx.reshape(-1, 1) - cx.reshape(1, -1)
+        dy = qy.reshape(-1, 1) - cy.reshape(1, -1)
+        distance_sq = dx * dx + dy * dy
+        distance_sq_by_id = distance_sq[:, candidate_id_order]
+        rank_order_by_id = cupy.argsort(distance_sq_by_id, axis=1, kind="stable")[:, :k]
+        nearest_indices = candidate_id_order[rank_order_by_id]
+        nearest_distance_sq = cupy.take_along_axis(distance_sq, nearest_indices, axis=1)
+        query_ids = cupy.repeat(query_point_columns["ids"], k)
+        neighbor_ids = candidate_point_columns["ids"][nearest_indices].reshape(-1)
+        distances = cupy.sqrt(nearest_distance_sq).reshape(-1)
+        neighbor_rank = cupy.tile(cupy.arange(1, k + 1, dtype=cupy.uint32), query_count)
+    else:
+        raise ValueError("partner must be 'torch' or 'cupy'")
+
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_ids,
+        "neighbor_ids": neighbor_ids,
+        "distances": distances,
+        "neighbor_rank": neighbor_rank,
+    }
+    metadata = {
+        "adapter": "top_k_nearest_points_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "query_count": query_count,
+        "candidate_count": candidate_count,
+        "k": k,
+        "tie_break": "distance_then_candidate_id",
+        "app_row_materialization": "caller_optional",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def _polygon_triangle_columns(polygons: tuple[_CanonicalPolygon, ...], partner: dict) -> tuple[dict[str, object], object]:
     ids: list[int] = []
     x0: list[float] = []

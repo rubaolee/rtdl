@@ -75,6 +75,7 @@ TEST_MODULES = (
     "tests.goal1969_cupy_extent_polygon_candidate_backend_test",
     "tests.goal1972_graph_metric_table_partner_reduction_test",
     "tests.goal1975_exact_hausdorff_partner_reference_test",
+    "tests.goal1978_exact_top_k_partner_facility_assignment_test",
 )
 
 

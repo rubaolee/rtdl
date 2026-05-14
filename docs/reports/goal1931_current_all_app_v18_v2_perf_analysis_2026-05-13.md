@@ -14,7 +14,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 | `graph_analytics` | `positive-bounded` | cupy | 1000 | 18.060916 | 0.000054 | 0.000003 | Goal1972 removes the closed-form graph shortcut and uses generic partner metric-table reductions; this is still not a broad graph traversal acceleration claim. |
 | `service_coverage_gaps` | `positive` | cupy | 16384 | 0.038096 | 0.000228 | 0.005983 | Prepared fixed-radius native work plus partner-owned threshold columns amortize very well at the larger row size. |
 | `event_hotspot_screening` | `positive` | cupy | 16384 | 0.094140 | 0.000188 | 0.001998 | Prepared fixed-radius native work plus partner-owned threshold columns amortize very well at the larger row size. |
-| `facility_knn_assignment` | `positive` | cupy | 524288 | 1.553787 | 0.000480 | 0.000309 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
+| `facility_knn_assignment` | `positive-bounded-exact` | cupy | 512 | 0.101372 | 0.004628 | 0.045649 | Goal1978 upgrades facility KNN from a service-coverage threshold proxy to exact K=3 ranked nearest-depot rows through generic partner top-k point-column algebra; this is not an RT-core claim. |
 | `road_hazard_screening` | `positive` | cupy | 2048 | 0.004491 | 0.001108 | 0.246651 | Prepared reuse and partner-owned compact outputs matter; row materialization or tiny cases are much less favorable. |
 | `segment_polygon_hitcount` | `positive` | torch | 2048 | 0.002544 | 0.000878 | 0.345241 | Prepared reuse and partner-owned compact outputs matter; row materialization or tiny cases are much less favorable. |
 | `segment_polygon_anyhit_rows` | `positive` | torch | 1048576 | 7.121871 | 1.582755 | 0.222239 | Goal1940 moves this row out of pending: the 1,048,576-row segment any-hit artifact is seconds-scale and same-contract, with strict row-count parity. |
@@ -34,6 +34,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 - Robot collision now has exact pose-flag parity and strong ratios through 8,388,608 poses, but it is marked `positive-subsecond` because the v1.8 baseline is still below one second.
 - Database remains a bounded control/fallback row. Graph and the two polygon control rows now have positive bounded v2 evidence after Goal1972 and Goal1969, but their claims stay narrow.
 - Hausdorff now has an exact partner-reference row after Goal1975, so the table prefers that semantic match over the faster but weaker fixed-radius threshold proxy.
+- Facility KNN now has an exact partner-reference K=3 top-k row after Goal1978, so the table no longer treats service coverage as the best semantic representative for that app.
 
 ## Release Boundary
 

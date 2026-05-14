@@ -12,10 +12,10 @@ that v2.0 can claim broad whole-app acceleration.
 
 Current classification from the refreshed Goal1931 analysis:
 
-- `positive`: 11 apps
+- `positive`: 10 apps
 - `positive-subsecond`: 1 app
 - `positive-bounded`: 3 apps
-- `positive-bounded-exact`: 1 app
+- `positive-bounded-exact`: 2 apps
 
 The important change is that there are no longer blank “control” rows in the
 all-app matrix. The remaining question is quality of the v2 path.
@@ -28,7 +28,7 @@ all-app matrix. The remaining question is quality of the v2 path.
 | `graph_analytics` | positive bounded metric-table row | v2/v1.8 `0.000003x` | Goal1972 removed the closed-form RawKernel shortcut; still not a broad graph traversal acceleration claim. |
 | `service_coverage_gaps` | positive | v2/v1.8 `0.006x` | Mostly healthy; keep prepared scene/output reuse and avoid row materialization. |
 | `event_hotspot_screening` | positive | v2/v1.8 `0.002x` | Mostly healthy; same fixed-radius threshold shape. |
-| `facility_knn_assignment` | positive threshold proxy | v2/v1.8 `0.000309x` | Not ranked KNN assignment; needs ranked/top-k partner output if the public app wants true assignment semantics. |
+| `facility_knn_assignment` | positive bounded exact top-k row | v2/CPU exact `0.04565x` | Goal1978 replaces the service-coverage proxy with exact K=3 ranked nearest-depot rows; bounded because it is partner-reference evidence, not an RT-core speedup claim. |
 | `road_hazard_screening` | positive | v2/v1.8 `0.247x` | Smaller row counts are overhead-sensitive; improve batching/reuse before marketing broad speedups. |
 | `segment_polygon_hitcount` | positive | v2/v1.8 `0.345x` | Healthy compact count row; avoid host witness materialization. |
 | `segment_polygon_anyhit_rows` | positive row output | v2/v1.8 `0.222x` | Row materialization remains heavier than compact counts; needs device-resident row paging/compaction for larger arbitrary outputs. |
@@ -54,11 +54,13 @@ The remaining debt is not one bug. It is four patterns:
 2. **Threshold proxies for richer app semantics are shrinking**
 
    Goal1975 removes `hausdorff_distance` from this bucket by adding exact
-   directed Hausdorff partner reductions. `facility_knn_assignment`,
-   `ann_candidate_search`, `dbscan_clustering`, and `barnes_hut_force_app`
-   still have strong v2 rows because they map to fixed-radius count/threshold
-   outputs. The real richer semantics still need additional partner contracts:
-   ranked top-k, ANN indexing, cluster expansion, and vector accumulation.
+   directed Hausdorff partner reductions. Goal1978 removes
+   `facility_knn_assignment` from this bucket by adding exact K=3 ranked
+   nearest-depot rows. `ann_candidate_search`, `dbscan_clustering`, and
+   `barnes_hut_force_app` still have strong v2 rows because they map to
+   fixed-radius count/threshold outputs. The real richer semantics still need
+   additional partner contracts: ANN indexing, cluster expansion, and vector
+   accumulation.
 
 3. **Row materialization**
 
@@ -104,9 +106,10 @@ The remaining debt is not one bug. It is four patterns:
 5. **Semantic honesty for proxy apps**
 
    Keep the current fixed-radius threshold rows, but document exactly which app
-   semantics they cover. Goal1975 adds the exact Hausdorff row; future rows for
-   ranked KNN, full DBSCAN labeling, and Barnes-Hut force-vector accumulation
-   should appear only when those continuations are actually implemented.
+   semantics they cover. Goal1975 adds the exact Hausdorff row and Goal1978
+   adds the exact facility KNN top-k row; future rows for ANN indexing, full
+   DBSCAN labeling, and Barnes-Hut force-vector accumulation should appear only
+   when those continuations are actually implemented.
 
 ## Release Meaning
 

@@ -7,9 +7,9 @@
     "whole_app_speedup_claim_authorized": false
   },
   "classification_counts": {
-    "positive": 11,
+    "positive": 10,
     "positive-bounded": 3,
-    "positive-bounded-exact": 1,
+    "positive-bounded-exact": 2,
     "positive-subsecond": 1
   },
   "goal": "Goal1931",
@@ -82,19 +82,19 @@
     },
     {
       "app": "facility_knn_assignment",
-      "artifact": "docs/reports/goal1937_fixed_radius_repeat3_pod/fixed_radius_524288_repeat3.json",
+      "artifact": "docs/reports/goal1978_pod_exact_top_k_facility_cupy_perf.json",
       "claim_class": "implemented-needs-hardware",
-      "classification": "positive",
-      "insight": "Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling.",
+      "classification": "positive-bounded-exact",
+      "insight": "Goal1978 upgrades facility KNN from a service-coverage threshold proxy to exact K=3 ranked nearest-depot rows through generic partner top-k point-column algebra; this is not an RT-core claim.",
       "label": "facility knn assignment",
       "matrix_state": "harness-ready-pod-needed",
       "partner": "cupy",
-      "ratio_vs_v18_prepared": 0.00030881955759633575,
+      "ratio_vs_v18_prepared": 0.045648761570007065,
       "ratio_vs_v18_reused_prepared": null,
-      "size": 524288,
-      "v18_prepared_s": 1.5537867676466703,
+      "size": 512,
+      "v18_prepared_s": 0.10137242823839188,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 0.0004798397421836853
+      "v2_prepared_partner_s": 0.004627525806427002
     },
     {
       "app": "road_hazard_screening",

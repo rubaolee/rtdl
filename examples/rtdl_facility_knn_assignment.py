@@ -202,6 +202,48 @@ def _run_optix_coverage_threshold(
     }
 
 
+def _partner_column_to_list(column, partner: str) -> list[object]:
+    if partner == "torch":
+        return column.detach().cpu().tolist()
+    if partner == "cupy":
+        import cupy
+
+        return cupy.asnumpy(column).tolist()
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _run_partner_exact_top_k(
+    case: dict[str, tuple[rt.Point, ...]],
+    *,
+    k: int,
+    partner: str,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    customer_columns = rt.point_rows_to_partner_columns(case["customers"], partner=partner)
+    depot_columns = rt.point_rows_to_partner_columns(case["depots"], partner=partner)
+    result = rt.top_k_nearest_points_2d_partner_columns(
+        customer_columns,
+        depot_columns,
+        k=k,
+        partner=partner,
+        return_metadata=True,
+    )
+    columns = result["columns"]
+    query_ids = _partner_column_to_list(columns["query_ids"], partner)
+    neighbor_ids = _partner_column_to_list(columns["neighbor_ids"], partner)
+    distances = _partner_column_to_list(columns["distances"], partner)
+    ranks = _partner_column_to_list(columns["neighbor_rank"], partner)
+    rows = tuple(
+        {
+            "query_id": int(query_id),
+            "neighbor_id": int(neighbor_id),
+            "distance": float(distance),
+            "neighbor_rank": int(rank),
+        }
+        for query_id, neighbor_id, distance, rank in zip(query_ids, neighbor_ids, distances, ranks)
+    )
+    return rows, result["metadata"]
+
+
 def run_case(
     backend: str,
     *,
@@ -209,6 +251,7 @@ def run_case(
     output_mode: str = "rows",
     optix_summary_mode: str = "rows",
     service_radius: float = DEFAULT_SERVICE_RADIUS,
+    partner: str = "cupy",
     require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"rows", "primary_assignments", "summary"}:
@@ -260,7 +303,15 @@ def run_case(
             "--optix-summary-mode coverage_threshold_prepared"
         )
     primary_only = output_mode != "rows"
-    rows = _run_rows(backend, case, primary_only=primary_only)
+    if backend == "partner_exact":
+        rows, partner_metadata = _run_partner_exact_top_k(
+            case,
+            k=PRIMARY_K if primary_only else K,
+            partner=partner,
+        )
+    else:
+        rows = _run_rows(backend, case, primary_only=primary_only)
+        partner_metadata = None
     choices: dict[int, list[dict[str, object]]] = {}
     primary_load: dict[int, int] = {}
     primary_depot_by_customer: dict[int, int] = {}
@@ -288,6 +339,7 @@ def run_case(
         "copies": copies,
         "output_mode": output_mode,
         "optix_summary_mode": None,
+        "partner": partner if backend == "partner_exact" else None,
         "service_radius": None,
         "customer_count": len(case["customers"]),
         "depot_count": len(case["depots"]),
@@ -296,13 +348,19 @@ def run_case(
         "row_count": len(rows),
         "native_continuation_active": False,
         "native_continuation_backend": "none",
+        "partner_reference_contract": (
+            partner_metadata["partner_reference_contract"] if partner_metadata else None
+        ),
         "rt_core_accelerated": False,
         "boundary": (
-            "Rows mode emits K=3 nearest-depot fallback choices. Compact "
-            "primary_assignments and summary modes use a K=1 RTDL KNN kernel "
-            "when fallback choices are not needed."
+            "Rows mode emits K=3 nearest-depot fallback choices. The "
+            "partner_exact backend computes exact ranked nearest-depot rows "
+            "with generic partner point-column algebra, not native engine "
+            "app customization or RT-core acceleration."
         ),
     }
+    if partner_metadata is not None:
+        payload["partner_metadata"] = partner_metadata
     if output_mode == "rows":
         payload["rows"] = list(rows)
         payload["choices_by_customer"] = dict(sorted(choices.items()))
@@ -317,9 +375,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "scipy"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "scipy", "partner_exact"),
         default="cpu_python_reference",
     )
+    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument(
         "--output-mode",
@@ -353,6 +412,7 @@ def main(argv: list[str] | None = None) -> int:
                 output_mode=args.output_mode,
                 optix_summary_mode=args.optix_summary_mode,
                 service_radius=args.service_radius,
+                partner=args.partner,
                 require_rt_core=args.require_rt_core,
             ),
             indent=2,

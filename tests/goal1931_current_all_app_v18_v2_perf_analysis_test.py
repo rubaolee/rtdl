@@ -46,7 +46,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertEqual(classes["segment_polygon_hitcount"], "positive")
         self.assertEqual(classes["road_hazard_screening"], "positive")
         self.assertEqual(classes["robot_collision_screening"], "positive-subsecond")
-        self.assertEqual(classes["facility_knn_assignment"], "positive")
+        self.assertEqual(classes["facility_knn_assignment"], "positive-bounded-exact")
         self.assertEqual(classes["segment_polygon_anyhit_rows"], "positive")
         self.assertEqual(classes["hausdorff_distance"], "positive-bounded-exact")
         self.assertEqual(classes["ann_candidate_search"], "positive")
@@ -69,6 +69,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertIn("positive bounded v2 evidence", text)
         self.assertIn("compact CuPy extent candidate table", text)
         self.assertIn("upgrades Hausdorff", text)
+        self.assertIn("upgrades facility KNN", text)
 
 
 if __name__ == "__main__":
