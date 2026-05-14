@@ -1,0 +1,125 @@
+[setup] count=4096 hazards=6144 threshold=2 output_capacity=25165824
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iterations=3
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iter=1 elapsed_s=93.206911
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iter=2 elapsed_s=91.596287
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iter=3 elapsed_s=94.424474
+[timing] v1_8_prepared_native_optix_road_hazard_rows iterations=3
+[timing] v1_8_prepared_native_optix_road_hazard_rows iter=1 elapsed_s=0.007638
+[timing] v1_8_prepared_native_optix_road_hazard_rows iter=2 elapsed_s=0.006282
+[timing] v1_8_prepared_native_optix_road_hazard_rows iter=3 elapsed_s=0.006050
+[setup] building caller-owned cupy columns
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iterations=3
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iter=1 elapsed_s=8.559352
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iter=2 elapsed_s=0.005818
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iter=3 elapsed_s=0.003935
+[setup] preparing reusable cupy triangle scene and witness outputs
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iterations=3
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iter=1 elapsed_s=0.003715
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iter=2 elapsed_s=0.003464
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iter=3 elapsed_s=0.003147
+fatal: not a git repository (or any of the parent directories): .git
+[artifact] wrote docs/reports/goal2026_all_app_v18_v2_pod_comparison_936aff2f_retry2/road_hazard_cupy_4096.json
+{
+  "baseline": {
+    "name": "v1_8_one_shot_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      93.20691055990756,
+      91.59628699533641,
+      94.4244735557586
+    ],
+    "query_summary": {
+      "max_s": 94.4244735557586,
+      "median_s": 93.20691055990756,
+      "min_s": 91.59628699533641
+    },
+    "row_count": 4096
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 4096,
+  "git_commit": "unknown",
+  "goal": "Goal1869",
+  "goal_extension": "Goal1889",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "iterations": 3,
+  "output_capacity": 25165824,
+  "parity": {
+    "expected_row_count": 4096,
+    "strict_priority_flags_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.01857318915426731,
+      "goal1889_prepared_reuse": {
+        "metadata": {
+          "app_count_materialization": "partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter",
+          "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+          "app_exact_filter_device_materialization": true,
+          "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+          "whole_app_true_zero_copy_authorized": true
+        },
+        "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
+        "prepared_scene_reused": true,
+        "query_median_ratio_vs_goal1869_unprepared_partner": 0.5954402053610819,
+        "query_median_ratio_vs_v1_8_one_shot_native": 3.716704758076296e-05,
+        "query_median_ratio_vs_v1_8_prepared_native": 0.5514916001583449,
+        "query_samples_s": [
+          0.0037146490067243576,
+          0.0034642256796360016,
+          0.003146730363368988
+        ],
+        "query_summary": {
+          "max_s": 0.0037146490067243576,
+          "median_s": 0.0034642256796360016,
+          "min_s": 0.003146730363368988
+        },
+        "row_count": 4096,
+        "witness_output_columns_reused": true
+      },
+      "metadata": {
+        "app_count_materialization": "partner_gpu_unique_pair_counts_from_cupy_exact_filter",
+        "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+        "app_exact_filter_device_materialization": true,
+        "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+        "whole_app_true_zero_copy_authorized": true
+      },
+      "output_contract": "partner_owned_road_hazard_priority_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": 6.241944572457015e-05,
+      "query_median_ratio_vs_v1_8_prepared_native": 0.9261914045994155,
+      "query_samples_s": [
+        8.55935175716877,
+        0.005817923694849014,
+        0.0039347074925899506
+      ],
+      "query_summary": {
+        "max_s": 8.55935175716877,
+        "median_s": 0.005817923694849014,
+        "min_s": 0.0039347074925899506
+      },
+      "row_count": 4096
+    }
+  },
+  "prepared_baseline": {
+    "name": "v1_8_prepared_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      0.007638139650225639,
+      0.006281556561589241,
+      0.006049521267414093
+    ],
+    "query_summary": {
+      "max_s": 0.007638139650225639,
+      "median_s": 0.006281556561589241,
+      "min_s": 0.006049521267414093
+    },
+    "row_count": 4096
+  },
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "pass",
+  "threshold": 2
+}

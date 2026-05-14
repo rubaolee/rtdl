@@ -1,0 +1,15 @@
+[goal2026] 2026-05-14T20:09:33+00:00 POD 6b9290e2841d
+[goal2026] 2026-05-14T20:09:35+00:00 START fixed_radius_family_cupy
+[goal2026] 2026-05-14T20:09:38+00:00 DONE fixed_radius_family_cupy status=1
+[goal2026] 2026-05-14T20:09:38+00:00 START road_hazard_cupy
+[goal2026] 2026-05-14T20:14:28+00:00 DONE road_hazard_cupy status=0
+[goal2026] 2026-05-14T20:14:28+00:00 START segment_hitcount_cupy
+[goal2026] 2026-05-14T20:14:30+00:00 DONE segment_hitcount_cupy status=0
+[goal2026] 2026-05-14T20:14:30+00:00 START robot_collision_cupy
+[goal2026] 2026-05-14T20:14:42+00:00 DONE robot_collision_cupy status=0
+[goal2026] 2026-05-14T20:14:42+00:00 START database_control_cupy
+[goal2026] 2026-05-14T20:15:11+00:00 DONE database_control_cupy status=0
+[goal2026] 2026-05-14T20:15:11+00:00 START graph_control_cupy
+[goal2026] 2026-05-14T20:16:10+00:00 DONE graph_control_cupy status=0
+[goal2026] 2026-05-14T20:16:10+00:00 START polygon_control_cupy_extent
+[goal2026] 2026-05-14T20:16:23+00:00 DONE polygon_control_cupy_extent status=0

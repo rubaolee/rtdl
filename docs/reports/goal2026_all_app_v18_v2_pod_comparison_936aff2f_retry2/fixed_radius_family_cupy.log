@@ -1,0 +1,22 @@
+[goal1925] start app=facility_knn_assignment partner=cupy
+Traceback (most recent call last):
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 353, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 328, in main
+    results.append(run_case(scenario, repeat=args.repeat, partner=partner))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 257, in run_case
+    forward = _run_one_direction(scenario, query_points, search_points, repeat=repeat, partner=partner)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 199, in _run_one_direction
+    prepared_v2 = prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/partner_adapters.py", line 3377, in prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
+    return _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/optix_runtime.py", line 1068, in prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
+    _check_status(status, error)
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/optix_runtime.py", line 5559, in _check_status
+    raise RuntimeError(msg)
+RuntimeError: CUDA driver error: the provided PTX was compiled with an unsupported toolchain.. RTDL generated PTX that this CUDA driver cannot load. Use a CUDA toolkit/NVRTC version supported by the installed driver, put the driver's CUDA compat libraries first in LD_LIBRARY_PATH when required, or set RTDL_OPTIX_PTX_ARCH=compute_XX for the target GPU before rerunning. RTDL could not load generated PTX with the installed CUDA driver. Check that the CUDA toolkit/NVRTC used to build/run RTDL is supported by the driver; if using a newer toolkit with an older datacenter driver, put the CUDA compat library path first in LD_LIBRARY_PATH or rebuild/run with a compatible CUDA toolkit. You may also set RTDL_OPTIX_PTX_ARCH=compute_XX to target the GPU architecture explicitly.
