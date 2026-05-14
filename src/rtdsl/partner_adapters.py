@@ -266,10 +266,14 @@ def partner_group_count_unique_pairs_by_key(group_keys, item_keys, output_group_
         item_i64 = item_keys.to(torch.int64)
         if bool(torch.any(item_i64 < 0).item()):
             raise ValueError("item_keys must be non-negative")
-        group_matches = output_i64.reshape(-1, 1).eq(group_i64.reshape(1, -1))
-        if not bool(torch.all(torch.any(group_matches, dim=0)).item()):
+        sorted_output, sorted_to_original = torch.sort(output_i64)
+        sorted_positions = torch.searchsorted(sorted_output, group_i64)
+        valid_positions = sorted_positions < int(output_i64.numel())
+        if not bool(torch.all(valid_positions).item()):
             raise ValueError("group_keys must be present in output_group_keys")
-        group_positions = torch.argmax(group_matches.to(torch.int64), dim=0)
+        if not bool(torch.all(sorted_output[sorted_positions] == group_i64).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        group_positions = sorted_to_original[sorted_positions]
         item_modulus = torch.max(item_i64) + 1
         unique_pairs = torch.unique(group_positions * item_modulus + item_i64)
         unique_positions = torch.div(unique_pairs, item_modulus, rounding_mode="floor")
@@ -285,10 +289,15 @@ def partner_group_count_unique_pairs_by_key(group_keys, item_keys, output_group_
         item_i64 = item_keys.astype(cupy.int64, copy=False)
         if bool(cupy.any(item_i64 < 0).item()):
             raise ValueError("item_keys must be non-negative")
-        group_matches = output_i64.reshape(-1, 1) == group_i64.reshape(1, -1)
-        if not bool(cupy.all(cupy.any(group_matches, axis=0)).item()):
+        sorted_to_original = cupy.argsort(output_i64)
+        sorted_output = output_i64[sorted_to_original]
+        sorted_positions = cupy.searchsorted(sorted_output, group_i64)
+        valid_positions = sorted_positions < int(output_i64.size)
+        if not bool(cupy.all(valid_positions).item()):
             raise ValueError("group_keys must be present in output_group_keys")
-        group_positions = cupy.argmax(group_matches, axis=0).astype(cupy.int64, copy=False)
+        if not bool(cupy.all(sorted_output[sorted_positions] == group_i64).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        group_positions = sorted_to_original[sorted_positions].astype(cupy.int64, copy=False)
         item_modulus = cupy.max(item_i64) + cupy.asarray(1, dtype=cupy.int64)
         unique_pairs = cupy.unique(group_positions * item_modulus + item_i64)
         unique_positions = unique_pairs // item_modulus
