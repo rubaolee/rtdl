@@ -13,6 +13,7 @@ INIT = ROOT / "src" / "rtdsl" / "__init__.py"
 EXAMPLE = ROOT / "examples" / "rtdl_control_apps_cupy_rawkernel.py"
 PREFLIGHT = ROOT / "scripts" / "goal1908_v2_local_preflight.py"
 REPORT = ROOT / "docs" / "reports" / "goal1972_graph_metric_table_partner_reduction_2026-05-14.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1972_pod_graph_metric_table_control_perf.json"
 
 
 class Goal1972GraphMetricTablePartnerReductionTest(unittest.TestCase):
@@ -72,8 +73,18 @@ class Goal1972GraphMetricTablePartnerReductionTest(unittest.TestCase):
         self.assertIn("partner_metric_table_reduce_by_key", report)
         self.assertIn("no longer a one-off RawKernel", report)
         self.assertIn("does not add graph semantics to the native engine", report)
-        self.assertIn("pod timing is still required", report)
+        self.assertIn("0.000003x", report)
+        self.assertIn("general graph traversal acceleration claim", report)
         self.assertIn("tests.goal1972_graph_metric_table_partner_reduction_test", preflight)
+
+    def test_pod_artifact_records_graph_metric_table_correctness(self) -> None:
+        payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+        row = payload["results"][0]
+
+        self.assertEqual(row["app"], "graph_analytics")
+        self.assertTrue(payload["all_match_v1_8_python_rtdl_oracle"])
+        self.assertTrue(row["matches_v1_8_python_rtdl_oracle"])
+        self.assertLess(row["v2_vs_v1_8_ratio"], 0.001)
 
 
 if __name__ == "__main__":

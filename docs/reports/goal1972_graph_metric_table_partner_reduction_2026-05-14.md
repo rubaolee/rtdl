@@ -2,7 +2,7 @@
 
 Date: 2026-05-14
 
-Status: implementation slice; pod timing pending
+Status: implementation slice with pod timing
 
 ## Why This Goal Exists
 
@@ -51,6 +51,23 @@ The design lesson is narrower and useful for v2.0: graph-like apps need generic
 partner-owned metric tables and reductions, not app-specific native
 continuations and not closed-form timing shortcuts.
 
+## Pod Timing
+
+The RTX 2000 Ada pod rerun used `copies=1000`, `partner=cupy`, and the
+Goal1972 metric-table path:
+
+| App | Copies | v1.8 median s | v2 median s | v2/v1.8 | Correct |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `graph_analytics` | 1000 | 18.060916 | 0.000054 | 0.000003x | yes |
+
+This is no longer the previous closed-form RawKernel, but the claim remains
+bounded: the authored input rows are small, and this does not prove arbitrary
+graph traversal acceleration.
+
+Artifact:
+
+- `docs/reports/goal1972_pod_graph_metric_table_control_perf.json`
+
 ## Validation
 
 Local focused validation:
@@ -59,4 +76,4 @@ Local focused validation:
 PYTHONPATH=src;. py -3 -m unittest tests.goal1972_graph_metric_table_partner_reduction_test
 ```
 
-Pod timing remains the next step.
+Pod timing was collected on the RTX 2000 Ada pod.

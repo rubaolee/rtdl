@@ -25,17 +25,19 @@ class Goal1953ControlAppsCuPyRawKernelV2Test(unittest.TestCase):
             self.assertIn(app, text)
         self.assertIn("cp.RawKernel", text)
         self.assertIn("DB_RAWKERNEL_SOURCE", text)
-        self.assertIn("GRAPH_RAWKERNEL_SOURCE", text)
+        self.assertIn("partner_metric_table_reduce_by_key", text)
         self.assertIn("POLYGON_PAIR_RAWKERNEL_SOURCE", text)
         self.assertIn("fairness_note", text)
         self.assertIn("not absolutely fair", text)
 
-    def test_graph_rawkernel_uses_closed_form_summary_without_global_atomic_contention(self) -> None:
-        import examples.rtdl_control_apps_cupy_rawkernel as rawkernel_apps
+    def test_graph_uses_metric_table_reductions_instead_of_closed_form_rawkernel(self) -> None:
+        text = EXAMPLE.read_text(encoding="utf-8")
 
-        self.assertNotIn("atomicAdd", rawkernel_apps.GRAPH_RAWKERNEL_SOURCE)
-        self.assertIn("out[0] = 2 * copies", rawkernel_apps.GRAPH_RAWKERNEL_SOURCE)
-        self.assertIn("out[6] = 3 * copies", rawkernel_apps.GRAPH_RAWKERNEL_SOURCE)
+        self.assertNotIn("GRAPH_RAWKERNEL_SOURCE", text)
+        self.assertNotIn("rtdl_user_graph_summary", text)
+        self.assertIn("GRAPH_SUM_METRIC_IDS", text)
+        self.assertIn("GRAPH_MAX_METRIC_IDS", text)
+        self.assertIn("partner_metric_table_reduce_by_key(", text)
 
     def test_cpu_fallback_all_apps_match_v1_8_oracles(self) -> None:
         completed = subprocess.run(

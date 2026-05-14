@@ -39,7 +39,7 @@ continuations around the four former control rows.
 | App | v2 RawKernel continuation | Local oracle |
 | --- | --- | --- |
 | `database_analytics` | RawKernel predicate scan, grouped counts, grouped revenue sums, and risky order id emission | `rtdl_database_analytics_app.run_app(... output_mode="compact_summary")` |
-| `graph_analytics` | RawKernel app summaries for BFS discovery, triangle count, and visibility-edge counts | `rtdl_graph_analytics_app.run_app(... output_mode="summary")` per scenario |
+| `graph_analytics` | Generic partner metric-table reductions for BFS discovery, triangle count, and visibility-edge counts | `rtdl_graph_analytics_app.run_app(... output_mode="summary")` per scenario |
 | `polygon_pair_overlap_area_rows` | RawKernel exact cell-mask intersection/union summary over RTDL candidate pairs | `rtdl_polygon_pair_overlap_area_rows.run_case(... output_mode="summary")` |
 | `polygon_set_jaccard` | RawKernel exact cell-mask set-intersection continuation plus CuPy-side ratio assembly | `rtdl_polygon_set_jaccard.run_case(... output_mode="summary")` |
 
@@ -80,7 +80,7 @@ Python+CuPy RawKernel+RTDL.
 
 Still blocked until pod timing:
 
-- performance ratios for the four RawKernel v2 rows;
+- performance ratios for the four v2 rows;
 - whole-app speedup wording for these rows;
 - any claim that RTDL accelerates arbitrary RawKernel code.
 
