@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 346, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 328, in main
+    payload = build_payload(
+              ^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 265, in build_payload
+    run_one(
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 198, in run_one
+    rawkernel_apps.run_control_app(
+  File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 1000, in run_control_app
+    return run_polygon_pair_overlap_rawkernel(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 883, in run_polygon_pair_overlap_rawkernel
+    inputs = _polygon_summary_inputs("polygon_pair_overlap_area_rows", copies, candidate_backend, partner)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 849, in _polygon_summary_inputs
+    pair_payload_table = _partner_pair_payload_table_cupy_extent(left, right)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 664, in _partner_pair_payload_table_cupy_extent
+    height = cp.minimum(left_columns["max_y"][:, None], right_columns["max_y"][None, :]) - cp.maximum(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cupy/_core/core.pyx", line 1379, in cupy._core.core._ndarray_base.__sub__
+  File "cupy/_core/_kernel.pyx", line 1349, in cupy._core._kernel.ufunc.__call__
+  File "cupy/_core/_kernel.pyx", line 645, in cupy._core._kernel._get_out_args_from_optionals
+  File "cupy/_core/core.pyx", line 2999, in cupy._core.core._ndarray_init
+  File "cupy/_core/core.pyx", line 272, in cupy._core.core._ndarray_base._init_fast
+  File "cupy/cuda/memory.pyx", line 875, in cupy.cuda.memory.alloc
+  File "cupy/cuda/memory.pyx", line 1579, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1600, in cupy.cuda.memory.MemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1271, in cupy.cuda.memory.SingleDeviceMemoryPool.malloc
+  File "cupy/cuda/memory.pyx", line 1292, in cupy.cuda.memory.SingleDeviceMemoryPool._malloc
+  File "cupy/cuda/memory.pyx", line 1537, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+  File "cupy/cuda/memory.pyx", line 1540, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 6,442,450,944 bytes (allocated so far: 19,328,991,232 bytes).

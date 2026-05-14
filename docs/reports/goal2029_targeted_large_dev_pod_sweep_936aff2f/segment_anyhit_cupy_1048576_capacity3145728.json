@@ -1,0 +1,56 @@
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      7.216832691803575,
+      6.131051514297724,
+      5.10112046264112
+    ],
+    "query_summary": {
+      "max_s": 7.216832691803575,
+      "median_s": 6.131051514297724,
+      "min_s": 5.10112046264112
+    },
+    "row_count": 1048576
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "whole_app_true_zero_copy_authorized": false
+  },
+  "count": 1048576,
+  "git_commit": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "iterations": 3,
+  "output_capacity": 3145728,
+  "parity": {
+    "expected_row_count": 1048576,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 3.136429239064455,
+      "overflow_check": {
+        "status": "skipped"
+      },
+      "query_median_ratio_vs_v1_8_native": 3.6572204822803904,
+      "query_samples_s": [
+        22.42260717600584,
+        24.514420114457607,
+        21.99056761339307
+      ],
+      "query_summary": {
+        "max_s": 24.514420114457607,
+        "median_s": 22.42260717600584,
+        "min_s": 21.99056761339307
+      },
+      "row_count": 1048576
+    }
+  },
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "pass"
+}

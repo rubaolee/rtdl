@@ -1,0 +1,261 @@
+[goal2029] 2026-05-14T20:43:27+00:00 POD 6b9290e2841d
+[goal2029] 2026-05-14T20:43:27+00:00 START polygon_extent_10000 timeout=600s
+[goal2029] 2026-05-14T20:43:38+00:00 DONE polygon_extent_10000 status=0
+[goal2029][polygon_extent_10000]       "app": "polygon_set_jaccard",
+[goal2029][polygon_extent_10000]       "candidate_backend": "cupy_extent",
+[goal2029][polygon_extent_10000]       "copies": 10000,
+[goal2029][polygon_extent_10000]       "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+[goal2029][polygon_extent_10000]       "matches_v1_8_python_rtdl_oracle": true,
+[goal2029][polygon_extent_10000]       "partner": "cupy",
+[goal2029][polygon_extent_10000]       "repeats": 3,
+[goal2029][polygon_extent_10000]       "v1_8_payload_signature": {
+[goal2029][polygon_extent_10000]         "app": "polygon_set_jaccard",
+[goal2029][polygon_extent_10000]         "sha256": "9e1511a90aef3385d17ae10894aff1c9a92b0d64730739944ffea21f74f2da1d",
+[goal2029][polygon_extent_10000]         "summary": {
+[goal2029][polygon_extent_10000]           "intersection_area": 50000,
+[goal2029][polygon_extent_10000]           "jaccard_similarity": 0.2631578947368421,
+[goal2029][polygon_extent_10000]           "left_area": 130000,
+[goal2029][polygon_extent_10000]           "right_area": 110000,
+[goal2029][polygon_extent_10000]           "union_area": 190000
+[goal2029][polygon_extent_10000]         }
+[goal2029][polygon_extent_10000]       },
+[goal2029][polygon_extent_10000]       "v1_8_python_rtdl_wall": {
+[goal2029][polygon_extent_10000]         "max_s": 1.0798357799649239,
+[goal2029][polygon_extent_10000]         "median_s": 1.0313529670238495,
+[goal2029][polygon_extent_10000]         "min_s": 1.0037556141614914
+[goal2029][polygon_extent_10000]       },
+[goal2029][polygon_extent_10000]       "v2_payload_signature": {
+[goal2029][polygon_extent_10000]         "app": "polygon_set_jaccard",
+[goal2029][polygon_extent_10000]         "candidate_backend": "cupy_extent",
+[goal2029][polygon_extent_10000]         "matches_v1_8_python_rtdl_oracle": null,
+[goal2029][polygon_extent_10000]         "partner": "cupy",
+[goal2029][polygon_extent_10000]         "sha256": "497925f16f45a4c743d828cad0e4c7e87511b20af143acb496fb1f9f781f2122",
+[goal2029][polygon_extent_10000]         "summary": {
+[goal2029][polygon_extent_10000]           "intersection_area": 50000,
+[goal2029][polygon_extent_10000]           "jaccard_similarity": 0.2631578947368421,
+[goal2029][polygon_extent_10000]           "left_area": 130000,
+[goal2029][polygon_extent_10000]           "right_area": 110000,
+[goal2029][polygon_extent_10000]           "union_area": 190000
+[goal2029][polygon_extent_10000]         }
+[goal2029][polygon_extent_10000]       },
+[goal2029][polygon_extent_10000]       "v2_rawkernel_wall": {
+[goal2029][polygon_extent_10000]         "max_s": 0.24704153090715408,
+[goal2029][polygon_extent_10000]         "median_s": 0.2342971097677946,
+[goal2029][polygon_extent_10000]         "min_s": 0.20985729433596134
+[goal2029][polygon_extent_10000]       },
+[goal2029][polygon_extent_10000]       "v2_vs_v1_8_ratio": 0.2271745146997542,
+[goal2029][polygon_extent_10000]       "warmups": 1
+[goal2029][polygon_extent_10000]     }
+[goal2029][polygon_extent_10000]   ],
+[goal2029][polygon_extent_10000]   "source_commit": "",
+[goal2029][polygon_extent_10000]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2029][polygon_extent_10000]   "status": "rawkernel-control-app-perf-smoke"
+[goal2029][polygon_extent_10000] }
+[goal2029] 2026-05-14T20:43:38+00:00 START polygon_extent_12000 timeout=600s
+[goal2029] 2026-05-14T20:43:50+00:00 DONE polygon_extent_12000 status=0
+[goal2029][polygon_extent_12000]       "app": "polygon_set_jaccard",
+[goal2029][polygon_extent_12000]       "candidate_backend": "cupy_extent",
+[goal2029][polygon_extent_12000]       "copies": 12000,
+[goal2029][polygon_extent_12000]       "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+[goal2029][polygon_extent_12000]       "matches_v1_8_python_rtdl_oracle": true,
+[goal2029][polygon_extent_12000]       "partner": "cupy",
+[goal2029][polygon_extent_12000]       "repeats": 3,
+[goal2029][polygon_extent_12000]       "v1_8_payload_signature": {
+[goal2029][polygon_extent_12000]         "app": "polygon_set_jaccard",
+[goal2029][polygon_extent_12000]         "sha256": "05615970ef53192bd40d2c22d57683ce373e5c3506c15de67afb4fd95fe03aa1",
+[goal2029][polygon_extent_12000]         "summary": {
+[goal2029][polygon_extent_12000]           "intersection_area": 60000,
+[goal2029][polygon_extent_12000]           "jaccard_similarity": 0.2631578947368421,
+[goal2029][polygon_extent_12000]           "left_area": 156000,
+[goal2029][polygon_extent_12000]           "right_area": 132000,
+[goal2029][polygon_extent_12000]           "union_area": 228000
+[goal2029][polygon_extent_12000]         }
+[goal2029][polygon_extent_12000]       },
+[goal2029][polygon_extent_12000]       "v1_8_python_rtdl_wall": {
+[goal2029][polygon_extent_12000]         "max_s": 1.1956436783075333,
+[goal2029][polygon_extent_12000]         "median_s": 1.1673869173973799,
+[goal2029][polygon_extent_12000]         "min_s": 1.1600497793406248
+[goal2029][polygon_extent_12000]       },
+[goal2029][polygon_extent_12000]       "v2_payload_signature": {
+[goal2029][polygon_extent_12000]         "app": "polygon_set_jaccard",
+[goal2029][polygon_extent_12000]         "candidate_backend": "cupy_extent",
+[goal2029][polygon_extent_12000]         "matches_v1_8_python_rtdl_oracle": null,
+[goal2029][polygon_extent_12000]         "partner": "cupy",
+[goal2029][polygon_extent_12000]         "sha256": "288d0c56cdf7806f7a88a155faebc70703cfc966cda1fa3b6d6a0948f5bb7ff4",
+[goal2029][polygon_extent_12000]         "summary": {
+[goal2029][polygon_extent_12000]           "intersection_area": 60000,
+[goal2029][polygon_extent_12000]           "jaccard_similarity": 0.2631578947368421,
+[goal2029][polygon_extent_12000]           "left_area": 156000,
+[goal2029][polygon_extent_12000]           "right_area": 132000,
+[goal2029][polygon_extent_12000]           "union_area": 228000
+[goal2029][polygon_extent_12000]         }
+[goal2029][polygon_extent_12000]       },
+[goal2029][polygon_extent_12000]       "v2_rawkernel_wall": {
+[goal2029][polygon_extent_12000]         "max_s": 0.27694259211421013,
+[goal2029][polygon_extent_12000]         "median_s": 0.2533129286020994,
+[goal2029][polygon_extent_12000]         "min_s": 0.25262931920588017
+[goal2029][polygon_extent_12000]       },
+[goal2029][polygon_extent_12000]       "v2_vs_v1_8_ratio": 0.21699140604286163,
+[goal2029][polygon_extent_12000]       "warmups": 1
+[goal2029][polygon_extent_12000]     }
+[goal2029][polygon_extent_12000]   ],
+[goal2029][polygon_extent_12000]   "source_commit": "",
+[goal2029][polygon_extent_12000]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2029][polygon_extent_12000]   "status": "rawkernel-control-app-perf-smoke"
+[goal2029][polygon_extent_12000] }
+[goal2029] 2026-05-14T20:43:50+00:00 START segment_capacity_1m_x3 timeout=900s
+[goal2029] 2026-05-14T20:45:29+00:00 DONE segment_capacity_1m_x3 status=0
+[goal2029][segment_capacity_1m_x3]       5.10112046264112
+[goal2029][segment_capacity_1m_x3]     ],
+[goal2029][segment_capacity_1m_x3]     "query_summary": {
+[goal2029][segment_capacity_1m_x3]       "max_s": 7.216832691803575,
+[goal2029][segment_capacity_1m_x3]       "median_s": 6.131051514297724,
+[goal2029][segment_capacity_1m_x3]       "min_s": 5.10112046264112
+[goal2029][segment_capacity_1m_x3]     },
+[goal2029][segment_capacity_1m_x3]     "row_count": 1048576
+[goal2029][segment_capacity_1m_x3]   },
+[goal2029][segment_capacity_1m_x3]   "claim_boundary": {
+[goal2029][segment_capacity_1m_x3]     "broad_rt_core_speedup_claim_authorized": false,
+[goal2029][segment_capacity_1m_x3]     "package_install_claim_authorized": false,
+[goal2029][segment_capacity_1m_x3]     "same_contract_timing_row": true,
+[goal2029][segment_capacity_1m_x3]     "v2_0_release_authorized": false,
+[goal2029][segment_capacity_1m_x3]     "whole_app_speedup_claim_authorized": false,
+[goal2029][segment_capacity_1m_x3]     "whole_app_true_zero_copy_authorized": false
+[goal2029][segment_capacity_1m_x3]   },
+[goal2029][segment_capacity_1m_x3]   "count": 1048576,
+[goal2029][segment_capacity_1m_x3]   "git_commit": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2029][segment_capacity_1m_x3]   "goal": "Goal1856",
+[goal2029][segment_capacity_1m_x3]   "gpu": "NVIDIA RTX A5000, 570.211.01",
+[goal2029][segment_capacity_1m_x3]   "iterations": 3,
+[goal2029][segment_capacity_1m_x3]   "output_capacity": 3145728,
+[goal2029][segment_capacity_1m_x3]   "parity": {
+[goal2029][segment_capacity_1m_x3]     "expected_row_count": 1048576,
+[goal2029][segment_capacity_1m_x3]     "strict_rows_match": true
+[goal2029][segment_capacity_1m_x3]   },
+[goal2029][segment_capacity_1m_x3]   "partners": {
+[goal2029][segment_capacity_1m_x3]     "cupy": {
+[goal2029][segment_capacity_1m_x3]       "column_build_s": 3.136429239064455,
+[goal2029][segment_capacity_1m_x3]       "overflow_check": {
+[goal2029][segment_capacity_1m_x3]         "status": "skipped"
+[goal2029][segment_capacity_1m_x3]       },
+[goal2029][segment_capacity_1m_x3]       "query_median_ratio_vs_v1_8_native": 3.6572204822803904,
+[goal2029][segment_capacity_1m_x3]       "query_samples_s": [
+[goal2029][segment_capacity_1m_x3]         22.42260717600584,
+[goal2029][segment_capacity_1m_x3]         24.514420114457607,
+[goal2029][segment_capacity_1m_x3]         21.99056761339307
+[goal2029][segment_capacity_1m_x3]       ],
+[goal2029][segment_capacity_1m_x3]       "query_summary": {
+[goal2029][segment_capacity_1m_x3]         "max_s": 24.514420114457607,
+[goal2029][segment_capacity_1m_x3]         "median_s": 22.42260717600584,
+[goal2029][segment_capacity_1m_x3]         "min_s": 21.99056761339307
+[goal2029][segment_capacity_1m_x3]       },
+[goal2029][segment_capacity_1m_x3]       "row_count": 1048576
+[goal2029][segment_capacity_1m_x3]     }
+[goal2029][segment_capacity_1m_x3]   },
+[goal2029][segment_capacity_1m_x3]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2029][segment_capacity_1m_x3]   "status": "pass"
+[goal2029][segment_capacity_1m_x3] }
+[goal2029] 2026-05-14T20:45:29+00:00 START road_prepared_8192 timeout=600s
+[goal2029] 2026-05-14T20:45:32+00:00 DONE road_prepared_8192 status=0
+[goal2029][road_prepared_8192]     "app_priority_materialization": "partner_gpu_threshold_from_prepared_hit_counts",
+[goal2029][road_prepared_8192]     "app_rows_emitted": 8192,
+[goal2029][road_prepared_8192]     "backend": "optix",
+[goal2029][road_prepared_8192]     "direct_device_handoff_authorized": true,
+[goal2029][road_prepared_8192]     "direct_device_pointer_observed": true,
+[goal2029][road_prepared_8192]     "emitted_count": 12288,
+[goal2029][road_prepared_8192]     "exact_row_semantics_authorized": true,
+[goal2029][road_prepared_8192]     "input_contract": "caller_supplied_partner_device_columns",
+[goal2029][road_prepared_8192]     "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+[goal2029][road_prepared_8192]     "native_exact_row_semantics_authorized": false,
+[goal2029][road_prepared_8192]     "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+[goal2029][road_prepared_8192]     "overflowed": false,
+[goal2029][road_prepared_8192]     "partner": "cupy",
+[goal2029][road_prepared_8192]     "partner_tensor_handoff_authorized": true,
+[goal2029][road_prepared_8192]     "prepared_scene_reused": true,
+[goal2029][road_prepared_8192]     "priority_threshold": 2,
+[goal2029][road_prepared_8192]     "ray_columns_true_zero_copy_authorized": true,
+[goal2029][road_prepared_8192]     "ray_count": 8192,
+[goal2029][road_prepared_8192]     "rt_core_speedup_claim_authorized": false,
+[goal2029][road_prepared_8192]     "source_devices": [
+[goal2029][road_prepared_8192]       "cuda:0"
+[goal2029][road_prepared_8192]     ],
+[goal2029][road_prepared_8192]     "source_protocols": [
+[goal2029][road_prepared_8192]       "cupy"
+[goal2029][road_prepared_8192]     ],
+[goal2029][road_prepared_8192]     "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+[goal2029][road_prepared_8192]     "triangle_scene_true_zero_copy_authorized": true,
+[goal2029][road_prepared_8192]     "true_zero_copy_authorized": true,
+[goal2029][road_prepared_8192]     "v2_0_release_authorized": false,
+[goal2029][road_prepared_8192]     "whole_app_speedup_claim_authorized": false,
+[goal2029][road_prepared_8192]     "whole_app_true_zero_copy_authorized": true,
+[goal2029][road_prepared_8192]     "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+[goal2029][road_prepared_8192]     "witness_output_columns_reused": true,
+[goal2029][road_prepared_8192]     "witness_outputs_true_zero_copy_authorized": true,
+[goal2029][road_prepared_8192]     "witness_row_capacity": 100663296
+[goal2029][road_prepared_8192]   },
+[goal2029][road_prepared_8192]   "output_capacity": 100663296,
+[goal2029][road_prepared_8192]   "ratio": 0.19718307141644356,
+[goal2029][road_prepared_8192]   "strict_priority_flags_match": true,
+[goal2029][road_prepared_8192]   "v1_prepared": {
+[goal2029][road_prepared_8192]     "max_s": 0.02479618228971958,
+[goal2029][road_prepared_8192]     "median_s": 0.01737692952156067,
+[goal2029][road_prepared_8192]     "min_s": 0.013942304998636246
+[goal2029][road_prepared_8192]   },
+[goal2029][road_prepared_8192]   "v2_prepared": {
+[goal2029][road_prepared_8192]     "max_s": 0.19772732630372047,
+[goal2029][road_prepared_8192]     "median_s": 0.003426436334848404,
+[goal2029][road_prepared_8192]     "min_s": 0.0034110285341739655
+[goal2029][road_prepared_8192]   }
+[goal2029][road_prepared_8192] }
+[goal2029] 2026-05-14T20:45:32+00:00 START road_prepared_16384 timeout=900s
+[goal2029] 2026-05-14T20:45:34+00:00 DONE road_prepared_16384 status=0
+[goal2029][road_prepared_16384]     "app_priority_materialization": "partner_gpu_threshold_from_prepared_hit_counts",
+[goal2029][road_prepared_16384]     "app_rows_emitted": 16384,
+[goal2029][road_prepared_16384]     "backend": "optix",
+[goal2029][road_prepared_16384]     "direct_device_handoff_authorized": true,
+[goal2029][road_prepared_16384]     "direct_device_pointer_observed": true,
+[goal2029][road_prepared_16384]     "emitted_count": 24576,
+[goal2029][road_prepared_16384]     "exact_row_semantics_authorized": true,
+[goal2029][road_prepared_16384]     "input_contract": "caller_supplied_partner_device_columns",
+[goal2029][road_prepared_16384]     "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+[goal2029][road_prepared_16384]     "native_exact_row_semantics_authorized": false,
+[goal2029][road_prepared_16384]     "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+[goal2029][road_prepared_16384]     "overflowed": false,
+[goal2029][road_prepared_16384]     "partner": "cupy",
+[goal2029][road_prepared_16384]     "partner_tensor_handoff_authorized": true,
+[goal2029][road_prepared_16384]     "prepared_scene_reused": true,
+[goal2029][road_prepared_16384]     "priority_threshold": 2,
+[goal2029][road_prepared_16384]     "ray_columns_true_zero_copy_authorized": true,
+[goal2029][road_prepared_16384]     "ray_count": 16384,
+[goal2029][road_prepared_16384]     "rt_core_speedup_claim_authorized": false,
+[goal2029][road_prepared_16384]     "source_devices": [
+[goal2029][road_prepared_16384]       "cuda:0"
+[goal2029][road_prepared_16384]     ],
+[goal2029][road_prepared_16384]     "source_protocols": [
+[goal2029][road_prepared_16384]       "cupy"
+[goal2029][road_prepared_16384]     ],
+[goal2029][road_prepared_16384]     "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+[goal2029][road_prepared_16384]     "triangle_scene_true_zero_copy_authorized": true,
+[goal2029][road_prepared_16384]     "true_zero_copy_authorized": true,
+[goal2029][road_prepared_16384]     "v2_0_release_authorized": false,
+[goal2029][road_prepared_16384]     "whole_app_speedup_claim_authorized": false,
+[goal2029][road_prepared_16384]     "whole_app_true_zero_copy_authorized": true,
+[goal2029][road_prepared_16384]     "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+[goal2029][road_prepared_16384]     "witness_output_columns_reused": true,
+[goal2029][road_prepared_16384]     "witness_outputs_true_zero_copy_authorized": true,
+[goal2029][road_prepared_16384]     "witness_row_capacity": 402653184
+[goal2029][road_prepared_16384]   },
+[goal2029][road_prepared_16384]   "output_capacity": 402653184,
+[goal2029][road_prepared_16384]   "ratio": 0.13418502696861095,
+[goal2029][road_prepared_16384]   "strict_priority_flags_match": true,
+[goal2029][road_prepared_16384]   "v1_prepared": {
+[goal2029][road_prepared_16384]     "max_s": 0.04831831902265549,
+[goal2029][road_prepared_16384]     "median_s": 0.04120857082307339,
+[goal2029][road_prepared_16384]     "min_s": 0.03478754870593548
+[goal2029][road_prepared_16384]   },
+[goal2029][road_prepared_16384]   "v2_prepared": {
+[goal2029][road_prepared_16384]     "max_s": 0.19444276206195354,
+[goal2029][road_prepared_16384]     "median_s": 0.0055295731872320175,
+[goal2029][road_prepared_16384]     "min_s": 0.0031622759997844696
+[goal2029][road_prepared_16384]   }
+[goal2029][road_prepared_16384] }

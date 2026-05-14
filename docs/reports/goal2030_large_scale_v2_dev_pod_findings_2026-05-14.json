@@ -1,0 +1,46 @@
+{
+  "goal": "Goal2030",
+  "date": "2026-05-14",
+  "status": "development-evidence-not-release-authorization",
+  "pod": {
+    "host": "69.30.85.251",
+    "port": 22085,
+    "gpu": "NVIDIA RTX A5000, 570.211.01, 24564 MiB",
+    "source_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+    "checkout": "/root/rtdl_goal2024_936aff2f"
+  },
+  "artifacts": [
+    "docs/reports/goal2028_large_scale_dev_pod_sweep_936aff2f/",
+    "docs/reports/goal2029_targeted_large_dev_pod_sweep_936aff2f/"
+  ],
+  "key_results": {
+    "database_500k_ratio": 0.19831207499140568,
+    "polygon_12000_pair_ratio": 0.19856740692062474,
+    "polygon_12000_jaccard_ratio": 0.21699140604286163,
+    "polygon_16000_status": "oom_dense_all_pairs_extent",
+    "graph_100000_v2_only_s": 0.0002064276486635208,
+    "graph_1000000_v2_only_s": 0.00012318231165409088,
+    "segment_1m_capacity_2x_status": "overflow",
+    "segment_1m_capacity_3x_ratio": 3.6572204822803904,
+    "segment_1m_capacity_4x_ratio": 3.7502764253842775,
+    "robot_4m_ratio": 0.017478193066838642,
+    "robot_16m_ratio": 0.015387562527185109,
+    "road_hazard_8192_prepared_ratio": 0.19718307141644356,
+    "road_hazard_16384_prepared_ratio": 0.13418502696861095,
+    "fixed_radius_status": "cuda13_nvrtc_ptx_driver_mismatch"
+  },
+  "next_engineering_targets": [
+    "tiled or chunked polygon extent candidate discovery",
+    "compact segment output contract or paged witness materialization",
+    "separate benchmark modes for correctness, ratio, and v2-only scale probes",
+    "warmup and allocation phase reporting",
+    "fixed-radius CUDA/NVRTC/PTX toolchain repair"
+  ],
+  "claim_boundary": {
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "unbounded_polygon_graph_or_segment_claim_authorized": false
+  }
+}

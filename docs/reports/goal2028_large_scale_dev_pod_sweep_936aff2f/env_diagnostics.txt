@@ -1,0 +1,21 @@
+CUDA_HOME=
+LD_LIBRARY_PATH=/usr/local/cuda/lib64
+/usr/local/cuda/bin/nvcc
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Wed_Aug_20_01:58:59_PM_PDT_2025
+Cuda compilation tools, release 13.0, V13.0.88
+Build cuda_13.0.r13.0/compiler.36424714_0
+	linux-vdso.so.1 (0x00007fff55bf5000)
+	libcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x000078adc0000000)
+	libnvrtc.so.13 => /usr/local/cuda/lib64/libnvrtc.so.13 (0x000078adb9440000)
+	libgeos_c.so.1 => /lib/x86_64-linux-gnu/libgeos_c.so.1 (0x000078adc45ba000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000078adb91c2000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000078adc44d1000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000078adb9194000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000078adb8f82000)
+	/lib64/ld-linux-x86-64.so.2 (0x000078adc46d1000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x000078adc44ca000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x000078adc44c5000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x000078adb8f7d000)
+	libgeos.so.3.12.1 => /lib/x86_64-linux-gnu/libgeos.so.3.12.1 (0x000078adb8d13000)

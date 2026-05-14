@@ -1,0 +1,26 @@
+[setup] count=1048576 output_capacity=2097152
+[timing] v1_8_native_optix_rows iterations=3
+[timing] v1_8_native_optix_rows iter=1 elapsed_s=6.921838
+[timing] v1_8_native_optix_rows iter=2 elapsed_s=6.315167
+[timing] v1_8_native_optix_rows iter=3 elapsed_s=5.241562
+[setup] building caller-owned cupy columns
+[timing] v2_0_partner_columns_cupy iterations=3
+Traceback (most recent call last):
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 292, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 230, in main
+    samples, rows = _time_call(
+                    ^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 130, in _time_call
+    last_rows = fn()
+                ^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 233, in <lambda>
+    lambda: rt.segment_polygon_anyhit_rows_optix_partner_columns(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/partner_adapters.py", line 2762, in segment_polygon_anyhit_rows_optix_partner_columns
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/partner_adapters.py", line 2094, in _segment_polygon_all_witness_columns_optix_partner_columns
+    raise RuntimeError("partner segment/polygon column adapter overflowed; increase output_capacity")
+RuntimeError: partner segment/polygon column adapter overflowed; increase output_capacity

@@ -1,0 +1,387 @@
+[goal2028] 2026-05-14T20:22:47+00:00 POD 6b9290e2841d
+[goal2028] 2026-05-14T20:22:47+00:00 START database_control_200k timeout=600s
+[goal2028] 2026-05-14T20:23:45+00:00 DONE database_control_200k status=0
+[goal2028][database_control_200k]                 6,
+[goal2028][database_control_200k]                 8,
+[goal2028][database_control_200k]                 9,
+[goal2028][database_control_200k]                 10,
+[goal2028][database_control_200k]                 12
+[goal2028][database_control_200k]               ],
+[goal2028][database_control_200k]               "list_length": 800000,
+[goal2028][database_control_200k]               "sha256": "0bd4e08093ac24eb2c20f8a9e3b9f3befcdb0cae4722bd2f012cc6b8929756d4",
+[goal2028][database_control_200k]               "tail": [
+[goal2028][database_control_200k]                 1199990,
+[goal2028][database_control_200k]                 1199991,
+[goal2028][database_control_200k]                 1199992,
+[goal2028][database_control_200k]                 1199994,
+[goal2028][database_control_200k]                 1199996,
+[goal2028][database_control_200k]                 1199997,
+[goal2028][database_control_200k]                 1199998,
+[goal2028][database_control_200k]                 1200000
+[goal2028][database_control_200k]               ]
+[goal2028][database_control_200k]             },
+[goal2028][database_control_200k]             "risky_revenue_by_region": {
+[goal2028][database_control_200k]               "central": 52000000,
+[goal2028][database_control_200k]               "east": 62000000,
+[goal2028][database_control_200k]               "west": 86000000
+[goal2028][database_control_200k]             }
+[goal2028][database_control_200k]           }
+[goal2028][database_control_200k]         }
+[goal2028][database_control_200k]       },
+[goal2028][database_control_200k]       "v2_rawkernel_wall": {
+[goal2028][database_control_200k]         "max_s": 3.2445099093019962,
+[goal2028][database_control_200k]         "median_s": 2.8702725525945425,
+[goal2028][database_control_200k]         "min_s": 2.788766223937273
+[goal2028][database_control_200k]       },
+[goal2028][database_control_200k]       "v2_vs_v1_8_ratio": 0.20193704252029457,
+[goal2028][database_control_200k]       "warmups": 1
+[goal2028][database_control_200k]     }
+[goal2028][database_control_200k]   ],
+[goal2028][database_control_200k]   "source_commit": "",
+[goal2028][database_control_200k]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][database_control_200k]   "status": "rawkernel-control-app-perf-smoke"
+[goal2028][database_control_200k] }
+[goal2028] 2026-05-14T20:23:45+00:00 START database_control_500k timeout=900s
+[goal2028] 2026-05-14T20:25:20+00:00 DONE database_control_500k status=0
+[goal2028][database_control_500k]                 6,
+[goal2028][database_control_500k]                 8,
+[goal2028][database_control_500k]                 9,
+[goal2028][database_control_500k]                 10,
+[goal2028][database_control_500k]                 12
+[goal2028][database_control_500k]               ],
+[goal2028][database_control_500k]               "list_length": 2000000,
+[goal2028][database_control_500k]               "sha256": "c8a377dbc26ea765f1e24dc4b624a466885561d7956b0e50927d036fde0a9a86",
+[goal2028][database_control_500k]               "tail": [
+[goal2028][database_control_500k]                 2999990,
+[goal2028][database_control_500k]                 2999991,
+[goal2028][database_control_500k]                 2999992,
+[goal2028][database_control_500k]                 2999994,
+[goal2028][database_control_500k]                 2999996,
+[goal2028][database_control_500k]                 2999997,
+[goal2028][database_control_500k]                 2999998,
+[goal2028][database_control_500k]                 3000000
+[goal2028][database_control_500k]               ]
+[goal2028][database_control_500k]             },
+[goal2028][database_control_500k]             "risky_revenue_by_region": {
+[goal2028][database_control_500k]               "central": 130000000,
+[goal2028][database_control_500k]               "east": 155000000,
+[goal2028][database_control_500k]               "west": 215000000
+[goal2028][database_control_500k]             }
+[goal2028][database_control_500k]           }
+[goal2028][database_control_500k]         }
+[goal2028][database_control_500k]       },
+[goal2028][database_control_500k]       "v2_rawkernel_wall": {
+[goal2028][database_control_500k]         "max_s": 6.984990555793047,
+[goal2028][database_control_500k]         "median_s": 6.963365303352475,
+[goal2028][database_control_500k]         "min_s": 6.941740050911903
+[goal2028][database_control_500k]       },
+[goal2028][database_control_500k]       "v2_vs_v1_8_ratio": 0.19831207499140568,
+[goal2028][database_control_500k]       "warmups": 1
+[goal2028][database_control_500k]     }
+[goal2028][database_control_500k]   ],
+[goal2028][database_control_500k]   "source_commit": "",
+[goal2028][database_control_500k]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][database_control_500k]   "status": "rawkernel-control-app-perf-smoke"
+[goal2028][database_control_500k] }
+[goal2028] 2026-05-14T20:25:20+00:00 START polygon_extent_16384 timeout=600s
+[goal2028] 2026-05-14T20:25:22+00:00 DONE polygon_extent_16384 status=1
+[goal2028][polygon_extent_16384] Traceback (most recent call last):
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 346, in <module>
+[goal2028][polygon_extent_16384]     raise SystemExit(main())
+[goal2028][polygon_extent_16384]                      ^^^^^^
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 328, in main
+[goal2028][polygon_extent_16384]     payload = build_payload(
+[goal2028][polygon_extent_16384]               ^^^^^^^^^^^^^^
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 265, in build_payload
+[goal2028][polygon_extent_16384]     run_one(
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1955_rawkernel_control_app_perf.py", line 198, in run_one
+[goal2028][polygon_extent_16384]     rawkernel_apps.run_control_app(
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 1000, in run_control_app
+[goal2028][polygon_extent_16384]     return run_polygon_pair_overlap_rawkernel(
+[goal2028][polygon_extent_16384]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 883, in run_polygon_pair_overlap_rawkernel
+[goal2028][polygon_extent_16384]     inputs = _polygon_summary_inputs("polygon_pair_overlap_area_rows", copies, candidate_backend, partner)
+[goal2028][polygon_extent_16384]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 849, in _polygon_summary_inputs
+[goal2028][polygon_extent_16384]     pair_payload_table = _partner_pair_payload_table_cupy_extent(left, right)
+[goal2028][polygon_extent_16384]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][polygon_extent_16384]   File "/root/rtdl_goal2024_936aff2f/examples/rtdl_control_apps_cupy_rawkernel.py", line 664, in _partner_pair_payload_table_cupy_extent
+[goal2028][polygon_extent_16384]     height = cp.minimum(left_columns["max_y"][:, None], right_columns["max_y"][None, :]) - cp.maximum(
+[goal2028][polygon_extent_16384]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][polygon_extent_16384]   File "cupy/_core/core.pyx", line 1379, in cupy._core.core._ndarray_base.__sub__
+[goal2028][polygon_extent_16384]   File "cupy/_core/_kernel.pyx", line 1349, in cupy._core._kernel.ufunc.__call__
+[goal2028][polygon_extent_16384]   File "cupy/_core/_kernel.pyx", line 645, in cupy._core._kernel._get_out_args_from_optionals
+[goal2028][polygon_extent_16384]   File "cupy/_core/core.pyx", line 2999, in cupy._core.core._ndarray_init
+[goal2028][polygon_extent_16384]   File "cupy/_core/core.pyx", line 272, in cupy._core.core._ndarray_base._init_fast
+[goal2028][polygon_extent_16384]   File "cupy/cuda/memory.pyx", line 875, in cupy.cuda.memory.alloc
+[goal2028][polygon_extent_16384]   File "cupy/cuda/memory.pyx", line 1579, in cupy.cuda.memory.MemoryPool.malloc
+[goal2028][polygon_extent_16384]   File "cupy/cuda/memory.pyx", line 1600, in cupy.cuda.memory.MemoryPool.malloc
+[goal2028][polygon_extent_16384]   File "cupy/cuda/memory.pyx", line 1271, in cupy.cuda.memory.SingleDeviceMemoryPool.malloc
+[goal2028][polygon_extent_16384]   File "cupy/cuda/memory.pyx", line 1292, in cupy.cuda.memory.SingleDeviceMemoryPool._malloc
+[goal2028][polygon_extent_16384]   File "cupy/cuda/memory.pyx", line 1537, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+[goal2028][polygon_extent_16384]   File "cupy/cuda/memory.pyx", line 1540, in cupy.cuda.memory.SingleDeviceMemoryPool._try_malloc
+[goal2028][polygon_extent_16384] cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 6,442,450,944 bytes (allocated so far: 19,328,991,232 bytes).
+[goal2028] 2026-05-14T20:25:22+00:00 START graph_control_5000 timeout=600s
+[goal2028] 2026-05-14T20:35:23+00:00 DONE graph_control_5000 status=143
+[goal2028] 2026-05-14T20:35:23+00:00 START graph_v2only_100000 timeout=300s
+[goal2028] 2026-05-14T20:35:24+00:00 DONE graph_v2only_100000 status=0
+[goal2028][graph_v2only_100000]       "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+[goal2028][graph_v2only_100000]       "matches_v1_8_python_rtdl_oracle": null,
+[goal2028][graph_v2only_100000]       "partner": "cupy",
+[goal2028][graph_v2only_100000]       "repeats": 5,
+[goal2028][graph_v2only_100000]       "v1_8_payload_signature": null,
+[goal2028][graph_v2only_100000]       "v1_8_python_rtdl_wall": null,
+[goal2028][graph_v2only_100000]       "v2_payload_signature": {
+[goal2028][graph_v2only_100000]         "app": "graph_analytics",
+[goal2028][graph_v2only_100000]         "matches_v1_8_python_rtdl_oracle": null,
+[goal2028][graph_v2only_100000]         "partner": "cupy",
+[goal2028][graph_v2only_100000]         "sha256": "2391a271c0e358b50242e45b6f5ff3b54e5bdf85083a42751e25912cad9cb964",
+[goal2028][graph_v2only_100000]         "summary": {
+[goal2028][graph_v2only_100000]           "bfs": {
+[goal2028][graph_v2only_100000]             "discovered_edge_count": 200000,
+[goal2028][graph_v2only_100000]             "discovered_vertex_count": 200000,
+[goal2028][graph_v2only_100000]             "max_level": 1
+[goal2028][graph_v2only_100000]           },
+[goal2028][graph_v2only_100000]           "triangle_count": {
+[goal2028][graph_v2only_100000]             "touched_vertex_count": 300000,
+[goal2028][graph_v2only_100000]             "triangle_count": 100000
+[goal2028][graph_v2only_100000]           },
+[goal2028][graph_v2only_100000]           "visibility_edges": {
+[goal2028][graph_v2only_100000]             "blocked_edge_count": 300000,
+[goal2028][graph_v2only_100000]             "visible_edge_count": 100000
+[goal2028][graph_v2only_100000]           }
+[goal2028][graph_v2only_100000]         }
+[goal2028][graph_v2only_100000]       },
+[goal2028][graph_v2only_100000]       "v2_rawkernel_wall": {
+[goal2028][graph_v2only_100000]         "max_s": 0.0002352409064769745,
+[goal2028][graph_v2only_100000]         "median_s": 0.0002064276486635208,
+[goal2028][graph_v2only_100000]         "min_s": 0.0001985207200050354
+[goal2028][graph_v2only_100000]       },
+[goal2028][graph_v2only_100000]       "v2_vs_v1_8_ratio": null,
+[goal2028][graph_v2only_100000]       "warmups": 2
+[goal2028][graph_v2only_100000]     }
+[goal2028][graph_v2only_100000]   ],
+[goal2028][graph_v2only_100000]   "source_commit": "",
+[goal2028][graph_v2only_100000]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][graph_v2only_100000]   "status": "rawkernel-control-app-perf-smoke"
+[goal2028][graph_v2only_100000] }
+[goal2028] 2026-05-14T20:35:24+00:00 START graph_v2only_1000000 timeout=300s
+[goal2028] 2026-05-14T20:35:25+00:00 DONE graph_v2only_1000000 status=0
+[goal2028][graph_v2only_1000000]       "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+[goal2028][graph_v2only_1000000]       "matches_v1_8_python_rtdl_oracle": null,
+[goal2028][graph_v2only_1000000]       "partner": "cupy",
+[goal2028][graph_v2only_1000000]       "repeats": 5,
+[goal2028][graph_v2only_1000000]       "v1_8_payload_signature": null,
+[goal2028][graph_v2only_1000000]       "v1_8_python_rtdl_wall": null,
+[goal2028][graph_v2only_1000000]       "v2_payload_signature": {
+[goal2028][graph_v2only_1000000]         "app": "graph_analytics",
+[goal2028][graph_v2only_1000000]         "matches_v1_8_python_rtdl_oracle": null,
+[goal2028][graph_v2only_1000000]         "partner": "cupy",
+[goal2028][graph_v2only_1000000]         "sha256": "4d4b3c1b5f69a4abcc5aeb168c842708d73a4cd08b0fc00f3767a2d5794333e0",
+[goal2028][graph_v2only_1000000]         "summary": {
+[goal2028][graph_v2only_1000000]           "bfs": {
+[goal2028][graph_v2only_1000000]             "discovered_edge_count": 2000000,
+[goal2028][graph_v2only_1000000]             "discovered_vertex_count": 2000000,
+[goal2028][graph_v2only_1000000]             "max_level": 1
+[goal2028][graph_v2only_1000000]           },
+[goal2028][graph_v2only_1000000]           "triangle_count": {
+[goal2028][graph_v2only_1000000]             "touched_vertex_count": 3000000,
+[goal2028][graph_v2only_1000000]             "triangle_count": 1000000
+[goal2028][graph_v2only_1000000]           },
+[goal2028][graph_v2only_1000000]           "visibility_edges": {
+[goal2028][graph_v2only_1000000]             "blocked_edge_count": 3000000,
+[goal2028][graph_v2only_1000000]             "visible_edge_count": 1000000
+[goal2028][graph_v2only_1000000]           }
+[goal2028][graph_v2only_1000000]         }
+[goal2028][graph_v2only_1000000]       },
+[goal2028][graph_v2only_1000000]       "v2_rawkernel_wall": {
+[goal2028][graph_v2only_1000000]         "max_s": 0.00015463680028915405,
+[goal2028][graph_v2only_1000000]         "median_s": 0.00012318231165409088,
+[goal2028][graph_v2only_1000000]         "min_s": 0.00012039579451084137
+[goal2028][graph_v2only_1000000]       },
+[goal2028][graph_v2only_1000000]       "v2_vs_v1_8_ratio": null,
+[goal2028][graph_v2only_1000000]       "warmups": 2
+[goal2028][graph_v2only_1000000]     }
+[goal2028][graph_v2only_1000000]   ],
+[goal2028][graph_v2only_1000000]   "source_commit": "",
+[goal2028][graph_v2only_1000000]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][graph_v2only_1000000]   "status": "rawkernel-control-app-perf-smoke"
+[goal2028][graph_v2only_1000000] }
+[goal2028] 2026-05-14T20:35:25+00:00 START segment_capacity_1m_x2 timeout=900s
+[goal2028] 2026-05-14T20:35:54+00:00 DONE segment_capacity_1m_x2 status=1
+[goal2028][segment_capacity_1m_x2] [setup] count=1048576 output_capacity=2097152
+[goal2028][segment_capacity_1m_x2] [timing] v1_8_native_optix_rows iterations=3
+[goal2028][segment_capacity_1m_x2] [timing] v1_8_native_optix_rows iter=1 elapsed_s=6.921838
+[goal2028][segment_capacity_1m_x2] [timing] v1_8_native_optix_rows iter=2 elapsed_s=6.315167
+[goal2028][segment_capacity_1m_x2] [timing] v1_8_native_optix_rows iter=3 elapsed_s=5.241562
+[goal2028][segment_capacity_1m_x2] [setup] building caller-owned cupy columns
+[goal2028][segment_capacity_1m_x2] [timing] v2_0_partner_columns_cupy iterations=3
+[goal2028][segment_capacity_1m_x2] Traceback (most recent call last):
+[goal2028][segment_capacity_1m_x2]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 292, in <module>
+[goal2028][segment_capacity_1m_x2]     raise SystemExit(main())
+[goal2028][segment_capacity_1m_x2]                      ^^^^^^
+[goal2028][segment_capacity_1m_x2]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 230, in main
+[goal2028][segment_capacity_1m_x2]     samples, rows = _time_call(
+[goal2028][segment_capacity_1m_x2]                     ^^^^^^^^^^^
+[goal2028][segment_capacity_1m_x2]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 130, in _time_call
+[goal2028][segment_capacity_1m_x2]     last_rows = fn()
+[goal2028][segment_capacity_1m_x2]                 ^^^^
+[goal2028][segment_capacity_1m_x2]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1856_segment_polygon_v2_partner_perf.py", line 233, in <lambda>
+[goal2028][segment_capacity_1m_x2]     lambda: rt.segment_polygon_anyhit_rows_optix_partner_columns(
+[goal2028][segment_capacity_1m_x2]             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][segment_capacity_1m_x2]   File "/root/rtdl_goal2024_936aff2f/src/rtdsl/partner_adapters.py", line 2762, in segment_polygon_anyhit_rows_optix_partner_columns
+[goal2028][segment_capacity_1m_x2]     witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+[goal2028][segment_capacity_1m_x2]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][segment_capacity_1m_x2]   File "/root/rtdl_goal2024_936aff2f/src/rtdsl/partner_adapters.py", line 2094, in _segment_polygon_all_witness_columns_optix_partner_columns
+[goal2028][segment_capacity_1m_x2]     raise RuntimeError("partner segment/polygon column adapter overflowed; increase output_capacity")
+[goal2028][segment_capacity_1m_x2] RuntimeError: partner segment/polygon column adapter overflowed; increase output_capacity
+[goal2028] 2026-05-14T20:35:54+00:00 START segment_capacity_1m_x4 timeout=900s
+[goal2028] 2026-05-14T20:37:31+00:00 DONE segment_capacity_1m_x4 status=0
+[goal2028][segment_capacity_1m_x4]     "broad_rt_core_speedup_claim_authorized": false,
+[goal2028][segment_capacity_1m_x4]     "package_install_claim_authorized": false,
+[goal2028][segment_capacity_1m_x4]     "same_contract_timing_row": true,
+[goal2028][segment_capacity_1m_x4]     "v2_0_release_authorized": false,
+[goal2028][segment_capacity_1m_x4]     "whole_app_speedup_claim_authorized": false,
+[goal2028][segment_capacity_1m_x4]     "whole_app_true_zero_copy_authorized": false
+[goal2028][segment_capacity_1m_x4]   },
+[goal2028][segment_capacity_1m_x4]   "count": 1048576,
+[goal2028][segment_capacity_1m_x4]   "git_commit": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][segment_capacity_1m_x4]   "goal": "Goal1856",
+[goal2028][segment_capacity_1m_x4]   "gpu": "NVIDIA RTX A5000, 570.211.01",
+[goal2028][segment_capacity_1m_x4]   "iterations": 3,
+[goal2028][segment_capacity_1m_x4]   "output_capacity": 4194304,
+[goal2028][segment_capacity_1m_x4]   "parity": {
+[goal2028][segment_capacity_1m_x4]     "expected_row_count": 1048576,
+[goal2028][segment_capacity_1m_x4]     "strict_rows_match": true
+[goal2028][segment_capacity_1m_x4]   },
+[goal2028][segment_capacity_1m_x4]   "partners": {
+[goal2028][segment_capacity_1m_x4]     "cupy": {
+[goal2028][segment_capacity_1m_x4]       "column_build_s": 3.2287528067827225,
+[goal2028][segment_capacity_1m_x4]       "overflow_check": {
+[goal2028][segment_capacity_1m_x4]         "status": "skipped"
+[goal2028][segment_capacity_1m_x4]       },
+[goal2028][segment_capacity_1m_x4]       "query_median_ratio_vs_v1_8_native": 3.7502764253842775,
+[goal2028][segment_capacity_1m_x4]       "query_samples_s": [
+[goal2028][segment_capacity_1m_x4]         22.664319340139627,
+[goal2028][segment_capacity_1m_x4]         23.961318716406822,
+[goal2028][segment_capacity_1m_x4]         21.86143384873867
+[goal2028][segment_capacity_1m_x4]       ],
+[goal2028][segment_capacity_1m_x4]       "query_summary": {
+[goal2028][segment_capacity_1m_x4]         "max_s": 23.961318716406822,
+[goal2028][segment_capacity_1m_x4]         "median_s": 22.664319340139627,
+[goal2028][segment_capacity_1m_x4]         "min_s": 21.86143384873867
+[goal2028][segment_capacity_1m_x4]       },
+[goal2028][segment_capacity_1m_x4]       "row_count": 1048576
+[goal2028][segment_capacity_1m_x4]     }
+[goal2028][segment_capacity_1m_x4]   },
+[goal2028][segment_capacity_1m_x4]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][segment_capacity_1m_x4]   "status": "pass"
+[goal2028][segment_capacity_1m_x4] }
+[goal2028] 2026-05-14T20:37:31+00:00 START robot_4m timeout=600s
+[goal2028] 2026-05-14T20:38:02+00:00 DONE robot_4m status=0
+[goal2028][robot_4m]         "source_devices": [
+[goal2028][robot_4m]           "cuda:0"
+[goal2028][robot_4m]         ],
+[goal2028][robot_4m]         "source_protocols": [
+[goal2028][robot_4m]           "cupy"
+[goal2028][robot_4m]         ],
+[goal2028][robot_4m]         "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+[goal2028][robot_4m]         "triangle_scene_true_zero_copy_authorized": true,
+[goal2028][robot_4m]         "true_zero_copy_authorized": true,
+[goal2028][robot_4m]         "v2_0_release_authorized": false,
+[goal2028][robot_4m]         "whole_app_speedup_claim_authorized": false
+[goal2028][robot_4m]       },
+[goal2028][robot_4m]       "obstacle_count": 16384,
+[goal2028][robot_4m]       "parity": {
+[goal2028][robot_4m]         "colliding_pose_count_match": true,
+[goal2028][robot_4m]         "pose_collision_flags_match": true,
+[goal2028][robot_4m]         "v1_colliding_pose_count": 4161536,
+[goal2028][robot_4m]         "v2_colliding_pose_count": 4161536
+[goal2028][robot_4m]       },
+[goal2028][robot_4m]       "partner": "cupy",
+[goal2028][robot_4m]       "pose_count": 4194304,
+[goal2028][robot_4m]       "ray_count": 16777216,
+[goal2028][robot_4m]       "status": "pass",
+[goal2028][robot_4m]       "triangle_count": 32768,
+[goal2028][robot_4m]       "v1_8_prepared_optix_pose_flags": {
+[goal2028][robot_4m]         "max_s": 0.3427366968244314,
+[goal2028][robot_4m]         "median_s": 0.30358915589749813,
+[goal2028][robot_4m]         "min_s": 0.29780167527496815
+[goal2028][robot_4m]       },
+[goal2028][robot_4m]       "v2_prepared_native_optix_partner_pose_flags": {
+[goal2028][robot_4m]         "max_s": 0.06286497972905636,
+[goal2028][robot_4m]         "median_s": 0.005306189879775047,
+[goal2028][robot_4m]         "min_s": 0.005193421617150307
+[goal2028][robot_4m]       },
+[goal2028][robot_4m]       "v2_vs_v1_8_prepared_ratio": 0.017478193066838642
+[goal2028][robot_4m]     }
+[goal2028][robot_4m]   ],
+[goal2028][robot_4m]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][robot_4m]   "status": "pass"
+[goal2028][robot_4m] }
+[goal2028] 2026-05-14T20:38:02+00:00 START robot_16m timeout=900s
+[goal2028] 2026-05-14T20:39:58+00:00 DONE robot_16m status=0
+[goal2028][robot_16m]         "source_devices": [
+[goal2028][robot_16m]           "cuda:0"
+[goal2028][robot_16m]         ],
+[goal2028][robot_16m]         "source_protocols": [
+[goal2028][robot_16m]           "cupy"
+[goal2028][robot_16m]         ],
+[goal2028][robot_16m]         "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+[goal2028][robot_16m]         "triangle_scene_true_zero_copy_authorized": true,
+[goal2028][robot_16m]         "true_zero_copy_authorized": true,
+[goal2028][robot_16m]         "v2_0_release_authorized": false,
+[goal2028][robot_16m]         "whole_app_speedup_claim_authorized": false
+[goal2028][robot_16m]       },
+[goal2028][robot_16m]       "obstacle_count": 16384,
+[goal2028][robot_16m]       "parity": {
+[goal2028][robot_16m]         "colliding_pose_count_match": true,
+[goal2028][robot_16m]         "pose_collision_flags_match": true,
+[goal2028][robot_16m]         "v1_colliding_pose_count": 16646144,
+[goal2028][robot_16m]         "v2_colliding_pose_count": 16646144
+[goal2028][robot_16m]       },
+[goal2028][robot_16m]       "partner": "cupy",
+[goal2028][robot_16m]       "pose_count": 16777216,
+[goal2028][robot_16m]       "ray_count": 67108864,
+[goal2028][robot_16m]       "status": "pass",
+[goal2028][robot_16m]       "triangle_count": 32768,
+[goal2028][robot_16m]       "v1_8_prepared_optix_pose_flags": {
+[goal2028][robot_16m]         "max_s": 1.3337273951619864,
+[goal2028][robot_16m]         "median_s": 1.2893250565975904,
+[goal2028][robot_16m]         "min_s": 1.2725123465061188
+[goal2028][robot_16m]       },
+[goal2028][robot_16m]       "v2_prepared_native_optix_partner_pose_flags": {
+[goal2028][robot_16m]         "max_s": 0.09501150622963905,
+[goal2028][robot_16m]         "median_s": 0.019839569926261902,
+[goal2028][robot_16m]         "min_s": 0.019739899784326553
+[goal2028][robot_16m]       },
+[goal2028][robot_16m]       "v2_vs_v1_8_prepared_ratio": 0.015387562527185109
+[goal2028][robot_16m]     }
+[goal2028][robot_16m]   ],
+[goal2028][robot_16m]   "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+[goal2028][robot_16m]   "status": "pass"
+[goal2028][robot_16m] }
+[goal2028] 2026-05-14T20:39:58+00:00 START fixed_radius_default_probe timeout=300s
+[goal2028] 2026-05-14T20:40:00+00:00 DONE fixed_radius_default_probe status=1
+[goal2028][fixed_radius_default_probe] [goal1925] start app=facility_knn_assignment partner=cupy
+[goal2028][fixed_radius_default_probe] Traceback (most recent call last):
+[goal2028][fixed_radius_default_probe]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 353, in <module>
+[goal2028][fixed_radius_default_probe]     raise SystemExit(main())
+[goal2028][fixed_radius_default_probe]                      ^^^^^^
+[goal2028][fixed_radius_default_probe]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 328, in main
+[goal2028][fixed_radius_default_probe]     results.append(run_case(scenario, repeat=args.repeat, partner=partner))
+[goal2028][fixed_radius_default_probe]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][fixed_radius_default_probe]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 257, in run_case
+[goal2028][fixed_radius_default_probe]     forward = _run_one_direction(scenario, query_points, search_points, repeat=repeat, partner=partner)
+[goal2028][fixed_radius_default_probe]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][fixed_radius_default_probe]   File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 199, in _run_one_direction
+[goal2028][fixed_radius_default_probe]     prepared_v2 = prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+[goal2028][fixed_radius_default_probe]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][fixed_radius_default_probe]   File "/root/rtdl_goal2024_936aff2f/src/rtdsl/partner_adapters.py", line 3377, in prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
+[goal2028][fixed_radius_default_probe]     return _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+[goal2028][fixed_radius_default_probe]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[goal2028][fixed_radius_default_probe]   File "/root/rtdl_goal2024_936aff2f/src/rtdsl/optix_runtime.py", line 1068, in prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
+[goal2028][fixed_radius_default_probe]     _check_status(status, error)
+[goal2028][fixed_radius_default_probe]   File "/root/rtdl_goal2024_936aff2f/src/rtdsl/optix_runtime.py", line 5559, in _check_status
+[goal2028][fixed_radius_default_probe]     raise RuntimeError(msg)
+[goal2028][fixed_radius_default_probe] RuntimeError: CUDA driver error: the provided PTX was compiled with an unsupported toolchain.. RTDL generated PTX that this CUDA driver cannot load. Use a CUDA toolkit/NVRTC version supported by the installed driver, put the driver's CUDA compat libraries first in LD_LIBRARY_PATH when required, or set RTDL_OPTIX_PTX_ARCH=compute_XX for the target GPU before rerunning. RTDL could not load generated PTX with the installed CUDA driver. Check that the CUDA toolkit/NVRTC used to build/run RTDL is supported by the driver; if using a newer toolkit with an older datacenter driver, put the CUDA compat library path first in LD_LIBRARY_PATH or rebuild/run with a compatible CUDA toolkit. You may also set RTDL_OPTIX_PTX_ARCH=compute_XX to target the GPU architecture explicitly.

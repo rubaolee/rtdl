@@ -1,0 +1,66 @@
+{
+  "column_build_s": 0.031461603939533234,
+  "count": 8192,
+  "goal": "Goal2029-road-prepared-only",
+  "hazards": 12288,
+  "iterations": 3,
+  "metadata": {
+    "adapter": "road_hazard_priority_flags_optix_prepared_partner_device_columns",
+    "app": "road_hazard_screening",
+    "app_columns_emitted": 2,
+    "app_count_host_materialization": false,
+    "app_count_materialization": "partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter",
+    "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+    "app_exact_filter_device_materialization": true,
+    "app_exact_row_semantics_authorized": true,
+    "app_priority_host_materialization": false,
+    "app_priority_materialization": "partner_gpu_threshold_from_prepared_hit_counts",
+    "app_rows_emitted": 8192,
+    "backend": "optix",
+    "direct_device_handoff_authorized": true,
+    "direct_device_pointer_observed": true,
+    "emitted_count": 12288,
+    "exact_row_semantics_authorized": true,
+    "input_contract": "caller_supplied_partner_device_columns",
+    "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+    "native_exact_row_semantics_authorized": false,
+    "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+    "overflowed": false,
+    "partner": "cupy",
+    "partner_tensor_handoff_authorized": true,
+    "prepared_scene_reused": true,
+    "priority_threshold": 2,
+    "ray_columns_true_zero_copy_authorized": true,
+    "ray_count": 8192,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "cupy"
+    ],
+    "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+    "triangle_scene_true_zero_copy_authorized": true,
+    "true_zero_copy_authorized": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "whole_app_true_zero_copy_authorized": true,
+    "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+    "witness_output_columns_reused": true,
+    "witness_outputs_true_zero_copy_authorized": true,
+    "witness_row_capacity": 100663296
+  },
+  "output_capacity": 100663296,
+  "ratio": 0.19718307141644356,
+  "strict_priority_flags_match": true,
+  "v1_prepared": {
+    "max_s": 0.02479618228971958,
+    "median_s": 0.01737692952156067,
+    "min_s": 0.013942304998636246
+  },
+  "v2_prepared": {
+    "max_s": 0.19772732630372047,
+    "median_s": 0.003426436334848404,
+    "min_s": 0.0034110285341739655
+  }
+}
