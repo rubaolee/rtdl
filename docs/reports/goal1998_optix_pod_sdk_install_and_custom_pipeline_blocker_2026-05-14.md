@@ -37,6 +37,43 @@ whole-app acceleration, or broad RT-core claims.
   pipeline during scene construction. Pipeline compilation is now lazy, so a
   prepared scene only compiles the path the caller actually runs.
 
+## Reusable CUDA/OptiX Pod Setup Notes
+
+Use this sequence on future NVIDIA pods before declaring OptiX blocked:
+
+```bash
+nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
+ls -d /usr/local/cuda* || true
+command -v nvcc || true
+find /usr /lib /run -name 'libnvoptix*' 2>/dev/null | head
+
+mkdir -p /root/vendor
+git clone --depth 1 --branch v8.0.0 https://github.com/NVIDIA/optix-sdk /root/vendor/optix-sdk
+ln -sfn /root/vendor/optix-sdk /opt/optix
+
+cd /root/rtdl_goal1983
+make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk
+
+RTDL_OPTIX_LIBRARY=/root/rtdl_goal1983/build/librtdl_optix.so \
+RTDL_OPTIX_LOG_LEVEL=2 \
+PYTHONPATH=src:. \
+python3 scratch/goal1997_pod_smoke.py
+```
+
+Driver/tag guidance from this session:
+
+- Driver `550.x`: start with OptiX SDK `v8.0.0`.
+- Driver `565.x`: OptiX SDK `v8.1.0` can build against the runtime observed
+  here.
+- OptiX SDK `v9.0.0` produced `Unsupported ABI version` on this `565.57.01`
+  pod, so do not assume 9.x works unless the pod proves it.
+
+If `libnvoptix.so.1` is missing, try the matching `libnvidia-gl-<driver>` user
+space package. In this container, the package payload made `libnvoptix.so.1`
+visible, but full package repair later failed on bind-mounted driver files with
+`Invalid cross-device link`. Record that as container packaging state, not as an
+SDK-header failure.
+
 ## Still Blocked
 
 The generic all-witness paging smoke reaches real OptiX module creation, but the
