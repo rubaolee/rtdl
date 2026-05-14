@@ -2053,6 +2053,58 @@ def allocate_segment_polygon_witness_partner_device_output_columns(
     }
 
 
+def ray_primitive_witness_pair_page_optix_prepared_partner_columns(
+    prepared_scene,
+    ray_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    page_offset: int = 0,
+    page_limit: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return a bounded partner-owned page of generic ray/primitive witness pairs."""
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        ray_columns,
+        None,
+        None,
+        partner=partner,
+        output_capacity=output_capacity,
+        prepared_scene=prepared_scene,
+        witness_output_columns=witness_output_columns,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    witness_columns = {
+        "witness_ray_ids": runtime["slice"](witness_result["witness_ray_ids"], emitted_count),
+        "witness_primitive_ids": runtime["slice"](witness_result["witness_primitive_ids"], emitted_count),
+    }
+    page = partner_page_columns(
+        witness_columns,
+        offset=page_offset,
+        limit=page_limit,
+        partner=runtime["name"],
+    )
+    metadata = dict(page["_metadata"])
+    metadata.update(dict(witness_result["metadata"]))
+    metadata.update(
+        {
+            "adapter": "ray_primitive_witness_pair_page_optix_prepared_partner_columns",
+            "partner": runtime["name"],
+            "emitted_count": emitted_count,
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_row_materialization": "not_performed_generic_witness_page_only",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    page["_metadata"] = metadata
+    if return_metadata:
+        return {"columns": page, "metadata": metadata}
+    return page
+
+
 def allocate_robot_collision_pose_partner_device_output_columns(
     pose_count: int,
     ray_count: int,
