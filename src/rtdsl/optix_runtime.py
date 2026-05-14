@@ -2559,11 +2559,11 @@ def _partner_contiguous_aabb_strides(strides) -> bool:
 def _require_partner_device_ray_column_layout(handoffs: dict) -> None:
     expected_dtypes = {
         "ids": {"uint32"},
-        "ox": {"float64", "double"},
-        "oy": {"float64", "double"},
-        "dx": {"float64", "double"},
-        "dy": {"float64", "double"},
-        "tmax": {"float64", "double"},
+        "ox": {"float32", "float64", "double"},
+        "oy": {"float32", "float64", "double"},
+        "dx": {"float32", "float64", "double"},
+        "dy": {"float32", "float64", "double"},
+        "tmax": {"float32", "float64", "double"},
     }
     expected_count = None
     expected_device = None

@@ -632,10 +632,20 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
     pco.pipelineLaunchParamsVariableName = "params";
     pco.usesPrimitiveTypeFlags           = OPTIX_PRIMITIVE_TYPE_FLAGS_CUSTOM;
 
-    OPTIX_CHECK(optixModuleCreate(ctx, &mco, &pco,
-                                   ptx.c_str(), ptx.size(),
-                                   nullptr, nullptr,
-                                   &holder->module));
+    char module_log[8192] = {};
+    size_t module_log_size = sizeof(module_log);
+    OptixResult module_result = optixModuleCreate(ctx, &mco, &pco,
+                                                  ptx.c_str(), ptx.size(),
+                                                  module_log, &module_log_size,
+                                                  &holder->module);
+    if (module_result != OPTIX_SUCCESS) {
+        std::string message = std::string("OptiX module compile error: ") +
+                              optixGetErrorString(module_result);
+        if (module_log_size > 1 && module_log[0] != '\0') {
+            message += "\n" + std::string(module_log);
+        }
+        throw std::runtime_error(message);
+    }
 
     // Raygen group
     {

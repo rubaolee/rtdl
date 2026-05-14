@@ -87,6 +87,7 @@ TEST_MODULES = (
     "tests.goal1994_aabb_pair_payload_adapter_test",
     "tests.goal1996_partner_column_paging_primitive_test",
     "tests.goal1997_generic_witness_pair_paging_adapter_test",
+    "tests.goal1998_optix_pod_sdk_install_and_custom_pipeline_blocker_test",
 )
 
 

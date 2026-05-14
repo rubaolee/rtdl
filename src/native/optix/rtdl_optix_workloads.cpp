@@ -3332,6 +3332,37 @@ static void ensure_ray_anyhit_witness_device_columns_2d_pipeline()
 static std::string ray_anyhit_all_witnesses_device_columns_kernel_source_2d()
 {
     std::string src = ray_anyhit_count_device_columns_kernel_source_2d();
+    for (const char* field : {
+             "    const double* ray_ox;\n",
+             "    const double* ray_oy;\n",
+             "    const double* ray_dx;\n",
+             "    const double* ray_dy;\n",
+             "    const double* ray_tmax;\n",
+         }) {
+        size_t field_pos = src.find(field);
+        if (field_pos == std::string::npos)
+            throw std::runtime_error("failed to specialize OptiX 2-D all-witness ray column dtype");
+        std::string replacement(field);
+        size_t double_pos = replacement.find("double");
+        replacement.replace(double_pos, 6, "float");
+        src.replace(field_pos, std::strlen(field), replacement);
+    }
+    const std::string intersection_start =
+        "extern \"C\" __global__ void __intersection__rayhit_isect() {\n";
+    const std::string anyhit_start =
+        "\nextern \"C\" __global__ void __anyhit__rayhit_anyhit()";
+    const std::string new_intersection =
+        "extern \"C\" __global__ void __intersection__rayhit_isect() {\n"
+        "    float hit_t = optixGetRayTmin() + 1.0e-6f;\n"
+        "    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();\n"
+        "    optixReportIntersection(hit_t, 0u);\n"
+        "}\n";
+    size_t pos = src.find(intersection_start);
+    size_t end = src.find(anyhit_start, pos);
+    if (pos == std::string::npos || end == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D all-witness candidate intersection");
+    src.replace(pos, end - pos, new_intersection);
+
     const std::string old_output_field =
         "    uint32_t* hit_count;\n";
     const std::string new_output_field =
@@ -3340,7 +3371,7 @@ static std::string ray_anyhit_all_witnesses_device_columns_kernel_source_2d()
         "    uint32_t* emitted_count;\n"
         "    uint32_t* overflowed;\n"
         "    uint32_t witness_capacity;\n";
-    size_t pos = src.find(old_output_field);
+    pos = src.find(old_output_field);
     if (pos == std::string::npos)
         throw std::runtime_error("failed to specialize OptiX 2-D all-witness output params");
     src.replace(pos, old_output_field.size(), new_output_field);
@@ -3363,11 +3394,10 @@ static std::string ray_anyhit_all_witnesses_device_columns_kernel_source_2d()
         "extern \"C\" __global__ void __anyhit__rayhit_anyhit() {\n"
         "    const uint32_t idx = optixGetLaunchIndex().x;\n"
         "    const uint32_t prim = optixGetPrimitiveIndex();\n"
-        "    const GpuTriangle t = load_triangle_column(prim);\n"
         "    const uint32_t slot = atomicAdd(params.emitted_count, 1u);\n"
         "    if (slot < params.witness_capacity) {\n"
         "        params.witness_ray_ids[slot] = params.ray_ids[idx];\n"
-        "        params.witness_primitive_ids[slot] = t.id;\n"
+        "        params.witness_primitive_ids[slot] = params.triangle_ids[prim];\n"
         "    } else {\n"
         "        atomicExch(params.overflowed, 1u);\n"
         "    }\n"
@@ -3827,7 +3857,6 @@ PreparedRayAnyHit2D::PreparedRayAnyHit2D(
 static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_optix(
         const RtdlTriangle* triangles, size_t triangle_count)
 {
-    ensure_ray_anyhit_count_2d_pipeline();
     return new PreparedRayAnyHit2D(triangles, triangle_count);
 }
 
@@ -3841,7 +3870,6 @@ static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_device_triangles_optix(
         const double* triangle_y2,
         size_t triangle_count)
 {
-    ensure_ray_anyhit_count_2d_pipeline();
     return new PreparedRayAnyHit2D(
         triangle_ids,
         triangle_x0,
@@ -3864,7 +3892,6 @@ static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_device_triangle_columns_aabbs_
         const void* triangle_aabbs,
         size_t triangle_count)
 {
-    ensure_ray_anyhit_count_2d_pipeline();
     return new PreparedRayAnyHit2D(
         triangle_ids,
         triangle_x0,

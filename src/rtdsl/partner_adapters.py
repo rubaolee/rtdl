@@ -1167,11 +1167,11 @@ def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict)
             partner["uint32"],
             device,
         ),
-        "ox": partner["tensor"]([segment.x0 for segment in segments], partner["float64"], device),
-        "oy": partner["tensor"]([segment.y0 for segment in segments], partner["float64"], device),
-        "dx": partner["tensor"]([segment.x1 - segment.x0 for segment in segments], partner["float64"], device),
-        "dy": partner["tensor"]([segment.y1 - segment.y0 for segment in segments], partner["float64"], device),
-        "tmax": partner["tensor"]([1.0 for _ in segments], partner["float64"], device),
+        "ox": partner["tensor"]([segment.x0 for segment in segments], partner["float32"], device),
+        "oy": partner["tensor"]([segment.y0 for segment in segments], partner["float32"], device),
+        "dx": partner["tensor"]([segment.x1 - segment.x0 for segment in segments], partner["float32"], device),
+        "dy": partner["tensor"]([segment.y1 - segment.y0 for segment in segments], partner["float32"], device),
+        "tmax": partner["tensor"]([1.0 for _ in segments], partner["float32"], device),
     }
 
 
