@@ -43,8 +43,10 @@ class Goal1958AllAppV2OptimizationDebtAuditTest(unittest.TestCase):
         self.assertEqual(classes["graph_analytics"], "positive-bounded")
         self.assertEqual(classes["polygon_pair_overlap_area_rows"], "positive-bounded")
         self.assertEqual(classes["polygon_set_jaccard"], "positive-bounded")
-        self.assertEqual(analysis["classification_counts"]["positive"], 12)
+        self.assertEqual(classes["hausdorff_distance"], "positive-bounded-exact")
+        self.assertEqual(analysis["classification_counts"]["positive"], 11)
         self.assertEqual(analysis["classification_counts"]["positive-bounded"], 3)
+        self.assertEqual(analysis["classification_counts"]["positive-bounded-exact"], 1)
         self.assertFalse(analysis["claim_boundary"]["v2_0_release_authorized"])
 
 

@@ -13,6 +13,7 @@ INIT = ROOT / "src" / "rtdsl" / "__init__.py"
 EXAMPLE = ROOT / "examples" / "rtdl_hausdorff_distance_app.py"
 PREFLIGHT = ROOT / "scripts" / "goal1908_v2_local_preflight.py"
 REPORT = ROOT / "docs" / "reports" / "goal1975_exact_hausdorff_partner_reference_2026-05-14.md"
+POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1975_pod_exact_hausdorff_partner_cupy_perf.json"
 
 
 class Goal1975ExactHausdorffPartnerReferenceTest(unittest.TestCase):
@@ -71,8 +72,22 @@ class Goal1975ExactHausdorffPartnerReferenceTest(unittest.TestCase):
         self.assertIn("threshold-decision proxy", report)
         self.assertIn("exact directed Hausdorff definition", report)
         self.assertIn("OptiX or claim RT-core acceleration", report)
-        self.assertIn("Pod CuPy timing is the next step", report)
+        self.assertIn("0.00824x", report)
+        self.assertIn("does not authorize a broad whole-app speedup claim", report)
         self.assertIn("tests.goal1975_exact_hausdorff_partner_reference_test", preflight)
+
+    def test_pod_artifact_records_exact_cupy_semantics_and_boundary(self) -> None:
+        payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["status"], "pass")
+        self.assertTrue(payload["claim_boundary"]["exact_partner_reference_path"])
+        self.assertFalse(payload["claim_boundary"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(payload["claim_boundary"]["v2_0_release_authorized"])
+        rows = {row["copies"]: row for row in payload["results"]}
+        self.assertTrue(rows[128]["matches_oracle"])
+        self.assertLess(rows[128]["v2_vs_cpu_python_reference_ratio"], 0.01)
+        self.assertTrue(rows[1024]["matches_oracle"])
+        self.assertEqual(rows[1024]["partner_reference_contract"], "generic_exact_directed_hausdorff_2d")
 
 
 if __name__ == "__main__":

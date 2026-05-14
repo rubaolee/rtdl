@@ -20,7 +20,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 | `segment_polygon_anyhit_rows` | `positive` | torch | 1048576 | 7.121871 | 1.582755 | 0.222239 | Goal1940 moves this row out of pending: the 1,048,576-row segment any-hit artifact is seconds-scale and same-contract, with strict row-count parity. |
 | `polygon_pair_overlap_area_rows` | `positive-bounded` | cupy | 2048 | 0.279780 | 0.081689 | 0.291976 | Goal1969 reverses the polygon control rows by using a compact CuPy extent candidate table; this is still bounded to the authored axis-aligned control app and is not an arbitrary polygon overlay or OptiX RT-core claim. |
 | `polygon_set_jaccard` | `positive-bounded` | cupy | 2048 | 0.233212 | 0.065533 | 0.281000 | Goal1969 reverses the polygon control rows by using a compact CuPy extent candidate table; this is still bounded to the authored axis-aligned control app and is not an arbitrary polygon overlay or OptiX RT-core claim. |
-| `hausdorff_distance` | `positive` | torch | 524288 | 1.326599 | 0.000368 | 0.000277 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
+| `hausdorff_distance` | `positive-bounded-exact` | cupy | 512 | 0.325964 | 0.002686 | 0.008241 | Goal1975 upgrades Hausdorff from a fixed-radius threshold proxy to exact partner-reference directed Hausdorff via min-distance then max-distance reductions; the CPU baseline is limited to a small exact row and this is not an RT-core claim. |
 | `ann_candidate_search` | `positive` | torch | 524288 | 1.328173 | 0.000350 | 0.000263 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
 | `outlier_detection` | `positive` | cupy | 524288 | 1.357974 | 0.000439 | 0.000323 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
 | `dbscan_clustering` | `positive` | torch | 524288 | 1.337720 | 0.000436 | 0.000326 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
@@ -33,6 +33,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 - Segment any-hit now has a seconds-scale same-contract row at 1,048,576 outputs; road-hazard and segment hitcount remain positive compact-output rows.
 - Robot collision now has exact pose-flag parity and strong ratios through 8,388,608 poses, but it is marked `positive-subsecond` because the v1.8 baseline is still below one second.
 - Database remains a bounded control/fallback row. Graph and the two polygon control rows now have positive bounded v2 evidence after Goal1972 and Goal1969, but their claims stay narrow.
+- Hausdorff now has an exact partner-reference row after Goal1975, so the table prefers that semantic match over the faster but weaker fixed-radius threshold proxy.
 
 ## Release Boundary
 

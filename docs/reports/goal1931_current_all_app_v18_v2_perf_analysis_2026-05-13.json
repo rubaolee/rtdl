@@ -7,8 +7,9 @@
     "whole_app_speedup_claim_authorized": false
   },
   "classification_counts": {
-    "positive": 12,
+    "positive": 11,
     "positive-bounded": 3,
+    "positive-bounded-exact": 1,
     "positive-subsecond": 1
   },
   "goal": "Goal1931",
@@ -177,19 +178,19 @@
     },
     {
       "app": "hausdorff_distance",
-      "artifact": "docs/reports/goal1937_fixed_radius_repeat3_pod/fixed_radius_524288_repeat3.json",
+      "artifact": "docs/reports/goal1975_pod_exact_hausdorff_partner_cupy_perf.json",
       "claim_class": "implemented-needs-hardware",
-      "classification": "positive",
-      "insight": "Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling.",
+      "classification": "positive-bounded-exact",
+      "insight": "Goal1975 upgrades Hausdorff from a fixed-radius threshold proxy to exact partner-reference directed Hausdorff via min-distance then max-distance reductions; the CPU baseline is limited to a small exact row and this is not an RT-core claim.",
       "label": "hausdorff distance",
       "matrix_state": "harness-ready-pod-needed",
-      "partner": "torch",
-      "ratio_vs_v18_prepared": 0.0002771377259026609,
+      "partner": "cupy",
+      "ratio_vs_v18_prepared": 0.008241350707461079,
       "ratio_vs_v18_reused_prepared": null,
-      "size": 524288,
-      "v18_prepared_s": 1.3265994768589735,
+      "size": 512,
+      "v18_prepared_s": 0.32596372067928314,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 0.00036765076220035553
+      "v2_prepared_partner_s": 0.0026863813400268555
     },
     {
       "app": "ann_candidate_search",

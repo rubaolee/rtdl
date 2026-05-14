@@ -2,7 +2,7 @@
 
 Date: 2026-05-14
 
-Status: implementation slice; pod timing pending
+Status: implementation slice with pod timing
 
 ## Why This Goal Exists
 
@@ -41,4 +41,20 @@ Local Windows has neither Torch nor CuPy installed, so local validation checks:
 - `partner_exact` CLI and app path wiring;
 - CPU/reference oracle path remains unchanged.
 
-Pod CuPy timing is the next step.
+## Pod Timing
+
+The RTX 2000 Ada pod ran the exact CuPy partner path with warmups and repeats:
+
+| Copies | Points A | Points B | CPU Python exact median s | v2 CuPy exact median s | Ratio | Correct |
+| ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 128 | 512 | 512 | 0.325964 | 0.002686 | 0.00824x | yes |
+| 512 | 2048 | 2048 | not run | 0.010296 | n/a | yes |
+| 1024 | 4096 | 4096 | not run | 0.026813 | n/a | yes |
+
+The CPU baseline was intentionally limited to the small row so this test would
+not become a long O(N^2) Python run. Larger rows prove the exact CuPy partner
+path remains functional and fast. This evidence does not authorize a broad whole-app speedup claim.
+
+Artifact:
+
+- `docs/reports/goal1975_pod_exact_hausdorff_partner_cupy_perf.json`

@@ -357,6 +357,44 @@ def _goal1972_graph_metric_table_rows() -> list[dict[str, object]]:
     return rows
 
 
+def _goal1975_exact_hausdorff_rows() -> list[dict[str, object]]:
+    path = "docs/reports/goal1975_pod_exact_hausdorff_partner_cupy_perf.json"
+    artifact = _read_json(ROOT / path)
+    if not artifact:
+        return []
+    candidates = [
+        row
+        for row in artifact.get("results", [])
+        if isinstance(row, dict) and isinstance(row.get("v2_vs_cpu_python_reference_ratio"), (int, float))
+    ]
+    if not candidates:
+        return []
+    result = min(candidates, key=lambda row: int(row.get("copies", 0) or 0))
+    v18 = _median(result, "cpu_python_reference_wall_s")
+    v2 = _median(result, "v2_partner_exact_wall_s")
+    ratio = result.get("v2_vs_cpu_python_reference_ratio")
+    return [
+        {
+            "app": "hausdorff_distance",
+            "label": "hausdorff distance",
+            "size": int(result.get("point_count_a", 0) or 0),
+            "partner": str(result.get("partner", "cupy")),
+            "v18_prepared_s": v18,
+            "v18_reused_prepared_s": None,
+            "v2_prepared_partner_s": v2,
+            "ratio_vs_v18_prepared": float(ratio) if isinstance(ratio, (int, float)) else _ratio(v2, v18),
+            "ratio_vs_v18_reused_prepared": None,
+            "classification": "positive-bounded-exact",
+            "insight": (
+                "Goal1975 upgrades Hausdorff from a fixed-radius threshold proxy to exact partner-reference "
+                "directed Hausdorff via min-distance then max-distance reductions; the CPU baseline is limited "
+                "to a small exact row and this is not an RT-core claim."
+            ),
+            "artifact": path,
+        }
+    ]
+
+
 def _best_measured(rows: list[dict[str, object]]) -> dict[str, dict[str, object]]:
     best: dict[str, dict[str, object]] = {}
     for row in rows:
@@ -397,7 +435,13 @@ def build_analysis() -> dict[str, object]:
     measured_rows.extend(_goal1957_rawkernel_control_rows())
     measured_rows.extend(_goal1969_polygon_extent_rows())
     measured_rows.extend(_goal1972_graph_metric_table_rows())
+    exact_hausdorff_rows = _goal1975_exact_hausdorff_rows()
+    measured_rows.extend(exact_hausdorff_rows)
     best = _best_measured(measured_rows)
+    if exact_hausdorff_rows:
+        # For Hausdorff, exact semantics are more important than keeping the
+        # smallest ratio from the older fixed-radius threshold proxy row.
+        best["hausdorff_distance"] = exact_hausdorff_rows[0]
     rows: list[dict[str, object]] = []
     for matrix_row in matrix["rows"]:
         app = str(matrix_row["app"])
@@ -501,6 +545,7 @@ def to_markdown(payload: dict[str, object]) -> str:
             "- Segment any-hit now has a seconds-scale same-contract row at 1,048,576 outputs; road-hazard and segment hitcount remain positive compact-output rows.",
             "- Robot collision now has exact pose-flag parity and strong ratios through 8,388,608 poses, but it is marked `positive-subsecond` because the v1.8 baseline is still below one second.",
             "- Database remains a bounded control/fallback row. Graph and the two polygon control rows now have positive bounded v2 evidence after Goal1972 and Goal1969, but their claims stay narrow.",
+            "- Hausdorff now has an exact partner-reference row after Goal1975, so the table prefers that semantic match over the faster but weaker fixed-radius threshold proxy.",
             "",
             "## Release Boundary",
             "",

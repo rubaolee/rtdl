@@ -1,0 +1,87 @@
+{
+  "claim_boundary": {
+    "cpu_baseline_limited_to_small_size": true,
+    "exact_partner_reference_path": true,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1975",
+  "gpu_info": [
+    "NVIDIA RTX 2000 Ada Generation, 565.57.01"
+  ],
+  "results": [
+    {
+      "claim_boundary": {
+        "exact_hausdorff_semantics": true,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 128,
+      "cpu_python_reference_wall_s": {
+        "max_s": 0.32596372067928314,
+        "median_s": 0.32596372067928314,
+        "min_s": 0.32596372067928314
+      },
+      "distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+      "point_count_a": 512,
+      "point_count_b": 512,
+      "v2_partner_exact_wall_s": {
+        "max_s": 0.003160528838634491,
+        "median_s": 0.0026863813400268555,
+        "min_s": 0.0026360079646110535
+      },
+      "v2_vs_cpu_python_reference_ratio": 0.008241350707461079
+    },
+    {
+      "claim_boundary": {
+        "exact_hausdorff_semantics": true,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 512,
+      "cpu_python_reference_wall_s": null,
+      "distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "v2_partner_exact_wall_s": {
+        "max_s": 0.010385416448116302,
+        "median_s": 0.010296352207660675,
+        "min_s": 0.010274745523929596
+      },
+      "v2_vs_cpu_python_reference_ratio": null
+    },
+    {
+      "claim_boundary": {
+        "exact_hausdorff_semantics": true,
+        "rt_core_speedup_claim_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "copies": 1024,
+      "cpu_python_reference_wall_s": null,
+      "distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+      "point_count_a": 4096,
+      "point_count_b": 4096,
+      "v2_partner_exact_wall_s": {
+        "max_s": 0.02682991325855255,
+        "median_s": 0.026812627911567688,
+        "min_s": 0.026787444949150085
+      },
+      "v2_vs_cpu_python_reference_ratio": null
+    }
+  ],
+  "source_commit_label": "c3df4c3e",
+  "status": "pass"
+}

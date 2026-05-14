@@ -12,9 +12,10 @@ that v2.0 can claim broad whole-app acceleration.
 
 Current classification from the refreshed Goal1931 analysis:
 
-- `positive`: 12 apps
+- `positive`: 11 apps
 - `positive-subsecond`: 1 app
 - `positive-bounded`: 3 apps
+- `positive-bounded-exact`: 1 app
 
 The important change is that there are no longer blank “control” rows in the
 all-app matrix. The remaining question is quality of the v2 path.
@@ -33,7 +34,7 @@ all-app matrix. The remaining question is quality of the v2 path.
 | `segment_polygon_anyhit_rows` | positive row output | v2/v1.8 `0.222x` | Row materialization remains heavier than compact counts; needs device-resident row paging/compaction for larger arbitrary outputs. |
 | `polygon_pair_overlap_area_rows` | positive bounded extent row | v2/v1.8 `0.292x` | Goal1969 fixed the candidate-table bottleneck with CuPy extent columns; still bounded to the authored axis-aligned control app. |
 | `polygon_set_jaccard` | positive bounded extent row | v2/v1.8 `0.281x` | Goal1969 makes this a clear speedup for the authored extent case; arbitrary polygon/set overlay remains a future broader contract. |
-| `hausdorff_distance` | positive threshold proxy | v2/v1.8 `0.000277x` | Current row is thresholded nearest-candidate, not exact directed Hausdorff max-distance. |
+| `hausdorff_distance` | positive bounded exact partner row | v2/CPU exact `0.00824x` | Goal1975 replaces the threshold proxy with exact min-distance then max-distance partner reductions; bounded because it is partner-reference evidence, not an RT-core speedup claim. |
 | `ann_candidate_search` | positive threshold proxy | v2/v1.8 `0.000263x` | Not an ANN index; needs candidate-generation/index contract if public app promises ANN behavior. |
 | `outlier_detection` | positive | v2/v1.8 `0.000323x` | Healthy count-threshold shape; avoid returning full neighbor rows. |
 | `dbscan_clustering` | positive threshold proxy | v2/v1.8 `0.000326x` | Core-point detection is accelerated; full transitive cluster labeling is still app/graph logic. |
@@ -50,13 +51,14 @@ The remaining debt is not one bug. It is four patterns:
    Goal1972. It now uses generic partner metric-table reductions, but it is
    still not a general graph runtime.
 
-2. **Threshold proxies for richer app semantics**
+2. **Threshold proxies for richer app semantics are shrinking**
 
-   `hausdorff_distance`, `facility_knn_assignment`, `ann_candidate_search`,
-   `dbscan_clustering`, and `barnes_hut_force_app` have strong v2 rows because
-   they map to fixed-radius count/threshold outputs. The real richer semantics
-   still need additional partner contracts: ranked top-k, exact max-distance,
-   ANN indexing, cluster expansion, and vector accumulation.
+   Goal1975 removes `hausdorff_distance` from this bucket by adding exact
+   directed Hausdorff partner reductions. `facility_knn_assignment`,
+   `ann_candidate_search`, `dbscan_clustering`, and `barnes_hut_force_app`
+   still have strong v2 rows because they map to fixed-radius count/threshold
+   outputs. The real richer semantics still need additional partner contracts:
+   ranked top-k, ANN indexing, cluster expansion, and vector accumulation.
 
 3. **Row materialization**
 
@@ -102,9 +104,9 @@ The remaining debt is not one bug. It is four patterns:
 5. **Semantic honesty for proxy apps**
 
    Keep the current fixed-radius threshold rows, but document exactly which app
-   semantics they cover. Add future rows for exact Hausdorff, ranked KNN, full
-   DBSCAN labeling, and Barnes-Hut force-vector accumulation only when those
-   continuations are actually implemented.
+   semantics they cover. Goal1975 adds the exact Hausdorff row; future rows for
+   ranked KNN, full DBSCAN labeling, and Barnes-Hut force-vector accumulation
+   should appear only when those continuations are actually implemented.
 
 ## Release Meaning
 
