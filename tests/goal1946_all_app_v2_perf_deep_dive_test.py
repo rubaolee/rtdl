@@ -32,30 +32,31 @@ class Goal1946AllAppV2PerfDeepDiveTest(unittest.TestCase):
         ):
             self.assertIn(app, text)
 
-        self.assertIn("`positive` | 11", text)
+        self.assertIn("`positive` | 7", text)
         self.assertIn("`positive-subsecond` | 1", text)
-        self.assertIn("`control` | 4", text)
+        self.assertIn("`positive-bounded` | 3", text)
+        self.assertIn("`positive-bounded-exact` | 5", text)
 
     def test_report_explains_speedups_without_overclaiming(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("geometric mean speedup is", text)
-        self.assertIn("288x", text)
+        self.assertIn("Aggregate speedup summaries", text)
         self.assertIn("must not be turned into a", text)
-        self.assertIn("public \"RTDL is 288x faster\" claim", text)
+        self.assertIn("public \"RTDL is N times", text)
         self.assertIn("fixed-radius", text)
         self.assertIn("segment any-hit", text)
         self.assertIn("true device-handoff", text)
-        self.assertIn("control row", text)
+        self.assertIn("bounded evidence", text)
         self.assertIn("does not authorize v2.0 release", text)
 
-    def test_report_keeps_control_rows_out_of_speedup_claims(self) -> None:
+    def test_report_keeps_bounded_rows_out_of_broad_speedup_claims(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("not v2 partner speedup rows", text)
-        self.assertIn("not full partner acceleration", text)
-        self.assertIn("reviewed partner tensor contracts", text)
-        self.assertIn("using control rows as speedup evidence", text)
+        self.assertIn("### Bounded Families", text)
+        self.assertIn("Goals1993-1994", text)
+        self.assertIn("generic columnar partner path", text)
+        self.assertIn("generic metric-table payload", text)
+        self.assertIn("using bounded rows as broad speedup evidence", text)
 
 
 if __name__ == "__main__":

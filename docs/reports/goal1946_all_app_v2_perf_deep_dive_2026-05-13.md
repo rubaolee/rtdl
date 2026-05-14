@@ -11,7 +11,7 @@ performance analysis. It answers a narrower question than "is v2.0 released?":
 
 For the 16 active public app rows, what does the current v1.8 versus v2.0
 evidence actually say, and why do some rows speed up dramatically while others
-must remain controls?
+remain bounded rather than broad release claims?
 
 This report is based on already collected artifacts:
 
@@ -26,18 +26,20 @@ broad RT-core speedup, or arbitrary PyTorch/CuPy acceleration.
 
 ## Executive Summary
 
-Current all-app classification:
+Current all-app classification after the later Goal1957-1997 cleanup:
 
 | Class | Count | Meaning |
 | --- | ---: | --- |
-| `positive` | 11 | v2.0 partner path is faster on the same measured row contract. |
+| `positive` | 7 | v2.0 partner path is faster on the same measured row contract. |
 | `positive-subsecond` | 1 | v2.0 is much faster, but the v1.8 baseline is still under one second. |
-| `control` | 4 | The row has useful evidence, but not a reviewed v2 partner speedup contract. |
+| `positive-bounded` | 3 | The row has measured positive v2 evidence, but the semantics are intentionally narrow. |
+| `positive-bounded-exact` | 5 | Exact partner-reference rows are implemented, but they are not broad RT-core speedup claims. |
 
-For the 12 rows with a measured positive ratio, the geometric mean speedup is
-about `288x`. This aggregate is descriptive only; it must not be turned into a
-public "RTDL is 288x faster" claim because the rows are heterogeneous and four
-active app rows are controls.
+All 16 rows now have a measured or bounded v2 path. Aggregate speedup summaries
+remain descriptive only; they must not be turned into a public "RTDL is N times
+faster" claim because the rows are heterogeneous, several are bounded
+partner-reference contracts, and v2.0 release authorization still requires final
+review consensus.
 
 The core lesson is sharper:
 
@@ -46,9 +48,9 @@ The core lesson is sharper:
   device columns.
 - v2.0 still helps on any-hit rows when the output stays compact and the app
   avoids host row materialization.
-- v2.0 should not claim a speedup when the remaining application continuation
-  is an exact database, graph, polygon-area, or set-union computation that is
-  not yet a reviewed partner tensor contract.
+- v2.0 should not overclaim when the remaining application continuation is a
+  bounded database, graph, polygon-area, or set-union contract rather than a
+  general-purpose engine feature.
 
 ## Full Row Table
 
@@ -57,16 +59,16 @@ number is better for v2.0. `Ratio` is the inverse, matching Goal1931.
 
 | App row | Class | Partner | Size | v1.8 prepared s | v2 partner s | Ratio | Speedup | Interpretation |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `database_analytics` | `control` | none | n/a | n/a | n/a | n/a | n/a | Current fast path is a native compact-summary continuation; no reviewed partner columnar scan/grouped-reduction continuation yet. |
-| `graph_analytics` | `control` | none | n/a | n/a | n/a | n/a | n/a | Needs split rows: visibility is RT-shaped, but BFS and triangle count are graph algorithms outside the current partner speedup contract. |
+| `database_analytics` | `positive` | CuPy | 100,000 | 5.002953 | 1.023833 | 0.204646 | 4.9x | Goal1989 gives a reusable fused columnar partner path at parity with the old app-local RawKernel; bounded by database semantics and final review. |
+| `graph_analytics` | `positive-bounded` | CuPy | 1,000 | 18.060916 | 0.000054 | 0.000003 | 334,999x | Goal1991 uses generic metric-table payload/batch reductions; this is not a broad graph traversal claim. |
 | `service_coverage_gaps` | `positive` | CuPy | 16,384 | 0.038096 | 0.000228 | 0.005983 | 167.1x | Fixed-radius count-threshold row; partner-owned threshold columns avoid dense pair materialization. |
 | `event_hotspot_screening` | `positive` | CuPy | 16,384 | 0.094140 | 0.000188 | 0.001998 | 500.6x | Same fixed-radius pattern, with larger v1.8 native work and tiny partner continuation. |
 | `facility_knn_assignment` | `positive` | CuPy | 524,288 | 1.553787 | 0.000480 | 0.000309 | 3238.1x | This is radius-threshold assignment evidence, not a full ranked KNN implementation claim. |
 | `road_hazard_screening` | `positive` | CuPy | 2,048 | 0.004491 | 0.001108 | 0.246651 | 4.1x | Positive but small; prepared reuse and compact outputs matter, while tiny rows expose fixed overhead. |
 | `segment_polygon_hitcount` | `positive` | Torch | 2,048 | 0.002544 | 0.000878 | 0.345241 | 2.9x | Positive compact count row; not the exact polygon area/Jaccard continuation. |
 | `segment_polygon_anyhit_rows` | `positive` | Torch | 1,048,576 | 7.121871 | 1.582755 | 0.222239 | 4.5x | Seconds-scale same-contract any-hit row with strict row-count parity. |
-| `polygon_pair_overlap_area_rows` | `control` | none | n/a | n/a | n/a | n/a | n/a | Candidate discovery is RT-shaped, but exact area refinement is not yet a reviewed partner continuation. |
-| `polygon_set_jaccard` | `control` | none | n/a | n/a | n/a | n/a | n/a | Exact set union/reduction dominates; no public v2 partner speedup claim yet. |
+| `polygon_pair_overlap_area_rows` | `positive-bounded` | CuPy | 2,048 | 0.279780 | 0.081689 | 0.291976 | 3.4x | Goals1993-1994 replace the app-local extent RawKernel with generic AABB pair-payload and overlap-summary partner adapters; still bounded to AABB extent semantics. |
+| `polygon_set_jaccard` | `positive-bounded` | CuPy | 2,048 | 0.233212 | 0.065533 | 0.281000 | 3.6x | Same generic AABB pair summary path; not arbitrary polygon topology or GIS overlay. |
 | `hausdorff_distance` | `positive` | Torch | 524,288 | 1.326599 | 0.000368 | 0.000277 | 3608.3x | Fixed-radius threshold surrogate, not a claim about all exact Hausdorff formulations. |
 | `ann_candidate_search` | `positive` | Torch | 524,288 | 1.328173 | 0.000350 | 0.000263 | 3799.2x | Candidate coverage threshold is an ideal partner-output contract. |
 | `outlier_detection` | `positive` | CuPy | 524,288 | 1.357974 | 0.000439 | 0.000323 | 3096.5x | Native fixed-radius counts plus partner scalar reduction. |
@@ -138,7 +140,7 @@ The ratio is strong (`53.3x`), but the v1.8 prepared baseline is still only
 "selected true zero-copy/direct-pointer contract" wording, not a seconds-scale
 whole-app claim.
 
-### Control Families
+### Bounded Families
 
 Rows:
 
@@ -148,22 +150,21 @@ Rows:
 - `polygon_set_jaccard`
 
 These rows are not failures of v2.0; they are places where the current
-application continuation has not yet been moved into a reviewed partner tensor
-contract. They are not v2 partner speedup rows.
+application continuation is useful but narrow. They are v2 rows, but not broad
+release-proof claims for arbitrary database, graph, or polygon programs.
 
-`database_analytics` still relies on compact-summary native continuation
-evidence. A real v2.0-positive database row would need a partner columnar scan
-or grouped-reduction contract that is app-agnostic and externally reviewed.
+`database_analytics` now has a fused generic columnar partner path, but the
+semantics are still a bounded columnar predicate/reduction workload rather than
+arbitrary SQL acceleration.
 
-`graph_analytics` is too broad as a single row. Visibility edges can be
-RT-shaped, but BFS and triangle counting are graph algorithms. Future reporting
-should split the app into separate rows rather than hiding mixed behavior under
-one name.
+`graph_analytics` now uses generic metric-table payload/reduction adapters, but
+it remains too broad as a general graph-runtime claim. Visibility edges can be
+RT-shaped, while BFS and triangle counting are graph algorithms.
 
-`polygon_pair_overlap_area_rows` and `polygon_set_jaccard` currently prove
-candidate discovery and exact-control behavior, not full partner acceleration.
-The exact area refinement and set-union reduction must move to bounded partner
-continuations before these rows can become v2 speedup evidence.
+`polygon_pair_overlap_area_rows` and `polygon_set_jaccard` now use reusable AABB
+pair-payload and overlap-summary partner adapters. That is legitimate v2
+evidence for the authored AABB extent rows, not evidence for arbitrary polygon
+clipping or exact GIS topology.
 
 ## What A Learner Should Take Away
 
@@ -176,8 +177,8 @@ RTDL generic primitive -> partner-owned device columns -> Torch/CuPy tensor cont
 
 The more an app can fit that shape, the better v2.0 looks. The more an app
 requires app-specific exact continuation logic that remains outside Torch/CuPy
-or returns to the host, the more it becomes a control row rather than a speedup
-row.
+or returns to the host, the more it becomes bounded evidence rather than a broad
+speedup claim.
 
 ## Release Claim Boundary
 
@@ -187,9 +188,9 @@ Allowed technical summary, pending final consensus:
 Current v2.0 evidence shows strong speedups for selected OptiX RTDL primitive
 contracts that hand compact outputs to Torch or CuPy device tensors. The
 strongest rows are fixed-radius threshold workloads; segment any-hit and robot
-collision also show positive measured results. Database, graph, and exact
-polygon metrics remain control rows until their app continuations are expressed
-as reviewed partner tensor contracts.
+collision also show positive measured results. Database, graph, and AABB polygon
+metrics now have bounded partner contracts, but they must stay narrowly worded
+until final review consensus.
 ```
 
 Still blocked:
@@ -199,12 +200,12 @@ Still blocked:
 - whole-app acceleration claims;
 - arbitrary PyTorch/CuPy acceleration claims;
 - package-install claims;
-- using control rows as speedup evidence.
+- using bounded rows as broad speedup evidence.
 
 ## Next Work
 
 Before a final v2.0 release packet, this report needs external review. The
 review should check that the row classifications are fair, that the fixed-radius
-speedups are not overgeneralized, that the control rows stay out of marketing
+speedups are not overgeneralized, that bounded rows stay out of broad marketing
 claims, and that the source-tree-only package policy remains a separate
 consensus question.
