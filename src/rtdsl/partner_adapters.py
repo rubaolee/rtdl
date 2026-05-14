@@ -179,6 +179,32 @@ def partner_group_min_by_key(keys, values, group_count: int, *, partner: str = "
     raise ValueError("partner must be 'torch' or 'cupy'")
 
 
+def partner_mask_indices(mask, *, partner: str = "torch"):
+    """Return partner-owned indices where mask is true/non-zero."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        return torch.nonzero(mask.to(torch.bool), as_tuple=False).reshape(-1).to(torch.int64)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        return cupy.nonzero(mask.astype(cupy.bool_, copy=False))[0].astype(cupy.int64, copy=False)
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_take_columns_by_indices(columns: dict[str, object], indices, *, partner: str = "torch"):
+    """Take the same partner-owned row indices from each column."""
+    runtime = _partner_module(partner)
+    if runtime["name"] in ("torch", "cupy"):
+        return {name: column[indices] for name, column in columns.items()}
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_compact_columns_by_mask(columns: dict[str, object], mask, *, partner: str = "torch"):
+    """Compact partner-owned columns by a true/non-zero mask without host rows."""
+    indices = partner_mask_indices(mask, partner=partner)
+    return partner_take_columns_by_indices(columns, indices, partner=partner)
+
+
 def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "torch"):
     """Reduce binary/int flags to one any-hit flag per integer key."""
     runtime = _partner_module(partner)

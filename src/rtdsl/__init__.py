@@ -391,6 +391,9 @@ from .partner_adapters import partner_group_count_unique_pairs_by_key
 from .partner_adapters import partner_group_max_by_key
 from .partner_adapters import partner_group_min_by_key
 from .partner_adapters import partner_group_sum_by_key
+from .partner_adapters import partner_mask_indices
+from .partner_adapters import partner_take_columns_by_indices
+from .partner_adapters import partner_compact_columns_by_mask
 from .partner_adapters import partner_unique_pair_keys
 from .partner_adapters import service_coverage_gap_flags_partner_columns
 from .partner_adapters import service_coverage_gap_flags_optix_partner_device_columns
@@ -1296,6 +1299,9 @@ __all__ = [
     "partner_group_max_by_key",
     "partner_group_min_by_key",
     "partner_group_sum_by_key",
+    "partner_mask_indices",
+    "partner_take_columns_by_indices",
+    "partner_compact_columns_by_mask",
     "partner_unique_pair_keys",
     "service_coverage_gap_flags_partner_columns",
     "service_coverage_gap_flags_optix_partner_device_columns",
