@@ -61,9 +61,13 @@ print(json.dumps({
 }, indent=2, sort_keys=True))
 PY
 
-echo "[goal1956] building OptiX once for polygon candidate discovery" | tee -a "${OUT_DIR}/progress.log"
-make build-optix OPTIX_PREFIX="${OPTIX_PREFIX}" 2>&1 | tee "${OUT_DIR}/build_optix.log"
-export RTDL_OPTIX_LIBRARY="${PWD}/build/librtdl_optix.so"
+if [[ "${RUN_POLYGON_WITH_OPTIX}" == "1" ]]; then
+  echo "[goal1956] building OptiX once for polygon candidate discovery" | tee -a "${OUT_DIR}/progress.log"
+  make build-optix OPTIX_PREFIX="${OPTIX_PREFIX}" 2>&1 | tee "${OUT_DIR}/build_optix.log"
+  export RTDL_OPTIX_LIBRARY="${PWD}/build/librtdl_optix.so"
+else
+  echo "[goal1956] skipping OptiX build because RUN_POLYGON_WITH_OPTIX=0" | tee -a "${OUT_DIR}/progress.log"
+fi
 
 run_step focused_unittest \
   "${PYTHON_BIN}" -m unittest \

@@ -1,0 +1,65 @@
+{
+  "blocker": "OptiX SDK headers were not present at /root/vendor/optix-sdk/include/optix.h or elsewhere under /root, /opt, or /usr/local, so polygon OptiX candidate discovery was not run.",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "polygon_optix_candidate_discovery_validated": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1956",
+  "gpu": "NVIDIA L4, 550.127.05",
+  "results": [
+    {
+      "app": "database_analytics",
+      "artifact": "docs/reports/goal1956_rawkernel_control_app_pod_no_optix/database_analytics.json",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 100000,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 5.058332055807114,
+      "v2_median_s": 1.0374882444739342,
+      "v2_vs_v1_8_ratio": 0.20510481182880574
+    },
+    {
+      "app": "graph_analytics",
+      "artifact": "docs/reports/goal1956_rawkernel_control_app_pod_no_optix/graph_analytics.json",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 1000,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 9.907823599874973,
+      "v2_median_s": 3.222376108169556e-05,
+      "v2_vs_v1_8_ratio": 3.2523551471084113e-06
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact": "docs/reports/goal1956_rawkernel_control_app_pod_no_optix/polygon_pair_overlap_area_rows.json",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 512,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 0.044128917157649994,
+      "v2_median_s": 1.6245396807789803,
+      "v2_vs_v1_8_ratio": 36.81349521846033
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact": "docs/reports/goal1956_rawkernel_control_app_pod_no_optix/polygon_set_jaccard.json",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 512,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 0.03131086379289627,
+      "v2_median_s": 0.9878385066986084,
+      "v2_vs_v1_8_ratio": 31.549385326211496
+    },
+    {
+      "app": "graph_analytics",
+      "artifact": "docs/reports/goal1956_rawkernel_control_app_pod_no_optix/graph_analytics_1m_v2_only.json",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 1000000,
+      "matches_v1_8_python_rtdl_oracle": null,
+      "v1_8_median_s": null,
+      "v2_median_s": 3.75211238861084e-05,
+      "v2_vs_v1_8_ratio": null
+    }
+  ],
+  "source_commit_label": "e0a3d6d22dc5e27fc1c6987879227dfe37130f77",
+  "status": "partial_no_optix_sdk"
+}
