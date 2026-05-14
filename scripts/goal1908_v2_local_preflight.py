@@ -80,6 +80,7 @@ TEST_MODULES = (
     "tests.goal1981_exact_radius_graph_components_dbscan_partner_reference_test",
     "tests.goal1983_exact_ann_candidate_quality_partner_reference_test",
     "tests.goal1985_spatial_bucket_dbscan_partner_reference_test",
+    "tests.goal1987_database_partner_columnar_reductions_test",
 )
 
 

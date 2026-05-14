@@ -65,7 +65,7 @@ class Goal1953ControlAppsCuPyRawKernelV2Test(unittest.TestCase):
         self.assertEqual(len(payload["results"]), 4)
         for result in payload["results"]:
             self.assertTrue(result["matches_v1_8_python_rtdl_oracle"], result["app"])
-            self.assertIn("Python+CuPy RawKernel+RTDL", result["fairness_note"])
+            self.assertIn("Python+partner continuations+RTDL", result["fairness_note"])
 
     def test_report_documents_user_decision_and_pod_requirement(self) -> None:
         text = REPORT.read_text(encoding="utf-8")

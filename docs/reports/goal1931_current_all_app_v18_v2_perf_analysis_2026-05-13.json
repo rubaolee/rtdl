@@ -21,7 +21,7 @@
       "artifact": "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/summary.json",
       "claim_class": "bounded-implemented",
       "classification": "positive",
-      "insight": "Goal1957/1956 RawKernel evidence is fast, but the reusable engine debt is a general partner grouped-scan/reduction adapter instead of app-local DB code.",
+      "insight": "Goal1957/1956 RawKernel evidence is fast; Goal1987 adds a reusable generic partner columnar predicate/reduction path, but it is currently slower than the fused app-local RawKernel and needs batching/fusion.",
       "label": "database analytics",
       "matrix_state": "bounded-partner-row",
       "partner": "cupy",

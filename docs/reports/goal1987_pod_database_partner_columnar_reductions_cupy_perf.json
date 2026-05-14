@@ -1,0 +1,91 @@
+{
+  "claim_boundary": {
+    "app_rawkernel_replaced_for_design_path": true,
+    "native_engine_customization": false,
+    "rawkernel_faster_than_generic_currently": true,
+    "reusable_partner_columnar_reductions": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1987",
+  "gpu": "NVIDIA RTX 2000 Ada Generation",
+  "results": [
+    {
+      "columnar_vs_rawkernel_ratio": 2.626100962552382,
+      "copies": 1000,
+      "matches_rawkernel": true,
+      "partner_columnar_wall_s": {
+        "max_s": 0.04998768866062164,
+        "median_s": 0.024307243525981903,
+        "min_s": 0.024251148104667664,
+        "repeats": 5
+      },
+      "rawkernel_wall_s": {
+        "max_s": 0.4289485663175583,
+        "median_s": 0.009256020188331604,
+        "min_s": 0.00919746607542038,
+        "repeats": 5
+      },
+      "regional_rows": 7000,
+      "sales_rows": 6000
+    },
+    {
+      "columnar_vs_rawkernel_ratio": 2.5866800568038713,
+      "copies": 10000,
+      "matches_rawkernel": true,
+      "partner_columnar_wall_s": {
+        "max_s": 0.25782226771116257,
+        "median_s": 0.2416469156742096,
+        "min_s": 0.23181893676519394,
+        "repeats": 5
+      },
+      "rawkernel_wall_s": {
+        "max_s": 0.09475867450237274,
+        "median_s": 0.09341971576213837,
+        "min_s": 0.09294842928647995,
+        "repeats": 5
+      },
+      "regional_rows": 70000,
+      "sales_rows": 60000
+    },
+    {
+      "columnar_vs_rawkernel_ratio": 2.7499126411732124,
+      "copies": 50000,
+      "matches_rawkernel": true,
+      "partner_columnar_wall_s": {
+        "max_s": 1.3595997169613838,
+        "median_s": 1.3295036256313324,
+        "min_s": 1.3059676513075829,
+        "repeats": 3
+      },
+      "rawkernel_wall_s": {
+        "max_s": 0.4927370399236679,
+        "median_s": 0.48347122222185135,
+        "min_s": 0.4786696285009384,
+        "repeats": 3
+      },
+      "regional_rows": 350000,
+      "sales_rows": 300000
+    },
+    {
+      "columnar_vs_rawkernel_ratio": 2.7545253080734398,
+      "copies": 100000,
+      "matches_rawkernel": true,
+      "partner_columnar_wall_s": {
+        "max_s": 2.6908093690872192,
+        "median_s": 2.6493465080857277,
+        "min_s": 2.6480628922581673,
+        "repeats": 3
+      },
+      "rawkernel_wall_s": {
+        "max_s": 0.9758953005075455,
+        "median_s": 0.9618159979581833,
+        "min_s": 0.9594753682613373,
+        "repeats": 3
+      },
+      "regional_rows": 700000,
+      "sales_rows": 600000
+    }
+  ],
+  "status": "pass"
+}

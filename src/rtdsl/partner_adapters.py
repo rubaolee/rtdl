@@ -269,6 +269,126 @@ def partner_compact_columns_by_mask(columns: dict[str, object], mask, *, partner
     return partner_take_columns_by_indices(columns, indices, partner=partner)
 
 
+def columnar_rows_to_partner_columns(
+    rows,
+    *,
+    partner: str = "torch",
+    categorical_fields: tuple[str, ...] = (),
+) -> dict[str, object]:
+    """Convert generic row dictionaries into partner-owned column tensors."""
+    runtime = _partner_module(partner)
+    row_tuple = tuple(rows)
+    if not row_tuple:
+        raise ValueError("columnar rows require at least one row")
+    categorical = set(categorical_fields)
+    device = runtime["device"]
+    columns: dict[str, object] = {}
+    category_maps: dict[str, dict[str, int]] = {}
+    for name in row_tuple[0]:
+        values = [row[name] for row in row_tuple]
+        if name in categorical or any(isinstance(value, str) for value in values):
+            labels = sorted({str(value) for value in values})
+            mapping = {label: index for index, label in enumerate(labels)}
+            category_maps[name] = mapping
+            columns[name] = runtime["tensor"]([mapping[str(value)] for value in values], runtime["uint32"], device)
+        elif any(isinstance(value, float) for value in values):
+            columns[name] = runtime["tensor"]([float(value) for value in values], runtime["float64"], device)
+        else:
+            columns[name] = runtime["tensor"]([int(value) for value in values], runtime["module"].int64, device)
+    columns["_metadata"] = {
+        "adapter": "columnar_rows_to_partner_columns",
+        "partner": runtime["name"],
+        "row_count": len(row_tuple),
+        "category_maps": category_maps,
+        "input_contract": "caller_supplied_python_rows",
+        "partner_reference_contract": "generic_columnar_payload_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
+def partner_columnar_predicate_mask(columns: dict[str, object], predicates, *, partner: str = "torch"):
+    """Build a boolean mask for simple generic columnar predicates."""
+    runtime = _partner_module(partner)
+    row_count = _column_length(columns, next(name for name in columns if not name.startswith("_")))
+    module = runtime["module"]
+    if runtime["name"] == "torch":
+        mask = module.ones((row_count,), dtype=module.bool, device=runtime["device"])
+    else:
+        mask = module.ones((row_count,), dtype=module.bool_)
+    for predicate in predicates:
+        field, op, *values = predicate
+        column = columns[str(field)]
+        if op == "between":
+            current = (column >= values[0]) & (column <= values[1])
+        elif op == "eq":
+            current = column == values[0]
+        elif op == "ge":
+            current = column >= values[0]
+        elif op == "gt":
+            current = column > values[0]
+        elif op == "le":
+            current = column <= values[0]
+        elif op == "lt":
+            current = column < values[0]
+        else:
+            raise ValueError(f"unsupported predicate op: {op}")
+        mask = mask & current
+    return mask
+
+
+def partner_columnar_predicate_reduce(
+    columns: dict[str, object],
+    predicates,
+    *,
+    partner: str = "torch",
+    reduce: str = "count",
+    group_field: str | None = None,
+    value_field: str | None = None,
+    group_count: int | None = None,
+):
+    """Reduce rows matching generic predicates with partner tensor operations."""
+    runtime = _partner_module(partner)
+    mask = partner_columnar_predicate_mask(columns, predicates, partner=partner)
+    if group_field is None:
+        if reduce == "count":
+            return partner_group_sum_by_key(
+                runtime["zeros"]((int(_column_length({"mask": mask}, "mask")),), runtime["uint32"], runtime["device"]),
+                mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"]),
+                1,
+                partner=partner,
+            )[0]
+        if reduce == "ids":
+            return columns[str(value_field)][partner_mask_indices(mask, partner=partner)]
+        raise ValueError("scalar reduce must be 'count' or 'ids'")
+    if group_count is None:
+        metadata = columns.get("_metadata", {})
+        category_maps = metadata.get("category_maps", {}) if isinstance(metadata, dict) else {}
+        group_count = len(category_maps.get(group_field, {}))
+        if not group_count:
+            group_count = int(runtime["to_host"](columns[group_field].max().reshape(1))[0]) + 1
+    keys = columns[group_field]
+    if reduce == "count":
+        values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
+        return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
+    if reduce == "sum":
+        if value_field is None:
+            raise ValueError("sum reduce requires value_field")
+        values = columns[value_field] * (
+            mask.astype(columns[value_field].dtype, copy=False)
+            if runtime["name"] == "cupy"
+            else mask.to(columns[value_field].dtype)
+        )
+        if runtime["name"] == "cupy" and values.dtype == runtime["module"].int64:
+            values = values.astype(runtime["module"].float64, copy=False)
+        return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
+    raise ValueError("grouped reduce must be 'count' or 'sum'")
+
+
 def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "torch"):
     """Reduce binary/int flags to one any-hit flag per integer key."""
     runtime = _partner_module(partner)

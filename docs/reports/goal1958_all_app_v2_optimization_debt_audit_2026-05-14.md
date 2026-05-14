@@ -24,7 +24,7 @@ all-app matrix. The remaining question is quality of the v2 path.
 
 | App | Current v2 state | Evidence | Main remaining optimization debt |
 | --- | --- | --- | --- |
-| `database_analytics` | positive bounded RawKernel row | v2/v1.8 `0.205x` | Generalize app-local DB RawKernel into reusable partner grouped scan/reduction primitives. |
+| `database_analytics` | positive bounded RawKernel row plus generic columnar path | v2/v1.8 `0.205x`; generic/RawKernel `2.755x` | Goal1987 adds reusable partner columnar predicate/reduction primitives; the next debt is fusing/batching them so the generic path can match the old app-local RawKernel. |
 | `graph_analytics` | positive bounded metric-table row | v2/v1.8 `0.000003x` | Goal1972 removed the closed-form RawKernel shortcut; still not a broad graph traversal acceleration claim. |
 | `service_coverage_gaps` | positive | v2/v1.8 `0.006x` | Mostly healthy; keep prepared scene/output reuse and avoid row materialization. |
 | `event_hotspot_screening` | positive | v2/v1.8 `0.002x` | Mostly healthy; same fixed-radius threshold shape. |
@@ -85,7 +85,9 @@ The remaining debt is not one bug. It is four patterns:
 
    Add reusable partner-side primitives for `group_count`, `group_sum`,
    `group_any`, `compact_by_key`, `top_k_by_key`, and `prefix/paging`. This
-   directly attacks DB, row materialization, graph, and polygon debts.
+   directly attacks row materialization, graph, and polygon debts. Goal1987
+   adds the first generic DB columnar reductions; the remaining DB issue is
+   fusing/batching those reductions to avoid multiple partner launches.
 
 2. **Exact identity-preserving outputs**
 

@@ -10,7 +10,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 
 | App | Class | Partner | Size | v1.8 prepared s | v2 prepared partner s | Ratio | Insight |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| `database_analytics` | `positive` | cupy | 100000 | 5.002953 | 1.023833 | 0.204646 | Goal1957/1956 RawKernel evidence is fast, but the reusable engine debt is a general partner grouped-scan/reduction adapter instead of app-local DB code. |
+| `database_analytics` | `positive` | cupy | 100000 | 5.002953 | 1.023833 | 0.204646 | Goal1957/1956 RawKernel evidence is fast; Goal1987 adds a reusable generic partner columnar predicate/reduction path, but it is currently slower than the fused app-local RawKernel and needs batching/fusion. |
 | `graph_analytics` | `positive-bounded` | cupy | 1000 | 18.060916 | 0.000054 | 0.000003 | Goal1972 removes the closed-form graph shortcut and uses generic partner metric-table reductions; this is still not a broad graph traversal acceleration claim. |
 | `service_coverage_gaps` | `positive` | cupy | 16384 | 0.038096 | 0.000228 | 0.005983 | Prepared fixed-radius native work plus partner-owned threshold columns amortize very well at the larger row size. |
 | `event_hotspot_screening` | `positive` | cupy | 16384 | 0.094140 | 0.000188 | 0.001998 | Prepared fixed-radius native work plus partner-owned threshold columns amortize very well at the larger row size. |

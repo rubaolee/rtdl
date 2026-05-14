@@ -263,8 +263,9 @@ def _goal1957_rawkernel_control_rows() -> list[dict[str, object]]:
                 }[app],
                 "insight": {
                     "database_analytics": (
-                        "Goal1957/1956 RawKernel evidence is fast, but the reusable engine debt is a "
-                        "general partner grouped-scan/reduction adapter instead of app-local DB code."
+                        "Goal1957/1956 RawKernel evidence is fast; Goal1987 adds a reusable generic "
+                        "partner columnar predicate/reduction path, but it is currently slower than "
+                        "the fused app-local RawKernel and needs batching/fusion."
                     ),
                     "graph_analytics": (
                         "Goal1957/1956 RawKernel evidence is fast because it uses the authored replicated-graph "
