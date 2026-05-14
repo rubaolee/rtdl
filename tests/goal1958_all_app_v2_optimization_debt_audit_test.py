@@ -19,7 +19,7 @@ class Goal1958AllAppV2OptimizationDebtAuditTest(unittest.TestCase):
         for row in matrix["rows"]:
             self.assertIn(f"`{row['app']}`", text)
         for phrase in (
-            "Closed-form app shortcuts",
+            "Metric-table graph continuation is fixed",
             "Threshold proxies for richer app semantics",
             "Row materialization",
             "Exact polygon/set reductions",
@@ -40,13 +40,13 @@ class Goal1958AllAppV2OptimizationDebtAuditTest(unittest.TestCase):
         analysis = json.loads(ANALYSIS.read_text(encoding="utf-8"))
         classes = {row["app"]: row["classification"] for row in analysis["rows"]}
 
-        self.assertEqual(classes["graph_analytics"], "bounded-closed-form")
-        self.assertEqual(classes["polygon_pair_overlap_area_rows"], "bounded-slower")
-        self.assertEqual(classes["polygon_set_jaccard"], "bounded-near-parity")
+        self.assertEqual(classes["graph_analytics"], "positive-bounded")
+        self.assertEqual(classes["polygon_pair_overlap_area_rows"], "positive-bounded")
+        self.assertEqual(classes["polygon_set_jaccard"], "positive-bounded")
         self.assertEqual(analysis["classification_counts"]["positive"], 12)
+        self.assertEqual(analysis["classification_counts"]["positive-bounded"], 3)
         self.assertFalse(analysis["claim_boundary"]["v2_0_release_authorized"])
 
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -7,10 +7,8 @@
     "whole_app_speedup_claim_authorized": false
   },
   "classification_counts": {
-    "bounded-closed-form": 1,
-    "bounded-near-parity": 1,
-    "bounded-slower": 1,
     "positive": 12,
+    "positive-bounded": 3,
     "positive-subsecond": 1
   },
   "goal": "Goal1931",
@@ -35,19 +33,19 @@
     },
     {
       "app": "graph_analytics",
-      "artifact": "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/summary.json",
+      "artifact": "docs/reports/goal1972_pod_graph_metric_table_control_perf.json",
       "claim_class": "bounded-closed-form",
-      "classification": "bounded-closed-form",
-      "insight": "Goal1957/1956 RawKernel evidence is fast because it uses the authored replicated-graph closed form; this is not a reusable graph traversal or triangle-count primitive.",
+      "classification": "positive-bounded",
+      "insight": "Goal1972 removes the closed-form graph shortcut and uses generic partner metric-table reductions; this is still not a broad graph traversal acceleration claim.",
       "label": "graph analytics",
       "matrix_state": "bounded-closed-form-row",
       "partner": "cupy",
-      "ratio_vs_v18_prepared": 3.1412134965033497e-06,
+      "ratio_vs_v18_prepared": 2.985031338825502e-06,
       "ratio_vs_v18_reused_prepared": null,
       "size": 1000,
-      "v18_prepared_s": 9.65829423069954,
+      "v18_prepared_s": 18.0609163120389,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 3.0338764190673828e-05
+      "v2_prepared_partner_s": 5.391240119934082e-05
     },
     {
       "app": "service_coverage_gaps",
@@ -147,35 +145,35 @@
     },
     {
       "app": "polygon_pair_overlap_area_rows",
-      "artifact": "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/summary.json",
+      "artifact": "docs/reports/goal1969_pod_cupy_extent_polygon_control_perf.json",
       "claim_class": "bounded-implemented",
-      "classification": "bounded-slower",
-      "insight": "Goal1957 removed the dense CPU mask handoff with identity-payload columns; this is exact for the authored axis-aligned control app but not arbitrary polygon overlay.",
+      "classification": "positive-bounded",
+      "insight": "Goal1969 reverses the polygon control rows by using a compact CuPy extent candidate table; this is still bounded to the authored axis-aligned control app and is not an arbitrary polygon overlay or OptiX RT-core claim.",
       "label": "polygon pair overlap area rows",
       "matrix_state": "bounded-partner-row",
       "partner": "cupy",
-      "ratio_vs_v18_prepared": 1.4214513733463607,
+      "ratio_vs_v18_prepared": 0.2919758698301695,
       "ratio_vs_v18_reused_prepared": null,
       "size": 2048,
-      "v18_prepared_s": 0.17235253751277924,
+      "v18_prepared_s": 0.27978045493364334,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 0.2449907511472702
+      "v2_prepared_partner_s": 0.08168914169073105
     },
     {
       "app": "polygon_set_jaccard",
-      "artifact": "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/summary.json",
+      "artifact": "docs/reports/goal1969_pod_cupy_extent_polygon_control_perf.json",
       "claim_class": "bounded-implemented",
-      "classification": "bounded-near-parity",
-      "insight": "Goal1957 removed the dense CPU mask handoff with identity-payload columns; this is exact for the authored axis-aligned control app but not arbitrary polygon overlay.",
+      "classification": "positive-bounded",
+      "insight": "Goal1969 reverses the polygon control rows by using a compact CuPy extent candidate table; this is still bounded to the authored axis-aligned control app and is not an arbitrary polygon overlay or OptiX RT-core claim.",
       "label": "polygon set jaccard",
       "matrix_state": "bounded-partner-row",
       "partner": "cupy",
-      "ratio_vs_v18_prepared": 1.0625089140630732,
+      "ratio_vs_v18_prepared": 0.2810004311013249,
       "ratio_vs_v18_reused_prepared": null,
       "size": 2048,
-      "v18_prepared_s": 0.14459741115570068,
+      "v18_prepared_s": 0.23321230709552765,
       "v18_reused_prepared_s": null,
-      "v2_prepared_partner_s": 0.15363603830337524
+      "v2_prepared_partner_s": 0.06553275883197784
     },
     {
       "app": "hausdorff_distance",

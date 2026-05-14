@@ -285,6 +285,78 @@ def _goal1957_rawkernel_control_rows() -> list[dict[str, object]]:
     return rows
 
 
+def _goal1969_polygon_extent_rows() -> list[dict[str, object]]:
+    path = "docs/reports/goal1969_pod_cupy_extent_polygon_control_perf.json"
+    artifact = _read_json(ROOT / path)
+    if not artifact:
+        return []
+    rows: list[dict[str, object]] = []
+    for result in artifact.get("results", []):
+        if not isinstance(result, dict):
+            continue
+        app = str(result.get("app", ""))
+        if app not in {"polygon_pair_overlap_area_rows", "polygon_set_jaccard"}:
+            continue
+        v18 = _median(result, "v1_8_python_rtdl_wall")
+        v2 = _median(result, "v2_rawkernel_wall")
+        ratio = result.get("v2_vs_v1_8_ratio")
+        rows.append(
+            {
+                "app": app,
+                "label": app.replace("_", " "),
+                "size": int(result.get("copies", 0) or 0),
+                "partner": str(result.get("partner", "cupy")),
+                "v18_prepared_s": v18,
+                "v18_reused_prepared_s": None,
+                "v2_prepared_partner_s": v2,
+                "ratio_vs_v18_prepared": float(ratio) if isinstance(ratio, (int, float)) else _ratio(v2, v18),
+                "ratio_vs_v18_reused_prepared": None,
+                "classification": "positive-bounded",
+                "insight": (
+                    "Goal1969 reverses the polygon control rows by using a compact CuPy extent candidate table; "
+                    "this is still bounded to the authored axis-aligned control app and is not an arbitrary polygon "
+                    "overlay or OptiX RT-core claim."
+                ),
+                "artifact": path,
+            }
+        )
+    return rows
+
+
+def _goal1972_graph_metric_table_rows() -> list[dict[str, object]]:
+    path = "docs/reports/goal1972_pod_graph_metric_table_control_perf.json"
+    artifact = _read_json(ROOT / path)
+    if not artifact:
+        return []
+    rows: list[dict[str, object]] = []
+    for result in artifact.get("results", []):
+        if not isinstance(result, dict) or result.get("app") != "graph_analytics":
+            continue
+        v18 = _median(result, "v1_8_python_rtdl_wall")
+        v2 = _median(result, "v2_rawkernel_wall")
+        ratio = result.get("v2_vs_v1_8_ratio")
+        rows.append(
+            {
+                "app": "graph_analytics",
+                "label": "graph analytics",
+                "size": int(result.get("copies", 0) or 0),
+                "partner": str(result.get("partner", "cupy")),
+                "v18_prepared_s": v18,
+                "v18_reused_prepared_s": None,
+                "v2_prepared_partner_s": v2,
+                "ratio_vs_v18_prepared": float(ratio) if isinstance(ratio, (int, float)) else _ratio(v2, v18),
+                "ratio_vs_v18_reused_prepared": None,
+                "classification": "positive-bounded",
+                "insight": (
+                    "Goal1972 removes the closed-form graph shortcut and uses generic partner metric-table "
+                    "reductions; this is still not a broad graph traversal acceleration claim."
+                ),
+                "artifact": path,
+            }
+        )
+    return rows
+
+
 def _best_measured(rows: list[dict[str, object]]) -> dict[str, dict[str, object]]:
     best: dict[str, dict[str, object]] = {}
     for row in rows:
@@ -323,6 +395,8 @@ def build_analysis() -> dict[str, object]:
     measured_rows.extend(_segment_anyhit_scaleup_rows())
     measured_rows.extend(_robot_scaleup_rows())
     measured_rows.extend(_goal1957_rawkernel_control_rows())
+    measured_rows.extend(_goal1969_polygon_extent_rows())
+    measured_rows.extend(_goal1972_graph_metric_table_rows())
     best = _best_measured(measured_rows)
     rows: list[dict[str, object]] = []
     for matrix_row in matrix["rows"]:
@@ -426,7 +500,7 @@ def to_markdown(payload: dict[str, object]) -> str:
             "- The strongest measured v2 rows are the repeat-3 fixed-radius family rows, where v1.8 is seconds-scale and v2 partner threshold decisions are sub-millisecond.",
             "- Segment any-hit now has a seconds-scale same-contract row at 1,048,576 outputs; road-hazard and segment hitcount remain positive compact-output rows.",
             "- Robot collision now has exact pose-flag parity and strong ratios through 8,388,608 poses, but it is marked `positive-subsecond` because the v1.8 baseline is still below one second.",
-            "- Database, graph, and exact polygon metrics are intentionally marked as controls/fallbacks. They are important evidence rows, but they are not v2 partner speedup rows until their app continuations move into reviewed partner tensor contracts.",
+            "- Database remains a bounded control/fallback row. Graph and the two polygon control rows now have positive bounded v2 evidence after Goal1972 and Goal1969, but their claims stay narrow.",
             "",
             "## Release Boundary",
             "",

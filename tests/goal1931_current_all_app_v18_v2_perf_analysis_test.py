@@ -54,9 +54,9 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertEqual(classes["dbscan_clustering"], "positive")
         self.assertEqual(classes["barnes_hut_force_app"], "positive")
         self.assertEqual(classes["database_analytics"], "positive")
-        self.assertEqual(classes["graph_analytics"], "bounded-closed-form")
-        self.assertEqual(classes["polygon_pair_overlap_area_rows"], "bounded-slower")
-        self.assertEqual(classes["polygon_set_jaccard"], "bounded-near-parity")
+        self.assertEqual(classes["graph_analytics"], "positive-bounded")
+        self.assertEqual(classes["polygon_pair_overlap_area_rows"], "positive-bounded")
+        self.assertEqual(classes["polygon_set_jaccard"], "positive-bounded")
 
     def test_report_contains_insight_not_only_ratios(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -66,8 +66,8 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertIn("Prepared fixed-radius", text)
         self.assertIn("Segment any-hit now has a seconds-scale", text)
         self.assertIn("positive-subsecond", text)
-        self.assertIn("controls/fallbacks", text)
-        self.assertIn("identity-payload", text)
+        self.assertIn("positive bounded v2 evidence", text)
+        self.assertIn("compact CuPy extent candidate table", text)
 
 
 if __name__ == "__main__":
