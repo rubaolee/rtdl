@@ -563,6 +563,40 @@ def _partner_pair_payload_table(
     )
 
 
+def _positive_candidate_pairs_cupy_extent(
+    left: tuple[Any, ...],
+    right: tuple[Any, ...],
+) -> set[tuple[int, int]]:
+    cp = _load_cupy()
+    left_columns = _axis_aligned_extent_columns(left)
+    right_columns = _axis_aligned_extent_columns(right)
+    left_min_x = cp.asarray(left_columns["min_x"])
+    left_min_y = cp.asarray(left_columns["min_y"])
+    left_max_x = cp.asarray(left_columns["max_x"])
+    left_max_y = cp.asarray(left_columns["max_y"])
+    right_min_x = cp.asarray(right_columns["min_x"])
+    right_min_y = cp.asarray(right_columns["min_y"])
+    right_max_x = cp.asarray(right_columns["max_x"])
+    right_max_y = cp.asarray(right_columns["max_y"])
+    width = cp.minimum(left_max_x[:, None], right_max_x[None, :]) - cp.maximum(
+        left_min_x[:, None],
+        right_min_x[None, :],
+    )
+    height = cp.minimum(left_max_y[:, None], right_max_y[None, :]) - cp.maximum(
+        left_min_y[:, None],
+        right_min_y[None, :],
+    )
+    left_indices, right_indices = cp.nonzero((width > 0) & (height > 0))
+    left_ids = np.asarray([polygon.id for polygon in left], dtype=np.int32)
+    right_ids = np.asarray([polygon.id for polygon in right], dtype=np.int32)
+    return set(
+        zip(
+            left_ids[cp.asnumpy(left_indices)].tolist(),
+            right_ids[cp.asnumpy(right_indices)].tolist(),
+        )
+    )
+
+
 def _polygon_pair_cpu_summary(
     left_masks: np.ndarray,
     right_masks: np.ndarray,
@@ -712,7 +746,9 @@ def _polygon_summary_inputs(app: str, copies: int, candidate_backend: str) -> di
         raise ValueError(f"unsupported polygon app: {app}")
     left = case["left"]
     right = case["right"]
-    if candidate_backend == "embree":
+    if candidate_backend == "cupy_extent":
+        candidate_pairs = _positive_candidate_pairs_cupy_extent(left, right)
+    elif candidate_backend == "embree":
         candidate_pairs = rtdl_polygon_pair_overlap_area_rows._positive_candidate_pairs_embree(left, right)
     elif candidate_backend == "optix":
         candidate_pairs = rtdl_polygon_pair_overlap_area_rows._positive_candidate_pairs_optix(left, right)
@@ -915,7 +951,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--partner", choices=("cpu_fallback", "cupy"), default="cpu_fallback")
     parser.add_argument(
         "--candidate-backend",
-        choices=("cpu_all_pairs", "embree", "optix"),
+        choices=("cpu_all_pairs", "cupy_extent", "embree", "optix"),
         default="cpu_all_pairs",
         help="Polygon candidate discovery source. Use optix on pod for RTDL+RawKernel timing.",
     )

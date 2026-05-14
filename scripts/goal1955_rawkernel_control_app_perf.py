@@ -306,7 +306,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--apps", default="all")
     parser.add_argument("--copies", type=int, default=None)
     parser.add_argument("--partner", choices=("cpu_fallback", "cupy"), default="cupy")
-    parser.add_argument("--candidate-backend", choices=("cpu_all_pairs", "embree", "optix"), default="cpu_all_pairs")
+    parser.add_argument("--candidate-backend", choices=("cpu_all_pairs", "cupy_extent", "embree", "optix"), default="cpu_all_pairs")
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--warmups", type=int, default=1)
     parser.add_argument("--skip-v1-8", action="store_true")

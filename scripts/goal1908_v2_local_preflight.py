@@ -72,6 +72,7 @@ TEST_MODULES = (
     "tests.goal1965_partner_column_compaction_primitives_test",
     "tests.goal1967_unique_pair_group_count_sparse_mapping_test",
     "tests.goal1968_pod_control_perf_after_partner_algebra_test",
+    "tests.goal1969_cupy_extent_polygon_candidate_backend_test",
 )
 
 

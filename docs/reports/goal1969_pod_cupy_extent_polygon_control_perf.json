@@ -1,0 +1,112 @@
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "cupy_extent",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA RTX 2000 Ada Generation, 565.57.01"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "candidate_backend": "cupy_extent",
+      "copies": 2048,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+CuPy RawKernel+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "sha256": "e95ea0b6da651fc4898d35cc3c8273679c0527a1aea70ff30bcec5d2ec2d343d",
+        "summary": {
+          "overlap_pair_count": 4096,
+          "total_intersection_area": 10240,
+          "total_union_area": 38912
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 0.2996221259236336,
+        "median_s": 0.2843460291624069,
+        "min_s": 0.2828421965241432
+      },
+      "v2_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "8648fbd9291d623eff3164ba80571310478439774356cb40b357f300cdcb784c",
+        "summary": {
+          "overlap_pair_count": 4096,
+          "total_intersection_area": 10240,
+          "total_union_area": 38912
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.08179344236850739,
+        "median_s": 0.07968563586473465,
+        "min_s": 0.06829249858856201
+      },
+      "v2_vs_v1_8_ratio": 0.2802417747821667,
+      "warmups": 1
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "candidate_backend": "cupy_extent",
+      "copies": 2048,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+CuPy RawKernel+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "sha256": "ce51efe18360f4a1c56cc243681c098a0bf6248ca3a6c93845cdd444430161c5",
+        "summary": {
+          "intersection_area": 10240,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 26624,
+          "right_area": 22528,
+          "union_area": 38912
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 0.22369486093521118,
+        "median_s": 0.22141479700803757,
+        "min_s": 0.20947888493537903
+      },
+      "v2_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "569035c998e777bc0d8ed05e6fb23c6e9333946b6fca642651641cd973c2f8fb",
+        "summary": {
+          "intersection_area": 10240,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 26624,
+          "right_area": 22528,
+          "union_area": 38912
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.0657239630818367,
+        "median_s": 0.06564759463071823,
+        "min_s": 0.053597964346408844
+      },
+      "v2_vs_v1_8_ratio": 0.29649145187137227,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "goal1969-local-cupy-extent",
+  "status": "rawkernel-control-app-perf-smoke"
+}
