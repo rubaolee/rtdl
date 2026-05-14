@@ -266,6 +266,61 @@ def partner_metric_table_reduce_by_key(
     raise ValueError("partner must be 'torch' or 'cupy'")
 
 
+def partner_metric_table_reduce_repeated_pattern(
+    metric_keys,
+    values,
+    output_metric_keys,
+    repeat_count: int,
+    *,
+    partner: str = "torch",
+    reduce: str = "sum",
+    initial=0,
+    assume_aligned_output: bool = False,
+):
+    """Reduce a generic metric/value pattern repeated N times without materializing rows."""
+    runtime = _partner_module(partner)
+    repeat_count = int(repeat_count)
+    if repeat_count < 0:
+        raise ValueError("repeat_count must be non-negative")
+    module = runtime["module"]
+    if reduce not in {"sum", "max", "min"}:
+        raise ValueError("reduce must be 'sum', 'max', or 'min'")
+    if assume_aligned_output:
+        if len(metric_keys) != len(output_metric_keys):
+            raise ValueError("aligned repeated metric pattern requires one value per output metric key")
+        if repeat_count == 0:
+            if reduce == "sum":
+                return module.zeros_like(output_metric_keys, dtype=values.dtype)
+            return module.full_like(output_metric_keys, initial, dtype=values.dtype)
+        if runtime["name"] == "cupy" and not isinstance(values, module.ndarray):
+            return module.asarray(values * repeat_count if reduce == "sum" else values)
+        if runtime["name"] == "torch" and not hasattr(values, "device"):
+            base = values * repeat_count if reduce == "sum" else values
+            return module.as_tensor(base, device=runtime["device"])
+        if reduce == "sum":
+            return values * repeat_count
+        return values
+    if repeat_count == 0:
+        if reduce == "sum":
+            if runtime["name"] == "torch":
+                return module.zeros_like(output_metric_keys, dtype=values.dtype)
+            return module.zeros_like(output_metric_keys, dtype=values.dtype)
+        if runtime["name"] == "torch":
+            return module.full_like(output_metric_keys, initial, dtype=values.dtype)
+        return module.full_like(output_metric_keys, initial, dtype=values.dtype)
+    reduced = partner_metric_table_reduce_by_key(
+        metric_keys,
+        values,
+        output_metric_keys,
+        partner=partner,
+        reduce=reduce,
+        initial=initial,
+    )
+    if reduce == "sum":
+        return reduced * repeat_count
+    return reduced
+
+
 def metric_table_payload_to_partner_columns(
     payload,
     *,

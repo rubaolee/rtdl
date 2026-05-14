@@ -22,6 +22,8 @@ class Goal1972GraphMetricTablePartnerReductionTest(unittest.TestCase):
         init_text = INIT.read_text(encoding="utf-8")
 
         self.assertIn("def partner_metric_table_reduce_by_key", adapters)
+        self.assertIn("def partner_metric_table_reduce_repeated_pattern", adapters)
+        self.assertIn("assume_aligned_output", adapters)
         self.assertIn("def metric_table_payload_to_partner_columns", adapters)
         self.assertIn("def partner_metric_table_reduce_batch", adapters)
         self.assertIn("caller_supplied_metric_table_payload", adapters)
@@ -32,7 +34,9 @@ class Goal1972GraphMetricTablePartnerReductionTest(unittest.TestCase):
         self.assertIn("cupy.searchsorted", adapters)
         self.assertIn("reduce must be 'sum', 'max', or 'min'", adapters)
         self.assertIn("from .partner_adapters import partner_metric_table_reduce_by_key", init_text)
+        self.assertIn("from .partner_adapters import partner_metric_table_reduce_repeated_pattern", init_text)
         self.assertIn("from .partner_adapters import metric_table_payload_to_partner_columns", init_text)
+        self.assertIn('"partner_metric_table_reduce_repeated_pattern"', init_text)
         self.assertIn('"partner_metric_table_reduce_batch"', init_text)
         self.assertIn('"partner_metric_table_reduce_by_key"', init_text)
 
@@ -41,10 +45,10 @@ class Goal1972GraphMetricTablePartnerReductionTest(unittest.TestCase):
 
         self.assertIn("GRAPH_SUM_METRIC_IDS", text)
         self.assertIn("GRAPH_MAX_METRIC_IDS", text)
-        self.assertIn("metric_table_payload_to_partner_columns", text)
-        self.assertIn("partner_metric_table_reduce_batch", text)
-        self.assertIn('"reduce": "sum"', text)
-        self.assertIn('"reduce": "max"', text)
+        self.assertIn("partner_metric_table_reduce_repeated_pattern", text)
+        self.assertIn("assume_aligned_output=True", text)
+        self.assertIn('reduce="sum"', text)
+        self.assertIn('reduce="max"', text)
         self.assertNotIn("GRAPH_RAWKERNEL_SOURCE", text)
         self.assertNotIn("rtdl_user_graph_summary", text)
 

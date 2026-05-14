@@ -35,19 +35,19 @@
                  },
                  {
                      "app":  "graph_analytics",
-                     "artifact":  "docs/reports/goal1972_pod_graph_metric_table_control_perf.json",
+                     "artifact":  "docs/reports/goal2022_pod_graph_host_compressed_metric_pattern_1000.json",
                      "claim_class":  "bounded-closed-form",
                      "classification":  "positive-bounded",
-                     "insight":  "Goal1972 removes the closed-form graph shortcut and uses generic partner metric-table reductions; this is still not a broad graph traversal acceleration claim.",
+                     "insight":  "Goal2022 uses a generic compressed repeated metric-table pattern for the authored graph control row; this keeps the row reusable and fast without claiming broad graph traversal acceleration.",
                      "label":  "graph analytics",
                      "matrix_state":  "bounded-closed-form-row",
                      "partner":  "cupy",
-                     "ratio_vs_v18_prepared":  2.985031338825502E-06,
+                     "ratio_vs_v18_prepared":  7.290313933407316E-06,
                      "ratio_vs_v18_reused_prepared":  null,
                      "size":  1000,
-                     "v18_prepared_s":  18.0609163120389,
+                     "v18_prepared_s":  17.23447435721755,
                      "v18_reused_prepared_s":  null,
-                     "v2_prepared_partner_s":  5.391240119934082E-05
+                     "v2_prepared_partner_s":  0.0001256447285413742
                  },
                  {
                      "app":  "service_coverage_gaps",

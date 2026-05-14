@@ -391,6 +391,7 @@ from .partner_adapters import partner_group_count_by_key
 from .partner_adapters import partner_group_count_unique_pairs_by_key
 from .partner_adapters import partner_group_max_by_key
 from .partner_adapters import partner_metric_table_reduce_by_key
+from .partner_adapters import partner_metric_table_reduce_repeated_pattern
 from .partner_adapters import metric_table_payload_to_partner_columns
 from .partner_adapters import partner_metric_table_reduce_batch
 from .partner_adapters import aabb_pair_payload_to_partner_columns
@@ -1318,6 +1319,7 @@ __all__ = [
     "partner_group_count_unique_pairs_by_key",
     "partner_group_max_by_key",
     "partner_metric_table_reduce_by_key",
+    "partner_metric_table_reduce_repeated_pattern",
     "metric_table_payload_to_partner_columns",
     "partner_metric_table_reduce_batch",
     "aabb_pair_payload_to_partner_columns",

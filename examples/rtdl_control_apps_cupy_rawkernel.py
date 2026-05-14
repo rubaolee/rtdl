@@ -23,6 +23,7 @@ from examples import rtdl_sales_risk_screening
 from examples import rtdl_v0_7_db_app_demo
 from rtdsl.partner_adapters import metric_table_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_metric_table_reduce_batch
+from rtdsl.partner_adapters import partner_metric_table_reduce_repeated_pattern
 from rtdsl.partner_adapters import columnar_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_columnar_predicate_reduce_batch
 from rtdsl.partner_adapters import aabb_pair_payload_to_partner_columns
@@ -494,41 +495,29 @@ def _graph_cpu_continuation(copies: int) -> dict[str, object]:
 
 def _graph_cupy_continuation(copies: int) -> dict[str, object]:
     cp = _load_cupy()
-    sum_keys, sum_row_values, max_keys, max_row_values = _graph_metric_rows(copies)
-    reductions = partner_metric_table_reduce_batch(
-        (
-            {
-                "name": "sum_values",
-                "columns": metric_table_payload_to_partner_columns(
-                    {
-                        "metric_keys": sum_keys,
-                        "values": sum_row_values,
-                        "output_metric_keys": GRAPH_SUM_METRIC_IDS,
-                    },
-                    partner="cupy",
-                ),
-                "reduce": "sum",
-            },
-            {
-                "name": "max_values",
-                "columns": metric_table_payload_to_partner_columns(
-                    {
-                        "metric_keys": max_keys,
-                        "values": max_row_values,
-                        "output_metric_keys": GRAPH_MAX_METRIC_IDS,
-                    },
-                    partner="cupy",
-                ),
-                "reduce": "max",
-                "initial": 0,
-            },
-        ),
+    sum_values = partner_metric_table_reduce_repeated_pattern(
+        GRAPH_SUM_METRIC_IDS,
+        GRAPH_SUM_METRIC_VALUES,
+        GRAPH_SUM_METRIC_IDS,
+        copies,
         partner="cupy",
+        reduce="sum",
+        assume_aligned_output=True,
+    )
+    max_values = partner_metric_table_reduce_repeated_pattern(
+        GRAPH_MAX_METRIC_IDS,
+        GRAPH_MAX_METRIC_VALUES,
+        GRAPH_MAX_METRIC_IDS,
+        copies,
+        partner="cupy",
+        reduce="max",
+        initial=0,
+        assume_aligned_output=True,
     )
     cp.cuda.Stream.null.synchronize()
     return _graph_summary_from_values(
-        cp.asnumpy(reductions["sum_values"]).astype(int).tolist(),
-        cp.asnumpy(reductions["max_values"]).astype(int).tolist(),
+        cp.asnumpy(sum_values).astype(int).tolist(),
+        cp.asnumpy(max_values).astype(int).tolist(),
     )
 
 
@@ -568,7 +557,7 @@ def run_graph_analytics_rawkernel(
         }
     return {
         "app": "graph_analytics",
-        "v2_control_app_path": "partner_metric_table_reduce_batch" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
+        "v2_control_app_path": "partner_metric_table_reduce_repeated_pattern" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
         "partner": partner,
         "copies": copies,
         "summary": summary,
