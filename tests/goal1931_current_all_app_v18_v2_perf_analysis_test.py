@@ -53,10 +53,10 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertEqual(classes["outlier_detection"], "positive")
         self.assertEqual(classes["dbscan_clustering"], "positive")
         self.assertEqual(classes["barnes_hut_force_app"], "positive")
-        self.assertEqual(classes["database_analytics"], "control")
-        self.assertEqual(classes["graph_analytics"], "control")
-        self.assertEqual(classes["polygon_pair_overlap_area_rows"], "control")
-        self.assertEqual(classes["polygon_set_jaccard"], "control")
+        self.assertEqual(classes["database_analytics"], "positive")
+        self.assertEqual(classes["graph_analytics"], "bounded-closed-form")
+        self.assertEqual(classes["polygon_pair_overlap_area_rows"], "bounded-slower")
+        self.assertEqual(classes["polygon_set_jaccard"], "bounded-near-parity")
 
     def test_report_contains_insight_not_only_ratios(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -67,7 +67,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertIn("Segment any-hit now has a seconds-scale", text)
         self.assertIn("positive-subsecond", text)
         self.assertIn("controls/fallbacks", text)
-        self.assertIn("not v2 partner speedup rows", text)
+        self.assertIn("identity-payload", text)
 
 
 if __name__ == "__main__":

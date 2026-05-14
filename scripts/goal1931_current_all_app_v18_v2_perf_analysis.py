@@ -224,6 +224,67 @@ def _robot_scaleup_rows() -> list[dict[str, object]]:
     return rows
 
 
+def _goal1957_rawkernel_control_rows() -> list[dict[str, object]]:
+    path = "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/summary.json"
+    artifact = _read_json(ROOT / path)
+    if not artifact:
+        return []
+    rows: list[dict[str, object]] = []
+    for result in artifact.get("results", []):
+        if not isinstance(result, dict):
+            continue
+        app = str(result.get("app", ""))
+        if app not in {
+            "database_analytics",
+            "graph_analytics",
+            "polygon_pair_overlap_area_rows",
+            "polygon_set_jaccard",
+        }:
+            continue
+        v18 = float(result.get("v1_8_median_s", 0.0) or 0.0)
+        v2 = float(result.get("v2_median_s", 0.0) or 0.0)
+        ratio = result.get("v2_vs_v1_8_ratio")
+        rows.append(
+            {
+                "app": app,
+                "label": app.replace("_", " "),
+                "size": int(result.get("copies", 0) or 0),
+                "partner": "cupy",
+                "v18_prepared_s": v18,
+                "v18_reused_prepared_s": None,
+                "v2_prepared_partner_s": v2,
+                "ratio_vs_v18_prepared": float(ratio) if isinstance(ratio, (int, float)) else _ratio(v2, v18),
+                "ratio_vs_v18_reused_prepared": None,
+                "classification": {
+                    "database_analytics": "positive",
+                    "graph_analytics": "bounded-closed-form",
+                    "polygon_pair_overlap_area_rows": "bounded-slower",
+                    "polygon_set_jaccard": "bounded-near-parity",
+                }[app],
+                "insight": {
+                    "database_analytics": (
+                        "Goal1957/1956 RawKernel evidence is fast, but the reusable engine debt is a "
+                        "general partner grouped-scan/reduction adapter instead of app-local DB code."
+                    ),
+                    "graph_analytics": (
+                        "Goal1957/1956 RawKernel evidence is fast because it uses the authored replicated-graph "
+                        "closed form; this is not a reusable graph traversal or triangle-count primitive."
+                    ),
+                    "polygon_pair_overlap_area_rows": (
+                        "Goal1957 removed the dense CPU mask handoff with identity-payload columns; "
+                        "this is exact for the authored axis-aligned control app but not arbitrary polygon overlay."
+                    ),
+                    "polygon_set_jaccard": (
+                        "Goal1957 removed the dense CPU mask handoff with identity-payload columns; "
+                        "this is exact for the authored axis-aligned control app but not arbitrary polygon overlay."
+                    ),
+                }[app],
+                "artifact": path,
+            }
+        )
+    return rows
+
+
 def _best_measured(rows: list[dict[str, object]]) -> dict[str, dict[str, object]]:
     best: dict[str, dict[str, object]] = {}
     for row in rows:
@@ -261,6 +322,7 @@ def build_analysis() -> dict[str, object]:
     )
     measured_rows.extend(_segment_anyhit_scaleup_rows())
     measured_rows.extend(_robot_scaleup_rows())
+    measured_rows.extend(_goal1957_rawkernel_control_rows())
     best = _best_measured(measured_rows)
     rows: list[dict[str, object]] = []
     for matrix_row in matrix["rows"]:

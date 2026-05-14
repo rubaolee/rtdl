@@ -1,16 +1,15 @@
 {
   "blockers": [
-    "current RTX pod timing is missing for harness-ready rows",
-    "control/fallback rows cannot be marketed as v2 partner speedups"
+    "current RTX pod timing is missing for harness-ready rows"
   ],
   "counts_by_comparison_status": {
-    "evidence-only-control": 4,
     "needs-current-pod-rerun": 1,
     "needs-pod-timing": 7,
-    "pod-evidence-collected": 4
+    "pod-evidence-collected": 4,
+    "pod-evidence-collected-bounded": 4
   },
   "final_pod_batch_needed": true,
-  "git_commit": "c7acbf58cab34718d6bd5c6d0a351e43310ac1df",
+  "git_commit": "f8f1847196669dd912dce31602252b7d0ece7571",
   "goal": "Goal1930",
   "release_claim_boundary": {
     "all_apps_have_a_row_decision": true,
@@ -22,28 +21,28 @@
   "row_count": 16,
   "rows": [
     {
-      "analysis_hint": "The current fast path is a prepared compact-summary native continuation, not a v2 partner tensor continuation. Treat as a control until a true partner columnar scan/grouped-reduction adapter exists.",
+      "analysis_hint": "The RawKernel v2 row is fast and correct, but the next generalization is a reusable partner grouped-reduction adapter rather than app-local DB code.",
       "app": "database_analytics",
-      "claim_class": "fallback-control",
-      "comparison_status": "evidence-only-control",
+      "claim_class": "bounded-implemented",
+      "comparison_status": "pod-evidence-collected-bounded",
       "family": "E-columnar-database-analytics",
-      "next_command": "PYTHONPATH=src:. python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario all --copies 20000 --output-mode compact_summary",
+      "next_command": "PYTHONPATH=src:. python3 scripts/goal1955_rawkernel_control_app_perf.py --apps database_analytics --copies 100000 --partner cupy --repeats 3 --warmups 1",
       "v18_reference": "scripts/goal756_db_prepared_session_perf.py",
-      "v2_contract": "v1.8 prepared compact-summary DB path retained; no partner-owned v2 columnar postprocess is claimed yet",
-      "v2_evidence": "docs/reports/goal921_database_analytics_phase_review_contract_2026-04-25.md",
-      "v2_state": "explicit-control-row"
+      "v2_contract": "CuPy RawKernel predicate scan plus grouped count/sum continuation over Python-owned column payloads",
+      "v2_evidence": "docs/reports/goal1957_partner_identity_payload_pod_retest_2026-05-14.md",
+      "v2_state": "bounded-partner-row"
     },
     {
-      "analysis_hint": "Visibility can be RT-shaped, but BFS and triangle-count bookkeeping remain graph algorithms. Final analysis must split these rows rather than hiding them under one app name.",
+      "analysis_hint": "The authored app is fast, but this remains the largest semantic debt: no reusable partner graph primitive for frontier traversal, triangle counting, or visibility-edge aggregation.",
       "app": "graph_analytics",
-      "claim_class": "split-control",
-      "comparison_status": "evidence-only-control",
+      "claim_class": "bounded-closed-form",
+      "comparison_status": "pod-evidence-collected-bounded",
       "family": "F-graph-split-rows",
-      "next_command": "PYTHONPATH=src:. python3 scripts/goal982_graph_same_scale_timing_repair.py --copies 20000 --repeats 3",
+      "next_command": "PYTHONPATH=src:. python3 scripts/goal1955_rawkernel_control_app_perf.py --apps graph_analytics --copies 1000 --partner cupy --repeats 3 --warmups 1",
       "v18_reference": "scripts/goal982_graph_same_scale_timing_repair.py",
-      "v2_contract": "split into visibility_edges, bfs, and triangle_count evidence; no single whole-graph v2 speedup claim",
-      "v2_evidence": "docs/reports/goal982_graph_same_scale_timing_repair_2026-04-26.md",
-      "v2_state": "split-control-row"
+      "v2_contract": "CuPy RawKernel summary for the authored replicated graph case; not a generic graph traversal/triangle engine",
+      "v2_evidence": "docs/reports/goal1957_partner_identity_payload_pod_retest_2026-05-14.md",
+      "v2_state": "bounded-closed-form-row"
     },
     {
       "analysis_hint": "Positive rows are expected when prepared reuse and partner-owned threshold outputs amortize dispatch and transfer cost.",
@@ -118,28 +117,28 @@
       "v2_state": "implemented-rerun-needed"
     },
     {
-      "analysis_hint": "Do not claim full v2 partner acceleration until exact area refinement is a reviewed partner tensor continuation or explicitly accepted as fallback.",
+      "analysis_hint": "Goal1957 fixes the dense-mask handoff with compact identity-payload columns; still bounded to authored axis-aligned shapes and currently near-parity/slower than v1.8, not arbitrary polygon overlay.",
       "app": "polygon_pair_overlap_area_rows",
-      "claim_class": "candidate-discovery-control",
-      "comparison_status": "evidence-only-control",
+      "claim_class": "bounded-implemented",
+      "comparison_status": "pod-evidence-collected-bounded",
       "family": "D-polygon-exact-metric-continuation",
-      "next_command": "PYTHONPATH=src:. python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies 4096 --output-mode summary",
+      "next_command": "PYTHONPATH=src:. python3 scripts/goal1955_rawkernel_control_app_perf.py --apps polygon_pair_overlap_area_rows --copies 2048 --partner cupy --candidate-backend optix --repeats 3 --warmups 1",
       "v18_reference": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
-      "v2_contract": "generic candidate discovery exists; exact overlap-area continuation remains CPU/Python/native summary fallback",
-      "v2_evidence": "docs/reports/goal877_polygon_overlap_optix_phase_profiler_2026-04-24.md",
-      "v2_state": "explicit-control-row"
+      "v2_contract": "OptiX candidate discovery plus CuPy identity-payload extent continuation for authored axis-aligned bounded shapes",
+      "v2_evidence": "docs/reports/goal1957_partner_identity_payload_pod_retest_2026-05-14.md",
+      "v2_state": "bounded-partner-row"
     },
     {
-      "analysis_hint": "The exact set-union reduction dominates unless moved into a bounded partner continuation.",
+      "analysis_hint": "Goal1957 fixes the dense-mask handoff with compact identity-payload columns; still bounded to authored axis-aligned shapes and near parity rather than a clean speedup.",
       "app": "polygon_set_jaccard",
-      "claim_class": "candidate-discovery-control",
-      "comparison_status": "evidence-only-control",
+      "claim_class": "bounded-implemented",
+      "comparison_status": "pod-evidence-collected-bounded",
       "family": "D-polygon-exact-metric-continuation",
-      "next_command": "PYTHONPATH=src:. python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 4096 --output-mode summary",
+      "next_command": "PYTHONPATH=src:. python3 scripts/goal1955_rawkernel_control_app_perf.py --apps polygon_set_jaccard --copies 2048 --partner cupy --candidate-backend optix --repeats 3 --warmups 1",
       "v18_reference": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
-      "v2_contract": "generic candidate discovery exists; exact Jaccard continuation remains CPU/Python/native summary fallback",
-      "v2_evidence": "docs/reports/goal877_polygon_overlap_optix_phase_profiler_2026-04-24.md",
-      "v2_state": "explicit-control-row"
+      "v2_contract": "OptiX candidate discovery plus CuPy identity-payload extent continuation for authored axis-aligned bounded-shape set Jaccard",
+      "v2_evidence": "docs/reports/goal1957_partner_identity_payload_pod_retest_2026-05-14.md",
+      "v2_state": "bounded-partner-row"
     },
     {
       "analysis_hint": "This is a thresholded nearest-candidate workload. Exact directed Hausdorff max-distance remains a different app continuation.",

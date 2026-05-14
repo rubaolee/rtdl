@@ -65,8 +65,14 @@ class Goal1930AllAppV2MatrixTest(unittest.TestCase):
             for row in payload["rows"]
             if row["comparison_status"] == "evidence-only-control"
         }
+        self.assertEqual(control_apps, set())
+        bounded_apps = {
+            row["app"]
+            for row in payload["rows"]
+            if row["comparison_status"] == "pod-evidence-collected-bounded"
+        }
         self.assertEqual(
-            control_apps,
+            bounded_apps,
             {
                 "database_analytics",
                 "graph_analytics",
