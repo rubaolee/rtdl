@@ -1,0 +1,59 @@
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      0.8650635089725256,
+      0.025790229439735413,
+      0.024218866601586342
+    ],
+    "query_summary": {
+      "max_s": 0.8650635089725256,
+      "median_s": 0.025790229439735413,
+      "min_s": 0.024218866601586342
+    },
+    "row_count": 2048
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "whole_app_true_zero_copy_authorized": false
+  },
+  "count": 2048,
+  "git_commit": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "iterations": 3,
+  "output_capacity": 4194304,
+  "parity": {
+    "expected_row_count": 2048,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.008778616786003113,
+      "overflow_check": {
+        "elapsed_s": 0.042384881526231766,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 1024
+      },
+      "query_median_ratio_vs_v1_8_native": 1.797115691840488,
+      "query_samples_s": [
+        0.04754533804953098,
+        0.046348026022315025,
+        0.045590367168188095
+      ],
+      "query_summary": {
+        "max_s": 0.04754533804953098,
+        "median_s": 0.046348026022315025,
+        "min_s": 0.045590367168188095
+      },
+      "row_count": 2048
+    }
+  },
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "pass"
+}

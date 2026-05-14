@@ -1,0 +1,670 @@
+[goal2026] 2026-05-14T20:09:33+00:00 POD 6b9290e2841d
+NVIDIA RTX A5000, 570.211.01
+Python 3.12.3
+cupy 13.6.0
+torch 2.11.0+cu128
+numpy 2.4.4
+[goal2026] 2026-05-14T20:09:35+00:00 START fixed_radius_family_cupy
+[goal1925] start app=facility_knn_assignment partner=cupy
+Traceback (most recent call last):
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 353, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 328, in main
+    results.append(run_case(scenario, repeat=args.repeat, partner=partner))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 257, in run_case
+    forward = _run_one_direction(scenario, query_points, search_points, repeat=repeat, partner=partner)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/scripts/goal1925_fixed_radius_family_v2_partner_perf.py", line 199, in _run_one_direction
+    prepared_v2 = prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/partner_adapters.py", line 3377, in prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
+    return _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/optix_runtime.py", line 1068, in prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
+    _check_status(status, error)
+  File "/root/rtdl_goal2024_936aff2f/src/rtdsl/optix_runtime.py", line 5559, in _check_status
+    raise RuntimeError(msg)
+RuntimeError: CUDA driver error: the provided PTX was compiled with an unsupported toolchain.. RTDL generated PTX that this CUDA driver cannot load. Use a CUDA toolkit/NVRTC version supported by the installed driver, put the driver's CUDA compat libraries first in LD_LIBRARY_PATH when required, or set RTDL_OPTIX_PTX_ARCH=compute_XX for the target GPU before rerunning. RTDL could not load generated PTX with the installed CUDA driver. Check that the CUDA toolkit/NVRTC used to build/run RTDL is supported by the driver; if using a newer toolkit with an older datacenter driver, put the CUDA compat library path first in LD_LIBRARY_PATH or rebuild/run with a compatible CUDA toolkit. You may also set RTDL_OPTIX_PTX_ARCH=compute_XX to target the GPU architecture explicitly.
+[goal2026] 2026-05-14T20:09:38+00:00 DONE fixed_radius_family_cupy status=1
+[goal2026] 2026-05-14T20:09:38+00:00 START road_hazard_cupy
+[setup] count=4096 hazards=6144 threshold=2 output_capacity=25165824
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iterations=3
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iter=1 elapsed_s=93.206911
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iter=2 elapsed_s=91.596287
+[timing] v1_8_one_shot_native_optix_road_hazard_rows iter=3 elapsed_s=94.424474
+[timing] v1_8_prepared_native_optix_road_hazard_rows iterations=3
+[timing] v1_8_prepared_native_optix_road_hazard_rows iter=1 elapsed_s=0.007638
+[timing] v1_8_prepared_native_optix_road_hazard_rows iter=2 elapsed_s=0.006282
+[timing] v1_8_prepared_native_optix_road_hazard_rows iter=3 elapsed_s=0.006050
+[setup] building caller-owned cupy columns
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iterations=3
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iter=1 elapsed_s=8.559352
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iter=2 elapsed_s=0.005818
+[timing] v2_0_partner_road_hazard_priority_flags_cupy iter=3 elapsed_s=0.003935
+[setup] preparing reusable cupy triangle scene and witness outputs
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iterations=3
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iter=1 elapsed_s=0.003715
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iter=2 elapsed_s=0.003464
+[timing] v2_0_prepared_partner_road_hazard_priority_flags_cupy iter=3 elapsed_s=0.003147
+fatal: not a git repository (or any of the parent directories): .git
+[artifact] wrote docs/reports/goal2026_all_app_v18_v2_pod_comparison_936aff2f_retry2/road_hazard_cupy_4096.json
+{
+  "baseline": {
+    "name": "v1_8_one_shot_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      93.20691055990756,
+      91.59628699533641,
+      94.4244735557586
+    ],
+    "query_summary": {
+      "max_s": 94.4244735557586,
+      "median_s": 93.20691055990756,
+      "min_s": 91.59628699533641
+    },
+    "row_count": 4096
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 4096,
+  "git_commit": "unknown",
+  "goal": "Goal1869",
+  "goal_extension": "Goal1889",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "iterations": 3,
+  "output_capacity": 25165824,
+  "parity": {
+    "expected_row_count": 4096,
+    "strict_priority_flags_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.01857318915426731,
+      "goal1889_prepared_reuse": {
+        "metadata": {
+          "app_count_materialization": "partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter",
+          "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+          "app_exact_filter_device_materialization": true,
+          "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+          "whole_app_true_zero_copy_authorized": true
+        },
+        "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
+        "prepared_scene_reused": true,
+        "query_median_ratio_vs_goal1869_unprepared_partner": 0.5954402053610819,
+        "query_median_ratio_vs_v1_8_one_shot_native": 3.716704758076296e-05,
+        "query_median_ratio_vs_v1_8_prepared_native": 0.5514916001583449,
+        "query_samples_s": [
+          0.0037146490067243576,
+          0.0034642256796360016,
+          0.003146730363368988
+        ],
+        "query_summary": {
+          "max_s": 0.0037146490067243576,
+          "median_s": 0.0034642256796360016,
+          "min_s": 0.003146730363368988
+        },
+        "row_count": 4096,
+        "witness_output_columns_reused": true
+      },
+      "metadata": {
+        "app_count_materialization": "partner_gpu_unique_pair_counts_from_cupy_exact_filter",
+        "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+        "app_exact_filter_device_materialization": true,
+        "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+        "whole_app_true_zero_copy_authorized": true
+      },
+      "output_contract": "partner_owned_road_hazard_priority_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": 6.241944572457015e-05,
+      "query_median_ratio_vs_v1_8_prepared_native": 0.9261914045994155,
+      "query_samples_s": [
+        8.55935175716877,
+        0.005817923694849014,
+        0.0039347074925899506
+      ],
+      "query_summary": {
+        "max_s": 8.55935175716877,
+        "median_s": 0.005817923694849014,
+        "min_s": 0.0039347074925899506
+      },
+      "row_count": 4096
+    }
+  },
+  "prepared_baseline": {
+    "name": "v1_8_prepared_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      0.007638139650225639,
+      0.006281556561589241,
+      0.006049521267414093
+    ],
+    "query_summary": {
+      "max_s": 0.007638139650225639,
+      "median_s": 0.006281556561589241,
+      "min_s": 0.006049521267414093
+    },
+    "row_count": 4096
+  },
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "pass",
+  "threshold": 2
+}
+[goal2026] 2026-05-14T20:14:28+00:00 DONE road_hazard_cupy status=0
+[goal2026] 2026-05-14T20:14:28+00:00 START segment_hitcount_cupy
+[setup] count=2048 output_capacity=4194304
+[timing] v1_8_native_optix_rows iterations=3
+[timing] v1_8_native_optix_rows iter=1 elapsed_s=0.865064
+[timing] v1_8_native_optix_rows iter=2 elapsed_s=0.025790
+[timing] v1_8_native_optix_rows iter=3 elapsed_s=0.024219
+[setup] building caller-owned cupy columns
+[overflow] cupy tight_capacity=1024
+[timing] v2_0_partner_columns_cupy iterations=3
+[timing] v2_0_partner_columns_cupy iter=1 elapsed_s=0.047545
+[timing] v2_0_partner_columns_cupy iter=2 elapsed_s=0.046348
+[timing] v2_0_partner_columns_cupy iter=3 elapsed_s=0.045590
+[artifact] wrote docs/reports/goal2026_all_app_v18_v2_pod_comparison_936aff2f_retry2/segment_polygon_anyhit_cupy_2048.json
+{
+  "baseline": {
+    "name": "v1_8_native_optix_rows",
+    "query_samples_s": [
+      0.8650635089725256,
+      0.025790229439735413,
+      0.024218866601586342
+    ],
+    "query_summary": {
+      "max_s": 0.8650635089725256,
+      "median_s": 0.025790229439735413,
+      "min_s": 0.024218866601586342
+    },
+    "row_count": 2048
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "whole_app_true_zero_copy_authorized": false
+  },
+  "count": 2048,
+  "git_commit": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "goal": "Goal1856",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "iterations": 3,
+  "output_capacity": 4194304,
+  "parity": {
+    "expected_row_count": 2048,
+    "strict_rows_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.008778616786003113,
+      "overflow_check": {
+        "elapsed_s": 0.042384881526231766,
+        "message": "partner segment/polygon column adapter overflowed; increase output_capacity",
+        "status": "pass",
+        "tight_capacity": 1024
+      },
+      "query_median_ratio_vs_v1_8_native": 1.797115691840488,
+      "query_samples_s": [
+        0.04754533804953098,
+        0.046348026022315025,
+        0.045590367168188095
+      ],
+      "query_summary": {
+        "max_s": 0.04754533804953098,
+        "median_s": 0.046348026022315025,
+        "min_s": 0.045590367168188095
+      },
+      "row_count": 2048
+    }
+  },
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "pass"
+}
+[goal2026] 2026-05-14T20:14:30+00:00 DONE segment_hitcount_cupy status=0
+[goal2026] 2026-05-14T20:14:30+00:00 START robot_collision_cupy
+[goal1928] start robot_collision_screening partner=cupy pose_count=1048576 obstacle_count=16384
+[goal1928] timing robot_collision_screening:v2_prepared_partner:cupy repeat=3
+[goal1928] robot_collision_screening:v2_prepared_partner:cupy iter=1 elapsed_s=0.335333
+[goal1928] robot_collision_screening:v2_prepared_partner:cupy iter=2 elapsed_s=0.001728
+[goal1928] robot_collision_screening:v2_prepared_partner:cupy iter=3 elapsed_s=0.001589
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "git_commit": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "goal": "Goal1928",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "results": [
+    {
+      "app": "robot_collision_screening",
+      "metadata": {
+        "adapter": "robot_collision_pose_flags_optix_prepared_partner_device_columns",
+        "app": "robot_collision_screening",
+        "app_flag_host_materialization": false,
+        "app_flag_materialization": "partner_gpu_pose_flags_from_native_any_hit_ray_flags",
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "input_contract": "caller_supplied_partner_device_ray_columns_and_pose_indices",
+        "native_engine_row_contract": "generic_ray_primitive_any_hit_flags",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+        "output_columns_reused": true,
+        "output_flags_true_zero_copy_authorized": true,
+        "partner": "cupy",
+        "partner_tensor_handoff_authorized": true,
+        "pose_count": 1048576,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 4194304,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "obstacle_count": 16384,
+      "parity": {
+        "colliding_pose_count_match": true,
+        "pose_collision_flags_match": true,
+        "v1_colliding_pose_count": 1040384,
+        "v2_colliding_pose_count": 1040384
+      },
+      "partner": "cupy",
+      "pose_count": 1048576,
+      "ray_count": 4194304,
+      "status": "pass",
+      "triangle_count": 32768,
+      "v1_8_prepared_optix_pose_flags": {
+        "max_s": 0.2235518265515566,
+        "median_s": 0.07153001241385937,
+        "min_s": 0.06745287030935287
+      },
+      "v2_prepared_native_optix_partner_pose_flags": {
+        "max_s": 0.33533308282494545,
+        "median_s": 0.0017277132719755173,
+        "min_s": 0.0015889611095190048
+      },
+      "v2_vs_v1_8_prepared_ratio": 0.02415368337949236
+    }
+  ],
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "pass"
+}
+[goal2026] 2026-05-14T20:14:42+00:00 DONE robot_collision_cupy status=0
+[goal2026] 2026-05-14T20:14:42+00:00 START database_control_cupy
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "cupy_extent",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA RTX A5000, 570.211.01"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "database_analytics",
+      "candidate_backend": "cupy_extent",
+      "copies": 100000,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "sha256": "c68fca34a78eba9b5c08bd0cf0c71097de78e10c51acf5e0eddff8c44f87ae44",
+        "summary": {
+          "regional_dashboard": {
+            "open_order_count_by_region": {
+              "east": 200000,
+              "south": 100000,
+              "west": 200000
+            },
+            "promo_order_count": 400000,
+            "web_revenue_by_region": {
+              "east": 18000000,
+              "west": 24000000
+            }
+          },
+          "sales_risk": {
+            "highest_risk_region": "west",
+            "risky_order_count": 400000,
+            "risky_order_count_by_region": {
+              "central": 100000,
+              "east": 100000,
+              "west": 200000
+            },
+            "risky_order_ids": {
+              "head": [
+                2,
+                3,
+                4,
+                6,
+                8,
+                9,
+                10,
+                12
+              ],
+              "list_length": 400000,
+              "sha256": "e7e76b02b7eda92f266f1db2f29ee8e1d0ab685d2458f032f06df69292f79226",
+              "tail": [
+                599990,
+                599991,
+                599992,
+                599994,
+                599996,
+                599997,
+                599998,
+                600000
+              ]
+            },
+            "risky_revenue_by_region": {
+              "central": 26000000,
+              "east": 31000000,
+              "west": 43000000
+            }
+          }
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 6.758942635729909,
+        "median_s": 6.717377100139856,
+        "min_s": 6.695539025589824
+      },
+      "v2_payload_signature": {
+        "app": "database_analytics",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "bac6563ad0173ed1b4881370804b66ce6553f2da9fc5466e7b7db2048f3a9687",
+        "summary": {
+          "regional_dashboard": {
+            "open_order_count_by_region": {
+              "east": 200000,
+              "south": 100000,
+              "west": 200000
+            },
+            "promo_order_count": 400000,
+            "web_revenue_by_region": {
+              "east": 18000000,
+              "west": 24000000
+            }
+          },
+          "sales_risk": {
+            "highest_risk_region": "west",
+            "risky_order_count": 400000,
+            "risky_order_count_by_region": {
+              "central": 100000,
+              "east": 100000,
+              "west": 200000
+            },
+            "risky_order_ids": {
+              "head": [
+                2,
+                3,
+                4,
+                6,
+                8,
+                9,
+                10,
+                12
+              ],
+              "list_length": 400000,
+              "sha256": "e7e76b02b7eda92f266f1db2f29ee8e1d0ab685d2458f032f06df69292f79226",
+              "tail": [
+                599990,
+                599991,
+                599992,
+                599994,
+                599996,
+                599997,
+                599998,
+                600000
+              ]
+            },
+            "risky_revenue_by_region": {
+              "central": 26000000,
+              "east": 31000000,
+              "west": 43000000
+            }
+          }
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 1.6967335622757673,
+        "median_s": 1.5772283915430307,
+        "min_s": 1.3682452663779259
+      },
+      "v2_vs_v1_8_ratio": 0.23479825057166923,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "rawkernel-control-app-perf-smoke"
+}
+[goal2026] 2026-05-14T20:15:11+00:00 DONE database_control_cupy status=0
+[goal2026] 2026-05-14T20:15:11+00:00 START graph_control_cupy
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "cupy_extent",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA RTX A5000, 570.211.01"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "graph_analytics",
+      "candidate_backend": "cupy_extent",
+      "copies": 1000,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "sha256": "820211b61af0b6b67f11452c38c1436a498e53270fbe16b1ea5d3330e44c1e6a",
+        "summary": {
+          "bfs": {
+            "discovered_edge_count": 2000,
+            "discovered_vertex_count": 2000,
+            "max_level": 1
+          },
+          "triangle_count": {
+            "touched_vertex_count": 3000,
+            "triangle_count": 1000
+          },
+          "visibility_edges": {
+            "blocked_edge_count": 3000,
+            "visible_edge_count": 1000
+          }
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 24.188011400401592,
+        "median_s": 16.971306839957833,
+        "min_s": 16.932745968922973
+      },
+      "v2_payload_signature": {
+        "app": "graph_analytics",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "7812d4d2c3605f235214bffd44250f92f6281e2e5df3492a19fb5062fd8d9169",
+        "summary": {
+          "bfs": {
+            "discovered_edge_count": 2000,
+            "discovered_vertex_count": 2000,
+            "max_level": 1
+          },
+          "triangle_count": {
+            "touched_vertex_count": 3000,
+            "triangle_count": 1000
+          },
+          "visibility_edges": {
+            "blocked_edge_count": 3000,
+            "visible_edge_count": 1000
+          }
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.0001983344554901123,
+        "median_s": 0.0001489724963903427,
+        "min_s": 0.0001251623034477234
+      },
+      "v2_vs_v1_8_ratio": 8.777903657931438e-06,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "rawkernel-control-app-perf-smoke"
+}
+[goal2026] 2026-05-14T20:16:10+00:00 DONE graph_control_cupy status=0
+[goal2026] 2026-05-14T20:16:10+00:00 START polygon_control_cupy_extent
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "cupy_extent",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA RTX A5000, 570.211.01"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "candidate_backend": "cupy_extent",
+      "copies": 8192,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "sha256": "113e9abad5da0b67fd7e1e42a531ef5fdceac634d38cbeb3e54b10836c11c287",
+        "summary": {
+          "overlap_pair_count": 16384,
+          "total_intersection_area": 40960,
+          "total_union_area": 155648
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 1.2106497641652822,
+        "median_s": 1.1880274433642626,
+        "min_s": 1.1625757161527872
+      },
+      "v2_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "a59b04eb240f04ed17582ecec18000bef2574fa032a4e8536775805d01d694c9",
+        "summary": {
+          "overlap_pair_count": 16384,
+          "total_intersection_area": 40960,
+          "total_union_area": 155648
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.3175877761095762,
+        "median_s": 0.2753830626606941,
+        "min_s": 0.24672971107065678
+      },
+      "v2_vs_v1_8_ratio": 0.2317985701414968,
+      "warmups": 1
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "candidate_backend": "cupy_extent",
+      "copies": 8192,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "sha256": "50f45162ee277ac88d4b0b6c9a17f0a7024bfdb059a376bc17962f481f04a973",
+        "summary": {
+          "intersection_area": 40960,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 106496,
+          "right_area": 90112,
+          "union_area": 155648
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 0.8523099794983864,
+        "median_s": 0.8491284977644682,
+        "min_s": 0.8294583037495613
+      },
+      "v2_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "ff91fb501678bfb6a0e237d6283cb0cdffe0a32f548fb3e92f0e352c8a5baf21",
+        "summary": {
+          "intersection_area": 40960,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 106496,
+          "right_area": 90112,
+          "union_area": 155648
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.19367523305118084,
+        "median_s": 0.1927964836359024,
+        "min_s": 0.1917516067624092
+      },
+      "v2_vs_v1_8_ratio": 0.22705218838313024,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "936aff2f1b1d83ee0187c0ef5610db91dd80fd40",
+  "status": "rawkernel-control-app-perf-smoke"
+}
+[goal2026] 2026-05-14T20:16:23+00:00 DONE polygon_control_cupy_extent status=0
+[goal2026] 2026-05-14T20:16:23+00:00 ALL_DONE
