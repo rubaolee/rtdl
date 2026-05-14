@@ -27,7 +27,7 @@
       "repeats": 3,
       "v1_8_payload_signature": {
         "app": "polygon_pair_overlap_area_rows",
-        "sha256": "e95ea0b6da651fc4898d35cc3c8273679c0527a1aea70ff30bcec5d2ec2d343d",
+        "sha256": "4c5db3e9d4b80cebe47a56e5dfc1682b57729deca7f2549046dc9f865fc76eb4",
         "summary": {
           "overlap_pair_count": 4096,
           "total_intersection_area": 10240,
@@ -35,16 +35,16 @@
         }
       },
       "v1_8_python_rtdl_wall": {
-        "max_s": 0.2996221259236336,
-        "median_s": 0.2843460291624069,
-        "min_s": 0.2828421965241432
+        "max_s": 0.3001747578382492,
+        "median_s": 0.27978045493364334,
+        "min_s": 0.2783218324184418
       },
       "v2_payload_signature": {
         "app": "polygon_pair_overlap_area_rows",
         "candidate_backend": "cupy_extent",
         "matches_v1_8_python_rtdl_oracle": null,
         "partner": "cupy",
-        "sha256": "8648fbd9291d623eff3164ba80571310478439774356cb40b357f300cdcb784c",
+        "sha256": "66fa8d350dc659659a5bb8253983ddb11bdffc39e3096217efd7e477caf7872c",
         "summary": {
           "overlap_pair_count": 4096,
           "total_intersection_area": 10240,
@@ -52,11 +52,11 @@
         }
       },
       "v2_rawkernel_wall": {
-        "max_s": 0.08179344236850739,
-        "median_s": 0.07968563586473465,
-        "min_s": 0.06829249858856201
+        "max_s": 0.08233830332756042,
+        "median_s": 0.08168914169073105,
+        "min_s": 0.06662121415138245
       },
-      "v2_vs_v1_8_ratio": 0.2802417747821667,
+      "v2_vs_v1_8_ratio": 0.2919758698301695,
       "warmups": 1
     },
     {
@@ -69,7 +69,7 @@
       "repeats": 3,
       "v1_8_payload_signature": {
         "app": "polygon_set_jaccard",
-        "sha256": "ce51efe18360f4a1c56cc243681c098a0bf6248ca3a6c93845cdd444430161c5",
+        "sha256": "d389756b8a8d2cdf95080e96454d36173fcc858057d3215a6bc2d584a1913bb8",
         "summary": {
           "intersection_area": 10240,
           "jaccard_similarity": 0.2631578947368421,
@@ -79,16 +79,16 @@
         }
       },
       "v1_8_python_rtdl_wall": {
-        "max_s": 0.22369486093521118,
-        "median_s": 0.22141479700803757,
-        "min_s": 0.20947888493537903
+        "max_s": 0.2397492751479149,
+        "median_s": 0.23321230709552765,
+        "min_s": 0.22881031036376953
       },
       "v2_payload_signature": {
         "app": "polygon_set_jaccard",
         "candidate_backend": "cupy_extent",
         "matches_v1_8_python_rtdl_oracle": null,
         "partner": "cupy",
-        "sha256": "569035c998e777bc0d8ed05e6fb23c6e9333946b6fca642651641cd973c2f8fb",
+        "sha256": "7c2bdd99b15532dbdb52e6de0c5c6c9cf3cab4c18a89c8c9dc5e6da759ac7b2f",
         "summary": {
           "intersection_area": 10240,
           "jaccard_similarity": 0.2631578947368421,
@@ -98,15 +98,15 @@
         }
       },
       "v2_rawkernel_wall": {
-        "max_s": 0.0657239630818367,
-        "median_s": 0.06564759463071823,
-        "min_s": 0.053597964346408844
+        "max_s": 0.0678531751036644,
+        "median_s": 0.06553275883197784,
+        "min_s": 0.055880963802337646
       },
-      "v2_vs_v1_8_ratio": 0.29649145187137227,
+      "v2_vs_v1_8_ratio": 0.2810004311013249,
       "warmups": 1
     }
   ],
   "source_commit": "",
-  "source_commit_label": "goal1969-local-cupy-extent",
+  "source_commit_label": "22362c31e3c646de7009328f80296f16a3204a19",
   "status": "rawkernel-control-app-perf-smoke"
 }

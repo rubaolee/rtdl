@@ -40,8 +40,8 @@ The pod run compared `cupy_extent` against v1.8 Python+RTDL for:
 
 | App | Candidate backend | Copies | v1.8 median s | v2 median s | v2/v1.8 | Correct |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
-| `polygon_pair_overlap_area_rows` | `cupy_extent` | 2048 | 0.284346 | 0.079686 | 0.280x | yes |
-| `polygon_set_jaccard` | `cupy_extent` | 2048 | 0.221415 | 0.065648 | 0.296x | yes |
+| `polygon_pair_overlap_area_rows` | `cupy_extent` | 2048 | 0.279780 | 0.081689 | 0.292x | yes |
+| `polygon_set_jaccard` | `cupy_extent` | 2048 | 0.233212 | 0.065533 | 0.281x | yes |
 
 This reverses the Goal1968 polygon result: the same rows were `2.764x` to
 `3.484x` slower with Embree candidate discovery and more than `100x` slower with

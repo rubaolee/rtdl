@@ -58,8 +58,8 @@ class Goal1969CuPyExtentPolygonCandidateBackendTest(unittest.TestCase):
         self.assertIn("does not replace", text)
         self.assertIn("OptiX RT-core candidate path", text)
         self.assertIn("Correct", text)
-        self.assertIn("0.280x", text)
-        self.assertIn("0.296x", text)
+        self.assertIn("0.292x", text)
+        self.assertIn("0.281x", text)
 
     def test_pod_artifact_records_polygon_speedups_and_correctness(self) -> None:
         payload = json.loads(POD_ARTIFACT.read_text(encoding="utf-8"))
