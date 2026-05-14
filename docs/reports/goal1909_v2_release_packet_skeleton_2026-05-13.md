@@ -22,6 +22,7 @@ which slots are still blocked.
 | Local non-pod preflight | populated and passing | Goal1908 |
 | All-app rollup | populated, needs final release consensus | Goal1931, Goal1942, Goal1946 |
 | User-owned native continuation example | populated, not release speedup evidence | Goal1948 |
+| Final v2.0 release review | partially populated, Claude still required for 3-AI consensus | Goal1950 Gemini review |
 
 ## Hard Missing Slots
 
