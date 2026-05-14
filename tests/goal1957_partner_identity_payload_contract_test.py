@@ -9,6 +9,9 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "examples" / "rtdl_control_apps_cupy_rawkernel.py"
 REPORT = ROOT / "docs" / "reports" / "goal1957_partner_identity_payload_contract_2026-05-14.md"
+RETEST_REPORT = ROOT / "docs" / "reports" / "goal1957_partner_identity_payload_pod_retest_2026-05-14.md"
+RETEST_SUMMARY = ROOT / "docs" / "reports" / "goal1957_partner_identity_payload_pod_optix_v800" / "summary.json"
+CLAUDE_REVIEW = ROOT / "docs" / "reviews" / "goal1957_claude_review_partner_identity_payload_contract_2026-05-14.md"
 HANDOFF = ROOT / "HANDOFF_GOAL1957_CLAUDE_REVIEW.md"
 
 
@@ -64,7 +67,20 @@ class Goal1957PartnerIdentityPayloadContractTest(unittest.TestCase):
         self.assertIn("accept-with-boundary", text)
         self.assertIn("docs/reviews/goal1957_claude_review_partner_identity_payload_contract_2026-05-14.md", text)
 
+    def test_pod_retest_records_bounded_improvement(self) -> None:
+        report = RETEST_REPORT.read_text(encoding="utf-8")
+        summary = RETEST_SUMMARY.read_text(encoding="utf-8")
+        review = CLAUDE_REVIEW.read_text(encoding="utf-8")
+
+        self.assertIn("10.720x", report)
+        self.assertIn("16.186x", report)
+        self.assertIn("1.421x", report)
+        self.assertIn("1.063x", report)
+        self.assertIn("general arbitrary polygon overlay implementation", report)
+        self.assertIn('"v2_0_release_authorized": false', summary)
+        self.assertIn('"matches_v1_8_python_rtdl_oracle": true', summary)
+        self.assertIn("accept-with-boundary", review)
+
 
 if __name__ == "__main__":
     unittest.main()
-

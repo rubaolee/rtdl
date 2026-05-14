@@ -1,0 +1,55 @@
+{
+  "artifacts": [
+    "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/database_analytics.json",
+    "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/graph_analytics.json",
+    "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/polygon_pair_overlap_area_rows.json",
+    "docs/reports/goal1957_partner_identity_payload_pod_optix_v800/polygon_set_jaccard.json"
+  ],
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1956",
+  "results": [
+    {
+      "app": "database_analytics",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 100000,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 5.002953410148621,
+      "v2_median_s": 1.0238331034779549,
+      "v2_vs_v1_8_ratio": 0.20464574013443396
+    },
+    {
+      "app": "graph_analytics",
+      "candidate_backend": "cpu_all_pairs",
+      "copies": 1000,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 9.65829423069954,
+      "v2_median_s": 3.0338764190673828e-05,
+      "v2_vs_v1_8_ratio": 3.1412134965033497e-06
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "candidate_backend": "optix",
+      "copies": 2048,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 0.17235253751277924,
+      "v2_median_s": 0.2449907511472702,
+      "v2_vs_v1_8_ratio": 1.4214513733463607
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "candidate_backend": "optix",
+      "copies": 2048,
+      "matches_v1_8_python_rtdl_oracle": true,
+      "v1_8_median_s": 0.14459741115570068,
+      "v2_median_s": 0.15363603830337524,
+      "v2_vs_v1_8_ratio": 1.0625089140630732
+    }
+  ],
+  "source_commit_label": "0fb6e049ac211d29ad4307d20a2972d1755d1b89",
+  "status": "pass"
+}
