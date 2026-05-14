@@ -33,6 +33,7 @@ class Goal2011V20ProgressReportForExternalReviewTest(unittest.TestCase):
         self.assertIn("0.003932310", text)
         self.assertIn("2.46x", text)
         self.assertIn("strict priority-flag parity", text)
+        self.assertIn("refreshed pod artifact rerun", text)
         self.assertIn("Claude Goal2010: `accept`", text)
 
 

@@ -202,6 +202,14 @@ Pod evidence at count 2048:
 | v2.0 unprepared CuPy priority columns | 0.003750768 | 1.080x |
 | Goal2006 prepared CuPy exact-filter priority columns | 0.003149398 | 0.907x |
 
+Note: the Goal2006 table above uses the refreshed pod artifact rerun that also
+embedded exact-filter metadata into the JSON. The earlier Goal2007 Claude review
+looked at the first Goal2006 pod artifact, where the prepared CuPy row was
+`0.002599899 s` and `0.922x` versus that run's v1.8 prepared baseline. Both
+runs support the same bounded conclusion: prepared CuPy exact filtering is
+correct and modestly faster than the corresponding v1.8 prepared baseline, but
+the exact median should be cited with its artifact path.
+
 External review:
 
 - Claude Goal2007: `accept-with-boundary`.

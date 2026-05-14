@@ -2337,12 +2337,133 @@ def _cupy_exact_segment_triangle_witness_pairs(
     return candidate_ray_ids[exact_mask], candidate_primitive_ids[exact_mask], metadata
 
 
+def _torch_exact_segment_triangle_witness_pairs(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+    triangle_lookup_cache: dict[str, object] | None = None,
+):
+    emitted_count = int(emitted_count)
+    torch = runtime["module"]
+    device = runtime["device"]
+    if emitted_count <= 0:
+        return (
+            torch.zeros((0,), dtype=torch.int64, device=device),
+            torch.zeros((0,), dtype=torch.int64, device=device),
+            {
+                "app_exact_filter": "torch_vectorized_segment_triangle_filter_from_generic_witness_candidates",
+                "app_exact_filter_device_materialization": True,
+            },
+        )
+
+    candidate_ray_ids = runtime["slice"](witness_ray_ids, emitted_count).to(torch.int64)
+    candidate_primitive_ids = runtime["slice"](witness_primitive_ids, emitted_count).to(torch.int64)
+
+    def lookup_indices(source_ids, candidate_ids, cache: dict[str, object] | None = None):
+        source_ids_i64 = source_ids.to(torch.int64)
+        candidate_ids_i64 = candidate_ids.to(torch.int64)
+        if cache is not None:
+            sorted_pos = cache.get("sorted_pos")
+            sorted_ids = cache.get("sorted_ids")
+        else:
+            sorted_pos = None
+            sorted_ids = None
+        if sorted_pos is None or sorted_ids is None:
+            sorted_ids, sorted_pos = torch.sort(source_ids_i64)
+            if cache is not None:
+                cache["sorted_pos"] = sorted_pos
+                cache["sorted_ids"] = sorted_ids
+        search_pos = torch.searchsorted(sorted_ids, candidate_ids_i64)
+        valid = search_pos < int(source_ids_i64.numel())
+        safe_pos = torch.minimum(
+            search_pos,
+            torch.full_like(search_pos, max(0, int(source_ids_i64.numel()) - 1)),
+        )
+        valid = valid & (sorted_ids[safe_pos] == candidate_ids_i64)
+        return torch.where(valid, sorted_pos[safe_pos], torch.full_like(safe_pos, -1)).to(torch.int64)
+
+    ray_indices = lookup_indices(segment_ray_columns["ids"], candidate_ray_ids)
+    if triangle_lookup_cache is not None:
+        torch_cache = triangle_lookup_cache.setdefault("torch", {})
+    else:
+        torch_cache = None
+    triangle_indices = lookup_indices(polygon_triangle_columns["ids"], candidate_primitive_ids, torch_cache)
+
+    valid = (ray_indices >= 0) & (triangle_indices >= 0)
+    safe_ray_indices = torch.clamp(ray_indices, min=0)
+    safe_triangle_indices = torch.clamp(triangle_indices, min=0)
+
+    sx = segment_ray_columns["ox"].to(torch.float64)[safe_ray_indices]
+    sy = segment_ray_columns["oy"].to(torch.float64)[safe_ray_indices]
+    ex = sx + segment_ray_columns["dx"].to(torch.float64)[safe_ray_indices] * segment_ray_columns["tmax"].to(torch.float64)[safe_ray_indices]
+    ey = sy + segment_ray_columns["dy"].to(torch.float64)[safe_ray_indices] * segment_ray_columns["tmax"].to(torch.float64)[safe_ray_indices]
+    ax = polygon_triangle_columns["x0"].to(torch.float64)[safe_triangle_indices]
+    ay = polygon_triangle_columns["y0"].to(torch.float64)[safe_triangle_indices]
+    bx = polygon_triangle_columns["x1"].to(torch.float64)[safe_triangle_indices]
+    by = polygon_triangle_columns["y1"].to(torch.float64)[safe_triangle_indices]
+    cx = polygon_triangle_columns["x2"].to(torch.float64)[safe_triangle_indices]
+    cy = polygon_triangle_columns["y2"].to(torch.float64)[safe_triangle_indices]
+    eps = 1.0e-9
+
+    def orient(px, py, qx, qy, rx, ry):
+        return (qx - px) * (ry - py) - (qy - py) * (rx - px)
+
+    def point_in_triangle(px, py):
+        o1 = orient(ax, ay, bx, by, px, py)
+        o2 = orient(bx, by, cx, cy, px, py)
+        o3 = orient(cx, cy, ax, ay, px, py)
+        has_neg = (o1 < -eps) | (o2 < -eps) | (o3 < -eps)
+        has_pos = (o1 > eps) | (o2 > eps) | (o3 > eps)
+        return ~(has_neg & has_pos)
+
+    def on_segment(px, py, qx, qy, rx, ry):
+        return (
+            (torch.minimum(px, rx) - eps <= qx)
+            & (qx <= torch.maximum(px, rx) + eps)
+            & (torch.minimum(py, ry) - eps <= qy)
+            & (qy <= torch.maximum(py, ry) + eps)
+        )
+
+    def segments_intersect(px, py, qx, qy, rx, ry, sx2, sy2):
+        o1 = orient(px, py, qx, qy, rx, ry)
+        o2 = orient(px, py, qx, qy, sx2, sy2)
+        o3 = orient(rx, ry, sx2, sy2, px, py)
+        o4 = orient(rx, ry, sx2, sy2, qx, qy)
+        proper = (((o1 > eps) & (o2 < -eps)) | ((o1 < -eps) & (o2 > eps))) & (
+            ((o3 > eps) & (o4 < -eps)) | ((o3 < -eps) & (o4 > eps))
+        )
+        return (
+            proper
+            | ((torch.abs(o1) <= eps) & on_segment(px, py, rx, ry, qx, qy))
+            | ((torch.abs(o2) <= eps) & on_segment(px, py, sx2, sy2, qx, qy))
+            | ((torch.abs(o3) <= eps) & on_segment(rx, ry, px, py, sx2, sy2))
+            | ((torch.abs(o4) <= eps) & on_segment(rx, ry, qx, qy, sx2, sy2))
+        )
+
+    exact_mask = valid & (
+        point_in_triangle(sx, sy)
+        | point_in_triangle(ex, ey)
+        | segments_intersect(sx, sy, ex, ey, ax, ay, bx, by)
+        | segments_intersect(sx, sy, ex, ey, bx, by, cx, cy)
+        | segments_intersect(sx, sy, ex, ey, cx, cy, ax, ay)
+    )
+    metadata = {
+        "app_exact_filter": "torch_vectorized_segment_triangle_filter_from_generic_witness_candidates",
+        "app_exact_filter_device_materialization": True,
+    }
+    return candidate_ray_ids[exact_mask], candidate_primitive_ids[exact_mask], metadata
+
+
 class _PartnerPreparedTriangleScene:
     def __init__(self, native_scene, polygon_triangle_columns: dict[str, object], polygon_triangle_aabbs) -> None:
         self._native_scene = native_scene
         self.polygon_triangle_columns = polygon_triangle_columns
         self.polygon_triangle_aabbs = polygon_triangle_aabbs
-        self._cupy_exact_filter_triangle_lookup_cache: dict[str, object] = {}
+        self._partner_exact_filter_triangle_lookup_cache: dict[str, object] = {}
+        self._cupy_exact_filter_triangle_lookup_cache = self._partner_exact_filter_triangle_lookup_cache
 
     def write_device_any_hit_all_witnesses(self, *args, **kwargs):
         return self._native_scene.write_device_any_hit_all_witnesses(*args, **kwargs)
@@ -2739,6 +2860,24 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
         app_count_materialization = "partner_gpu_unique_pair_counts_from_cupy_exact_filter"
         app_count_host_materialization = False
         whole_app_true_zero_copy_authorized = True
+    elif runtime["name"] == "torch":
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _torch_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_torch_exact_filter"
+        app_count_host_materialization = False
+        whole_app_true_zero_copy_authorized = True
     else:
         exact_rows = _exact_segment_triangle_rows_from_witness_columns(
             runtime,
@@ -2823,7 +2962,11 @@ def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
     metadata = dict(witness_result["metadata"])
     polygon_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
     if runtime["name"] == "cupy" and polygon_triangle_columns is not None:
-        triangle_lookup_cache = getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None)
+        triangle_lookup_cache = getattr(
+            prepared_scene,
+            "_partner_exact_filter_triangle_lookup_cache",
+            getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None),
+        )
         exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
             runtime,
             segment_ray_columns,
@@ -2840,6 +2983,32 @@ def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
             exact_primitive_ids,
         )
         app_count_materialization = "partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter"
+        app_count_host_materialization = False
+        native_exact_row_semantics_authorized = False
+        app_exact_row_semantics_authorized = True
+        whole_app_true_zero_copy_authorized = True
+    elif runtime["name"] == "torch" and polygon_triangle_columns is not None:
+        triangle_lookup_cache = getattr(
+            prepared_scene,
+            "_partner_exact_filter_triangle_lookup_cache",
+            getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None),
+        )
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _torch_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_prepared_torch_exact_filter"
         app_count_host_materialization = False
         native_exact_row_semantics_authorized = False
         app_exact_row_semantics_authorized = True
