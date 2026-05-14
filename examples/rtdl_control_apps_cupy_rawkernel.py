@@ -21,6 +21,7 @@ from examples import rtdl_polygon_pair_overlap_area_rows
 from examples import rtdl_polygon_set_jaccard
 from examples import rtdl_sales_risk_screening
 from examples import rtdl_v0_7_db_app_demo
+from rtdsl.partner_adapters import partner_metric_table_reduce_by_key
 from rtdsl.reference import _polygon_unit_cells
 
 
@@ -79,26 +80,6 @@ void rtdl_user_db_summary(
         atomicAdd(&risky_count_by_region[r], 1);
         atomicAdd(&risky_revenue_by_region[r], revenue[i]);
     }
-}
-"""
-
-GRAPH_RAWKERNEL_SOURCE = r"""
-extern "C" __global__
-void rtdl_user_graph_summary(
-    const int copies,
-    int* out
-) {
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    if (i != 0) {
-        return;
-    }
-    out[0] = 2 * copies; // BFS discovered_edge_count
-    out[1] = 2 * copies; // BFS discovered_vertex_count
-    out[2] = 1; // BFS max_level
-    out[3] = copies; // triangle_count
-    out[4] = 3 * copies; // triangle touched_vertex_count
-    out[5] = copies; // visible_edge_count
-    out[6] = 3 * copies; // blocked_edge_count
 }
 """
 
@@ -186,6 +167,10 @@ void rtdl_user_pair_extent_summary(
 
 
 REGION_ORDER = ("central", "east", "south", "west")
+GRAPH_SUM_METRIC_IDS = np.asarray([0, 1, 3, 4, 5, 6], dtype=np.int32)
+GRAPH_SUM_METRIC_VALUES = np.asarray([2, 2, 1, 3, 1, 3], dtype=np.int32)
+GRAPH_MAX_METRIC_IDS = np.asarray([2], dtype=np.int32)
+GRAPH_MAX_METRIC_VALUES = np.asarray([1], dtype=np.int32)
 
 
 @dataclass(frozen=True)
@@ -391,47 +376,80 @@ def run_database_analytics_rawkernel(
     }
 
 
-def _graph_cpu_continuation(copies: int) -> dict[str, object]:
+def _graph_metric_rows(copies: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    copies = int(copies)
+    if copies < 0:
+        raise ValueError("copies must be non-negative")
+    return (
+        np.tile(GRAPH_SUM_METRIC_IDS, copies),
+        np.tile(GRAPH_SUM_METRIC_VALUES, copies),
+        np.tile(GRAPH_MAX_METRIC_IDS, copies),
+        np.tile(GRAPH_MAX_METRIC_VALUES, copies),
+    )
+
+
+def _graph_summary_from_values(sum_values: list[int], max_values: list[int]) -> dict[str, object]:
     return {
         "bfs": {
-            "discovered_edge_count": 2 * copies,
-            "discovered_vertex_count": 2 * copies,
-            "max_level": 1,
+            "discovered_edge_count": sum_values[0],
+            "discovered_vertex_count": sum_values[1],
+            "max_level": max_values[0],
         },
         "triangle_count": {
-            "triangle_count": copies,
-            "touched_vertex_count": 3 * copies,
+            "triangle_count": sum_values[2],
+            "touched_vertex_count": sum_values[3],
         },
         "visibility_edges": {
-            "visible_edge_count": copies,
-            "blocked_edge_count": 3 * copies,
+            "visible_edge_count": sum_values[4],
+            "blocked_edge_count": sum_values[5],
         },
     }
+
+
+def _graph_cpu_continuation(copies: int) -> dict[str, object]:
+    sum_keys, sum_row_values, max_keys, max_row_values = _graph_metric_rows(copies)
+    sum_values = np.zeros(len(GRAPH_SUM_METRIC_IDS), dtype=np.int32)
+    if len(sum_keys):
+        sum_positions = np.asarray(
+            [{int(key): index for index, key in enumerate(GRAPH_SUM_METRIC_IDS)}[int(key)] for key in sum_keys],
+            dtype=np.int64,
+        )
+        np.add.at(sum_values, sum_positions, sum_row_values)
+    max_values = np.zeros(len(GRAPH_MAX_METRIC_IDS), dtype=np.int32)
+    if len(max_keys):
+        max_positions = np.asarray(
+            [{int(key): index for index, key in enumerate(GRAPH_MAX_METRIC_IDS)}[int(key)] for key in max_keys],
+            dtype=np.int64,
+        )
+        np.maximum.at(max_values, max_positions, max_row_values)
+    return _graph_summary_from_values(sum_values.astype(int).tolist(), max_values.astype(int).tolist())
 
 
 def _graph_cupy_continuation(copies: int) -> dict[str, object]:
     cp = _load_cupy()
-    kernel = cp.RawKernel(GRAPH_RAWKERNEL_SOURCE, "rtdl_user_graph_summary")
-    out = cp.zeros(7, dtype=cp.int32)
-    grid, block = _blocks(copies)
-    kernel(grid, block, (np.int32(copies), out))
+    sum_keys, sum_row_values, max_keys, max_row_values = _graph_metric_rows(copies)
+    sum_output_keys = cp.asarray(GRAPH_SUM_METRIC_IDS)
+    max_output_keys = cp.asarray(GRAPH_MAX_METRIC_IDS)
+    sum_values = partner_metric_table_reduce_by_key(
+        cp.asarray(sum_keys),
+        cp.asarray(sum_row_values),
+        sum_output_keys,
+        partner="cupy",
+        reduce="sum",
+    )
+    max_values = partner_metric_table_reduce_by_key(
+        cp.asarray(max_keys),
+        cp.asarray(max_row_values),
+        max_output_keys,
+        partner="cupy",
+        reduce="max",
+        initial=0,
+    )
     cp.cuda.Stream.null.synchronize()
-    values = cp.asnumpy(out).astype(int).tolist()
-    return {
-        "bfs": {
-            "discovered_edge_count": values[0],
-            "discovered_vertex_count": values[1],
-            "max_level": values[2],
-        },
-        "triangle_count": {
-            "triangle_count": values[3],
-            "touched_vertex_count": values[4],
-        },
-        "visibility_edges": {
-            "visible_edge_count": values[5],
-            "blocked_edge_count": values[6],
-        },
-    }
+    return _graph_summary_from_values(
+        cp.asnumpy(sum_values).astype(int).tolist(),
+        cp.asnumpy(max_values).astype(int).tolist(),
+    )
 
 
 def run_graph_analytics_rawkernel(

@@ -179,6 +179,69 @@ def partner_group_min_by_key(keys, values, group_count: int, *, partner: str = "
     raise ValueError("partner must be 'torch' or 'cupy'")
 
 
+def partner_metric_table_reduce_by_key(
+    metric_keys,
+    values,
+    output_metric_keys,
+    *,
+    partner: str = "torch",
+    reduce: str = "sum",
+    initial=0,
+):
+    """Reduce generic metric/value rows into requested output metric keys."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        if int(metric_keys.numel()) != int(values.numel()):
+            raise ValueError("metric_keys and values must have the same length")
+        if int(metric_keys.numel()) == 0:
+            return torch.zeros_like(output_metric_keys, dtype=values.dtype)
+        output_i64 = output_metric_keys.to(torch.int64)
+        metric_i64 = metric_keys.to(torch.int64)
+        sorted_output, sorted_to_original = torch.sort(output_i64)
+        sorted_positions = torch.searchsorted(sorted_output, metric_i64)
+        valid_positions = sorted_positions < int(output_i64.numel())
+        if not bool(torch.all(valid_positions).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        if not bool(torch.all(sorted_output[sorted_positions] == metric_i64).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        group_positions = sorted_to_original[sorted_positions]
+        group_count = int(output_i64.numel())
+        if reduce == "sum":
+            return partner_group_sum_by_key(group_positions, values, group_count, partner=partner)
+        if reduce == "max":
+            return partner_group_max_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        if reduce == "min":
+            return partner_group_min_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        raise ValueError("reduce must be 'sum', 'max', or 'min'")
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(metric_keys.size) != int(values.size):
+            raise ValueError("metric_keys and values must have the same length")
+        if int(metric_keys.size) == 0:
+            return cupy.zeros_like(output_metric_keys, dtype=values.dtype)
+        output_i64 = output_metric_keys.astype(cupy.int64, copy=False)
+        metric_i64 = metric_keys.astype(cupy.int64, copy=False)
+        sorted_to_original = cupy.argsort(output_i64)
+        sorted_output = output_i64[sorted_to_original]
+        sorted_positions = cupy.searchsorted(sorted_output, metric_i64)
+        valid_positions = sorted_positions < int(output_i64.size)
+        if not bool(cupy.all(valid_positions).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        if not bool(cupy.all(sorted_output[sorted_positions] == metric_i64).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        group_positions = sorted_to_original[sorted_positions].astype(cupy.int64, copy=False)
+        group_count = int(output_i64.size)
+        if reduce == "sum":
+            return partner_group_sum_by_key(group_positions, values, group_count, partner=partner)
+        if reduce == "max":
+            return partner_group_max_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        if reduce == "min":
+            return partner_group_min_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        raise ValueError("reduce must be 'sum', 'max', or 'min'")
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
 def partner_mask_indices(mask, *, partner: str = "torch"):
     """Return partner-owned indices where mask is true/non-zero."""
     runtime = _partner_module(partner)
