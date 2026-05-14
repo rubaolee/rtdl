@@ -22,8 +22,8 @@ from examples import rtdl_polygon_set_jaccard
 from examples import rtdl_sales_risk_screening
 from examples import rtdl_v0_7_db_app_demo
 from rtdsl.partner_adapters import partner_metric_table_reduce_by_key
-from rtdsl.partner_adapters import columnar_rows_to_partner_columns
-from rtdsl.partner_adapters import partner_columnar_predicate_reduce
+from rtdsl.partner_adapters import columnar_payload_to_partner_columns
+from rtdsl.partner_adapters import partner_columnar_predicate_reduce_batch
 from rtdsl.reference import _polygon_unit_cells
 
 
@@ -346,17 +346,10 @@ def _partner_to_host(value, partner: str):
 
 
 def _database_partner_columnar_continuation(rows: tuple[dict[str, object], ...], *, partner: str) -> dict[str, object]:
-    rows = tuple(
-        {
-            **row,
-            "channel_web": 1 if str(row.get("channel", "")) == "web" else 0,
-        }
-        for row in rows
-    )
-    columns = columnar_rows_to_partner_columns(
-        rows,
+    columns = columnar_payload_to_partner_columns(
+        _table_columns(rows),
         partner=partner,
-        categorical_fields=("region",),
+        category_maps={"region": {region: index for index, region in enumerate(REGION_ORDER)}},
     )
     category_maps = columns["_metadata"]["category_maps"]
     region_count = len(category_maps["region"])
@@ -364,67 +357,62 @@ def _database_partner_columnar_continuation(rows: tuple[dict[str, object], ...],
     open_predicates = (("ship_date", "ge", 12), ("quantity", "lt", 20))
     web_predicates = (("ship_date", "ge", 12), ("channel_web", "eq", 1))
     risky_predicates = (("ship_date", "between", 11, 13), ("discount", "ge", 6), ("quantity", "lt", 20))
-    promo_count = int(_partner_to_host(partner_columnar_predicate_reduce(columns, promo_predicates, partner=partner), partner))
-    open_count = _partner_to_host(
-        partner_columnar_predicate_reduce(
-            columns,
-            open_predicates,
-            partner=partner,
-            reduce="count",
-            group_field="region",
-            group_count=region_count,
+    reductions = partner_columnar_predicate_reduce_batch(
+        columns,
+        (
+            {"name": "promo_count", "predicates": promo_predicates, "output_dtype": "int32"},
+            {
+                "name": "open_count_by_region",
+                "predicates": open_predicates,
+                "reduce": "count",
+                "group_field": "region",
+                "group_count": region_count,
+                "output_dtype": "int32",
+            },
+            {
+                "name": "web_revenue_by_region",
+                "predicates": web_predicates,
+                "reduce": "sum",
+                "group_field": "region",
+                "value_field": "revenue",
+                "group_count": region_count,
+                "output_dtype": "int32",
+            },
+            {"name": "risky_count", "predicates": risky_predicates, "output_dtype": "int32"},
+            {
+                "name": "risky_order_ids",
+                "predicates": risky_predicates,
+                "reduce": "ids",
+                "value_field": "row_id",
+                "output_dtype": "int32",
+            },
+            {
+                "name": "risky_count_by_region",
+                "predicates": risky_predicates,
+                "reduce": "count",
+                "group_field": "region",
+                "group_count": region_count,
+                "output_dtype": "int32",
+            },
+            {
+                "name": "risky_revenue_by_region",
+                "predicates": risky_predicates,
+                "reduce": "sum",
+                "group_field": "region",
+                "value_field": "revenue",
+                "group_count": region_count,
+                "output_dtype": "int32",
+            },
         ),
-        partner,
+        partner=partner,
     )
-    web_revenue = _partner_to_host(
-        partner_columnar_predicate_reduce(
-            columns,
-            web_predicates,
-            partner=partner,
-            reduce="sum",
-            group_field="region",
-            value_field="revenue",
-            group_count=region_count,
-        ),
-        partner,
-    )
-    risky_count = int(_partner_to_host(partner_columnar_predicate_reduce(columns, risky_predicates, partner=partner), partner))
-    risky_order_ids = sorted(
-        int(value)
-        for value in _partner_to_host(
-            partner_columnar_predicate_reduce(
-                columns,
-                risky_predicates,
-                partner=partner,
-                reduce="ids",
-                value_field="row_id",
-            ),
-            partner,
-        )
-    )
-    risky_count_by_region = _partner_to_host(
-        partner_columnar_predicate_reduce(
-            columns,
-            risky_predicates,
-            partner=partner,
-            reduce="count",
-            group_field="region",
-            group_count=region_count,
-        ),
-        partner,
-    )
-    risky_revenue_by_region = _partner_to_host(
-        partner_columnar_predicate_reduce(
-            columns,
-            risky_predicates,
-            partner=partner,
-            reduce="sum",
-            group_field="region",
-            value_field="revenue",
-            group_count=region_count,
-        ),
-        partner,
-    )
+    promo_count = int(_partner_to_host(reductions["promo_count"], partner)[0])
+    open_count = _partner_to_host(reductions["open_count_by_region"], partner)
+    web_revenue = _partner_to_host(reductions["web_revenue_by_region"], partner)
+    risky_count = int(_partner_to_host(reductions["risky_count"], partner)[0])
+    risky_order_ids = sorted(int(value) for value in _partner_to_host(reductions["risky_order_ids"], partner))
+    risky_count_by_region = _partner_to_host(reductions["risky_count_by_region"], partner)
+    risky_revenue_by_region = _partner_to_host(reductions["risky_revenue_by_region"], partner)
     region_order = tuple(
         label for label, _index in sorted(category_maps["region"].items(), key=lambda item: item[1])
     )
@@ -483,7 +471,7 @@ def run_database_analytics_rawkernel(
         }
     return {
         "app": "database_analytics",
-        "v2_control_app_path": "partner_columnar_predicate_reductions" if partner in {"cupy", "torch"} else "cpu_fallback_for_rawkernel_contract",
+        "v2_control_app_path": "partner_columnar_predicate_reduce_batch" if partner in {"cupy", "torch"} else "cpu_fallback_for_rawkernel_contract",
         "partner": partner,
         "copies": copies,
         "summary": summary,

@@ -22,20 +22,27 @@ class Goal1987DatabasePartnerColumnarReductionsTest(unittest.TestCase):
         init_text = INIT.read_text(encoding="utf-8")
 
         self.assertIn("def columnar_rows_to_partner_columns", adapters)
+        self.assertIn("def columnar_payload_to_partner_columns", adapters)
         self.assertIn("def partner_columnar_predicate_mask", adapters)
         self.assertIn("def partner_columnar_predicate_reduce", adapters)
+        self.assertIn("def partner_columnar_predicate_reduce_batch", adapters)
+        self.assertIn("shared_predicate_mask_count", adapters)
         self.assertIn("generic_columnar_payload_columns", adapters)
+        self.assertIn("caller_supplied_columnar_payload", adapters)
         self.assertIn("native_engine_row_contract", adapters)
         self.assertIn("not_called_partner_reference_only", adapters)
         self.assertIn("from .partner_adapters import columnar_rows_to_partner_columns", init_text)
+        self.assertIn("from .partner_adapters import columnar_payload_to_partner_columns", init_text)
         self.assertIn('"partner_columnar_predicate_reduce"', init_text)
+        self.assertIn('"partner_columnar_predicate_reduce_batch"', init_text)
 
     def test_database_control_path_uses_generic_partner_columnar_reductions(self) -> None:
         text = EXAMPLE.read_text(encoding="utf-8")
 
         self.assertIn("_database_partner_columnar_continuation", text)
-        self.assertIn("partner_columnar_predicate_reduce", text)
-        self.assertIn('"partner_columnar_predicate_reductions"', text)
+        self.assertIn("columnar_payload_to_partner_columns", text)
+        self.assertIn("partner_columnar_predicate_reduce_batch", text)
+        self.assertIn('"partner_columnar_predicate_reduce_batch"', text)
         self.assertIn("v2 uses Python+partner continuations+RTDL", text)
 
     def test_cpu_fallback_still_matches_oracle(self) -> None:

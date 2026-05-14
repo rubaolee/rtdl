@@ -81,6 +81,7 @@ TEST_MODULES = (
     "tests.goal1983_exact_ann_candidate_quality_partner_reference_test",
     "tests.goal1985_spatial_bucket_dbscan_partner_reference_test",
     "tests.goal1987_database_partner_columnar_reductions_test",
+    "tests.goal1989_database_columnar_payload_fused_batch_test",
 )
 
 

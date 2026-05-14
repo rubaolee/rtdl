@@ -263,9 +263,9 @@ def _goal1957_rawkernel_control_rows() -> list[dict[str, object]]:
                 }[app],
                 "insight": {
                     "database_analytics": (
-                        "Goal1957/1956 RawKernel evidence is fast; Goal1987 adds a reusable generic "
-                        "partner columnar predicate/reduction path, but it is currently slower than "
-                        "the fused app-local RawKernel and needs batching/fusion."
+                        "Goal1989 replaces the app-local RawKernel dependency with reusable columnar "
+                        "payload handoff plus fused generic partner summaries; pod timing is at "
+                        "approximately parity with the old app-local RawKernel comparison."
                     ),
                     "graph_analytics": (
                         "Goal1957/1956 RawKernel evidence is fast because it uses the authored replicated-graph "
@@ -766,7 +766,7 @@ def to_markdown(payload: dict[str, object]) -> str:
             "- The strongest measured v2 rows are the repeat-3 fixed-radius family rows, where v1.8 is seconds-scale and v2 partner threshold decisions are sub-millisecond.",
             "- Segment any-hit now has a seconds-scale same-contract row at 1,048,576 outputs; road-hazard and segment hitcount remain positive compact-output rows.",
             "- Robot collision now has exact pose-flag parity and strong ratios through 8,388,608 poses, but it is marked `positive-subsecond` because the v1.8 baseline is still below one second.",
-            "- Database remains a bounded control/fallback row. Graph and the two polygon control rows now have positive bounded v2 evidence after Goal1972 and Goal1969, but their claims stay narrow.",
+            "- Database now has a reusable generic columnar-payload plus fused-summary v2 path after Goal1989; graph and the two polygon control rows remain positive but bounded, so their claims stay narrow.",
             "- Hausdorff now has an exact partner-reference row after Goal1975, so the table prefers that semantic match over the faster but weaker fixed-radius threshold proxy.",
             "- Facility KNN now has an exact partner-reference K=3 top-k row after Goal1978, so the table no longer treats service coverage as the best semantic representative for that app.",
             "- Barnes-Hut now has exact partner-reference force-vector rows after Goal1979, so node coverage stays useful but no longer stands in for force output.",

@@ -404,8 +404,10 @@ from .partner_adapters import top_k_nearest_points_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_spatial_bucket_partner_columns
 from .partner_adapters import columnar_rows_to_partner_columns
+from .partner_adapters import columnar_payload_to_partner_columns
 from .partner_adapters import partner_columnar_predicate_mask
 from .partner_adapters import partner_columnar_predicate_reduce
+from .partner_adapters import partner_columnar_predicate_reduce_batch
 from .partner_adapters import service_coverage_gap_flags_partner_columns
 from .partner_adapters import service_coverage_gap_flags_optix_partner_device_columns
 from .partner_adapters import service_coverage_gap_flags_optix_prepared_partner_device_columns
@@ -1323,8 +1325,10 @@ __all__ = [
     "radius_graph_components_2d_partner_columns",
     "radius_graph_components_2d_spatial_bucket_partner_columns",
     "columnar_rows_to_partner_columns",
+    "columnar_payload_to_partner_columns",
     "partner_columnar_predicate_mask",
     "partner_columnar_predicate_reduce",
+    "partner_columnar_predicate_reduce_batch",
     "service_coverage_gap_flags_partner_columns",
     "service_coverage_gap_flags_optix_partner_device_columns",
     "service_coverage_gap_flags_optix_prepared_partner_device_columns",

@@ -7,6 +7,7 @@ from . import optix_runtime as _optix
 
 _UINT32_MAX = 2**32 - 1
 _CUPY_PAIRWISE_FORCE_2D_KERNEL = None
+_CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
 
 
 def _require_uint32_id(value: int, label: str) -> int:
@@ -311,6 +312,46 @@ def columnar_rows_to_partner_columns(
     return columns
 
 
+def columnar_payload_to_partner_columns(
+    payload,
+    *,
+    partner: str = "torch",
+    category_maps: dict[str, dict[str, int]] | None = None,
+) -> dict[str, object]:
+    """Convert caller-supplied column arrays into partner-owned column tensors."""
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    items = [(str(name), values) for name, values in dict(payload).items() if not str(name).startswith("_")]
+    if not items:
+        raise ValueError("columnar payload requires at least one column")
+    row_count = None
+    columns: dict[str, object] = {}
+    for name, values in items:
+        length = len(values)
+        if row_count is None:
+            row_count = int(length)
+        elif int(length) != row_count:
+            raise ValueError("all columnar payload columns must have the same length")
+        if runtime["name"] == "torch":
+            columns[name] = module.as_tensor(values, device=runtime["device"])
+        else:
+            columns[name] = module.asarray(values)
+    columns["_metadata"] = {
+        "adapter": "columnar_payload_to_partner_columns",
+        "partner": runtime["name"],
+        "row_count": int(row_count or 0),
+        "category_maps": dict(category_maps or {}),
+        "input_contract": "caller_supplied_columnar_payload",
+        "partner_reference_contract": "generic_columnar_payload_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
 def partner_columnar_predicate_mask(columns: dict[str, object], predicates, *, partner: str = "torch"):
     """Build a boolean mask for simple generic columnar predicates."""
     runtime = _partner_module(partner)
@@ -387,6 +428,293 @@ def partner_columnar_predicate_reduce(
             values = values.astype(runtime["module"].float64, copy=False)
         return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
     raise ValueError("grouped reduce must be 'count' or 'sum'")
+
+
+def partner_columnar_predicate_reduce_batch(
+    columns: dict[str, object],
+    summaries,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Evaluate several generic predicate/reduction summaries with shared masks."""
+    runtime = _partner_module(partner)
+    summary_tuple = tuple(summaries)
+    if runtime["name"] == "cupy" and summary_tuple:
+        return _cupy_columnar_predicate_reduce_batch_fused(runtime["module"], columns, summary_tuple)
+    results: dict[str, object] = {}
+    mask_cache: dict[tuple, object] = {}
+    group_count_cache: dict[str, int] = {}
+
+    def predicate_key(predicates) -> tuple:
+        return tuple(tuple(item) for item in predicates)
+
+    def mask_for(predicates):
+        key = predicate_key(predicates)
+        if key not in mask_cache:
+            mask_cache[key] = partner_columnar_predicate_mask(columns, key, partner=partner)
+        return mask_cache[key]
+
+    def group_count_for(group_field: str, explicit_count) -> int:
+        if explicit_count is not None:
+            return int(explicit_count)
+        if group_field not in group_count_cache:
+            metadata = columns.get("_metadata", {})
+            category_maps = metadata.get("category_maps", {}) if isinstance(metadata, dict) else {}
+            count = len(category_maps.get(group_field, {}))
+            if not count:
+                count = int(runtime["to_host"](columns[group_field].max().reshape(1))[0]) + 1
+            group_count_cache[group_field] = int(count)
+        return group_count_cache[group_field]
+
+    for summary in summary_tuple:
+        name = str(summary["name"])
+        predicates = summary.get("predicates", ())
+        reduce = str(summary.get("reduce", "count"))
+        group_field = summary.get("group_field")
+        value_field = summary.get("value_field")
+        mask = mask_for(predicates)
+        if group_field is None:
+            if reduce == "count":
+                one_key = runtime["zeros"]((int(_column_length({"mask": mask}, "mask")),), runtime["uint32"], runtime["device"])
+                values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
+                results[name] = partner_group_sum_by_key(one_key, values, 1, partner=partner)[0]
+                continue
+            if reduce == "ids":
+                if value_field is None:
+                    raise ValueError("ids reduce requires value_field")
+                results[name] = columns[str(value_field)][partner_mask_indices(mask, partner=partner)]
+                continue
+            raise ValueError("scalar reduce must be 'count' or 'ids'")
+        group_count = group_count_for(str(group_field), summary.get("group_count"))
+        keys = columns[str(group_field)]
+        if reduce == "count":
+            values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
+            results[name] = partner_group_sum_by_key(keys, values, group_count, partner=partner)
+            continue
+        if reduce == "sum":
+            if value_field is None:
+                raise ValueError("sum reduce requires value_field")
+            value_column = columns[str(value_field)]
+            values = value_column * (
+                mask.astype(value_column.dtype, copy=False)
+                if runtime["name"] == "cupy"
+                else mask.to(value_column.dtype)
+            )
+            if runtime["name"] == "cupy" and values.dtype == runtime["module"].int64:
+                values = values.astype(runtime["module"].float64, copy=False)
+            results[name] = partner_group_sum_by_key(keys, values, group_count, partner=partner)
+            continue
+        raise ValueError("grouped reduce must be 'count' or 'sum'")
+
+    metadata = columns.get("_metadata")
+    if isinstance(metadata, dict):
+        metadata = dict(metadata)
+        metadata.update(
+            {
+                "adapter": "partner_columnar_predicate_reduce_batch",
+                "summary_count": len(summary_tuple),
+                "shared_predicate_mask_count": len(mask_cache),
+                "native_engine_row_contract": "not_called_partner_reference_only",
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        results["_metadata"] = metadata
+    return results
+
+
+def _cupy_column_c_type(cupy, column) -> str:
+    if column.dtype == cupy.int32:
+        return "int"
+    if column.dtype == cupy.int64:
+        return "long long"
+    if column.dtype == cupy.uint32:
+        return "unsigned int"
+    if column.dtype == cupy.float64:
+        return "double"
+    if column.dtype == cupy.float32:
+        return "float"
+    raise ValueError(f"unsupported fused column dtype: {column.dtype}")
+
+
+def _cupy_dtype_from_summary(cupy, summary: dict, fallback):
+    name = summary.get("output_dtype")
+    if name is None:
+        return fallback
+    if name == "int32":
+        return cupy.int32
+    if name == "int64":
+        return cupy.int64
+    if name == "float32":
+        return cupy.float32
+    if name == "float64":
+        return cupy.float64
+    raise ValueError(f"unsupported output_dtype: {name}")
+
+
+def _cupy_atomic_add(c_type: str, target: str, value: str) -> str:
+    if c_type == "long long":
+        return f"atomicAdd((unsigned long long*)({target}), (unsigned long long)({value}));"
+    return f"atomicAdd({target}, ({c_type})({value}));"
+
+
+def _cupy_predicate_expr(column_names: dict[str, str], predicate) -> str:
+    field, op, *values = predicate
+    column = f"{column_names[str(field)]}[i]"
+    if op == "between":
+        return f"(({column}) >= ({values[0]}) && ({column}) <= ({values[1]}))"
+    if op == "eq":
+        return f"(({column}) == ({values[0]}))"
+    if op == "ge":
+        return f"(({column}) >= ({values[0]}))"
+    if op == "gt":
+        return f"(({column}) > ({values[0]}))"
+    if op == "le":
+        return f"(({column}) <= ({values[0]}))"
+    if op == "lt":
+        return f"(({column}) < ({values[0]}))"
+    raise ValueError(f"unsupported predicate op: {op}")
+
+
+def _cupy_columnar_predicate_reduce_batch_fused(cupy, columns: dict[str, object], summaries: tuple) -> dict[str, object]:
+    row_count = _column_length(columns, next(name for name in columns if not name.startswith("_")))
+    field_names: list[str] = []
+    for summary in summaries:
+        for predicate in summary.get("predicates", ()):
+            field_names.append(str(predicate[0]))
+        for optional in ("group_field", "value_field"):
+            if summary.get(optional) is not None:
+                field_names.append(str(summary[optional]))
+    field_names = sorted(set(field_names))
+    if not field_names:
+        raise ValueError("fused columnar summaries require at least one referenced field")
+
+    column_arg_names = {name: f"col_{index}" for index, name in enumerate(field_names)}
+    column_decls = [
+        f"const {_cupy_column_c_type(cupy, columns[name])}* {column_arg_names[name]}"
+        for name in field_names
+    ]
+    output_decls: list[str] = []
+    output_args: list[object] = []
+    output_info: list[dict[str, object]] = []
+    results: dict[str, object] = {}
+
+    for index, summary in enumerate(summaries):
+        name = str(summary["name"])
+        reduce = str(summary.get("reduce", "count"))
+        group_field = summary.get("group_field")
+        value_field = summary.get("value_field")
+        if group_field is None:
+            if reduce == "count":
+                output = cupy.zeros(1, dtype=_cupy_dtype_from_summary(cupy, summary, cupy.int32))
+                output_decls.append(f"{_cupy_column_c_type(cupy, output)}* out_{index}")
+                output_args.append(output)
+                output_info.append({"name": name, "reduce": reduce, "output": output})
+                continue
+            if reduce == "ids":
+                if value_field is None:
+                    raise ValueError("ids reduce requires value_field")
+                value_column = columns[str(value_field)]
+                output = cupy.zeros(row_count, dtype=_cupy_dtype_from_summary(cupy, summary, value_column.dtype))
+                counter = cupy.zeros(1, dtype=cupy.int32)
+                output_decls.append(f"{_cupy_column_c_type(cupy, value_column)}* out_{index}")
+                output_decls[-1] = f"{_cupy_column_c_type(cupy, output)}* out_{index}"
+                output_decls.append(f"int* out_{index}_count")
+                output_args.extend([output, counter])
+                output_info.append({"name": name, "reduce": reduce, "output": output, "counter": counter})
+                continue
+            raise ValueError("scalar reduce must be 'count' or 'ids'")
+        group_count = int(summary.get("group_count") or 0)
+        if group_count <= 0:
+            metadata = columns.get("_metadata", {})
+            category_maps = metadata.get("category_maps", {}) if isinstance(metadata, dict) else {}
+            group_count = len(category_maps.get(str(group_field), {}))
+            if not group_count:
+                group_count = int(cupy.asnumpy(columns[str(group_field)].max().reshape(1))[0]) + 1
+        if reduce == "count":
+            output = cupy.zeros(group_count, dtype=_cupy_dtype_from_summary(cupy, summary, cupy.int32))
+            output_decls.append(f"{_cupy_column_c_type(cupy, output)}* out_{index}")
+            output_args.append(output)
+            output_info.append({"name": name, "reduce": reduce, "output": output})
+            continue
+        if reduce == "sum":
+            if value_field is None:
+                raise ValueError("sum reduce requires value_field")
+            value_column = columns[str(value_field)]
+            output = cupy.zeros(group_count, dtype=_cupy_dtype_from_summary(cupy, summary, value_column.dtype))
+            output_decls.append(f"{_cupy_column_c_type(cupy, output)}* out_{index}")
+            output_args.append(output)
+            output_info.append({"name": name, "reduce": reduce, "output": output})
+            continue
+        raise ValueError("grouped reduce must be 'count' or 'sum'")
+
+    lines = [
+        'extern "C" __global__',
+        "void rtdl_columnar_predicate_reduce_batch(",
+        "    int n,",
+        *[f"    {decl}," for decl in column_decls],
+        *[f"    {decl}{',' if pos + 1 < len(output_decls) else ''}" for pos, decl in enumerate(output_decls)],
+        ") {",
+        "    int i = blockIdx.x * blockDim.x + threadIdx.x;",
+        "    if (i >= n) return;",
+    ]
+    for index, summary in enumerate(summaries):
+        predicates = summary.get("predicates", ())
+        reduce = str(summary.get("reduce", "count"))
+        group_field = summary.get("group_field")
+        value_field = summary.get("value_field")
+        expr = " && ".join(_cupy_predicate_expr(column_arg_names, predicate) for predicate in predicates) or "true"
+        lines.append(f"    if ({expr}) {{")
+        if group_field is None:
+            if reduce == "count":
+                out_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(f"        {_cupy_atomic_add(out_type, f'&out_{index}[0]', '1')}")
+            elif reduce == "ids":
+                value_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(f"        int pos = atomicAdd(&out_{index}_count[0], 1);")
+                lines.append(f"        out_{index}[pos] = ({value_type})({column_arg_names[str(value_field)]}[i]);")
+        else:
+            group_index = f"(int)({column_arg_names[str(group_field)]}[i])"
+            if reduce == "count":
+                out_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(f"        {_cupy_atomic_add(out_type, f'&out_{index}[{group_index}]', '1')}")
+            elif reduce == "sum":
+                value_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(
+                    f"        {_cupy_atomic_add(value_type, f'&out_{index}[{group_index}]', f'{column_arg_names[str(value_field)]}[i]')}"
+                )
+        lines.append("    }")
+    lines.append("}")
+    source = "\n".join(lines)
+    cache_key = (tuple((name, str(columns[name].dtype)) for name in field_names), tuple(str(summary) for summary in summaries))
+    kernel = _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS.get(cache_key)
+    if kernel is None:
+        kernel = cupy.RawKernel(source, "rtdl_columnar_predicate_reduce_batch")
+        _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS[cache_key] = kernel
+    block = 256
+    grid = ((row_count + block - 1) // block,)
+    column_args = [columns[name] for name in field_names]
+    kernel(grid, (block,), (row_count, *column_args, *output_args))
+
+    for item in output_info:
+        if item["reduce"] == "ids":
+            count = int(cupy.asnumpy(item["counter"])[0])
+            results[str(item["name"])] = item["output"][:count]
+        else:
+            results[str(item["name"])] = item["output"]
+    metadata = columns.get("_metadata")
+    if isinstance(metadata, dict):
+        metadata = dict(metadata)
+        metadata.update(
+            {
+                "adapter": "partner_columnar_predicate_reduce_batch",
+                "execution": "cupy_fused_rawkernel_from_generic_summary_specs",
+                "summary_count": len(summaries),
+                "native_engine_row_contract": "not_called_partner_reference_only",
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        results["_metadata"] = metadata
+    return results
 
 
 def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "torch"):

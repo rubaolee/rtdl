@@ -1,0 +1,104 @@
+{
+  "claim_boundary": {
+    "cupy_fused_rawkernel_generated_from_generic_summary_specs": true,
+    "native_engine_customization": false,
+    "rawkernel_still_reference_comparison": true,
+    "reusable_partner_columnar_batch_reductions": true,
+    "reusable_partner_columnar_payload_handoff": true,
+    "summary_output_dtype_contract": "int32 where caller proves range safety",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "device": "NVIDIA RTX 2000 Ada Generation",
+  "goal": "Goal1989",
+  "results": [
+    {
+      "all_match_rawkernel": true,
+      "copies": 1000,
+      "fused_columnar_payload_batch_median_sec": 0.009453840553760529,
+      "fused_columnar_payload_batch_times_sec": [
+        0.00949510931968689,
+        0.009490877389907837,
+        0.009378500282764435,
+        0.009453840553760529,
+        0.009387172758579254
+      ],
+      "fused_columnar_payload_vs_rawkernel_ratio": 1.0066386091288808,
+      "input_rows": 13000,
+      "rawkernel_median_sec": 0.00939149409532547,
+      "rawkernel_times_sec": [
+        0.009449295699596405,
+        0.009473636746406555,
+        0.009367555379867554,
+        0.00939149409532547,
+        0.00936812162399292
+      ]
+    },
+    {
+      "all_match_rawkernel": true,
+      "copies": 10000,
+      "fused_columnar_payload_batch_median_sec": 0.09336873143911362,
+      "fused_columnar_payload_batch_times_sec": [
+        0.0937027633190155,
+        0.09306655079126358,
+        0.09322553873062134,
+        0.09426546841859818,
+        0.09336873143911362
+      ],
+      "fused_columnar_payload_vs_rawkernel_ratio": 0.9748664062145683,
+      "input_rows": 130000,
+      "rawkernel_median_sec": 0.09577592462301254,
+      "rawkernel_times_sec": [
+        0.09505724906921387,
+        0.0955478623509407,
+        0.09577592462301254,
+        0.09692667424678802,
+        0.09593368321657181
+      ]
+    },
+    {
+      "all_match_rawkernel": true,
+      "copies": 50000,
+      "fused_columnar_payload_batch_median_sec": 0.4759438782930374,
+      "fused_columnar_payload_batch_times_sec": [
+        0.4759438782930374,
+        0.48277948796749115,
+        0.4736684635281563,
+        0.48942796140909195,
+        0.47434740513563156
+      ],
+      "fused_columnar_payload_vs_rawkernel_ratio": 0.9551635776217448,
+      "input_rows": 650000,
+      "rawkernel_median_sec": 0.4982852041721344,
+      "rawkernel_times_sec": [
+        0.5024144798517227,
+        0.4877784848213196,
+        0.4982852041721344,
+        0.4874449893832207,
+        0.5012330934405327
+      ]
+    },
+    {
+      "all_match_rawkernel": true,
+      "copies": 100000,
+      "fused_columnar_payload_batch_median_sec": 0.9549314901232719,
+      "fused_columnar_payload_batch_times_sec": [
+        0.9559283331036568,
+        0.9495565220713615,
+        0.9549314901232719,
+        0.9516363367438316,
+        0.9607686549425125
+      ],
+      "fused_columnar_payload_vs_rawkernel_ratio": 0.9704163788336992,
+      "input_rows": 1300000,
+      "rawkernel_median_sec": 0.9840430468320847,
+      "rawkernel_times_sec": [
+        1.0034748017787933,
+        0.9804810732603073,
+        0.9843740910291672,
+        0.9840430468320847,
+        0.9824999421834946
+      ]
+    }
+  ],
+  "status": "pass"
+}
