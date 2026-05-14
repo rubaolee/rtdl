@@ -57,6 +57,7 @@ TEST_MODULES = (
     "tests.goal1945_claude_review_v2_source_tree_only_policy_test",
     "tests.goal1946_all_app_v2_perf_deep_dive_test",
     "tests.goal1947_v2_source_tree_only_policy_consensus_test",
+    "tests.goal1948_user_owned_native_continuation_example_test",
 )
 
 

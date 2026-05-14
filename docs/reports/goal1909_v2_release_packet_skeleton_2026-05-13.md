@@ -21,6 +21,7 @@ which slots are still blocked.
 | Post-pod artifact review | populated with Claude/Gemini reviews, plus Goal1941/1942 Gemini follow-up reviews | Goals1912, 1923, 1935, 1936, 1938, 1941, 1942 |
 | Local non-pod preflight | populated and passing | Goal1908 |
 | All-app rollup | populated, needs final release consensus | Goal1931, Goal1942, Goal1946 |
+| User-owned native continuation example | populated, not release speedup evidence | Goal1948 |
 
 ## Hard Missing Slots
 

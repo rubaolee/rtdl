@@ -141,6 +141,9 @@ blocks the v2.0 release label.
   remain controls rather than speedup evidence.
 - Goal1947: source-tree-only policy consensus closes the package/source-tree
   blocker without authorizing release or install claims.
+- Goal1948: Hausdorff example demonstrates Python+RTDL interoperation with a
+  learner-owned C++ continuation while explicitly keeping that continuation out
+  of official v2.0 Torch/CuPy partner speedup claims.
 
 ## Immediate Next Step
 
