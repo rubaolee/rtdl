@@ -331,6 +331,51 @@ def _run_scipy_core_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, in
     }
 
 
+def _partner_column_to_list(column, partner: str) -> list[object]:
+    if partner == "torch":
+        return column.detach().cpu().tolist()
+    if partner == "cupy":
+        import cupy
+
+        return cupy.asnumpy(column).tolist()
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _run_partner_exact_clusters(
+    points: tuple[rt.Point, ...],
+    *,
+    partner: str,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    point_columns = rt.point_rows_to_partner_columns(points, partner=partner)
+    result = rt.radius_graph_components_2d_partner_columns(
+        point_columns,
+        radius=EPSILON,
+        min_neighbors=MIN_POINTS,
+        partner=partner,
+        return_metadata=True,
+    )
+    columns = result["columns"]
+    point_ids = _partner_column_to_list(columns["point_ids"], partner)
+    labels = _partner_column_to_list(columns["component_labels"], partner)
+    core_flags = _partner_column_to_list(columns["is_core"], partner)
+    neighbor_counts = _partner_column_to_list(columns["neighbor_counts"], partner)
+    rows = tuple(
+        {
+            "point_id": int(point_id),
+            "cluster_id": int(cluster_id),
+            "is_core": bool(is_core),
+            "neighbor_count": int(neighbor_count),
+        }
+        for point_id, cluster_id, is_core, neighbor_count in zip(
+            point_ids,
+            labels,
+            core_flags,
+            neighbor_counts,
+        )
+    )
+    return tuple(sorted(rows, key=lambda row: int(row["point_id"]))), result["metadata"]
+
+
 def _native_continuation_backend(
     backend: str,
     *,
@@ -481,6 +526,7 @@ def run_app(
     optix_summary_mode: str = "rows",
     embree_summary_mode: str = "rows",
     output_mode: str = "full",
+    partner: str = "cupy",
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
@@ -492,7 +538,11 @@ def run_app(
     points = case["points"]
     core_flag_rows: tuple[dict[str, object], ...] = ()
     scalar_core_count: dict[str, int | str | None] | None = None
-    if output_mode == "core_count" and backend == "optix":
+    partner_metadata: dict[str, object] | None = None
+    if backend == "partner_exact_clusters":
+        neighbor_rows = ()
+        cluster_rows, partner_metadata = _run_partner_exact_clusters(points, partner=partner)
+    elif output_mode == "core_count" and backend == "optix":
         neighbor_rows = ()
         cluster_rows = ()
         scalar_core_count = _run_optix_prepared_core_count(case)
@@ -571,6 +621,7 @@ def run_app(
         "output_mode": output_mode,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else "not_applicable",
         "embree_summary_mode": embree_summary_mode if backend == "embree" else "not_applicable",
+        "partner": partner if backend == "partner_exact_clusters" else None,
         "epsilon": EPSILON,
         "min_points": MIN_POINTS,
         "k_max": K_MAX,
@@ -597,9 +648,13 @@ def run_app(
         "summary_primitive": (
             scalar_core_count.get("summary_primitive") if scalar_core_count is not None else None
         ),
+        "partner_reference_contract": (
+            partner_metadata["partner_reference_contract"] if partner_metadata else None
+        ),
+        "partner_metadata": partner_metadata,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.",
-        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The partner_exact_clusters path computes generic radius-graph component labels over point columns outside the native engine.",
+        "boundary": "Bounded app-level DBSCAN demo only. The partner_exact_clusters path is an exact radius-graph component reference, not a native engine DBSCAN continuation and not an RT-core claim. Embree/OptiX rt_core_flags remains a fixed-radius core predicate prototype.",
     }
 
 
@@ -609,9 +664,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy", "partner_exact_clusters"),
         default="cpu_python_reference",
     )
+    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
     parser.add_argument("--copies", type=int, default=1, help="tile the authored clustering fixture")
     parser.add_argument(
         "--output-mode",
@@ -640,6 +696,7 @@ def main(argv: list[str] | None = None) -> int:
                 optix_summary_mode=args.optix_summary_mode,
                 embree_summary_mode=args.embree_summary_mode,
                 output_mode=args.output_mode,
+                partner=args.partner,
             ),
             indent=2,
             sort_keys=True,

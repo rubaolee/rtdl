@@ -471,6 +471,44 @@ def _goal1979_exact_barnes_force_rows() -> list[dict[str, object]]:
     ]
 
 
+def _goal1981_exact_dbscan_component_rows() -> list[dict[str, object]]:
+    path = "docs/reports/goal1981_pod_exact_radius_graph_components_dbscan_cupy_perf.json"
+    artifact = _read_json(ROOT / path)
+    if not artifact:
+        return []
+    candidates = [
+        row
+        for row in artifact.get("results", [])
+        if isinstance(row, dict) and isinstance(row.get("v2_vs_cpu_python_reference_ratio"), (int, float))
+    ]
+    if not candidates:
+        return []
+    result = min(candidates, key=lambda row: int(row.get("point_count", 0) or 0))
+    v18 = _median(result, "cpu_python_reference_wall_s")
+    v2 = _median(result, "v2_partner_exact_cluster_wall_s")
+    ratio = result.get("v2_vs_cpu_python_reference_ratio")
+    return [
+        {
+            "app": "dbscan_clustering",
+            "label": "dbscan clustering",
+            "size": int(result.get("point_count", 0) or 0),
+            "partner": str(result.get("partner", "cupy")),
+            "v18_prepared_s": v18,
+            "v18_reused_prepared_s": None,
+            "v2_prepared_partner_s": v2,
+            "ratio_vs_v18_prepared": float(ratio) if isinstance(ratio, (int, float)) else _ratio(v2, v18),
+            "ratio_vs_v18_reused_prepared": None,
+            "classification": "positive-bounded-exact",
+            "insight": (
+                "Goal1981 upgrades DBSCAN from core-point threshold proxy to exact radius-graph "
+                "component labels; current dense labeling is semantically correct but still needs "
+                "a sparse/spatial-bucket partner implementation for larger rows."
+            ),
+            "artifact": path,
+        }
+    ]
+
+
 def _best_measured(rows: list[dict[str, object]]) -> dict[str, dict[str, object]]:
     best: dict[str, dict[str, object]] = {}
     for row in rows:
@@ -514,9 +552,11 @@ def build_analysis() -> dict[str, object]:
     exact_hausdorff_rows = _goal1975_exact_hausdorff_rows()
     exact_facility_top_k_rows = _goal1978_exact_facility_top_k_rows()
     exact_barnes_force_rows = _goal1979_exact_barnes_force_rows()
+    exact_dbscan_component_rows = _goal1981_exact_dbscan_component_rows()
     measured_rows.extend(exact_hausdorff_rows)
     measured_rows.extend(exact_facility_top_k_rows)
     measured_rows.extend(exact_barnes_force_rows)
+    measured_rows.extend(exact_dbscan_component_rows)
     best = _best_measured(measured_rows)
     if exact_hausdorff_rows:
         # For Hausdorff, exact semantics are more important than keeping the
@@ -530,6 +570,10 @@ def build_analysis() -> dict[str, object]:
         # Force vectors are the authored Barnes-Hut app output; node coverage
         # is only a candidate/proxy row.
         best["barnes_hut_force_app"] = exact_barnes_force_rows[0]
+    if exact_dbscan_component_rows:
+        # Full component labels are the DBSCAN app semantics; core counts are
+        # only the density predicate.
+        best["dbscan_clustering"] = exact_dbscan_component_rows[0]
     rows: list[dict[str, object]] = []
     for matrix_row in matrix["rows"]:
         app = str(matrix_row["app"])
@@ -636,6 +680,7 @@ def to_markdown(payload: dict[str, object]) -> str:
             "- Hausdorff now has an exact partner-reference row after Goal1975, so the table prefers that semantic match over the faster but weaker fixed-radius threshold proxy.",
             "- Facility KNN now has an exact partner-reference K=3 top-k row after Goal1978, so the table no longer treats service coverage as the best semantic representative for that app.",
             "- Barnes-Hut now has exact partner-reference force-vector rows after Goal1979, so node coverage stays useful but no longer stands in for force output.",
+            "- DBSCAN now has exact partner-reference radius-graph component labels after Goal1981, but the dense implementation is still marked as optimization debt.",
             "",
             "## Release Boundary",
             "",

@@ -1,0 +1,63 @@
+{
+  "claim_boundary": {
+    "exact_partner_reference_path": true,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal1981",
+  "gpu": "NVIDIA RTX 2000 Ada Generation, 565.57.01",
+  "results": [
+    {
+      "cluster_count": 128,
+      "copies": 64,
+      "cpu_python_reference_wall_s": {
+        "max_s": 0.11799339950084686,
+        "median_s": 0.11799339950084686,
+        "min_s": 0.11799339950084686
+      },
+      "matches_cpu_clusters": true,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_radius_graph_component_labels_2d",
+      "point_count": 512,
+      "rt_core_accelerated": false,
+      "v2_partner_exact_cluster_wall_s": {
+        "max_s": 0.07233835756778717,
+        "median_s": 0.07031960040330887,
+        "min_s": 0.06905575096607208
+      },
+      "v2_vs_cpu_python_reference_ratio": 0.5959621529745329
+    },
+    {
+      "cluster_count": 512,
+      "copies": 256,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_radius_graph_component_labels_2d",
+      "point_count": 2048,
+      "rt_core_accelerated": false,
+      "v2_partner_exact_cluster_wall_s": {
+        "max_s": 0.9822518453001976,
+        "median_s": 0.9696685075759888,
+        "min_s": 0.9641196504235268
+      }
+    },
+    {
+      "cluster_count": 1024,
+      "copies": 512,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_radius_graph_component_labels_2d",
+      "point_count": 4096,
+      "rt_core_accelerated": false,
+      "v2_partner_exact_cluster_wall_s": {
+        "max_s": 3.8188750594854355,
+        "median_s": 3.8071106001734734,
+        "min_s": 3.8029796853661537
+      }
+    }
+  ],
+  "source": "pod direct uncommitted goal1981 workspace",
+  "status": "pass"
+}

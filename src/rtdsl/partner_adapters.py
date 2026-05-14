@@ -800,6 +800,123 @@ def top_k_nearest_points_2d_partner_columns(
     return columns
 
 
+def radius_graph_components_2d_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Label radius-graph core components over generic point columns."""
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    runtime = _partner_module(partner)
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        x = point_columns["x"].to(torch.float64)
+        y = point_columns["y"].to(torch.float64)
+        dx = x.reshape(-1, 1) - x.reshape(1, -1)
+        dy = y.reshape(-1, 1) - y.reshape(1, -1)
+        within = (dx * dx + dy * dy).le(radius * radius)
+        neighbor_counts = torch.sum(within.to(torch.int64), dim=1)
+        is_core = neighbor_counts.ge(min_neighbors)
+        labels = torch.arange(point_count, dtype=torch.int64, device=x.device)
+        active = within & is_core.reshape(-1, 1) & is_core.reshape(1, -1)
+        for _ in range(point_count):
+            candidate = torch.where(active, labels.reshape(1, -1), torch.full_like(active.to(torch.int64), point_count))
+            new_labels = torch.minimum(labels, torch.min(candidate, dim=1).values)
+            if bool(torch.all(new_labels == labels).item()):
+                break
+            labels = new_labels
+        core_labels = torch.where(is_core, labels, torch.full_like(labels, -1))
+        border_candidates = torch.where(
+            within & is_core.reshape(1, -1),
+            labels.reshape(1, -1),
+            torch.full_like(within.to(torch.int64), point_count),
+        )
+        border_labels = torch.min(border_candidates, dim=1).values
+        component_labels = torch.where(is_core, core_labels, torch.where(border_labels < point_count, border_labels, torch.full_like(labels, -1)))
+        unique_labels = torch.unique(component_labels[component_labels >= 0])
+        dense = torch.full_like(component_labels, -1)
+        for index, label in enumerate(unique_labels.detach().cpu().tolist(), start=1):
+            dense = torch.where(component_labels == int(label), torch.full_like(dense, index), dense)
+        core_u32 = is_core.to(torch.uint32)
+        counts_u32 = neighbor_counts.to(torch.uint32)
+    elif runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        x = point_columns["x"].astype(cupy.float64, copy=False)
+        y = point_columns["y"].astype(cupy.float64, copy=False)
+        dx = x.reshape(-1, 1) - x.reshape(1, -1)
+        dy = y.reshape(-1, 1) - y.reshape(1, -1)
+        within = (dx * dx + dy * dy) <= (radius * radius)
+        neighbor_counts = cupy.sum(within.astype(cupy.int64, copy=False), axis=1)
+        is_core = neighbor_counts >= min_neighbors
+        labels = cupy.arange(point_count, dtype=cupy.int64)
+        active = within & is_core.reshape(-1, 1) & is_core.reshape(1, -1)
+        sentinel = cupy.asarray(point_count, dtype=cupy.int64)
+        for _ in range(point_count):
+            candidate = cupy.where(active, labels.reshape(1, -1), sentinel)
+            new_labels = cupy.minimum(labels, cupy.min(candidate, axis=1))
+            if bool(cupy.all(new_labels == labels).item()):
+                break
+            labels = new_labels
+        core_labels = cupy.where(is_core, labels, cupy.full_like(labels, -1))
+        border_candidates = cupy.where(
+            within & is_core.reshape(1, -1),
+            labels.reshape(1, -1),
+            sentinel,
+        )
+        border_labels = cupy.min(border_candidates, axis=1)
+        component_labels = cupy.where(
+            is_core,
+            core_labels,
+            cupy.where(border_labels < point_count, border_labels, cupy.full_like(labels, -1)),
+        )
+        unique_labels = cupy.unique(component_labels[component_labels >= 0])
+        dense = cupy.full_like(component_labels, -1)
+        for index, label in enumerate(cupy.asnumpy(unique_labels).tolist(), start=1):
+            dense = cupy.where(component_labels == int(label), cupy.full_like(dense, index), dense)
+        core_u32 = is_core.astype(cupy.uint32, copy=False)
+        counts_u32 = neighbor_counts.astype(cupy.uint32, copy=False)
+    else:
+        raise ValueError("partner must be 'torch' or 'cupy'")
+
+    runtime["sync"]()
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": dense,
+        "is_core": core_u32,
+        "neighbor_counts": counts_u32,
+    }
+    metadata = {
+        "adapter": "radius_graph_components_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_radius_graph_component_labels_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "component_label_policy": "dense_positive_labels_by_lowest_component_seed_noise_minus_one",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def _polygon_triangle_columns(polygons: tuple[_CanonicalPolygon, ...], partner: dict) -> tuple[dict[str, object], object]:
     ids: list[int] = []
     x0: list[float] = []

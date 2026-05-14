@@ -51,7 +51,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertEqual(classes["hausdorff_distance"], "positive-bounded-exact")
         self.assertEqual(classes["ann_candidate_search"], "positive")
         self.assertEqual(classes["outlier_detection"], "positive")
-        self.assertEqual(classes["dbscan_clustering"], "positive")
+        self.assertEqual(classes["dbscan_clustering"], "positive-bounded-exact")
         self.assertEqual(classes["barnes_hut_force_app"], "positive-bounded-exact")
         self.assertEqual(classes["database_analytics"], "positive")
         self.assertEqual(classes["graph_analytics"], "positive-bounded")
@@ -71,6 +71,7 @@ class Goal1931CurrentAllAppPerfAnalysisTest(unittest.TestCase):
         self.assertIn("upgrades Hausdorff", text)
         self.assertIn("upgrades facility KNN", text)
         self.assertIn("upgrades Barnes-Hut", text)
+        self.assertIn("upgrades DBSCAN", text)
 
 
 if __name__ == "__main__":

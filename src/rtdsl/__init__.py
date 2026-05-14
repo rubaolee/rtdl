@@ -401,6 +401,7 @@ from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
+from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import service_coverage_gap_flags_partner_columns
 from .partner_adapters import service_coverage_gap_flags_optix_partner_device_columns
 from .partner_adapters import service_coverage_gap_flags_optix_prepared_partner_device_columns
@@ -1315,6 +1316,7 @@ __all__ = [
     "pairwise_inverse_square_force_2d_partner_columns",
     "directed_hausdorff_2d_partner_columns",
     "top_k_nearest_points_2d_partner_columns",
+    "radius_graph_components_2d_partner_columns",
     "service_coverage_gap_flags_partner_columns",
     "service_coverage_gap_flags_optix_partner_device_columns",
     "service_coverage_gap_flags_optix_prepared_partner_device_columns",

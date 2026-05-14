@@ -46,9 +46,10 @@ class Goal1958AllAppV2OptimizationDebtAuditTest(unittest.TestCase):
         self.assertEqual(classes["polygon_set_jaccard"], "positive-bounded")
         self.assertEqual(classes["hausdorff_distance"], "positive-bounded-exact")
         self.assertEqual(classes["barnes_hut_force_app"], "positive-bounded-exact")
-        self.assertEqual(analysis["classification_counts"]["positive"], 9)
+        self.assertEqual(classes["dbscan_clustering"], "positive-bounded-exact")
+        self.assertEqual(analysis["classification_counts"]["positive"], 8)
         self.assertEqual(analysis["classification_counts"]["positive-bounded"], 3)
-        self.assertEqual(analysis["classification_counts"]["positive-bounded-exact"], 3)
+        self.assertEqual(analysis["classification_counts"]["positive-bounded-exact"], 4)
         self.assertFalse(analysis["claim_boundary"]["v2_0_release_authorized"])
 
 

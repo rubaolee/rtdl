@@ -23,7 +23,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 | `hausdorff_distance` | `positive-bounded-exact` | cupy | 512 | 0.325964 | 0.002686 | 0.008241 | Goal1975 upgrades Hausdorff from a fixed-radius threshold proxy to exact partner-reference directed Hausdorff via min-distance then max-distance reductions; the CPU baseline is limited to a small exact row and this is not an RT-core claim. |
 | `ann_candidate_search` | `positive` | torch | 524288 | 1.328173 | 0.000350 | 0.000263 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
 | `outlier_detection` | `positive` | cupy | 524288 | 1.357974 | 0.000439 | 0.000323 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
-| `dbscan_clustering` | `positive` | torch | 524288 | 1.337720 | 0.000436 | 0.000326 | Repeat-3 fixed-radius pod evidence is seconds-scale on v1.8 and sub-millisecond on the v2 partner threshold path; this is not ranked KNN or full cluster labeling. |
+| `dbscan_clustering` | `positive-bounded-exact` | cupy | 512 | 0.117993 | 0.070320 | 0.595962 | Goal1981 upgrades DBSCAN from core-point threshold proxy to exact radius-graph component labels; current dense labeling is semantically correct but still needs a sparse/spatial-bucket partner implementation for larger rows. |
 | `robot_collision_screening` | `positive-subsecond` | cupy | 8388608 | 0.524696 | 0.009835 | 0.018745 | Goal1940 proves exact pose-flag parity and strong ratios through 8,388,608 poses, but the v1.8 baseline remains subsecond, so this is not a seconds-scale whole-app claim. |
 | `barnes_hut_force_app` | `positive-bounded-exact` | cupy | 512 | 0.103554 | 0.002056 | 0.019859 | Goal1979 upgrades Barnes-Hut from node-coverage threshold proxy to exact all-pairs force-vector partner reference rows; this is not hierarchical Barnes-Hut tree-opening or RT-core acceleration. |
 
@@ -36,6 +36,7 @@ This report is the current all-app performance analysis layer on top of Goal1930
 - Hausdorff now has an exact partner-reference row after Goal1975, so the table prefers that semantic match over the faster but weaker fixed-radius threshold proxy.
 - Facility KNN now has an exact partner-reference K=3 top-k row after Goal1978, so the table no longer treats service coverage as the best semantic representative for that app.
 - Barnes-Hut now has exact partner-reference force-vector rows after Goal1979, so node coverage stays useful but no longer stands in for force output.
+- DBSCAN now has exact partner-reference radius-graph component labels after Goal1981, but the dense implementation is still marked as optimization debt.
 
 ## Release Boundary
 
