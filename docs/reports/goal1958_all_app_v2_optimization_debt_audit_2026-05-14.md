@@ -31,7 +31,7 @@ all-app matrix. The remaining question is quality of the v2 path.
 | `facility_knn_assignment` | positive bounded exact top-k row | v2/CPU exact `0.04565x` | Goal1978 replaces the service-coverage proxy with exact K=3 ranked nearest-depot rows; bounded because it is partner-reference evidence, not an RT-core speedup claim. |
 | `road_hazard_screening` | positive | v2/v1.8 `0.247x` | Smaller row counts are overhead-sensitive; improve batching/reuse before marketing broad speedups. |
 | `segment_polygon_hitcount` | positive | v2/v1.8 `0.345x` | Healthy compact count row; avoid host witness materialization. |
-| `segment_polygon_anyhit_rows` | positive row output | v2/v1.8 `0.222x` | Row materialization remains heavier than compact counts; needs device-resident row paging/compaction for larger arbitrary outputs. |
+| `segment_polygon_anyhit_rows` | positive row output | v2/v1.8 `0.222x` | Row materialization remains heavier than compact counts; Goals1996-1997 add generic partner column paging and generic witness-pair page adapters. Remaining debt is app adoption plus pod-scale timing. |
 | `polygon_pair_overlap_area_rows` | positive bounded AABB extent row | v2/v1.8 `0.292x` | Goal1969 fixed the candidate-table bottleneck; Goals1993-1994 replace the app-local extent RawKernel and handoff with reusable AABB pair-payload and overlap-summary partner adapters. Still bounded to axis-aligned extent semantics. |
 | `polygon_set_jaccard` | positive bounded AABB extent row | v2/v1.8 `0.281x` | Goal1969 makes this a clear speedup for the authored extent case; Goals1993-1994 make the continuation generic AABB partner algebra, but arbitrary polygon/set overlay remains a future broader contract. |
 | `hausdorff_distance` | positive bounded exact partner row | v2/CPU exact `0.00824x` | Goal1975 replaces the threshold proxy with exact min-distance then max-distance partner reductions; bounded because it is partner-reference evidence, not an RT-core speedup claim. |
@@ -68,8 +68,10 @@ The remaining debt is not one bug. It is four patterns:
 3. **Row materialization**
 
    `segment_polygon_anyhit_rows` is positive, but row-output paths are inherently
-   heavier than compact count/flag paths. We should add device-resident
-   compaction/paging and grouped reductions before expecting count-like ratios.
+   heavier than compact count/flag paths. Goal1965 adds generic compaction,
+   Goal1996 adds bounded partner-column paging, and Goal1997 adds generic
+   ray/primitive witness-pair paging. We still need app adoption and pod-scale
+   timing before expecting count-like ratios.
 
 4. **Exact polygon/set reductions beyond AABB**
 
@@ -86,10 +88,12 @@ The remaining debt is not one bug. It is four patterns:
 1. **Partner reduction primitive set**
 
    Add reusable partner-side primitives for `group_count`, `group_sum`,
-   `group_any`, `compact_by_key`, `top_k_by_key`, and `prefix/paging`. This
-   directly attacks row materialization, graph, and polygon debts. Goal1987
-   adds the first generic DB columnar reductions; the remaining DB issue is
-   fusing/batching those reductions to avoid multiple partner launches.
+   `group_any`, `compact_by_key`, `top_k_by_key`, and prefix/paging. This
+   directly attacks row materialization, graph, and polygon debts. Goals1996-1997
+   cover the first generic paging layer; the next row-output target is using
+   those pages in app examples and timing them on pod-scale witness outputs.
+   Goal1987 adds the first generic DB columnar reductions; Goal1989 fuses the
+   DB summaries into a batched generic path.
 
 2. **Exact identity-preserving outputs**
 

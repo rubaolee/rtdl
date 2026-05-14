@@ -26,6 +26,8 @@ class Goal1958AllAppV2OptimizationDebtAuditTest(unittest.TestCase):
             "Goals1993-1994",
             "aabb_pair_payload_to_partner_columns",
             "aabb_pair_overlap_summary_2d_partner_columns",
+            "Goals1996-1997",
+            "generic witness-pair page",
             "Partner reduction primitive set",
         ):
             self.assertIn(phrase, text)
