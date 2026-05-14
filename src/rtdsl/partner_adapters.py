@@ -23,21 +23,11 @@ def _partner_module(partner: str):
             raise RuntimeError("Torch partner adapter requires torch.cuda to be available")
 
         def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
-            if int(witness_ray_ids.numel()) == 0:
-                return torch.zeros_like(segment_ids, dtype=torch.uint32)
-            segment_ids_i64 = segment_ids.to(torch.int64)
-            ray_ids = witness_ray_ids.to(torch.int64)
-            primitive_ids = witness_primitive_ids.to(torch.int64)
-            segment_matches = segment_ids_i64.reshape(-1, 1).eq(ray_ids.reshape(1, -1))
-            if not bool(torch.all(torch.any(segment_matches, dim=0)).item()):
-                raise ValueError("witness ray IDs must be present in segment_ray_columns['ids']")
-            segment_positions = torch.argmax(segment_matches.to(torch.int64), dim=0)
-            primitive_modulus = torch.max(primitive_ids) + 1
-            unique_pairs = torch.unique(segment_positions * primitive_modulus + primitive_ids)
-            unique_positions = torch.div(unique_pairs, primitive_modulus, rounding_mode="floor")
-            return (
-                torch.bincount(unique_positions, minlength=int(segment_ids.numel()))
-                .to(torch.uint32)
+            return partner_group_count_unique_pairs_by_key(
+                witness_ray_ids,
+                witness_primitive_ids,
+                segment_ids,
+                partner="torch",
             )
 
         return {
@@ -70,19 +60,12 @@ def _partner_module(partner: str):
             raise RuntimeError("CuPy partner adapter requires a CUDA device")
 
         def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
-            if int(witness_ray_ids.size) == 0:
-                return cupy.zeros_like(segment_ids, dtype=cupy.uint32)
-            segment_ids_i64 = segment_ids.astype(cupy.int64, copy=False)
-            ray_ids = witness_ray_ids.astype(cupy.int64, copy=False)
-            primitive_ids = witness_primitive_ids.astype(cupy.int64, copy=False)
-            segment_matches = segment_ids_i64.reshape(-1, 1) == ray_ids.reshape(1, -1)
-            if not bool(cupy.all(cupy.any(segment_matches, axis=0)).item()):
-                raise ValueError("witness ray IDs must be present in segment_ray_columns['ids']")
-            segment_positions = cupy.argmax(segment_matches, axis=0).astype(cupy.int64, copy=False)
-            primitive_modulus = cupy.max(primitive_ids) + cupy.asarray(1, dtype=cupy.int64)
-            unique_pairs = cupy.unique(segment_positions * primitive_modulus + primitive_ids)
-            unique_positions = unique_pairs // primitive_modulus
-            return cupy.bincount(unique_positions, minlength=int(segment_ids.size)).astype(cupy.uint32, copy=False)
+            return partner_group_count_unique_pairs_by_key(
+                witness_ray_ids,
+                witness_primitive_ids,
+                segment_ids,
+                partner="cupy",
+            )
 
         return {
             "name": "cupy",
@@ -197,6 +180,63 @@ def partner_unique_pair_keys(left_keys, right_keys, *, partner: str = "torch"):
             (unique % modulus).astype(right_keys.dtype, copy=False),
         )
     raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_group_count_unique_pairs_by_key(group_keys, item_keys, output_group_keys, *, partner: str = "torch"):
+    """Count unique (group_key, item_key) pairs per requested output group key."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        if int(group_keys.numel()) != int(item_keys.numel()):
+            raise ValueError("group_keys and item_keys must have the same length")
+        if int(group_keys.numel()) == 0:
+            return torch.zeros_like(output_group_keys, dtype=torch.uint32)
+        output_i64 = output_group_keys.to(torch.int64)
+        group_i64 = group_keys.to(torch.int64)
+        item_i64 = item_keys.to(torch.int64)
+        if bool(torch.any(item_i64 < 0).item()):
+            raise ValueError("item_keys must be non-negative")
+        group_matches = output_i64.reshape(-1, 1).eq(group_i64.reshape(1, -1))
+        if not bool(torch.all(torch.any(group_matches, dim=0)).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        group_positions = torch.argmax(group_matches.to(torch.int64), dim=0)
+        item_modulus = torch.max(item_i64) + 1
+        unique_pairs = torch.unique(group_positions * item_modulus + item_i64)
+        unique_positions = torch.div(unique_pairs, item_modulus, rounding_mode="floor")
+        return torch.bincount(unique_positions, minlength=int(output_group_keys.numel())).to(torch.uint32)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(group_keys.size) != int(item_keys.size):
+            raise ValueError("group_keys and item_keys must have the same length")
+        if int(group_keys.size) == 0:
+            return cupy.zeros_like(output_group_keys, dtype=cupy.uint32)
+        output_i64 = output_group_keys.astype(cupy.int64, copy=False)
+        group_i64 = group_keys.astype(cupy.int64, copy=False)
+        item_i64 = item_keys.astype(cupy.int64, copy=False)
+        if bool(cupy.any(item_i64 < 0).item()):
+            raise ValueError("item_keys must be non-negative")
+        group_matches = output_i64.reshape(-1, 1) == group_i64.reshape(1, -1)
+        if not bool(cupy.all(cupy.any(group_matches, axis=0)).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        group_positions = cupy.argmax(group_matches, axis=0).astype(cupy.int64, copy=False)
+        item_modulus = cupy.max(item_i64) + cupy.asarray(1, dtype=cupy.int64)
+        unique_pairs = cupy.unique(group_positions * item_modulus + item_i64)
+        unique_positions = unique_pairs // item_modulus
+        return cupy.bincount(unique_positions, minlength=int(output_group_keys.size)).astype(cupy.uint32, copy=False)
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _count_unique_pairs_for_runtime(runtime, output_group_keys, group_keys, item_keys):
+    if runtime["name"] in ("torch", "cupy"):
+        return partner_group_count_unique_pairs_by_key(
+            group_keys,
+            item_keys,
+            output_group_keys,
+            partner=runtime["name"],
+        )
+    if "count_unique_pairs_by_ids" in runtime:
+        return runtime["count_unique_pairs_by_ids"](output_group_keys, group_keys, item_keys)
+    raise ValueError("runtime must provide a supported partner name or count_unique_pairs_by_ids fallback")
 
 
 def _torch_fixed_radius_count_threshold_2d(torch, query_columns, search_columns, radius, threshold):
@@ -795,7 +835,8 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
     metadata = dict(witness_result["metadata"])
     witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
     witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
-    hit_counts = runtime["count_unique_pairs_by_ids"](
+    hit_counts = _count_unique_pairs_for_runtime(
+        runtime,
         segment_ray_columns["ids"],
         witness_ray_ids,
         witness_primitive_ids,
@@ -849,7 +890,8 @@ def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
     metadata = dict(witness_result["metadata"])
     witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
     witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
-    hit_counts = runtime["count_unique_pairs_by_ids"](
+    hit_counts = _count_unique_pairs_for_runtime(
+        runtime,
         segment_ray_columns["ids"],
         witness_ray_ids,
         witness_primitive_ids,
