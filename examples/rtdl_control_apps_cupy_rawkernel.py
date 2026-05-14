@@ -4,6 +4,7 @@ import argparse
 from dataclasses import dataclass
 import json
 import math
+import os
 from pathlib import Path
 import sys
 import time
@@ -650,6 +651,39 @@ def _partner_pair_payload_table(
     )
 
 
+def _cupy_extent_tile_rows() -> int:
+    return max(1, int(os.environ.get("RTDL_CUPY_EXTENT_TILE_ROWS", "2048")))
+
+
+def _cupy_extent_candidate_indices(left_columns: dict[str, Any], right_columns: dict[str, Any]):
+    cp = _load_cupy()
+    tile_rows = _cupy_extent_tile_rows()
+    left_chunks = []
+    right_chunks = []
+    right_min_x = right_columns["min_x"][None, :]
+    right_min_y = right_columns["min_y"][None, :]
+    right_max_x = right_columns["max_x"][None, :]
+    right_max_y = right_columns["max_y"][None, :]
+    left_count = int(len(left_columns["min_x"]))
+    for start in range(0, left_count, tile_rows):
+        stop = min(start + tile_rows, left_count)
+        width = cp.minimum(left_columns["max_x"][start:stop, None], right_max_x) - cp.maximum(
+            left_columns["min_x"][start:stop, None],
+            right_min_x,
+        )
+        height = cp.minimum(left_columns["max_y"][start:stop, None], right_max_y) - cp.maximum(
+            left_columns["min_y"][start:stop, None],
+            right_min_y,
+        )
+        local_left, right_index = cp.nonzero((width > 0) & (height > 0))
+        if int(local_left.size):
+            left_chunks.append((local_left + start).astype(cp.int32, copy=False))
+            right_chunks.append(right_index.astype(cp.int32, copy=False))
+    if not left_chunks:
+        return cp.empty(0, dtype=cp.int32), cp.empty(0, dtype=cp.int32)
+    return cp.concatenate(left_chunks), cp.concatenate(right_chunks)
+
+
 def _partner_pair_payload_table_cupy_extent(
     left: tuple[Any, ...],
     right: tuple[Any, ...],
@@ -657,15 +691,7 @@ def _partner_pair_payload_table_cupy_extent(
     cp = _load_cupy()
     left_columns = {name: cp.asarray(value) for name, value in _axis_aligned_extent_columns(left).items()}
     right_columns = {name: cp.asarray(value) for name, value in _axis_aligned_extent_columns(right).items()}
-    width = cp.minimum(left_columns["max_x"][:, None], right_columns["max_x"][None, :]) - cp.maximum(
-        left_columns["min_x"][:, None],
-        right_columns["min_x"][None, :],
-    )
-    height = cp.minimum(left_columns["max_y"][:, None], right_columns["max_y"][None, :]) - cp.maximum(
-        left_columns["min_y"][:, None],
-        right_columns["min_y"][None, :],
-    )
-    left_indices, right_indices = cp.nonzero((width > 0) & (height > 0))
+    left_indices, right_indices = _cupy_extent_candidate_indices(left_columns, right_columns)
     return PartnerPairPayloadTable(
         left_index=left_indices.astype(cp.int32, copy=False),
         right_index=right_indices.astype(cp.int32, copy=False),
@@ -697,15 +723,20 @@ def _positive_candidate_pairs_cupy_extent(
     right_min_y = cp.asarray(right_columns["min_y"])
     right_max_x = cp.asarray(right_columns["max_x"])
     right_max_y = cp.asarray(right_columns["max_y"])
-    width = cp.minimum(left_max_x[:, None], right_max_x[None, :]) - cp.maximum(
-        left_min_x[:, None],
-        right_min_x[None, :],
+    left_indices, right_indices = _cupy_extent_candidate_indices(
+        {
+            "min_x": left_min_x,
+            "min_y": left_min_y,
+            "max_x": left_max_x,
+            "max_y": left_max_y,
+        },
+        {
+            "min_x": right_min_x,
+            "min_y": right_min_y,
+            "max_x": right_max_x,
+            "max_y": right_max_y,
+        },
     )
-    height = cp.minimum(left_max_y[:, None], right_max_y[None, :]) - cp.maximum(
-        left_min_y[:, None],
-        right_min_y[None, :],
-    )
-    left_indices, right_indices = cp.nonzero((width > 0) & (height > 0))
     left_ids = np.asarray([polygon.id for polygon in left], dtype=np.int32)
     right_ids = np.asarray([polygon.id for polygon in right], dtype=np.int32)
     return set(

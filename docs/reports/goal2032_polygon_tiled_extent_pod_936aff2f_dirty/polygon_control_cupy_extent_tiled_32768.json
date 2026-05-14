@@ -1,0 +1,112 @@
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "cupy_extent",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA RTX A5000, 570.211.01"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "candidate_backend": "cupy_extent",
+      "copies": 32768,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "sha256": "8aaa2e58bc41a4611ff7602369e49f8bb0b05eba110dd7f8783a9ec07c3339bd",
+        "summary": {
+          "overlap_pair_count": 65536,
+          "total_intersection_area": 163840,
+          "total_union_area": 622592
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 3.9507734533399343,
+        "median_s": 3.91704566963017,
+        "min_s": 3.8944087475538254
+      },
+      "v2_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "0d44cc8aaa6379c6b4815bf75a6481b0c129d2365c4fd8b1c6e69526f4fc9488",
+        "summary": {
+          "overlap_pair_count": 65536,
+          "total_intersection_area": 163840,
+          "total_union_area": 622592
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 1.565527344122529,
+        "median_s": 1.5551260337233543,
+        "min_s": 1.3658445794135332
+      },
+      "v2_vs_v1_8_ratio": 0.39701503757809964,
+      "warmups": 1
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "candidate_backend": "cupy_extent",
+      "copies": 32768,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "sha256": "3ccced3fe8f585d80b4ff5b36bdf5c4d26333f718ff43578c8560a653990ffbf",
+        "summary": {
+          "intersection_area": 163840,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 425984,
+          "right_area": 360448,
+          "union_area": 622592
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 3.5269232876598835,
+        "median_s": 3.4744751043617725,
+        "min_s": 3.389129091054201
+      },
+      "v2_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "b9e4a9fd32811fe6fdbf8e62e909676fd06af24becb08879573fdf972ff9906b",
+        "summary": {
+          "intersection_area": 163840,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 425984,
+          "right_area": 360448,
+          "union_area": 622592
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 1.038173757493496,
+        "median_s": 0.9658928718417883,
+        "min_s": 0.9385580271482468
+      },
+      "v2_vs_v1_8_ratio": 0.27799677442766235,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "936aff2f_plus_goal2032_tiled_extent",
+  "status": "rawkernel-control-app-perf-smoke"
+}
