@@ -138,18 +138,18 @@ GRAPH_MAX_METRIC_VALUES = np.asarray([1], dtype=np.int32)
 class PartnerPairPayloadTable:
     """Compact identity-preserving table handed from RTDL discovery to partner code."""
 
-    left_index: np.ndarray
-    right_index: np.ndarray
-    left_min_x: np.ndarray
-    left_min_y: np.ndarray
-    left_max_x: np.ndarray
-    left_max_y: np.ndarray
-    left_area: np.ndarray
-    right_min_x: np.ndarray
-    right_min_y: np.ndarray
-    right_max_x: np.ndarray
-    right_max_y: np.ndarray
-    right_area: np.ndarray
+    left_index: Any
+    right_index: Any
+    left_min_x: Any
+    left_min_y: Any
+    left_max_x: Any
+    left_max_y: Any
+    left_area: Any
+    right_min_x: Any
+    right_min_y: Any
+    right_max_x: Any
+    right_max_y: Any
+    right_area: Any
 
     @property
     def pair_count(self) -> int:
@@ -661,6 +661,38 @@ def _partner_pair_payload_table(
     )
 
 
+def _partner_pair_payload_table_cupy_extent(
+    left: tuple[Any, ...],
+    right: tuple[Any, ...],
+) -> PartnerPairPayloadTable:
+    cp = _load_cupy()
+    left_columns = {name: cp.asarray(value) for name, value in _axis_aligned_extent_columns(left).items()}
+    right_columns = {name: cp.asarray(value) for name, value in _axis_aligned_extent_columns(right).items()}
+    width = cp.minimum(left_columns["max_x"][:, None], right_columns["max_x"][None, :]) - cp.maximum(
+        left_columns["min_x"][:, None],
+        right_columns["min_x"][None, :],
+    )
+    height = cp.minimum(left_columns["max_y"][:, None], right_columns["max_y"][None, :]) - cp.maximum(
+        left_columns["min_y"][:, None],
+        right_columns["min_y"][None, :],
+    )
+    left_indices, right_indices = cp.nonzero((width > 0) & (height > 0))
+    return PartnerPairPayloadTable(
+        left_index=left_indices.astype(cp.int32, copy=False),
+        right_index=right_indices.astype(cp.int32, copy=False),
+        left_min_x=left_columns["min_x"],
+        left_min_y=left_columns["min_y"],
+        left_max_x=left_columns["max_x"],
+        left_max_y=left_columns["max_y"],
+        left_area=left_columns["area"],
+        right_min_x=right_columns["min_x"],
+        right_min_y=right_columns["min_y"],
+        right_max_x=right_columns["max_x"],
+        right_max_y=right_columns["max_y"],
+        right_area=right_columns["area"],
+    )
+
+
 def _positive_candidate_pairs_cupy_extent(
     left: tuple[Any, ...],
     right: tuple[Any, ...],
@@ -809,7 +841,13 @@ def _polygon_pair_cupy_summary(
     }
 
 
-def _polygon_summary_inputs(app: str, copies: int, candidate_backend: str) -> dict[str, object]:
+def _sum_int(values: Any) -> int:
+    if hasattr(values, "sum"):
+        return int(values.sum().item())
+    return int(np.asarray(values).sum())
+
+
+def _polygon_summary_inputs(app: str, copies: int, candidate_backend: str, partner: str) -> dict[str, object]:
     if app == "polygon_pair_overlap_area_rows":
         case = rtdl_polygon_pair_overlap_area_rows.make_authored_polygon_pair_overlap_case(copies=copies)
     elif app == "polygon_set_jaccard":
@@ -818,25 +856,30 @@ def _polygon_summary_inputs(app: str, copies: int, candidate_backend: str) -> di
         raise ValueError(f"unsupported polygon app: {app}")
     left = case["left"]
     right = case["right"]
-    if candidate_backend == "cupy_extent":
-        candidate_pairs = _positive_candidate_pairs_cupy_extent(left, right)
-    elif candidate_backend == "embree":
-        candidate_pairs = rtdl_polygon_pair_overlap_area_rows._positive_candidate_pairs_embree(left, right)
-    elif candidate_backend == "optix":
-        candidate_pairs = rtdl_polygon_pair_overlap_area_rows._positive_candidate_pairs_optix(left, right)
+    if candidate_backend == "cupy_extent" and partner == "cupy":
+        pair_payload_table = _partner_pair_payload_table_cupy_extent(left, right)
+        candidate_pair_count = pair_payload_table.pair_count
     else:
-        candidate_pairs = {
-            (left_polygon.id, right_polygon.id)
-            for left_polygon in left
-            for right_polygon in right
-        }
-    pair_payload_table = _partner_pair_payload_table(left, right, candidate_pairs)
+        if candidate_backend == "cupy_extent":
+            candidate_pairs = _positive_candidate_pairs_cupy_extent(left, right)
+        elif candidate_backend == "embree":
+            candidate_pairs = rtdl_polygon_pair_overlap_area_rows._positive_candidate_pairs_embree(left, right)
+        elif candidate_backend == "optix":
+            candidate_pairs = rtdl_polygon_pair_overlap_area_rows._positive_candidate_pairs_optix(left, right)
+        else:
+            candidate_pairs = {
+                (left_polygon.id, right_polygon.id)
+                for left_polygon in left
+                for right_polygon in right
+            }
+        pair_payload_table = _partner_pair_payload_table(left, right, candidate_pairs)
+        candidate_pair_count = len(candidate_pairs)
     return {
         "case": case,
-        "candidate_pairs": candidate_pairs,
+        "candidate_pair_count": candidate_pair_count,
         "pair_payload_table": pair_payload_table,
-        "left_set_area": int(pair_payload_table.left_area.sum()),
-        "right_set_area": int(pair_payload_table.right_area.sum()),
+        "left_set_area": _sum_int(pair_payload_table.left_area),
+        "right_set_area": _sum_int(pair_payload_table.right_area),
     }
 
 
@@ -848,7 +891,7 @@ def run_polygon_pair_overlap_rawkernel(
     verify_oracle: bool = True,
 ) -> dict[str, object]:
     start = time.perf_counter()
-    inputs = _polygon_summary_inputs("polygon_pair_overlap_area_rows", copies, candidate_backend)
+    inputs = _polygon_summary_inputs("polygon_pair_overlap_area_rows", copies, candidate_backend, partner)
     input_sec = time.perf_counter() - start
     continuation_start = time.perf_counter()
     pair_payload_table = inputs["pair_payload_table"]
@@ -878,7 +921,7 @@ def run_polygon_pair_overlap_rawkernel(
         "partner": partner,
         "candidate_backend": candidate_backend,
         "copies": copies,
-        "candidate_pair_count": len(inputs["candidate_pairs"]),
+        "candidate_pair_count": int(inputs["candidate_pair_count"]),
         "pair_payload_row_count": pair_payload_table.pair_count,
         "summary": summary,
         "matches_v1_8_python_rtdl_oracle": None if oracle is None else summary == oracle,
@@ -898,7 +941,7 @@ def run_polygon_set_jaccard_rawkernel(
     verify_oracle: bool = True,
 ) -> dict[str, object]:
     start = time.perf_counter()
-    inputs = _polygon_summary_inputs("polygon_set_jaccard", copies, candidate_backend)
+    inputs = _polygon_summary_inputs("polygon_set_jaccard", copies, candidate_backend, partner)
     input_sec = time.perf_counter() - start
     continuation_start = time.perf_counter()
     pair_payload_table = inputs["pair_payload_table"]
@@ -940,7 +983,7 @@ def run_polygon_set_jaccard_rawkernel(
         "partner": partner,
         "candidate_backend": candidate_backend,
         "copies": copies,
-        "candidate_pair_count": len(inputs["candidate_pairs"]),
+        "candidate_pair_count": int(inputs["candidate_pair_count"]),
         "pair_payload_row_count": pair_payload_table.pair_count,
         "summary": summary,
         "matches_v1_8_python_rtdl_oracle": matches,
