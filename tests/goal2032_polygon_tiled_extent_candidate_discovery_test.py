@@ -17,8 +17,12 @@ class Goal2032PolygonTiledExtentCandidateDiscoveryTest(unittest.TestCase):
         text = SOURCE.read_text(encoding="utf-8")
 
         self.assertIn("RTDL_CUPY_EXTENT_TILE_ROWS", text)
+        self.assertIn("RTDL_CUPY_EXTENT_RIGHT_TILE_ROWS", text)
+        self.assertIn("RTDL_CUPY_EXTENT_FREE_TILE_BLOCKS", text)
         self.assertIn("def _cupy_extent_candidate_indices", text)
-        self.assertIn("for start in range(0, left_count, tile_rows):", text)
+        self.assertIn("for left_start in range(0, left_count, left_tile_rows):", text)
+        self.assertIn("for right_start in range(0, right_count, right_tile_rows):", text)
+        self.assertIn("cp.get_default_memory_pool().free_all_blocks()", text)
         self.assertIn("cp.concatenate(left_chunks)", text)
         self.assertNotIn('left_columns["max_x"][:, None]', text)
         self.assertNotIn("left_max_x[:, None]", text)
@@ -31,6 +35,7 @@ class Goal2032PolygonTiledExtentCandidateDiscoveryTest(unittest.TestCase):
         self.assertIn("16,384", text)
         self.assertIn("32,768", text)
         self.assertIn("65,536", text)
+        self.assertIn("131,072", text)
         self.assertIn("not v2.0 release authorization", text)
         self.assertIn("not absolutely fair", text)
 
@@ -46,15 +51,18 @@ class Goal2032PolygonTiledExtentCandidateDiscoveryTest(unittest.TestCase):
         self.assertLess(payload["key_results"]["polygon_pair_16384_ratio"], 0.30)
         self.assertLess(payload["key_results"]["polygon_pair_32768_ratio"], 0.45)
         self.assertLess(payload["key_results"]["polygon_pair_65536_ratio"], 0.55)
+        self.assertLess(payload["key_results"]["polygon_pair_131072_ratio"], 0.80)
         self.assertLess(payload["key_results"]["polygon_jaccard_16384_ratio"], 0.25)
         self.assertLess(payload["key_results"]["polygon_jaccard_32768_ratio"], 0.30)
         self.assertLess(payload["key_results"]["polygon_jaccard_65536_ratio"], 0.45)
+        self.assertLess(payload["key_results"]["polygon_jaccard_131072_ratio"], 0.70)
 
     def test_pod_artifacts_preserve_oracle_parity(self) -> None:
         for name in (
             "polygon_control_cupy_extent_tiled_16384.json",
             "polygon_control_cupy_extent_tiled_32768.json",
             "polygon_control_cupy_extent_tiled_65536.json",
+            "polygon_control_cupy_extent_tiled_131072.json",
         ):
             path = ARTIFACT_DIR / name
             self.assertTrue(path.exists(), str(path))

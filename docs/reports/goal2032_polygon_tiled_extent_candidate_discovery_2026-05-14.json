@@ -16,9 +16,11 @@
     "polygon_pair_16384_ratio": 0.2765689201203822,
     "polygon_pair_32768_ratio": 0.39701503757809964,
     "polygon_pair_65536_ratio": 0.5006256673080767,
+    "polygon_pair_131072_ratio": 0.771281994158361,
     "polygon_jaccard_16384_ratio": 0.22773768277380274,
     "polygon_jaccard_32768_ratio": 0.27799677442766235,
     "polygon_jaccard_65536_ratio": 0.4279166790489903,
+    "polygon_jaccard_131072_ratio": 0.6619238120057245,
     "all_match_v1_8_python_rtdl_oracle": true,
     "goal2030_polygon_16000_dense_status": "oom_dense_all_pairs_extent",
     "goal2032_polygon_16384_tiled_status": "passed"
@@ -26,7 +28,8 @@
   "design_findings": [
     "The v2 polygon continuation needs bounded-memory candidate discovery before RawKernel continuation.",
     "Tiling preserves app-level polygon semantics without putting polygon customization back into the native RTDL engine.",
-    "The 32k pair-overlap row still shows that materialized candidate table size needs a reusable compact or paged contract."
+    "The 32k and larger pair-overlap rows still show that materialized candidate table size needs a reusable compact or paged contract.",
+    "One-axis tiling is insufficient at larger scale; both axes and the CuPy temporary memory pool must be bounded."
   ],
   "next_work": [
     "Retest after commit with an exact source commit label.",

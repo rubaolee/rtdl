@@ -1,0 +1,112 @@
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "cupy_extent",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA RTX A5000, 570.211.01"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "candidate_backend": "cupy_extent",
+      "copies": 131072,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "sha256": "9741e2f487e3e15618db9ce409e92272664a7fb39d40313c3b9676c4c648253c",
+        "summary": {
+          "overlap_pair_count": 262144,
+          "total_intersection_area": 655360,
+          "total_union_area": 2490368
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 17.82785141468048,
+        "median_s": 17.2665802706033,
+        "min_s": 16.832255208864808
+      },
+      "v2_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "936bebdcd41a4c948ce43bf66a8f4ed42a31c8f2f6d6066b7644f9244305e363",
+        "summary": {
+          "overlap_pair_count": 262144,
+          "total_intersection_area": 655360,
+          "total_union_area": 2490368
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 13.38577408157289,
+        "median_s": 13.317402463406324,
+        "min_s": 13.210731679573655
+      },
+      "v2_vs_v1_8_ratio": 0.771281994158361,
+      "warmups": 1
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "candidate_backend": "cupy_extent",
+      "copies": 131072,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "sha256": "da8ac63782144d34dd8573b8a1ea04bdd403c8fdcdbc3266ba29df7bdcc0db0b",
+        "summary": {
+          "intersection_area": 655360,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 1703936,
+          "right_area": 1441792,
+          "union_area": 2490368
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 14.152937527745962,
+        "median_s": 13.721577567979693,
+        "min_s": 13.200305800884962
+      },
+      "v2_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "candidate_backend": "cupy_extent",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "89e9eb3c9599ac941dc4bc187e77ca1b759ab1a09b79b3c4f31f0f9072bed72c",
+        "summary": {
+          "intersection_area": 655360,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 1703936,
+          "right_area": 1441792,
+          "union_area": 2490368
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 9.615636669099331,
+        "median_s": 9.082638930529356,
+        "min_s": 8.975809767842293
+      },
+      "v2_vs_v1_8_ratio": 0.6619238120057245,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "936aff2f_plus_goal2032_tiled_extent",
+  "status": "rawkernel-control-app-perf-smoke"
+}

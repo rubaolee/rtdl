@@ -655,30 +655,44 @@ def _cupy_extent_tile_rows() -> int:
     return max(1, int(os.environ.get("RTDL_CUPY_EXTENT_TILE_ROWS", "2048")))
 
 
+def _cupy_extent_right_tile_rows() -> int:
+    return max(1, int(os.environ.get("RTDL_CUPY_EXTENT_RIGHT_TILE_ROWS", str(_cupy_extent_tile_rows()))))
+
+
+def _cupy_extent_free_tile_blocks() -> bool:
+    return os.environ.get("RTDL_CUPY_EXTENT_FREE_TILE_BLOCKS", "1") not in ("0", "false", "False")
+
+
 def _cupy_extent_candidate_indices(left_columns: dict[str, Any], right_columns: dict[str, Any]):
     cp = _load_cupy()
-    tile_rows = _cupy_extent_tile_rows()
+    left_tile_rows = _cupy_extent_tile_rows()
+    right_tile_rows = _cupy_extent_right_tile_rows()
+    free_tile_blocks = _cupy_extent_free_tile_blocks()
     left_chunks = []
     right_chunks = []
-    right_min_x = right_columns["min_x"][None, :]
-    right_min_y = right_columns["min_y"][None, :]
-    right_max_x = right_columns["max_x"][None, :]
-    right_max_y = right_columns["max_y"][None, :]
     left_count = int(len(left_columns["min_x"]))
-    for start in range(0, left_count, tile_rows):
-        stop = min(start + tile_rows, left_count)
-        width = cp.minimum(left_columns["max_x"][start:stop, None], right_max_x) - cp.maximum(
-            left_columns["min_x"][start:stop, None],
-            right_min_x,
-        )
-        height = cp.minimum(left_columns["max_y"][start:stop, None], right_max_y) - cp.maximum(
-            left_columns["min_y"][start:stop, None],
-            right_min_y,
-        )
-        local_left, right_index = cp.nonzero((width > 0) & (height > 0))
-        if int(local_left.size):
-            left_chunks.append((local_left + start).astype(cp.int32, copy=False))
-            right_chunks.append(right_index.astype(cp.int32, copy=False))
+    right_count = int(len(right_columns["min_x"]))
+    for left_start in range(0, left_count, left_tile_rows):
+        left_stop = min(left_start + left_tile_rows, left_count)
+        left_min_x = left_columns["min_x"][left_start:left_stop, None]
+        left_min_y = left_columns["min_y"][left_start:left_stop, None]
+        left_max_x = left_columns["max_x"][left_start:left_stop, None]
+        left_max_y = left_columns["max_y"][left_start:left_stop, None]
+        for right_start in range(0, right_count, right_tile_rows):
+            right_stop = min(right_start + right_tile_rows, right_count)
+            right_min_x = right_columns["min_x"][None, right_start:right_stop]
+            right_min_y = right_columns["min_y"][None, right_start:right_stop]
+            right_max_x = right_columns["max_x"][None, right_start:right_stop]
+            right_max_y = right_columns["max_y"][None, right_start:right_stop]
+            width = cp.minimum(left_max_x, right_max_x) - cp.maximum(left_min_x, right_min_x)
+            height = cp.minimum(left_max_y, right_max_y) - cp.maximum(left_min_y, right_min_y)
+            local_left, local_right = cp.nonzero((width > 0) & (height > 0))
+            if int(local_left.size):
+                left_chunks.append((local_left + left_start).astype(cp.int32, copy=False))
+                right_chunks.append((local_right + right_start).astype(cp.int32, copy=False))
+            del width, height, local_left, local_right
+            if free_tile_blocks:
+                cp.get_default_memory_pool().free_all_blocks()
     if not left_chunks:
         return cp.empty(0, dtype=cp.int32), cp.empty(0, dtype=cp.int32)
     return cp.concatenate(left_chunks), cp.concatenate(right_chunks)
