@@ -80,11 +80,11 @@ def _build_partner_columns(roads, hazards, partner: str):
     t0 = time.perf_counter()
     ray_columns = {
         "ids": runtime["tensor"]([road.id for road in roads], runtime["uint32"]),
-        "ox": runtime["tensor"]([road.x0 for road in roads], runtime["float64"]),
-        "oy": runtime["tensor"]([road.y0 for road in roads], runtime["float64"]),
-        "dx": runtime["tensor"]([road.x1 - road.x0 for road in roads], runtime["float64"]),
-        "dy": runtime["tensor"]([road.y1 - road.y0 for road in roads], runtime["float64"]),
-        "tmax": runtime["tensor"]([1.0 for _ in roads], runtime["float64"]),
+        "ox": runtime["tensor"]([road.x0 for road in roads], runtime["float32"]),
+        "oy": runtime["tensor"]([road.y0 for road in roads], runtime["float32"]),
+        "dx": runtime["tensor"]([road.x1 - road.x0 for road in roads], runtime["float32"]),
+        "dy": runtime["tensor"]([road.y1 - road.y0 for road in roads], runtime["float32"]),
+        "tmax": runtime["tensor"]([1.0 for _ in roads], runtime["float32"]),
     }
     triangle_ids = []
     x0 = []
@@ -138,6 +138,18 @@ def _columns_to_flags(columns: dict[str, object], runtime: dict) -> tuple[tuple[
     road_ids = runtime["to_host"](columns["road_ids"])
     priority_flags = runtime["to_host"](columns["priority_flags"])
     return tuple(sorted((road_id, flag) for road_id, flag in zip(road_ids, priority_flags)))
+
+
+def _result_columns(result):
+    if isinstance(result, dict) and "columns" in result:
+        return result["columns"]
+    return result
+
+
+def _result_metadata(result) -> dict:
+    if isinstance(result, dict) and isinstance(result.get("metadata"), dict):
+        return dict(result["metadata"])
+    return {}
 
 
 def _time_call(label: str, iterations: int, fn):
@@ -227,9 +239,10 @@ def main() -> int:
                 threshold=args.threshold,
                 partner=partner,
                 output_capacity=output_capacity,
+                return_metadata=True,
             ),
         )
-        flags = _columns_to_flags(result, runtime)
+        flags = _columns_to_flags(_result_columns(result), runtime)
         if flags != expected_flags:
             raise RuntimeError(f"v2.0 partner priority flags did not match expected flags for {partner}")
         print(f"[setup] preparing reusable {partner} triangle scene and witness outputs", flush=True)
@@ -252,13 +265,16 @@ def main() -> int:
                     partner=partner,
                     output_capacity=output_capacity,
                     witness_output_columns=witness_output_columns,
+                    return_metadata=True,
                 ),
             )
         finally:
             prepared_partner_scene.close()
-        prepared_flags = _columns_to_flags(prepared_result, runtime)
+        prepared_flags = _columns_to_flags(_result_columns(prepared_result), runtime)
         if prepared_flags != expected_flags:
             raise RuntimeError(f"v2.0 prepared partner priority flags did not match expected flags for {partner}")
+        metadata = _result_metadata(result)
+        prepared_metadata = _result_metadata(prepared_result)
         partner_results[partner] = {
             "column_build_s": build_s,
             "query_samples_s": samples,
@@ -267,6 +283,13 @@ def main() -> int:
             "query_median_ratio_vs_v1_8_prepared_native": statistics.median(samples) / statistics.median(v18_prepared_samples),
             "row_count": len(flags),
             "output_contract": "partner_owned_road_hazard_priority_columns",
+            "metadata": {
+                "native_engine_row_contract": metadata.get("native_engine_row_contract"),
+                "app_exact_filter": metadata.get("app_exact_filter"),
+                "app_exact_filter_device_materialization": metadata.get("app_exact_filter_device_materialization"),
+                "app_count_materialization": metadata.get("app_count_materialization"),
+                "whole_app_true_zero_copy_authorized": metadata.get("whole_app_true_zero_copy_authorized"),
+            },
             "goal1889_prepared_reuse": {
                 "query_samples_s": prepared_samples,
                 "query_summary": _summary(prepared_samples),
@@ -280,6 +303,13 @@ def main() -> int:
                 "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
                 "prepared_scene_reused": True,
                 "witness_output_columns_reused": True,
+                "metadata": {
+                    "native_engine_row_contract": prepared_metadata.get("native_engine_row_contract"),
+                    "app_exact_filter": prepared_metadata.get("app_exact_filter"),
+                    "app_exact_filter_device_materialization": prepared_metadata.get("app_exact_filter_device_materialization"),
+                    "app_count_materialization": prepared_metadata.get("app_count_materialization"),
+                    "whole_app_true_zero_copy_authorized": prepared_metadata.get("whole_app_true_zero_copy_authorized"),
+                },
             },
         }
 

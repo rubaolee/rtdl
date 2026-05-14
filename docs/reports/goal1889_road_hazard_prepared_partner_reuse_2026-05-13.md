@@ -1,6 +1,6 @@
 # Goal1889 - Road Hazard Prepared Partner Reuse Timing Row
 
-Status: local-smoke-pass-pod-pending
+Status: pod-pass-with-boundary
 
 Date: 2026-05-13
 
@@ -68,6 +68,30 @@ Artifacts to collect:
 
 Each artifact must include strict priority-flag parity, the dual v1.8 baselines,
 the Goal1869 unprepared partner row, and the nested Goal1889 prepared reuse row.
+
+## Goal2006 Pod Follow-Up
+
+Goal2006 reran the prepared CuPy row on an RTX A5000 pod after the Goal2000 /
+Goal2003 candidate-witness exact-filter correction. The reusable prepared scene
+now retains the caller-owned triangle columns, allowing the CuPy RawKernel exact
+segment/triangle filter to run before partner-side unique-pair counting.
+
+Artifact:
+
+- `docs/reports/goal2006_pod_smoke/road_hazard_prepared_cupy_exact_filter_2048.json`
+
+Result at `count=2048`, `iterations=5`:
+
+| Row | Median seconds | Ratio vs v1.8 prepared |
+| --- | ---: | ---: |
+| v1.8 one-shot native OptiX road-hazard rows | 16.327098407 | 4699.62x slower |
+| v1.8 prepared native OptiX road-hazard rows | 0.003474137 | 1.000x |
+| v2.0 unprepared CuPy priority columns | 0.003750768 | 1.080x |
+| Goal2006 prepared CuPy exact-filter priority columns | 0.003149398 | 0.907x |
+
+Strict priority-flag parity passed. This upgrades the CuPy prepared road-hazard
+row from pod-pending to measured-with-boundary, while keeping the v2.0 release
+and broad-speedup claims blocked.
 
 ## Local Linux Smoke
 

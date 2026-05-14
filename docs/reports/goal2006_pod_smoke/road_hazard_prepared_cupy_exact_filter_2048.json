@@ -1,0 +1,112 @@
+{
+  "baseline": {
+    "name": "v1_8_one_shot_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      16.353441439568996,
+      16.32709840685129,
+      16.014203367754817,
+      15.945955723524094,
+      18.769804634153843
+    ],
+    "query_summary": {
+      "max_s": 18.769804634153843,
+      "median_s": 16.32709840685129,
+      "min_s": 15.945955723524094
+    },
+    "row_count": 2048
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 2048,
+  "git_commit": "unknown",
+  "goal": "Goal1869",
+  "goal_extension": "Goal1889",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "iterations": 5,
+  "output_capacity": 6291456,
+  "parity": {
+    "expected_row_count": 2048,
+    "strict_priority_flags_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.01013171672821045,
+      "goal1889_prepared_reuse": {
+        "metadata": {
+          "app_count_materialization": "partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter",
+          "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+          "app_exact_filter_device_materialization": true,
+          "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+          "whole_app_true_zero_copy_authorized": true
+        },
+        "output_contract": "prepared_partner_owned_road_hazard_priority_columns",
+        "prepared_scene_reused": true,
+        "query_median_ratio_vs_goal1869_unprepared_partner": 0.8396675138726252,
+        "query_median_ratio_vs_v1_8_one_shot_native": 0.0001928938990103174,
+        "query_median_ratio_vs_v1_8_prepared_native": 0.9065266681785988,
+        "query_samples_s": [
+          0.0031580477952957153,
+          0.0031493976712226868,
+          0.003109615296125412,
+          0.0031382031738758087,
+          0.0031657274812459946
+        ],
+        "query_summary": {
+          "max_s": 0.0031657274812459946,
+          "median_s": 0.0031493976712226868,
+          "min_s": 0.003109615296125412
+        },
+        "row_count": 2048,
+        "witness_output_columns_reused": true
+      },
+      "metadata": {
+        "app_count_materialization": "partner_gpu_unique_pair_counts_from_cupy_exact_filter",
+        "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+        "app_exact_filter_device_materialization": true,
+        "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+        "whole_app_true_zero_copy_authorized": true
+      },
+      "output_contract": "partner_owned_road_hazard_priority_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": 0.00022972652368158519,
+      "query_median_ratio_vs_v1_8_prepared_native": 1.0796257485270724,
+      "query_samples_s": [
+        0.21332121267914772,
+        0.004292910918593407,
+        0.0036809835582971573,
+        0.003750767558813095,
+        0.003705061972141266
+      ],
+      "query_summary": {
+        "max_s": 0.21332121267914772,
+        "median_s": 0.003750767558813095,
+        "min_s": 0.0036809835582971573
+      },
+      "row_count": 2048
+    }
+  },
+  "prepared_baseline": {
+    "name": "v1_8_prepared_native_optix_road_hazard_rows",
+    "query_samples_s": [
+      0.024799322709441185,
+      0.0037336405366659164,
+      0.0034741368144750595,
+      0.0034299176186323166,
+      0.0033976566046476364
+    ],
+    "query_summary": {
+      "max_s": 0.024799322709441185,
+      "median_s": 0.0034741368144750595,
+      "min_s": 0.0033976566046476364
+    },
+    "row_count": 2048
+  },
+  "source_commit_label": "cbbffaa9-plus-goal2006-prepared-cupy-exact",
+  "status": "pass",
+  "threshold": 2
+}

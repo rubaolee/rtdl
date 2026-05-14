@@ -30,10 +30,13 @@ class Goal1889RoadHazardPreparedPartnerReusePerfTest(unittest.TestCase):
     def test_report_keeps_claim_boundary_and_pod_plan(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("Status: local-smoke-pass-pod-pending", report)
+        self.assertIn("Status: pod-pass-with-boundary", report)
         self.assertIn("road_hazard_priority_flags_optix_prepared_partner_device_columns", report)
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_512.json", report)
         self.assertIn("goal1889_road_hazard_prepared_reuse_pod_2048.json", report)
+        self.assertIn("goal2006_pod_smoke/road_hazard_prepared_cupy_exact_filter_2048.json", report)
+        self.assertIn("CuPy RawKernel exact", report)
+        self.assertIn("0.003149398", report)
         self.assertIn("goal1889_road_hazard_prepared_reuse_local_gtx1070_smoke_64.json", report)
         self.assertIn("goal1889_road_hazard_prepared_reuse_local_gtx1070_smoke_256.json", report)
         self.assertIn("They do not replace RTX 3090 pod timing evidence", report)

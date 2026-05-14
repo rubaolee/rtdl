@@ -68,7 +68,7 @@ class Goal1886SegmentPolygonPreparedPartnerReuseTest(unittest.TestCase):
             "witness_primitive_ids": _FakeColumn([11, 12, 12]),
             "emitted_count": 3,
             "metadata": {
-                "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+                "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
                 "prepared_scene_reused": True,
                 "witness_output_columns_reused": True,
                 "true_zero_copy_authorized": True,
@@ -98,7 +98,10 @@ class Goal1886SegmentPolygonPreparedPartnerReuseTest(unittest.TestCase):
         self.assertEqual(result["columns"]["hit_counts"].values, [2, 1, 0])
         metadata = result["metadata"]
         self.assertEqual(metadata["adapter"], "segment_polygon_hitcount_optix_prepared_partner_device_count_columns")
-        self.assertEqual(metadata["app_count_materialization"], "partner_gpu_from_prepared_generic_witness_pairs")
+        self.assertEqual(metadata["app_count_materialization"], "partner_gpu_from_prepared_generic_candidate_witness_pairs")
+        self.assertEqual(metadata["native_engine_row_contract"], "generic_ray_primitive_candidate_witness_pairs")
+        self.assertFalse(metadata["app_exact_row_semantics_authorized"])
+        self.assertFalse(metadata["whole_app_true_zero_copy_authorized"])
         self.assertTrue(metadata["prepared_scene_reused"])
         self.assertTrue(metadata["witness_output_columns_reused"])
         self.assertFalse(metadata["v2_0_release_authorized"])
@@ -111,8 +114,8 @@ class Goal1886SegmentPolygonPreparedPartnerReuseTest(unittest.TestCase):
             },
             "metadata": {
                 "adapter": "segment_polygon_hitcount_optix_prepared_partner_device_count_columns",
-                "app_count_materialization": "partner_gpu_from_prepared_generic_witness_pairs",
-                "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+                "app_count_materialization": "partner_gpu_from_prepared_generic_candidate_witness_pairs",
+                "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
                 "v2_0_release_authorized": False,
                 "whole_app_speedup_claim_authorized": False,
             },
@@ -149,7 +152,7 @@ class Goal1886SegmentPolygonPreparedPartnerReuseTest(unittest.TestCase):
         report = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("Status: measured-with-boundary", report)
-        self.assertIn("generic_ray_primitive_witness_pairs", report)
+        self.assertIn("generic_ray_primitive_candidate_witness_pairs", report)
         self.assertIn("reusable witness output columns", report)
         self.assertIn("does not authorize broad RT-core speedup wording", report)
         self.assertIn("Speedup vs v1.8 prepared", report)

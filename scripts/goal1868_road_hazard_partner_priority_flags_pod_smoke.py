@@ -75,11 +75,11 @@ def _build_partner_columns(roads, hazards, partner: str):
     runtime = _partner_tensor_factory(partner)
     ray_columns = {
         "ids": runtime["tensor"]([road.id for road in roads], runtime["uint32"]),
-        "ox": runtime["tensor"]([road.x0 for road in roads], runtime["float64"]),
-        "oy": runtime["tensor"]([road.y0 for road in roads], runtime["float64"]),
-        "dx": runtime["tensor"]([road.x1 - road.x0 for road in roads], runtime["float64"]),
-        "dy": runtime["tensor"]([road.y1 - road.y0 for road in roads], runtime["float64"]),
-        "tmax": runtime["tensor"]([1.0 for _ in roads], runtime["float64"]),
+        "ox": runtime["tensor"]([road.x0 for road in roads], runtime["float32"]),
+        "oy": runtime["tensor"]([road.y0 for road in roads], runtime["float32"]),
+        "dx": runtime["tensor"]([road.x1 - road.x0 for road in roads], runtime["float32"]),
+        "dy": runtime["tensor"]([road.y1 - road.y0 for road in roads], runtime["float32"]),
+        "tmax": runtime["tensor"]([1.0 for _ in roads], runtime["float32"]),
     }
     triangle_ids = []
     x0 = []

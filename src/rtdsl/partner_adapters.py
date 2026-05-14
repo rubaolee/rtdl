@@ -1971,7 +1971,11 @@ def _segment_polygon_all_witness_columns_optix_partner_columns(
 ):
     ray_count = _column_length(segment_ray_columns, "ids")
     if prepared_scene is not None:
-        triangle_count = int(getattr(getattr(prepared_scene, "_packed_triangles", None), "count", 0))
+        prepared_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
+        if prepared_triangle_columns is not None:
+            triangle_count = _column_length(prepared_triangle_columns, "ids")
+        else:
+            triangle_count = int(getattr(getattr(prepared_scene, "_packed_triangles", None), "count", 0))
     elif polygon_triangle_columns is not None:
         triangle_count = _column_length(polygon_triangle_columns, "ids")
     else:
@@ -1980,7 +1984,7 @@ def _segment_polygon_all_witness_columns_optix_partner_columns(
     if ray_count == 0 or triangle_count == 0:
         metadata = {
             "input_contract": "caller_supplied_partner_device_columns",
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
             "emitted_count": 0,
             "overflowed": False,
             "v2_0_release_authorized": False,
@@ -2322,15 +2326,35 @@ def _cupy_exact_segment_triangle_witness_pairs(
     return candidate_ray_ids[exact_mask], candidate_primitive_ids[exact_mask], metadata
 
 
+class _PartnerPreparedTriangleScene:
+    def __init__(self, native_scene, polygon_triangle_columns: dict[str, object], polygon_triangle_aabbs) -> None:
+        self._native_scene = native_scene
+        self.polygon_triangle_columns = polygon_triangle_columns
+        self.polygon_triangle_aabbs = polygon_triangle_aabbs
+
+    def write_device_any_hit_all_witnesses(self, *args, **kwargs):
+        return self._native_scene.write_device_any_hit_all_witnesses(*args, **kwargs)
+
+    def write_device_any_hit_flags(self, *args, **kwargs):
+        return self._native_scene.write_device_any_hit_flags(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self._native_scene, name)
+
+    def close(self) -> None:
+        self._native_scene.close()
+
+
 def prepare_segment_polygon_anyhit_optix_partner_device_scene(
     polygon_triangle_columns: dict[str, object],
     polygon_triangle_aabbs,
 ):
     """Prepare a reusable OptiX scene from partner-owned triangle columns."""
-    return _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+    native_scene = _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
         polygon_triangle_columns,
         polygon_triangle_aabbs,
     )
+    return _PartnerPreparedTriangleScene(native_scene, polygon_triangle_columns, polygon_triangle_aabbs)
 
 
 def allocate_segment_polygon_witness_partner_device_output_columns(
@@ -2389,7 +2413,7 @@ def ray_primitive_witness_pair_page_optix_prepared_partner_columns(
             "adapter": "ray_primitive_witness_pair_page_optix_prepared_partner_columns",
             "partner": runtime["name"],
             "emitted_count": emitted_count,
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
             "app_row_materialization": "not_performed_generic_witness_page_only",
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
@@ -2785,14 +2809,45 @@ def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
     runtime = witness_result["runtime"]
     emitted_count = witness_result["emitted_count"]
     metadata = dict(witness_result["metadata"])
-    witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
-    witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
-    hit_counts = _count_unique_pairs_for_runtime(
-        runtime,
-        segment_ray_columns["ids"],
-        witness_ray_ids,
-        witness_primitive_ids,
-    )
+    polygon_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
+    if runtime["name"] == "cupy" and polygon_triangle_columns is not None:
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter"
+        app_count_host_materialization = False
+        native_exact_row_semantics_authorized = False
+        app_exact_row_semantics_authorized = True
+        whole_app_true_zero_copy_authorized = True
+    else:
+        witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
+        witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            witness_ray_ids,
+            witness_primitive_ids,
+        )
+        exact_filter_metadata = {
+            "app_exact_filter": "not_available_for_prepared_scene_without_partner_triangle_columns",
+            "app_exact_filter_device_materialization": False,
+        }
+        app_count_materialization = "partner_gpu_from_prepared_generic_candidate_witness_pairs"
+        app_count_host_materialization = False
+        native_exact_row_semantics_authorized = False
+        app_exact_row_semantics_authorized = False
+        whole_app_true_zero_copy_authorized = False
     runtime["sync"]()
     columns = {
         "segment_ids": segment_ray_columns["ids"],
@@ -2805,10 +2860,14 @@ def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
             "app_columns_emitted": 2,
             "app_rows_emitted": _column_length(segment_ray_columns, "ids"),
             "input_contract": "caller_supplied_partner_device_columns",
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
-            "app_count_materialization": "partner_gpu_from_prepared_generic_witness_pairs",
-            "app_count_host_materialization": False,
-            "whole_app_true_zero_copy_authorized": True,
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_count_materialization": app_count_materialization,
+            "app_count_host_materialization": app_count_host_materialization,
+            "app_exact_filter": exact_filter_metadata["app_exact_filter"],
+            "app_exact_filter_device_materialization": exact_filter_metadata["app_exact_filter_device_materialization"],
+            "native_exact_row_semantics_authorized": native_exact_row_semantics_authorized,
+            "app_exact_row_semantics_authorized": app_exact_row_semantics_authorized,
+            "whole_app_true_zero_copy_authorized": whole_app_true_zero_copy_authorized,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
@@ -2922,7 +2981,7 @@ def road_hazard_priority_flags_optix_prepared_partner_device_columns(
             "app_priority_materialization": "partner_gpu_threshold_from_prepared_hit_counts",
             "app_priority_host_materialization": False,
             "input_contract": "caller_supplied_partner_device_columns",
-            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }

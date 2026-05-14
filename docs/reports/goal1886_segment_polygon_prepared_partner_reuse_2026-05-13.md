@@ -8,11 +8,18 @@ Status: measured-with-boundary
 
 Goal1886 extends the v2.0 partner-device reuse pattern from fixed-radius to the segment/polygon hitcount and road-hazard path.
 
-The native engine contract stays generic: `generic_ray_primitive_witness_pairs`. The Python partner layer owns the app meaning:
+The native engine contract stays generic: `generic_ray_primitive_candidate_witness_pairs`. The Python partner layer owns the app meaning:
 
 - segment/polygon hitcount is built from generic witness pairs with PyTorch/CuPy duplicate-pair reduction;
 - road-hazard priority is a Python/PyTorch/CuPy threshold over those hit counts;
 - native OptiX does not see road, hazard, polygon-hitcount, or app-specific semantics.
+
+Follow-up correction after Goal2000/Goal2003: native bounded all-witness rows are
+candidate witness pairs, not exact app rows. Prepared partner scenes must retain
+the caller-owned triangle columns if the partner layer wants to exact-filter
+those candidates on device. CuPy prepared scenes now keep those columns and can
+run the RawKernel exact filter before partner-side counting; runtimes without a
+device exact filter remain bounded as generic candidate-count rows.
 
 ## What Changed
 
