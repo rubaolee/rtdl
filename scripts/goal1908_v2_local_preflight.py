@@ -63,6 +63,7 @@ TEST_MODULES = (
     "tests.goal1953_control_apps_cupy_rawkernel_v2_test",
     "tests.goal1954_gemini_review_goal1953_rawkernel_control_apps_test",
     "tests.goal1955_rawkernel_control_app_perf_test",
+    "tests.goal1956_rawkernel_control_app_pod_runner_test",
 )
 
 

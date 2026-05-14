@@ -192,6 +192,7 @@ def run_one(
     repeats: int,
     warmups: int,
     include_v1_8: bool,
+    source_commit_label: str | None,
 ) -> dict[str, object]:
     for _ in range(warmups):
         rawkernel_apps.run_control_app(
@@ -258,6 +259,7 @@ def build_payload(
     repeats: int,
     warmups: int,
     include_v1_8: bool,
+    source_commit_label: str | None,
 ) -> dict[str, object]:
     results = [
         run_one(
@@ -268,6 +270,7 @@ def build_payload(
             repeats=repeats,
             warmups=warmups,
             include_v1_8=include_v1_8,
+            source_commit_label=source_commit_label,
         )
         for app in apps
     ]
@@ -275,6 +278,7 @@ def build_payload(
         "goal": "Goal1955",
         "status": "rawkernel-control-app-perf-smoke",
         "source_commit": _git_commit(),
+        "source_commit_label": source_commit_label or _git_commit(),
         "gpu_info": _gpu_info(),
         "partner": partner,
         "candidate_backend": candidate_backend,
@@ -306,6 +310,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--warmups", type=int, default=1)
     parser.add_argument("--skip-v1-8", action="store_true")
+    parser.add_argument("--source-commit-label", default=None)
     parser.add_argument("--output", default="docs/reports/goal1955_rawkernel_control_app_perf.json")
     args = parser.parse_args(list(argv) if argv is not None else None)
 
@@ -328,6 +333,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         repeats=args.repeats,
         warmups=args.warmups,
         include_v1_8=not args.skip_v1_8,
+        source_commit_label=args.source_commit_label,
     )
     output = ROOT / args.output
     output.parent.mkdir(parents=True, exist_ok=True)

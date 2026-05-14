@@ -31,6 +31,8 @@ class Goal1955RawKernelControlAppPerfTest(unittest.TestCase):
                     "1",
                     "--warmups",
                     "0",
+                    "--source-commit-label",
+                    "local-test",
                     "--output",
                     str(output),
                 ],
@@ -42,6 +44,7 @@ class Goal1955RawKernelControlAppPerfTest(unittest.TestCase):
             payload = json.loads(completed.stdout)
 
             self.assertEqual(payload["goal"], "Goal1955")
+            self.assertEqual(payload["source_commit_label"], "local-test")
             self.assertTrue(payload["all_match_v1_8_python_rtdl_oracle"])
             self.assertFalse(payload["claim_boundary"]["local_linux_gtx1070_is_release_perf_evidence"])
             self.assertTrue(payload["claim_boundary"]["comparison_is_not_absolutely_fair"])
@@ -64,6 +67,7 @@ class Goal1955RawKernelControlAppPerfTest(unittest.TestCase):
         self.assertIn("DEFAULT_COPIES", text)
         self.assertIn("local_linux_gtx1070_is_release_perf_evidence", text)
         self.assertIn("requires_pod_for_release_timing", text)
+        self.assertIn("source_commit_label", text)
         self.assertIn("payload_signature", text)
         self.assertIn("list_length", text)
         self.assertIn("not absolutely fair", text)
