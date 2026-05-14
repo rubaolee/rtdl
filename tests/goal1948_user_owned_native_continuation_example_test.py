@@ -42,6 +42,7 @@ class Goal1948UserOwnedNativeContinuationExampleTest(unittest.TestCase):
         self.assertEqual(payload["app"], "hausdorff_user_cpp_continuation")
         self.assertEqual(payload["continuation"], "python_reference")
         self.assertTrue(payload["matches_oracle"])
+        self.assertEqual(payload["witness_direction"], payload["oracle"]["witness_direction"])
         self.assertFalse(payload["counts_as_v2_partner_speedup"])
         self.assertEqual(payload["rows_a_to_b"], 4)
         self.assertEqual(payload["rows_b_to_a"], 4)

@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
         }
         Directed ab = read_directed(in, "AB");
         Directed ba = read_directed(in, "BA");
-        const bool choose_ba = ba.distance > ab.distance;
+        const bool choose_ba = ba.distance >= ab.distance;
         const Directed& undirected = choose_ba ? ba : ab;
         std::cout << std::setprecision(17)
                   << "{\"directed_a_to_b\":{\"distance\":" << ab.distance
@@ -218,7 +218,7 @@ def run_app(
         float(oracle["hausdorff_distance"]),
         rel_tol=1e-9,
         abs_tol=1e-9,
-    )
+    ) and continuation_result["witness_direction"] == oracle["witness_direction"]
     return {
         "app": "hausdorff_user_cpp_continuation",
         "backend": backend,
