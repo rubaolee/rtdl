@@ -21,6 +21,8 @@ class Goal2006PreparedCupyExactFilterReuseTest(unittest.TestCase):
 
         self.assertIn("class _PartnerPreparedTriangleScene", text)
         self.assertIn("self.polygon_triangle_columns = polygon_triangle_columns", text)
+        self.assertIn("_cupy_exact_filter_triangle_lookup_cache", text)
+        self.assertIn("triangle_lookup_cache[\"sorted_triangle_ids\"]", text)
         self.assertIn("prepared_triangle_columns = getattr(prepared_scene, \"polygon_triangle_columns\", None)", text)
         self.assertIn("_cupy_exact_segment_triangle_witness_pairs(", text)
         self.assertIn("partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter", text)

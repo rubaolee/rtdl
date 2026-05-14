@@ -2259,6 +2259,7 @@ def _cupy_exact_segment_triangle_witness_pairs(
     witness_ray_ids,
     witness_primitive_ids,
     emitted_count: int,
+    triangle_lookup_cache: dict[str, object] | None = None,
 ):
     emitted_count = int(emitted_count)
     cupy = runtime["module"]
@@ -2285,8 +2286,18 @@ def _cupy_exact_segment_triangle_witness_pairs(
     segment_valid = segment_valid & (sorted_segment_ids[safe_segment_pos] == candidate_ray_ids)
     ray_indices = cupy.where(segment_valid, sorted_segment_pos[safe_segment_pos], -1).astype(cupy.int64, copy=False)
 
-    sorted_triangle_pos = cupy.argsort(triangle_ids)
-    sorted_triangle_ids = triangle_ids[sorted_triangle_pos]
+    if triangle_lookup_cache is not None:
+        sorted_triangle_pos = triangle_lookup_cache.get("sorted_triangle_pos")
+        sorted_triangle_ids = triangle_lookup_cache.get("sorted_triangle_ids")
+    else:
+        sorted_triangle_pos = None
+        sorted_triangle_ids = None
+    if sorted_triangle_pos is None or sorted_triangle_ids is None:
+        sorted_triangle_pos = cupy.argsort(triangle_ids)
+        sorted_triangle_ids = triangle_ids[sorted_triangle_pos]
+        if triangle_lookup_cache is not None:
+            triangle_lookup_cache["sorted_triangle_pos"] = sorted_triangle_pos
+            triangle_lookup_cache["sorted_triangle_ids"] = sorted_triangle_ids
     triangle_search_pos = cupy.searchsorted(sorted_triangle_ids, candidate_primitive_ids)
     triangle_valid = triangle_search_pos < int(triangle_ids.size)
     safe_triangle_pos = cupy.minimum(triangle_search_pos, max(0, int(triangle_ids.size) - 1))
@@ -2331,6 +2342,7 @@ class _PartnerPreparedTriangleScene:
         self._native_scene = native_scene
         self.polygon_triangle_columns = polygon_triangle_columns
         self.polygon_triangle_aabbs = polygon_triangle_aabbs
+        self._cupy_exact_filter_triangle_lookup_cache: dict[str, object] = {}
 
     def write_device_any_hit_all_witnesses(self, *args, **kwargs):
         return self._native_scene.write_device_any_hit_all_witnesses(*args, **kwargs)
@@ -2811,6 +2823,7 @@ def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
     metadata = dict(witness_result["metadata"])
     polygon_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
     if runtime["name"] == "cupy" and polygon_triangle_columns is not None:
+        triangle_lookup_cache = getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None)
         exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
             runtime,
             segment_ray_columns,
@@ -2818,6 +2831,7 @@ def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
             witness_result["witness_ray_ids"],
             witness_result["witness_primitive_ids"],
             emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
         )
         hit_counts = _count_unique_pairs_for_runtime(
             runtime,

@@ -110,3 +110,6 @@ The prepared CuPy exact filter still sorts segment and triangle IDs inside each
 query. That is correct, but the triangle-side sort is reusable for a prepared
 scene and should be cached in a later optimization pass if this row becomes a
 headline v2.0 performance path.
+
+Update: Goal2009 implements the triangle-side lookup cache in the Python partner
+wrapper and records a faster pod timing row.
