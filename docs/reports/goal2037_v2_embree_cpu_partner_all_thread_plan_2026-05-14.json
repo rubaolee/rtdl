@@ -1,0 +1,31 @@
+{
+  "claim_boundary": {
+    "broad_all_app_speedup_claim_authorized": false,
+    "triton_numba_public_backend_claim_authorized": false,
+    "true_host_zero_copy_for_every_row_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "goal": "Goal2037",
+  "status": "proposed-for-review-then-implementation",
+  "purpose": "Fully test the v2.0 Embree CPU partner path on local Linux using all available CPU threads.",
+  "default_cpu_partners": [
+    "numpy",
+    "torch_cpu"
+  ],
+  "conditional_cpu_partners": [
+    "numba_cpu"
+  ],
+  "non_default_interop": [
+    "python_c_extension"
+  ],
+  "required_evidence": [
+    "local_linux_cpu_and_thread_count",
+    "embree_build_or_probe_status",
+    "all_thread_environment",
+    "full_app_matrix",
+    "parity_or_explicit_boundary_per_row",
+    "repeat_timing_with_progress_logs",
+    "continuation_kind_per_row"
+  ],
+  "initial_verdict": "needs-implementation"
+}
