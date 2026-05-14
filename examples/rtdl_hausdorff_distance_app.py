@@ -272,6 +272,32 @@ def _native_continuation_backend(
     return "none"
 
 
+def _run_partner_exact_directed(
+    source: tuple[Point, ...],
+    target: tuple[Point, ...],
+    *,
+    partner: str,
+    label: str,
+) -> dict[str, object]:
+    source_columns = rt.point_rows_to_partner_columns(source, partner=partner)
+    target_columns = rt.point_rows_to_partner_columns(target, partner=partner)
+    result = rt.directed_hausdorff_2d_partner_columns(
+        source_columns,
+        target_columns,
+        partner=partner,
+        return_metadata=True,
+    )
+    metadata = result["metadata"]
+    return {
+        "label": label,
+        "distance": float(metadata["distance"]),
+        "source_id": int(metadata["source_id"]),
+        "target_id": int(metadata["target_id"]),
+        "row_count": int(metadata["source_count"]),
+        "partner_reference_contract": metadata["partner_reference_contract"],
+    }
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     copies: int = 1,
@@ -280,6 +306,7 @@ def run_app(
     optix_summary_mode: str = "rows",
     hausdorff_threshold: float = 0.4,
     require_rt_core: bool = False,
+    partner: str = "cupy",
 ) -> dict[str, object]:
     input_start = time.perf_counter()
     case = make_authored_point_sets(copies=copies)
@@ -292,6 +319,8 @@ def run_app(
         raise ValueError("embree_result_mode must be 'rows' or 'directed_summary'")
     if optix_summary_mode not in {"rows", "directed_threshold_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'directed_threshold_prepared'")
+    if backend == "partner_exact" and partner not in {"torch", "cupy"}:
+        raise ValueError("partner must be 'torch' or 'cupy'")
     if hausdorff_threshold < 0:
         raise ValueError("hausdorff_threshold must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
@@ -300,6 +329,52 @@ def run_app(
         embree_result_mode=embree_result_mode,
         optix_summary_mode=optix_summary_mode,
     )
+
+    if backend == "partner_exact":
+        query_start = time.perf_counter()
+        directed_ab = _run_partner_exact_directed(points_a, points_b, partner=partner, label="a_to_b")
+        directed_ba = _run_partner_exact_directed(points_b, points_a, partner=partner, label="b_to_a")
+        run_phases["partner_exact_directed_summary_sec"] = time.perf_counter() - query_start
+        undirected = max(
+            (("a_to_b", directed_ab), ("b_to_a", directed_ba)),
+            key=lambda item: (float(item[1]["distance"]), item[0]),
+        )
+        validation_start = time.perf_counter()
+        oracle = expected_tiled_hausdorff(copies=copies)
+        run_phases["validation_sec"] = time.perf_counter() - validation_start
+        return {
+            "app": "hausdorff_distance",
+            "backend": backend,
+            "partner": partner,
+            "copies": copies,
+            "point_count_a": len(points_a),
+            "point_count_b": len(points_b),
+            "embree_result_mode": None,
+            "optix_summary_mode": None,
+            "hausdorff_threshold": None,
+            "directed_a_to_b": directed_ab,
+            "directed_b_to_a": directed_ba,
+            "hausdorff_distance": float(undirected[1]["distance"]),
+            "witness_direction": undirected[0],
+            "oracle": oracle,
+            "matches_oracle": math.isclose(
+                float(undirected[1]["distance"]),
+                float(oracle["hausdorff_distance"]),
+                rel_tol=1e-5,
+                abs_tol=1e-5,
+            ),
+            "rtdl_role": (
+                "RTDL v2 partner exact mode converts Python point rows into generic partner "
+                "point columns, computes nearest distance per source point, then reduces the "
+                "nearest distances with max. The native engine is not app-customized."
+            ),
+            "optix_performance": _optix_performance(),
+            "native_continuation_active": False,
+            "native_continuation_backend": "none",
+            "rt_core_accelerated": False,
+            "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+            "run_phases": run_phases,
+        }
 
     if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
         directed_ab = _run_optix_directed_threshold(
@@ -410,6 +485,7 @@ def run_app(
     return {
         "app": "hausdorff_distance",
         "backend": backend,
+        "partner": None,
         "copies": copies,
         "point_count_a": len(points_a),
         "point_count_b": len(points_b),
@@ -442,9 +518,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "partner_exact"),
         default="cpu_python_reference",
     )
+    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
     parser.add_argument("--copies", type=int, default=1, help="tile the small authored point sets")
     parser.add_argument(
         "--embree-result-mode",
@@ -479,6 +556,7 @@ def main(argv: list[str] | None = None) -> int:
                 optix_summary_mode=args.optix_summary_mode,
                 hausdorff_threshold=args.hausdorff_threshold,
                 require_rt_core=args.require_rt_core,
+                partner=args.partner,
             ),
             indent=2,
             sort_keys=True,

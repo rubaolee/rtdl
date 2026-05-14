@@ -444,6 +444,95 @@ def _point_columns(points, partner: dict) -> dict[str, object]:
     }
 
 
+def point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
+    """Convert point rows into partner-owned generic point columns."""
+    runtime = _partner_module(partner)
+    return _point_columns(tuple(points), runtime)
+
+
+def directed_hausdorff_2d_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Compute exact directed Hausdorff distance from generic point columns."""
+    runtime = _partner_module(partner)
+    source_count = _column_length(source_point_columns, "ids")
+    target_count = _column_length(target_point_columns, "ids")
+    if source_count <= 0 or target_count <= 0:
+        raise ValueError("directed Hausdorff requires non-empty source and target columns")
+
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        sx = source_point_columns["x"].to(torch.float64)
+        sy = source_point_columns["y"].to(torch.float64)
+        tx = target_point_columns["x"].to(torch.float64)
+        ty = target_point_columns["y"].to(torch.float64)
+        dx = sx.reshape(-1, 1) - tx.reshape(1, -1)
+        dy = sy.reshape(-1, 1) - ty.reshape(1, -1)
+        distance_sq = dx * dx + dy * dy
+        nearest_distance_sq, nearest_indices = torch.min(distance_sq, dim=1)
+        directed_distance_sq, source_index = torch.max(nearest_distance_sq, dim=0)
+        source_index_i = int(source_index.detach().cpu().item())
+        target_index_i = int(nearest_indices[source_index_i].detach().cpu().item())
+        directed_distance = torch.sqrt(directed_distance_sq)
+        nearest_distances = torch.sqrt(nearest_distance_sq)
+    elif runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        sx = source_point_columns["x"].astype(cupy.float64, copy=False)
+        sy = source_point_columns["y"].astype(cupy.float64, copy=False)
+        tx = target_point_columns["x"].astype(cupy.float64, copy=False)
+        ty = target_point_columns["y"].astype(cupy.float64, copy=False)
+        dx = sx.reshape(-1, 1) - tx.reshape(1, -1)
+        dy = sy.reshape(-1, 1) - ty.reshape(1, -1)
+        distance_sq = dx * dx + dy * dy
+        nearest_distance_sq = cupy.min(distance_sq, axis=1)
+        nearest_indices = cupy.argmin(distance_sq, axis=1)
+        source_index = cupy.argmax(nearest_distance_sq)
+        source_index_i = int(source_index.item())
+        target_index_i = int(nearest_indices[source_index_i].item())
+        directed_distance_sq = nearest_distance_sq[source_index_i]
+        directed_distance = cupy.sqrt(directed_distance_sq)
+        nearest_distances = cupy.sqrt(nearest_distance_sq)
+    else:
+        raise ValueError("partner must be 'torch' or 'cupy'")
+
+    runtime["sync"]()
+    columns = {
+        "source_ids": source_point_columns["ids"],
+        "nearest_target_ids": target_point_columns["ids"][nearest_indices],
+        "nearest_distances": nearest_distances,
+    }
+    metadata = {
+        "adapter": "directed_hausdorff_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "source_count": source_count,
+        "target_count": target_count,
+        "source_id": int(runtime["to_host"](source_point_columns["ids"][source_index_i : source_index_i + 1])[0]),
+        "target_id": int(runtime["to_host"](target_point_columns["ids"][target_index_i : target_index_i + 1])[0]),
+        "distance": float(directed_distance.detach().cpu().item())
+        if runtime["name"] == "torch"
+        else float(directed_distance.item()),
+        "distance_sq": float(directed_distance_sq.detach().cpu().item())
+        if runtime["name"] == "torch"
+        else float(directed_distance_sq.item()),
+        "app_distance_materialization": "partner_gpu_exact_min_then_max_distance",
+        "app_distance_host_materialization": False,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def _polygon_triangle_columns(polygons: tuple[_CanonicalPolygon, ...], partner: dict) -> tuple[dict[str, object], object]:
     ids: list[int] = []
     x0: list[float] = []

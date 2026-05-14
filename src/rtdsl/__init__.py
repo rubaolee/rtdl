@@ -396,6 +396,8 @@ from .partner_adapters import partner_mask_indices
 from .partner_adapters import partner_take_columns_by_indices
 from .partner_adapters import partner_compact_columns_by_mask
 from .partner_adapters import partner_unique_pair_keys
+from .partner_adapters import point_rows_to_partner_columns
+from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import service_coverage_gap_flags_partner_columns
 from .partner_adapters import service_coverage_gap_flags_optix_partner_device_columns
 from .partner_adapters import service_coverage_gap_flags_optix_prepared_partner_device_columns
@@ -1305,6 +1307,8 @@ __all__ = [
     "partner_take_columns_by_indices",
     "partner_compact_columns_by_mask",
     "partner_unique_pair_keys",
+    "point_rows_to_partner_columns",
+    "directed_hausdorff_2d_partner_columns",
     "service_coverage_gap_flags_partner_columns",
     "service_coverage_gap_flags_optix_partner_device_columns",
     "service_coverage_gap_flags_optix_prepared_partner_device_columns",
