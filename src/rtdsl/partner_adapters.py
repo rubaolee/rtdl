@@ -12,6 +12,7 @@ _UINT32_MAX = 2**32 - 1
 _CUPY_PAIRWISE_FORCE_2D_KERNEL = None
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
 _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
+_CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -2137,6 +2138,190 @@ def _exact_segment_triangle_rows_from_witness_columns(
     return tuple({"segment_id": segment_id, "polygon_id": polygon_id} for segment_id, polygon_id in sorted(exact_pairs))
 
 
+def _cupy_segment_triangle_exact_witness_filter_kernel(cupy):
+    global _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL
+    if _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL is None:
+        _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = cupy.RawKernel(
+            r'''
+            __device__ double rtdl_orient2d(double px, double py, double qx, double qy, double rx, double ry) {
+                return (qx - px) * (ry - py) - (qy - py) * (rx - px);
+            }
+
+            __device__ bool rtdl_between_eps(double p, double q, double r, double eps) {
+                double mn = p < q ? p : q;
+                double mx = p > q ? p : q;
+                return r >= mn - eps && r <= mx + eps;
+            }
+
+            __device__ bool rtdl_on_segment_eps(
+                double px, double py, double qx, double qy, double rx, double ry, double eps
+            ) {
+                return fabs(rtdl_orient2d(px, py, qx, qy, rx, ry)) <= eps
+                    && rtdl_between_eps(px, qx, rx, eps)
+                    && rtdl_between_eps(py, qy, ry, eps);
+            }
+
+            __device__ bool rtdl_segments_intersect_eps(
+                double p1x, double p1y, double p2x, double p2y,
+                double q1x, double q1y, double q2x, double q2y,
+                double eps
+            ) {
+                double o1 = rtdl_orient2d(p1x, p1y, p2x, p2y, q1x, q1y);
+                double o2 = rtdl_orient2d(p1x, p1y, p2x, p2y, q2x, q2y);
+                double o3 = rtdl_orient2d(q1x, q1y, q2x, q2y, p1x, p1y);
+                double o4 = rtdl_orient2d(q1x, q1y, q2x, q2y, p2x, p2y);
+                if (((o1 > eps && o2 < -eps) || (o1 < -eps && o2 > eps))
+                    && ((o3 > eps && o4 < -eps) || (o3 < -eps && o4 > eps))) {
+                    return true;
+                }
+                return rtdl_on_segment_eps(p1x, p1y, p2x, p2y, q1x, q1y, eps)
+                    || rtdl_on_segment_eps(p1x, p1y, p2x, p2y, q2x, q2y, eps)
+                    || rtdl_on_segment_eps(q1x, q1y, q2x, q2y, p1x, p1y, eps)
+                    || rtdl_on_segment_eps(q1x, q1y, q2x, q2y, p2x, p2y, eps);
+            }
+
+            __device__ bool rtdl_point_in_triangle_eps(
+                double px, double py,
+                double ax, double ay,
+                double bx, double by,
+                double cx, double cy,
+                double eps
+            ) {
+                double o1 = rtdl_orient2d(ax, ay, bx, by, px, py);
+                double o2 = rtdl_orient2d(bx, by, cx, cy, px, py);
+                double o3 = rtdl_orient2d(cx, cy, ax, ay, px, py);
+                bool has_neg = (o1 < -eps) || (o2 < -eps) || (o3 < -eps);
+                bool has_pos = (o1 > eps) || (o2 > eps) || (o3 > eps);
+                return !(has_neg && has_pos);
+            }
+
+            extern "C" __global__
+            void segment_triangle_exact_witness_filter_2d(
+                const int n,
+                const long long* ray_indices,
+                const long long* triangle_indices,
+                const float* ox,
+                const float* oy,
+                const float* dx,
+                const float* dy,
+                const float* tmax,
+                const double* x0,
+                const double* y0,
+                const double* x1,
+                const double* y1,
+                const double* x2,
+                const double* y2,
+                unsigned char* exact_flags
+            ) {
+                int i = blockDim.x * blockIdx.x + threadIdx.x;
+                if (i >= n) {
+                    return;
+                }
+                long long ri = ray_indices[i];
+                long long ti = triangle_indices[i];
+                if (ri < 0 || ti < 0) {
+                    exact_flags[i] = 0;
+                    return;
+                }
+                double sx = (double)ox[ri];
+                double sy = (double)oy[ri];
+                double ex = sx + (double)dx[ri] * (double)tmax[ri];
+                double ey = sy + (double)dy[ri] * (double)tmax[ri];
+                double ax = x0[ti];
+                double ay = y0[ti];
+                double bx = x1[ti];
+                double by = y1[ti];
+                double cx = x2[ti];
+                double cy = y2[ti];
+                const double eps = 1.0e-9;
+
+                bool hit = rtdl_point_in_triangle_eps(sx, sy, ax, ay, bx, by, cx, cy, eps)
+                    || rtdl_point_in_triangle_eps(ex, ey, ax, ay, bx, by, cx, cy, eps)
+                    || rtdl_segments_intersect_eps(sx, sy, ex, ey, ax, ay, bx, by, eps)
+                    || rtdl_segments_intersect_eps(sx, sy, ex, ey, bx, by, cx, cy, eps)
+                    || rtdl_segments_intersect_eps(sx, sy, ex, ey, cx, cy, ax, ay, eps);
+                exact_flags[i] = hit ? 1 : 0;
+            }
+            ''',
+            "segment_triangle_exact_witness_filter_2d",
+        )
+    return _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL
+
+
+def _cupy_exact_segment_triangle_witness_pairs(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+):
+    emitted_count = int(emitted_count)
+    cupy = runtime["module"]
+    if emitted_count <= 0:
+        return (
+            cupy.zeros((0,), dtype=cupy.uint32),
+            cupy.zeros((0,), dtype=cupy.uint32),
+            {
+                "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+                "app_exact_filter_device_materialization": True,
+            },
+        )
+
+    candidate_ray_ids = runtime["slice"](witness_ray_ids, emitted_count).astype(cupy.uint32, copy=False)
+    candidate_primitive_ids = runtime["slice"](witness_primitive_ids, emitted_count).astype(cupy.uint32, copy=False)
+
+    segment_ids = segment_ray_columns["ids"].astype(cupy.uint32, copy=False)
+    triangle_ids = polygon_triangle_columns["ids"].astype(cupy.uint32, copy=False)
+    sorted_segment_pos = cupy.argsort(segment_ids)
+    sorted_segment_ids = segment_ids[sorted_segment_pos]
+    segment_search_pos = cupy.searchsorted(sorted_segment_ids, candidate_ray_ids)
+    segment_valid = segment_search_pos < int(segment_ids.size)
+    safe_segment_pos = cupy.minimum(segment_search_pos, max(0, int(segment_ids.size) - 1))
+    segment_valid = segment_valid & (sorted_segment_ids[safe_segment_pos] == candidate_ray_ids)
+    ray_indices = cupy.where(segment_valid, sorted_segment_pos[safe_segment_pos], -1).astype(cupy.int64, copy=False)
+
+    sorted_triangle_pos = cupy.argsort(triangle_ids)
+    sorted_triangle_ids = triangle_ids[sorted_triangle_pos]
+    triangle_search_pos = cupy.searchsorted(sorted_triangle_ids, candidate_primitive_ids)
+    triangle_valid = triangle_search_pos < int(triangle_ids.size)
+    safe_triangle_pos = cupy.minimum(triangle_search_pos, max(0, int(triangle_ids.size) - 1))
+    triangle_valid = triangle_valid & (sorted_triangle_ids[safe_triangle_pos] == candidate_primitive_ids)
+    triangle_indices = cupy.where(triangle_valid, sorted_triangle_pos[safe_triangle_pos], -1).astype(cupy.int64, copy=False)
+
+    exact_flags = cupy.zeros((emitted_count,), dtype=cupy.uint8)
+    kernel = _cupy_segment_triangle_exact_witness_filter_kernel(cupy)
+    block = 256
+    grid = ((emitted_count + block - 1) // block,)
+    kernel(
+        grid,
+        (block,),
+        (
+            emitted_count,
+            ray_indices,
+            triangle_indices,
+            segment_ray_columns["ox"].astype(cupy.float32, copy=False),
+            segment_ray_columns["oy"].astype(cupy.float32, copy=False),
+            segment_ray_columns["dx"].astype(cupy.float32, copy=False),
+            segment_ray_columns["dy"].astype(cupy.float32, copy=False),
+            segment_ray_columns["tmax"].astype(cupy.float32, copy=False),
+            polygon_triangle_columns["x0"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["y0"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["x1"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["y1"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["x2"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["y2"].astype(cupy.float64, copy=False),
+            exact_flags,
+        ),
+    )
+    exact_mask = exact_flags.astype(cupy.bool_, copy=False)
+    metadata = {
+        "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+        "app_exact_filter_device_materialization": True,
+    }
+    return candidate_ray_ids[exact_mask], candidate_primitive_ids[exact_mask], metadata
+
+
 def prepare_segment_polygon_anyhit_optix_partner_device_scene(
     polygon_triangle_columns: dict[str, object],
     polygon_triangle_aabbs,
@@ -2500,29 +2685,55 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
     runtime = witness_result["runtime"]
     emitted_count = witness_result["emitted_count"]
     metadata = dict(witness_result["metadata"])
-    exact_rows = _exact_segment_triangle_rows_from_witness_columns(
-        runtime,
-        segment_ray_columns,
-        polygon_triangle_columns,
-        witness_result["witness_ray_ids"],
-        witness_result["witness_primitive_ids"],
-        emitted_count,
-    )
-    ids_column = segment_ray_columns["ids"]
-    if "to_host" in runtime:
-        segment_ids = runtime["to_host"](ids_column)
-    elif hasattr(ids_column, "values") and not callable(ids_column.values):
-        segment_ids = [int(item) for item in ids_column.values]
-    elif hasattr(ids_column, "tolist"):
-        segment_ids = [int(item) for item in ids_column.tolist()]
+    if runtime["name"] == "cupy":
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_cupy_exact_filter"
+        app_count_host_materialization = False
+        whole_app_true_zero_copy_authorized = True
     else:
-        segment_ids = [int(item) for item in ids_column]
-    counts = {int(segment_id): 0 for segment_id in segment_ids}
-    for row in exact_rows:
-        segment_id = int(row["segment_id"])
-        if segment_id in counts:
-            counts[segment_id] += 1
-    hit_counts = runtime["tensor"]([counts[int(segment_id)] for segment_id in segment_ids], runtime["uint32"], runtime["device"])
+        exact_rows = _exact_segment_triangle_rows_from_witness_columns(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        ids_column = segment_ray_columns["ids"]
+        if "to_host" in runtime:
+            segment_ids = runtime["to_host"](ids_column)
+        elif hasattr(ids_column, "values") and not callable(ids_column.values):
+            segment_ids = [int(item) for item in ids_column.values]
+        elif hasattr(ids_column, "tolist"):
+            segment_ids = [int(item) for item in ids_column.tolist()]
+        else:
+            segment_ids = [int(item) for item in ids_column]
+        counts = {int(segment_id): 0 for segment_id in segment_ids}
+        for row in exact_rows:
+            segment_id = int(row["segment_id"])
+            if segment_id in counts:
+                counts[segment_id] += 1
+        hit_counts = runtime["tensor"]([counts[int(segment_id)] for segment_id in segment_ids], runtime["uint32"], runtime["device"])
+        exact_filter_metadata = {
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "app_exact_filter_device_materialization": False,
+        }
+        app_count_materialization = "partner_columns_from_host_exact_filter"
+        app_count_host_materialization = True
+        whole_app_true_zero_copy_authorized = False
     runtime["sync"]()
     columns = {
         "segment_ids": segment_ray_columns["ids"],
@@ -2536,12 +2747,13 @@ def segment_polygon_hitcount_optix_partner_device_count_columns(
             "app_rows_emitted": _column_length(segment_ray_columns, "ids"),
             "input_contract": "caller_supplied_partner_device_columns",
             "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
-            "app_count_materialization": "partner_columns_from_host_exact_filter",
-            "app_count_host_materialization": True,
-            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "app_count_materialization": app_count_materialization,
+            "app_count_host_materialization": app_count_host_materialization,
+            "app_exact_filter": exact_filter_metadata["app_exact_filter"],
+            "app_exact_filter_device_materialization": exact_filter_metadata["app_exact_filter_device_materialization"],
             "native_exact_row_semantics_authorized": False,
             "app_exact_row_semantics_authorized": True,
-            "whole_app_true_zero_copy_authorized": False,
+            "whole_app_true_zero_copy_authorized": whole_app_true_zero_copy_authorized,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
         }
