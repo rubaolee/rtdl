@@ -8,6 +8,7 @@ from . import optix_runtime as _optix
 _UINT32_MAX = 2**32 - 1
 _CUPY_PAIRWISE_FORCE_2D_KERNEL = None
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
+_CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
 
 
 def _require_uint32_id(value: int, label: str) -> int:
@@ -313,6 +314,158 @@ def partner_metric_table_reduce_batch(metric_tables, *, partner: str = "torch") 
         "whole_app_speedup_claim_authorized": False,
     }
     return results
+
+
+def aabb_pair_overlap_summary_2d_partner_columns(pair_columns: dict[str, object], *, partner: str = "torch") -> dict[str, object]:
+    """Summarize 2D axis-aligned box pair overlaps from partner/caller columns."""
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    required = (
+        "left_index",
+        "right_index",
+        "left_min_x",
+        "left_min_y",
+        "left_max_x",
+        "left_max_y",
+        "left_area",
+        "right_min_x",
+        "right_min_y",
+        "right_max_x",
+        "right_max_y",
+        "right_area",
+    )
+    for name in required:
+        if name not in pair_columns:
+            raise ValueError(f"aabb pair summary requires {name!r}")
+    if runtime["name"] == "torch":
+        left_index = pair_columns["left_index"].to(module.int64)
+        right_index = pair_columns["right_index"].to(module.int64)
+        lx0 = pair_columns["left_min_x"][left_index]
+        ly0 = pair_columns["left_min_y"][left_index]
+        lx1 = pair_columns["left_max_x"][left_index]
+        ly1 = pair_columns["left_max_y"][left_index]
+        la = pair_columns["left_area"][left_index]
+        rx0 = pair_columns["right_min_x"][right_index]
+        ry0 = pair_columns["right_min_y"][right_index]
+        rx1 = pair_columns["right_max_x"][right_index]
+        ry1 = pair_columns["right_max_y"][right_index]
+        ra = pair_columns["right_area"][right_index]
+        width = module.clamp(module.minimum(lx1, rx1) - module.maximum(lx0, rx0), min=0)
+        height = module.clamp(module.minimum(ly1, ry1) - module.maximum(ly0, ry0), min=0)
+        intersection = width * height
+        mask = intersection > 0
+        union = la + ra - intersection
+        return {
+            "overlap_pair_count": mask.to(module.int64).sum().reshape(1),
+            "total_intersection_area": intersection[mask].to(module.int64).sum().reshape(1),
+            "total_union_area": union[mask].to(module.int64).sum().reshape(1),
+            "set_intersection_area": intersection[mask].to(module.int64).sum().reshape(1),
+            "_metadata": {
+                "adapter": "aabb_pair_overlap_summary_2d_partner_columns",
+                "partner": runtime["name"],
+                "pair_count": int(_column_length(pair_columns, "left_index")),
+                "partner_reference_contract": "generic_aabb_pair_overlap_summary_2d",
+                "native_engine_row_contract": "not_called_partner_reference_only",
+                "whole_app_speedup_claim_authorized": False,
+            },
+        }
+    if runtime["name"] == "cupy":
+        return _cupy_aabb_pair_overlap_summary_2d(module, pair_columns)
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _cupy_aabb_pair_overlap_summary_2d(cupy, pair_columns: dict[str, object]) -> dict[str, object]:
+    global _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL
+    if _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL is None:
+        _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = cupy.RawKernel(
+            r'''
+            extern "C" __global__
+            void aabb_pair_overlap_summary_2d(
+                const int pair_count,
+                const int* left_index,
+                const int* right_index,
+                const int* left_min_x,
+                const int* left_min_y,
+                const int* left_max_x,
+                const int* left_max_y,
+                const int* left_area,
+                const int* right_min_x,
+                const int* right_min_y,
+                const int* right_max_x,
+                const int* right_max_y,
+                const int* right_area,
+                int* overlap_pair_count,
+                int* total_intersection_area,
+                int* total_union_area,
+                int* set_intersection_area
+            ) {
+                int pair = blockDim.x * blockIdx.x + threadIdx.x;
+                if (pair >= pair_count) {
+                    return;
+                }
+                int li = left_index[pair];
+                int ri = right_index[pair];
+                int ix0 = max(left_min_x[li], right_min_x[ri]);
+                int iy0 = max(left_min_y[li], right_min_y[ri]);
+                int ix1 = min(left_max_x[li], right_max_x[ri]);
+                int iy1 = min(left_max_y[li], right_max_y[ri]);
+                int width = max(0, ix1 - ix0);
+                int height = max(0, iy1 - iy0);
+                int intersection_area = width * height;
+                if (intersection_area > 0) {
+                    atomicAdd(overlap_pair_count, 1);
+                    atomicAdd(total_intersection_area, intersection_area);
+                    atomicAdd(total_union_area, left_area[li] + right_area[ri] - intersection_area);
+                    atomicAdd(set_intersection_area, intersection_area);
+                }
+            }
+            ''',
+            "aabb_pair_overlap_summary_2d",
+        )
+    pair_count = int(_column_length(pair_columns, "left_index"))
+    overlap_pair_count = cupy.zeros(1, dtype=cupy.int32)
+    total_intersection_area = cupy.zeros(1, dtype=cupy.int32)
+    total_union_area = cupy.zeros(1, dtype=cupy.int32)
+    set_intersection_area = cupy.zeros(1, dtype=cupy.int32)
+    block = 256
+    grid = (max(1, (pair_count + block - 1) // block),)
+    _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL(
+        grid,
+        (block,),
+        (
+            pair_count,
+            pair_columns["left_index"],
+            pair_columns["right_index"],
+            pair_columns["left_min_x"],
+            pair_columns["left_min_y"],
+            pair_columns["left_max_x"],
+            pair_columns["left_max_y"],
+            pair_columns["left_area"],
+            pair_columns["right_min_x"],
+            pair_columns["right_min_y"],
+            pair_columns["right_max_x"],
+            pair_columns["right_max_y"],
+            pair_columns["right_area"],
+            overlap_pair_count,
+            total_intersection_area,
+            total_union_area,
+            set_intersection_area,
+        ),
+    )
+    return {
+        "overlap_pair_count": overlap_pair_count,
+        "total_intersection_area": total_intersection_area,
+        "total_union_area": total_union_area,
+        "set_intersection_area": set_intersection_area,
+        "_metadata": {
+            "adapter": "aabb_pair_overlap_summary_2d_partner_columns",
+            "partner": "cupy",
+            "pair_count": pair_count,
+            "partner_reference_contract": "generic_aabb_pair_overlap_summary_2d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "whole_app_speedup_claim_authorized": False,
+        },
+    }
 
 
 def partner_mask_indices(mask, *, partner: str = "torch"):

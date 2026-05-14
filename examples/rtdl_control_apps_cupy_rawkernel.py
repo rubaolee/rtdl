@@ -25,6 +25,7 @@ from rtdsl.partner_adapters import metric_table_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_metric_table_reduce_batch
 from rtdsl.partner_adapters import columnar_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_columnar_predicate_reduce_batch
+from rtdsl.partner_adapters import aabb_pair_overlap_summary_2d_partner_columns
 from rtdsl.reference import _polygon_unit_cells
 
 
@@ -124,50 +125,6 @@ void rtdl_user_polygon_pair_summary(
     }
 }
 """
-
-POLYGON_EXTENT_RAWKERNEL_SOURCE = r"""
-extern "C" __global__
-void rtdl_user_pair_extent_summary(
-    const int pair_count,
-    const int* left_index,
-    const int* right_index,
-    const int* left_min_x,
-    const int* left_min_y,
-    const int* left_max_x,
-    const int* left_max_y,
-    const int* left_area,
-    const int* right_min_x,
-    const int* right_min_y,
-    const int* right_max_x,
-    const int* right_max_y,
-    const int* right_area,
-    int* overlap_pair_count,
-    int* total_intersection_area,
-    int* total_union_area,
-    int* set_intersection_area
-) {
-    int pair = blockDim.x * blockIdx.x + threadIdx.x;
-    if (pair >= pair_count) {
-        return;
-    }
-    int li = left_index[pair];
-    int ri = right_index[pair];
-    int ix0 = max(left_min_x[li], right_min_x[ri]);
-    int iy0 = max(left_min_y[li], right_min_y[ri]);
-    int ix1 = min(left_max_x[li], right_max_x[ri]);
-    int iy1 = min(left_max_y[li], right_max_y[ri]);
-    int width = max(0, ix1 - ix0);
-    int height = max(0, iy1 - iy0);
-    int intersection_area = width * height;
-    if (intersection_area > 0) {
-        atomicAdd(overlap_pair_count, 1);
-        atomicAdd(total_intersection_area, intersection_area);
-        atomicAdd(total_union_area, left_area[li] + right_area[ri] - intersection_area);
-        atomicAdd(set_intersection_area, intersection_area);
-    }
-}
-"""
-
 
 REGION_ORDER = ("central", "east", "south", "west")
 GRAPH_SUM_METRIC_IDS = np.asarray([0, 1, 3, 4, 5, 6], dtype=np.int32)
@@ -792,44 +749,38 @@ def _pair_extent_cpu_summary(table: PartnerPairPayloadTable) -> dict[str, int]:
     }
 
 
+def _pair_extent_partner_columns(table: PartnerPairPayloadTable, *, partner: str):
+    cp = _load_cupy()
+    if partner != "cupy":
+        raise ValueError("only cupy partner columns are currently used for pair extents")
+    return {
+        "left_index": cp.asarray(table.left_index),
+        "right_index": cp.asarray(table.right_index),
+        "left_min_x": cp.asarray(table.left_min_x),
+        "left_min_y": cp.asarray(table.left_min_y),
+        "left_max_x": cp.asarray(table.left_max_x),
+        "left_max_y": cp.asarray(table.left_max_y),
+        "left_area": cp.asarray(table.left_area),
+        "right_min_x": cp.asarray(table.right_min_x),
+        "right_min_y": cp.asarray(table.right_min_y),
+        "right_max_x": cp.asarray(table.right_max_x),
+        "right_max_y": cp.asarray(table.right_max_y),
+        "right_area": cp.asarray(table.right_area),
+    }
+
+
 def _pair_extent_cupy_summary(table: PartnerPairPayloadTable) -> dict[str, int]:
     cp = _load_cupy()
-    pair_count = table.pair_count
-    kernel = cp.RawKernel(POLYGON_EXTENT_RAWKERNEL_SOURCE, "rtdl_user_pair_extent_summary")
-    overlap_pair_count = cp.zeros(1, dtype=cp.int32)
-    total_intersection_area = cp.zeros(1, dtype=cp.int32)
-    total_union_area = cp.zeros(1, dtype=cp.int32)
-    set_intersection_area = cp.zeros(1, dtype=cp.int32)
-    grid, block = _blocks(pair_count)
-    kernel(
-        grid,
-        block,
-        (
-            np.int32(pair_count),
-            cp.asarray(table.left_index),
-            cp.asarray(table.right_index),
-            cp.asarray(table.left_min_x),
-            cp.asarray(table.left_min_y),
-            cp.asarray(table.left_max_x),
-            cp.asarray(table.left_max_y),
-            cp.asarray(table.left_area),
-            cp.asarray(table.right_min_x),
-            cp.asarray(table.right_min_y),
-            cp.asarray(table.right_max_x),
-            cp.asarray(table.right_max_y),
-            cp.asarray(table.right_area),
-            overlap_pair_count,
-            total_intersection_area,
-            total_union_area,
-            set_intersection_area,
-        ),
+    summary_columns = aabb_pair_overlap_summary_2d_partner_columns(
+        _pair_extent_partner_columns(table, partner="cupy"),
+        partner="cupy",
     )
     cp.cuda.Stream.null.synchronize()
     return {
-        "overlap_pair_count": int(cp.asnumpy(overlap_pair_count)[0]),
-        "total_intersection_area": int(cp.asnumpy(total_intersection_area)[0]),
-        "total_union_area": int(cp.asnumpy(total_union_area)[0]),
-        "set_intersection_area": int(cp.asnumpy(set_intersection_area)[0]),
+        "overlap_pair_count": int(cp.asnumpy(summary_columns["overlap_pair_count"])[0]),
+        "total_intersection_area": int(cp.asnumpy(summary_columns["total_intersection_area"])[0]),
+        "total_union_area": int(cp.asnumpy(summary_columns["total_union_area"])[0]),
+        "set_intersection_area": int(cp.asnumpy(summary_columns["set_intersection_area"])[0]),
     }
 
 
@@ -942,7 +893,7 @@ def run_polygon_pair_overlap_rawkernel(
     )
     return {
         "app": "polygon_pair_overlap_area_rows",
-        "v2_control_app_path": "cupy_rawkernel" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
+        "v2_control_app_path": "aabb_pair_overlap_summary_2d_partner_columns" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
         "partner": partner,
         "candidate_backend": candidate_backend,
         "copies": copies,
@@ -1004,7 +955,7 @@ def run_polygon_set_jaccard_rawkernel(
     )
     return {
         "app": "polygon_set_jaccard",
-        "v2_control_app_path": "cupy_rawkernel" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
+        "v2_control_app_path": "aabb_pair_overlap_summary_2d_partner_columns" if partner == "cupy" else "cpu_fallback_for_rawkernel_contract",
         "partner": partner,
         "candidate_backend": candidate_backend,
         "copies": copies,

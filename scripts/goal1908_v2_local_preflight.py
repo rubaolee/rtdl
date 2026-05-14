@@ -83,6 +83,7 @@ TEST_MODULES = (
     "tests.goal1987_database_partner_columnar_reductions_test",
     "tests.goal1989_database_columnar_payload_fused_batch_test",
     "tests.goal1991_metric_table_payload_batch_graph_test",
+    "tests.goal1993_aabb_pair_overlap_partner_summary_test",
 )
 
 

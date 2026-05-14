@@ -30,8 +30,9 @@ class Goal1957PartnerIdentityPayloadContractTest(unittest.TestCase):
         text = EXAMPLE.read_text(encoding="utf-8")
 
         self.assertIn("class PartnerPairPayloadTable", text)
-        self.assertIn("POLYGON_EXTENT_RAWKERNEL_SOURCE", text)
-        self.assertIn("rtdl_user_pair_extent_summary", text)
+        self.assertIn("aabb_pair_overlap_summary_2d_partner_columns", text)
+        self.assertNotIn("POLYGON_EXTENT_RAWKERNEL_SOURCE", text)
+        self.assertNotIn("rtdl_user_pair_extent_summary", text)
         self.assertIn("_pair_extent_cupy_summary(pair_payload_table)", text)
         self.assertIn("candidate_and_payload_construction_sec", text)
         self.assertNotIn("_polygon_pair_cupy_summary(\n            inputs[\"left_masks\"]", text)
