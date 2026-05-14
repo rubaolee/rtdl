@@ -52,6 +52,29 @@ PYTHONPATH=src:. python examples/rtdl_hausdorff_user_cpp_continuation.py \
 The C++ helper is built into `build/hausdorff_user_cpp/` by default. Users may
 set `CXX` or `RTDL_HAUSDORFF_USER_CPP_CACHE` to control the compiler and cache.
 
+## Validation
+
+Windows local validation covers the Python continuation path and the static
+claim boundary in `tests.goal1948_user_owned_native_continuation_example_test`.
+
+The learner-owned C++ branch was also validated on the local Linux development
+host `192.168.1.20` in an isolated temporary copy, not in the dirty Linux
+checkout:
+
+```bash
+cd /tmp/rtdl_goal1948_min
+PYTHONPATH=src:. timeout 90s python3 \
+  examples/rtdl_hausdorff_user_cpp_continuation.py \
+  --backend cpu_python_reference --continuation cpp
+PYTHONPATH=src:. timeout 90s python3 -m unittest \
+  tests.goal1948_user_owned_native_continuation_example_test
+```
+
+That Linux run compiled the helper with `/usr/bin/g++` and matched the Python
+oracle for both the Hausdorff distance and witness direction. The validation
+also caught and fixed the C++ tie rule: exact ties choose `b_to_a`, matching the
+Python oracle's deterministic direction rule.
+
 ## Claim Boundary
 
 This example does not count as a v2.0 partner speedup row.

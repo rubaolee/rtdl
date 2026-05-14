@@ -55,6 +55,10 @@ class Goal1948UserOwnedNativeContinuationExampleTest(unittest.TestCase):
         self.assertIn("does not count as a v2.0 partner speedup row", text)
         self.assertIn("RTDL Python apps can interoperate with user-owned C/C++ continuations", text)
         self.assertIn("official v2.0 partner acceleration path", text)
+        self.assertIn("192.168.1.20", text)
+        self.assertIn("/usr/bin/g++", text)
+        self.assertIn("witness direction", text)
+        self.assertIn("exact ties choose `b_to_a`", text)
 
 
 if __name__ == "__main__":
