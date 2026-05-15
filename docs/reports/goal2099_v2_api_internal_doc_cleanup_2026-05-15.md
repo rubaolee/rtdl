@@ -37,10 +37,10 @@ archive area or reduced to current-facing links.
 | `docs/rtdl/llm_authoring_guide.md` | Still described the implemented surface as an old preview. | Updated to current v2.0 support wording. |
 | `docs/rtdl/workload_cookbook.md` | Mentioned historical validation drivers in active learner guidance. | Rephrased as outside the active learner path. |
 | `docs/current_architecture.md` | Linked archive context with old-facing label text. | Retargeted link label to neutral version archive notes. |
-| `docs/architecture_api_performance_overview.md` | Entire file was an old architecture/performance overview. | Moved to `docs/history/legacy_api_internal_docs/architecture_api_performance_overview.md`. |
-| `docs/rtdl/minimal_itre_extension_demo_kernels.md` | Internal proposal sketch, not current RTDL API reference. | Moved to `docs/history/legacy_api_internal_docs/minimal_itre_extension_demo_kernels.md`. |
-| `docs/wiki_drafts/*` | Preserved old wiki drafts lived in an active docs directory. | Moved to `docs/history/legacy_api_internal_docs/wiki_drafts/`. |
-| `docs/history/legacy_api_internal_docs/README.md` | No archive landing page existed for moved API/internal material. | Added an archive index and current-doc pointers. |
+| `docs/architecture_api_performance_overview.md` | Entire file was an old architecture/performance overview. | Moved to `docs/history/api_internal_archive/architecture_api_performance_overview.md`. |
+| `docs/rtdl/minimal_itre_extension_demo_kernels.md` | Internal proposal sketch, not current RTDL API reference. | Moved to `docs/history/api_internal_archive/minimal_itre_extension_demo_kernels.md`. |
+| `docs/wiki_drafts/*` | Preserved old wiki drafts lived in an active docs directory. | Moved to `docs/history/api_internal_archive/wiki_drafts/`. |
+| `docs/history/api_internal_archive/README.md` | No archive landing page existed for moved API/internal material. | Added an archive index and current-doc pointers. |
 | `docs/history/version_archive_notes.md` | Active docs needed a neutral archive link target. | Added a neutral version archive pointer while preserving older note files for audit compatibility. |
 
 ## Regression Gate

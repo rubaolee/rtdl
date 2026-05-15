@@ -18,7 +18,7 @@ Run source-tree examples from the repository root with `PYTHONPATH=src:.`.
 
 The quick rule: examples show runnable RTDL shapes; public speedup wording comes only from the support matrix and reviewed evidence for an exact bounded sub-path.
 
-## How To Read Examples In v1.8
+## How To Read Examples In v2.0
 
 Each public example is a Python application wrapped around an RTDL kernel:
 
@@ -30,7 +30,7 @@ Each public example is a Python application wrapped around an RTDL kernel:
 | `--backend cpu_python_reference`, `embree`, `optix` | runtime engine selection |
 
 Do not infer that an app name in `examples/` means the native engine has an
-app-customized implementation. The v1.8 release-prep boundary keeps app logic
+app-customized implementation. The v2.0 pre-release candidate boundary keeps app logic
 in Python and keeps native runtime symbols generic.
 
 ## Directory Contents
@@ -158,4 +158,5 @@ For guided learning and support boundaries, prefer:
 - [App And Example Quickstart](../docs/app_example_quickstart.md)
 - [Application Catalog](../docs/application_catalog.md)
 - [App Engine Support Matrix](../docs/app_engine_support_matrix.md)
+- [Current Support Matrix](../docs/current_main_support_matrix.md)
 - [Performance Model](../docs/performance_model.md)

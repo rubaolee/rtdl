@@ -52,7 +52,7 @@ class Goal2099V2ApiInternalDocCleanupTest(unittest.TestCase):
         self.assertFalse((ROOT / "docs" / "rtdl" / "minimal_itre_extension_demo_kernels.md").exists())
         self.assertFalse((ROOT / "docs" / "wiki_drafts" / "README.md").exists())
 
-        archive = ROOT / "docs" / "history" / "legacy_api_internal_docs"
+        archive = ROOT / "docs" / "history" / "api_internal_archive"
         self.assertTrue((archive / "architecture_api_performance_overview.md").exists())
         self.assertTrue((archive / "minimal_itre_extension_demo_kernels.md").exists())
         self.assertTrue((archive / "wiki_drafts" / "README.md").exists())
@@ -67,7 +67,7 @@ class Goal2099V2ApiInternalDocCleanupTest(unittest.TestCase):
             "docs/current_main_support_matrix.md",
             "docs/app_engine_support_matrix.md",
             "docs/rtdl/dsl_reference.md",
-            "docs/history/legacy_api_internal_docs/",
+            "docs/history/api_internal_archive/",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, report)

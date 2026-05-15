@@ -15,6 +15,8 @@ have to learn the project by reading its development timeline.
 | Structured revision archive | [Revision Archive README](../../history/README.md) |
 | Release boundaries and audit packages | [Release Reports](../release_reports/) |
 | Benchmark evidence and consensus reports | [Benchmark And Audit Reports](../reports/) |
+| Archived root-level docs | [Root Archive](root_archive/README.md) |
+| Archived API/internal notes | [Archived API And Internal Design Notes](api_internal_archive/README.md) |
 | Historical docs tree | This `docs/history/` directory |
 
 ## What Belongs Here

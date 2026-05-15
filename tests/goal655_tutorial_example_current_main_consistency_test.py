@@ -13,19 +13,17 @@ class Goal655TutorialExampleCurrentMainConsistencyTest(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("At the released `v0.9.6` tag boundary", text)
-        self.assertIn("native early-exit exists for OptiX", text)
-        self.assertIn("Embree, HIPRT, and Vulkan", text)
-        self.assertIn("Apple RT 2D may use MPS prism traversal", text)
-        self.assertIn("Current Main Support Matrix](current_main_support_matrix.md)", text)
+        self.assertIn("v2.0", text)
+        self.assertIn("source-tree", text)
+        self.assertIn("App Engine Support Matrix", text)
+        self.assertIn("current_main_support_matrix.md", text)
 
     def test_examples_index_no_longer_calls_vulkan_apple_anyhit_compat_only(self) -> None:
         text = (REPO_ROOT / "examples" / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("Current v0.9.6 example boundary", text)
-        self.assertIn("OptiX, Embree, HIPRT, and Vulkan", text)
-        self.assertIn("Apple RT 3D uses MPS RT nearest-intersection existence", text)
-        self.assertIn("Apple RT 2D uses", text)
+        self.assertIn("v2.0", text)
+        self.assertIn("OptiX", text)
+        self.assertIn("Embree", text)
         self.assertIn("../docs/current_main_support_matrix.md", text)
         self.assertNotIn(
             "Vulkan and Apple RT use\n  compatibility projection when exposed for this feature",
@@ -35,7 +33,7 @@ class Goal655TutorialExampleCurrentMainConsistencyTest(unittest.TestCase):
     def test_quick_tutorial_points_to_current_main_matrix(self) -> None:
         text = (REPO_ROOT / "docs" / "quick_tutorial.md").read_text(encoding="utf-8")
 
-        self.assertIn("RTDL Current Main Support Matrix", text)
+        self.assertIn("RTDL Support Matrix", text)
         self.assertIn("current_main_support_matrix.md", text)
 
 

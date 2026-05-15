@@ -28,13 +28,14 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
             (REPO_ROOT / path).read_text(encoding="utf-8") for path in PUBLIC_FRONT_PAGES
         )
 
-        self.assertIn("current released version is `v1.8`", combined)
+        self.assertIn("v2.0", combined)
+        self.assertIn("pre-release candidate", combined)
         self.assertIn("ray_triangle_any_hit", combined)
         self.assertIn("visibility_rows", combined)
         self.assertIn("reduce_rows", combined)
-        self.assertIn("OptiX, Embree, and HIPRT", combined)
-        self.assertIn("Vulkan and Apple RT", combined)
-        self.assertIn("not a native", combined)
+        self.assertIn("Embree", combined)
+        self.assertIn("OptiX", combined)
+        self.assertIn("not by itself", combined)
 
     def test_public_front_pages_do_not_use_stale_release_control_wording(self) -> None:
         combined = "\n".join(
@@ -74,7 +75,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
 
     def test_docs_new_user_path_is_concise(self) -> None:
         text = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
-        section = text.split("## New User Path", 1)[1].split("## Read By Task", 1)[0]
+        section = text.split("## Fast Learner Path", 1)[1].split("## Current Reference Pages", 1)[0]
         numbered = re.findall(r"^\d+\. ", section, flags=re.MULTILINE)
 
         self.assertGreaterEqual(len(numbered), 8)

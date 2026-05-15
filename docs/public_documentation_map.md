@@ -1,22 +1,31 @@
 # RTDL Public Documentation Map
 
-This page maps the current v2.0-facing documentation for users, reviewers, and
-app builders. It keeps the front-door reading path separate from historical
-reports and audit records.
+This page maps the current documentation by audience. It is intentionally
+simple: learners should not have to walk through logs, release history, or
+research notes to write their first RTDL program.
+
+## Three Doors
+
+| Audience | Door | Use it for |
+| --- | --- | --- |
+| Learner / user / app builder | [Learn](learn/README.md) | Tutorials, examples, current API, current backend boundaries. |
+| Internal researcher / advanced developer | [Research](research/README.md) | Architecture, backend design, RayJoin/Embree context, future ideas. |
+| Release reviewer / auditor | [Audit](audit/README.md) | Release evidence, reports, reviews, handoffs, process docs, archived logs. |
 
 ## Read By Question
 
 | If you care about... | Read first | Then read |
 | --- | --- | --- |
-| What RTDL is | [Project Front Page](../README.md) | [Feature Guide](rtdl_feature_guide.md), [Capability Boundaries](capability_boundaries.md) |
+| What RTDL is | [Project Front Page](../README.md) | [Learn](learn/README.md) |
 | First program | [Quick Tutorial](quick_tutorial.md) | [Tutorial Ladder](tutorials/README.md), [Hello World](tutorials/hello_world.md) |
 | Workload recipes | [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) | [Workload Cookbook](rtdl/workload_cookbook.md), [Features Index](features/README.md) |
 | Apps and examples | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Examples Index](../examples/README.md) |
-| Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md), [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md) |
+| Architecture | [Current Architecture](current_architecture.md) | [Research](research/README.md), [Capability Boundaries](capability_boundaries.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [DSL Reference](rtdl/dsl_reference.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
 | Performance | [Performance Model](performance_model.md) | [App Engine Support Matrix](app_engine_support_matrix.md), [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
-| Older releases or audits | [Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md) | [Release Reports](release_reports/), [Benchmark And Audit Reports](reports/) |
+| Release evidence | [Audit](audit/README.md) | [Release Reports](release_reports/), [Benchmark And Audit Reports](reports/) |
+| Archive context | [Version Archive Notes](history/version_archive_notes.md) | [Root Archive](history/root_archive/), [API/Internal Archive](history/api_internal_archive/) |
 
 ## Public Doc Layers
 
@@ -27,7 +36,8 @@ reports and audit records.
 | Apps and examples | Show what each app does and where RTDL fits | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md) |
 | Architecture and language | Explain runtime, IR, lowering, and app model | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [DSL Reference](rtdl/dsl_reference.md) |
 | Performance and boundaries | Explain how to interpret backend results | [Performance Model](performance_model.md), [Capability Boundaries](capability_boundaries.md), [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
-| History and evidence | Preserve project evolution and review records | [Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md), [Release Reports](release_reports/), [Benchmark And Audit Reports](reports/) |
+| Research | Preserve advanced design and source context | [Research](research/README.md) |
+| Audit | Preserve evidence and project chronology | [Audit](audit/README.md) |
 
 ## Current User Message
 
@@ -44,28 +54,5 @@ The current learner surface is v2.0-facing:
 - native engines remain app-agnostic;
 - final release waits for the strict 3-AI consensus redline.
 
-The honest public message is:
-
-- RTDL reduces backend-specific authoring burden for supported RT-style
-  workloads.
-- Backend support varies by feature and platform.
-- `--backend optix` selects an OptiX path; it is not automatically a public
-  speedup claim.
-- Performance claims should name the exact workload, backend, hardware, command
-  shape, output contract, and artifact.
-- Whole-application performance depends on the non-RT work around the RTDL
-  kernel.
-
-## Learner Design Check
-
-A learner should be able to answer these questions after the front-door docs:
-
-1. How do I run a source-tree example with `PYTHONPATH=src:.`?
-2. What does `input -> traverse -> refine -> emit` mean?
-3. Which parts of my program stay in Python?
-4. Which parts belong to the app-agnostic RTDL engine?
-5. How do partner-owned columns fit into the v2.0 candidate surface?
-6. Why is `--backend optix` not automatically a speedup claim?
-
-If a page does not help answer one of those questions, it belongs in the
-history/evidence layer rather than the beginner path.
+If a page does not help a learner answer "how do I write and run a current RTDL
+program?", it belongs in Research or Audit rather than the beginner path.
