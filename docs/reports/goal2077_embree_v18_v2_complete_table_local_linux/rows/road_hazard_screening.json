@@ -1,0 +1,132 @@
+{
+  "app": "road_hazard_screening",
+  "attempts": {
+    "v1_8_way_embree": [
+      {
+        "elapsed_sec": 0.3582931390265003,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "copies",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "priority_segment_count",
+          "priority_segments",
+          "row_count",
+          "rt_core_accelerated",
+          "run_phases",
+          "summary_materializes_rows"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.35809558699838817,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "copies",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "priority_segment_count",
+          "priority_segments",
+          "row_count",
+          "rt_core_accelerated",
+          "run_phases",
+          "summary_materializes_rows"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ],
+    "v2_embree_cpu_partner": [
+      {
+        "elapsed_sec": 0.35932112392038107,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "copies",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "priority_segment_count",
+          "priority_segments",
+          "row_count",
+          "rt_core_accelerated",
+          "run_phases",
+          "summary_materializes_rows"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.35721255699172616,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "copies",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "priority_segment_count",
+          "priority_segments",
+          "row_count",
+          "rt_core_accelerated",
+          "run_phases",
+          "summary_materializes_rows"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ]
+  },
+  "boundary": "same Embree evidence cell; v2 GPU partner speedup is an OptiX/CuPy result, not an Embree CPU claim",
+  "scale_note": "copies=2000",
+  "status": "measured",
+  "v1_8_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_road_hazard_screening.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "2000",
+    "--output-mode",
+    "summary"
+  ],
+  "v1_8_way_embree_sec": 0.35819436301244423,
+  "v2_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_road_hazard_screening.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "2000",
+    "--output-mode",
+    "summary"
+  ],
+  "v2_contract": "Embree segment/polygon compact road-hazard summary",
+  "v2_embree_cpu_partner_sec": 0.3582668404560536,
+  "v2_over_v1_8_ratio": 1.0002023411060963
+}

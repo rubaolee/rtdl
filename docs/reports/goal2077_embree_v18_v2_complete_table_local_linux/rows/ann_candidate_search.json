@@ -1,0 +1,148 @@
+{
+  "app": "ann_candidate_search",
+  "attempts": {
+    "v1_8_way_embree": [
+      {
+        "elapsed_sec": 0.7569011079613119,
+        "parsed_keys": [
+          "app",
+          "approximate_row_count",
+          "backend",
+          "boundary",
+          "candidate_count",
+          "candidate_radius",
+          "copies",
+          "k",
+          "max_neighbor_rank",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "query_count",
+          "query_count_with_candidate",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "search_count"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.749072044971399,
+        "parsed_keys": [
+          "app",
+          "approximate_row_count",
+          "backend",
+          "boundary",
+          "candidate_count",
+          "candidate_radius",
+          "copies",
+          "k",
+          "max_neighbor_rank",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "query_count",
+          "query_count_with_candidate",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "search_count"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ],
+    "v2_embree_cpu_partner": [
+      {
+        "elapsed_sec": 0.7453279009787366,
+        "parsed_keys": [
+          "app",
+          "approximate_row_count",
+          "backend",
+          "boundary",
+          "candidate_count",
+          "candidate_radius",
+          "copies",
+          "k",
+          "max_neighbor_rank",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "query_count",
+          "query_count_with_candidate",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "search_count"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.7486664690077305,
+        "parsed_keys": [
+          "app",
+          "approximate_row_count",
+          "backend",
+          "boundary",
+          "candidate_count",
+          "candidate_radius",
+          "copies",
+          "k",
+          "max_neighbor_rank",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "query_count",
+          "query_count_with_candidate",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "search_count"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ]
+  },
+  "boundary": "candidate coverage/rerank summary only; not a general ANN index claim",
+  "scale_note": "copies=2000",
+  "status": "measured",
+  "v1_8_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_ann_candidate_app.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "2000",
+    "--output-mode",
+    "rerank_summary"
+  ],
+  "v1_8_way_embree_sec": 0.7529865764663555,
+  "v2_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_ann_candidate_app.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "2000",
+    "--output-mode",
+    "rerank_summary"
+  ],
+  "v2_contract": "Embree rerank summary",
+  "v2_embree_cpu_partner_sec": 0.7469971849932335,
+  "v2_over_v1_8_ratio": 0.992045819061969
+}

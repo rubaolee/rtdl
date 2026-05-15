@@ -1,0 +1,136 @@
+{
+  "app": "robot_collision_screening",
+  "attempts": {
+    "v1_8_way_embree": [
+      {
+        "elapsed_sec": 35.86409852898214,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "edge_ray_count",
+          "hit_edge_count",
+          "matches_oracle",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "obstacle_triangle_count",
+          "optix_summary_mode",
+          "oracle_hit_edge_count",
+          "output_mode",
+          "pose_count",
+          "rtdl_role",
+          "validation_mode"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 35.582009300007485,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "edge_ray_count",
+          "hit_edge_count",
+          "matches_oracle",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "obstacle_triangle_count",
+          "optix_summary_mode",
+          "oracle_hit_edge_count",
+          "output_mode",
+          "pose_count",
+          "rtdl_role",
+          "validation_mode"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ],
+    "v2_embree_cpu_partner": [
+      {
+        "elapsed_sec": 35.58914441696834,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "edge_ray_count",
+          "hit_edge_count",
+          "matches_oracle",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "obstacle_triangle_count",
+          "optix_summary_mode",
+          "oracle_hit_edge_count",
+          "output_mode",
+          "pose_count",
+          "rtdl_role",
+          "validation_mode"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 35.763913849019445,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "edge_ray_count",
+          "hit_edge_count",
+          "matches_oracle",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "obstacle_triangle_count",
+          "optix_summary_mode",
+          "oracle_hit_edge_count",
+          "output_mode",
+          "pose_count",
+          "rtdl_role",
+          "validation_mode"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ]
+  },
+  "boundary": "pose flags/count only; no whole-planner acceleration claim",
+  "scale_note": "poses=2000 obstacles=512",
+  "status": "measured",
+  "v1_8_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_robot_collision_screening_app.py",
+    "--backend",
+    "embree",
+    "--pose-count",
+    "2000",
+    "--obstacle-count",
+    "512",
+    "--output-mode",
+    "hit_count"
+  ],
+  "v1_8_way_embree_sec": 35.72305391449481,
+  "v2_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_robot_collision_screening_app.py",
+    "--backend",
+    "embree",
+    "--pose-count",
+    "2000",
+    "--obstacle-count",
+    "512",
+    "--output-mode",
+    "hit_count"
+  ],
+  "v2_contract": "Embree pose hit-count summary",
+  "v2_embree_cpu_partner_sec": 35.67652913299389,
+  "v2_over_v1_8_ratio": 0.9986976258633352
+}

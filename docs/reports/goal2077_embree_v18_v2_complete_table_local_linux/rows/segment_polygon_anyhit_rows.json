@@ -1,0 +1,132 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "attempts": {
+    "v1_8_way_embree": [
+      {
+        "elapsed_sec": 0.4202994729857892,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "dataset",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "native_output_capacity",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "row_count",
+          "rows",
+          "rt_core_accelerated",
+          "summary_source"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.41535297606606036,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "dataset",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "native_output_capacity",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "row_count",
+          "rows",
+          "rt_core_accelerated",
+          "summary_source"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ],
+    "v2_embree_cpu_partner": [
+      {
+        "elapsed_sec": 0.4193881859537214,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "dataset",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "native_output_capacity",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "row_count",
+          "rows",
+          "rt_core_accelerated",
+          "summary_source"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.41901703004259616,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "boundary",
+          "dataset",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "native_output_capacity",
+          "optix_mode",
+          "optix_performance",
+          "output_mode",
+          "row_count",
+          "rows",
+          "rt_core_accelerated",
+          "summary_source"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ]
+  },
+  "boundary": "full row materialization remains the weak output shape; no compact-count substitution in this row",
+  "scale_note": "copies=1024 capacity=16384",
+  "status": "measured",
+  "v1_8_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_segment_polygon_anyhit_rows.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "1024",
+    "--output-mode",
+    "rows",
+    "--output-capacity",
+    "16384"
+  ],
+  "v1_8_way_embree_sec": 0.41782622452592477,
+  "v2_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_segment_polygon_anyhit_rows.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "1024",
+    "--output-mode",
+    "rows",
+    "--output-capacity",
+    "16384"
+  ],
+  "v2_contract": "Embree bounded witness-row materialization",
+  "v2_embree_cpu_partner_sec": 0.4192026079981588,
+  "v2_over_v1_8_ratio": 1.0032941529072181
+}

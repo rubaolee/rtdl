@@ -1,0 +1,140 @@
+{
+  "app": "barnes_hut_force_app",
+  "attempts": {
+    "v1_8_way_embree": [
+      {
+        "elapsed_sec": 1.0308899420779198,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "body_count",
+          "body_count_with_candidates",
+          "boundary",
+          "candidate_row_count",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "node_count",
+          "node_count_seen",
+          "node_radius",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "theta"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 1.0148451239801943,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "body_count",
+          "body_count_with_candidates",
+          "boundary",
+          "candidate_row_count",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "node_count",
+          "node_count_seen",
+          "node_radius",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "theta"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ],
+    "v2_embree_cpu_partner": [
+      {
+        "elapsed_sec": 1.0200363099575043,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "body_count",
+          "body_count_with_candidates",
+          "boundary",
+          "candidate_row_count",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "node_count",
+          "node_count_seen",
+          "node_radius",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "theta"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 1.0219382410869002,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "body_count",
+          "body_count_with_candidates",
+          "boundary",
+          "candidate_row_count",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "node_count",
+          "node_count_seen",
+          "node_radius",
+          "optix_performance",
+          "optix_summary_mode",
+          "output_mode",
+          "rt_core_accelerated",
+          "rtdl_role",
+          "theta"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ]
+  },
+  "boundary": "node coverage only; force-vector reduction remains outside this row",
+  "scale_note": "body-count=50000",
+  "status": "measured",
+  "v1_8_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_barnes_hut_force_app.py",
+    "--backend",
+    "embree",
+    "--body-count",
+    "50000",
+    "--output-mode",
+    "candidate_summary"
+  ],
+  "v1_8_way_embree_sec": 1.022867533029057,
+  "v2_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_barnes_hut_force_app.py",
+    "--backend",
+    "embree",
+    "--body-count",
+    "50000",
+    "--output-mode",
+    "candidate_summary"
+  ],
+  "v2_contract": "Embree node coverage candidate summary",
+  "v2_embree_cpu_partner_sec": 1.0209872755222023,
+  "v2_over_v1_8_ratio": 0.9981617780933111
+}

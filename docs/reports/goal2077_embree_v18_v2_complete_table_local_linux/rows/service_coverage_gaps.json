@@ -1,0 +1,152 @@
+{
+  "app": "service_coverage_gaps",
+  "attempts": {
+    "v1_8_way_embree": [
+      {
+        "elapsed_sec": 0.3839542680652812,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "clinic_count",
+          "clinic_loads",
+          "copies",
+          "coverage_summary_rows",
+          "covered_household_count",
+          "embree_summary_mode",
+          "household_count",
+          "k_max",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "nearby_clinics_by_household",
+          "optix_performance",
+          "optix_summary_mode",
+          "radius",
+          "rows",
+          "rt_core_accelerated",
+          "summary_boundary",
+          "uncovered_household_ids"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.3836664539994672,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "clinic_count",
+          "clinic_loads",
+          "copies",
+          "coverage_summary_rows",
+          "covered_household_count",
+          "embree_summary_mode",
+          "household_count",
+          "k_max",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "nearby_clinics_by_household",
+          "optix_performance",
+          "optix_summary_mode",
+          "radius",
+          "rows",
+          "rt_core_accelerated",
+          "summary_boundary",
+          "uncovered_household_ids"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ],
+    "v2_embree_cpu_partner": [
+      {
+        "elapsed_sec": 0.3846818530000746,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "clinic_count",
+          "clinic_loads",
+          "copies",
+          "coverage_summary_rows",
+          "covered_household_count",
+          "embree_summary_mode",
+          "household_count",
+          "k_max",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "nearby_clinics_by_household",
+          "optix_performance",
+          "optix_summary_mode",
+          "radius",
+          "rows",
+          "rt_core_accelerated",
+          "summary_boundary",
+          "uncovered_household_ids"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      },
+      {
+        "elapsed_sec": 0.38704729196615517,
+        "parsed_keys": [
+          "app",
+          "backend",
+          "clinic_count",
+          "clinic_loads",
+          "copies",
+          "coverage_summary_rows",
+          "covered_household_count",
+          "embree_summary_mode",
+          "household_count",
+          "k_max",
+          "native_continuation_active",
+          "native_continuation_backend",
+          "nearby_clinics_by_household",
+          "optix_performance",
+          "optix_summary_mode",
+          "radius",
+          "rows",
+          "rt_core_accelerated",
+          "summary_boundary",
+          "uncovered_household_ids"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_json": true,
+        "stdout_tail": ""
+      }
+    ]
+  },
+  "boundary": "threshold/proxy semantics only; not exact ranked KNN, full DBSCAN, or force-vector accumulation",
+  "scale_note": "copies=2000",
+  "status": "measured",
+  "v1_8_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_service_coverage_gaps.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "2000",
+    "--embree-summary-mode",
+    "gap_summary"
+  ],
+  "v1_8_way_embree_sec": 0.3838103610323742,
+  "v2_command": [
+    "/usr/bin/python3",
+    "examples/rtdl_service_coverage_gaps.py",
+    "--backend",
+    "embree",
+    "--copies",
+    "2000",
+    "--embree-summary-mode",
+    "gap_summary"
+  ],
+  "v2_contract": "Embree fixed-radius gap summary; CPU partner continuation not separately timed in this row",
+  "v2_embree_cpu_partner_sec": 0.3858645724831149,
+  "v2_over_v1_8_ratio": 1.005352152154557
+}
