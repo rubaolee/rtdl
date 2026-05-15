@@ -429,6 +429,123 @@ def aabb_pair_payload_to_partner_columns(payload, *, partner: str = "torch") -> 
     return columns
 
 
+def aabb_tiled_candidate_pair_payload_2d_partner_columns(
+    left_aabb_columns,
+    right_aabb_columns,
+    *,
+    partner: str = "torch",
+    tile_rows: int = 2048,
+    right_tile_rows: int | None = None,
+    free_tile_blocks: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Build a bounded-memory 2D AABB candidate-pair payload on the partner.
+
+    The adapter scans left/right AABB columns in tiles, appends only positive
+    overlap pairs, and returns the generic pair payload consumed by
+    aabb_pair_overlap_summary_2d_partner_columns. It is intentionally a
+    partner-side primitive, not a native engine specialization.
+    """
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    tile_rows = int(tile_rows)
+    right_tile_rows = tile_rows if right_tile_rows is None else int(right_tile_rows)
+    if tile_rows <= 0 or right_tile_rows <= 0:
+        raise ValueError("tile row counts must be positive")
+
+    def as_column(source, name):
+        if name not in source:
+            raise ValueError(f"aabb tiled candidate payload requires {name!r}")
+        values = source[name]
+        if runtime["name"] == "torch":
+            return module.as_tensor(values, device=runtime["device"])
+        return module.asarray(values)
+
+    left = {name: as_column(left_aabb_columns, name) for name in ("min_x", "min_y", "max_x", "max_y", "area")}
+    right = {name: as_column(right_aabb_columns, name) for name in ("min_x", "min_y", "max_x", "max_y", "area")}
+    left_count = int(len(left["min_x"]))
+    right_count = int(len(right["min_x"]))
+    left_chunks = []
+    right_chunks = []
+
+    for left_start in range(0, left_count, tile_rows):
+        left_stop = min(left_start + tile_rows, left_count)
+        left_min_x = left["min_x"][left_start:left_stop, None]
+        left_min_y = left["min_y"][left_start:left_stop, None]
+        left_max_x = left["max_x"][left_start:left_stop, None]
+        left_max_y = left["max_y"][left_start:left_stop, None]
+        for right_start in range(0, right_count, right_tile_rows):
+            right_stop = min(right_start + right_tile_rows, right_count)
+            right_min_x = right["min_x"][None, right_start:right_stop]
+            right_min_y = right["min_y"][None, right_start:right_stop]
+            right_max_x = right["max_x"][None, right_start:right_stop]
+            right_max_y = right["max_y"][None, right_start:right_stop]
+            width = module.minimum(left_max_x, right_max_x) - module.maximum(left_min_x, right_min_x)
+            height = module.minimum(left_max_y, right_max_y) - module.maximum(left_min_y, right_min_y)
+            mask = (width > 0) & (height > 0)
+            if runtime["name"] == "torch":
+                local = module.nonzero(mask, as_tuple=False)
+                if int(local.numel()):
+                    left_chunks.append((local[:, 0] + left_start).to(module.int32))
+                    right_chunks.append((local[:, 1] + right_start).to(module.int32))
+            else:
+                local_left, local_right = module.nonzero(mask)
+                if int(local_left.size):
+                    left_chunks.append((local_left + left_start).astype(module.int32, copy=False))
+                    right_chunks.append((local_right + right_start).astype(module.int32, copy=False))
+                if free_tile_blocks:
+                    module.get_default_memory_pool().free_all_blocks()
+
+    if left_chunks:
+        if runtime["name"] == "torch":
+            left_index = module.cat(left_chunks).to(module.int32)
+            right_index = module.cat(right_chunks).to(module.int32)
+        else:
+            left_index = module.concatenate(left_chunks).astype(module.int32, copy=False)
+            right_index = module.concatenate(right_chunks).astype(module.int32, copy=False)
+    elif runtime["name"] == "torch":
+        left_index = module.empty((0,), dtype=module.int32, device=runtime["device"])
+        right_index = module.empty((0,), dtype=module.int32, device=runtime["device"])
+    else:
+        left_index = module.empty(0, dtype=module.int32)
+        right_index = module.empty(0, dtype=module.int32)
+
+    columns = {
+        "left_index": left_index,
+        "right_index": right_index,
+        "left_min_x": left["min_x"],
+        "left_min_y": left["min_y"],
+        "left_max_x": left["max_x"],
+        "left_max_y": left["max_y"],
+        "left_area": left["area"],
+        "right_min_x": right["min_x"],
+        "right_min_y": right["min_y"],
+        "right_max_x": right["max_x"],
+        "right_max_y": right["max_y"],
+        "right_area": right["area"],
+        "_metadata": {
+            "adapter": "aabb_tiled_candidate_pair_payload_2d_partner_columns",
+            "partner": runtime["name"],
+            "pair_count": int(len(left_index)),
+            "left_count": left_count,
+            "right_count": right_count,
+            "tile_rows": tile_rows,
+            "right_tile_rows": right_tile_rows,
+            "input_contract": "caller_supplied_aabb_columns",
+            "partner_reference_contract": "generic_tiled_aabb_candidate_pair_payload_2d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "bounded_materialization": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        },
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": columns["_metadata"]}
+    return columns
+
+
 def aabb_pair_overlap_summary_2d_partner_columns(pair_columns: dict[str, object], *, partner: str = "torch") -> dict[str, object]:
     """Summarize 2D axis-aligned box pair overlaps from partner/caller columns."""
     runtime = _partner_module(partner)

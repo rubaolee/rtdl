@@ -29,6 +29,7 @@ from rtdsl.partner_adapters import columnar_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_columnar_predicate_reduce_batch
 from rtdsl.partner_adapters import aabb_pair_payload_to_partner_columns
 from rtdsl.partner_adapters import aabb_pair_overlap_summary_2d_partner_columns
+from rtdsl.partner_adapters import aabb_tiled_candidate_pair_payload_2d_partner_columns
 from rtdsl.reference import _polygon_unit_cells
 
 
@@ -703,22 +704,29 @@ def _partner_pair_payload_table_cupy_extent(
     right: tuple[Any, ...],
 ) -> PartnerPairPayloadTable:
     cp = _load_cupy()
-    left_columns = {name: cp.asarray(value) for name, value in _axis_aligned_extent_columns(left).items()}
-    right_columns = {name: cp.asarray(value) for name, value in _axis_aligned_extent_columns(right).items()}
-    left_indices, right_indices = _cupy_extent_candidate_indices(left_columns, right_columns)
+    payload_columns = aabb_tiled_candidate_pair_payload_2d_partner_columns(
+        _axis_aligned_extent_columns(left),
+        _axis_aligned_extent_columns(right),
+        partner="cupy",
+        tile_rows=_cupy_extent_tile_rows(),
+        right_tile_rows=_cupy_extent_right_tile_rows(),
+        free_tile_blocks=_cupy_extent_free_tile_blocks(),
+    )
+    left_indices = payload_columns["left_index"]
+    right_indices = payload_columns["right_index"]
     return PartnerPairPayloadTable(
         left_index=left_indices.astype(cp.int32, copy=False),
         right_index=right_indices.astype(cp.int32, copy=False),
-        left_min_x=left_columns["min_x"],
-        left_min_y=left_columns["min_y"],
-        left_max_x=left_columns["max_x"],
-        left_max_y=left_columns["max_y"],
-        left_area=left_columns["area"],
-        right_min_x=right_columns["min_x"],
-        right_min_y=right_columns["min_y"],
-        right_max_x=right_columns["max_x"],
-        right_max_y=right_columns["max_y"],
-        right_area=right_columns["area"],
+        left_min_x=payload_columns["left_min_x"],
+        left_min_y=payload_columns["left_min_y"],
+        left_max_x=payload_columns["left_max_x"],
+        left_max_y=payload_columns["left_max_y"],
+        left_area=payload_columns["left_area"],
+        right_min_x=payload_columns["right_min_x"],
+        right_min_y=payload_columns["right_min_y"],
+        right_max_x=payload_columns["right_max_x"],
+        right_max_y=payload_columns["right_max_y"],
+        right_area=payload_columns["right_area"],
     )
 
 
