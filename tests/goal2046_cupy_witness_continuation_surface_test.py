@@ -15,6 +15,7 @@ class Goal2046CuPyWitnessContinuationSurfaceTest(unittest.TestCase):
     def test_cupy_surface_is_exported(self):
         source = SOURCE.read_text(encoding="utf-8")
         init_text = INIT.read_text(encoding="utf-8")
+        app_text = (ROOT / "examples" / "rtdl_hausdorff_distance_app.py").read_text(encoding="utf-8")
         required = [
             "def cupy_group_topk",
             "def cupy_group_argmin_then_global_argmax_with_witness",
@@ -29,6 +30,8 @@ class Goal2046CuPyWitnessContinuationSurfaceTest(unittest.TestCase):
         ]:
             self.assertIn(f"from .partner_continuations import {name}", init_text)
             self.assertIn(f'"{name}"', init_text)
+        self.assertIn("partner_cupy_witness_exact", app_text)
+        self.assertIn("rt.directed_hausdorff_2d_cupy_columns", app_text)
 
     def test_cupy_runtime_matches_numpy_when_available(self):
         if importlib.util.find_spec("cupy") is None:
@@ -72,6 +75,14 @@ class Goal2046CuPyWitnessContinuationSurfaceTest(unittest.TestCase):
         self.assertEqual(result["metadata"]["source_id"], 2)
         self.assertEqual(result["metadata"]["target_id"], 11)
         self.assertTrue(np.isclose(result["metadata"]["distance"], 1.0))
+
+        from examples import rtdl_hausdorff_distance_app as hausdorff
+
+        payload = hausdorff.run_app("partner_cupy_witness_exact", copies=2)
+        self.assertTrue(payload["matches_oracle"])
+        self.assertEqual(payload["partner"], "cupy")
+        self.assertEqual(payload["partner_reference_contract"], "generic_group_argmin_then_global_argmax_with_witness")
+        self.assertFalse(payload["rt_core_accelerated"])
 
     def test_report_keeps_pod_boundary(self):
         text = REPORT.read_text(encoding="utf-8")

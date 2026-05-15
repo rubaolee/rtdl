@@ -1,0 +1,105 @@
+{
+  "claim_boundary": "bounded CuPy witness continuation runtime evidence only; no OptiX zero-copy handoff and no v2.0 release authorization",
+  "driver": "570.195.03",
+  "goal": "2048",
+  "gpu": "NVIDIA L4",
+  "host": "66.92.198.234:11830",
+  "rows": [
+    {
+      "backend": "partner_numpy_exact",
+      "copies": 64,
+      "elapsed_sec": 0.029745768755674362,
+      "hausdorff_distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "numpy",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 256,
+      "point_count_b": 256,
+      "run_phases": {
+        "input_construction_sec": 0.0012646056711673737,
+        "partner_numpy_exact_directed_summary_sec": 0.02831617370247841,
+        "validation_sec": 0.00011665746569633484
+      }
+    },
+    {
+      "backend": "partner_cupy_witness_exact",
+      "copies": 64,
+      "elapsed_sec": 0.8800476156175137,
+      "hausdorff_distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 256,
+      "point_count_b": 256,
+      "run_phases": {
+        "input_construction_sec": 0.00042602792382240295,
+        "partner_cupy_witness_exact_directed_summary_sec": 0.8791281618177891,
+        "validation_sec": 0.0003087148070335388
+      }
+    },
+    {
+      "backend": "partner_numpy_exact",
+      "copies": 256,
+      "elapsed_sec": 1.3653892762959003,
+      "hausdorff_distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "numpy",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 1024,
+      "point_count_b": 1024,
+      "run_phases": {
+        "input_construction_sec": 0.0017409250140190125,
+        "partner_numpy_exact_directed_summary_sec": 1.3631767183542252,
+        "validation_sec": 0.00012939050793647766
+      }
+    },
+    {
+      "backend": "partner_cupy_witness_exact",
+      "copies": 256,
+      "elapsed_sec": 1.1715425439178944,
+      "hausdorff_distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 1024,
+      "point_count_b": 1024,
+      "run_phases": {
+        "input_construction_sec": 0.019398413598537445,
+        "partner_cupy_witness_exact_directed_summary_sec": 1.151211366057396,
+        "validation_sec": 0.000338040292263031
+      }
+    },
+    {
+      "backend": "partner_numpy_exact",
+      "copies": 512,
+      "elapsed_sec": 15.39313493669033,
+      "hausdorff_distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "numpy",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "run_phases": {
+        "input_construction_sec": 0.0054319389164447784,
+        "partner_numpy_exact_directed_summary_sec": 15.386455677449703,
+        "validation_sec": 0.0004226267337799072
+      }
+    },
+    {
+      "backend": "partner_cupy_witness_exact",
+      "copies": 512,
+      "elapsed_sec": 2.0107460729777813,
+      "hausdorff_distance": 0.30000000000000004,
+      "matches_oracle": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "run_phases": {
+        "input_construction_sec": 0.0034658238291740417,
+        "partner_cupy_witness_exact_directed_summary_sec": 2.006739117205143,
+        "validation_sec": 9.877234697341919e-05
+      }
+    }
+  ]
+}

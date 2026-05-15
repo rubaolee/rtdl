@@ -12,6 +12,7 @@ Goal2046 adds the matching CuPy-facing surface for the witness-carrying slice:
 - `cupy_group_topk`
 - `cupy_group_argmin_then_global_argmax_with_witness`
 - `directed_hausdorff_2d_cupy_columns`
+- `partner_cupy_witness_exact` in `examples/rtdl_hausdorff_distance_app.py`
 
 This prepares the exact Hausdorff-with-witness contract for pod validation without changing the RTDL native engines.
 
@@ -30,6 +31,7 @@ The contract remains app-agnostic. The primitive names do not mention facility, 
 ## What This Enables
 
 - pod tests can exercise exact Hausdorff witness extraction on CuPy;
+- the Hausdorff app can explicitly run the new generic CuPy witness continuation with `--backend partner_cupy_witness_exact`;
 - future OptiX zero-copy candidate-row work has a partner-side continuation target;
 - v2.0 can explain the difference between fast threshold decisions and rich exact witness extraction.
 
