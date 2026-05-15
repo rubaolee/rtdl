@@ -1,0 +1,88 @@
+{
+  "baseline": {
+    "name": "v1_8_one_shot_native_optix_hitcount_rows",
+    "query_samples_s": [],
+    "query_summary": null,
+    "row_count": null,
+    "skip_reason": "explicit --skip-one-shot-baseline for large prepared-only scaling",
+    "skipped": true
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 131072,
+  "git_commit": "unknown",
+  "goal": "Goal1863",
+  "gpu": "NVIDIA L4, 570.195.03",
+  "iterations": 5,
+  "output_capacity": 67108864,
+  "parity": {
+    "expected_row_count": 131072,
+    "strict_counts_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.500684916973114,
+      "goal1886_prepared_reuse": {
+        "output_contract": "prepared_partner_owned_device_count_columns",
+        "prepared_scene_reused": true,
+        "query_median_ratio_vs_goal1863_unprepared_partner": 0.43516984936848924,
+        "query_median_ratio_vs_v1_8_one_shot_native": null,
+        "query_median_ratio_vs_v1_8_prepared_native": 0.006120606640089472,
+        "query_samples_s": [
+          0.003953505307435989,
+          0.0027719251811504364,
+          0.00271466001868248,
+          0.002733219414949417,
+          0.003090139478445053
+        ],
+        "query_summary": {
+          "max_s": 0.003953505307435989,
+          "median_s": 0.0027719251811504364,
+          "min_s": 0.00271466001868248
+        },
+        "row_count": 131072,
+        "witness_output_columns_reused": true
+      },
+      "output_contract": "partner_owned_device_count_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": null,
+      "query_median_ratio_vs_v1_8_prepared_native": 0.01406486834731677,
+      "query_samples_s": [
+        0.5216403380036354,
+        0.005820263177156448,
+        0.006369754672050476,
+        0.00636151060461998,
+        0.015626560896635056
+      ],
+      "query_summary": {
+        "max_s": 0.5216403380036354,
+        "median_s": 0.006369754672050476,
+        "min_s": 0.005820263177156448
+      },
+      "row_count": 131072
+    }
+  },
+  "prepared_baseline": {
+    "name": "v1_8_prepared_native_optix_hitcount_rows",
+    "query_samples_s": [
+      0.5730337388813496,
+      0.4194483943283558,
+      0.4528840593993664,
+      0.6252787709236145,
+      0.383663535118103
+    ],
+    "query_summary": {
+      "max_s": 0.6252787709236145,
+      "median_s": 0.4528840593993664,
+      "min_s": 0.383663535118103
+    },
+    "row_count": 131072
+  },
+  "source_commit_label": "",
+  "status": "pass"
+}

@@ -1,0 +1,42 @@
+[goal2066-polygon-control-4096][goal1955-perf] app=polygon_pair_overlap_area_rows copies=4096 partner=cupy candidate_backend=optix warmups=1 repeats=3 include_v1_8=True
+[goal1955-perf] app=polygon_pair_overlap_area_rows warmup 1/1 start
+Traceback (most recent call last):
+  File "/root/rtdl_goal2048_9b95e5f2/scripts/goal1955_rawkernel_control_app_perf.py", line 360, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/scripts/goal1955_rawkernel_control_app_perf.py", line 342, in main
+    payload = build_payload(
+              ^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/scripts/goal1955_rawkernel_control_app_perf.py", line 279, in build_payload
+    run_one(
+  File "/root/rtdl_goal2048_9b95e5f2/scripts/goal1955_rawkernel_control_app_perf.py", line 207, in run_one
+    rawkernel_apps.run_control_app(
+  File "/root/rtdl_goal2048_9b95e5f2/examples/rtdl_control_apps_cupy_rawkernel.py", line 1045, in run_control_app
+    return run_polygon_pair_overlap_rawkernel(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/examples/rtdl_control_apps_cupy_rawkernel.py", line 928, in run_polygon_pair_overlap_rawkernel
+    inputs = _polygon_summary_inputs("polygon_pair_overlap_area_rows", copies, candidate_backend, partner)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/examples/rtdl_control_apps_cupy_rawkernel.py", line 902, in _polygon_summary_inputs
+    candidate_pairs = rtdl_polygon_pair_overlap_area_rows._positive_candidate_pairs_optix(left, right)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/examples/rtdl_polygon_pair_overlap_area_rows.py", line 259, in _positive_candidate_pairs_optix
+    return _positive_candidate_pairs_backend("optix", left, right)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/examples/rtdl_polygon_pair_overlap_area_rows.py", line 213, in _positive_candidate_pairs_backend
+    lsi_rows = run_backend(
+               ^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/src/rtdsl/optix_runtime.py", line 571, in run_optix
+    return prepared.run_raw() if result_mode == "raw" else prepared.run()
+                                                           ^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/src/rtdsl/optix_runtime.py", line 496, in run
+    rows = self.run_raw()
+           ^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/src/rtdsl/optix_runtime.py", line 479, in run_raw
+    return fn(self.compiled, self.packed_inputs, self.library)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_goal2048_9b95e5f2/src/rtdsl/optix_runtime.py", line 3333, in _call_lsi_optix_packed
+    _check_status(status, error)
+  File "/root/rtdl_goal2048_9b95e5f2/src/rtdsl/optix_runtime.py", line 5559, in _check_status
+    raise RuntimeError(msg)
+RuntimeError: CUDA driver error: out of memory
