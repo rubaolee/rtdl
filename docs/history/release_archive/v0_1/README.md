@@ -45,11 +45,11 @@ git checkout 85fcd90a7462ef01137426af7b0224e7da518eb4
 
 From the archived baseline, read:
 
-- [v0.1 release-report index](../../release_reports/v0_1/README.md)
-- [release statement](../../release_reports/v0_1/release_statement.md)
-- [work report](../../release_reports/v0_1/work_report.md)
-- [audit report](../../release_reports/v0_1/audit_report.md)
-- [final readiness check](../../release_reports/v0_1/final_readiness_check.md)
+- [v0.1 release-report index](../../../release_reports/v0_1/README.md)
+- [release statement](../../../release_reports/v0_1/release_statement.md)
+- [work report](../../../release_reports/v0_1/work_report.md)
+- [audit report](../../../release_reports/v0_1/audit_report.md)
+- [final readiness check](../../../release_reports/v0_1/final_readiness_check.md)
 
 ## Important note
 
