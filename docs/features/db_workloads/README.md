@@ -1,6 +1,6 @@
 # Database Workloads
 
-Status: released bounded `v0.7.0` line on `main`.
+Status: current v2.0 pre-release candidate workload family.
 
 RTDL's first database-style workload family is a bounded analytical kernel
 surface over denormalized rows:
@@ -54,22 +54,13 @@ The prepared RT state is backend-specific:
 
 ## Current Evidence
 
-The current canonical Linux 200k-row comparison is Goal 452. It rebases RTDL
-native prepared columnar dataset timings against the best PostgreSQL index modes
-tested in Goal 451:
+RTDL can accelerate fixed DB-style filtering and compact grouping when the app
+uses the supported columnar payload contract. It is not a SQL database, storage
+engine, optimizer, or transaction system.
 
-- [Goal 452 RTDL vs best-tested PostgreSQL performance rebase](../../reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.md)
-- [Goal 450 Linux correctness and performance refresh](../../reports/goal450_v0_7_linux_correctness_and_performance_refresh_2026-04-16.md)
-- [Goal 451 PostgreSQL baseline index audit](../../reports/goal451_v0_7_postgresql_baseline_index_audit_2026-04-16.md)
-- [v0.7 support matrix](../../release_reports/v0_7/support_matrix.md)
-
-The current honest performance summary is:
-
-- query-only results against best-tested PostgreSQL are mixed
-- Embree loses query-only for `conjunctive_scan` and `grouped_count`
-- OptiX and Vulkan win query-only for all measured workloads
-- all three RTDL backends win setup-plus-10-query total time in this measured
-  Linux evidence
+Use the current performance table and app support matrix for release-facing
+numbers. Older PostgreSQL comparison material is kept in the report archive for
+audit work.
 
 ## Current Limits
 

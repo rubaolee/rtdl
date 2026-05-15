@@ -2,7 +2,7 @@
 
 This page describes the v2.0-facing architecture for learners and users. It
 does not retell older release history. For that, use
-[Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md)
+[Version Archive Notes](history/version_archive_notes.md)
 and the release-report archive.
 
 ## Current Status

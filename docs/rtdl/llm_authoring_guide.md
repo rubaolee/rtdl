@@ -37,12 +37,9 @@ The kernel function must take no Python arguments.
 - `Polygons x Polygons` with `overlay_compose()`
 - `Rays x Triangles` with `ray_triangle_hit_count(exact=False)`
 - `Segments x Polygons` with `segment_polygon_hitcount(exact=False)`
-- `Points x Segments` with `point_nearest_segment(exact=False)`
-
-Current `v0.4` surface under active closure:
-
 - `Points x Points` with `fixed_radius_neighbors(radius=..., k_max=...)`
 - `Points x Points` with `knn_rows(k=...)`
+- `Points x Segments` with `point_nearest_segment(exact=False)`
 
 ## Supported Emit Fields
 
@@ -134,8 +131,8 @@ Current boundary:
   - native CPU/oracle execution
   - Embree execution
   - optional SciPy / PostGIS external baselines
-- OptiX / Vulkan nearest-neighbor closure is still not part of the active
-  `v0.4` preview acceptance package
+- OptiX and Vulkan support is feature-specific. Check the current engine
+  feature support contract before selecting a backend.
 
 ## Recommended Prompting Pattern
 

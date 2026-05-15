@@ -14,10 +14,10 @@ the orthogonal integer-grid unit-cell contract.
   - [rtdl_polygon_set_jaccard.py](../../../examples/rtdl_polygon_set_jaccard.py)
 - generated handoff bundle:
   - [generated_polygon_set_jaccard_bundle](../../../examples/generated/rtdl_generated_polygon_set_jaccard_bundle/README.md)
-- saved PostGIS SQL:
-  - [v0_2_jaccard_postgis_workloads.sql](../../sql/v0_2_jaccard_postgis_workloads.sql)
-- public-data audit:
-  - [goal141_public_jaccard_linux_audit_2026-04-06.md](../../reports/goal141_public_jaccard_linux_audit_2026-04-06.md)
+- support contract:
+  - [Engine Feature Support Contract](../engine_support_matrix.md)
+- app support:
+  - [App Engine Support Matrix](../../app_engine_support_matrix.md)
 
 Kernel shape:
 

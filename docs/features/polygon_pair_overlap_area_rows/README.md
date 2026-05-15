@@ -12,12 +12,10 @@ under the current orthogonal integer-grid unit-cell contract.
 
 - canonical example:
   - [rtdl_polygon_pair_overlap_area_rows.py](../../../examples/rtdl_polygon_pair_overlap_area_rows.py)
-- PostGIS parity helper:
-  - [goal138_polygon_overlap_postgis.py](../../../src/rtdsl/goal138_polygon_overlap_postgis.py)
-- saved PostGIS SQL:
-  - [v0_2_jaccard_postgis_workloads.sql](../../sql/v0_2_jaccard_postgis_workloads.sql)
-- closure report:
-  - [goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md](../../reports/goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md)
+- support contract:
+  - [Engine Feature Support Contract](../engine_support_matrix.md)
+- app support:
+  - [App Engine Support Matrix](../../app_engine_support_matrix.md)
 
 Kernel shape:
 
@@ -85,6 +83,6 @@ Use `python3` instead if that is what your shell exposes.
 - current backend maturity is intentionally narrower than the segment/polygon line
 - Embree and OptiX app modes use native LSI/PIP positive candidate discovery;
   compact summary mode uses backend-neutral native exact-area summary plumbing
-- this is not a monolithic GPU polygon-area kernel; only the Goal1263 bounded
-  RT-assisted LSI/PIP positive candidate discovery plus exact area continuation
-  wording is public, and whole-app polygon speedup remains outside the claim
+- this is not a monolithic GPU polygon-area kernel; only measured bounded
+  candidate discovery plus exact area continuation should be used for claim
+  wording, and whole-app polygon speedup remains outside the claim

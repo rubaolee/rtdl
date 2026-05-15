@@ -39,8 +39,8 @@ return rt.emit(
   - `rt.segment_intersection(exact=False)`
 - canonical reference kernel:
   - [county_zip_join_reference](../../../examples/reference/rtdl_language_reference.py)
-- current Embree root-performance closure:
-  - [Goal 742 LSI/PIP root workload refresh](../../reports/goal742_lsi_pip_root_workload_refresh_2026-04-21.md)
+- current support contract:
+  - [Engine Feature Support Contract](../engine_support_matrix.md)
 
 ## Current Backend Notes
 
@@ -93,4 +93,4 @@ This file contains the current minimal language-reference `lsi` kernel.
 - current implementation is float-based, not exact arithmetic
 - dense all-pairs outputs are usually row-materialization-bound even when
   traversal is native and correct
-- backend performance maturity is not uniform across every historical package
+- backend performance maturity is not uniform across every archive package

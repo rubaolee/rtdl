@@ -156,6 +156,8 @@ Use exact benchmark artifacts before publishing performance wording.
 - [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Application Catalog](docs/application_catalog.md)
 - [Feature Guide](docs/rtdl_feature_guide.md)
+- [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
+- [App Engine Support Matrix](docs/app_engine_support_matrix.md)
 - [Capability Boundaries](docs/capability_boundaries.md)
 - [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md)
 - [Current Architecture](docs/current_architecture.md)
@@ -168,7 +170,7 @@ User-facing docs describe the current RTDL product surface. Project history,
 release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
-- [Legacy Learner Doc Version Notes](docs/history/legacy_learner_doc_version_notes.md)
+- [Version Archive Notes](docs/history/version_archive_notes.md)
 - [Release Reports](docs/release_reports/)
 - [Benchmark And Audit Reports](docs/reports/)
 

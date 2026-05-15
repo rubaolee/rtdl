@@ -50,7 +50,7 @@ Use `python3` instead if that is what your shell exposes.
 
 ## Current Boundary
 
-- `v0.9.5` exposes the language predicate, lowering metadata, CPU Python
+- The current source tree exposes the language predicate, lowering metadata, CPU Python
   reference path, and `run_cpu` oracle fallback.
 - OptiX has a native early-exit any-hit path that sets `any_hit=1` and
   terminates the ray after the first accepted triangle hit.

@@ -13,8 +13,8 @@ segment/polygon pair.
   - [rtdl_segment_polygon_hitcount.py](../../../examples/rtdl_segment_polygon_hitcount.py)
 - app-style example:
   - [rtdl_road_hazard_screening.py](../../../examples/rtdl_road_hazard_screening.py)
-- PostGIS SQL comparison:
-  - [v0_2_segment_polygon_postgis_workloads.sql](../../sql/v0_2_segment_polygon_postgis_workloads.sql)
+- support contract:
+  - [Engine Feature Support Contract](../engine_support_matrix.md)
 
 Kernel shape:
 
@@ -57,8 +57,8 @@ python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode na
 ```
 
 The app-level native OptiX path is a compatibility surface. The bounded
-claim-review path for this workload is the Goal933 prepared hit-count profiler,
-validated in the Goal969 RTX A5000 batch for compact hit-count traversal only.
+claim-review path for this workload is the prepared hit-count profiler,
+validated for compact hit-count traversal only.
 That does not authorize a broad segment/polygon speedup claim.
 
 App-style run:

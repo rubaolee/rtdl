@@ -78,7 +78,7 @@ python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference
 
 ## Limitations
 
-- this is a simpler ray-query feature, not the main live v0.2 workload-growth line
+- this is a simpler ray-query feature, not a full ray-tracing renderer
 - current implementation is still float-based
 - examples are synthetic, not the main public-data workload story
 - the lit-ball demo is intentionally a user-level RTDL-plus-Python demo, not a

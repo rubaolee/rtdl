@@ -14,8 +14,8 @@ outside RTDL.
   - [rtdl_segment_polygon_anyhit_rows.py](../../../examples/rtdl_segment_polygon_anyhit_rows.py)
 - shared reference kernel:
   - [rtdl_workload_reference.py](../../../examples/reference/rtdl_workload_reference.py)
-- PostGIS SQL comparison:
-  - [v0_2_segment_polygon_postgis_workloads.sql](../../sql/v0_2_segment_polygon_postgis_workloads.sql)
+- support contract:
+  - [Engine Feature Support Contract](../engine_support_matrix.md)
 
 Kernel shape:
 
@@ -58,8 +58,8 @@ python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mod
 ```
 
 That command uses the bounded native OptiX pair-row emitter. The bound matters:
-overflow fails rather than silently truncating rows. Goal934 added the prepared
-bounded pair-row profiler, and Goal969 supplied the real RTX artifact with
+overflow fails rather than silently truncating rows. The prepared
+bounded pair-row profiler has real RTX artifact coverage with
 row-digest parity and zero overflow for the reviewed output capacity. This is
 an explicit native traversal path, not an unbounded row-volume speedup claim.
 
@@ -80,7 +80,8 @@ bounded pair-row traversal capacity.
 - when only counts or flags are needed, prefer `--output-mode segment_counts`
   or `segment_flags` so the app can reuse the compact hit-count primitive
 - keep ids stable and sortable because row shape is the main value of this feature
-- compare accepted larger rows against PostGIS on Linux when the goal is correctness evidence
+- compare accepted larger rows against an external geometry oracle when the aim
+  is correctness evidence
 
 ## Try
 
@@ -98,8 +99,8 @@ bounded pair-row traversal capacity.
 
 - row materialization can be heavier than aggregated counting if you only need counts
 - current geometry path is float-based
-- explicit OptiX native bounded pair-row output exists for rows mode, and the
-  Goal969 artifact makes the prepared bounded path ready for claim review
+- explicit OptiX native bounded pair-row output exists for rows mode, and
+  current artifact coverage makes the prepared bounded path ready for claim review
 - broad or unbounded OptiX RT-core speedup claims remain blocked until a later
   same-semantics performance review authorizes them
 - strongest evidence remains on the accepted Linux/PostGIS validation surface

@@ -10,7 +10,7 @@ ITRE is the current RTDL programming model:
 
 This page is v2.0-facing and avoids older release chronology. For older
 version history, use
-[Legacy Learner Doc Version Notes](../history/legacy_learner_doc_version_notes.md).
+[Version Archive Notes](../history/version_archive_notes.md).
 
 ## The Honest Claim
 
@@ -96,4 +96,3 @@ moving app logic into the native engine:
 
 That is the v2.0 lesson: keep the engine generic, but give Python and partner
 frameworks efficient output shapes.
-

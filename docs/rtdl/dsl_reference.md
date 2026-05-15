@@ -20,7 +20,7 @@ For guided usage, read:
 
 This reference only describes the RTDL features that are implemented today:
 
-- backend: `rtdl` (legacy `rayjoin` still accepted)
+- backend: `rtdl`
 - precision: `float_approx`
 - accel: `bvh`
 - workloads:
@@ -70,7 +70,7 @@ Kernels do not accept Python function arguments.
 ## Required Kernel Rules
 
 - Every RTDL kernel must be decorated with `@rt.kernel(...)`.
-- `backend` must be `"rtdl"` in current live usage. The legacy spelling `"rayjoin"` is still accepted for compatibility.
+- `backend` must be `"rtdl"` in current live usage.
 - `precision` must be `"float_approx"`.
 - The kernel function must return `rt.emit(...)`.
 - Input names inside one kernel must be unique.
@@ -90,8 +90,7 @@ Current accepted values:
 - `backend="rtdl"`
 - `precision="float_approx"`
 
-`backend="rayjoin"` is accepted only for compatibility with older authored
-kernels. New code should use `backend="rtdl"`.
+New code should use `backend="rtdl"`.
 
 ### `rt.input(name, geometry, layout=None, role=None)`
 

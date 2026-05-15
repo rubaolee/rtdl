@@ -63,7 +63,7 @@ same dimensionality.
 
 ## Current Boundary
 
-- `visibility_rows_cpu` is the CPU standard-library helper in `v0.9.5`.
+- `visibility_rows_cpu` is the CPU standard-library helper.
 - `visibility_rows(..., backend=...)` can use real backend dispatch through
   `ray_triangle_any_hit`.
 - `visibility_pair_rows(..., backend=...)` uses the same backend dispatch but

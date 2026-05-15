@@ -125,19 +125,18 @@ Current release performance evidence lives in:
 - [Performance Model](performance_model.md)
 - [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
 - [Benchmark And Audit Reports](reports/)
-- [Benchmark And Audit Reports](reports/)
 - [Release Reports](release_reports/)
 
 ## History And Audit Trail
 
-The current docs are for users. Historical project evolution, release packages,
-review records, and goal archives live here:
+The current docs are for users. Project evolution, release packages,
+review records, and archive material live here:
 
 - [History Index](history/README.md)
-- [Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md)
+- [Version Archive Notes](history/version_archive_notes.md)
 - [Complete History Map](../history/COMPLETE_HISTORY.md)
 - [Release Reports](release_reports/)
 - [Benchmark And Audit Reports](reports/)
 
-Keep history links out of the beginner path unless the reader is explicitly
+Keep archive links out of the beginner path unless the reader is explicitly
 looking for evidence or project evolution.

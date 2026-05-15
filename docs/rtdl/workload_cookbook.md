@@ -176,8 +176,7 @@ Notes:
   - authored
   - fixture-backed
   - generic deterministic tiled county-derived cases via `--copies`
-- external GIS validation drivers are kept in the historical report/archive
-  layer
+- external GIS validation drivers are kept outside the active learner path
 - an app-style example now exists here:
   - [rtdl_road_hazard_screening.py](../../examples/rtdl_road_hazard_screening.py)
 

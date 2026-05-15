@@ -61,11 +61,11 @@ Output rows:
 `group_by` can be a field name, a tuple/list of field names, `None`, or an
 empty tuple. Groups are emitted in first-seen input order.
 
-## v1.5 Scalar Reduction Primitives
+## Scalar Reduction Primitives
 
 For app-name-free scalar summaries, use
 `rt.run_generic_scalar_reduction(...)`. This helper standardizes the stable
-v1.5 scalar primitive names and result layouts:
+Current scalar primitive names and result layouts:
 
 | Primitive | `value_field` required? | Result layout |
 | --- | --- | --- |
