@@ -22,6 +22,8 @@ def run_case(backend: str) -> dict[str, object]:
         rows = rt.run_cpu(fixed_radius_neighbors_reference, **case)
     elif backend == "embree":
         rows = rt.run_embree(fixed_radius_neighbors_reference, **case)
+    elif backend == "optix":
+        rows = rt.run_optix(fixed_radius_neighbors_reference, **case)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
 
@@ -48,11 +50,11 @@ def run_case(backend: str) -> dict[str, object]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Release-facing fixed-radius-neighbor example for the v0.4 nearest-neighbor line."
+        description="Release-facing fixed-radius-neighbor example for the current RTDL tutorial path."
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix"),
         default="cpu_python_reference",
     )
     args = parser.parse_args(argv)

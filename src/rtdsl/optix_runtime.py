@@ -4658,11 +4658,57 @@ def _call_triangle_probe_optix_packed(compiled: CompiledKernel, packed, lib) -> 
 
 @functools.lru_cache(maxsize=1)
 def _load_optix_library():
+    _ensure_cuda_driver_initialized()
     lib_path = _find_optix_library()
     lib = ctypes.CDLL(str(lib_path))
     lib._rtdl_library_path = str(lib_path)
     _register_argtypes(lib)
     return lib
+
+
+@functools.lru_cache(maxsize=1)
+def _ensure_cuda_driver_initialized() -> None:
+    """Initialize CUDA before the first OptiX native call.
+
+    CuPy/PyTorch users often initialize the CUDA driver before reaching RTDL.
+    Host-staged NumPy inputs do not, so RTDL must not accidentally depend on a
+    partner framework side effect.
+    """
+    name = ctypes.util.find_library("cuda") or "libcuda.so.1"
+    try:
+        cuda = ctypes.CDLL(name)
+    except OSError as exc:
+        raise RuntimeError(
+            "CUDA driver library is required for the OptiX backend; "
+            "could not load libcuda.so.1"
+        ) from exc
+    cuda.cuInit.argtypes = [ctypes.c_uint]
+    cuda.cuInit.restype = ctypes.c_int
+    status = int(cuda.cuInit(0))
+    if status != 0:
+        raise RuntimeError(f"CUDA driver initialization failed with cuInit status {status}")
+    device = ctypes.c_int()
+    cuda.cuDeviceGet.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int]
+    cuda.cuDeviceGet.restype = ctypes.c_int
+    status = int(cuda.cuDeviceGet(ctypes.byref(device), 0))
+    if status != 0:
+        raise RuntimeError(f"CUDA device 0 lookup failed with cuDeviceGet status {status}")
+    context = ctypes.c_void_p()
+    cuda.cuDevicePrimaryCtxRetain.argtypes = [
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_int,
+    ]
+    cuda.cuDevicePrimaryCtxRetain.restype = ctypes.c_int
+    status = int(cuda.cuDevicePrimaryCtxRetain(ctypes.byref(context), device.value))
+    if status != 0:
+        raise RuntimeError(
+            f"CUDA primary context retain failed with cuDevicePrimaryCtxRetain status {status}"
+        )
+    cuda.cuCtxSetCurrent.argtypes = [ctypes.c_void_p]
+    cuda.cuCtxSetCurrent.restype = ctypes.c_int
+    status = int(cuda.cuCtxSetCurrent(context))
+    if status != 0:
+        raise RuntimeError(f"CUDA current context setup failed with cuCtxSetCurrent status {status}")
 
 
 def _find_optix_library() -> Path:
