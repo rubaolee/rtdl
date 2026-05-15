@@ -112,6 +112,12 @@ def _summary(values: list[float]) -> dict[str, float]:
     }
 
 
+def _median_ratio(numerator: list[float], denominator: list[float] | None) -> float | None:
+    if denominator is None:
+        return None
+    return statistics.median(numerator) / statistics.median(denominator)
+
+
 def _canonical_counts(rows) -> tuple[tuple[int, int], ...]:
     return tuple(sorted((int(row["segment_id"]), int(row["hit_count"])) for row in rows))
 
@@ -155,6 +161,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--iterations", type=int, default=5)
     parser.add_argument("--partners", default="cupy,torch")
     parser.add_argument("--output-capacity", type=int, default=None)
+    parser.add_argument("--skip-one-shot-baseline", action="store_true")
     parser.add_argument("--output", default=None)
     return parser.parse_args()
 
@@ -174,13 +181,18 @@ def main() -> int:
     expected_canonical = _canonical_counts(expected_rows)
     print(f"[setup] count={args.count} output_capacity={output_capacity}", flush=True)
 
-    v18_one_shot_samples, v18_rows = _time_call(
-        "v1_8_one_shot_native_optix_hitcount_rows",
-        args.iterations,
-        lambda: rt.run_optix(segment_polygon_hitcount_reference, segments=segments, polygons=polygons),
-    )
-    if _canonical_counts(v18_rows) != expected_canonical:
-        raise RuntimeError("v1.8 native OptiX hitcount rows did not match expected rows")
+    v18_one_shot_samples = None
+    v18_rows = None
+    if args.skip_one_shot_baseline:
+        print("[timing] v1_8_one_shot_native_optix_hitcount_rows skipped", flush=True)
+    else:
+        v18_one_shot_samples, v18_rows = _time_call(
+            "v1_8_one_shot_native_optix_hitcount_rows",
+            args.iterations,
+            lambda: rt.run_optix(segment_polygon_hitcount_reference, segments=segments, polygons=polygons),
+        )
+        if _canonical_counts(v18_rows) != expected_canonical:
+            raise RuntimeError("v1.8 native OptiX hitcount rows did not match expected rows")
     prepared = rt.prepare_optix_segment_polygon_hitcount_2d(polygons)
     try:
         v18_prepared_samples, v18_prepared_rows = _time_call(
@@ -240,19 +252,16 @@ def main() -> int:
             "column_build_s": build_s,
             "query_samples_s": samples,
             "query_summary": _summary(samples),
-            "query_median_ratio_vs_v1_8_one_shot_native": statistics.median(samples) / statistics.median(v18_one_shot_samples),
-            "query_median_ratio_vs_v1_8_prepared_native": statistics.median(samples) / statistics.median(v18_prepared_samples),
+            "query_median_ratio_vs_v1_8_one_shot_native": _median_ratio(samples, v18_one_shot_samples),
+            "query_median_ratio_vs_v1_8_prepared_native": _median_ratio(samples, v18_prepared_samples),
             "row_count": len(rows),
             "output_contract": "partner_owned_device_count_columns",
             "goal1886_prepared_reuse": {
                 "query_samples_s": prepared_samples,
                 "query_summary": _summary(prepared_samples),
-                "query_median_ratio_vs_v1_8_one_shot_native": statistics.median(prepared_samples)
-                / statistics.median(v18_one_shot_samples),
-                "query_median_ratio_vs_v1_8_prepared_native": statistics.median(prepared_samples)
-                / statistics.median(v18_prepared_samples),
-                "query_median_ratio_vs_goal1863_unprepared_partner": statistics.median(prepared_samples)
-                / statistics.median(samples),
+                "query_median_ratio_vs_v1_8_one_shot_native": _median_ratio(prepared_samples, v18_one_shot_samples),
+                "query_median_ratio_vs_v1_8_prepared_native": _median_ratio(prepared_samples, v18_prepared_samples),
+                "query_median_ratio_vs_goal1863_unprepared_partner": _median_ratio(prepared_samples, samples),
                 "row_count": len(prepared_rows),
                 "output_contract": "prepared_partner_owned_device_count_columns",
                 "prepared_scene_reused": True,
@@ -269,12 +278,24 @@ def main() -> int:
         "count": args.count,
         "iterations": args.iterations,
         "output_capacity": output_capacity,
-        "baseline": {
-            "name": "v1_8_one_shot_native_optix_hitcount_rows",
-            "query_samples_s": v18_one_shot_samples,
-            "query_summary": _summary(v18_one_shot_samples),
-            "row_count": len(v18_rows),
-        },
+        "baseline": (
+            {
+                "name": "v1_8_one_shot_native_optix_hitcount_rows",
+                "query_samples_s": v18_one_shot_samples,
+                "query_summary": _summary(v18_one_shot_samples),
+                "row_count": len(v18_rows),
+                "skipped": False,
+            }
+            if v18_one_shot_samples is not None and v18_rows is not None
+            else {
+                "name": "v1_8_one_shot_native_optix_hitcount_rows",
+                "query_samples_s": [],
+                "query_summary": None,
+                "row_count": None,
+                "skipped": True,
+                "skip_reason": "explicit --skip-one-shot-baseline for large prepared-only scaling",
+            }
+        ),
         "prepared_baseline": {
             "name": "v1_8_prepared_native_optix_hitcount_rows",
             "query_samples_s": v18_prepared_samples,

@@ -1,0 +1,82 @@
+{
+  "baseline": {
+    "name": "v1_8_one_shot_native_optix_hitcount_rows",
+    "query_samples_s": [],
+    "query_summary": null,
+    "row_count": null,
+    "skip_reason": "explicit --skip-one-shot-baseline for large prepared-only scaling",
+    "skipped": true
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "partner_output_columns_true_zero_copy_authorized": true,
+    "same_contract_timing_row": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count": 16384,
+  "git_commit": "unknown",
+  "goal": "Goal1863",
+  "gpu": "NVIDIA L4, 570.195.03",
+  "iterations": 3,
+  "output_capacity": 1048576,
+  "parity": {
+    "expected_row_count": 16384,
+    "strict_counts_match": true
+  },
+  "partners": {
+    "cupy": {
+      "column_build_s": 0.06295173987746239,
+      "goal1886_prepared_reuse": {
+        "output_contract": "prepared_partner_owned_device_count_columns",
+        "prepared_scene_reused": true,
+        "query_median_ratio_vs_goal1863_unprepared_partner": 0.5884878300269433,
+        "query_median_ratio_vs_v1_8_one_shot_native": null,
+        "query_median_ratio_vs_v1_8_prepared_native": 0.06129197191245245,
+        "query_samples_s": [
+          0.0028294511139392853,
+          0.00231325626373291,
+          0.0022497884929180145
+        ],
+        "query_summary": {
+          "max_s": 0.0028294511139392853,
+          "median_s": 0.00231325626373291,
+          "min_s": 0.0022497884929180145
+        },
+        "row_count": 16384,
+        "witness_output_columns_reused": true
+      },
+      "output_contract": "partner_owned_device_count_columns",
+      "query_median_ratio_vs_v1_8_one_shot_native": null,
+      "query_median_ratio_vs_v1_8_prepared_native": 0.10415163880219283,
+      "query_samples_s": [
+        0.4738125279545784,
+        0.003930848091840744,
+        0.0032557882368564606
+      ],
+      "query_summary": {
+        "max_s": 0.4738125279545784,
+        "median_s": 0.003930848091840744,
+        "min_s": 0.0032557882368564606
+      },
+      "row_count": 16384
+    }
+  },
+  "prepared_baseline": {
+    "name": "v1_8_prepared_native_optix_hitcount_rows",
+    "query_samples_s": [
+      0.037741586565971375,
+      0.05131092295050621,
+      0.031312473118305206
+    ],
+    "query_summary": {
+      "max_s": 0.05131092295050621,
+      "median_s": 0.037741586565971375,
+      "min_s": 0.031312473118305206
+    },
+    "row_count": 16384
+  },
+  "source_commit_label": "4e26c379-plus-goal2054-skip-one-shot",
+  "status": "pass"
+}
