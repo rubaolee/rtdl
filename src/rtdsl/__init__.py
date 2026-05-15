@@ -408,6 +408,17 @@ from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
+from .partner_continuations import PartnerCandidateRows
+from .partner_continuations import cupy_group_argmin_then_global_argmax_with_witness
+from .partner_continuations import cupy_group_topk
+from .partner_continuations import directed_hausdorff_2d_cupy_columns
+from .partner_continuations import directed_hausdorff_2d_numpy_columns
+from .partner_continuations import numpy_group_argmin_then_global_argmax_with_witness
+from .partner_continuations import numpy_group_topk
+from .partner_continuations import numpy_segmented_count
+from .partner_continuations import numpy_segmented_minmax
+from .partner_continuations import numpy_segmented_sum
+from .partner_continuations import point_rows_to_numpy_columns
 from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_spatial_bucket_partner_columns
 from .partner_adapters import columnar_rows_to_partner_columns
@@ -1336,6 +1347,17 @@ __all__ = [
     "pairwise_inverse_square_force_2d_partner_columns",
     "directed_hausdorff_2d_partner_columns",
     "top_k_nearest_points_2d_partner_columns",
+    "PartnerCandidateRows",
+    "cupy_group_argmin_then_global_argmax_with_witness",
+    "cupy_group_topk",
+    "directed_hausdorff_2d_cupy_columns",
+    "directed_hausdorff_2d_numpy_columns",
+    "numpy_group_argmin_then_global_argmax_with_witness",
+    "numpy_group_topk",
+    "numpy_segmented_count",
+    "numpy_segmented_minmax",
+    "numpy_segmented_sum",
+    "point_rows_to_numpy_columns",
     "radius_graph_components_2d_partner_columns",
     "radius_graph_components_2d_spatial_bucket_partner_columns",
     "columnar_rows_to_partner_columns",
