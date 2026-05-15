@@ -1,0 +1,9 @@
+mkdir -p build
+/usr/local/cuda-12/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-sdk/include -I/usr/local/cuda-12/include  -DRTDL_OPTIX_INCLUDE_DIR=\"/root/vendor/optix-sdk/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC \
+	src/native/rtdl_optix.cpp \
+	-L/usr/local/cuda-12/lib64 -lcuda -lnvrtc  \
+	-o build/librtdl_optix.so
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+--- ldd build/librtdl_optix.so ---
+	libcuda.so.1 => /usr/lib/x86_64-linux-gnu/libcuda.so.1 (0x00007f01e3800000)
+	libnvrtc.so.12 => /usr/local/cuda/targets/x86_64-linux/lib/libnvrtc.so.12 (0x00007f01dd0bc000)
