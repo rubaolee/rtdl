@@ -1,6 +1,8 @@
 # Tutorial: Nearest-Neighbor Workloads
 
-RTDL `v0.4.0` adds two released nearest-neighbor workloads:
+This tutorial covers the current v2.0-facing nearest-neighbor workload shapes:
+fixed-radius rows, K-closest rows, and Python-level composition for
+Hausdorff-style applications.
 
 | Workload | Question it answers | Output shape |
 | --- | --- | --- |
@@ -166,8 +168,8 @@ Important difference:
 
 ## App Pattern: Hausdorff Distance
 
-Goal499 classified X-HD-style directed Hausdorff distance as a strong RTDL +
-Python app candidate. The app shape is:
+Hausdorff-style directed distance is a strong RTDL + Python app candidate. The
+app shape is:
 
 | Data | Becomes |
 | --- | --- |
@@ -209,23 +211,15 @@ running the two directed passes, reducing with `max(distance)`, and checking the
 small-case brute-force oracle. This app does not claim the paper's full X-HD
 performance optimizations such as grid-cell pruning or prepared point-set reuse.
 
-Linux performance evidence is recorded in
-[Goal507 Hausdorff Linux Performance Report](../reports/goal507_hausdorff_linux_perf_report_2026-04-17.md).
-The bounded readout is that RTDL OptiX/Vulkan strongly beat RTDL Embree for this
-app on the measured Linux host, but mature nearest-neighbor libraries such as
-SciPy `cKDTree` and FAISS `IndexFlatL2` remain faster for exact 2D 1-NN
-Hausdorff distance in that evidence.
+Current performance wording must come from the v2.0 evidence packet, not from a
+tutorial. The bounded readout is that RTDL can provide the RT-shaped candidate
+or neighbor rows while Python or a partner framework owns the final app answer.
 
-The current exact Hausdorff and ANN ranking OptiX paths are not NVIDIA RT-core
-claims. Hausdorff has an explicit `directed_threshold_prepared` decision mode,
-and ANN candidate search has an explicit `candidate_threshold_prepared`
-candidate-coverage decision mode. Those bounded decision modes use prepared
-fixed-radius traversal; they do not compute exact nearest-neighbor ranking or
-authorize whole-app speedup claims. Claim-sensitive scripts using
-`--require-rt-core` reject the default row/ranking modes. The prepared decision
-modes have Goal969 RTX artifacts and may enter bounded claim review, while
-exact Hausdorff distance and ANN ranking/index behavior remain outside the
-claim.
+The current exact Hausdorff and ANN ranking paths are not broad NVIDIA RT-core
+claims. Prepared decision modes can use bounded fixed-radius traversal; they do
+not automatically authorize exact ranking, whole-app speedup, or arbitrary ANN
+index claims. Claim-sensitive scripts using `--require-rt-core` keep that
+boundary explicit.
 
 ---
 
@@ -266,14 +260,13 @@ python examples\rtdl_fixed_radius_neighbors.py --backend embree
 python examples\rtdl_knn_rows.py --backend embree
 ```
 
-The released `v0.4.0` nearest-neighbor line also has OptiX and Vulkan backend
-implementations, but availability depends on the machine and local runtime
-setup. Use the feature and support-matrix docs for the exact platform story.
+OptiX and Vulkan availability depends on the machine and local runtime setup.
+Use the current feature docs and v2.0 release-candidate packet for the exact
+platform story.
 
 ---
 
 ## Next
 
-- [RTDL v0.4 Application Examples](../v0_4_application_examples.md)
 - [Feature Homes](../features/README.md)
 - [Tutorial Index](README.md)

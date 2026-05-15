@@ -2,6 +2,10 @@
 
 This is the first RTDL kernel you should read in full.
 
+This page is part of the current v2.0-facing tutorial path. It starts with the
+portable CPU reference backend before you move to partner-column or native
+backend tutorials.
+
 It teaches the smallest complete RTDL idea:
 
 - RTDL handles the geometric query

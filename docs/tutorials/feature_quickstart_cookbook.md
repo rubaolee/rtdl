@@ -134,11 +134,8 @@ PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
 - Standard-library helper: `rt.reduce_rows(any)` converts per-edge rows into pose-level collision flags.
 - Python output: colliding pose IDs plus witness edge/ray summaries.
 - Boundary: this is bounded 2D discrete-pose screening, not continuous collision detection, full robot kinematics, or a full mesh collision engine.
-- Linux performance evidence: Goal509 accepts CPU and Embree for this app on
-  the earlier hit-count formulation. The original Goal509 OptiX robot evidence
-  is superseded by Goal748, which found and fixed a short-ray OptiX correctness
-  bug and reran post-fix parity/timing. The v0.9.5 app rewrites the app to
-  any-hit plus `reduce_rows` without making a new Vulkan or Apple native
+- Performance wording must come from the current v2.0 evidence packet. This
+  app teaches any-hit rows plus `reduce_rows` without making a broad native
   early-exit speedup claim.
 - Run:
 
@@ -150,7 +147,7 @@ PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend
   - `examples/rtdl_robot_collision_screening_app.py`
   - [Ray/Triangle Any Hit feature home](../features/ray_tri_anyhit/README.md)
   - [Reduce Rows feature home](../features/reduce_rows/README.md)
-  - [Goal509 Robot/Barnes-Hut Linux Performance Report](../reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
+  - [Capability Boundaries](../capability_boundaries.md)
 
 ### `barnes_hut_force_app`
 
@@ -158,9 +155,9 @@ PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend
 - RTDL output: body-to-node candidate rows using `fixed_radius_neighbors`.
 - Python output: accepted node IDs, exact fallback body IDs, approximate force vectors, and error against a brute-force oracle.
 - Boundary: this is a bounded one-level 2D approximation. RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions.
-- Linux performance evidence: Goal509 accepts CPU, Embree, OptiX, and Vulkan
-  for candidate generation, but full-app timing remains dominated by Python
-  opening-rule and force-reduction work.
+- Performance wording must come from the current v2.0 evidence packet. This app
+  teaches candidate generation; Python still owns opening-rule and
+  force-reduction work.
 - Run:
 
 ```bash
@@ -170,7 +167,7 @@ PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_pyth
 - Learn from:
   - `examples/rtdl_barnes_hut_force_app.py`
   - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
-  - [Goal509 Robot/Barnes-Hut Linux Performance Report](../reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
+  - [Capability Boundaries](../capability_boundaries.md)
 
 ### `point_nearest_segment`
 
@@ -273,11 +270,9 @@ PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 - Python output: undirected distance selection plus witness IDs.
 - Boundary: exact distance remains an app pattern over `knn_rows`; the OptiX
   threshold mode is a decision sub-path, not an exact-distance speedup claim.
-- Linux performance evidence: Goal507 covers Embree, OptiX, Vulkan, SciPy
-  `cKDTree`, scikit-learn `NearestNeighbors`, and FAISS `IndexFlatL2`; the
-  honest result is that RTDL GPU backends beat RTDL Embree, but do not beat the
-  strongest mature nearest-neighbor library baselines on the measured exact 2D
-  task.
+- Performance wording must come from the current v2.0 evidence packet. This app
+  teaches exact-distance composition and the threshold decision sub-path without
+  claiming broad nearest-neighbor library replacement.
 - Run:
 
 ```bash
@@ -287,7 +282,7 @@ PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix 
 
 - Learn from:
   - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
-  - [Goal507 Hausdorff Linux Performance Report](../reports/goal507_hausdorff_linux_perf_report_2026-04-17.md)
+  - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
   - `examples/rtdl_hausdorff_distance_app.py`
 
 ### `bfs`
@@ -366,5 +361,5 @@ for learning and row-shape inspection, not performance claims.
 For backend status, use:
 
 - [Current Architecture](../current_architecture.md)
-- [v0.7 Support Matrix](../release_reports/v0_7/support_matrix.md)
+- [v2.0 Pre-Release Candidate](../release_reports/v2_0_pre_release_candidate.md)
 - [Release-Facing Examples](../release_facing_examples.md)

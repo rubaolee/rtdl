@@ -1,6 +1,8 @@
 # Tutorial: Graph Workloads
 
-RTDL `v0.6.1` adds the first released RT graph workload family:
+This tutorial covers the current v2.0-facing graph workload shape:
+frontier/edge traversal rows and bounded graph-summary continuation inside a
+Python program.
 
 - `bfs`
 - `triangle_count`
@@ -189,11 +191,10 @@ PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend optix --optix-graph
 PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix --optix-graph-mode native
 ```
 
-After the Goal929/Goal930/Goal969 review chain, the unified graph app is ready
-for RTX claim review only under a bounded scope: visibility-edge filtering plus
-native graph-ray candidate generation. The component BFS and triangle-count
-example scripts still reject `--require-rt-core` intentionally; use the unified
-app for claim-sensitive graph runs:
+The unified graph app is the public entry point for claim-sensitive graph runs.
+The bounded scope is visibility-edge filtering plus native graph-ray candidate
+generation. The component BFS and triangle-count example scripts still reject
+`--require-rt-core` intentionally:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core
@@ -209,5 +210,5 @@ whole-app graph-system speedup claim.
 ## Next
 
 - [Release-Facing Examples](../release_facing_examples.md)
-- [RTDL v0.6 Release Statement](../release_reports/v0_6/release_statement.md)
-- [RTDL v0.6 Support Matrix](../release_reports/v0_6/support_matrix.md)
+- [Application Catalog](../application_catalog.md)
+- [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)

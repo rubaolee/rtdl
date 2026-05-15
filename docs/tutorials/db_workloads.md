@@ -1,9 +1,10 @@
-# RTDL Database Workloads (`v0.7.0` Release Line)
+# RTDL Database Workloads
 
-This tutorial covers the first bounded database-style workload family in RTDL's
-`v0.7.0` release line.
+This tutorial covers the current v2.0-facing database-style workload shape:
+bounded columnar-payload scans and grouped numeric summaries inside a Python
+program.
 
-Current bounded kernels:
+Current bounded workload contracts:
 
 - `conjunctive_scan`
 - `grouped_count`
@@ -12,18 +13,17 @@ Current bounded kernels:
 Current correctness anchors:
 
 - Python truth path on every OS
-- native oracle `run_cpu(...)` for the first bounded family
+- native oracle `run_cpu(...)` for the bounded family
 - PostgreSQL on Linux as the external correctness baseline
-- real RT backends for the first bounded family:
+- real RT backends for the bounded family where configured:
   - `embree`
   - `optix`
   - `vulkan`
-- native prepared DB datasets for repeated-query execution:
+- native prepared datasets for repeated-query execution:
   - `prepare_embree_db_dataset`
   - `prepare_optix_db_dataset`
   - `prepare_vulkan_db_dataset`
-- columnar prepared dataset transfer for Embree, OptiX, and Vulkan through
-  `transfer="columnar"`
+- columnar-payload transfer and partner continuation where documented
 
 Important boundary:
 
@@ -149,23 +149,19 @@ corresponding
 
 ## 5. PostgreSQL Correctness On Linux
 
-If you are on the Linux validation host with PostgreSQL available:
+Historical PostgreSQL comparison tests still exist in the regression suite. If
+you are doing release archaeology, use the history and report archives rather
+than treating those old goal-named tests as the learner path.
 
 ```bash
-RTDL_POSTGRESQL_DSN="dbname=postgres" PYTHONPATH=src:. python -m unittest \
-  tests.goal420_v0_7_rt_db_conjunctive_scan_native_oracle_truth_path_test \
-  tests.goal421_v0_7_rt_db_grouped_count_native_oracle_truth_path_test \
-  tests.goal422_v0_7_rt_db_grouped_sum_native_oracle_truth_path_test \
-  tests.goal423_v0_7_postgresql_db_correctness_test \
-  tests.goal424_v0_7_postgresql_db_grouped_correctness_test -v
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
 ```
 
-That is the current strongest bounded correctness gate for the first DB kernel
-family.
+For current v2.0 learning, the unified example above is the public entry point.
 
 ## 6. Current Limits
 
-The `v0.7.0` DB line is intentionally bounded. It does not yet include:
+The DB-style surface is intentionally bounded. It does not include:
 
 - multi-group-key native grouped kernels
 - PostgreSQL-style storage, indexing, transactions, optimizer behavior, and
@@ -173,17 +169,11 @@ The `v0.7.0` DB line is intentionally bounded. It does not yet include:
 
 So the current correct claim is:
 
-- RTDL now supports a first bounded analytical DB kernel family
-- correctness is anchored against PostgreSQL on Linux
+- RTDL supports bounded analytical DB-style kernels
+- historical external correctness anchors live in the report archive
 - the RT backend path for DB workloads is real across Embree, OptiX, and Vulkan
 - native prepared dataset paths reuse Embree scenes, OptiX GAS/traversables, and
   Vulkan BLAS/TLAS state for repeated queries
-- the prepared RT dataset APIs support columnar table ingestion on Embree,
-  OptiX, and Vulkan
-- the current Linux 200k-row Goal 452 comparison shows all three RT backends
-  winning setup-plus-10-query total time against the best PostgreSQL modes
-  tested so far, while query-only results are mixed
-- Goal 492 records the final release-readiness hold before explicit `v0.7.0`
-  release authorization
-- `v0.7.0` is now the current tagged mainline release; claims remain bounded by
-  the v0.7 release reports and support matrix
+- the prepared RT dataset APIs support columnar-payload ingestion on Embree,
+  OptiX, and Vulkan where configured
+- this is not a SQL engine, DBMS, optimizer, or broad database speedup claim

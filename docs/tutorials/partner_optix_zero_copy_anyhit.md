@@ -3,6 +3,9 @@
 This tutorial explains the current v2.0-facing OptiX partner-column idea. It is
 not a release announcement and not a broad GPU-speedup promise.
 
+Read [Python Partner Any-Hit](partner_anyhit.md) first if you have not already
+seen the partner descriptor shape.
+
 ## What This Path Demonstrates
 
 The supported shape is:

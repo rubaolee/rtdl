@@ -1,6 +1,7 @@
 # Tutorial: Segment And Polygon Workloads
 
-This tutorial covers the stable released `v0.2.0` workload families.
+This tutorial covers the current v2.0-facing segment and polygon workload
+families.
 
 These are the best place to learn RTDL through real public workloads instead of
 through the tiny hello-world or sorting demos.
@@ -183,13 +184,13 @@ Important boundary:
   `--output-mode summary --optix-mode native --require-rt-core`; that path is
   limited to prepared compact summary traversal, not full GIS/routing or
   default-app speedup
-- segment/polygon hit-count has a bounded claim-review path through the
-  Goal933 prepared profiler, not a broad default-app claim
-- `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` now uses
-  the bounded native pair-row emitter. It is the explicit true-traversal rows
-  path, and Goal969 supplies bounded claim-review evidence through the Goal934
-  prepared profiler. Public wording must still stay limited to the reviewed
-  output capacity; unbounded row-volume speedup remains outside the claim.
+- segment/polygon hit-count has a bounded prepared compact-summary claim path,
+  not a broad default-app claim
+- `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` uses the
+  bounded native pair-row emitter. The v2.0 path also documents streaming
+  witness-column output for larger summaries. Public wording must still stay
+  limited to the reviewed output capacity; unbounded row-volume speedup remains
+  outside the claim.
 
 ---
 
@@ -223,21 +224,20 @@ Embree/OptiX modes are native-assisted: the backend performs LSI/PIP candidate
 discovery and current compact summary paths use backend-neutral exact
 grid-cell area summary plumbing.
 
-The OptiX path has reviewed Goal1263 bounded positive wording only for
-RT-assisted LSI/PIP positive candidate discovery plus exact area continuation.
-It is not a monolithic GPU polygon-area kernel or whole-app polygon speedup
-claim. For claim-sensitive runs:
+The OptiX path is bounded to RT-assisted candidate discovery plus documented
+exact continuation. It is not a monolithic GPU polygon-area kernel or whole-app
+polygon speedup claim. For claim-sensitive runs:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core
 ```
 
-The segment/polygon road-screening and direct segment/polygon lines now have
-bounded claim-review paths after Goal969, but the release boundary remains
-narrow: prepared compact road-hazard summary, prepared compact hit-count
-summary, and prepared bounded pair-row traversal only. Default app behavior,
-full GIS/routing, broad segment/polygon acceleration, and unbounded row-volume
-speedup remain outside the claim.
+The segment/polygon road-screening and direct segment/polygon lines have
+bounded claim-review paths, but the release boundary remains narrow: prepared
+compact road-hazard summary, prepared compact hit-count summary, streaming
+witness columns, and prepared bounded pair-row traversal only. Default app
+behavior, full GIS/routing, broad segment/polygon acceleration, and unbounded
+row-volume speedup remain outside the claim.
 
 Kernel shape:
 

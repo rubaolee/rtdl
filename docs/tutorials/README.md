@@ -1,56 +1,49 @@
-# RTDL Tutorials
+# RTDL v2.0 Tutorials
 
-Start here if you want to write RTDL programs, not just read reference pages.
+Start here if you want to write RTDL programs with the current v2.0-facing
+Python+partner+RTDL surface.
 
-If you are brand new, read [Quick Tutorial](../quick_tutorial.md) first. It gets
-you a working program immediately and explains the kernel shape before the
-longer tutorials.
+RTDL is a Python eDSL. You write the surrounding Python application, describe
+the traversal-heavy kernel in RTDL, and choose a backend such as the portable
+CPU reference path, Embree, or OptiX. In the v2.0 track, partner frameworks such
+as NumPy, PyTorch, and CuPy can own columns around supported RTDL primitives.
 
-If you want to choose a runnable app or example before reading the full ladder,
-use [App And Example Quickstart](../app_example_quickstart.md).
+This page is intentionally single-version. It teaches the current pre-release
+candidate surface and links old tutorial history only from the final archive
+section.
 
-If you want the full example inventory, use [Examples Index](../../examples/README.md).
-That index is more complete and more boundary-heavy than this tutorial page.
-
-The tutorial ladder is organized around the main RTDL value proposition: write a
-small workload kernel once, keep application logic in Python, and avoid
-hand-maintaining separate ray-tracing backend implementations.
-
-## Tutorial Ladder
+## Start Here
 
 | Step | Tutorial | What you learn |
 | --- | --- | --- |
-| 0 | [Quick Tutorial](../quick_tutorial.md) | First run, kernel anatomy, four-step pattern |
-| 1 | [Hello World](hello_world.md) | Full kernel walkthrough, line-by-line |
-| 2 | [Sorting Demo](sorting_demo.md) | RTDL inside a compact Python program |
-| 3 | [Feature Quickstart Cookbook](feature_quickstart_cookbook.md) | One compact recipe per public feature |
-| 4 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Segment/polygon feature family and boundaries |
-| 5 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius and KNN row workloads |
-| 6 | [Graph Workloads](graph_workloads.md) | RT graph workload shapes and limits |
-| 7 | [Database Workloads](db_workloads.md) | Bounded DB-style kernel examples |
-| 8 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
-| 9 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | Prepared 3D ray/triangle path |
-| 10 | [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py) | Apple RT closest-hit and visibility-count scenarios |
-| 11 | [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py) | Bounded any-hit row primitive |
-| 12 | [Python Partner Any-Hit](partner_anyhit.md) | First partner-owned column path with Embree as CPU RT fallback |
-| 13 | [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md) | What RTDL accelerates in partner programs, and what it does not |
-| 14 | [OptiX Partner Zero-Copy Any-Hit Preview](partner_optix_zero_copy_anyhit.md) | Advanced Torch/CuPy CUDA input-plus-output slice for one OptiX primitive |
-| 15 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | Observer-target line-of-sight rows |
-| 16 | [Reduce Rows Example](../../examples/rtdl_reduce_rows.py) | Deterministic Python standard-library reductions over emitted RTDL rows |
+| 0 | [Quick Tutorial](../quick_tutorial.md) | First run, kernel anatomy, and the `input -> traverse -> refine -> emit` pattern |
+| 1 | [Hello World](hello_world.md) | The smallest complete RTDL program |
+| 2 | [v2.0 App Building](v2_app_building.md) | How Python, RTDL, and partner arrays divide work |
+| 3 | [Python Partner Any-Hit](partner_anyhit.md) | Partner-owned columns with Embree as the CPU RT fallback |
+| 4 | [OptiX Partner Column Any-Hit](partner_optix_zero_copy_anyhit.md) | The GPU partner-column shape and its claim boundary |
+| 5 | [Feature Quickstart Cookbook](feature_quickstart_cookbook.md) | Which RTDL primitive shape to choose for a workload |
+| 6 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Count rows, witness rows, and streaming witness summaries |
+| 7 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Fixed-radius, K-closest, and Hausdorff-style composition |
+| 8 | [Graph Workloads](graph_workloads.md) | Frontier/edge traversal rows and graph-summary continuation |
+| 9 | [Database Workloads](db_workloads.md) | Columnar-payload scans, grouped summaries, and DB-style boundaries |
+| 10 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as the compute/query core inside a Python visual program |
 
-## Three Learning Tracks
+## Learning Tracks
 
-### Track 1: Language Basics
+### Language Basics
 
-Learn the `input -> traverse -> refine -> emit` kernel shape and how Python
-wraps RTDL as an engine.
-
+- [Quick Tutorial](../quick_tutorial.md)
 - [Hello World](hello_world.md)
 - [Sorting Demo](sorting_demo.md)
 
-### Track 2: Workload Tutorials
+### Python+Partner+RTDL
 
-Learn the workload families, what they emit, and when to choose each.
+- [v2.0 App Building](v2_app_building.md)
+- [Python Partner Any-Hit](partner_anyhit.md)
+- [OptiX Partner Column Any-Hit](partner_optix_zero_copy_anyhit.md)
+- [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
+
+### Workload Families
 
 - [Feature Quickstart Cookbook](feature_quickstart_cookbook.md)
 - [Segment And Polygon Workloads](segment_polygon_workloads.md)
@@ -58,43 +51,42 @@ Learn the workload families, what they emit, and when to choose each.
 - [Graph Workloads](graph_workloads.md)
 - [Database Workloads](db_workloads.md)
 
-Current feature terms you will see:
+## Current Claim Boundary
 
-- `ANY_HIT`
-- `COUNT_HITS`
-- `REDUCE_FLOAT(MIN|MAX|SUM)`
-- `REDUCE_INT(COUNT|SUM)`
-- `ray_triangle_any_hit`
-- `visibility_rows`
-- `reduce_rows`
+The v2.0 tutorial path teaches a pre-release candidate, not a final release.
+Use it from the source tree with `PYTHONPATH=src:.`.
 
-### Track 3: Application Demos
+Allowed tutorial wording:
 
-Learn how RTDL works as the accelerated compute/query core inside a larger
-Python application.
+- RTDL can run the documented Python+RTDL examples from source.
+- The v2.0 candidate has partner-column paths for documented primitives.
+- OptiX evidence exists for specific measured contracts.
+- Python or partner frameworks own app continuation outside the RTDL primitive.
 
-- [RTDL Plus Python Rendering](rendering_and_visual_demos.md)
-- [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
-- [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py)
-- [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py)
-- [Python Partner Any-Hit](partner_anyhit.md)
-- [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
-- [OptiX Partner Zero-Copy Any-Hit Preview](partner_optix_zero_copy_anyhit.md)
-- [Visibility Rows Example](../../examples/rtdl_visibility_rows.py)
-- [Reduce Rows Example](../../examples/rtdl_reduce_rows.py)
+Not allowed:
 
-## After The Tutorials
+- package-install promises;
+- broad RT-core speedup claims;
+- arbitrary PyTorch/CuPy acceleration claims;
+- arbitrary polygon overlay, graph analytics, or database acceleration claims;
+- final v2.0 release wording before the 3-AI consensus gate is complete.
 
-Once you finish the ladder, the next useful destinations are:
+For the exact boundary, read
+[Partner Acceleration Boundaries](../partner_acceleration_boundaries.md) and
+[v2.0 Pre-Release Candidate](../release_reports/v2_0_pre_release_candidate.md).
 
-- [Current Architecture](../current_architecture.md)
-- [Feature Quickstart Cookbook](feature_quickstart_cookbook.md)
-- [Release-Facing Examples](../release_facing_examples.md)
-- [Feature Homes](../features/README.md)
-- [RTDL Language Docs](../rtdl/README.md)
+## More Navigation
+
+- [Docs Index](../README.md)
+- [Public Documentation Map](../public_documentation_map.md)
+- [App And Example Quickstart](../app_example_quickstart.md)
 - [Application Catalog](../application_catalog.md)
-- [Capability Boundaries](../capability_boundaries.md)
-- [Performance Model](../performance_model.md)
+- [Current Architecture](../current_architecture.md)
+- [IR And Lowering](../rtdl/ir_and_lowering.md)
 
-Use the tutorials first. Use the reference pages when you want exact contracts,
-edge cases, backend/status detail, or benchmark evidence.
+## Legacy Tutorials
+
+Older tutorial files are preserved for audit and project history, but they are
+not part of the active learner path. Start here for the current surface; use
+[Legacy Tutorial Archive](../history/legacy_tutorials/README.md) only when you
+need to inspect archived project history.
