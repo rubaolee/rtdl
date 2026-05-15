@@ -206,4 +206,8 @@ other examples first and treat the linked 4K video as the reference recording.
 | `tests/` | Regression tests for API, docs, release gates, and claim boundaries |
 | `scripts/` | Audits, report generators, benchmark helpers, and intake tools |
 
+Root-level generated artifacts, archived proof apps, and schema files are kept
+inside the appropriate source, script, example, or history directories rather
+than as separate front-door folders.
+
 For full navigation, start with [docs/README.md](docs/README.md).

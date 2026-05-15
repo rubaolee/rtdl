@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def schema_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "schemas" / "rtdl_plan.schema.json"
+    return Path(__file__).resolve().parent / "schemas" / "rtdl_plan.schema.json"
 
 
 def load_plan_schema() -> dict[str, object]:

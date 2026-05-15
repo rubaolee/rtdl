@@ -11,7 +11,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = REPO_ROOT / "build" / "system_audit" / "rtdl_system_audit.sqlite"
 DEFAULT_SUMMARY = REPO_ROOT / "build" / "system_audit" / "summary.json"
-SCHEMA_PATH = REPO_ROOT / "schemas" / "system_audit_schema.sql"
+SCHEMA_PATH = REPO_ROOT / "scripts" / "schemas" / "system_audit_schema.sql"
 
 
 FRONT_SURFACE = {
@@ -42,7 +42,7 @@ def git(args: list[str]) -> str:
 
 
 def tracked_files() -> list[Path]:
-    lines = git(["ls-files", "README.md", "VERSION", "docs", "src", "tests", "examples", "scripts", "apps"]).splitlines()
+    lines = git(["ls-files", "README.md", "VERSION", "docs", "src", "tests", "examples", "scripts"]).splitlines()
     return [REPO_ROOT / line for line in lines if line]
 
 
@@ -57,7 +57,7 @@ def classify(rel_path: str) -> tuple[str, str, int]:
         return ("docs", "docs", 3)
     if rel_path.startswith("examples/"):
         return ("examples", "examples", 4)
-    if rel_path.startswith(("src/", "apps/")):
+    if rel_path.startswith("src/"):
         return ("code", "source", 5)
     if rel_path.startswith("scripts/"):
         return ("code", "scripts", 5)

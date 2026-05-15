@@ -13,3 +13,8 @@ If you are starting fresh, go first to:
 - `../README.md`
 - `../../README.md`
 - `../../docs/release_facing_examples.md`
+
+## Subdirectories
+
+- `plan_bundles/`: archived generated C++/CUDA plan bundles that used to live
+  in the repository root `generated/` directory.

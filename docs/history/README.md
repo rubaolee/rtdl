@@ -18,6 +18,8 @@ have to learn the project by reading its development timeline.
 | Archived root-level docs | [Root Archive](root_archive/README.md) |
 | Historical release entry points | [Release Archive](release_archive/README.md) |
 | Archived API/internal notes | [Archived API And Internal Design Notes](api_internal_archive/README.md) |
+| Archived root source/proof apps | [Source Archive](source_archive/README.md) |
+| Archived tracked build artifacts | [Build Artifacts Archive](build_artifacts_archive/README.md) |
 | Historical docs tree | This `docs/history/` directory |
 
 ## What Belongs Here

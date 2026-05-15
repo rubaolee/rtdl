@@ -229,7 +229,7 @@ build-embree:
 run: run-rtdsl-py
 
 run-rtdsl-py:
-	PYTHONPATH=src:. python3 apps/rtdsl_python_demo.py
+	PYTHONPATH=src:. python3 examples/internal/rtdsl_python_demo.py
 
 run-rtdsl-sim:
 	PYTHONPATH=src:. python3 examples/internal/rtdl_simulator_demo.py
