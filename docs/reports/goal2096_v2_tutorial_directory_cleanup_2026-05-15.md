@@ -18,8 +18,8 @@ Older tutorial material is preserved under history.
 | --- | --- | --- |
 | `docs/tutorials/README.md` | Tutorial ladder mixed current partner tutorials with old inventory-style examples. | Rewrote as `RTDL v2.0 Tutorials`, added a current learning ladder, claim boundary, and legacy archive link. |
 | `docs/tutorials/v2_app_building.md` | Missing current app-building tutorial for Python+partner+RTDL. | Added a v2.0 app-building tutorial explaining Python, partner arrays, RTDL primitive contracts, backend work, and continuation. |
-| `docs/tutorials/v0_8_app_building.md` | Old-version filename was visible in the active tutorial directory. | Moved to `docs/history/legacy_tutorials/v0_8_app_building.md`. |
-| `docs/history/legacy_tutorials/README.md` | Needed an archive doorway for moved tutorial history. | Added a short legacy tutorial archive index. |
+| `docs/tutorials/v0_8_app_building.md` | Old-version filename was visible in the active tutorial directory. | Moved to `docs/history/tutorial_archive/v0_8_app_building.md`. |
+| `docs/history/tutorial_archive/README.md` | Needed an archive doorway for moved tutorial history. | Added a short tutorial archive index. |
 | `docs/tutorials/db_workloads.md` | Opened as an old DB release-line tutorial and contained goal-named historical tests. | Reframed as current bounded columnar-payload tutorial; moved historical validation context behind archives. |
 | `docs/tutorials/graph_workloads.md` | Opened with old graph release-line language and old release links. | Reframed around frontier/edge traversal rows and v2.0 graph-summary boundaries. |
 | `docs/tutorials/nearest_neighbor_workloads.md` | Opened with old nearest-neighbor release-line language and historical performance report wording. | Reframed around fixed-radius/K-closest/Hausdorff composition and current v2.0 claim boundary. |

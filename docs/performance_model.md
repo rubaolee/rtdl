@@ -1,31 +1,31 @@
 # RTDL Performance Model
 
-This page explains how to read RTDL performance claims across the released
-v1.8 source-tree Python+RTDL language boundary. It is
-intentionally stricter than marketing language: a backend flag, a native code
-path, and a public speedup claim are different things.
+This page explains how to read performance results for the current v2.0-facing
+RTDL surface. It is intentionally stricter than marketing language: selecting a
+backend, running native code, and publishing a speedup claim are different
+things.
 
 ## Short Version
 
-RTDL can improve performance when the hot work is inside a prepared/native
-backend path and the comparison uses the same contract. RTDL can be slower when
-the app still returns large Python row materializations or when non-RT
-post-processing dominates.
+RTDL can improve performance when the hot work is inside a prepared backend path
+and the comparison uses the same contract. RTDL can be slower when the app
+returns large Python row tables, when setup dominates, or when most work happens
+after traversal.
 
-The current public performance model is:
+The current model is:
 
-- Python is the authoring/control plane.
-- Backend/native code should own traversal and candidate discovery.
-- v1.6 keeps the v1.0 app-shaped proof history and publishes the first
-  Python+RTDL architecture milestone for the supported Embree+OptiX primitive
-  surface.
-- v1.8 publishes the source-tree Python+RTDL language boundary with
-  app-agnostic native source/ABI cleanup evidence for the tracked release
-  surface.
-- Python convenience row output is useful for development but can dominate
-  runtime.
-- Raw/prepared/native summary paths are the serious performance path.
-- Public RTX wording is only allowed for reviewed bounded sub-paths.
+- Python is the authoring and control plane.
+- RTDL describes traversal, refinement, row emission, and supported reductions.
+- Native backends must remain app-agnostic.
+- Partner libraries such as NumPy, PyTorch, and CuPy can own tensor-side
+  continuation when the app needs GPU or vectorized compute.
+- Convenience row output is useful for learning and debugging, but it is not
+  always the serious performance path.
+- Public speedup wording requires exact evidence for the exact measured
+  contract.
+
+Older performance history is preserved in the audit archive, but the learner
+model should be read from this current page.
 
 ## Timing Boundaries
 
@@ -36,10 +36,11 @@ RTDL performance evidence must name the boundary being timed.
 | Python dict rows | End-to-end convenience output with Python materialization | Good for usability; often not the fastest path |
 | Raw rows / thin views | Native result buffers exposed with less Python rematerialization | Better measure of backend execution plus thin host overhead |
 | Prepared execution | Build-side data and/or rays are reused | Best for repeated-query workloads |
-| Compact/native summary | Backend or native continuation returns reduced app output | Useful when users do not need full witness rows |
-| Whole app | Data construction, RTDL execution, post-processing, and output | Only claim this when the evidence explicitly covers it |
+| Compact/native summary | Backend or partner continuation returns reduced output | Useful when users do not need full witness rows |
+| Streaming witness output | Bounded pages or columns of witness data rather than one huge Python table | Best when correctness needs witnesses but full materialization would dominate |
+| Whole app | Data construction, RTDL execution, partner work, post-processing, and output | Only claim this when the evidence explicitly covers it |
 
-## NVIDIA RTX Claim Boundary
+## NVIDIA RT Claim Boundary
 
 For NVIDIA paths, distinguish four levels:
 
@@ -50,44 +51,16 @@ For NVIDIA paths, distinguish four levels:
 
 Only level 4 is a public speedup claim.
 
-Current public RTX wording is governed by:
+Current public wording is governed by:
 
 - [Current Support Matrix](current_main_support_matrix.md)
 - [Backend Maturity](backend_maturity.md)
 - [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
+- [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - `rtdsl.rtx_public_wording_matrix()`
 
-## v1.6 App Performance Reality
-
-v1.6 is the current Python+RTDL architecture release for the supported
-Embree+OptiX primitive surface. It keeps the v1.0 app-shaped proof history and
-the v1.5 standalone Embree+OptiX language/runtime completion history, so
-performance is still mixed by design:
-
-- RT traversal-heavy sub-paths can be fast.
-- Full apps may still be slow when Python owns ranking, clustering, exact
-  polygon refinement, graph reductions, or force computation.
-- At the v1.6 tag boundary, some app-specific or workload-shaped native
-  continuations exist to make the proof apps measurable.
-- Current main later migrates the tracked release native ABI surface toward
-  app-agnostic terminology, but that does not convert every workload into a
-  public speedup claim.
-
-Examples:
-
-- Hausdorff has reviewed bounded prepared threshold-decision wording, but exact
-  Hausdorff distance remains outside that RTX claim.
-- ANN candidate coverage can be reviewed as a bounded threshold decision, but
-  ANN ranking/index speedup remains outside the claim.
-- DBSCAN core-count summaries can be native/prepared, but full cluster
-  expansion remains outside the RT-core claim.
-- Barnes-Hut node coverage can be reviewed as a bounded query, but opening-rule
-  and force-vector reduction remain outside the claim.
-- Robot collision `prepared_pose_flags` has normalized per-pose wording only,
-  not same-total-work or whole-app robot-planning wording.
-
-## Why RTDL Can Be Slower Than Native Code
+## Why Fast Backends Can Still Look Slow
 
 The convenience path has overhead:
 
@@ -96,89 +69,60 @@ The convenience path has overhead:
 - `ctypes` marshaling
 - result rematerialization into dictionaries
 - repeated validation and dispatch
+- partner array conversion when a run cannot stay on one memory path
 
-The older [Runtime Overhead Architecture](runtime_overhead_architecture.md)
-shows the same lesson with Embree: dict-return paths can be far slower than
-native, while raw/prepared raw paths are much closer to the native wrapper
-baseline.
+Use [Runtime Overhead Architecture](runtime_overhead_architecture.md) for the
+mechanical breakdown. The recurring lesson is simple: returning full Python
+objects can dominate a run even when traversal is fast.
 
 ## When OptiX Is Slower Than Embree
 
-Embree is a ray-tracing/BVH backend, not a plain Python baseline. For supported
-Embree app paths, the CPU comparison is still an RT-style traversal comparison
-with native continuation where documented.
-
-A slower OptiX result is acceptable engineering evidence when the same-contract
-comparison is clean and the bottleneck is identified. It can close a v1.1/v1.2
-investigation as `optix_still_slower_with_reason`, but it cannot authorize
-positive public RTX speedup wording.
+Embree is a ray-tracing/BVH backend, not a plain Python baseline. A slower
+OptiX result is useful engineering evidence when the same-contract comparison is
+clean and the bottleneck is identified, but it does not authorize positive
+public RT-core wording.
 
 Use slower-than-Embree results to decide the next architecture step:
 
-- if native traversal is fast but host input construction, scene/ray prepare,
-  ray packing, or Python output dominates, the v1.2 target is overhead removal;
-- if native traversal itself is slower, the target is backend kernel/layout
-  work or a narrower claim boundary;
-- if parity or same-contract timing is incomplete, the result stays
-  `baseline_contract_incomplete`;
-- if the app needs reductions, grouping, ranking, graph analytics, or SQL-style
-  materialization outside traversal, that is v1.6.x/v2.0 design input rather
-  than a failed OptiX proof.
+- if native traversal is fast but setup, packing, launch overhead, or Python
+  output dominates, improve the handoff/output contract;
+- if native traversal itself is slower, tune the backend layout or narrow the
+  claim boundary;
+- if parity or same-contract timing is incomplete, keep the result out of
+  release claims;
+- if the app needs ranking, clustering, graph analytics, exact geometry, or
+  SQL-style materialization after traversal, route that work through the Python
+  app layer or a partner continuation instead of hardcoding it into the engine.
 
-## What v1.6 Publishes
+## Partner Continuation Rule
 
-The released v1.6 package has Windows, Linux, and OptiX validation evidence for
-the supported Python+RTDL architecture boundary. Those subpaths express more app
-continuations through reviewed backend primitives instead of hardcoded app
-logic:
+v2.0 treats partner compute as part of the user-visible programming model:
 
-- `ANY_HIT`
-- `COUNT_HITS`
-- `REDUCE_FLOAT(MIN|MAX|SUM)`
-- `REDUCE_INT(COUNT|SUM)`
+```text
+Python owns the app.
+RTDL owns app-agnostic RT-shaped traversal.
+The partner owns tensor/vector/GPU continuation when the app asks for it.
+```
 
-`COLLECT_K_BOUNDED` remains experimental and is deferred to follow-up
-performance work. v1.6 is
-not a claim that every app is automatically fast. App-level continuations such
-as ranking, clustering, graph analytics, SQL-style materialization,
-exact-distance rows, and force-vector reduction remain outside the verified
-v1.6 subpath boundary unless a later report explicitly moves them.
-
-## What v1.7-v2.0 Should Fix
-
-v1.7-v2.0 are the broader productization and partner-interoperability track.
-v1.8 finishes Python+RTDL productization; v2.0 finishes Python+partner+RTDL.
-They should preserve the Python-facing DSL while removing Python from hot data
-movement and heavy non-RT continuation work:
-
-- stable compiled plans
-- flat native-ready buffers
-- direct backend dispatch
-- thin result views
-- zero-copy or low-copy interop with GPU compute tools
-- explicit boundaries between RT traversal, compute reductions, and Python
-  presentation
-
-Now that v1.8 is the current source-tree Python+RTDL language release, public
-docs should say v1.6 provides the earlier Python+RTDL architecture milestone
-and v1.8 provides the bounded source-tree Python+RTDL release surface. They
-should not claim universal whole-app speedup, arbitrary RTX acceleration, or
-universal partner zero-copy.
+That means a v2.0 app may use NumPy, PyTorch, CuPy, or user-controlled extension
+code around RTDL. Those choices can be valid app implementations, but public
+claims must say exactly which layer produced the speedup.
 
 ## Public Wording Rule
 
-When writing docs, use this template:
+Use this template:
 
 ```text
-RTDL accelerates <exact prepared/native sub-path> for <app/workload> under
-<backend/mode>, with <evidence/report>. This is not a whole-app speedup claim
-and does not include <excluded phases>.
+RTDL accelerates <exact prepared/native or partner-continuation sub-path> for
+<app/workload> under <backend/mode>, with <evidence/report>. This is not a
+whole-app speedup claim and does not include <excluded phases>.
 ```
 
 Do not write:
 
 ```text
-RTDL accelerates the whole app.
-OptiX means RT cores were used.
+RTDL accelerates every whole app.
+OptiX means RT cores made the app faster.
 All graph/DB/polygon workloads are faster with RT.
 ```
+

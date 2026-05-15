@@ -47,13 +47,13 @@ Read these in order:
 | `tutorials/` | Current v2.0 tutorials and runnable teaching docs. |
 | `features/` | Current feature homes and engine support contract. |
 | `rtdl/` | DSL, IR, programming model, and workload reference docs. |
-| `research/` | Advanced design, RayJoin/Embree context, and future research notes. |
-| `audit/` | Process docs and runbooks for reviewers. |
+| `research/` | Advanced design, RayJoin/Embree context, technical app notes, proposals, and future research notes. |
+| `audit/` | Process docs, directive snapshots, and runbooks for reviewers. |
 | `release_reports/` | Release packages and release evidence. |
 | `reports/` | Detailed benchmark, implementation, and audit reports. |
 | `reviews/` | External AI and human-style review records. |
 | `handoff/` | Handoff files used for external review and continuation. |
-| `history/` | Archived docs, root-level logs, old version notes, and preserved project history. |
+| `history/` | Archived docs, release archive entry points, root-level logs, old version notes, and preserved project history. |
 
 ## Rule
 

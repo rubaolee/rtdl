@@ -54,8 +54,8 @@ What this does not show:
 
 For the full app inventory, read [Application Catalog](application_catalog.md).
 For backend support, read [App Engine Support Matrix](app_engine_support_matrix.md).
-For implementation notes, use [Technical App Notes](technical_app_notes/README.md).
-For older version evidence, use [Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md).
+For implementation notes, use [Technical App Notes](research/app_notes/README.md).
+For older version evidence, use [Learner Doc Version Notes](history/learner_doc_version_notes.md).
 
 ## Backend Names
 
@@ -79,7 +79,7 @@ the needed local dependencies.
 | App catalog | [Application Catalog](application_catalog.md) | current app inventory and boundaries |
 | All examples | [Examples Index](../examples/README.md) | compact directory inventory |
 | Command archive | [Release-Facing Examples](release_facing_examples.md) | large evidence-oriented command list |
-| Technical app notes | [Technical App Notes](technical_app_notes/README.md) | implementation boundaries and primitive groups |
+| Technical app notes | [Technical App Notes](research/app_notes/README.md) | implementation boundaries and primitive groups |
 
 ## OptiX Rule For App Runs
 

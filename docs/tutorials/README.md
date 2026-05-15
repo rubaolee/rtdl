@@ -84,9 +84,9 @@ For the exact boundary, read
 - [Current Architecture](../current_architecture.md)
 - [IR And Lowering](../rtdl/ir_and_lowering.md)
 
-## Legacy Tutorials
+## Tutorial Archive
 
 Older tutorial files are preserved for audit and project history, but they are
 not part of the active learner path. Start here for the current surface; use
-[Legacy Tutorial Archive](../history/legacy_tutorials/README.md) only when you
-need to inspect archived project history.
+[Tutorial Archive](../history/tutorial_archive/README.md) only when you need to
+inspect archived project history.

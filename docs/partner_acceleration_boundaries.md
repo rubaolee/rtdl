@@ -83,7 +83,7 @@ with normal CuPy code, including RawKernel, subject to their own correctness and
 performance responsibility.
 ```
 
-The same boundary applies to user C/C++ continuations in v1.8-style Python
+The same boundary applies to user C/C++ continuations in source-tree Python
 apps: RTDL does not forbid them, but their performance is not automatically an
 RTDL speedup claim.
 
@@ -100,11 +100,11 @@ For the current four all-app control rows, the intended interpretation is:
 
 ## Current Release Boundary
 
-v2.0 is a pre-release candidate after Goal2086, not a final release. The
-current evidence supports documented Python+partner+RTDL contracts, including a
-streaming exact witness-column contract that avoids full Python row-table
-materialization for the segment/polygon any-hit row. Final release still waits
-for the strict 3-AI consensus redline, including a fresh Claude-family review.
+v2.0 is a pre-release candidate, not a final release. The current evidence
+supports documented Python+partner+RTDL contracts, including a streaming exact
+witness-column contract that avoids full Python row-table materialization for
+the segment/polygon any-hit row. Final release still waits for the strict 3-AI
+consensus redline, including a fresh Claude-family review.
 
 Before final v2.0 release, every public performance statement must stay inside
 the reviewed evidence:

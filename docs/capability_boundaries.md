@@ -2,7 +2,7 @@
 
 This page states the current v2.0-facing capability boundary for learners and
 users. Older release history is kept separately in
-[Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md).
+[Learner Doc Version Notes](history/learner_doc_version_notes.md).
 
 ## Current Status
 
@@ -88,4 +88,3 @@ Not allowed:
 - arbitrary polygon overlay;
 - package-install support;
 - every user program is faster.
-

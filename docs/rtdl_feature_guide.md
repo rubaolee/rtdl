@@ -3,7 +3,7 @@
 This is the high-level feature guide for the v2.0-facing RTDL surface. It is
 for learners, users, and reviewers who want the current shape without release
 archaeology. Older version notes live in
-[Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md).
+[Learner Doc Version Notes](history/learner_doc_version_notes.md).
 
 ## Practical Promise
 

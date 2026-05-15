@@ -22,7 +22,7 @@ class Goal2096V2TutorialDirectoryCleanupTest(unittest.TestCase):
         tracked = result.stdout.splitlines()
         self.assertIn("docs/tutorials/v2_app_building.md", tracked)
         self.assertNotIn("docs/tutorials/v0_8_app_building.md", tracked)
-        self.assertTrue((ROOT / "docs/history/legacy_tutorials/v0_8_app_building.md").exists())
+        self.assertTrue((ROOT / "docs/history/tutorial_archive/v0_8_app_building.md").exists())
 
     def test_active_tutorials_do_not_expose_old_version_markers(self) -> None:
         pattern = re.compile(
@@ -52,7 +52,7 @@ class Goal2096V2TutorialDirectoryCleanupTest(unittest.TestCase):
         for rel in (
             "docs/tutorials/README.md",
             "docs/tutorials/v2_app_building.md",
-            "docs/history/legacy_tutorials/v0_8_app_building.md",
+            "docs/history/tutorial_archive/v0_8_app_building.md",
             "docs/tutorials/db_workloads.md",
             "docs/tutorials/partner_optix_zero_copy_anyhit.md",
         ):

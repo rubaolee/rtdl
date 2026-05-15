@@ -29,7 +29,7 @@ LEARNER_DOCS = [
     "docs/release_reports/v2_0_pre_release_candidate.md",
 ]
 REPORT = ROOT / "docs" / "reports" / "goal2094_v2_learner_doc_single_version_cleanup_2026-05-15.md"
-LEGACY = ROOT / "docs" / "history" / "legacy_learner_doc_version_notes.md"
+LEGACY = ROOT / "docs" / "history" / "learner_doc_version_notes.md"
 
 
 class Goal2094V2LearnerDocSingleVersionCleanupTest(unittest.TestCase):

@@ -6,6 +6,7 @@ project history.
 ## Process And Runbooks
 
 - [Process Docs](process/README.md)
+- [Directive Snapshots](process/directives/)
 - [Runbooks](runbooks/README.md)
 
 ## Evidence Stores

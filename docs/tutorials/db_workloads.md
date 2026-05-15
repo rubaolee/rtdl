@@ -142,16 +142,16 @@ general SQL acceleration claim.
 
 The unified app demo shows denormalized order tables becoming matched row IDs,
 grouped counts, grouped sums, and app summaries. The retired scenario-specific
-compatibility files still exist for historical tests, but the unified app is
-the public tutorial entry point. The old kernel-form demo showed the
+compatibility files still exist for archived tests, but the unified app is
+the public tutorial entry point. The archived kernel-form demo showed the
 corresponding
 `input -> traverse -> refine -> emit` structure for the same bounded DB surface.
 
 ## 5. PostgreSQL Correctness On Linux
 
-Historical PostgreSQL comparison tests still exist in the regression suite. If
+Archived PostgreSQL comparison tests still exist in the regression suite. If
 you are doing release archaeology, use the history and report archives rather
-than treating those old goal-named tests as the learner path.
+than treating those older goal-named tests as the learner path.
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
@@ -170,7 +170,7 @@ The DB-style surface is intentionally bounded. It does not include:
 So the current correct claim is:
 
 - RTDL supports bounded analytical DB-style kernels
-- historical external correctness anchors live in the report archive
+- external correctness anchors from older work live in the report archive
 - the RT backend path for DB workloads is real across Embree, OptiX, and Vulkan
 - native prepared dataset paths reuse Embree scenes, OptiX GAS/traversables, and
   Vulkan BLAS/TLAS state for repeated queries

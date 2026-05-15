@@ -32,7 +32,7 @@ or release-report archives.
 | `docs/tutorials/partner_optix_zero_copy_anyhit.md` | Tutorial was evidence/report-like with goal IDs and artifact names in the learner path. | Replaced with current OptiX partner-column tutorial and clean claim boundary. |
 | `docs/release_reports/v2_0_pre_release_candidate.md` | Needed a clean learner-facing status page without goal-number naming. | Added concise v2.0 pre-release candidate note and pointed audit detail to release-report archive. |
 | `docs/release_reports/v2_0_pre_release_candidate_after_goal2086.md` | Existing audit-detail report is appropriate for release reports, not learner path. | Left as historical/audit detail; learner docs now link to the clean alias page. |
-| `docs/history/legacy_learner_doc_version_notes.md` | No single parking page existed for older learner-doc version context. | Added a dedicated legacy note that points older-release readers to history and release-report archives. |
+| `docs/history/learner_doc_version_notes.md` | No single parking page existed for older learner-doc version context. | Added a dedicated archive note that points older-release readers to history and release-report archives. |
 
 ## Validation
 
@@ -50,4 +50,3 @@ markers:
 The scan is expected to be clean for the learner/user target set. Release
 reports, benchmark reports, reviews, and history archives are intentionally not
 part of that learner-path scan.
-

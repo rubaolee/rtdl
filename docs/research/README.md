@@ -14,6 +14,8 @@ lineage, or future directions.
 ## Backend And Research Areas
 
 - [RayJoin And Embree Research Notes](rayjoin/README.md)
+- [Technical App Notes](app_notes/README.md)
+- [Design Proposals](proposals/)
 - [Future Directions](future/README.md)
 
 ## Rule

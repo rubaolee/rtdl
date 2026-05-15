@@ -2,67 +2,69 @@
 
 ## Whole-Project Goal
 
-Build a DSL and runtime/compiler stack for **non-graphical, re-purposed
-ray-tracing-based applications** across multiple backend libraries, hardware
-targets, and software ecosystems.
+RTDL is a Python-hosted DSL and runtime/compiler stack for non-graphical,
+ray-tracing-shaped computation: spatial search, visibility, proximity, compact
+candidate generation, and backend-assisted summaries.
 
 RTDL is not intended to be:
 
-- only a RayJoin reimplementation
-- only an Embree wrapper
-- only an OptiX experiment
-- only a Vulkan exercise
+- only a renderer;
+- only an Embree wrapper;
+- only an OptiX experiment;
+- only a fixed catalog of applications.
 
-It is intended to become a language/runtime system for writing a broader class
-of RT-style applications once and mapping them onto different backend families.
+It is intended to be a language/runtime system where users write the Python
+program, express the RT-shaped kernel in RTDL, and select a backend without
+turning the native engine into an app-specific product.
 
 ## Thesis
 
-Today, non-graphics RT systems often require users to simultaneously manage:
+Non-graphics RT applications often force users to manage too many concerns at
+once:
 
-- problem decomposition
-- ray-tracing reformulation
-- backend-specific launch/runtime details
-- backend-specific precision/performance tradeoffs
-- dataset and memory layout details
+- problem decomposition;
+- ray-tracing reformulation;
+- backend launch and runtime details;
+- memory layout and transfer decisions;
+- precision and performance tradeoffs;
+- post-traversal reductions and continuation work.
 
-RTDL aims to separate those concerns:
+RTDL separates those concerns:
 
-1. the user writes a compact kernel in Python
-2. the compiler owns lowering into RT-style execution structure
-3. the backend owns realization for the available runtime
+1. Python owns the app and policy.
+2. RTDL owns the typed kernel contract.
+3. Backends own app-agnostic traversal/refinement execution.
+4. Partner libraries own tensor-side continuation when the app needs vectorized
+   or GPU-side work outside traversal.
 
 ## Backend Ambition
 
-The long-term backend picture includes:
+The project is multi-backend by design. The current public docs focus on the
+supported v2.0-facing surface, with Embree and OptiX as the primary engineering
+targets and other backend families preserved according to their documented
+maturity.
 
-- CPU-based ray-tracing libraries such as Intel Embree
-- NVIDIA OptiX/CUDA-based GPU backends
-- Vulkan KHR ray-tracing-based GPU backends
-- AMD HIP RT-based backends
-- Intel ray-tracing hardware/software platforms
-- Apple ray-tracing platforms
-- Qualcomm and other mobile ray-tracing platforms
+Long-term backend families include:
 
-The current repo validates only a subset of that ambition, but the project
-framing should stay multi-backend.
+- CPU ray-tracing libraries such as Intel Embree;
+- NVIDIA OptiX/CUDA-based GPU backends;
+- Vulkan ray-tracing-based GPU backends;
+- AMD HIP RT-based backends;
+- Apple ray-tracing platforms;
+- other hardware or software traversal systems where a clean backend contract
+  can be maintained.
 
-## Current v0.1 Slice
+## Current Product Direction
 
-The current **v0.1** slice is intentionally narrower than the whole vision.
+The current direction is:
 
-Validated backends:
+- keep the native engine app-agnostic;
+- make Python+RTDL a usable language surface;
+- make Python+partner+RTDL useful for high-performance continuation work;
+- document exact backend support instead of implying universal acceleration;
+- preserve old release evidence in the audit/history archive rather than mixing
+  it into learner docs.
 
-- **Intel Embree**: high-precision CPU baseline
-- **NVIDIA OptiX**: high-performance CUDA-based GPU path
-- **Vulkan KHR**: supported cross-vendor GPU path retained in the repo;
-  parity-clean on the accepted long flagship surface, but still slower and not
-  yet as mature as Embree/OptiX
-
-Target workloads:
-
-- RayJoin workload family (LSI, PIP, Overlay, etc.)
-- exact-source real-data validation
-- performance characterization vs research baseline
-- external ground-truth comparison against indexed PostGIS queries on the Linux host
-- bounded accepted reproduction package across the current trusted systems
+For the active user path, start with [Learn RTDL](learn/README.md). For
+release evidence and older milestones, use [Audit](audit/README.md) and
+[History](history/README.md).

@@ -5,7 +5,7 @@ normal users focused on the current architecture: Python application code around
 RTDL kernels, with optional partner-owned columns for supported paths.
 
 Older app/version evidence belongs in
-[Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md)
+[Learner Doc Version Notes](history/learner_doc_version_notes.md)
 and the report archive.
 
 ## Reading Rule
