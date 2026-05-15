@@ -1,0 +1,127 @@
+{
+  "accepted_negative_occurrences": [
+    {
+      "line": 41,
+      "path": "docs/partner_acceleration_boundaries.md",
+      "phrase": "broad RT-core acceleration",
+      "snippet": "arbitrary PyTorch code. - RTDL accelerates arbitrary CuPy code. - RTDL optimizes partner programs automatically. - RTDL makes whole applications faster by default. - RTDL provides broad RT-core acceleration for all partner workloads.  ## Partner-Owned Columns Are Not Whole-Program Acceleration  Partner-owned columns mean the input or output arrays are owned by a partner runtime such"
+    },
+    {
+      "line": 69,
+      "path": "docs/README.md",
+      "phrase": "arbitrary PyTorch/CuPy acceleration",
+      "snippet": "mitive, but v2.0 remains blocked until that evidence is reviewed and the remaining general true zero-copy, broad RT-core, general direct device-pointer handoff, whole-application, arbitrary PyTorch/CuPy acceleration, and package-install/source-tree scope questions are resolved by reviewed evidence. Use [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) for the current posit"
+    },
+    {
+      "line": 95,
+      "path": "docs/README.md",
+      "phrase": "Whole-application performance",
+      "snippet": "is not automatically a public speedup claim. - GPU speedups are workload-specific; short runs may be dominated by launch,   packing, Python orchestration, or result processing. - Whole-application performance depends on the Python code and continuation   work around the RTDL kernel.  ## Backend Setup  Start with the portable Python reference backend:  ```bash PYTHONPATH=src:. python ex"
+    },
+    {
+      "line": 224,
+      "path": "docs/tutorials/nearest_neighbor_workloads.md",
+      "phrase": "whole-app speedup",
+      "snippet": "shold_prepared` candidate-coverage decision mode. Those bounded decision modes use prepared fixed-radius traversal; they do not compute exact nearest-neighbor ranking or authorize whole-app speedup claims. Claim-sensitive scripts using `--require-rt-core` reject the default row/ranking modes. The prepared decision modes have Goal969 RTX artifacts and may enter bounded claim"
+    },
+    {
+      "line": 125,
+      "path": "docs/tutorials/partner_anyhit.md",
+      "phrase": "broad RT-core evidence",
+      "snippet": "_speedup_claim_authorized` remains `false`; - timing fields show phase shape, not benchmark evidence. - v2.0 remains blocked until true zero-copy, direct device-pointer handoff,   broad RT-core evidence, whole-application evidence, arbitrary PyTorch/CuPy   acceleration boundaries, and package-install/source-tree scope are resolved.  That boundary is what lets RTDL support partner"
+    },
+    {
+      "line": 125,
+      "path": "docs/tutorials/partner_anyhit.md",
+      "phrase": "whole-application evidence",
+      "snippet": "d` remains `false`; - timing fields show phase shape, not benchmark evidence. - v2.0 remains blocked until true zero-copy, direct device-pointer handoff,   broad RT-core evidence, whole-application evidence, arbitrary PyTorch/CuPy   acceleration boundaries, and package-install/source-tree scope are resolved.  That boundary is what lets RTDL support partner frameworks without turning"
+    },
+    {
+      "line": 114,
+      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "phrase": "v2.0 release readiness",
+      "snippet": "y/triangle any-hit can read Torch/CuPy CUDA input columns and write Torch/CuPy CUDA output flags without RTDL-owned input or output staging buffers. ```  It does not authorize:  - v2.0 release readiness; - broad RT-core speedup; - whole-app acceleration; - arbitrary PyTorch/CuPy acceleration; - package-install support; - a claim that OptiX creates no native acceleration state.  O"
+    },
+    {
+      "line": 115,
+      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "phrase": "broad RT-core speedup",
+      "snippet": "d Torch/CuPy CUDA input columns and write Torch/CuPy CUDA output flags without RTDL-owned input or output staging buffers. ```  It does not authorize:  - v2.0 release readiness; - broad RT-core speedup; - whole-app acceleration; - arbitrary PyTorch/CuPy acceleration; - package-install support; - a claim that OptiX creates no native acceleration state.  OptiX still creates native"
+    },
+    {
+      "line": 116,
+      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "phrase": "whole-app acceleration",
+      "snippet": "olumns and write Torch/CuPy CUDA output flags without RTDL-owned input or output staging buffers. ```  It does not authorize:  - v2.0 release readiness; - broad RT-core speedup; - whole-app acceleration; - arbitrary PyTorch/CuPy acceleration; - package-install support; - a claim that OptiX creates no native acceleration state.  OptiX still creates native GAS state. The zero-copy"
+    },
+    {
+      "line": 117,
+      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "phrase": "arbitrary PyTorch/CuPy acceleration",
+      "snippet": "y CUDA output flags without RTDL-owned input or output staging buffers. ```  It does not authorize:  - v2.0 release readiness; - broad RT-core speedup; - whole-app acceleration; - arbitrary PyTorch/CuPy acceleration; - package-install support; - a claim that OptiX creates no native acceleration state.  OptiX still creates native GAS state. The zero-copy claim applies to the partner-owned inpu"
+    },
+    {
+      "line": 118,
+      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "phrase": "package-install support",
+      "snippet": "input or output staging buffers. ```  It does not authorize:  - v2.0 release readiness; - broad RT-core speedup; - whole-app acceleration; - arbitrary PyTorch/CuPy acceleration; - package-install support; - a claim that OptiX creates no native acceleration state.  OptiX still creates native GAS state. The zero-copy claim applies to the partner-owned input and output buffers for th"
+    },
+    {
+      "line": 284,
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "phrase": "whole-app speedup",
+      "snippet": "at chunk `1024`, but no positive public Jaccard speedup wording is authorized because current evidence still has OptiX slower than Embree. This is not a monolithic GPU Jaccard or whole-app speedup claim. For claim-sensitive runs:  ```bash PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core ```  ---  ## Recommended learning order  1"
+    },
+    {
+      "line": 128,
+      "path": "README.md",
+      "phrase": "broad RT-core speedup",
+      "snippet": "s one measured primitive path, not a finished v2.0 release.  This preview is not v2.0 yet. It does not claim general true zero-copy support, general direct device-pointer handoff, broad RT-core speedup, whole-application acceleration, arbitrary PyTorch/CuPy acceleration, or package-install support. Those are hard gates for the actual v2.0 release. For the exact positive and nega"
+    },
+    {
+      "line": 129,
+      "path": "README.md",
+      "phrase": "whole-application acceleration",
+      "snippet": "e path, not a finished v2.0 release.  This preview is not v2.0 yet. It does not claim general true zero-copy support, general direct device-pointer handoff, broad RT-core speedup, whole-application acceleration, arbitrary PyTorch/CuPy acceleration, or package-install support. Those are hard gates for the actual v2.0 release. For the exact positive and negative rule, read [Partner Acceler"
+    },
+    {
+      "line": 129,
+      "path": "README.md",
+      "phrase": "arbitrary PyTorch/CuPy acceleration",
+      "snippet": "ase.  This preview is not v2.0 yet. It does not claim general true zero-copy support, general direct device-pointer handoff, broad RT-core speedup, whole-application acceleration, arbitrary PyTorch/CuPy acceleration, or package-install support. Those are hard gates for the actual v2.0 release. For the exact positive and negative rule, read [Partner Acceleration Boundaries](docs/partner_accele"
+    },
+    {
+      "line": 130,
+      "path": "README.md",
+      "phrase": "package-install support",
+      "snippet": "oes not claim general true zero-copy support, general direct device-pointer handoff, broad RT-core speedup, whole-application acceleration, arbitrary PyTorch/CuPy acceleration, or package-install support. Those are hard gates for the actual v2.0 release. For the exact positive and negative rule, read [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).  ## P"
+    }
+  ],
+  "claim_boundary": {
+    "arbitrary_partner_program_acceleration_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "findings": [],
+  "goal": "Goal1906",
+  "public_files_scanned": [
+    "docs/partner_acceleration_boundaries.md",
+    "docs/README.md",
+    "docs/tutorials/db_workloads.md",
+    "docs/tutorials/feature_quickstart_cookbook.md",
+    "docs/tutorials/graph_workloads.md",
+    "docs/tutorials/hello_world.md",
+    "docs/tutorials/nearest_neighbor_workloads.md",
+    "docs/tutorials/partner_anyhit.md",
+    "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+    "docs/tutorials/README.md",
+    "docs/tutorials/rendering_and_visual_demos.md",
+    "docs/tutorials/segment_polygon_workloads.md",
+    "docs/tutorials/sorting_demo.md",
+    "docs/tutorials/v0_8_app_building.md",
+    "README.md"
+  ],
+  "status": "pass"
+}
