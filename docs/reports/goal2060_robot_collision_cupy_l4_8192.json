@@ -1,0 +1,72 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "git_commit": "05fbfccb-pod-robot-8192",
+  "goal": "Goal1928",
+  "gpu": "NVIDIA L4, 570.195.03",
+  "results": [
+    {
+      "app": "robot_collision_screening",
+      "metadata": {
+        "adapter": "robot_collision_pose_flags_optix_prepared_partner_device_columns",
+        "app": "robot_collision_screening",
+        "app_flag_host_materialization": false,
+        "app_flag_materialization": "partner_gpu_pose_flags_from_native_any_hit_ray_flags",
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "input_contract": "caller_supplied_partner_device_ray_columns_and_pose_indices",
+        "native_engine_row_contract": "generic_ray_primitive_any_hit_flags",
+        "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+        "output_columns_reused": true,
+        "output_flags_true_zero_copy_authorized": true,
+        "partner": "cupy",
+        "partner_tensor_handoff_authorized": true,
+        "pose_count": 8192,
+        "ray_columns_true_zero_copy_authorized": true,
+        "ray_count": 32768,
+        "rt_core_speedup_claim_authorized": false,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+        "triangle_scene_true_zero_copy_authorized": true,
+        "true_zero_copy_authorized": true,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "obstacle_count": 8192,
+      "parity": {
+        "colliding_pose_count_match": true,
+        "pose_collision_flags_match": true,
+        "v1_colliding_pose_count": 8146,
+        "v2_colliding_pose_count": 8146
+      },
+      "partner": "cupy",
+      "pose_count": 8192,
+      "ray_count": 32768,
+      "status": "pass",
+      "triangle_count": 16384,
+      "v1_8_prepared_optix_pose_flags": {
+        "max_s": 0.4745894856750965,
+        "median_s": 0.0009020864963531494,
+        "min_s": 0.0008082985877990723
+      },
+      "v2_prepared_native_optix_partner_pose_flags": {
+        "max_s": 0.8278852142393589,
+        "median_s": 0.0011877603828907013,
+        "min_s": 0.0004903636872768402
+      },
+      "v2_vs_v1_8_prepared_ratio": 1.3166812580527933
+    }
+  ],
+  "source_commit_label": "05fbfccb-pod-robot-8192",
+  "status": "pass"
+}

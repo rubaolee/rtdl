@@ -1,0 +1,230 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "fixed_radius_family_true_zero_copy_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "git_commit": "05fbfccb-pod-fixed-radius-8192",
+  "goal": "Goal1925",
+  "gpu": "NVIDIA L4, 570.195.03",
+  "results": [
+    {
+      "app": "facility_knn_assignment",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 6144,
+          "threshold_reached_count": 2048
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.020301926881074905,
+          "median_s": 0.018378373235464096,
+          "min_s": 0.01700378581881523
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0005811341106891632,
+          "median_s": 0.0002937018871307373,
+          "min_s": 0.00026226043701171875
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.01598084244823101
+      },
+      "partner": "cupy",
+      "query_count": 8192,
+      "radius": 1.1,
+      "result_kind": "coverage_threshold_decision",
+      "search_count": 8192,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "hausdorff_distance",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 4096,
+          "threshold_reached_count": 4096
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.02665582299232483,
+          "median_s": 0.017337918281555176,
+          "min_s": 0.0170399472117424
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0008280500769615173,
+          "median_s": 0.0002797171473503113,
+          "min_s": 0.00027212128043174744
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.016133260222358208
+      },
+      "partner": "cupy",
+      "query_count": 8192,
+      "radius": 1.5,
+      "result_kind": "bidirectional_threshold_decision",
+      "reverse": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 4096,
+          "threshold_reached_count": 4096
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.017737366259098053,
+          "median_s": 0.01695498451590538,
+          "min_s": 0.016753416508436203
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0003643445670604706,
+          "median_s": 0.0002764090895652771,
+          "min_s": 0.00026049837470054626
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.01630252680596548
+      },
+      "search_count": 8192,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "ann_candidate_search",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 4096,
+          "threshold_reached_count": 4096
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.017428811639547348,
+          "median_s": 0.017251919955015182,
+          "min_s": 0.016757383942604065
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.00034205615520477295,
+          "median_s": 0.0002612359821796417,
+          "min_s": 0.00025522708892822266
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.015142429530210038
+      },
+      "partner": "cupy",
+      "query_count": 8192,
+      "radius": 0.1,
+      "result_kind": "candidate_coverage_threshold_decision",
+      "search_count": 8192,
+      "status": "pass",
+      "threshold": 1
+    },
+    {
+      "app": "outlier_detection",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "outlier_count": 2,
+          "threshold_reached_count": 8190
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.01733572781085968,
+          "median_s": 0.017207439988851547,
+          "min_s": 0.01657472923398018
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0003543384373188019,
+          "median_s": 0.00025883689522743225,
+          "min_s": 0.00025742873549461365
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.015042150104555294
+      },
+      "partner": "cupy",
+      "query_count": 8192,
+      "radius": 1.1,
+      "result_kind": "scalar_outlier_count",
+      "search_count": 8192,
+      "status": "pass",
+      "threshold": 3
+    },
+    {
+      "app": "dbscan_clustering",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "core_count": 8190,
+          "threshold_reached_count": 8190
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.017723556607961655,
+          "median_s": 0.01740150898694992,
+          "min_s": 0.017045866698026657
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.00035705044865608215,
+          "median_s": 0.00026987120509147644,
+          "min_s": 0.0002593286335468292
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.01550849442389528
+      },
+      "partner": "cupy",
+      "query_count": 8192,
+      "radius": 1.1,
+      "result_kind": "scalar_core_count",
+      "search_count": 8192,
+      "status": "pass",
+      "threshold": 3
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "forward": {
+        "output_contract": "partner_owned_fixed_radius_count_threshold_columns",
+        "parity": {
+          "counts_match": true,
+          "summary_match": true
+        },
+        "summary": {
+          "not_reached_count": 6144,
+          "threshold_reached_count": 2048
+        },
+        "v1_8_prepared_optix": {
+          "max_s": 0.017588939517736435,
+          "median_s": 0.017241057008504868,
+          "min_s": 0.0171021930873394
+        },
+        "v2_prepared_native_optix_partner": {
+          "max_s": 0.0003536492586135864,
+          "median_s": 0.0002616681158542633,
+          "min_s": 0.0002590753138065338
+        },
+        "v2_vs_v1_8_prepared_ratio": 0.015177034431542372
+      },
+      "partner": "cupy",
+      "query_count": 8192,
+      "radius": 1.1,
+      "result_kind": "node_coverage_threshold_decision",
+      "search_count": 8192,
+      "status": "pass",
+      "threshold": 1
+    }
+  ],
+  "source_commit_label": "05fbfccb-pod-fixed-radius-8192",
+  "status": "pass"
+}
