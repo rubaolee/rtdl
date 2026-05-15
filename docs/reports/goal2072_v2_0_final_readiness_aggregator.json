@@ -34,7 +34,7 @@
     "pod-evidence-collected-mixed": 1
   },
   "final_matrix_status": "final-v2-0-release-matrix-candidate",
-  "git_commit": "99ff5248463abc778cd0fdcb7595e47546f5766c",
+  "git_commit": "9b2b3198239bf6e81775b48c79ed36ff9c79b4b4",
   "goal": "Goal2072",
   "mixed_apps": [
     "segment_polygon_anyhit_rows"

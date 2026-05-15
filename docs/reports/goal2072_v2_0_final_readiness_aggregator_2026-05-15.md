@@ -4,7 +4,7 @@ Date: 2026-05-15
 
 Status: `blocked`
 
-Goal2072 is the current final readiness object after Goal2068/2069. It deliberately remains blocked until final Claude review, final 3-AI consensus, and explicit release action exist.
+Goal2072 is the current final readiness object after Goal2068/2069/2073. It deliberately remains blocked until explicit release action exists.
 
 ## Current Packet
 
