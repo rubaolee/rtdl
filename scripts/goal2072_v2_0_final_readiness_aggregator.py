@@ -114,6 +114,8 @@ def build_payload() -> dict[str, object]:
         "next_action": (
             "Wait for Claude review, then write final 3-AI consensus if Claude accepts with appropriate boundaries."
             if not claude["present"]
+            else "Wait for explicit user release action."
+            if consensus_present
             else "Write final 3-AI consensus if Claude review accepts with appropriate boundaries."
         ),
     }

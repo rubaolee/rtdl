@@ -44,6 +44,9 @@ class Goal2072V20FinalReadinessAggregatorTest(unittest.TestCase):
         )
         self.assertFalse(payload["release_claim_boundary"]["v2_0_release_authorized"])
         self.assertFalse(payload["release_claim_boundary"]["all_apps_have_measured_v2_speedup"])
+        if payload["final_consensus_file"] is not None:
+            self.assertEqual(payload["blockers"], ["explicit user-requested release action missing"])
+            self.assertEqual(payload["next_action"], "Wait for explicit user release action.")
 
     def test_markdown_names_packet_and_boundaries(self):
         text = REPORT.read_text(encoding="utf-8")

@@ -1,7 +1,5 @@
 {
   "blockers": [
-    "final Claude v2.0 release-gate review missing",
-    "final v2.0 3-AI release consensus missing",
     "explicit user-requested release action missing"
   ],
   "bounded_apps": [
@@ -15,9 +13,10 @@
   "external_reviews": {
     "claude": {
       "expected_reviewer": "Claude",
+      "mentions_reviewer": true,
       "path": "docs/reviews/goal2071_claude_review_goal2068_2069_final_v2_gate_2026-05-15.md",
-      "present": false,
-      "verdict": null
+      "present": true,
+      "verdict": "accept-with-boundary"
     },
     "gemini": {
       "expected_reviewer": "Gemini",
@@ -27,7 +26,7 @@
       "verdict": "accept-with-boundary"
     }
   },
-  "final_consensus_file": null,
+  "final_consensus_file": "docs/reports/goal2073_final_v2_0_release_consensus_2026-05-15.md",
   "final_matrix": "docs/reports/goal2068_final_v2_0_release_matrix.json",
   "final_matrix_counts": {
     "pod-evidence-collected": 11,
@@ -35,12 +34,12 @@
     "pod-evidence-collected-mixed": 1
   },
   "final_matrix_status": "final-v2-0-release-matrix-candidate",
-  "git_commit": "f8a36c4d72444e5e8d3f5dda5afb70101302bb60",
+  "git_commit": "99ff5248463abc778cd0fdcb7595e47546f5766c",
   "goal": "Goal2072",
   "mixed_apps": [
     "segment_polygon_anyhit_rows"
   ],
-  "next_action": "Wait for Claude review, then write final 3-AI consensus if Claude accepts with appropriate boundaries.",
+  "next_action": "Wait for explicit user release action.",
   "pre_release_gate": "docs/reports/goal2069_v2_0_pre_release_gate.json",
   "pre_release_gate_status": "pass",
   "pre_release_gate_tests": "40 tests, 1 skipped",

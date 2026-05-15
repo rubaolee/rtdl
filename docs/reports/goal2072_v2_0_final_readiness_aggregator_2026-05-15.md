@@ -20,12 +20,10 @@ Goal2072 is the current final readiness object after Goal2068/2069. It deliberat
 ## External Reviews
 
 - gemini: present=`True`, verdict=`accept-with-boundary`, path=`docs/reviews/goal2070_gemini_review_goal2068_2069_final_v2_gate_2026-05-15.md`
-- claude: present=`False`, verdict=`None`, path=`docs/reviews/goal2071_claude_review_goal2068_2069_final_v2_gate_2026-05-15.md`
+- claude: present=`True`, verdict=`accept-with-boundary`, path=`docs/reviews/goal2071_claude_review_goal2068_2069_final_v2_gate_2026-05-15.md`
 
 ## Blockers
 
-- final Claude v2.0 release-gate review missing
-- final v2.0 3-AI release consensus missing
 - explicit user-requested release action missing
 
 ## Claim Boundary
@@ -40,4 +38,4 @@ Goal2072 is the current final readiness object after Goal2068/2069. It deliberat
 
 ## Next Action
 
-Wait for Claude review, then write final 3-AI consensus if Claude accepts with appropriate boundaries.
+Wait for explicit user release action.
