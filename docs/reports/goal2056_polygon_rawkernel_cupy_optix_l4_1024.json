@@ -1,0 +1,112 @@
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "optix",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA L4, 570.195.03"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "candidate_backend": "optix",
+      "copies": 1024,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "sha256": "df47878f76365aeafbcb5a60429eae58e0e26adc95a0787a13832b7a56618090",
+        "summary": {
+          "overlap_pair_count": 2048,
+          "total_intersection_area": 5120,
+          "total_union_area": 19456
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 0.16250894591212273,
+        "median_s": 0.1588362269103527,
+        "min_s": 0.1452622376382351
+      },
+      "v2_payload_signature": {
+        "app": "polygon_pair_overlap_area_rows",
+        "candidate_backend": "optix",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "f330d3567d3350cbfdd924df353765a7773a8e1274f22bc39efd281313410e28",
+        "summary": {
+          "overlap_pair_count": 2048,
+          "total_intersection_area": 5120,
+          "total_union_area": 19456
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.1481202021241188,
+        "median_s": 0.14753228425979614,
+        "min_s": 0.13797981664538383
+      },
+      "v2_vs_v1_8_ratio": 0.9288327173816807,
+      "warmups": 1
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "candidate_backend": "optix",
+      "copies": 1024,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "sha256": "4abf5c90af85ac31cf61e018758bf6d3ad4afe9f0da0ac1d109d9740ff0c65a5",
+        "summary": {
+          "intersection_area": 5120,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 13312,
+          "right_area": 11264,
+          "union_area": 19456
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 0.12102850154042244,
+        "median_s": 0.11781161278486252,
+        "min_s": 0.11630835756659508
+      },
+      "v2_payload_signature": {
+        "app": "polygon_set_jaccard",
+        "candidate_backend": "optix",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "c0351a6b05c6f06d389d8aa2738cf30f1fc60cb7b95078348e16fe675d924179",
+        "summary": {
+          "intersection_area": 5120,
+          "jaccard_similarity": 0.2631578947368421,
+          "left_area": 13312,
+          "right_area": 11264,
+          "union_area": 19456
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.10956210270524025,
+        "median_s": 0.10204979032278061,
+        "min_s": 0.0907299779355526
+      },
+      "v2_vs_v1_8_ratio": 0.8662116400115428,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "980fe21e-pod-polygon-1024",
+  "status": "rawkernel-control-app-perf-smoke"
+}

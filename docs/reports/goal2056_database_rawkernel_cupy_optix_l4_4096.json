@@ -1,0 +1,158 @@
+{
+  "all_match_v1_8_python_rtdl_oracle": true,
+  "candidate_backend": "optix",
+  "claim_boundary": {
+    "comparison_is_not_absolutely_fair": true,
+    "counts_as_v2_app_version": true,
+    "local_linux_gtx1070_is_release_perf_evidence": false,
+    "requires_pod_for_release_timing": true,
+    "whole_app_speedup_claim_authorized_without_review": false
+  },
+  "fairness_note": "Per explicit user decision, compare v2 Python+CuPy RawKernel+RTDL against v1.8 Python+RTDL with no user C/C++ extension. This is useful but not absolutely fair.",
+  "goal": "Goal1955",
+  "gpu_info": {
+    "nvidia_smi": [
+      "NVIDIA L4, 570.195.03"
+    ]
+  },
+  "partner": "cupy",
+  "results": [
+    {
+      "app": "database_analytics",
+      "candidate_backend": "optix",
+      "copies": 4096,
+      "fairness_note": "Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.",
+      "matches_v1_8_python_rtdl_oracle": true,
+      "partner": "cupy",
+      "repeats": 3,
+      "v1_8_payload_signature": {
+        "sha256": "a14df59320a62330694047960195d6db5f2d8581af32c1c599f7df8a8face345",
+        "summary": {
+          "regional_dashboard": {
+            "open_order_count_by_region": {
+              "east": 8192,
+              "south": 4096,
+              "west": 8192
+            },
+            "promo_order_count": 16384,
+            "web_revenue_by_region": {
+              "east": 737280,
+              "west": 983040
+            }
+          },
+          "sales_risk": {
+            "highest_risk_region": "west",
+            "risky_order_count": 16384,
+            "risky_order_count_by_region": {
+              "central": 4096,
+              "east": 4096,
+              "west": 8192
+            },
+            "risky_order_ids": {
+              "head": [
+                2,
+                3,
+                4,
+                6,
+                8,
+                9,
+                10,
+                12
+              ],
+              "list_length": 16384,
+              "sha256": "f5da203248f063d9e32d9da4f63114a005fdd854ea8ef27445c2bbfd03f0217a",
+              "tail": [
+                24566,
+                24567,
+                24568,
+                24570,
+                24572,
+                24573,
+                24574,
+                24576
+              ]
+            },
+            "risky_revenue_by_region": {
+              "central": 1064960,
+              "east": 1269760,
+              "west": 1761280
+            }
+          }
+        }
+      },
+      "v1_8_python_rtdl_wall": {
+        "max_s": 0.306734312325716,
+        "median_s": 0.3008355014026165,
+        "min_s": 0.29875440523028374
+      },
+      "v2_payload_signature": {
+        "app": "database_analytics",
+        "matches_v1_8_python_rtdl_oracle": null,
+        "partner": "cupy",
+        "sha256": "d1477b6a67b16922bc48d9956578b6d4cff5ee4096b5af85499127c425bdecab",
+        "summary": {
+          "regional_dashboard": {
+            "open_order_count_by_region": {
+              "east": 8192,
+              "south": 4096,
+              "west": 8192
+            },
+            "promo_order_count": 16384,
+            "web_revenue_by_region": {
+              "east": 737280,
+              "west": 983040
+            }
+          },
+          "sales_risk": {
+            "highest_risk_region": "west",
+            "risky_order_count": 16384,
+            "risky_order_count_by_region": {
+              "central": 4096,
+              "east": 4096,
+              "west": 8192
+            },
+            "risky_order_ids": {
+              "head": [
+                2,
+                3,
+                4,
+                6,
+                8,
+                9,
+                10,
+                12
+              ],
+              "list_length": 16384,
+              "sha256": "f5da203248f063d9e32d9da4f63114a005fdd854ea8ef27445c2bbfd03f0217a",
+              "tail": [
+                24566,
+                24567,
+                24568,
+                24570,
+                24572,
+                24573,
+                24574,
+                24576
+              ]
+            },
+            "risky_revenue_by_region": {
+              "central": 1064960,
+              "east": 1269760,
+              "west": 1761280
+            }
+          }
+        }
+      },
+      "v2_rawkernel_wall": {
+        "max_s": 0.08215373754501343,
+        "median_s": 0.07490390166640282,
+        "min_s": 0.06567394733428955
+      },
+      "v2_vs_v1_8_ratio": 0.24898624436667416,
+      "warmups": 1
+    }
+  ],
+  "source_commit": "",
+  "source_commit_label": "980fe21e-pod-database-4096",
+  "status": "rawkernel-control-app-perf-smoke"
+}
