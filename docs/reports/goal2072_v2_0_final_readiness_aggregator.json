@@ -1,0 +1,57 @@
+{
+  "blockers": [
+    "final Claude v2.0 release-gate review missing",
+    "final v2.0 3-AI release consensus missing",
+    "explicit user-requested release action missing"
+  ],
+  "bounded_apps": [
+    "database_analytics",
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard"
+  ],
+  "claim_scan_status": "pass",
+  "date": "2026-05-15",
+  "external_reviews": {
+    "claude": {
+      "expected_reviewer": "Claude",
+      "path": "docs/reviews/goal2071_claude_review_goal2068_2069_final_v2_gate_2026-05-15.md",
+      "present": false,
+      "verdict": null
+    },
+    "gemini": {
+      "expected_reviewer": "Gemini",
+      "mentions_reviewer": true,
+      "path": "docs/reviews/goal2070_gemini_review_goal2068_2069_final_v2_gate_2026-05-15.md",
+      "present": true,
+      "verdict": "accept-with-boundary"
+    }
+  },
+  "final_consensus_file": null,
+  "final_matrix": "docs/reports/goal2068_final_v2_0_release_matrix.json",
+  "final_matrix_counts": {
+    "pod-evidence-collected": 11,
+    "pod-evidence-collected-bounded": 4,
+    "pod-evidence-collected-mixed": 1
+  },
+  "final_matrix_status": "final-v2-0-release-matrix-candidate",
+  "git_commit": "f8a36c4d72444e5e8d3f5dda5afb70101302bb60",
+  "goal": "Goal2072",
+  "mixed_apps": [
+    "segment_polygon_anyhit_rows"
+  ],
+  "next_action": "Wait for Claude review, then write final 3-AI consensus if Claude accepts with appropriate boundaries.",
+  "pre_release_gate": "docs/reports/goal2069_v2_0_pre_release_gate.json",
+  "pre_release_gate_status": "pass",
+  "pre_release_gate_tests": "40 tests, 1 skipped",
+  "release_claim_boundary": {
+    "all_apps_have_current_pod_evidence": true,
+    "all_apps_have_measured_v2_speedup": false,
+    "arbitrary_partner_program_acceleration_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "status": "blocked"
+}
