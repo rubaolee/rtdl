@@ -1,129 +1,60 @@
-# OptiX Partner Zero-Copy Any-Hit Preview
+# OptiX Partner Column Any-Hit
 
-This advanced tutorial shows the current v2.0 partner zero-copy preview shape
-for one primitive. It is the first documented Torch/CuPy CUDA input-plus-output
-zero-copy slice:
+This tutorial explains the current v2.0-facing OptiX partner-column idea. It is
+not a release announcement and not a broad GPU-speedup promise.
 
-```text
-Torch/CuPy CUDA columns -> RTDL direct device handoff -> OptiX prepared
-2-D ray/triangle ANY_HIT -> Torch/CuPy CUDA output flags
-```
+## What This Path Demonstrates
 
-This is not the v2.0 release. It is a measured preview slice for the OptiX
-prepared 2-D ray/triangle any-hit primitive.
-
-## What This Path Proves
-
-For this exact primitive, RTDL can:
-
-- read partner-owned CUDA ray columns;
-- read partner-owned CUDA triangle columns;
-- build OptiX GAS from a partner-owned CUDA AABB tensor;
-- write one `uint32` any-hit flag per ray into a partner-owned CUDA output
-  vector.
-
-The RTX A4500 pod artifacts for Goal1838 validated both partners:
-
-| Partner | Output flags | Status |
-| --- | --- | --- |
-| CuPy CUDA | `[1, 0]` | pass |
-| Torch CUDA | `[1, 0]` | pass |
-
-## What You Provide
-
-The ray columns are:
-
-```python
-rays = {
-    "ids": ...,
-    "ox": ...,
-    "oy": ...,
-    "dx": ...,
-    "dy": ...,
-    "tmax": ...,
-}
-```
-
-The triangle columns are:
-
-```python
-triangles = {
-    "ids": ...,
-    "x0": ...,
-    "y0": ...,
-    "x1": ...,
-    "y1": ...,
-    "x2": ...,
-    "y2": ...,
-}
-```
-
-The AABB tensor is a contiguous CUDA `float32[N, 6]` matrix in OptiX
-`OptixAabb` order:
+The supported shape is:
 
 ```text
-minX, minY, minZ, maxX, maxY, maxZ
+CuPy or PyTorch owns input columns
+  -> RTDL runs a prepared OptiX any-hit primitive
+  -> RTDL writes documented output columns
+  -> Python or the partner framework continues from those columns
 ```
 
-The output buffer is a contiguous CUDA `uint32[ray_count]` vector.
+The important lesson is column ownership. A user can keep data in a partner
+runtime and avoid turning every result into Python dictionaries when a compact
+or streaming output contract is available.
 
-## Code Shape
+## Minimal Mental Model
 
-The current public preview API is intentionally explicit:
+| Part | Owner |
+| --- | --- |
+| app data and policy | Python |
+| input/output tensors | PyTorch or CuPy |
+| RT-shaped primitive | RTDL |
+| native traversal | OptiX |
+| post-processing | user Python or partner code |
 
-```python
-scene = rt.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
-    triangles,
-    triangle_aabbs,
-)
+## Claim Boundary
 
-try:
-    result = scene.write_device_any_hit_flags(rays, output_flags)
-finally:
-    scene.close()
-```
+Allowed:
 
-`output_flags` remains owned by Torch or CuPy. The returned `result` contains
-metadata for the handoff; it is not the data result. Read the CUDA output buffer
-with your partner framework when you need to inspect values.
+- prepared OptiX partner-column primitive under documented contracts;
+- partner-owned input and output columns for the supported path;
+- continuation with normal PyTorch or CuPy code after RTDL returns.
 
-The validation runner used for the pod evidence is:
+Not allowed:
+
+- final v2.0 release wording;
+- arbitrary PyTorch or CuPy acceleration;
+- broad RT-core acceleration;
+- package-install support;
+- claims that every app phase is faster.
+
+For the current release status, read
+[v2.0 Pre-Release Candidate](../release_reports/v2_0_pre_release_candidate.md).
+
+## Practical Starting Point
+
+Start with the portable partner tutorial first:
 
 ```bash
-PYTHONPATH=src:. python scripts/run_goal1828_optix_device_column_pod_validation.py \
-  --partner cupy \
-  --goal Goal1838 \
-  --output-flags \
-  --output docs/reports/goal1838_optix_partner_owned_output_flags_pod_validation.json
+PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree
 ```
 
-Use `--partner torch` for the PyTorch version.
-
-## Boundaries
-
-This path authorizes only the exact measured claim:
-
-```text
-OptiX prepared 2-D ray/triangle any-hit can read Torch/CuPy CUDA input columns
-and write Torch/CuPy CUDA output flags without RTDL-owned input or output
-staging buffers.
-```
-
-It does not authorize:
-
-- v2.0 release readiness;
-- broad RT-core speedup;
-- whole-app acceleration;
-- arbitrary PyTorch/CuPy acceleration;
-- package-install support;
-- a claim that OptiX creates no native acceleration state.
-
-OptiX still creates native GAS state. The zero-copy claim applies to the
-partner-owned input and output buffers for this primitive path.
-
-## Read The Evidence
-
-- [Goal1834 whole-primitive input zero-copy](../reports/goal1834_optix_whole_primitive_input_zero_copy_2026-05-13.md)
-- [Goal1836 CuPy input conformance](../reports/goal1836_optix_cupy_whole_primitive_input_zero_copy_conformance_2026-05-13.md)
-- [Goal1838 partner-owned output flags](../reports/goal1838_optix_partner_owned_output_flags_zero_copy_2026-05-13.md)
-- [Goal1840 v2.0 progress packet](../reports/goal1840_v2_0_progress_so_far_external_review_packet_2026-05-13.md)
+Move to OptiX only on a configured NVIDIA host with the OptiX backend built.
+When measuring performance, record the exact backend, partner, hardware,
+command, output contract, and artifact path.

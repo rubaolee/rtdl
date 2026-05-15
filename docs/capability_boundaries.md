@@ -1,369 +1,91 @@
 # RTDL Capability Boundaries
 
-This page explains what RTDL can do today, what it can technically be used for
-but is not intended to become, and what it cannot do yet.
+This page states the current v2.0-facing capability boundary for learners and
+users. Older release history is kept separately in
+[Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md).
 
-RTDL is a language/runtime for expressing non-graphical spatial,
-geometric-query, graph, and bounded analytical workloads that can be lowered to
-ray-tracing-style traversal and refinement. Python remains the application
-host: it loads data, calls RTDL kernels, checks results, reduces rows, and
-connects the kernel result to the rest of an application.
+## Current Status
 
-Current public release: `v1.8`, the source-tree Python+RTDL language boundary.
-It should not be read as a whole-application accelerator, package-install
-release, partner-framework release, or true zero-copy release.
+RTDL v2.0 is a pre-release candidate, not a final release. The engineering
+packet is strong, but final release waits for the strict 3-AI consensus redline
+and a fresh Claude-family review.
 
 ## Short Version
 
-| Category | Meaning | Examples |
-| --- | --- | --- |
-| Can do and intended | Released or directly aligned with the RTDL design | spatial joins, nearest-neighbor rows, graph BFS/triangle counting, bounded DB-style scans/groups, any-hit visibility rows, emitted-row reductions |
-| Can do but not intended as RTDL's role | Possible when RTDL is used as a kernel inside a larger Python app, but RTDL should not become the whole system | rendering demos, robotics app orchestration, database-style workflows, full simulations |
-| Cannot do yet | Missing language types, predicates, reductions, or backend lowering | full SQL DBMS behavior, general rendering, high-dimensional ANN/PQ, continuous swept-volume collision detection, general HIPRT or Apple RT backend coverage |
+| Category | Meaning |
+| --- | --- |
+| RTDL is for | RT-shaped query kernels inside Python applications |
+| RTDL owns | typed inputs, traversal, refinement, emitted rows/device columns, backend dispatch |
+| Python owns | app semantics, labels, policies, files, presentation, final decisions |
+| Partners own | NumPy/PyTorch/CuPy arrays and normal framework continuations |
+| Native engines own | generic primitive execution, not app-specific products |
+
+## Intended Workloads
+
+RTDL is a good fit when the hard part of a workload can be expressed as
+candidate discovery plus refinement:
+
+- ray/triangle any-hit and hit-count queries;
+- visibility and blocker tests;
+- segment/polygon candidate and hit-count queries;
+- nearest-neighbor and fixed-radius rows;
+- bounded graph traversal-style rows;
+- bounded columnar scan or grouped summary rows;
+- compact summaries, flags, counts, and bounded witness columns.
+
+The v2.0-facing partner path lets Python programs pass partner-owned columns to
+supported RTDL primitives and keep results in partner-owned columns when that
+contract is documented.
+
+## Not RTDL's Job
+
+RTDL should not become:
+
+- a renderer;
+- a DBMS or SQL engine;
+- a graph database;
+- a GIS overlay engine;
+- a robotics planner;
+- a physics simulator;
+- a general PyTorch/CuPy optimizer;
+- a package-install promise.
+
+Users can combine RTDL with any of those systems in Python. The boundary is
+claim ownership: RTDL only claims the RTDL primitive and result contract that it
+actually ships, tests, measures, and reviews.
+
+## Performance Boundary
+
+`--backend optix` means the OptiX backend was selected. It does not by itself
+mean broad RT-core acceleration or whole-application speedup.
+
+Allowed performance wording names the exact:
+
+- app or primitive;
+- backend;
+- partner;
+- hardware;
+- command shape;
+- output contract;
+- artifact path.
+
+When any of those are missing, use candidate or preview wording.
+
+## v2.0 Candidate Boundaries
+
+Allowed:
+
+- Python+partner+RTDL pre-release candidate;
+- documented partner-owned input/output columns;
+- current OptiX/RT evidence under documented contracts;
+- streaming exact witness-column output where reviewed.
+
+Not allowed:
+
+- final v2.0 release before 3-AI consensus;
+- arbitrary PyTorch/CuPy acceleration;
+- broad RT-core acceleration;
+- arbitrary polygon overlay;
+- package-install support;
+- every user program is faster.
 
-## What RTDL Can Do And Intends To Do
-
-RTDL is intended to express workloads where the hard part is structured
-candidate discovery and refinement over geometric, spatial, graph, or bounded
-analytical data.
-
-### Geometry And Spatial Query Kernels
-
-RTDL can express and run released geometry workloads such as:
-
-- line-segment intersection
-- point-in-polygon
-- segment/polygon hit counting
-- segment/polygon any-hit rows
-- polygon overlap seed rows
-- polygon-set Jaccard under the documented bounded contract
-- point-nearest-segment rows
-- ray/triangle hit-count style kernels
-- ray/triangle any-hit blocker tests
-
-The intended use is not to replace a GIS system. The intended use is to make
-the ray-tracing-style candidate/refine kernel easier to write and run across
-supported backends.
-
-### Nearest-Neighbor Kernels
-
-RTDL can express nearest-neighbor style workloads such as:
-
-- `fixed_radius_neighbors`
-- `knn_rows`
-- `bounded_knn_rows`
-
-These are suitable for applications that need neighbor rows, ranked neighbor
-rows, or radius-bounded candidate rows. Python can then reduce, aggregate, or
-post-process those rows into application answers such as assignment decisions,
-Hausdorff-distance summaries, or local neighborhood metrics.
-
-Released `v0.9.5` adds `rt.reduce_rows(...)` for common emitted-row reductions:
-`any`, `count`, `sum`, `min`, and `max`. This is an intended standard-library
-helper for app ergonomics, not a native backend reduction or performance claim.
-
-The current v0.8 ANN candidate app is inside this nearest-neighbor boundary:
-Python selects a bounded candidate subset, RTDL ranks that subset with
-`knn_rows(k=1)`, and Python reports recall and distance-ratio metrics. This is
-candidate-subset reranking, not a full ANN index.
-
-### Graph Kernels
-
-RTDL can express the released graph workload family:
-
-- BFS frontier expansion
-- triangle counting / triangle matching
-
-The graph line is intended to show that the RTDL traversal/refine model can
-cover graph workloads whose core step can be mapped into RT-style candidate
-discovery or intersection-like work. RTDL is not trying to become a full graph
-database or graph-processing framework.
-
-### Bounded DB-Style Analytical Kernels
-
-RTDL `v0.7.0` can express a bounded database-style analytical family:
-
-- `conjunctive_scan`
-- `grouped_count`
-- `grouped_sum`
-
-These are RTDL kernels over bounded row data. They are useful for exploring how
-selection and simple grouping can be converted into ray-tracing-style traversal
-and candidate filtering.
-
-RTDL is not a DBMS. It does not provide transactions, SQL parsing, query
-optimization, storage management, concurrency control, indexes as a database
-would define them, or durability. PostgreSQL is used as an external correctness
-and timing baseline, not as an RTDL backend.
-
-### RTDL + Python Applications
-
-RTDL is intended to be used inside Python applications:
-
-- Python loads and normalizes data.
-- Python declares or calls RTDL kernels.
-- RTDL owns the heavy traversal/refine kernel.
-- Python reduces rows and implements domain-specific application logic.
-
-This is the expected model for new app workloads from papers: if the workload's
-core query can become RTDL rows, Python should own the rest.
-
-Current accepted v0.8 examples of this model are Hausdorff distance, ANN
-candidate search, outlier detection, DBSCAN clustering, robot collision
-screening, and Barnes-Hut force approximation. Their backend and performance
-boundaries are recorded in Goal507, Goal509, and Goal524.
-
-The released `v0.9.0` HIPRT backend also fits this intended direction.
-`run_hiprt` now covers the 18-workload Linux HIPRT matrix, while
-repeated-query `prepare_hiprt` currently covers prepared 3D ray/triangle
-hit-count, prepared 3D fixed-radius nearest-neighbor, prepared graph CSR paths,
-and prepared bounded DB table reuse.
-
-The released `v0.9.1` Apple RT slice also fits this direction. It began with
-3D `ray_triangle_closest_hit` through Apple Metal/MPS on macOS Apple Silicon.
-Released v0.9.4 work expands Apple execution to the full 18-predicate
-surface through explicit native or native-assisted modes: MPS RT for supported
-geometry/nearest-neighbor slices and Metal compute for bounded DB/graph slices.
-
-Released v0.9.5 work adds bounded any-hit and line-of-sight helpers. OptiX,
-Embree, and HIPRT have native early-exit any-hit paths in the released tag.
-Current `main` adds post-release native Vulkan any-hit when the backend library
-is rebuilt from current source, Apple MPS RT 3D any-hit by nearest-intersection
-existence, and Apple RT 2D MPS-prism any-hit with per-ray mask early-exit plus
-exact 2D acceptance when `librtdl_apple_rt` is rebuilt. This is native-assisted
-MPS traversal, not programmable shader-level Apple any-hit.
-
-## What RTDL Can Do But Is Not Intended To Become
-
-Some things are possible with RTDL as a component, but they should not become
-RTDL's job.
-
-### Rendering And Visual Demos
-
-RTDL can power visual demos when the RTDL part is the geometric/ray query core.
-For example, a Python demo may use RTDL to compute ray/triangle or hit-count
-results and then use Python to create frames or videos.
-
-RTDL is not intended to become:
-
-- a renderer
-- a graphics engine
-- a shader language
-- a material system
-- an animation system
-- a scene editor
-
-Visual demos are valid only when RTDL remains the compute/query kernel and
-Python owns scene setup, shading, animation, and media output.
-
-### Database-Like Applications
-
-RTDL can run bounded DB-style kernels and can be compared against PostgreSQL.
-It can be embedded in apps that load table-like rows, prepare an RT dataset,
-run bounded predicates, and emit result rows.
-
-RTDL is not intended to become:
-
-- PostgreSQL
-- SQLite
-- a transactional database
-- a SQL optimizer
-- a storage engine
-- a general BI system
-
-If an application needs a real DBMS, use a real DBMS and use RTDL only for the
-specific kernel where RT traversal is the point.
-
-### Robotics Or Simulation Applications
-
-RTDL can be used inside robotics or simulation apps when the core operation is
-a geometric query, such as discrete collision screening or ray/triangle checks.
-
-RTDL is not intended to own:
-
-- robot model loading
-- forward kinematics
-- planning loops
-- timestep integration
-- physics state management
-- visualization
-
-Those belong in Python or domain libraries. RTDL should own the kernel rows
-that are worth lowering to a ray-tracing-style backend.
-
-### End-To-End Application Frameworks
-
-RTDL can help build applications, but it is not intended to become an
-application framework. It should not grow paper-specific one-off shortcuts that
-hide the domain application inside RTDL. New primitives should become part of
-the language or standard-library surface only when they are reusable across
-workloads.
-
-## What RTDL Cannot Do Yet
-
-This section is intentionally direct. A user should not need to infer these
-limits from old reports.
-
-### Full SQL Or Full Database Systems
-
-RTDL cannot run arbitrary SQL. It cannot currently support joins, nested
-queries, transactions, indexes, persistence, query planning, or full database
-administration. The current DB-style line is a bounded analytical kernel
-surface, not a database product.
-
-### General High-Dimensional Vector Search
-
-RTDL does not yet have the language surface for faithful high-dimensional ANN
-systems such as IVF/PQ pipelines, product-quantized codebooks, sparse subspace
-selection, or tensor-core scoring pipelines. A toy vector-search demo may be
-possible in Python, but it would not be faithful RTDL support for that class.
-
-The v0.8 ANN candidate app does not contradict this limit. It is a bounded
-candidate-subset reranking example over existing nearest-neighbor rows, not
-FAISS, HNSW, IVF, PQ, or learned/vector-index support.
-
-### Continuous Swept-Volume Collision Detection
-
-RTDL can support bounded discrete ray/triangle-style collision screening more
-naturally than continuous collision detection. Continuous swept sphere,
-B-spline, curve, or swept-volume collision detection needs new primitives and
-backend lowering before it can be claimed as an RTDL capability.
-
-The current v0.8 robot screening app is inside the bounded discrete case:
-CPU/Embree are correctness-gated in Goal509, while Vulkan is not exposed for
-that app until its per-edge hit-count mismatch is fixed. The original Goal509
-OptiX robot evidence is superseded by Goal748 because Goal748 found and fixed a
-short-ray OptiX `optixReportIntersection` correctness bug and reran post-fix
-OptiX parity/timing.
-
-### Full Barnes-Hut Or General N-Body Simulation
-
-RTDL can potentially help discover candidate tree-node/body contribution rows,
-but it does not yet expose a full hierarchical tree-node input type,
-Barnes-Hut opening predicate, force-vector reduction primitive, or timestep
-simulation model. Python can build a simplified app around RTDL rows, but RTDL
-cannot honestly claim faithful Barnes-Hut acceleration yet.
-
-Goal509 measures that simplified app by separating RTDL candidate generation
-from Python opening-rule and force-reduction work. That evidence supports
-candidate-row generation, not full N-body solver acceleration.
-
-### Arbitrary Data Types And Arbitrary Predicates
-
-RTDL does not support arbitrary Python objects or arbitrary user predicates in
-accelerated backends. Current kernels depend on bounded, typed inputs and
-predicates that the runtime knows how to lower. New data types such as strings,
-dates, curves, spheres, meshes with rich metadata, or high-dimensional vectors
-need explicit language and backend support before performance claims are valid.
-
-### Closest-Hit / RTXRMQ Coverage
-
-The released `v0.9.0` line includes a bounded `ray_triangle_closest_hit`
-primitive for 3D ray/triangle workloads on the CPU Python reference, `run_cpu`,
-and Embree backend. Goal573 uses it to express an exact RTXRMQ-style
-range-minimum query gate from `/Users/rl2025/Downloads/2306.03282v1.pdf`.
-
-The current boundary is backend coverage, not language shape: OptiX, Vulkan,
-and HIPRT still need native closest-hit kernels before RTDL can claim full
-four-backend RTXRMQ support.
-
-The released `v0.9.1` Apple RT slice adds one native closest-hit path through
-Apple Metal/MPS, and released v0.9.4 work adds prepared closest-hit reuse.
-That does not change the remaining OptiX, Vulkan, and HIPRT closest-hit gaps.
-
-### Any-Hit / Visibility Coverage
-
-The released `v0.9.5` line includes bounded `ray_triangle_any_hit` and
-`visibility_rows` support. The language shape is intentionally small: finite
-rays, bounded triangle blockers, stable row output, and no continuous
-visibility field or rendering semantics.
-
-Released `v0.9.5` native early-exit coverage is OptiX, Embree, and HIPRT.
-Current `main` adds native Vulkan any-hit after rebuilding `librtdl_vulkan`,
-Apple MPS RT 3D nearest-intersection any-hit, and Apple RT 2D MPS-prism
-any-hit with per-ray early-exit plus exact 2D acceptance after rebuilding
-`librtdl_apple_rt`. Stale backend libraries may still fall back to hit-count
-projection; that fallback is correct backend execution but not native
-early-exit traversal and should not be used as a performance claim.
-
-### HIPRT Backend Coverage
-
-The released `v0.9.0` HIPRT backend can use `run_hiprt` for the 18-workload
-Linux HIPRT matrix on a HIPRT-SDK setup. It cannot yet claim AMD GPU hardware
-validation, HIPRT CPU fallback, RT-core speedup evidence from the tested GTX
-1070 path, OptiX/Vulkan/HIPRT native closest-hit support, or broader prepared
-HIPRT reuse beyond the prepared 3D ray/triangle, 3D fixed-radius
-nearest-neighbor, graph CSR, and bounded DB table paths.
-
-### Apple RT Backend Coverage
-
-The released `v0.9.1` Apple RT slice can use `run_apple_rt` for 3D
-`ray_triangle_closest_hit` on Apple Silicon macOS after `make build-apple-rt`.
-Goal582 extends the dispatcher so all 18 current RTDL predicates are callable
-through `run_apple_rt` on Apple Silicon macOS. Goals603-620 move that surface
-to explicit native or native-assisted modes: Apple MPS RT for supported
-geometry/nearest-neighbor slices, Apple Metal compute for bounded DB and graph
-slices, and disclosed CPU exact refinement, aggregation, uniqueness, or
-ordering where required.
-
-For database-style and graph workloads on Apple Silicon, current RTDL uses
-Apple Metal compute/native-assisted kernels. It does not currently claim Apple
-MPS ray-tracing-hardware traversal for `conjunctive_scan`, `grouped_count`,
-`grouped_sum`, `bfs_discover`, or `triangle_match`.
-
-It cannot yet claim broad Apple hardware speedup evidence, non-macOS support,
-or mature-backend status comparable to Embree.
-
-### Automatic Speedups For Every Workload
-
-RTDL does not promise that every RTDL kernel is faster than every CPU or
-database baseline. Some current paths are correctness-credible but not
-performance-leading. Performance claims must name:
-
-- workload
-- backend
-- dataset size
-- host machine
-- setup/preparation cost
-- query cost
-- baseline used for comparison
-
-The strongest RTDL claim is about making RT-style workloads easier and more
-portable to write while preserving an honest path to backend acceleration.
-
-## How To Decide If A New Workload Belongs In RTDL
-
-A workload is a good RTDL target if most answers are "yes":
-
-- Does it have a candidate-discovery step that resembles traversal,
-  intersection, containment, nearest-neighbor search, or bounded scan?
-- Can the heavy part emit rows that Python can reduce or post-process?
-- Can its inputs be represented as bounded typed records?
-- Can it benefit from prepared data reuse or backend acceleration?
-- Can correctness be checked against a simple oracle on small cases?
-
-A workload should stay mostly in Python or an external system if most answers
-are "yes":
-
-- Is the hard part orchestration, I/O, training, scheduling, optimization, or
-  domain policy rather than traversal/refinement?
-- Does it require arbitrary SQL, arbitrary Python predicates, or mutable system
-  state?
-- Would implementing it require RTDL to become a renderer, DBMS, robotics
-  stack, graph database, or full simulation engine?
-
-## Design Rule
-
-When RTDL grows, it should grow by adding reusable language or standard-library
-surfaces:
-
-- new input types
-- new predicates
-- new emitted row shapes
-- new reduction helpers
-- new prepared-dataset patterns
-- new backend lowering paths
-
-It should not grow by hiding complete applications inside special-case
-primitives. RTDL should make the kernel 10x easier to write; Python should keep
-the application understandable.

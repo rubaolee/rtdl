@@ -1,6 +1,6 @@
 # Python Partner Any-Hit
 
-This tutorial shows the first Python+partner+RTDL preview shape for the v2.0
+This tutorial shows the first Python+partner+RTDL shape for the v2.0-facing
 track.
 
 The idea is:
@@ -47,8 +47,8 @@ PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner torch-cuda --b
 PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner cupy-cuda --backend embree
 ```
 
-Those runs still report `transfer_mode = "host_stage"` because first-wave v2.0
-copies partner-owned CUDA columns back to host before calling Embree.
+Those runs still report `transfer_mode = "host_stage"` because Embree is a CPU
+backend. Use the OptiX partner-column tutorial for the GPU device-column shape.
 
 ## The Code Shape
 
@@ -113,17 +113,15 @@ phase timing.
 
 ## Boundaries
 
-This first-wave bridge is deliberately conservative and is not the v2.0 release:
+This bridge is deliberately conservative:
 
 - partner frameworks stay in Python adapter code;
 - the native engine remains app-agnostic;
 - data moves through explicit host staging;
 - `true_zero_copy_authorized` remains `false`;
 - `rt_core_speedup_claim_authorized` remains `false`;
-- timing fields show phase shape, not benchmark evidence.
-- v2.0 remains blocked until true zero-copy, direct device-pointer handoff,
-  broad RT-core evidence, whole-application evidence, arbitrary PyTorch/CuPy
-  acceleration boundaries, and package-install/source-tree scope are resolved.
+- timing fields show phase shape, not benchmark evidence;
+- final v2.0 release still waits for the strict 3-AI consensus redline.
 
 That boundary is what lets RTDL support partner frameworks without turning the
 engine into a PyTorch-, CuPy-, or app-specific runtime.

@@ -176,8 +176,8 @@ Notes:
   - authored
   - fixture-backed
   - generic deterministic tiled county-derived cases via `--copies`
-- the family also has a dedicated PostGIS validation driver:
-  - `scripts/goal114_segment_polygon_postgis_validation.py`
+- external GIS validation drivers are kept in the historical report/archive
+  layer
 - an app-style example now exists here:
   - [rtdl_road_hazard_screening.py](../../examples/rtdl_road_hazard_screening.py)
 
@@ -276,7 +276,7 @@ def hydrant_nearest_road():
     return rt.emit(nearest, fields=["point_id", "segment_id", "distance"])
 ```
 
-## Active v0.4: Fixed-Radius Neighbors
+## Fixed-Radius Neighbors
 
 ```python
 import rtdsl as rt
@@ -295,17 +295,11 @@ def nearby_facilities():
 
 Current status:
 
-- contract frozen for `v0.4`
-- API surface added
-- lowering support added
-- Python truth path implemented
-- native CPU/oracle implemented
-- Embree implemented
-- OptiX implemented
-- Vulkan implemented
-- optional SciPy / PostGIS external baselines implemented
+- API surface, lowering, Python truth path, native CPU/oracle, Embree, and
+  OptiX paths exist where documented
+- use support matrices before making backend-specific claims
 
-## Active v0.4: KNN Rows
+## KNN Rows
 
 ```python
 import rtdsl as rt
@@ -324,13 +318,9 @@ def nearest_facilities():
 
 Current status:
 
-- contract frozen for `v0.4`
-- API surface added
-- lowering support added
-- Python truth path implemented
-- native CPU/oracle implemented
-- Embree implemented
-- optional SciPy / PostGIS external baselines implemented
+- API surface, lowering, Python truth path, native CPU/oracle, and Embree paths
+  exist where documented
+- use support matrices before making backend-specific claims
 
 ## Quick Execution Examples
 

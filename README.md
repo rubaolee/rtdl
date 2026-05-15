@@ -11,11 +11,11 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-The current released version is `v1.8`: the first source-tree Python+RTDL
-language release with the tracked native release surface migrated to an
-app-agnostic engine contract. Use it from the repository source tree with
-`PYTHONPATH=src:.`; do not read this release as a package-install promise,
-broad speedup claim, or finished Python+partner+RTDL claim.
+This documentation is written for the v2.0-facing RTDL surface. v2.0 is a
+pre-release candidate: the engineering evidence is strong, but final release
+still waits for the 3-AI consensus redline and a fresh Claude-family review.
+Use RTDL from the repository source tree with `PYTHONPATH=src:.`; do not read
+the candidate as a package-install promise or broad speedup claim.
 
 ## Start Fast
 
@@ -65,9 +65,9 @@ Python owns the surrounding program: loading data, choosing a backend,
 post-processing rows, and writing outputs. RTDL owns the kernel contract and
 backend dispatch for supported RT-shaped primitive paths.
 
-## v1.8 Design In One Page
+## Design In One Page
 
-For the v1.8 Python+RTDL boundary, learn RTDL as two layers:
+Learn RTDL as two layers:
 
 | Layer | What belongs there |
 | --- | --- |
@@ -94,7 +94,7 @@ RTDL is an embedded Python DSL, so it is not a fixed box of apps. You write the
 Python program around it. RTDL provides the kernel language, runtime contract,
 and backend bridge for the RT-shaped part of that program.
 
-In v1.8, the public building blocks include:
+Current public building blocks include:
 
 | Building block | What it lets you express |
 | --- | --- |
@@ -114,22 +114,26 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## Python Partner Preview
+## v2.0 Pre-Release Candidate
 
-RTDL also contains an experimental Python+partner preview path for the v2.0
-track. It accepts partner-owned NumPy, PyTorch CUDA, and CuPy CUDA columns,
-then runs a host-staged ray/triangle any-hit primitive through Embree or OptiX.
+RTDL also contains a Python+partner pre-release candidate for the v2.0 track.
+It accepts partner-owned NumPy, PyTorch CUDA, and CuPy CUDA columns, then runs
+supported primitives through Embree or OptiX while keeping the native engine
+app-agnostic.
 
-There is also an advanced OptiX preview slice with pod evidence for Torch/CuPy
-CUDA input-plus-output zero-copy on the prepared 2-D ray/triangle any-hit
-primitive. That is one measured primitive path, not a finished v2.0 release.
+The current pre-release packet has strong OptiX/RT evidence for documented
+Python+CuPy+RTDL contracts: all 16 current OptiX/RT comparison rows are
+filled and below `1.0x` under their exact measured contracts. The earlier
+`segment_polygon_anyhit_rows` weak spot is now covered by a streaming exact
+witness-column contract instead of full Python row-table materialization.
 
-This preview is not v2.0 yet. It does not claim general true zero-copy support,
-general direct device-pointer handoff, broad RT-core speedup,
-whole-application acceleration, arbitrary PyTorch/CuPy acceleration, or
-package-install support. Those are hard gates for the actual v2.0 release.
-For the exact positive and negative rule, read
-[Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
+This is not a final v2.0 release. The project keeps 3-AI consensus as a
+release redline, and the fresh Claude-family final review is still missing.
+Do not read the v2.0 candidate as a package-install promise, broad RT-core
+claim, arbitrary PyTorch/CuPy acceleration claim, arbitrary polygon overlay
+claim, or proof that every user program is faster. For the exact positive and
+negative rule, read [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md)
+and [v2.0 Pre-Release Candidate](docs/release_reports/v2_0_pre_release_candidate.md).
 
 ## Performance Boundary
 
@@ -164,6 +168,7 @@ User-facing docs describe the current RTDL product surface. Project history,
 release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
+- [Legacy Learner Doc Version Notes](docs/history/legacy_learner_doc_version_notes.md)
 - [Release Reports](docs/release_reports/)
 - [Benchmark And Audit Reports](docs/reports/)
 

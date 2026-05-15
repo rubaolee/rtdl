@@ -73,7 +73,7 @@ details, but the plan makes the intended execution contract explicit.
 
 ## Current Lowering Boundary
 
-Current public lowering is still predicate-specific at the Python language
+Current public lowering is predicate-specific at the Python language
 surface. `lower_to_execution_plan(...)` accepts the current DSL kernel and
 dispatches to workload lowerers such as:
 
@@ -92,9 +92,8 @@ dispatches to workload lowerers such as:
 - bounded KNN rows
 
 This public surface is intentionally workload-aware because users write
-meaningful Python programs. The v1.8 engine boundary is stricter underneath:
-native source and exported ABI terminology must stay app-agnostic for the
-tracked release surface.
+meaningful Python programs. The engine boundary is stricter underneath: native
+source and exported ABI terminology must stay app-agnostic.
 
 ## What Is Stable Today
 
@@ -109,9 +108,9 @@ Stable current facts:
 - Some generated backend artifacts still use capacity/counter patterns and
   should not be treated as the final v2.0 execution ABI.
 
-## What v1.8 Has Tightened
+## What The Current Engine Boundary Tightens
 
-The v1.8 release-prep chain tightens app-specific engine customization by
+The current release-prep chain tightens app-specific engine customization by
 turning common backend work into reviewed generic primitives and generic native
 ABI terminology. The accepted direction separates primitives by result
 semantics, not by app names:
@@ -125,10 +124,10 @@ semantics, not by app names:
 That distinction matters for ABI shape, determinism, grouping, numeric
 tolerance, output capacity, and cross-backend parity.
 
-## What v2.0 Must Improve
+## What v2.0 Adds
 
-v2.0 should make RTDL a serious performance runtime, not only a proof DSL. The
-expected direction is:
+The v2.0-facing path makes RTDL a Python+partner runtime, not only a Python row
+DSL. The expected direction is:
 
 - compile once into a stable execution plan
 - bind flat native-ready buffers

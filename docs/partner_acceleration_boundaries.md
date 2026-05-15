@@ -100,8 +100,14 @@ For the current four all-app control rows, the intended interpretation is:
 
 ## Current Release Boundary
 
-Before v2.0 release, every public performance statement must stay inside the
-reviewed evidence:
+v2.0 is a pre-release candidate after Goal2086, not a final release. The
+current evidence supports documented Python+partner+RTDL contracts, including a
+streaming exact witness-column contract that avoids full Python row-table
+materialization for the segment/polygon any-hit row. Final release still waits
+for the strict 3-AI consensus redline, including a fresh Claude-family review.
+
+Before final v2.0 release, every public performance statement must stay inside
+the reviewed evidence:
 
 - exact primitive;
 - exact app row when app-level wording is used;
@@ -113,3 +119,6 @@ reviewed evidence:
 
 When those details are missing, use preview wording instead of performance
 wording.
+
+Do not use Copilot supplemental review as a replacement for the missing
+Claude-family release review unless the release rule is explicitly changed.

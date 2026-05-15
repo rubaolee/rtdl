@@ -3,6 +3,15 @@
 This is the current roadmap and release gate for the track after the v1.6
 Python+RTDL architecture milestone.
 
+## Current Status Note
+
+As of 2026-05-15, v1.8 is the current public release and v2.0 is a
+pre-release candidate after the Goal2086 streaming witness-column update. The
+post-Goal2086 packet has strong OptiX/RT evidence under documented contracts,
+but final v2.0 release is still blocked by the strict 3-AI consensus redline
+until a fresh Claude-family review lands. See
+[v2.0 Pre-Release Candidate After Goal2086](v2_0_pre_release_candidate_after_goal2086.md).
+
 ## Roadmap Rule
 
 The top-level roadmap is:

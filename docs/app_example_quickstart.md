@@ -35,7 +35,7 @@ What this does not show:
 | First working command | `examples/rtdl_hello_world.py` | import and output smoke path | performance |
 | Backend selection | `examples/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
 | Python+partner first path | `examples/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | zero-copy or RT-core speedup |
-| Advanced OptiX partner preview | `scripts/run_goal1828_optix_device_column_pod_validation.py --partner cupy --goal Goal1838 --output-flags` | Torch/CuPy CUDA input-plus-output zero-copy evidence for one prepared OptiX any-hit primitive | v2.0 release readiness or broad acceleration |
+| Advanced OptiX partner path | [OptiX Partner Column Any-Hit](tutorials/partner_optix_zero_copy_anyhit.md) | Torch/CuPy CUDA input-plus-output evidence for a prepared OptiX any-hit primitive | final release status or broad acceleration |
 | Feature recipes | `examples/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
 | Geometry/spatial joins | `examples/rtdl_segment_polygon_hitcount.py` | segment/polygon candidate traversal and refinement | full GIS engine |
 | Spatial coverage app | `examples/rtdl_service_coverage_gaps.py` | fixed-radius household/clinic join | full service optimization |
@@ -54,9 +54,8 @@ What this does not show:
 
 For the full app inventory, read [Application Catalog](application_catalog.md).
 For backend support, read [App Engine Support Matrix](app_engine_support_matrix.md).
-For implementation notes and historical evidence, use
-[Technical App Notes](technical_app_notes/README.md) and
-[History Index](history/README.md).
+For implementation notes, use [Technical App Notes](technical_app_notes/README.md).
+For older version evidence, use [Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md).
 
 ## Backend Names
 

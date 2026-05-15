@@ -24,13 +24,13 @@ The documents here have different roles and should not overlap heavily.
    - concrete examples by workload family
 
 4. [ITRE App Programming Model](itre_app_model.md)
-   - how `input -> traverse -> refine -> emit` supports v0.8 apps
+   - how `input -> traverse -> refine -> emit` supports Python apps
    - where the RTDL/Python boundary sits
 
 5. [IR And Lowering](ir_and_lowering.md)
    - how `CompiledKernel` lowers to `RTExecutionPlan`
-   - what is stable today and what current `main` has internally generalized
-     for the v1.8 Python+RTDL boundary
+   - what is stable today and what current `main` has generalized for the
+     v2.0-facing Python+partner boundary
 
 6. [Feature Homes](../features/README.md)
    - workload-by-workload usage homes

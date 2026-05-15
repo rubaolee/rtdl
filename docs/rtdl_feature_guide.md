@@ -1,359 +1,87 @@
 # RTDL Feature Guide
 
-This is the **high-level orientation guide** for RTDL.
-
-Audience:
-
-- readers who want a fast overview of what RTDL currently is
-- people deciding whether the current system fits their use case
-- reviewers who need the feature surface without reading the full language docs
-
-This guide is intentionally lighter than the documents in `docs/rtdl/`.
+This is the high-level feature guide for the v2.0-facing RTDL surface. It is
+for learners, users, and reviewers who want the current shape without release
+archaeology. Older version notes live in
+[Legacy Learner Doc Version Notes](history/legacy_learner_doc_version_notes.md).
 
 ## Practical Promise
 
-RTDL is useful when a workload can be expressed as accelerated search plus exact
-refinement. The public authoring target is a 10x reduction in workload-writing
-burden: fewer backend-specific files, less duplicated BVH/RT traversal code,
-and one stable row-emission model for CPU/oracle, Embree, OptiX, Vulkan,
-HIPRT, and Apple RT where the workload/backend pair is supported.
+RTDL helps Python users express RT-shaped query work once and run it through
+supported backends without hand-maintaining separate traversal implementations.
+The main productivity pattern is:
 
-This is a developer-productivity promise, not an automatic speedup promise.
-Use release reports and [Backend Maturity](backend_maturity.md) for measured
-performance claims.
+```text
+Python app -> RTDL kernel -> backend primitive -> rows or partner-owned columns
+```
 
-## What RTDL Is Today
+This is not an automatic speedup promise. Performance wording must cite exact
+evidence.
 
-RTDL is a Python-hosted DSL/runtime for non-graphical ray-tracing-style workloads.
-The current released state is `v1.6`: the bounded `v0.7.0` DB package, the
-released `v0.8.0` app-building layer that uses existing RTDL features with
-Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
-the released `v0.9.1` Apple RT closest-hit slice, the released `v0.9.4`
-Apple RT consolidation, the released `v0.9.5` any-hit / visibility-row /
-emitted-row reduction layer, the released `v0.9.6` prepared/prepacked repeated
-visibility/count optimization line, and the released `v0.9.8` bounded RTX app
-evidence / public-claim cleanup package, the released `v1.0` app-shaped proof
-release, the released `v1.5` standalone Embree+OptiX language/runtime
-completion for the supported surface, and the released `v1.6` first
-Python+RTDL architecture milestone.
+## Current Feature Surface
 
-The released `v0.9.1` line adds an Apple RT slice:
-`run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
-local Apple M4 host.
+| Feature family | Current learner meaning |
+| --- | --- |
+| Kernel shape | `input -> traverse -> refine -> emit` |
+| Geometry rows | segment intersections, point/polygon containment, ray/triangle rows |
+| Hit outputs | any-hit flags, hit counts, bounded witness columns |
+| Neighbor rows | fixed-radius rows, nearest-neighbor rows, bounded KNN-style rows |
+| Compact summaries | counts, sums, min/max-style summaries where documented |
+| Columnar partner path | NumPy/PyTorch/CuPy-owned inputs and outputs for supported primitives |
+| Backend dispatch | CPU reference, native CPU/oracle, Embree, OptiX, and bounded proof surfaces where documented |
+| IR/lowering | `CompiledKernel` to `RTExecutionPlan` for the supported language shape |
 
-The untagged `v0.9.2` Apple RT candidate and `v0.9.3` native-coverage
-milestone are internal evidence lines absorbed into `v0.9.4`, not separate
-public releases. The released `v0.9.4` line combines full-surface
-`run_apple_rt` compatibility,
-prepared closest-hit reuse, masked traversal work, expanded Apple MPS RT
-geometry/native-assisted slices, and Apple Metal compute DB/graph slices.
+## v2.0 Partner Features
 
-Today it includes:
+The v2.0-facing partner lane is about moving supported RTDL primitive inputs and
+outputs through partner-owned columns:
 
-- a kernel authoring surface
-- compiler IR and lowering
-- a native C/C++ oracle
-- a controlled Embree backend
-- a controlled OptiX backend
-- a Vulkan backend for supported workload families, with the current performance
-  story depending on workload and host configuration
-- a released `v0.9.0` HIPRT backend with Linux `run_hiprt` parity coverage for
-  the current 18-workload HIPRT matrix
-- a released `v0.9.1` Apple RT backend slice for 3D closest-hit ray/triangle
-  traversal on macOS Apple Silicon
-- a released `v0.9.4` Apple RT line with all 18 current predicates callable
-  through explicit native or native-assisted Apple modes
-- native Apple MPS RT coverage for supported geometry and nearest-neighbor
-  slices
-- Apple Metal compute/native-assisted coverage for bounded DB and graph slices
-- Apple RT prepared/masked performance improvements for the current ray
-  intersection slices after Goals596-598
-- bounded `ray_triangle_any_hit` rows, with native early-exit implementations
-  on OptiX, Embree, and HIPRT and compatibility projection on Vulkan and Apple
-  RT
-- `visibility_rows_cpu` and `visibility_rows` helpers that turn
-  observer-target pairs into finite any-hit rays and emit line-of-sight rows
-- `reduce_rows` as a deterministic Python standard-library helper for
-  reducing emitted RTDL rows by `any`, `count`, `sum`, `min`, or `max`
+- NumPy for CPU/host partner paths;
+- PyTorch as the reference GPU framework partner;
+- CuPy as a lightweight GPU conformance and RawKernel-friendly partner.
 
-Backend maturity note: Embree is currently the only backend RTDL should call
-optimized or mature in public performance-facing claims. OptiX, Vulkan, HIPRT,
-and Apple Metal/MPS RT are real backend integrations with bounded correctness
-evidence, but they are not broad optimized-backend claims. Apple Metal/MPS RT
-now has local overhead reductions for prepared closest-hit, hit-count, and
-segment-intersection, plus v0.9.4 Metal compute DB/graph coverage, but still is
-not a broad Apple speedup claim.
+The partner path can support fast app-level continuations when the user stays in
+partner-owned arrays. It does not make RTDL a general tensor compiler.
 
-NVIDIA RT-core claim note: `--backend optix` is not enough for a public
-RT-core acceleration claim. Claim-sensitive app commands must use
-`--require-rt-core`, and apps reject that flag unless the selected mode is a
-documented bounded OptiX traversal path. Current claim-review candidates are
-the bounded sub-paths listed in
-[v1.0 RTX App Status](v1_0_rtx_app_status.md) and the
-[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), with release-facing public
-wording governed by `rtdsl.rtx_public_wording_matrix()`: prepared
-DB compact summaries, graph visibility/native graph-ray candidate generation,
-service coverage, event hotspot, facility coverage decisions, prepared
-road-hazard and segment/polygon traversal, polygon-pair/Jaccard candidate
-discovery, Hausdorff threshold decisions, ANN candidate coverage, outlier
-threshold counts, DBSCAN core flags, robot collision pose-count/pose-flag
-traversal, and Barnes-Hut node-coverage decisions. These are not whole-app
-speedup claims. SQL/DBMS behavior, row-materializing DB output, full
-GIS/routing behavior, unbounded pair-row output, exact Hausdorff distance, ANN
-ranking/index behavior, Barnes-Hut opening-rule/force reduction, and broad
-whole-app speedup remain outside the claim unless the support matrix and a
-later review explicitly authorize them.
-`facility_knn_assignment / coverage_threshold_prepared_recentered`,
-`road_hazard_screening / prepared_native_compact_summary_40k`,
-`barnes_hut_force_app / node_coverage_prepared_rich`, and
-`hausdorff_distance / directed_threshold_prepared` have reviewed bounded public
-RTX sub-path wording after Goal1146, Goal1208, and Goal1224.
-`robot_collision_screening / prepared_pose_flags` has reviewed Goal1126
-normalized per-pose wording only; it is not a same-total-work wall-time claim
-and not a whole-app robot-planning claim.
-Goal1177 adds recovered clean-source RTX A5000 batch evidence for external
-review input only. Goal1184 adds newer Goal1182 RTX A4500 batch evidence for
-external-review input only. Neither goal adds a new reviewed public wording row
-or authorizes public speedup wording. Goal1208 authorizes only the bounded
-road-hazard prepared native compact-summary wording; full GIS/routing,
-default-app behavior, row output, and whole-app road-hazard speedup remain
-outside the claim. Goal1224 reviews Hausdorff threshold-decision wording and
-keeps graph public speedup wording blocked under current same-contract evidence.
-Goal1263 promotes bounded polygon-pair wording for RT-assisted LSI/PIP positive
-candidate discovery plus exact area continuation. Current `main` routes compact
-polygon summaries through backend-neutral native area-summary plumbing, but
-monolithic polygon overlay, broad GIS acceleration, arbitrary polygon geometry,
-and whole-app polygon-overlap speedup remain outside the claim.
-Goal1262 confirms `polygon_set_jaccard` correctness at chunk `1024`, including
-8192 copies, but OptiX remains slower than Embree and no positive Jaccard
-speedup wording is authorized. Goal1262/Goal1264 show `database_analytics`
-execution-unblocked but mixed, with warm-query median still favoring Embree.
-Goal1264 confirms graph visibility correctness and a fast OptiX any-hit kernel.
-Goal1267 verifies the current v1.2 direct packed-ray path on a live NVIDIA pod:
-the OptiX any-hit query is around `0.0002s` at the tested 30k/60k-copy scales,
-but total graph timing remains governed by scene preparation and host-side
-preparation, with mixed results versus Embree. The next graph performance work
-is prepared-scene reuse or amortization, not public speedup wording.
-Goal1268 makes the Embree backend accept both Embree 3 and Embree 4 so Linux
-pods with distro `libembree-dev` can run the same CPU RT baseline without
-manual Embree4 installation.
+## Output Contracts
 
-Current supported workload families:
+Use the smallest output contract that answers the app question:
 
-- `lsi`
-- `pip`
-- `overlay`
-- `ray_tri_hitcount`
-- `point_nearest_segment`
-- `segment_polygon_hitcount`
-- `segment_polygon_anyhit_rows`
-- `polygon_pair_overlap_area_rows`
-- `polygon_set_jaccard`
-- `bfs`
-- `triangle_count`
-- `conjunctive_scan`
-- `grouped_count`
-- `grouped_sum`
+| Need | Prefer |
+| --- | --- |
+| yes/no per item | flag columns |
+| counts | compact count columns |
+| threshold decisions | scalar or compact threshold summaries |
+| candidate reduction | bounded candidate-summary columns |
+| exact witnesses | streaming witness columns |
+| human inspection | Python row dictionaries, accepting materialization cost |
 
-Current release layers:
+The streaming witness-column contract is the current v2.0 answer to large
+segment/polygon witness output. It preserves exact witness IDs without forcing a
+huge Python dictionary table.
 
-- `v0.2.0`: segment/polygon and overlap workload family
-- `v0.4.0`: nearest-neighbor workload line
-- `v0.5.0`: 3D nearest-neighbor and multi-backend expansion
-- `v0.6.1`: corrected RT graph line
-- `v0.7.0`: bounded database-style analytical kernel line
-- `v0.8.0`: released app-building work on `main` over the released `v0.7.0`
-  surface
-- `v0.9.0`: released HIPRT backend and exact bounded closest-hit expansion
-- `v0.9.1`: released Apple Metal/MPS RT backend slice for closest-hit
-- `v0.9.4`: full-surface Apple RT dispatch with
-  native/native-assisted geometry, nearest-neighbor, DB, and graph slices,
-  absorbing the internal v0.9.2/v0.9.3 evidence lines
-- `v0.9.5`: bounded any-hit / visibility-row / emitted-row reduction surface;
-  native any-hit early-exit is implemented for OptiX, Embree, and HIPRT in the
-  released tag
-- `v0.9.6`: native Vulkan any-hit, Apple MPS RT 3D any-hit, Apple RT 2D
-  MPS-prism any-hit, and prepared/prepacked repeated-query visibility/count
-  paths for Apple RT, OptiX, HIPRT, and Vulkan under scalar/compact-output
-  contracts
-- `v1.0`: released app-shaped RTDL proof, documentation, and bounded evidence,
-  with post-Goal1224/Goal1228 current-state updates preserved on `main`
-- `v1.5`: released standalone Embree+OptiX language/runtime completion for the
-  supported surface, with app-name-free stable traversal-plus-reduction
-  primitive contracts, 14 included app contracts, 4 excluded rows,
-  `COLLECT_K_BOUNDED` deferred to v1.5.1, no whole-app speedup claim, and no
-  claim that native engine internals are fully app-free
-- `v1.6`: released first Python+RTDL architecture milestone; Python remains the
-  app/control layer, RTDL owns the supported RT-shaped primitive contract and
-  bridge, Embree/OptiX execute validated stable primitive subpaths, and
-  performance work continues in follow-up releases
+## What Users Build With These Features
 
-Plus:
+The examples demonstrate:
 
-- feature-home docs
-- Linux-backed evidence, including PostgreSQL-backed DB correctness and
-  repeated-query performance baselines for `v0.7.0`
-- Linux-primary validation, with bounded macOS and Windows support depending on
-  backend availability
-- explicit fallback-vs-native backend boundaries
+- visibility and blocker tests;
+- service coverage and hotspot screening;
+- facility assignment and nearest-neighbor screening;
+- road hazard and segment/polygon summaries;
+- Hausdorff and Frechet-style candidate discovery;
+- ANN candidate reranking surfaces;
+- DBSCAN/outlier core-count surfaces;
+- robot collision screening;
+- bounded DB-style summaries;
+- graph analytics rows;
+- Barnes-Hut candidate discovery.
 
-Current user-programming note:
+That list is a teaching catalog, not the fixed capacity of the language.
 
-- RTDL should not be understood only as a fixed workload catalog
-- users can already combine RTDL kernels with Python application logic
-- current examples of that pattern include:
-  - [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
-  - [rtdl_database_analytics_app.py](../examples/rtdl_database_analytics_app.py)
-  - [rtdl_hausdorff_distance_app.py](../examples/rtdl_hausdorff_distance_app.py)
-  - [rtdl_ann_candidate_app.py](../examples/rtdl_ann_candidate_app.py)
-  - [rtdl_outlier_detection_app.py](../examples/rtdl_outlier_detection_app.py)
-  - [rtdl_dbscan_clustering_app.py](../examples/rtdl_dbscan_clustering_app.py)
-  - [rtdl_robot_collision_screening_app.py](../examples/rtdl_robot_collision_screening_app.py)
-  - [rtdl_barnes_hut_force_app.py](../examples/rtdl_barnes_hut_force_app.py)
-- the released `v0.9.0` line also includes an exact bounded RTXRMQ-style
-  range-minimum-query gate using `ray_triangle_closest_hit` on CPU reference,
-  `run_cpu`, and Embree; the released `v0.9.1` Apple RT slice exposes
-  the same primitive for 3D rays/triangles through `run_apple_rt`; OptiX,
-  Vulkan, and HIPRT do not yet expose this closest-hit primitive
-- released `v0.9.4` Goals582-620 let users call the current 18-predicate
-  workload surface through `run_apple_rt` with explicit native or
-  native-assisted modes; geometry/nearest-neighbor slices use Apple MPS RT,
-  while bounded DB and graph slices use Apple Metal compute with disclosed CPU
-  refinement/aggregation/materialization where needed
-- RTDL provides the query core there, while Python handles application logic and
-  output
-- the released `v1.6` line makes the Python+RTDL architecture milestone the
-  current public release boundary; users may still write arbitrary Python
-  around RTDL, but RTDL does not take responsibility for user Python
-  continuation performance
-- the released `v0.9.5` line adds reusable app-building pieces:
-  `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`; `reduce_rows`
-  improves app ergonomics but is not a backend-native reduction or speedup
-  claim
+## Read Next
 
-Current app-building performance note:
-
-- Hausdorff distance has bounded Linux Embree/OptiX/Vulkan performance evidence
-  against RTDL and mature nearest-neighbor baselines.
-- ANN candidate search, outlier detection, and DBSCAN clustering are current
-  Goal519 Stage-1 proximity apps over existing `knn_rows` and
-  `fixed_radius_neighbors`; Goal524 now gives bounded Linux CPU/oracle,
-  Embree, OptiX, and Vulkan timing characterization for them.
-  This is not an external-baseline speedup claim; SciPy was not installed in
-  that validation checkout, and no claim is made against SciPy, scikit-learn,
-  FAISS, or production ANN/clustering systems.
-- Robot collision screening has bounded Linux CPU/Embree/OptiX evidence; Vulkan
-  is not exposed for that app until the per-edge hit-count mismatch found in
-  Goal509 is fixed.
-- Barnes-Hut force approximation has bounded Linux CPU/Embree/OptiX/Vulkan
-  candidate-generation evidence, but Python still owns the opening rule and
-  force reduction. This is not a full N-body acceleration claim.
-
-Canonical app-building docs:
-
-- [v0.8 App Building](tutorials/v0_8_app_building.md)
-- [Goal507 Hausdorff Linux Performance Report](reports/goal507_hausdorff_linux_perf_report_2026-04-17.md)
-- [Goal509 Robot/Barnes-Hut Linux Performance Report](reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
-- [Goal524 Stage-1 Proximity Linux Performance Report](reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md)
-
-Current workload-maturity note:
-
-- `segment_polygon_hitcount` is the first v0.2 workload-family expansion now
-  closed beyond the v0.1 RayJoin-heavy slice
-- its current accepted closure target is semantic/backend closure across:
-  - `cpu_python_reference`
-  - `cpu`
-  - `embree`
-  - `optix`
-  on deterministic authored / fixture / derived cases
-- this family must still be described honestly under the current audited local
-  `native_loop` boundary rather than as proof of BVH- or RT-core-matured
-  traversal
-- the family now also has:
-  - prepared-path performance characterization
-  - large deterministic PostGIS-backed correctness validation on:
-    - `cpu`
-    - `embree`
-    - `optix`
-  through the accepted `derived/br_county_subset_segment_polygon_tiled_x256`
-  case
-- `segment_polygon_anyhit_rows` is the second closed v0.2 segment/polygon family
-- the Jaccard line is now real, but only under the narrow pathology/unit-cell
-  contract:
-  - `polygon_pair_overlap_area_rows`
-  - `polygon_set_jaccard`
-
-Canonical workload homes:
-
-- [Release-Facing Examples](release_facing_examples.md)
-- [Feature Homes](features/README.md)
-
-## What RTDL Can Currently Do
-
-The current repo can:
-
-- author kernels in a constrained Python DSL
-- compile and lower them
-- run them through the native CPU/oracle path
-- run supported workloads on Embree
-- run supported graph and bounded DB workloads on OptiX and Vulkan where the
-  host GPU stack and backend libraries are available
-- run the released graph workloads `bfs` and `triangle_count`
-- run the released bounded DB workloads `conjunctive_scan`, `grouped_count`,
-  and `grouped_sum`
-- run accepted `v0.8` app-building examples for Hausdorff distance, ANN
-  candidate search, outlier detection, DBSCAN clustering, robot collision
-  screening, and Barnes-Hut force approximation, with the app-specific backend
-  boundaries documented in the Goal507, Goal509, and Goal524 reports
-- run the current narrow Jaccard line on Python/native CPU with PostGIS-backed
-  checking on accepted packages
-- run the current narrow Jaccard line through the public `embree`, `optix`,
-  and `vulkan` surfaces on Linux under documented native CPU/oracle fallback
-- run the accepted long exact-source Vulkan surface with exact parity, while
-  keeping Vulkan as the slower portable backend
-- support user-authored RTDL-plus-Python applications where RTDL handles the
-  geometry-query core and Python handles surrounding application logic
-- run the released HIPRT matrix through `run_hiprt` when the Linux HIPRT SDK
-  runtime is available; `prepare_hiprt` currently covers prepared 3D
-  ray/triangle hit-count, prepared 3D fixed-radius nearest-neighbor, and
-  prepared graph CSR paths, plus prepared bounded DB table reuse
-- run the v0.9.1 Apple RT closest-hit path on macOS Apple Silicon
-  after `make build-apple-rt`
-- run the released v0.9.4 Apple RT surface on macOS Apple Silicon, while
-  using `native_only=True` when an app must reject unsupported shape/backend
-  combinations; current Apple modes include MPS RT geometry/nearest-neighbor
-  slices and Metal compute/native-assisted DB/graph slices
-- run the released v0.9.5 bounded any-hit and visibility helpers; OptiX,
-  Embree, and HIPRT use native early-exit traversal in that released tag
-- run the released v0.9.6 prepared/prepacked repeated visibility/count paths;
-  Vulkan and Apple RT any-hit require rebuilt backend libraries, and the fastest
-  paths require stable build-side triangles plus reusable/prepacked probe rays
-- reduce already-emitted RTDL rows in Python with `rt.reduce_rows(...)`
-- compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
-  queries on the Linux host
-- close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
-- support a RayJoin-oriented experiment/reporting workflow
-- preserve bounded older release packages and reports as historical evidence
-
-## What RTDL Cannot Yet Claim
-
-RTDL does not yet claim:
-
-- exact computational geometry
-- a finished generalized multi-backend optimizer
-- full paper-identical reproduction of every RayJoin dataset family
-- high-precision native GPU geometry on Vulkan (the accepted bounded path still
-  relies on float32 traversal plus exact host-side final truth)
-- that every backend/workload/boundary combination is equally mature
-- full polygon overlay materialization (`overlay` is still a seed analogue)
-- generic continuous polygon Jaccard or generic continuous overlap-area closure
-- positive public Jaccard speedup wording; the current safe chunk is `1024`
-  and the accepted evidence still has OptiX slower than Embree
-- arbitrary SQL execution or DBMS behavior in the `v0.7.0` DB line
-- faithful full Barnes-Hut or full N-body solver acceleration
-- robot Vulkan support before the Goal509 hit-count parity defect is fixed
-- RT-core hardware speedup from the GTX 1070 Linux app evidence
-- AMD GPU HIPRT validation, HIPRT CPU fallback, HIPRT RT-core speedup evidence,
-  or OptiX/Vulkan/HIPRT native support for `ray_triangle_closest_hit`
-- broad Apple hardware speedup evidence or Apple backend maturity beyond the
-  current bounded native/native-assisted support matrix
+- [Quick Tutorial](quick_tutorial.md)
+- [Application Catalog](application_catalog.md)
+- [RTDL Language Docs](rtdl/README.md)
+- [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
+- [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
