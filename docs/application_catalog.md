@@ -8,6 +8,10 @@ Older app/version evidence belongs in
 [Learner Doc Version Notes](history/learner_doc_version_notes.md)
 and the report archive.
 
+Archived scenario-specific DB and Apple RT helpers remain in the repository for
+compatibility and audit tests, but users should start from the unified Apple and
+database app wrappers listed below.
+
 ## Reading Rule
 
 Each app below has two boundaries:

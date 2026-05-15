@@ -1330,12 +1330,13 @@ class PreparedAppleRtRayTriangleAnyHit2D:
     """Prepared Apple RT 2D any-hit scene for repeated visibility/collision queries."""
 
     def __init__(self, triangles: tuple[_CanonicalTriangle2D, ...]):
+        self._closed = True
+        self._handle = ctypes.c_void_p()
         if any(not isinstance(triangle, _CanonicalTriangle2D) for triangle in triangles):
             raise ValueError("prepared Apple RT ray_triangle_any_hit currently requires 2D triangles")
         self._library = _load_library()
         if getattr(self._library, "rtdl_apple_rt_prepare_ray_anyhit_2d", None) is None:
             raise NotImplementedError("loaded Apple RT library does not export prepared 2D any-hit")
-        self._closed = False
         triangle_records = _pack_triangles_2d(triangles)
         handle = ctypes.c_void_p()
         error = ctypes.create_string_buffer(4096)
@@ -1348,6 +1349,7 @@ class PreparedAppleRtRayTriangleAnyHit2D:
         )
         _check_status(status, error)
         self._handle = handle
+        self._closed = False
 
     def _check_open(self) -> None:
         if self._closed:

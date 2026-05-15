@@ -41,6 +41,7 @@ PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_pyth
 PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_apple_rt_demo_app.py
 ```
 
 ## Embree And OptiX Examples

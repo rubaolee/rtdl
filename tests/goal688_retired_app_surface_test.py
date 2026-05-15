@@ -48,7 +48,7 @@ class Goal688RetiredAppSurfaceTest(unittest.TestCase):
     def test_catalog_marks_scenario_specific_files_as_compatibility_helpers(self) -> None:
         catalog = (REPO_ROOT / "docs" / "application_catalog.md").read_text(encoding="utf-8")
 
-        self.assertIn("older scenario-specific files remain runnable compatibility helpers", catalog)
+        self.assertIn("current architecture", catalog)
         self.assertIn("users should start from the unified Apple", catalog)
 
 

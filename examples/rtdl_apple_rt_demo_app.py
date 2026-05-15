@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples import rtdl_apple_rt_closest_hit
+from examples.internal.archived_apps import rtdl_apple_rt_closest_hit
 
 
 SCENARIOS = ("closest_hit", "visibility_count", "all")
@@ -100,8 +100,8 @@ def run_app(scenario: str = "all") -> dict[str, Any]:
         "scenario": scenario,
         "sections": sections,
         "retired_compatibility_helpers": [
-            "examples/rtdl_apple_rt_closest_hit.py",
-            "examples/rtdl_apple_rt_visibility_count.py",
+            "examples/internal/archived_apps/rtdl_apple_rt_closest_hit.py",
+            "examples/internal/archived_apps/rtdl_apple_rt_visibility_count.py",
         ],
         "honesty_boundary": "Unified Apple RT demo; hardware-backed support depends on macOS Apple Silicon and a rebuilt librtdl_apple_rt, and this is not a broad Apple speedup claim.",
     }

@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from examples import rtdl_sales_risk_screening
-from examples import rtdl_v0_7_db_app_demo
+from examples.internal.archived_apps import rtdl_v0_7_db_app_demo
 import rtdsl as rt
 
 
@@ -151,7 +151,7 @@ class PreparedDatabaseAnalyticsSession:
                 "Python-owned dashboard or risk-summary JSON",
             ],
             "retired_compatibility_helpers": [
-                "examples/rtdl_v0_7_db_app_demo.py",
+                "examples/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
                 "examples/rtdl_sales_risk_screening.py",
             ],
             "native_continuation_active": native_continuation_backend != "none",
@@ -228,7 +228,7 @@ def run_app(
             "Python-owned dashboard or risk-summary JSON",
         ],
         "retired_compatibility_helpers": [
-            "examples/rtdl_v0_7_db_app_demo.py",
+            "examples/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
             "examples/rtdl_sales_risk_screening.py",
         ],
         "native_continuation_active": native_continuation_backend != "none",
