@@ -27,6 +27,9 @@ reduces that compact pair payload into overlap summary columns.
 - Rewired `examples/rtdl_control_apps_cupy_rawkernel.py` so the `cupy_extent`
   polygon candidate backend uses the generic tiled AABB adapter rather than
   owning the candidate-pair builder itself.
+- Rewired the `cupy_extent` oracle/validation helper to consume the same
+  generic tiled AABB adapter, eliminating the old private duplicated candidate
+  index builder.
 
 The CLI name `cupy_extent` is retained for compatibility with existing reports
 and scripts, but its internal meaning is now the generic tiled AABB
@@ -68,6 +71,19 @@ Goal2032 development evidence showed:
 Goal2075 does not reuse those ratios as release evidence. It makes the source
 implementation match the successful design so the next pod run can produce
 current-commit evidence.
+
+## Review Follow-Up Closure
+
+The Claude Goal2076 review accepted the design with a boundary and noted one
+cleanup risk: the performance path used the new generic adapter while the
+oracle/validation path still used a private `_cupy_extent_candidate_indices`
+helper. That duplicate helper has been removed, so both timed payload creation
+and validation pair extraction now share
+`aabb_tiled_candidate_pair_payload_2d_partner_columns`.
+
+The Goal2075 test now also includes a small Torch/CPU functional edge test for
+tile-boundary correctness and zero-width touching boxes. This remains a
+source-level functional check, not pod timing evidence.
 
 ## Claim Boundary
 

@@ -664,41 +664,6 @@ def _cupy_extent_free_tile_blocks() -> bool:
     return os.environ.get("RTDL_CUPY_EXTENT_FREE_TILE_BLOCKS", "1") not in ("0", "false", "False")
 
 
-def _cupy_extent_candidate_indices(left_columns: dict[str, Any], right_columns: dict[str, Any]):
-    cp = _load_cupy()
-    left_tile_rows = _cupy_extent_tile_rows()
-    right_tile_rows = _cupy_extent_right_tile_rows()
-    free_tile_blocks = _cupy_extent_free_tile_blocks()
-    left_chunks = []
-    right_chunks = []
-    left_count = int(len(left_columns["min_x"]))
-    right_count = int(len(right_columns["min_x"]))
-    for left_start in range(0, left_count, left_tile_rows):
-        left_stop = min(left_start + left_tile_rows, left_count)
-        left_min_x = left_columns["min_x"][left_start:left_stop, None]
-        left_min_y = left_columns["min_y"][left_start:left_stop, None]
-        left_max_x = left_columns["max_x"][left_start:left_stop, None]
-        left_max_y = left_columns["max_y"][left_start:left_stop, None]
-        for right_start in range(0, right_count, right_tile_rows):
-            right_stop = min(right_start + right_tile_rows, right_count)
-            right_min_x = right_columns["min_x"][None, right_start:right_stop]
-            right_min_y = right_columns["min_y"][None, right_start:right_stop]
-            right_max_x = right_columns["max_x"][None, right_start:right_stop]
-            right_max_y = right_columns["max_y"][None, right_start:right_stop]
-            width = cp.minimum(left_max_x, right_max_x) - cp.maximum(left_min_x, right_min_x)
-            height = cp.minimum(left_max_y, right_max_y) - cp.maximum(left_min_y, right_min_y)
-            local_left, local_right = cp.nonzero((width > 0) & (height > 0))
-            if int(local_left.size):
-                left_chunks.append((local_left + left_start).astype(cp.int32, copy=False))
-                right_chunks.append((local_right + right_start).astype(cp.int32, copy=False))
-            del width, height, local_left, local_right
-            if free_tile_blocks:
-                cp.get_default_memory_pool().free_all_blocks()
-    if not left_chunks:
-        return cp.empty(0, dtype=cp.int32), cp.empty(0, dtype=cp.int32)
-    return cp.concatenate(left_chunks), cp.concatenate(right_chunks)
-
-
 def _partner_pair_payload_table_cupy_extent(
     left: tuple[Any, ...],
     right: tuple[Any, ...],
@@ -735,30 +700,16 @@ def _positive_candidate_pairs_cupy_extent(
     right: tuple[Any, ...],
 ) -> set[tuple[int, int]]:
     cp = _load_cupy()
-    left_columns = _axis_aligned_extent_columns(left)
-    right_columns = _axis_aligned_extent_columns(right)
-    left_min_x = cp.asarray(left_columns["min_x"])
-    left_min_y = cp.asarray(left_columns["min_y"])
-    left_max_x = cp.asarray(left_columns["max_x"])
-    left_max_y = cp.asarray(left_columns["max_y"])
-    right_min_x = cp.asarray(right_columns["min_x"])
-    right_min_y = cp.asarray(right_columns["min_y"])
-    right_max_x = cp.asarray(right_columns["max_x"])
-    right_max_y = cp.asarray(right_columns["max_y"])
-    left_indices, right_indices = _cupy_extent_candidate_indices(
-        {
-            "min_x": left_min_x,
-            "min_y": left_min_y,
-            "max_x": left_max_x,
-            "max_y": left_max_y,
-        },
-        {
-            "min_x": right_min_x,
-            "min_y": right_min_y,
-            "max_x": right_max_x,
-            "max_y": right_max_y,
-        },
+    payload_columns = aabb_tiled_candidate_pair_payload_2d_partner_columns(
+        _axis_aligned_extent_columns(left),
+        _axis_aligned_extent_columns(right),
+        partner="cupy",
+        tile_rows=_cupy_extent_tile_rows(),
+        right_tile_rows=_cupy_extent_right_tile_rows(),
+        free_tile_blocks=_cupy_extent_free_tile_blocks(),
     )
+    left_indices = payload_columns["left_index"]
+    right_indices = payload_columns["right_index"]
     left_ids = np.asarray([polygon.id for polygon in left], dtype=np.int32)
     right_ids = np.asarray([polygon.id for polygon in right], dtype=np.int32)
     return set(
