@@ -1101,7 +1101,7 @@ extern "C" __global__ void __intersection__shape_pair_relation_isect() {
     uint32_t i1 = lp.vertex_offset + (eidx + 1) % lp.vertex_count;
     float ax0 = params.left_vx[i0], ay0 = params.left_vy[i0];
     float ax1 = params.left_vx[i1], ay1 = params.left_vy[i1];
-    bool segment_intersection_hit = false;
+    bool segment_pair_intersection_hit = false;
     for (uint32_t k = 0; k < rp.vertex_count; ++k) {
         uint32_t j0 = rp.vertex_offset + k;
         uint32_t j1 = rp.vertex_offset + (k + 1) % rp.vertex_count;
