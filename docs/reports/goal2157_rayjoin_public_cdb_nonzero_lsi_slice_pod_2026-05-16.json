@@ -1,0 +1,86 @@
+{
+  "case": {
+    "backends": {
+      "cpu": {
+        "all_parity_vs_cpu_python_reference": true,
+        "app_elapsed_sec_median": 0.005835813470184803,
+        "app_elapsed_sec_values": [
+          0.005933661013841629,
+          0.005835813470184803,
+          0.005717157386243343,
+          0.0058643389493227005,
+          0.0057925814762711525
+        ],
+        "elapsed_outer_sec": 6.8722912753000855,
+        "row_count_consistent": true,
+        "row_counts": [
+          34,
+          34,
+          34,
+          34,
+          34
+        ],
+        "rt_core_accelerated": false,
+        "status": "ok"
+      },
+      "embree": {
+        "all_parity_vs_cpu_python_reference": true,
+        "app_elapsed_sec_median": 0.016302102245390415,
+        "app_elapsed_sec_values": [
+          0.016085379756987095,
+          0.013211858458817005,
+          0.016302102245390415,
+          0.017467868514358997,
+          0.01655259821563959
+        ],
+        "elapsed_outer_sec": 6.747513287700713,
+        "row_count_consistent": true,
+        "row_counts": [
+          34,
+          34,
+          34,
+          34,
+          34
+        ],
+        "rt_core_accelerated": false,
+        "status": "ok"
+      },
+      "optix": {
+        "all_parity_vs_cpu_python_reference": true,
+        "app_elapsed_sec_median": 0.0062539102509617805,
+        "app_elapsed_sec_values": [
+          0.00636802613735199,
+          0.006212870590388775,
+          0.0062539102509617805,
+          0.006399195641279221,
+          0.006178936921060085
+        ],
+        "elapsed_outer_sec": 7.450716994702816,
+        "row_count_consistent": true,
+        "row_counts": [
+          34,
+          34,
+          34,
+          34,
+          34
+        ],
+        "rt_core_accelerated": true,
+        "status": "ok"
+      }
+    },
+    "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count48.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count48.cdb",
+    "label": "lsi_county_start256_soil_start256_count48",
+    "left_segments": 3506,
+    "right_segments": 815
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "commit": "9931585362e0e27ccf1a4e657afc7fd670209041",
+  "goal": "2157",
+  "repeats": 5,
+  "warmups": 1
+}

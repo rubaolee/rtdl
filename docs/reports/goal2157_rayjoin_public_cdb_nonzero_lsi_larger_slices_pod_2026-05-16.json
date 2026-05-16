@@ -1,0 +1,156 @@
+{
+  "cases": {
+    "lsi_county_start256_soil_start256_count128": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.011694242246448994,
+          "app_elapsed_sec_values": [
+            0.011694242246448994,
+            0.01128508523106575,
+            0.019327914342284203,
+            0.011715112254023552,
+            0.01145143061876297
+          ],
+          "elapsed_outer_sec": 28.38571242056787,
+          "row_count_consistent": true,
+          "row_counts": [
+            56,
+            56,
+            56,
+            56,
+            56
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.0227442504838109,
+          "app_elapsed_sec_values": [
+            0.022294835187494755,
+            0.022657064720988274,
+            0.03166418708860874,
+            0.022788243368268013,
+            0.0227442504838109
+          ],
+          "elapsed_outer_sec": 28.224807971157134,
+          "row_count_consistent": true,
+          "row_counts": [
+            56,
+            56,
+            56,
+            56,
+            56
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.010524878278374672,
+          "app_elapsed_sec_values": [
+            0.010524878278374672,
+            0.010589832440018654,
+            0.010514279827475548,
+            0.01034578774124384,
+            0.010647101327776909
+          ],
+          "elapsed_outer_sec": 28.845451212488115,
+          "row_count_consistent": true,
+          "row_counts": [
+            56,
+            56,
+            56,
+            56,
+            56
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count128.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count128.cdb"
+    },
+    "lsi_county_start256_soil_start256_count192": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.016113643534481525,
+          "app_elapsed_sec_values": [
+            0.016113643534481525,
+            0.015927409753203392,
+            0.015894106589257717,
+            0.01617753505706787,
+            0.016271374188363552
+          ],
+          "elapsed_outer_sec": 59.36613477114588,
+          "row_count_consistent": true,
+          "row_counts": [
+            85,
+            85,
+            85,
+            85,
+            85
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.029917496256530285,
+          "app_elapsed_sec_values": [
+            0.018081124871969223,
+            0.029917496256530285,
+            0.0184717969968915,
+            0.030994544737040997,
+            0.03062914963811636
+          ],
+          "elapsed_outer_sec": 59.38123796880245,
+          "row_count_consistent": true,
+          "row_counts": [
+            85,
+            85,
+            85,
+            85,
+            85
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.003110303543508053,
+          "app_elapsed_sec_values": [
+            0.0030805468559265137,
+            0.027843103744089603,
+            0.0030548181384801865,
+            0.0033386973664164543,
+            0.003110303543508053
+          ],
+          "elapsed_outer_sec": 59.386080467142165,
+          "row_count_consistent": true,
+          "row_counts": [
+            85,
+            85,
+            85,
+            85,
+            85
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count192.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count192.cdb"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "commit": "9931585362e0e27ccf1a4e657afc7fd670209041",
+  "goal": "2157",
+  "repeats": 5,
+  "warmups": 1
+}
