@@ -11,6 +11,7 @@ import sys
 import tarfile
 import time
 import urllib.request
+import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import BinaryIO, Iterable
@@ -99,6 +100,50 @@ XHD_GRAPHICS_PAIRS = (
         "asian_dragon",
         "X-HD graphics pair: XYZ RGB Thai Statuette vs XYZ RGB Asian Dragon, projected to XY.",
         "dense",
+    ),
+)
+
+PUBLIC_GEO_DATASETS = {
+    "census_counties": {
+        "url": "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip",
+        "archive": "tl_2023_us_county.zip",
+        "shp_name": "tl_2023_us_county.shp",
+        "source": "U.S. Census TIGER/Line 2023 county boundaries; public analogue for X-HD dtl_cnty.wkt",
+    },
+    "census_zcta": {
+        "url": "https://www2.census.gov/geo/tiger/TIGER2023/ZCTA520/tl_2023_us_zcta520.zip",
+        "archive": "tl_2023_us_zcta520.zip",
+        "shp_name": "tl_2023_us_zcta520.shp",
+        "source": "U.S. Census TIGER/Line 2023 2020 ZCTA boundaries; public analogue for X-HD uszipcode.wkt",
+    },
+    "naturalearth_lakes": {
+        "url": "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_lakes.zip",
+        "archive": "ne_10m_lakes.zip",
+        "shp_name": "ne_10m_lakes.shp",
+        "source": "Natural Earth 1:10m lakes and reservoirs; public analogue for X-HD lakes.wkt",
+    },
+    "naturalearth_parks": {
+        "url": "https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_parks_and_protected_lands.zip",
+        "archive": "ne_10m_parks_and_protected_lands.zip",
+        "shp_name": "ne_10m_parks_and_protected_lands.shp",
+        "source": "Natural Earth 1:10m parks and protected lands; public analogue for X-HD parks.wkt",
+    },
+}
+
+PUBLIC_GEO_PAIRS = (
+    (
+        "public_geo_census_counties_vs_zcta_xy",
+        "census_counties",
+        "census_zcta",
+        "Public geo pair mirroring X-HD dtl_cnty.wkt vs uszipcode.wkt: Census counties vs ZCTA boundaries.",
+        "detailed-census",
+    ),
+    (
+        "public_geo_lakes_vs_parks_xy",
+        "naturalearth_lakes",
+        "naturalearth_parks",
+        "Public geo pair mirroring X-HD lakes.wkt vs parks.wkt: Natural Earth lakes vs parks/protected lands.",
+        "sparse-naturalearth",
     ),
 )
 
@@ -254,6 +299,23 @@ def _extract_archive(archive: Path, extract_dir: Path) -> None:
     marker.write_text("ok\n", encoding="ascii")
 
 
+def _extract_zip_archive(archive: Path, extract_dir: Path) -> None:
+    marker = extract_dir / ".extracted"
+    if marker.exists():
+        print(f"[goal2126] using extracted {extract_dir}", flush=True)
+        return
+    print(f"[goal2126] extracting {archive} -> {extract_dir}", flush=True)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive) as zf:
+        safe_root = extract_dir.resolve()
+        for name in zf.namelist():
+            target = (extract_dir / name).resolve()
+            if safe_root not in (target, *target.parents):
+                raise ValueError(f"unsafe zip member path {name!r}")
+        zf.extractall(extract_dir)
+    marker.write_text("ok\n", encoding="ascii")
+
+
 def _decompress_gzip(archive: Path, out_path: Path) -> None:
     marker = out_path.with_suffix(out_path.suffix + ".decompressed")
     if marker.exists() and out_path.exists() and out_path.stat().st_size > 0:
@@ -305,6 +367,25 @@ def ensure_xhd_graphics_dataset(name: str, data_dir: Path) -> Path:
     raise ValueError(f"unsupported X-HD graphics dataset kind {kind!r}")
 
 
+def ensure_public_geo_dataset(name: str, data_dir: Path) -> Path:
+    dataset = PUBLIC_GEO_DATASETS[name]
+    archive = data_dir / str(dataset["archive"])
+    _download(str(dataset["url"]), archive)
+    extract_dir = data_dir / name
+    _extract_zip_archive(archive, extract_dir)
+    shp_name = str(dataset["shp_name"])
+    candidate = extract_dir / shp_name
+    if candidate.exists():
+        return candidate
+    candidates = sorted(extract_dir.rglob("*.shp"))
+    for path in candidates:
+        if path.name == shp_name:
+            return path
+    if not candidates:
+        raise FileNotFoundError(f"no shapefile found under {extract_dir}")
+    return candidates[0]
+
+
 def deterministic_sample(points: np.ndarray, count: int, *, seed: int) -> np.ndarray:
     if count <= 0:
         raise ValueError("sample count must be positive")
@@ -321,6 +402,54 @@ def normalize_project_xy(points: np.ndarray) -> np.ndarray:
     hi = xy.max(axis=0)
     span = np.maximum(hi - lo, 1.0e-12)
     return np.ascontiguousarray((xy - lo) / span, dtype=np.float64)
+
+
+def _load_shapefile_xy_sample(path: Path, *, sample_count: int, seed: int) -> tuple[np.ndarray, int]:
+    try:
+        import shapefile  # type: ignore[import-not-found]
+    except ImportError as exc:  # pragma: no cover - pod/runtime dependency path
+        raise RuntimeError("public-geo suite requires pyshp; install the 'pyshp' package") from exc
+
+    if sample_count <= 0:
+        raise ValueError("sample_count must be positive")
+
+    rng = np.random.default_rng(seed)
+    reservoir = np.empty((sample_count, 2), dtype=np.float64)
+    total_points = 0
+    kept = 0
+    start = time.perf_counter()
+    last_print = start
+    reader = shapefile.Reader(str(path))
+    try:
+        shape_count = len(reader)
+        print(f"[goal2126] sampling shapefile {path} shapes={shape_count}", flush=True)
+        for shape_index, shape in enumerate(reader.iterShapes(), start=1):
+            for x, y, *_rest in shape.points:
+                total_points += 1
+                if kept < sample_count:
+                    reservoir[kept, 0] = float(x)
+                    reservoir[kept, 1] = float(y)
+                    kept += 1
+                else:
+                    replacement = int(rng.integers(total_points))
+                    if replacement < sample_count:
+                        reservoir[replacement, 0] = float(x)
+                        reservoir[replacement, 1] = float(y)
+            now = time.perf_counter()
+            if now - last_print >= 10.0:
+                print(
+                    f"[goal2126] shapefile sample progress {path.name}: "
+                    f"shape={shape_index}/{shape_count} seen_points={total_points} kept={kept}",
+                    flush=True,
+                )
+                last_print = now
+    finally:
+        close = getattr(reader, "close", None)
+        if callable(close):
+            close()
+    if kept == 0:
+        raise ValueError(f"shapefile contains no coordinate points: {path}")
+    return np.ascontiguousarray(reservoir[:kept], dtype=np.float64), total_points
 
 
 def make_stanford_cases(data_dir: Path, *, sample_count: int) -> dict[str, dict[str, object]]:
@@ -372,6 +501,37 @@ def make_xhd_graphics_cases(data_dir: Path, *, sample_count: int) -> dict[str, d
     return cases
 
 
+def make_public_geo_cases(data_dir: Path, *, sample_count: int) -> dict[str, dict[str, object]]:
+    loaded: dict[str, tuple[Path, np.ndarray, int]] = {}
+    for index, name in enumerate(PUBLIC_GEO_DATASETS):
+        shp = ensure_public_geo_dataset(name, data_dir)
+        print(f"[goal2126] loading public geo {name}: {shp}", flush=True)
+        sampled, total_points = _load_shapefile_xy_sample(
+            shp,
+            sample_count=sample_count,
+            seed=2234 + index,
+        )
+        loaded[name] = (shp, normalize_project_xy(sampled), total_points)
+
+    cases: dict[str, dict[str, object]] = {}
+    for case_name, left, right, description, density_class in PUBLIC_GEO_PAIRS:
+        left_path, points_a, left_total = loaded[left]
+        right_path, points_b, right_total = loaded[right]
+        cases[case_name] = {
+            "points_a": points_a,
+            "points_b": points_b,
+            "source_paths": [str(left_path), str(right_path)],
+            "description": description,
+            "density_class": density_class,
+            "public_geo_dataset_pair": True,
+            "source_total_points": {
+                left: int(left_total),
+                right: int(right_total),
+            },
+        }
+    return cases
+
+
 def make_public_cases(
     data_dir: Path,
     *,
@@ -382,6 +542,8 @@ def make_public_cases(
         return make_stanford_cases(data_dir, sample_count=sample_count)
     if case_suite == "xhd-graphics":
         return make_xhd_graphics_cases(data_dir, sample_count=sample_count)
+    if case_suite == "public-geo":
+        return make_public_geo_cases(data_dir, sample_count=sample_count)
     if case_suite == "all":
         cases = make_stanford_cases(data_dir, sample_count=sample_count)
         cases.update(make_xhd_graphics_cases(data_dir, sample_count=sample_count))
@@ -549,6 +711,12 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
             "target_points_per_group": group_size,
         }
+        if "source_total_points" in case:
+            row["source_total_points"] = case["source_total_points"]
+            row["projection"] = (
+                "Normalized lon/lat vertex coordinates from public shapefiles; "
+                "not an original X-HD WKT-file reproduction"
+            )
         if not args.skip_cupy:
             print(f"[goal2126] case={name} CuPy baseline start", flush=True)
             row["cupy_rawkernel"] = _safe_call("cupy_rawkernel", lambda: _run_cupy(points_a, points_b, warmup=args.warmup))
@@ -653,6 +821,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "gpu": _gpu_summary(),
         "datasets": STANFORD_DATASETS,
         "xhd_graphics_datasets": XHD_GRAPHICS_DATASETS,
+        "public_geo_datasets": PUBLIC_GEO_DATASETS,
         "case_suite": args.case_suite,
         "sample_count": args.sample_count,
         "rows": rows,
@@ -661,6 +830,8 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "cupy_grouped_grid_fairness_baseline": not args.skip_cupy_grouped_grid,
             "xhd_seeded_pruned_rtdl_path": not args.skip_rtdl_pruned,
             "xhd_paper_graphics_dataset_names": args.case_suite in {"xhd-graphics", "all"},
+            "public_geo_dataset_family": args.case_suite == "public-geo",
+            "xhd_original_wkt_files": False,
             "xhd_paper_exact_dataset_evidence": False,
             "xy_projection_only": True,
             "three_dimensional_surface_hausdorff_claim": False,
@@ -672,7 +843,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Public Stanford-scan Hausdorff dataset perf harness.")
     parser.add_argument("--data-dir", type=Path, default=ROOT / "scratch" / "public_hausdorff")
-    parser.add_argument("--case-suite", choices=("stanford", "xhd-graphics", "all"), default="stanford")
+    parser.add_argument("--case-suite", choices=("stanford", "xhd-graphics", "public-geo", "all"), default="stanford")
     parser.add_argument("--sample-count", type=int, default=131072)
     parser.add_argument("--group-size", type=int)
     parser.add_argument("--seed-sample-count", type=int, default=8192)
