@@ -877,6 +877,66 @@ class PreparedOptixFixedRadiusCountThreshold2D:
         _check_status(status, error)
         return int(threshold_reached_count.value)
 
+    def nearest_witness_rows(self, query_points, *, radius: float) -> tuple[dict[str, object], ...]:
+        """Return one nearest in-radius witness row per query point.
+
+        This is the generic RT traversal primitive needed by user-level exact
+        Hausdorff-style reductions: OptiX finds in-radius candidate point AABBs,
+        the shader carries the nearest witness payload, and Python/partner code
+        can reduce the per-query nearest distances.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius count handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixFixedRadiusCountThreshold2D.nearest_witness_rows requires 2-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return ()
+
+        lib = _load_optix_library()
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_fixed_radius_nearest_witness_2d")
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_fixed_radius_nearest_witness_2d; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlFixedRadiusNeighborRow,
+            field_names=("query_id", "neighbor_id", "distance"),
+        )
+        try:
+            return tuple(
+                {
+                    "query_id": int(row["query_id"]),
+                    "neighbor_id": int(row["neighbor_id"]),
+                    "distance": float(row["distance"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
     def write_device_count_threshold_columns(
         self,
         query_point_columns: dict,
@@ -5321,6 +5381,20 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_frn_threshold.restype = ctypes.c_int
+
+    optional_prepared_frn_nearest = _find_optional_backend_symbol(
+        lib, "rtdl_optix_run_prepared_fixed_radius_nearest_witness_2d"
+    )
+    if optional_prepared_frn_nearest is not None:
+        optional_prepared_frn_nearest.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepared_frn_nearest.restype = ctypes.c_int
 
     optional_destroy_prepared_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d")
     if optional_destroy_prepared_frn_count is not None:

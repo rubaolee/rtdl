@@ -1,0 +1,51 @@
+{
+  "comparisons": {
+    "cuda_cpp": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "elapsed_sec": 0.000673965085297823,
+      "matches_primary": true,
+      "method": "cuda_cpp",
+      "source_index": 447,
+      "target_index": 486
+    },
+    "cupy_rawkernel": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "elapsed_sec": 0.0005340689094737172,
+      "matches_primary": true,
+      "method": "cupy_rawkernel",
+      "source_index": 447,
+      "target_index": 486
+    },
+    "openmp_cpu": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "elapsed_sec": 0.0007059589261189103,
+      "matches_primary": true,
+      "method": "openmp_cpu",
+      "source_index": 447,
+      "target_index": 486
+    },
+    "rtdl_v2_user_cuda": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "elapsed_sec": 0.0005841749953106046,
+      "matches_primary": true,
+      "method": "rtdl_v2_user_cuda",
+      "source_index": 447,
+      "target_index": 486
+    }
+  },
+  "primary": {
+    "backend": "optix",
+    "direction": "b_to_a",
+    "distance": 0.14627873169442843,
+    "elapsed_sec": 1.0729397459654137,
+    "exact_value": true,
+    "method": "rtdl_rt_nearest_witness",
+    "rt_core_accelerated": true,
+    "source_index": 447,
+    "target_index": 486
+  }
+}

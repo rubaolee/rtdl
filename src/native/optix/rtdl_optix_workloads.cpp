@@ -5331,6 +5331,18 @@ struct FixedRadiusCountRtLaunchParams {
     float trace_tmax;
 };
 
+struct GpuFixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
+
+struct FixedRadiusNearestRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    GpuFixedRadiusNearestRecord* output;
+    uint32_t query_count;
+    float radius;
+    float trace_tmax;
+};
+
 thread_local double g_optix_last_bvh_build_s = 0.0;
 thread_local double g_optix_last_traversal_s = 0.0;
 thread_local double g_optix_last_copy_s = 0.0;
@@ -5855,6 +5867,92 @@ static void count_prepared_fixed_radius_threshold_reached_2d_optix(
     auto t_end_copy = std::chrono::steady_clock::now();
     g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
     *threshold_reached_count_out = static_cast<size_t>(threshold_reached_count);
+}
+
+static void run_prepared_fixed_radius_nearest_witness_2d_optix(
+        PreparedFixedRadiusCountThreshold2D* prepared,
+        const RtdlPoint* query_points,
+        size_t query_count,
+        double radius,
+        RtdlFixedRadiusNeighborRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius handle must not be null");
+    if (!rows_out || !row_count_out) throw std::runtime_error("output pointers must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_nearest_witness radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("fixed_radius_nearest_witness radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_nearest_witness query_count exceeds uint32 limit");
+
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (query_count == 0 || prepared->search_points.empty()) return;
+
+    std::call_once(g_frn_nearest_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusNearestRtKernelSrc, "frn_nearest_rt_kernel.cu");
+        g_frn_nearest_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn_nearest_probe",
+            "__miss__frn_nearest_miss",
+            "__intersection__frn_nearest_isect",
+            "__anyhit__frn_nearest_anyhit",
+            nullptr, 4).release();
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            query_points[i].id
+        };
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    DevPtr d_output(sizeof(GpuFixedRadiusNearestRecord) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    FixedRadiusNearestRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(FixedRadiusNearestRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_frn_nearest_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusNearestRtLaunchParams),
+                             &g_frn_nearest_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+
+    auto t_start_copy = std::chrono::steady_clock::now();
+    std::vector<GpuFixedRadiusNearestRecord> gpu_rows(query_count);
+    download(gpu_rows.data(), d_output.ptr, query_count);
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
+
+    auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
+        std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * query_count));
+    if (!out && query_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < query_count; ++i) {
+        out[i].query_id = gpu_rows[i].query_id;
+        out[i].neighbor_id = gpu_rows[i].neighbor_id;
+        out[i].distance = static_cast<double>(gpu_rows[i].distance);
+    }
+    *rows_out = out;
+    *row_count_out = query_count;
 }
 
 static void run_fixed_radius_neighbors_cuda_3d(

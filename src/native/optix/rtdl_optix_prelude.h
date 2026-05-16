@@ -587,6 +587,12 @@ int  rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d(
          size_t threshold,
          size_t* threshold_reached_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_fixed_radius_nearest_witness_2d(
+         void* prepared,
+         const RtdlPoint* query_points, size_t query_count,
+         double radius,
+         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d(void* prepared);
 int  rtdl_optix_run_k_closest_hits(
          const RtdlPoint* query_points, size_t query_count,

@@ -44,6 +44,19 @@ class HausdorffThresholdResult:
     exact_value: bool
 
 
+@dataclass(frozen=True)
+class HausdorffRtNearestResult:
+    distance: float
+    direction: str
+    source_index: int
+    target_index: int
+    elapsed_sec: float
+    method: str
+    backend: str
+    rt_core_accelerated: bool
+    exact_value: bool
+
+
 def _as_point_columns(points: Sequence[Sequence[float]] | np.ndarray, *, name: str) -> dict[str, np.ndarray]:
     array = np.asarray(points, dtype=np.float64)
     if array.ndim != 2 or array.shape[1] != 2:
@@ -82,6 +95,92 @@ def _point_set_upper_bound(points_a: dict[str, np.ndarray], points_b: dict[str, 
     min_y = min(float(points_a["y"].min()), float(points_b["y"].min()))
     max_y = max(float(points_a["y"].max()), float(points_b["y"].max()))
     return math.hypot(max_x - min_x, max_y - min_y)
+
+
+def _directed_rt_nearest_witness(
+    source_columns: dict[str, np.ndarray],
+    target_columns: dict[str, np.ndarray],
+    *,
+    backend: str,
+    radius: float,
+) -> dict[str, object]:
+    source_points = _columns_to_points(source_columns)
+    target_points = _columns_to_points(target_columns)
+    target_by_id = {int(point.id): point for point in target_points}
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=target_points,
+        backend=backend,
+        max_radius=radius if backend == "optix" else None,
+    ) as prepared:
+        if not hasattr(prepared._prepared_scene, "nearest_witness_rows"):
+            raise RuntimeError(f"{backend} prepared fixed-radius scene does not expose nearest_witness_rows")
+        rows = prepared._prepared_scene.nearest_witness_rows(source_points, radius=radius)
+    if len(rows) != len(source_points):
+        raise RuntimeError("nearest_witness_rows must return one row per source point")
+    best_distance = -1.0
+    best_source_index = -1
+    best_target_index = -1
+    target_id_to_index = {int(target_columns["ids"][i]): i for i in range(int(target_columns["ids"].size))}
+    for source_index, row in enumerate(rows):
+        neighbor_id = int(row["neighbor_id"])
+        if neighbor_id == 0xFFFFFFFF:
+            raise RuntimeError("nearest_witness_rows did not find a witness; increase radius")
+        target_point = target_by_id[neighbor_id]
+        source_point = source_points[source_index]
+        distance = math.hypot(source_point.x - target_point.x, source_point.y - target_point.y)
+        if distance > best_distance or (
+            math.isclose(distance, best_distance) and source_index < best_source_index
+        ):
+            best_distance = distance
+            best_source_index = source_index
+            best_target_index = target_id_to_index[neighbor_id]
+    return {
+        "distance": best_distance,
+        "source_index": best_source_index,
+        "target_index": best_target_index,
+        "row_count": len(rows),
+    }
+
+
+def hausdorff_distance_2d_rt_nearest_witness(
+    points_a: Sequence[Sequence[float]] | np.ndarray,
+    points_b: Sequence[Sequence[float]] | np.ndarray,
+    *,
+    backend: str = "optix",
+) -> HausdorffRtNearestResult:
+    """Return exact HD using RTDL fixed-radius nearest-witness traversal.
+
+    The primitive is generic: a prepared fixed-radius point scene emits one
+    nearest in-radius witness row per query. This function uses a conservative
+    radius upper bound so every query has a witness, then reduces the returned
+    nearest witnesses into directed and undirected Hausdorff distances.
+    """
+
+    if backend != "optix":
+        raise ValueError("rt nearest-witness HD currently requires backend='optix'")
+    columns_a = _as_point_columns(points_a, name="points_a")
+    columns_b = _as_point_columns(points_b, name="points_b")
+    radius = _point_set_upper_bound(columns_a, columns_b)
+    start = time.perf_counter()
+    ab = _directed_rt_nearest_witness(columns_a, columns_b, backend=backend, radius=radius)
+    ba = _directed_rt_nearest_witness(columns_b, columns_a, backend=backend, radius=radius)
+    if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
+        selected = ab
+        direction = "a_to_b"
+    else:
+        selected = ba
+        direction = "b_to_a"
+    return HausdorffRtNearestResult(
+        distance=float(selected["distance"]),
+        direction=direction,
+        source_index=int(selected["source_index"]),
+        target_index=int(selected["target_index"]),
+        elapsed_sec=time.perf_counter() - start,
+        method="rtdl_rt_nearest_witness",
+        backend=backend,
+        rt_core_accelerated=True,
+        exact_value=True,
+    )
 
 
 def _directed_hd_threshold_search(
@@ -208,6 +307,17 @@ def hausdorff_distance_2d(
     validation/performance baselines for the same exact function.
     """
 
+    if method == "rtdl_rt_nearest_witness":
+        rt_result = hausdorff_distance_2d_rt_nearest_witness(points_a, points_b, backend="optix")
+        return HausdorffResult(
+            distance=rt_result.distance,
+            direction=rt_result.direction,
+            source_index=rt_result.source_index,
+            target_index=rt_result.target_index,
+            elapsed_sec=rt_result.elapsed_sec,
+            method=method,
+        )
+
     cache = cache_dir or (ROOT / "build" / "hausdorff_v2_user_benchmark")
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
@@ -238,7 +348,14 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--points-b", type=int, default=8192)
     parser.add_argument(
         "--method",
-        choices=("rtdl_v2_user_cuda", "rtdl_rt_threshold_search", "openmp_cpu", "cuda_cpp", "cupy_rawkernel"),
+        choices=(
+            "rtdl_v2_user_cuda",
+            "rtdl_rt_nearest_witness",
+            "rtdl_rt_threshold_search",
+            "openmp_cpu",
+            "cuda_cpp",
+            "cupy_rawkernel",
+        ),
         default="rtdl_v2_user_cuda",
     )
     parser.add_argument("--rt-backend", choices=("optix", "embree"), default="optix")
@@ -251,7 +368,11 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     points_a = make_demo_points(args.points_a, seed=11)
     points_b = make_demo_points(args.points_b, seed=29, offset=(0.08, -0.06))
-    if args.method == "rtdl_rt_threshold_search":
+    if args.method == "rtdl_rt_nearest_witness":
+        rt_exact = hausdorff_distance_2d_rt_nearest_witness(points_a, points_b, backend=args.rt_backend)
+        primary_distance = rt_exact.distance
+        payload: dict[str, object] = {"primary": asdict(rt_exact)}
+    elif args.method == "rtdl_rt_threshold_search":
         rt_primary = hausdorff_distance_2d_rt_threshold_search(
             points_a,
             points_b,
@@ -260,7 +381,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             max_iterations=args.rt_max_iterations,
         )
         primary_distance = rt_primary.distance_upper_bound
-        payload: dict[str, object] = {"primary": asdict(rt_primary)}
+        payload = {"primary": asdict(rt_primary)}
     else:
         primary = hausdorff_distance_2d(points_a, points_b, method=args.method, warmup=args.warmup)
         primary_distance = primary.distance

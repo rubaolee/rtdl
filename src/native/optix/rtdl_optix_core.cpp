@@ -3509,6 +3509,82 @@ extern "C" __global__ void __anyhit__frn_count_anyhit() {
 }
 )CUDA";
 
+static const char* kFixedRadiusNearestRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct FixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
+
+struct FixedRadiusNearestParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    FixedRadiusNearestRecord* output;
+    uint32_t query_count;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusNearestParams params;
+}
+
+extern "C" __global__ void __raygen__frn_nearest_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint q = params.query_points[idx];
+    unsigned int p0 = idx;
+    unsigned int p1 = __float_as_uint(3.4028234663852886e38f);
+    unsigned int p2 = 0xFFFFFFFFu;
+    unsigned int p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    params.output[idx] = {q.id, p2, p3 ? sqrtf(__uint_as_float(p1)) : 3.4028234663852886e38f};
+}
+
+extern "C" __global__ void __miss__frn_nearest_miss() {}
+
+extern "C" __global__ void __intersection__frn_nearest_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const GpuPoint t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float d2 = dx * dx + dy * dy;
+    const float radius_sq = params.radius * params.radius;
+    if (d2 > radius_sq) return;
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__frn_nearest_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const GpuPoint t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float d2 = dx * dx + dy * dy;
+    const float best = __uint_as_float(optixGetPayload_1());
+    const uint32_t best_id = optixGetPayload_2();
+    if (d2 < best || (d2 == best && t.id < best_id)) {
+        optixSetPayload_1(__float_as_uint(d2));
+        optixSetPayload_2(t.id);
+        optixSetPayload_3(1u);
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 static const char* kKnnRowsKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -4084,6 +4160,7 @@ static RayAnyHitPipeline    g_rayanyhit_witness_device_columns;
 static RayAnyHitPipeline    g_rayanyhit_all_witnesses_device_columns;
 static RayAnyHitPipeline    g_rayanyhit_group_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
+static RayAnyHitPipeline    g_frn_nearest_rt;
 static SegPolyPipeline     g_segpoly;
 static SegPolyPipeline     g_segpoly_rows;
 static DbScanPipeline      g_dbscan;
