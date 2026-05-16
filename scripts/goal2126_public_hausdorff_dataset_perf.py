@@ -250,8 +250,10 @@ def make_public_cases(data_dir: Path, *, sample_count: int) -> dict[str, dict[st
 
 
 def _run_cupy(points_a: np.ndarray, points_b: np.ndarray, *, warmup: int) -> dict[str, object]:
+    for _ in range(max(0, int(warmup))):
+        hd.hausdorff_distance_2d(points_a, points_b, method="cupy_rawkernel", warmup=0)
     start = time.perf_counter()
-    result = hd.hausdorff_distance_2d(points_a, points_b, method="cupy_rawkernel", warmup=warmup)
+    result = hd.hausdorff_distance_2d(points_a, points_b, method="cupy_rawkernel", warmup=0)
     return {
         "ok": True,
         "elapsed_sec": time.perf_counter() - start,
@@ -271,16 +273,19 @@ def _run_cupy_grouped_grid(
 ) -> dict[str, object]:
     columns_a = hd._as_point_columns(points_a, name="points_a")
     columns_b = hd._as_point_columns(points_b, name="points_b")
+    runner = lambda source, target: lab.run_cuda_grouped_grid_rawkernel(
+        source,
+        target,
+        target_points_per_group=group_size,
+    )
+    for _ in range(max(0, int(warmup))):
+        lab.undirected(runner, columns_a, columns_b, warmup=0)
     start = time.perf_counter()
     result = lab.undirected(
-        lambda source, target: lab.run_cuda_grouped_grid_rawkernel(
-            source,
-            target,
-            target_points_per_group=group_size,
-        ),
+        runner,
         columns_a,
         columns_b,
-        warmup=warmup,
+        warmup=0,
     )
     return {
         "ok": True,
@@ -292,7 +297,20 @@ def _run_cupy_grouped_grid(
     }
 
 
-def _run_rtdl_grouped_reduced(points_a: np.ndarray, points_b: np.ndarray, *, group_size: int) -> dict[str, object]:
+def _run_rtdl_grouped_reduced(
+    points_a: np.ndarray,
+    points_b: np.ndarray,
+    *,
+    group_size: int,
+    warmup: int,
+) -> dict[str, object]:
+    for _ in range(max(0, int(warmup))):
+        hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
+            points_a,
+            points_b,
+            seed_with_threshold=False,
+            target_points_per_group=group_size,
+        )
     start = time.perf_counter()
     result = hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
         points_a,
@@ -381,7 +399,12 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             print(f"[goal2126] case={name} RTDL/OptiX grouped reduced start", flush=True)
             row["rtdl_rt_grouped_reduced_nearest_witness"] = _safe_call(
                 "rtdl_rt_grouped_reduced_nearest_witness",
-                lambda: _run_rtdl_grouped_reduced(points_a, points_b, group_size=group_size),
+                lambda: _run_rtdl_grouped_reduced(
+                    points_a,
+                    points_b,
+                    group_size=group_size,
+                    warmup=args.warmup,
+                ),
             )
             print(
                 f"[goal2126] case={name} RTDL done ok={row['rtdl_rt_grouped_reduced_nearest_witness'].get('ok')} "
