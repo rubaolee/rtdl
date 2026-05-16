@@ -13,7 +13,13 @@ sys.path.insert(0, str(ROOT))
 import rtdsl as rt
 from examples.reference.rtdl_language_reference import county_soil_overlay_reference
 from examples.reference.rtdl_language_reference import county_zip_join_reference
+from rtdsl.baseline_runner import DatasetCase
 from rtdsl.baseline_runner import load_representative_case
+from rtdsl.baseline_runner import segments_from_records
+from rtdsl.datasets import chains_to_polygons
+from rtdsl.datasets import chains_to_probe_points
+from rtdsl.datasets import chains_to_segments
+from rtdsl.datasets import load_cdb
 
 
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
@@ -52,6 +58,80 @@ _BASELINE_WORKLOAD = {
     "lsi": "lsi",
     "overlay_seed": "overlay",
 }
+
+
+def _resolve_dataset_path(value: str) -> Path:
+    path = Path(value)
+    if not path.is_absolute():
+        path = ROOT / path
+    return path
+
+
+def _split_dataset_paths(dataset: str) -> tuple[Path, ...]:
+    return tuple(_resolve_dataset_path(part.strip()) for part in dataset.split("+") if part.strip())
+
+
+def _load_external_cdb_case(workload: str, dataset: str) -> DatasetCase:
+    paths = _split_dataset_paths(dataset)
+    if workload == "pip":
+        if len(paths) == 1:
+            point_dataset = polygon_dataset = load_cdb(paths[0])
+            note = "External CDB point-location case using probe points and polygons from one file."
+        elif len(paths) == 2:
+            point_dataset = load_cdb(paths[0])
+            polygon_dataset = load_cdb(paths[1])
+            note = "External CDB point-location case using points from the left file and polygons from the right file."
+        else:
+            raise ValueError("external PIP dataset must be `path.cdb` or `points.cdb + polygons.cdb`")
+        return DatasetCase(
+            workload="pip",
+            dataset=dataset,
+            inputs={
+                "points": chains_to_probe_points(point_dataset),
+                "polygons": chains_to_polygons(polygon_dataset),
+            },
+            note=note,
+        )
+    if workload == "lsi":
+        if len(paths) != 2:
+            raise ValueError("external LSI dataset must be `left.cdb + right.cdb`")
+        left = load_cdb(paths[0])
+        right = load_cdb(paths[1])
+        return DatasetCase(
+            workload="lsi",
+            dataset=dataset,
+            inputs={
+                "left": segments_from_records(chains_to_segments(left)),
+                "right": segments_from_records(chains_to_segments(right)),
+            },
+            note="External CDB line-segment intersection case using left/right chain segments.",
+        )
+    if workload == "overlay_seed":
+        if len(paths) != 2:
+            raise ValueError("external overlay_seed dataset must be `left.cdb + right.cdb`")
+        left = load_cdb(paths[0])
+        right = load_cdb(paths[1])
+        return DatasetCase(
+            workload="overlay",
+            dataset=dataset,
+            inputs={
+                "left": chains_to_polygons(left),
+                "right": chains_to_polygons(right),
+            },
+            note="External CDB overlay pair-dependency case using left/right polygon chains.",
+        )
+    raise ValueError("workload must be one of: pip, lsi, overlay_seed")
+
+
+def _load_rayjoin_case(workload: str, dataset: str) -> DatasetCase:
+    baseline_workload = _BASELINE_WORKLOAD[workload]
+    try:
+        return load_representative_case(baseline_workload, dataset)
+    except ValueError:
+        paths = _split_dataset_paths(dataset)
+        if paths and all(path.exists() for path in paths):
+            return _load_external_cdb_case(workload, dataset)
+        raise
 
 
 def _run_backend(kernel, backend: str, inputs: dict[str, object]) -> tuple[dict[str, object], ...]:
@@ -130,7 +210,7 @@ def run_rayjoin_workload(
         raise ValueError("workload must be one of: pip, lsi, overlay_seed")
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     baseline_workload = _BASELINE_WORKLOAD[workload]
-    case = load_representative_case(baseline_workload, resolved_dataset)
+    case = _load_rayjoin_case(workload, resolved_dataset)
     kernel = _KERNELS[workload]
     start = time.perf_counter()
     rows = _run_backend(kernel, backend, case.inputs)

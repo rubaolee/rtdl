@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 
 
@@ -80,6 +82,36 @@ class Goal2145RayjoinV2SpatialJoinAppTest(unittest.TestCase):
         self.assertIn('"workload": "pip"', completed.stdout)
         self.assertIn('"positive_assignment_count"', completed.stdout)
         self.assertNotIn('"rows"', completed.stdout)
+
+    def test_external_cdb_paths_are_loaded_without_engine_customization(self) -> None:
+        fixture_root = ROOT / "tests" / "fixtures" / "rayjoin"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = pathlib.Path(temp_dir)
+            county = temp_root / "county_external.cdb"
+            soil = temp_root / "soil_external.cdb"
+            shutil.copyfile(fixture_root / "br_county_subset.cdb", county)
+            shutil.copyfile(fixture_root / "br_soil_subset.cdb", soil)
+
+            pip = app.run_rayjoin_workload(
+                "pip",
+                backend="cpu_python_reference",
+                dataset=str(county),
+                include_rows=False,
+            )
+            overlay = app.run_rayjoin_workload(
+                "overlay_seed",
+                backend="cpu_python_reference",
+                dataset=f"{county} + {soil}",
+                include_rows=False,
+            )
+
+        self.assertIn("External CDB point-location", pip["dataset_note"])
+        self.assertEqual(pip["summary"]["output_contract"], "point_to_polygon_positive_hit_rows")
+        self.assertIn("External CDB overlay", overlay["dataset_note"])
+        self.assertEqual(
+            overlay["summary"]["output_contract"],
+            "overlay_pair_dependency_rows_with_lsi_pip_flags",
+        )
 
 
 if __name__ == "__main__":
