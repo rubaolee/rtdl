@@ -1,0 +1,88 @@
+{
+  "claim_boundary": {
+    "public_dataset_evidence": true,
+    "release_speedup_claim_authorized": false,
+    "three_dimensional_surface_hausdorff_claim": false,
+    "xhd_paper_exact_dataset_evidence": false,
+    "xy_projection_only": true
+  },
+  "commit": "",
+  "datasets": {
+    "dragon": {
+      "archive": "dragon_recon.tar.gz",
+      "preferred_ply": "dragon_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+    },
+    "happy": {
+      "archive": "happy_recon.tar.gz",
+      "preferred_ply": "happy_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+    }
+  },
+  "goal": "goal2126_public_hausdorff_dataset_perf",
+  "gpu": "NVIDIA GeForce GTX 1070, 580.126.09",
+  "rows": [
+    {
+      "case": "stanford_dragon_xy_shifted",
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.025000000000000022,
+        "elapsed_sec": 0.6676253719488159,
+        "ok": true,
+        "source_index": 4867,
+        "target_index": 4867
+      },
+      "description": "Dragon vertices projected to XY, compared with a deterministic shifted copy.",
+      "matches_cupy": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.025000000000000022,
+        "elapsed_sec": 1.0693055249284953,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 5971,
+        "target_index": 32272
+      },
+      "rtdl_vs_cupy_ratio": 1.6016550147085702,
+      "sample_count": 32768,
+      "source_paths": [
+        "/home/lestat/work/rtdl_goal2126_public_perf/scratch/public_hausdorff/dragon/dragon_recon/dragon_vrip.ply"
+      ],
+      "target_points_per_group": 128
+    },
+    {
+      "case": "stanford_dragon_vs_happy_xy",
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.30171323080072315,
+        "elapsed_sec": 0.40515121701173484,
+        "ok": true,
+        "source_index": 13912,
+        "target_index": 15888
+      },
+      "description": "Dragon and Happy Buddha vertices independently normalized and projected to XY.",
+      "matches_cupy": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.30171323080072315,
+        "elapsed_sec": 0.2195827680407092,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 13912,
+        "target_index": 25961
+      },
+      "rtdl_vs_cupy_ratio": 0.5419773132122893,
+      "sample_count": 32768,
+      "source_paths": [
+        "/home/lestat/work/rtdl_goal2126_public_perf/scratch/public_hausdorff/dragon/dragon_recon/dragon_vrip.ply",
+        "/home/lestat/work/rtdl_goal2126_public_perf/scratch/public_hausdorff/happy/happy_recon/happy_vrip.ply"
+      ],
+      "target_points_per_group": 128
+    }
+  ],
+  "sample_count": 32768
+}
