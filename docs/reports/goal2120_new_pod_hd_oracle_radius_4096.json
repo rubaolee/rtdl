@@ -1,0 +1,114 @@
+{
+  "exact_reference": {
+    "direction": "b_to_a",
+    "distance": 0.13528455701336056,
+    "method": "cuda_cpp",
+    "source_index": 472,
+    "target_index": 1183
+  },
+  "results": {
+    "cuda_cpp": {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "distance_for_compare": 0.13528455701336056,
+      "elapsed_sec": 0.010573208332061768,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "standalone CUDA C++ tiled double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cuda_cpp",
+      "ok": true,
+      "source_index": 472,
+      "target_index": 1183
+    },
+    "cupy_rawkernel": {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "distance_for_compare": 0.13528455701336056,
+      "elapsed_sec": 0.004541434347629547,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "CuPy RawKernel exact nearest-neighbor continuation",
+        "role": "baseline",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cupy_rawkernel",
+      "ok": true,
+      "source_index": 472,
+      "target_index": 1183
+    },
+    "rtdl_rt_nearest_witness_oracle_radius": {
+      "backend": "optix",
+      "base_method": "rtdl_rt_nearest_witness",
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "distance_for_compare": 0.13528455701336056,
+      "elapsed_sec": 0.8327662795782089,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "OptiX nearest-witness traversal using exact-reference radius plus slack; diagnostic only",
+        "role": "diagnostic_lower_bound",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_nearest_witness_oracle_radius",
+      "ok": true,
+      "oracle_radius": 0.13528465701336057,
+      "oracle_radius_source": "exact_reference_plus_slack",
+      "radius_strategy": "explicit_radius",
+      "rt_core_accelerated": true,
+      "source_index": 472,
+      "target_index": 1183,
+      "threshold_iterations": 0,
+      "witness_radius": 0.13528465701336057
+    },
+    "rtdl_v2_user_cuda": {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "distance_for_compare": 0.13528455701336056,
+      "elapsed_sec": 0.004556318745017052,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "RTDL converts rows to partner columns; CuPy continuation computes exact HD",
+        "role": "rtdl_v2_language",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_v2_user_cuda",
+      "ok": true,
+      "source_index": 472,
+      "target_index": 1183
+    }
+  },
+  "scenario": {
+    "methods": [
+      "cuda_cpp",
+      "cupy_rawkernel",
+      "rtdl_v2_user_cuda",
+      "rtdl_rt_nearest_witness_oracle_radius"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 4096,
+    "points_b": 4096,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}
