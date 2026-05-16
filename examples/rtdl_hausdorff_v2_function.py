@@ -15,7 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
+import rtdsl as rt
 from examples import rtdl_hausdorff_v2_user_benchmark as lab
+from rtdsl.reference import Point
 
 
 @dataclass(frozen=True)
@@ -26,6 +28,20 @@ class HausdorffResult:
     target_index: int
     elapsed_sec: float
     method: str
+
+
+@dataclass(frozen=True)
+class HausdorffThresholdResult:
+    distance_upper_bound: float
+    distance_lower_bound: float
+    tolerance: float
+    direction: str
+    elapsed_sec: float
+    method: str
+    backend: str
+    iterations: int
+    rt_core_accelerated: bool
+    exact_value: bool
 
 
 def _as_point_columns(points: Sequence[Sequence[float]] | np.ndarray, *, name: str) -> dict[str, np.ndarray]:
@@ -51,6 +67,125 @@ def _select_directed_runner(method: str, *, cache_dir: Path):
     if method == "cupy_rawkernel":
         return lab.run_cuda_rawkernel
     raise ValueError("method must be one of: rtdl_v2_user_cuda, openmp_cpu, cuda_cpp, cupy_rawkernel")
+
+
+def _columns_to_points(columns: dict[str, np.ndarray]) -> tuple[Point, ...]:
+    return tuple(
+        Point(id=int(columns["ids"][i]), x=float(columns["x"][i]), y=float(columns["y"][i]))
+        for i in range(int(columns["ids"].size))
+    )
+
+
+def _point_set_upper_bound(points_a: dict[str, np.ndarray], points_b: dict[str, np.ndarray]) -> float:
+    min_x = min(float(points_a["x"].min()), float(points_b["x"].min()))
+    max_x = max(float(points_a["x"].max()), float(points_b["x"].max()))
+    min_y = min(float(points_a["y"].min()), float(points_b["y"].min()))
+    max_y = max(float(points_a["y"].max()), float(points_b["y"].max()))
+    return math.hypot(max_x - min_x, max_y - min_y)
+
+
+def _directed_hd_threshold_search(
+    source_columns: dict[str, np.ndarray],
+    target_columns: dict[str, np.ndarray],
+    *,
+    backend: str,
+    tolerance: float,
+    max_iterations: int,
+    upper_bound: float,
+) -> dict[str, object]:
+    source_points = _columns_to_points(source_columns)
+    target_points = _columns_to_points(target_columns)
+    low = 0.0
+    high = float(upper_bound)
+    if high <= 0.0:
+        return {"lower_bound": 0.0, "upper_bound": 0.0, "iterations": 0, "elapsed_sec": 0.0}
+
+    start = time.perf_counter()
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=target_points,
+        backend=backend,
+        max_radius=high if backend == "optix" else None,
+    ) as prepared:
+        for iteration in range(1, max_iterations + 1):
+            mid = (low + high) * 0.5
+            result = prepared.count_threshold_reached(source_points, radius=mid, threshold=1)
+            if int(result["threshold_reached_count"]) == len(source_points):
+                high = mid
+            else:
+                low = mid
+            if high - low <= tolerance:
+                break
+        else:
+            iteration = max_iterations
+    return {
+        "lower_bound": low,
+        "upper_bound": high,
+        "iterations": iteration,
+        "elapsed_sec": time.perf_counter() - start,
+    }
+
+
+def hausdorff_distance_2d_rt_threshold_search(
+    points_a: Sequence[Sequence[float]] | np.ndarray,
+    points_b: Sequence[Sequence[float]] | np.ndarray,
+    *,
+    backend: str = "optix",
+    tolerance: float = 1e-5,
+    max_iterations: int = 32,
+) -> HausdorffThresholdResult:
+    """Compute a tolerance-bounded HD interval using RTDL fixed-radius decisions.
+
+    This is the v2.0 RT-core-facing HD path. It reduces directed HD to the
+    monotone question: "is every source point within radius r of some target?"
+    With `backend="optix"`, RTDL/OptiX handles the fixed-radius BVH traversal.
+    The current v2 primitive returns aggregate coverage counts, so this returns
+    a tight interval rather than an exact witness pair.
+    """
+
+    if backend not in {"embree", "optix"}:
+        raise ValueError("backend must be 'embree' or 'optix'")
+    if tolerance <= 0.0:
+        raise ValueError("tolerance must be positive")
+    columns_a = _as_point_columns(points_a, name="points_a")
+    columns_b = _as_point_columns(points_b, name="points_b")
+    upper_bound = _point_set_upper_bound(columns_a, columns_b)
+    start = time.perf_counter()
+    ab = _directed_hd_threshold_search(
+        columns_a,
+        columns_b,
+        backend=backend,
+        tolerance=tolerance,
+        max_iterations=max_iterations,
+        upper_bound=upper_bound,
+    )
+    ba = _directed_hd_threshold_search(
+        columns_b,
+        columns_a,
+        backend=backend,
+        tolerance=tolerance,
+        max_iterations=max_iterations,
+        upper_bound=upper_bound,
+    )
+    if (float(ab["upper_bound"]), "a_to_b") >= (float(ba["upper_bound"]), "b_to_a"):
+        direction = "a_to_b"
+        low = float(ab["lower_bound"])
+        high = float(ab["upper_bound"])
+    else:
+        direction = "b_to_a"
+        low = float(ba["lower_bound"])
+        high = float(ba["upper_bound"])
+    return HausdorffThresholdResult(
+        distance_upper_bound=high,
+        distance_lower_bound=low,
+        tolerance=tolerance,
+        direction=direction,
+        elapsed_sec=time.perf_counter() - start,
+        method="rtdl_rt_threshold_search",
+        backend=backend,
+        iterations=int(ab["iterations"]) + int(ba["iterations"]),
+        rt_core_accelerated=backend == "optix",
+        exact_value=False,
+    )
 
 
 def hausdorff_distance_2d(
@@ -103,17 +238,33 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--points-b", type=int, default=8192)
     parser.add_argument(
         "--method",
-        choices=("rtdl_v2_user_cuda", "openmp_cpu", "cuda_cpp", "cupy_rawkernel"),
+        choices=("rtdl_v2_user_cuda", "rtdl_rt_threshold_search", "openmp_cpu", "cuda_cpp", "cupy_rawkernel"),
         default="rtdl_v2_user_cuda",
     )
+    parser.add_argument("--rt-backend", choices=("optix", "embree"), default="optix")
+    parser.add_argument("--rt-tolerance", type=float, default=1e-5)
+    parser.add_argument("--rt-max-iterations", type=int, default=32)
     parser.add_argument("--compare", action="store_true", help="also run all available baselines and compare")
     parser.add_argument("--warmup", type=int, default=1)
+    parser.add_argument("--json-out", type=Path)
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     points_a = make_demo_points(args.points_a, seed=11)
     points_b = make_demo_points(args.points_b, seed=29, offset=(0.08, -0.06))
-    primary = hausdorff_distance_2d(points_a, points_b, method=args.method, warmup=args.warmup)
-    payload: dict[str, object] = {"primary": asdict(primary)}
+    if args.method == "rtdl_rt_threshold_search":
+        rt_primary = hausdorff_distance_2d_rt_threshold_search(
+            points_a,
+            points_b,
+            backend=args.rt_backend,
+            tolerance=args.rt_tolerance,
+            max_iterations=args.rt_max_iterations,
+        )
+        primary_distance = rt_primary.distance_upper_bound
+        payload: dict[str, object] = {"primary": asdict(rt_primary)}
+    else:
+        primary = hausdorff_distance_2d(points_a, points_b, method=args.method, warmup=args.warmup)
+        primary_distance = primary.distance
+        payload = {"primary": asdict(primary)}
     if args.compare:
         comparisons = {}
         for method in ("openmp_cpu", "cuda_cpp", "cupy_rawkernel", "rtdl_v2_user_cuda"):
@@ -123,14 +274,18 @@ def main(argv: Iterable[str] | None = None) -> int:
                 comparisons[method] = asdict(result)
                 comparisons[method]["matches_primary"] = math.isclose(
                     result.distance,
-                    primary.distance,
-                    rel_tol=1e-9,
-                    abs_tol=1e-9,
+                    primary_distance,
+                    rel_tol=max(1e-9, args.rt_tolerance if args.method == "rtdl_rt_threshold_search" else 1e-9),
+                    abs_tol=max(1e-9, args.rt_tolerance if args.method == "rtdl_rt_threshold_search" else 1e-9),
                 )
             except Exception as exc:
                 comparisons[method] = {"error": repr(exc), "elapsed_sec": time.perf_counter() - start}
         payload["comparisons"] = comparisons
-    print(json.dumps(payload, indent=2, sort_keys=True))
+    rendered = json.dumps(payload, indent=2, sort_keys=True)
+    if args.json_out:
+        args.json_out.parent.mkdir(parents=True, exist_ok=True)
+        args.json_out.write_text(rendered + "\n", encoding="utf-8")
+    print(rendered)
     return 0
 
 
