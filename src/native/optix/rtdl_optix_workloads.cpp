@@ -5355,6 +5355,34 @@ struct FixedRadiusNearestRtLaunchParams {
     float trace_tmax;
 };
 
+struct GpuPointGroupBounds {
+    float min_x, min_y, max_x, max_y;
+    uint32_t id, point_offset, point_count, pad;
+};
+
+struct PointGroupThresholdRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    const GpuPointGroupBounds* groups;
+    uint32_t* threshold_reached_count;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+struct PointGroupNearestRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    const GpuPointGroupBounds* groups;
+    GpuFixedRadiusNearestRecord* output;
+    uint32_t query_count;
+    float radius;
+    float trace_tmax;
+};
+
 thread_local double g_optix_last_bvh_build_s = 0.0;
 thread_local double g_optix_last_traversal_s = 0.0;
 thread_local double g_optix_last_copy_s = 0.0;
@@ -5579,6 +5607,84 @@ struct PreparedFixedRadiusCountThreshold2D {
         g_optix_last_bvh_build_s = std::chrono::duration<double>(t_end_bvh - t_start_bvh).count();
         g_optix_last_traversal_s = 0.0;
         g_optix_last_copy_s = 0.0;
+    }
+};
+
+struct PreparedPointGroupNearestWitness2D {
+    std::vector<GpuPoint> search_points;
+    std::vector<GpuPointGroupBounds> groups;
+    DevPtr d_search;
+    DevPtr d_groups;
+    AccelHolder accel;
+    float max_radius = 0.0f;
+
+    PreparedPointGroupNearestWitness2D(
+            const RtdlPoint* source,
+            size_t source_count,
+            const RtdlPointGroupBounds2D* source_groups,
+            size_t source_group_count,
+            double radius_bound)
+        : search_points(source_count),
+          groups(source_group_count),
+          d_search(sizeof(GpuPoint) * source_count),
+          d_groups(sizeof(GpuPointGroupBounds) * source_group_count),
+          max_radius(static_cast<float>(radius_bound))
+    {
+        if (source_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("point_group_nearest_witness search_count exceeds uint32 limit");
+        if (source_group_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("point_group_nearest_witness group_count exceeds uint32 limit");
+        for (size_t i = 0; i < source_count; ++i) {
+            search_points[i] = {
+                static_cast<float>(source[i].x),
+                static_cast<float>(source[i].y),
+                source[i].id
+            };
+        }
+        for (size_t i = 0; i < source_group_count; ++i) {
+            const RtdlPointGroupBounds2D& group = source_groups[i];
+            const size_t offset = static_cast<size_t>(group.point_offset);
+            const size_t count = static_cast<size_t>(group.point_count);
+            if (offset > source_count || count > source_count - offset)
+                throw std::runtime_error("point_group_nearest_witness group span exceeds search point count");
+            if (group.max_x < group.min_x || group.max_y < group.min_y)
+                throw std::runtime_error("point_group_nearest_witness group bounds must be ordered");
+            groups[i] = {
+                static_cast<float>(group.min_x),
+                static_cast<float>(group.min_y),
+                static_cast<float>(group.max_x),
+                static_cast<float>(group.max_y),
+                group.id,
+                group.point_offset,
+                group.point_count,
+                0u
+            };
+        }
+        upload(d_search.ptr, search_points.data(), search_points.size());
+        upload(d_groups.ptr, groups.data(), groups.size());
+
+        if (!groups.empty()) {
+            constexpr float kRadiusPad = 1.0e-4f;
+            const float aabb_radius = max_radius + kRadiusPad;
+            std::vector<OptixAabb> aabbs(groups.size());
+            for (size_t i = 0; i < groups.size(); ++i) {
+                const GpuPointGroupBounds& group = groups[i];
+                OptixAabb aabb;
+                aabb.minX = group.min_x - aabb_radius;
+                aabb.minY = group.min_y - aabb_radius;
+                aabb.minZ = -aabb_radius;
+                aabb.maxX = group.max_x + aabb_radius;
+                aabb.maxY = group.max_y + aabb_radius;
+                aabb.maxZ = aabb_radius;
+                aabbs[i] = aabb;
+            }
+            auto t_start_bvh = std::chrono::steady_clock::now();
+            accel = build_custom_accel(get_optix_context(), aabbs);
+            auto t_end_bvh = std::chrono::steady_clock::now();
+            g_optix_last_bvh_build_s = std::chrono::duration<double>(t_end_bvh - t_start_bvh).count();
+            g_optix_last_traversal_s = 0.0;
+            g_optix_last_copy_s = 0.0;
+        }
     }
 };
 
@@ -5945,6 +6051,283 @@ static void run_prepared_fixed_radius_nearest_witness_2d_optix(
     }
     *rows_out = out;
     *row_count_out = query_count;
+}
+
+static PreparedPointGroupNearestWitness2D* prepare_point_group_nearest_witness_2d_optix(
+        const RtdlPoint* search_points,
+        size_t search_count,
+        const RtdlPointGroupBounds2D* groups,
+        size_t group_count,
+        double max_radius)
+{
+    return new PreparedPointGroupNearestWitness2D(
+        search_points, search_count, groups, group_count, max_radius);
+}
+
+static void count_prepared_point_group_threshold_reached_2d_optix(
+        PreparedPointGroupNearestWitness2D* prepared,
+        const RtdlPoint* query_points,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        size_t* threshold_reached_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX point-group handle must not be null");
+    if (!threshold_reached_count_out) throw std::runtime_error("threshold_reached_count_out must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("point_group_threshold radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("point_group_threshold radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_threshold query_count exceeds uint32 limit");
+    if (threshold > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_threshold threshold exceeds uint32 limit");
+
+    *threshold_reached_count_out = 0;
+    if (query_count == 0 || prepared->groups.empty()) return;
+
+    std::call_once(g_point_group_threshold_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kPointGroupThresholdRtKernelSrc, "point_group_threshold_rt_kernel.cu");
+        g_point_group_threshold_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__point_group_threshold_probe",
+            "__miss__point_group_threshold_miss",
+            "__intersection__point_group_threshold_isect",
+            "__anyhit__point_group_threshold_anyhit",
+            nullptr, 3).release();
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            query_points[i].id
+        };
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+    DevPtr d_threshold_reached_count(sizeof(uint32_t));
+    uint32_t zero = 0;
+    upload(d_threshold_reached_count.ptr, &zero, 1);
+
+    PointGroupThresholdRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
+    lp.threshold_reached_count = reinterpret_cast<uint32_t*>(d_threshold_reached_count.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.threshold = static_cast<uint32_t>(threshold);
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(PointGroupThresholdRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_point_group_threshold_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(PointGroupThresholdRtLaunchParams),
+                             &g_point_group_threshold_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+
+    auto t_start_copy = std::chrono::steady_clock::now();
+    uint32_t threshold_reached_count = 0;
+    download(&threshold_reached_count, d_threshold_reached_count.ptr, 1);
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
+    *threshold_reached_count_out = static_cast<size_t>(threshold_reached_count);
+}
+
+static void run_prepared_point_group_nearest_witness_2d_optix(
+        PreparedPointGroupNearestWitness2D* prepared,
+        const RtdlPoint* query_points,
+        size_t query_count,
+        double radius,
+        RtdlFixedRadiusNeighborRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX point-group handle must not be null");
+    if (!rows_out || !row_count_out) throw std::runtime_error("output pointers must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("point_group_nearest_witness radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("point_group_nearest_witness radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_nearest_witness query_count exceeds uint32 limit");
+
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (query_count == 0 || prepared->groups.empty()) return;
+
+    std::call_once(g_point_group_nearest_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kPointGroupNearestRtKernelSrc, "point_group_nearest_rt_kernel.cu");
+        g_point_group_nearest_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__point_group_nearest_probe",
+            "__miss__point_group_nearest_miss",
+            "__intersection__point_group_nearest_isect",
+            "__anyhit__point_group_nearest_anyhit",
+            nullptr, 4).release();
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            query_points[i].id
+        };
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    DevPtr d_output(sizeof(GpuFixedRadiusNearestRecord) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    PointGroupNearestRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
+    lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(PointGroupNearestRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_point_group_nearest_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(PointGroupNearestRtLaunchParams),
+                             &g_point_group_nearest_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+
+    auto t_start_copy = std::chrono::steady_clock::now();
+    std::vector<GpuFixedRadiusNearestRecord> gpu_rows(query_count);
+    download(gpu_rows.data(), d_output.ptr, query_count);
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
+
+    auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
+        std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * query_count));
+    if (!out && query_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < query_count; ++i) {
+        out[i].query_id = gpu_rows[i].query_id;
+        out[i].neighbor_id = gpu_rows[i].neighbor_id;
+        out[i].distance = static_cast<double>(gpu_rows[i].distance);
+    }
+    *rows_out = out;
+    *row_count_out = query_count;
+}
+
+static void reduce_prepared_point_group_nearest_max_distance_2d_optix(
+        PreparedPointGroupNearestWitness2D* prepared,
+        const RtdlPoint* query_points,
+        size_t query_count,
+        double radius,
+        RtdlFixedRadiusNeighborRow* row_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX point-group handle must not be null");
+    if (!row_out) throw std::runtime_error("row_out must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("point_group_nearest_max_distance radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("point_group_nearest_max_distance radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_nearest_max_distance query_count exceeds uint32 limit");
+
+    row_out->query_id = UINT32_MAX;
+    row_out->neighbor_id = UINT32_MAX;
+    row_out->distance = std::numeric_limits<double>::infinity();
+    if (query_count == 0 || prepared->groups.empty()) return;
+
+    std::call_once(g_point_group_nearest_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kPointGroupNearestRtKernelSrc, "point_group_nearest_rt_kernel.cu");
+        g_point_group_nearest_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__point_group_nearest_probe",
+            "__miss__point_group_nearest_miss",
+            "__intersection__point_group_nearest_isect",
+            "__anyhit__point_group_nearest_anyhit",
+            nullptr, 4).release();
+    });
+    std::call_once(g_point_group_nearest_reduce.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kPointGroupNearestMaxReduceKernelSrc,
+            "point_group_nearest_max_reduce_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_reduce.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_point_group_nearest_reduce.fn,
+            g_point_group_nearest_reduce.module,
+            "reduce_point_group_nearest_max_distance"));
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            query_points[i].id
+        };
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    DevPtr d_output(sizeof(GpuFixedRadiusNearestRecord) * query_count);
+    DevPtr d_reduced(sizeof(GpuFixedRadiusNearestRecord));
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    PointGroupNearestRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
+    lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(PointGroupNearestRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_point_group_nearest_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(PointGroupNearestRtLaunchParams),
+                             &g_point_group_nearest_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    uint32_t count_u32 = static_cast<uint32_t>(query_count);
+    void* reduce_args[] = { &d_output.ptr, &count_u32, &d_reduced.ptr };
+    CU_CHECK(cuLaunchKernel(
+        g_point_group_nearest_reduce.fn,
+        1, 1, 1,
+        256, 1, 1,
+        0, stream, reduce_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+
+    auto t_start_copy = std::chrono::steady_clock::now();
+    GpuFixedRadiusNearestRecord reduced{};
+    download(&reduced, d_reduced.ptr, 1);
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
+
+    row_out->query_id = reduced.query_id;
+    row_out->neighbor_id = reduced.neighbor_id;
+    row_out->distance = static_cast<double>(reduced.distance);
 }
 
 static void run_fixed_radius_neighbors_cuda_3d(

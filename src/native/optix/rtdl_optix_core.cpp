@@ -3659,6 +3659,243 @@ extern "C" __global__ void __anyhit__frn_nearest_anyhit() {
 }
 )CUDA";
 
+static const char* kPointGroupThresholdRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct PointGroupBounds { float min_x, min_y, max_x, max_y; uint32_t id, point_offset, point_count, pad; };
+
+struct PointGroupThresholdParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    const PointGroupBounds* groups;
+    uint32_t* threshold_reached_count;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ PointGroupThresholdParams params;
+}
+
+static __forceinline__ __device__ float min_distance_sq_to_group(const GpuPoint q, const PointGroupBounds g) {
+    const float dx = q.x < g.min_x ? (g.min_x - q.x) : (q.x > g.max_x ? (q.x - g.max_x) : 0.0f);
+    const float dy = q.y < g.min_y ? (g.min_y - q.y) : (q.y > g.max_y ? (q.y - g.max_y) : 0.0f);
+    return dx * dx + dy * dy;
+}
+
+extern "C" __global__ void __raygen__point_group_threshold_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint q = params.query_points[idx];
+    unsigned int p0 = idx;
+    unsigned int p1 = 0u;
+    unsigned int p2 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2);
+    if (params.threshold_reached_count && p2 != 0u) {
+        atomicAdd(params.threshold_reached_count, 1u);
+    }
+}
+
+extern "C" __global__ void __miss__point_group_threshold_miss() {}
+
+extern "C" __global__ void __intersection__point_group_threshold_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    if (min_distance_sq_to_group(q, g) > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__point_group_threshold_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    uint32_t count = optixGetPayload_1();
+    for (uint32_t i = 0; i < g.point_count; ++i) {
+        const GpuPoint t = params.search_points[g.point_offset + i];
+        const float dx = t.x - q.x;
+        const float dy = t.y - q.y;
+        if ((dx * dx + dy * dy) <= radius_sq) {
+            ++count;
+            if (params.threshold != 0u && count >= params.threshold) {
+                optixSetPayload_1(count);
+                optixSetPayload_2(1u);
+                optixTerminateRay();
+                return;
+            }
+        }
+    }
+    optixSetPayload_1(count);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kPointGroupNearestRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct PointGroupBounds { float min_x, min_y, max_x, max_y; uint32_t id, point_offset, point_count, pad; };
+struct FixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
+
+struct PointGroupNearestParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    const PointGroupBounds* groups;
+    FixedRadiusNearestRecord* output;
+    uint32_t query_count;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ PointGroupNearestParams params;
+}
+
+static __forceinline__ __device__ float nearest_min_distance_sq_to_group(const GpuPoint q, const PointGroupBounds g) {
+    const float dx = q.x < g.min_x ? (g.min_x - q.x) : (q.x > g.max_x ? (q.x - g.max_x) : 0.0f);
+    const float dy = q.y < g.min_y ? (g.min_y - q.y) : (q.y > g.max_y ? (q.y - g.max_y) : 0.0f);
+    return dx * dx + dy * dy;
+}
+
+extern "C" __global__ void __raygen__point_group_nearest_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint q = params.query_points[idx];
+    unsigned int p0 = idx;
+    unsigned int p1 = __float_as_uint(3.4028234663852886e38f);
+    unsigned int p2 = 0xFFFFFFFFu;
+    unsigned int p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    params.output[idx] = {q.id, p2, p3 ? sqrtf(__uint_as_float(p1)) : 3.4028234663852886e38f};
+}
+
+extern "C" __global__ void __miss__point_group_nearest_miss() {}
+
+extern "C" __global__ void __intersection__point_group_nearest_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    if (nearest_min_distance_sq_to_group(q, g) > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__point_group_nearest_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    float best = __uint_as_float(optixGetPayload_1());
+    uint32_t best_id = optixGetPayload_2();
+    uint32_t found = optixGetPayload_3();
+    for (uint32_t i = 0; i < g.point_count; ++i) {
+        const GpuPoint t = params.search_points[g.point_offset + i];
+        const float dx = t.x - q.x;
+        const float dy = t.y - q.y;
+        const float d2 = dx * dx + dy * dy;
+        if (d2 > radius_sq) {
+            continue;
+        }
+        if (d2 < best || (d2 == best && t.id < best_id)) {
+            best = d2;
+            best_id = t.id;
+            found = 1u;
+        }
+    }
+    optixSetPayload_1(__float_as_uint(best));
+    optixSetPayload_2(best_id);
+    optixSetPayload_3(found);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kPointGroupNearestMaxReduceKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+typedef unsigned int uint32_t;
+
+struct FixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
+
+static __forceinline__ __device__ bool better_max_record(
+        const FixedRadiusNearestRecord candidate,
+        const FixedRadiusNearestRecord incumbent)
+{
+    if (candidate.distance > incumbent.distance) return true;
+    if (candidate.distance < incumbent.distance) return false;
+    if (candidate.query_id < incumbent.query_id) return true;
+    if (candidate.query_id > incumbent.query_id) return false;
+    return candidate.neighbor_id < incumbent.neighbor_id;
+}
+
+extern "C" __global__ void reduce_point_group_nearest_max_distance(
+        const FixedRadiusNearestRecord* input,
+        uint32_t count,
+        FixedRadiusNearestRecord* output)
+{
+    __shared__ FixedRadiusNearestRecord scratch[256];
+    const uint32_t tid = threadIdx.x;
+    FixedRadiusNearestRecord best = {0xffffffffu, 0xffffffffu, -1.0f};
+    for (uint32_t index = tid; index < count; index += blockDim.x) {
+        FixedRadiusNearestRecord row = input[index];
+        if (row.neighbor_id == 0xffffffffu || !isfinite(row.distance)) {
+            row.distance = INFINITY;
+        }
+        if (better_max_record(row, best)) {
+            best = row;
+        }
+    }
+    scratch[tid] = best;
+    __syncthreads();
+    for (uint32_t stride = blockDim.x >> 1; stride > 0; stride >>= 1) {
+        if (tid < stride && better_max_record(scratch[tid + stride], scratch[tid])) {
+            scratch[tid] = scratch[tid + stride];
+        }
+        __syncthreads();
+    }
+    if (tid == 0) {
+        output[0] = scratch[0];
+    }
+}
+)CUDA";
+
 static const char* kKnnRowsKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -4236,6 +4473,9 @@ static RayAnyHitPipeline    g_rayanyhit_group_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
 static RayAnyHitPipeline    g_frn_count_host_rt;
 static RayAnyHitPipeline    g_frn_nearest_rt;
+static RayAnyHitPipeline    g_point_group_threshold_rt;
+static RayAnyHitPipeline    g_point_group_nearest_rt;
+static KnnCuFunction       g_point_group_nearest_reduce;
 static SegPolyPipeline     g_segpoly;
 static SegPolyPipeline     g_segpoly_rows;
 static DbScanPipeline      g_dbscan;

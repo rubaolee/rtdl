@@ -1,0 +1,302 @@
+{
+  "claim_boundary": {
+    "release_speedup_claim_authorized": false,
+    "same_xhd_paper_datasets": false,
+    "synthetic_large_scale_speedup_authorized": false
+  },
+  "commit": "goal2123-local-pod",
+  "goal": "goal2123_xhd_grouped_reduced_hd_perf",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "rows": [
+    {
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.13528455701336056,
+        "elapsed_sec": 0.6046934593468904,
+        "ok": true,
+        "source_index": 472,
+        "target_index": 1183
+      },
+      "matches_cupy": true,
+      "n": 4096,
+      "reduced_vs_cupy_ratio": 0.5805808459438448,
+      "reduced_vs_row_materialized_ratio": 0.590704967722841,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.13528455701336056,
+        "elapsed_sec": 0.5943295881152153,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 472,
+        "target_index": 1183,
+        "target_points_per_group": 64
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.13528455701336056,
+        "elapsed_sec": 0.3510734401643276,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 472,
+        "target_index": 1069,
+        "target_points_per_group": 64
+      },
+      "target_points_per_group": 64
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.019635044038295746,
+        "ok": true,
+        "source_index": 8034,
+        "target_index": 3950
+      },
+      "matches_cupy": true,
+      "n": 8192,
+      "reduced_vs_cupy_ratio": 5.701494590325233,
+      "reduced_vs_row_materialized_ratio": 0.4652637656529363,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.24061426147818565,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 8034,
+        "target_index": 3950,
+        "target_points_per_group": 128
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.11194909736514091,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 8034,
+        "target_index": 2771,
+        "target_points_per_group": 128
+      },
+      "target_points_per_group": 128
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.14023226127028465,
+        "ok": true,
+        "source_index": 17108,
+        "target_index": 17833
+      },
+      "matches_cupy": true,
+      "n": 32768,
+      "reduced_vs_cupy_ratio": 2.657784659271869,
+      "reduced_vs_row_materialized_ratio": 0.42347227025541795,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.8801217433065176,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 17108,
+        "target_index": 17833,
+        "target_points_per_group": 256
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.3727071527391672,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 17108,
+        "target_index": 20842,
+        "target_points_per_group": 256
+      },
+      "target_points_per_group": 256
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.13085040452901578,
+        "elapsed_sec": 0.48124162293970585,
+        "ok": true,
+        "source_index": 48139,
+        "target_index": 55536
+      },
+      "matches_cupy": true,
+      "n": 65536,
+      "reduced_vs_cupy_ratio": 1.7072224425890743,
+      "reduced_vs_row_materialized_ratio": 0.4233260324612484,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.13085040452901578,
+        "elapsed_sec": 1.9407889805734158,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 48139,
+        "target_index": 55536,
+        "target_points_per_group": 256
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.13085040452901578,
+        "elapsed_sec": 0.821586498990655,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 48139,
+        "target_index": 47002,
+        "target_points_per_group": 256
+      },
+      "target_points_per_group": 256
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.1283029281659503,
+        "elapsed_sec": 1.9294065944850445,
+        "ok": true,
+        "source_index": 4515,
+        "target_index": 101341
+      },
+      "matches_cupy": true,
+      "n": 131072,
+      "reduced_vs_cupy_ratio": 0.7343591443947608,
+      "reduced_vs_row_materialized_ratio": 0.41247230616034397,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.12830292816595032,
+        "elapsed_sec": 3.4350848644971848,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 4515,
+        "target_index": 101341,
+        "target_points_per_group": 512
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.12830292816595032,
+        "elapsed_sec": 1.4168773759156466,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 4515,
+        "target_index": 45557,
+        "target_points_per_group": 512
+      },
+      "target_points_per_group": 512
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.12175947536791296,
+        "elapsed_sec": 7.6687640361487865,
+        "ok": true,
+        "source_index": 252725,
+        "target_index": 50178
+      },
+      "matches_cupy": true,
+      "n": 262144,
+      "reduced_vs_cupy_ratio": 0.4320946920926623,
+      "reduced_vs_row_materialized_ratio": 0.476443531238427,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.12175947536791294,
+        "elapsed_sec": 6.9549317341297865,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 252725,
+        "target_index": 50178,
+        "target_points_per_group": 1024
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.12175947536791294,
+        "elapsed_sec": 3.313632234930992,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 252725,
+        "target_index": 163347,
+        "target_points_per_group": 1024
+      },
+      "target_points_per_group": 1024
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.11676572113647332,
+        "elapsed_sec": 30.943458111956716,
+        "ok": true,
+        "source_index": 300213,
+        "target_index": 307238
+      },
+      "matches_cupy": true,
+      "n": 524288,
+      "reduced_vs_cupy_ratio": 0.27719055975931145,
+      "reduced_vs_row_materialized_ratio": 0.5317781350172565,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11676572113647332,
+        "elapsed_sec": 16.129347767680883,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 300213,
+        "target_index": 307238,
+        "target_points_per_group": 2048
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11676572113647332,
+        "elapsed_sec": 8.577234474942088,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 300213,
+        "target_index": 376043,
+        "target_points_per_group": 2048
+      },
+      "target_points_per_group": 2048
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.11605150774483532,
+        "elapsed_sec": 124.63019364327192,
+        "ok": true,
+        "source_index": 519004,
+        "target_index": 948484
+      },
+      "matches_cupy": true,
+      "n": 1048576,
+      "reduced_vs_cupy_ratio": 0.17605498863645017,
+      "reduced_vs_row_materialized_ratio": 0.6221002614986698,
+      "rtdl_rt_grouped_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11605150774483532,
+        "elapsed_sec": 35.27046793513,
+        "method": "rtdl_rt_grouped_nearest_witness",
+        "ok": true,
+        "source_index": 519004,
+        "target_index": 948484,
+        "target_points_per_group": 4096
+      },
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11605150774483532,
+        "elapsed_sec": 21.941767325624824,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 519004,
+        "target_index": 828724,
+        "target_points_per_group": 4096
+      },
+      "target_points_per_group": 4096
+    }
+  ],
+  "sizes": [
+    4096,
+    8192,
+    32768,
+    65536,
+    131072,
+    262144,
+    524288,
+    1048576
+  ]
+}

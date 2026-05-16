@@ -9,7 +9,9 @@ Current OptiX-native workload surface:
   segment_intersection, point_in_polygon, overlay_compose,
   ray_triangle_hit_count, segment_polygon_hitcount,
   segment_polygon_anyhit_rows, point_nearest_segment,
-  fixed_radius_neighbors, bounded_knn_rows, knn_rows
+  fixed_radius_neighbors, point_group_nearest_witness,
+  point_group_nearest_max_distance_reduction,
+  bounded_knn_rows, knn_rows
 
 Additional accepted public OptiX surface:
   polygon_pair_overlap_area_rows, polygon_set_jaccard
@@ -252,6 +254,18 @@ class _RtdlFixedRadiusCountRow(ctypes.Structure):
         ("query_id", ctypes.c_uint32),
         ("neighbor_count", ctypes.c_uint32),
         ("threshold_reached", ctypes.c_uint32),
+    ]
+
+
+class _RtdlPointGroupBounds2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("point_offset", ctypes.c_uint32),
+        ("point_count", ctypes.c_uint32),
+        ("min_x", ctypes.c_double),
+        ("min_y", ctypes.c_double),
+        ("max_x", ctypes.c_double),
+        ("max_y", ctypes.c_double),
     ]
 
 
@@ -1127,6 +1141,245 @@ def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
     )
     _check_status(status, error)
     return prepared
+
+
+def _point_group_value(group, key: str):
+    if isinstance(group, dict):
+        return group[key]
+    return getattr(group, key)
+
+
+def _pack_point_group_bounds_2d(groups) -> tuple[ctypes.Array, int]:
+    rows = tuple(groups)
+    packed = (_RtdlPointGroupBounds2D * len(rows))()
+    for index, group in enumerate(rows):
+        packed[index].id = int(_point_group_value(group, "id"))
+        packed[index].point_offset = int(_point_group_value(group, "point_offset"))
+        packed[index].point_count = int(_point_group_value(group, "point_count"))
+        packed[index].min_x = float(_point_group_value(group, "min_x"))
+        packed[index].min_y = float(_point_group_value(group, "min_y"))
+        packed[index].max_x = float(_point_group_value(group, "max_x"))
+        packed[index].max_y = float(_point_group_value(group, "max_y"))
+    return packed, len(rows)
+
+
+class PreparedOptixPointGroupNearestWitness2D:
+    """Prepared OptiX 2-D point-group nearest-witness scene.
+
+    The primitive is app-agnostic: the caller supplies a point array and a set
+    of group MBRs whose spans reference contiguous ranges inside that point
+    array. OptiX builds a BVH over the group bounds, then query calls can ask
+    for threshold coverage or one nearest in-radius witness per query point.
+    """
+
+    def __init__(self, search_points, groups, *, max_radius: float):
+        if max_radius < 0:
+            raise ValueError("max_radius must be non-negative")
+        packed = search_points if isinstance(search_points, PackedPoints) else pack_points(records=search_points, dimension=2)
+        if packed.dimension != 2:
+            raise ValueError("prepare_optix_point_group_nearest_witness_2d requires 2-D points")
+        packed_groups, group_count = _pack_point_group_bounds_2d(groups)
+        self._packed_search = packed
+        self._packed_groups = packed_groups
+        self._group_count = group_count
+        self._max_radius = float(max_radius)
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        if packed.count == 0 or group_count == 0:
+            return
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_point_group_nearest_witness_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_point_group_nearest_witness_2d; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            packed_groups,
+            group_count,
+            ctypes.c_double(self._max_radius),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def max_radius(self) -> float:
+        return self._max_radius
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def count_threshold_reached(self, query_points, *, radius: float, threshold: int = 0) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX point-group handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixPointGroupNearestWitness2D.count_threshold_reached requires 2-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0 or self._group_count == 0:
+            return 0
+
+        lib = _load_optix_library()
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_point_group_threshold_reached_2d")
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_point_group_threshold_reached_2d; rebuild the OptiX backend from current main"
+            )
+        threshold_reached_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.byref(threshold_reached_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(threshold_reached_count.value)
+
+    def nearest_witness_rows(self, query_points, *, radius: float) -> tuple[dict[str, object], ...]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX point-group handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixPointGroupNearestWitness2D.nearest_witness_rows requires 2-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0 or self._group_count == 0:
+            return ()
+
+        lib = _load_optix_library()
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_point_group_nearest_witness_2d")
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_point_group_nearest_witness_2d; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlFixedRadiusNeighborRow,
+            field_names=("query_id", "neighbor_id", "distance"),
+        )
+        try:
+            return tuple(
+                {
+                    "query_id": int(row["query_id"]),
+                    "neighbor_id": int(row["neighbor_id"]),
+                    "distance": float(row["distance"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
+    def nearest_max_distance_row(self, query_points, *, radius: float) -> dict[str, object]:
+        """Return the max-distance row after reducing nearest witnesses on device."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX point-group handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixPointGroupNearestWitness2D.nearest_max_distance_row requires 2-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0 or self._group_count == 0:
+            return {"query_id": 0xFFFFFFFF, "neighbor_id": 0xFFFFFFFF, "distance": float("inf")}
+
+        lib = _load_optix_library()
+        symbol = _find_optional_backend_symbol(
+            lib, "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_2d"
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_2d; "
+                "rebuild the OptiX backend from current main"
+            )
+        row = _RtdlFixedRadiusNeighborRow()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.byref(row),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "query_id": int(row.query_id),
+            "neighbor_id": int(row.neighbor_id),
+            "distance": float(row.distance),
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_point_group_nearest_witness_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixPointGroupNearestWitness2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_point_group_nearest_witness_2d(
+    search_points,
+    groups,
+    *,
+    max_radius: float,
+) -> PreparedOptixPointGroupNearestWitness2D:
+    return PreparedOptixPointGroupNearestWitness2D(search_points, groups, max_radius=max_radius)
 
 
 class PreparedOptixSegmentPolygonHitcount2D:
@@ -5400,6 +5653,63 @@ def _register_argtypes(lib) -> None:
     if optional_destroy_prepared_frn_count is not None:
         optional_destroy_prepared_frn_count.argtypes = [ctypes.c_void_p]
         optional_destroy_prepared_frn_count.restype = None
+
+    optional_prepare_point_group = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_point_group_nearest_witness_2d")
+    if optional_prepare_point_group is not None:
+        optional_prepare_point_group.argtypes = [
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPointGroupBounds2D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_point_group.restype = ctypes.c_int
+
+    optional_count_point_group_threshold = _find_optional_backend_symbol(
+        lib, "rtdl_optix_count_prepared_point_group_threshold_reached_2d"
+    )
+    if optional_count_point_group_threshold is not None:
+        optional_count_point_group_threshold.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_point_group_threshold.restype = ctypes.c_int
+
+    optional_run_point_group_nearest = _find_optional_backend_symbol(
+        lib, "rtdl_optix_run_prepared_point_group_nearest_witness_2d"
+    )
+    if optional_run_point_group_nearest is not None:
+        optional_run_point_group_nearest.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_point_group_nearest.restype = ctypes.c_int
+
+    optional_reduce_point_group_nearest = _find_optional_backend_symbol(
+        lib, "rtdl_optix_reduce_prepared_point_group_nearest_max_distance_2d"
+    )
+    if optional_reduce_point_group_nearest is not None:
+        optional_reduce_point_group_nearest.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(_RtdlFixedRadiusNeighborRow),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_reduce_point_group_nearest.restype = ctypes.c_int
+
+    optional_destroy_point_group = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_point_group_nearest_witness_2d")
+    if optional_destroy_point_group is not None:
+        optional_destroy_point_group.argtypes = [ctypes.c_void_p]
+        optional_destroy_point_group.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_k_closest_hits").argtypes = [
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,

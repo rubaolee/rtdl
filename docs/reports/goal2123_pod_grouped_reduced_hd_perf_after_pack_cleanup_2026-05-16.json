@@ -1,0 +1,189 @@
+{
+  "claim_boundary": {
+    "release_speedup_claim_authorized": false,
+    "same_xhd_paper_datasets": false,
+    "synthetic_large_scale_speedup_authorized": false
+  },
+  "commit": "goal2123-pack-cleanup",
+  "goal": "goal2123_xhd_grouped_reduced_hd_perf",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "rows": [
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.5058160033077002,
+        "ok": true,
+        "source_index": 8034,
+        "target_index": 3950
+      },
+      "matches_cupy": true,
+      "n": 8192,
+      "reduced_vs_cupy_ratio": 1.7769059371018332,
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.898787459358573,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 8034,
+        "target_index": 2771,
+        "target_points_per_group": 128
+      },
+      "target_points_per_group": 128
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.13558054342865944,
+        "ok": true,
+        "source_index": 17108,
+        "target_index": 17833
+      },
+      "matches_cupy": true,
+      "n": 32768,
+      "reduced_vs_cupy_ratio": 1.7856042341417173,
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.2420931924134493,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 17108,
+        "target_index": 20842,
+        "target_points_per_group": 256
+      },
+      "target_points_per_group": 256
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.13085040452901578,
+        "elapsed_sec": 0.48272062279284,
+        "ok": true,
+        "source_index": 48139,
+        "target_index": 55536
+      },
+      "matches_cupy": true,
+      "n": 65536,
+      "reduced_vs_cupy_ratio": 1.0744902212625647,
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.13085040452901578,
+        "elapsed_sec": 0.5186785887926817,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 48139,
+        "target_index": 47002,
+        "target_points_per_group": 256
+      },
+      "target_points_per_group": 256
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.1283029281659503,
+        "elapsed_sec": 1.9133429322391748,
+        "ok": true,
+        "source_index": 4515,
+        "target_index": 101341
+      },
+      "matches_cupy": true,
+      "n": 131072,
+      "reduced_vs_cupy_ratio": 0.5230569720308635,
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.12830292816595032,
+        "elapsed_sec": 1.0007873605936766,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 4515,
+        "target_index": 45557,
+        "target_points_per_group": 512
+      },
+      "target_points_per_group": 512
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.12175947536791296,
+        "elapsed_sec": 7.67498567327857,
+        "ok": true,
+        "source_index": 252725,
+        "target_index": 50178
+      },
+      "matches_cupy": true,
+      "n": 262144,
+      "reduced_vs_cupy_ratio": 0.3506637491225839,
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.12175947536791294,
+        "elapsed_sec": 2.691339250653982,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 252725,
+        "target_index": 163347,
+        "target_points_per_group": 1024
+      },
+      "target_points_per_group": 1024
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.11676572113647332,
+        "elapsed_sec": 30.889076068997383,
+        "ok": true,
+        "source_index": 300213,
+        "target_index": 307238
+      },
+      "matches_cupy": true,
+      "n": 524288,
+      "reduced_vs_cupy_ratio": 0.2161878731885602,
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11676572113647332,
+        "elapsed_sec": 6.677843660116196,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 300213,
+        "target_index": 376043,
+        "target_points_per_group": 2048
+      },
+      "target_points_per_group": 2048
+    },
+    {
+      "cupy_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.11605150774483532,
+        "elapsed_sec": 124.28445243276656,
+        "ok": true,
+        "source_index": 519004,
+        "target_index": 948484
+      },
+      "matches_cupy": true,
+      "n": 1048576,
+      "reduced_vs_cupy_ratio": 0.13968962727106274,
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.11605150774483532,
+        "elapsed_sec": 17.361248835921288,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 519004,
+        "target_index": 828724,
+        "target_points_per_group": 4096
+      },
+      "target_points_per_group": 4096
+    }
+  ],
+  "sizes": [
+    8192,
+    32768,
+    65536,
+    131072,
+    262144,
+    524288,
+    1048576
+  ]
+}

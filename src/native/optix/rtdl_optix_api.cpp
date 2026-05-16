@@ -2848,6 +2848,80 @@ extern "C" void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d(void
     delete reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared);
 }
 
+extern "C" int rtdl_optix_prepare_point_group_nearest_witness_2d(
+        const RtdlPoint* search_points, size_t search_count,
+        const RtdlPointGroupBounds2D* groups, size_t group_count,
+        double max_radius,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!search_points && search_count != 0)
+            throw std::runtime_error("point_group search_points pointer must not be null when search_count is nonzero");
+        if (!groups && group_count != 0)
+            throw std::runtime_error("point_group groups pointer must not be null when group_count is nonzero");
+        if (max_radius < 0.0)
+            throw std::runtime_error("point_group_nearest_witness max_radius must be non-negative");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("point_group_nearest_witness search_count exceeds uint32 limit");
+        if (group_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("point_group_nearest_witness group_count exceeds uint32 limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_point_group_nearest_witness_2d_optix(
+            search_points, search_count, groups, group_count, max_radius);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_point_group_threshold_reached_2d(
+        void* prepared,
+        const RtdlPoint* query_points, size_t query_count,
+        double radius,
+        size_t threshold,
+        size_t* threshold_reached_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        count_prepared_point_group_threshold_reached_2d_optix(
+            reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared),
+            query_points, query_count, radius, threshold, threshold_reached_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_point_group_nearest_witness_2d(
+        void* prepared,
+        const RtdlPoint* query_points, size_t query_count,
+        double radius,
+        RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_point_group_nearest_witness_2d_optix(
+            reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared),
+            query_points, query_count, radius, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_reduce_prepared_point_group_nearest_max_distance_2d(
+        void* prepared,
+        const RtdlPoint* query_points, size_t query_count,
+        double radius,
+        RtdlFixedRadiusNeighborRow* row_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        reduce_prepared_point_group_nearest_max_distance_2d_optix(
+            reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared),
+            query_points, query_count, radius, row_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_point_group_nearest_witness_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared);
+}
+
 extern "C" int rtdl_optix_run_k_closest_hits(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,

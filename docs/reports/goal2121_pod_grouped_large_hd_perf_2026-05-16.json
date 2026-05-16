@@ -1,0 +1,35 @@
+{
+  "gpu": "NVIDIA RTX A5000",
+  "rows": [
+    {
+      "distance": 0.13085040452901578,
+      "exact_sec": 0.23858298733830452,
+      "grouped_distance": 0.13085040452901578,
+      "grouped_sec": 1.9689115826040506,
+      "grouped_vs_cupy_ratio": 8.252522967248225,
+      "matches_exact": true,
+      "n": 65536,
+      "target_points_per_group": 256
+    },
+    {
+      "distance": 0.1283029281659503,
+      "exact_sec": 0.9567428342998028,
+      "grouped_distance": 0.12830292816595032,
+      "grouped_sec": 2.6496856715530157,
+      "grouped_vs_cupy_ratio": 2.76948577670007,
+      "matches_exact": true,
+      "n": 131072,
+      "target_points_per_group": 512
+    },
+    {
+      "distance": 0.12175947536791296,
+      "exact_sec": 3.832516022026539,
+      "grouped_distance": 0.12175947536791294,
+      "grouped_sec": 5.619073271751404,
+      "grouped_vs_cupy_ratio": 1.46615780324388,
+      "matches_exact": true,
+      "n": 262144,
+      "target_points_per_group": 1024
+    }
+  ]
+}
