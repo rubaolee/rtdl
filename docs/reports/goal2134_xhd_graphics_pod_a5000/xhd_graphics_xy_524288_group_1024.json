@@ -1,0 +1,187 @@
+{
+  "case_suite": "xhd-graphics",
+  "claim_boundary": {
+    "cupy_grouped_grid_fairness_baseline": true,
+    "public_dataset_evidence": true,
+    "release_speedup_claim_authorized": false,
+    "three_dimensional_surface_hausdorff_claim": false,
+    "xhd_paper_exact_dataset_evidence": false,
+    "xhd_paper_graphics_dataset_names": true,
+    "xhd_seeded_pruned_rtdl_path": true,
+    "xy_projection_only": true
+  },
+  "commit": "02ee6ab5a7b8e1a78b961772a8eabb27aa1aa052",
+  "datasets": {
+    "dragon": {
+      "archive": "dragon_recon.tar.gz",
+      "preferred_ply": "dragon_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+    },
+    "happy": {
+      "archive": "happy_recon.tar.gz",
+      "preferred_ply": "happy_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+    }
+  },
+  "goal": "goal2126_public_hausdorff_dataset_perf",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "rows": [
+    {
+      "case": "xhd_graphics_dragon_vs_asian_dragon_xy",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.2531376547116891,
+        "elapsed_sec": 3.407770061865449,
+        "ok": true,
+        "source_index": 403393,
+        "target_index": 216018
+      },
+      "density_class": "mixed-density",
+      "description": "X-HD graphics pair: Stanford Dragon vs XYZ RGB Asian Dragon, projected to XY.",
+      "matches_cupy_grouped_grid_seeded_pruned": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.2531376547116891,
+        "elapsed_sec": 0.5366424266248941,
+        "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+        "ok": true,
+        "source_index": 403393,
+        "target_index": 216018
+      },
+      "rtdl_seeded_pruned_vs_cupy_grouped_grid_ratio": 0.15747612570172367,
+      "sample_count": 437645,
+      "source_paths": [
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/dragon/dragon_recon/dragon_vrip.ply",
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/asian_dragon.ply"
+      ],
+      "target_points_per_group": 1024
+    },
+    {
+      "case": "xhd_graphics_thai_statuette_vs_happy_buddha_xy",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.29888263223583156,
+        "elapsed_sec": 4.486585360020399,
+        "ok": true,
+        "source_index": 272609,
+        "target_index": 87015
+      },
+      "density_class": "dense-to-medium",
+      "description": "X-HD graphics pair: XYZ RGB Thai Statuette vs Happy Buddha, projected to XY.",
+      "matches_cupy_grouped_grid_seeded_pruned": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.29888263223583156,
+        "elapsed_sec": 0.627338107675314,
+        "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+        "ok": true,
+        "source_index": 272609,
+        "target_index": 87015
+      },
+      "rtdl_seeded_pruned_vs_cupy_grouped_grid_ratio": 0.13982529191698287,
+      "sample_count": 524288,
+      "source_paths": [
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/thai_statuette.ply",
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/happy_buddha/happy_recon/happy_vrip.ply"
+      ],
+      "target_points_per_group": 1024
+    },
+    {
+      "case": "xhd_graphics_dragon_vs_happy_buddha_xy",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.3027664246713871,
+        "elapsed_sec": 4.657096054404974,
+        "ok": true,
+        "source_index": 217595,
+        "target_index": 216018
+      },
+      "density_class": "medium",
+      "description": "X-HD graphics pair: Stanford Dragon vs Happy Buddha, projected to XY.",
+      "matches_cupy_grouped_grid_seeded_pruned": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.30276642467138704,
+        "elapsed_sec": 0.5376147124916315,
+        "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+        "ok": true,
+        "source_index": 217595,
+        "target_index": 216018
+      },
+      "rtdl_seeded_pruned_vs_cupy_grouped_grid_ratio": 0.11543990207870455,
+      "sample_count": 437645,
+      "source_paths": [
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/dragon/dragon_recon/dragon_vrip.ply",
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/happy_buddha/happy_recon/happy_vrip.ply"
+      ],
+      "target_points_per_group": 1024
+    },
+    {
+      "case": "xhd_graphics_thai_statuette_vs_asian_dragon_xy",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.3546780190867209,
+        "elapsed_sec": 3.5491619035601616,
+        "ok": true,
+        "source_index": 216494,
+        "target_index": 12531
+      },
+      "density_class": "dense",
+      "description": "X-HD graphics pair: XYZ RGB Thai Statuette vs XYZ RGB Asian Dragon, projected to XY.",
+      "matches_cupy_grouped_grid_seeded_pruned": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.3546780190867209,
+        "elapsed_sec": 0.5799539070576429,
+        "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+        "ok": true,
+        "source_index": 216494,
+        "target_index": 12531
+      },
+      "rtdl_seeded_pruned_vs_cupy_grouped_grid_ratio": 0.16340587519433578,
+      "sample_count": 524288,
+      "source_paths": [
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/thai_statuette.ply",
+        "/root/work/rtdl_goal2134/scratch/public_hausdorff/asian_dragon.ply"
+      ],
+      "target_points_per_group": 1024
+    }
+  ],
+  "sample_count": 524288,
+  "xhd_graphics_datasets": {
+    "asian_dragon": {
+      "archive": "xyzrgb_dragon.ply.gz",
+      "kind": "ply_gz",
+      "ply_name": "asian_dragon.ply",
+      "source": "Stanford 3D Scanning Repository XYZ RGB model; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz"
+    },
+    "dragon": {
+      "archive": "dragon_recon.tar.gz",
+      "kind": "tar_gz",
+      "preferred_ply": "dragon_vrip.ply",
+      "source": "Stanford 3D Scanning Repository; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+    },
+    "happy_buddha": {
+      "archive": "happy_recon.tar.gz",
+      "kind": "tar_gz",
+      "preferred_ply": "happy_vrip.ply",
+      "source": "Stanford 3D Scanning Repository; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+    },
+    "thai_statuette": {
+      "archive": "xyzrgb_statuette.ply.gz",
+      "kind": "ply_gz",
+      "ply_name": "thai_statuette.ply",
+      "source": "Stanford 3D Scanning Repository XYZ RGB model; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz"
+    }
+  }
+}
