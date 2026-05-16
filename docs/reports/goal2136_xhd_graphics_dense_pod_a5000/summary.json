@@ -1,0 +1,100 @@
+{
+  "rows": [
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_4096.json",
+      "case": "xhd_graphics_dragon_vs_asian_dragon_xy",
+      "cupy_grouped_sec": 7.803855471313,
+      "density_class": "mixed-density",
+      "distance": 0.2529265348052136,
+      "group": 4096,
+      "match": true,
+      "ratio": 0.12103694748619452,
+      "rtdl_seeded_pruned_sec": 0.9445548448711634,
+      "sample_count": 437645
+    },
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_4096.json",
+      "case": "xhd_graphics_thai_statuette_vs_happy_buddha_xy",
+      "cupy_grouped_sec": 10.960250472649932,
+      "density_class": "dense-to-medium",
+      "distance": 0.29886337881890335,
+      "group": 4096,
+      "match": true,
+      "ratio": 0.08303946468059456,
+      "rtdl_seeded_pruned_sec": 0.9101333320140839,
+      "sample_count": 1048576
+    },
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_4096.json",
+      "case": "xhd_graphics_dragon_vs_happy_buddha_xy",
+      "cupy_grouped_sec": 5.769691640511155,
+      "density_class": "medium",
+      "distance": 0.30276642467138704,
+      "group": 4096,
+      "match": true,
+      "ratio": 0.10104658026750772,
+      "rtdl_seeded_pruned_sec": 0.5830076094716787,
+      "sample_count": 437645
+    },
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_4096.json",
+      "case": "xhd_graphics_thai_statuette_vs_asian_dragon_xy",
+      "cupy_grouped_sec": 15.281775183975697,
+      "density_class": "dense",
+      "distance": 0.3545946870488335,
+      "group": 4096,
+      "match": true,
+      "ratio": 0.0836568410718025,
+      "rtdl_seeded_pruned_sec": 1.2784250378608704,
+      "sample_count": 1048576
+    },
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_8192.json",
+      "case": "xhd_graphics_dragon_vs_asian_dragon_xy",
+      "cupy_grouped_sec": 8.910845912992954,
+      "density_class": "mixed-density",
+      "distance": 0.2529265348052136,
+      "group": 8192,
+      "match": true,
+      "ratio": 0.11127604939235233,
+      "rtdl_seeded_pruned_sec": 0.9915637299418449,
+      "sample_count": 437645
+    },
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_8192.json",
+      "case": "xhd_graphics_thai_statuette_vs_happy_buddha_xy",
+      "cupy_grouped_sec": 12.072403781116009,
+      "density_class": "dense-to-medium",
+      "distance": 0.29886337881890335,
+      "group": 8192,
+      "match": true,
+      "ratio": 0.07624379430117129,
+      "rtdl_seeded_pruned_sec": 0.9204458706080914,
+      "sample_count": 1048576
+    },
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_8192.json",
+      "case": "xhd_graphics_dragon_vs_happy_buddha_xy",
+      "cupy_grouped_sec": 6.2453325390815735,
+      "density_class": "medium",
+      "distance": 0.30276642467138704,
+      "group": 8192,
+      "match": true,
+      "ratio": 0.09950795096508239,
+      "rtdl_seeded_pruned_sec": 0.6214602440595627,
+      "sample_count": 437645
+    },
+    {
+      "artifact": "xhd_graphics_xy_1048576_group_8192.json",
+      "case": "xhd_graphics_thai_statuette_vs_asian_dragon_xy",
+      "cupy_grouped_sec": 17.380397571250796,
+      "density_class": "dense",
+      "distance": 0.3545946870488335,
+      "group": 8192,
+      "match": true,
+      "ratio": 0.07180551884835645,
+      "rtdl_seeded_pruned_sec": 1.2480084653943777,
+      "sample_count": 1048576
+    }
+  ]
+}
