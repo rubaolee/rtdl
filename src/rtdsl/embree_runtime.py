@@ -475,6 +475,7 @@ class PackedPoints:
     records: object
     count: int
     dimension: int = 2
+    owner: object | None = None
 
 
 @dataclass(frozen=True)
@@ -873,6 +874,50 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None)
     return PackedSegments(records=array, count=count)
 
 
+def _pack_points_columns_numpy(ids, x, y, z=None, *, dimension: int | None = None) -> PackedPoints | None:
+    try:
+        import numpy as _np
+    except Exception:
+        return None
+    if dimension not in {None, 2, 3}:
+        return None
+    is_3d = dimension == 3 or z is not None
+    try:
+        ids_array = _np.asarray(ids, dtype=_np.uint32)
+        x_array = _np.asarray(x, dtype=_np.float64)
+        y_array = _np.asarray(y, dtype=_np.float64)
+        if ids_array.ndim != 1 or x_array.ndim != 1 or y_array.ndim != 1:
+            return None
+        if not (ids_array.size == x_array.size == y_array.size):
+            return None
+        count = int(ids_array.size)
+        if is_3d:
+            z_array = _np.asarray(z, dtype=_np.float64)
+            if z_array.ndim != 1 or z_array.size != count:
+                return None
+            dtype = _np.dtype([("id", _np.uint32), ("x", _np.float64), ("y", _np.float64), ("z", _np.float64)], align=True)
+            if dtype.itemsize != ctypes.sizeof(_RtdlPoint3D):
+                return None
+            owner = _np.empty(count, dtype=dtype)
+            owner["id"] = ids_array
+            owner["x"] = x_array
+            owner["y"] = y_array
+            owner["z"] = z_array
+            records = (_RtdlPoint3D * count).from_buffer(owner)
+            return PackedPoints(records=records, count=count, dimension=3, owner=owner)
+        dtype = _np.dtype([("id", _np.uint32), ("x", _np.float64), ("y", _np.float64)], align=True)
+        if dtype.itemsize != ctypes.sizeof(_RtdlPoint):
+            return None
+        owner = _np.empty(count, dtype=dtype)
+        owner["id"] = ids_array
+        owner["x"] = x_array
+        owner["y"] = y_array
+        records = (_RtdlPoint * count).from_buffer(owner)
+        return PackedPoints(records=records, count=count, dimension=2, owner=owner)
+    except Exception:
+        return None
+
+
 def pack_points(records=None, *, ids=None, x=None, y=None, z=None, dimension: int | None = None) -> PackedPoints:
     if records is not None:
         normalized = (
@@ -901,11 +946,14 @@ def pack_points(records=None, *, ids=None, x=None, y=None, z=None, dimension: in
         ])
         return PackedPoints(records=array, count=len(normalized), dimension=2)
 
+    if dimension not in {None, 2, 3}:
+        raise ValueError("points dimension must be one of: 2, 3")
+    vectorized = _pack_points_columns_numpy(ids, x, y, z, dimension=dimension)
+    if vectorized is not None:
+        return vectorized
     ids_list = _coerce_list("ids", ids)
     x_list = _coerce_list("x", x)
     y_list = _coerce_list("y", y)
-    if dimension not in {None, 2, 3}:
-        raise ValueError("points dimension must be one of: 2, 3")
     if dimension == 3 or z is not None:
         z_list = _coerce_list("z", z)
         count = _validate_equal_lengths("points", ids_list, x_list, y_list, z_list)

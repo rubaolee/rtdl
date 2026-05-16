@@ -5366,6 +5366,7 @@ struct PointGroupThresholdRtLaunchParams {
     const GpuPoint* search_points;
     const GpuPointGroupBounds* groups;
     uint32_t* threshold_reached_count;
+    uint32_t* threshold_flags;
     uint32_t query_count;
     uint32_t threshold;
     float radius;
@@ -6118,6 +6119,7 @@ static void count_prepared_point_group_threshold_reached_2d_optix(
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
     lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
     lp.threshold_reached_count = reinterpret_cast<uint32_t*>(d_threshold_reached_count.ptr);
+    lp.threshold_flags = nullptr;
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
     lp.radius = static_cast<float>(radius);
@@ -6143,6 +6145,91 @@ static void count_prepared_point_group_threshold_reached_2d_optix(
     auto t_end_copy = std::chrono::steady_clock::now();
     g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
     *threshold_reached_count_out = static_cast<size_t>(threshold_reached_count);
+}
+
+static void write_prepared_point_group_threshold_flags_2d_optix(
+        PreparedPointGroupNearestWitness2D* prepared,
+        const RtdlPoint* query_points,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* threshold_flags_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX point-group handle must not be null");
+    if (!threshold_flags_out && query_count != 0) throw std::runtime_error("threshold_flags_out must not be null when query_count is nonzero");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("point_group_threshold_flags radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("point_group_threshold_flags radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_threshold_flags query_count exceeds uint32 limit");
+    if (threshold > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_threshold_flags threshold exceeds uint32 limit");
+
+    if (query_count == 0) return;
+    if (prepared->groups.empty()) {
+        const uint32_t value = threshold == 0 ? 1u : 0u;
+        for (size_t i = 0; i < query_count; ++i) threshold_flags_out[i] = value;
+        g_optix_last_bvh_build_s = 0.0;
+        g_optix_last_traversal_s = 0.0;
+        g_optix_last_copy_s = 0.0;
+        return;
+    }
+
+    std::call_once(g_point_group_threshold_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kPointGroupThresholdRtKernelSrc, "point_group_threshold_rt_kernel.cu");
+        g_point_group_threshold_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__point_group_threshold_probe",
+            "__miss__point_group_threshold_miss",
+            "__intersection__point_group_threshold_isect",
+            "__anyhit__point_group_threshold_anyhit",
+            nullptr, 3).release();
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            query_points[i].id
+        };
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    DevPtr d_threshold_flags(sizeof(uint32_t) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    PointGroupThresholdRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
+    lp.threshold_reached_count = nullptr;
+    lp.threshold_flags = reinterpret_cast<uint32_t*>(d_threshold_flags.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.threshold = static_cast<uint32_t>(threshold);
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(PointGroupThresholdRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_point_group_threshold_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(PointGroupThresholdRtLaunchParams),
+                             &g_point_group_threshold_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+
+    auto t_start_copy = std::chrono::steady_clock::now();
+    download(threshold_flags_out, d_threshold_flags.ptr, query_count);
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
 }
 
 static void run_prepared_point_group_nearest_witness_2d_optix(

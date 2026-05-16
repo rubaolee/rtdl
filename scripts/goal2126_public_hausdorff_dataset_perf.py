@@ -329,6 +329,39 @@ def _run_rtdl_grouped_reduced(
     }
 
 
+def _run_rtdl_grouped_seeded_pruned(
+    points_a: np.ndarray,
+    points_b: np.ndarray,
+    *,
+    group_size: int,
+    seed_sample_count: int,
+    warmup: int,
+) -> dict[str, object]:
+    for _ in range(max(0, int(warmup))):
+        hd.hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
+            points_a,
+            points_b,
+            seed_sample_count=seed_sample_count,
+            target_points_per_group=group_size,
+        )
+    start = time.perf_counter()
+    result = hd.hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
+        points_a,
+        points_b,
+        seed_sample_count=seed_sample_count,
+        target_points_per_group=group_size,
+    )
+    return {
+        "ok": True,
+        "elapsed_sec": time.perf_counter() - start,
+        "distance": result.distance,
+        "direction": result.direction,
+        "source_index": result.source_index,
+        "target_index": result.target_index,
+        "method": result.method,
+    }
+
+
 def _safe_call(name: str, fn) -> dict[str, object]:
     try:
         return fn()
@@ -411,9 +444,28 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 f"sec={row['rtdl_rt_grouped_reduced_nearest_witness'].get('elapsed_sec')}",
                 flush=True,
             )
+        if not args.skip_rtdl_pruned:
+            print(f"[goal2126] case={name} RTDL/OptiX X-HD seeded-pruned start", flush=True)
+            row["rtdl_rt_grouped_seeded_pruned_nearest_witness"] = _safe_call(
+                "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+                lambda: _run_rtdl_grouped_seeded_pruned(
+                    points_a,
+                    points_b,
+                    group_size=group_size,
+                    seed_sample_count=args.seed_sample_count,
+                    warmup=args.warmup,
+                ),
+            )
+            print(
+                f"[goal2126] case={name} RTDL seeded-pruned done "
+                f"ok={row['rtdl_rt_grouped_seeded_pruned_nearest_witness'].get('ok')} "
+                f"sec={row['rtdl_rt_grouped_seeded_pruned_nearest_witness'].get('elapsed_sec')}",
+                flush=True,
+            )
         cupy = row.get("cupy_rawkernel")
         cupy_grouped = row.get("cupy_grouped_grid_rawkernel")
         rtdl = row.get("rtdl_rt_grouped_reduced_nearest_witness")
+        rtdl_pruned = row.get("rtdl_rt_grouped_seeded_pruned_nearest_witness")
         if isinstance(cupy, dict) and isinstance(rtdl, dict) and cupy.get("ok") and rtdl.get("ok"):
             row["matches_cupy"] = math.isclose(
                 float(cupy["distance"]),
@@ -430,6 +482,21 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 abs_tol=args.tolerance,
             )
             row["rtdl_vs_cupy_grouped_grid_ratio"] = float(rtdl["elapsed_sec"]) / float(cupy_grouped["elapsed_sec"])
+        if (
+            isinstance(cupy_grouped, dict)
+            and isinstance(rtdl_pruned, dict)
+            and cupy_grouped.get("ok")
+            and rtdl_pruned.get("ok")
+        ):
+            row["matches_cupy_grouped_grid_seeded_pruned"] = math.isclose(
+                float(cupy_grouped["distance"]),
+                float(rtdl_pruned["distance"]),
+                rel_tol=args.tolerance,
+                abs_tol=args.tolerance,
+            )
+            row["rtdl_seeded_pruned_vs_cupy_grouped_grid_ratio"] = (
+                float(rtdl_pruned["elapsed_sec"]) / float(cupy_grouped["elapsed_sec"])
+            )
         if isinstance(cupy, dict) and isinstance(cupy_grouped, dict) and cupy.get("ok") and cupy_grouped.get("ok"):
             row["cupy_grouped_grid_vs_dense_ratio"] = (
                 float(cupy_grouped["elapsed_sec"]) / float(cupy["elapsed_sec"])
@@ -445,6 +512,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "claim_boundary": {
             "public_dataset_evidence": True,
             "cupy_grouped_grid_fairness_baseline": not args.skip_cupy_grouped_grid,
+            "xhd_seeded_pruned_rtdl_path": not args.skip_rtdl_pruned,
             "xhd_paper_exact_dataset_evidence": False,
             "xy_projection_only": True,
             "three_dimensional_surface_hausdorff_claim": False,
@@ -458,11 +526,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--data-dir", type=Path, default=ROOT / "scratch" / "public_hausdorff")
     parser.add_argument("--sample-count", type=int, default=131072)
     parser.add_argument("--group-size", type=int)
+    parser.add_argument("--seed-sample-count", type=int, default=8192)
     parser.add_argument("--warmup", type=int, default=1)
     parser.add_argument("--tolerance", type=float, default=1e-6)
     parser.add_argument("--skip-cupy", action="store_true")
     parser.add_argument("--skip-cupy-grouped-grid", action="store_true")
     parser.add_argument("--skip-rtdl", action="store_true")
+    parser.add_argument("--skip-rtdl-pruned", action="store_true")
     parser.add_argument("--commit-label", default="")
     parser.add_argument("--json-out", type=Path, required=True)
     args = parser.parse_args(argv)

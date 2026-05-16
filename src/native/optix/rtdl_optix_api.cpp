@@ -2889,6 +2889,21 @@ extern "C" int rtdl_optix_count_prepared_point_group_threshold_reached_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_write_prepared_point_group_threshold_flags_2d(
+        void* prepared,
+        const RtdlPoint* query_points, size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* threshold_flags_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        write_prepared_point_group_threshold_flags_2d_optix(
+            reinterpret_cast<PreparedPointGroupNearestWitness2D*>(prepared),
+            query_points, query_count, radius, threshold, threshold_flags_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_prepared_point_group_nearest_witness_2d(
         void* prepared,
         const RtdlPoint* query_points, size_t query_count,

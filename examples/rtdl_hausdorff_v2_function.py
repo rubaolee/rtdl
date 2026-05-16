@@ -187,6 +187,43 @@ def _point_set_upper_bound(points_a: dict[str, np.ndarray], points_b: dict[str, 
     return math.hypot(max_x - min_x, max_y - min_y)
 
 
+def _subset_point_columns(columns: dict[str, np.ndarray], indices: np.ndarray) -> dict[str, np.ndarray]:
+    return {
+        "ids": np.ascontiguousarray(np.asarray(columns["ids"], dtype=np.int64)[indices], dtype=np.int64),
+        "x": np.ascontiguousarray(np.asarray(columns["x"], dtype=np.float64)[indices], dtype=np.float64),
+        "y": np.ascontiguousarray(np.asarray(columns["y"], dtype=np.float64)[indices], dtype=np.float64),
+    }
+
+
+def _seed_sample_point_columns(
+    columns: dict[str, np.ndarray],
+    *,
+    sample_count: int,
+    seed: int,
+) -> tuple[dict[str, np.ndarray], np.ndarray]:
+    count = int(columns["ids"].size)
+    if sample_count <= 0 or sample_count >= count:
+        indices = np.arange(count, dtype=np.int64)
+        return _subset_point_columns(columns, indices), indices
+    x = np.asarray(columns["x"], dtype=np.float64)
+    y = np.asarray(columns["y"], dtype=np.float64)
+    extrema = np.asarray(
+        [int(x.argmin()), int(x.argmax()), int(y.argmin()), int(y.argmax())],
+        dtype=np.int64,
+    )
+    extrema = np.unique(extrema)
+    budget = max(0, int(sample_count) - int(extrema.size))
+    all_indices = np.arange(count, dtype=np.int64)
+    remaining = np.setdiff1d(all_indices, extrema, assume_unique=False)
+    if budget > 0 and remaining.size > 0:
+        rng = np.random.default_rng(seed)
+        chosen = rng.choice(remaining, size=min(budget, int(remaining.size)), replace=False)
+        indices = np.sort(np.concatenate([extrema, chosen]).astype(np.int64))
+    else:
+        indices = np.sort(extrema)
+    return _subset_point_columns(columns, indices), indices
+
+
 def _reduce_nearest_witness_rows(
     source_points: tuple[Point, ...],
     target_points: tuple[Point, ...],
@@ -431,6 +468,91 @@ def _directed_rt_grouped_reduced_nearest_witness(
     reduced["target_points_per_group"] = target_points_per_group
     reduced["native_reduction"] = "point_group_nearest_max_distance"
     return reduced
+
+
+def _directed_rt_grouped_seeded_pruned_nearest_witness(
+    source_columns: dict[str, np.ndarray],
+    target_columns: dict[str, np.ndarray],
+    *,
+    upper_bound: float,
+    radius: float | None,
+    seed_with_threshold: bool,
+    seed_sample_count: int,
+    target_points_per_group: int,
+) -> dict[str, object]:
+    from rtdsl.optix_runtime import prepare_optix_point_group_nearest_witness_2d
+
+    source_points = _pack_point_columns_for_optix(source_columns)
+    sorted_target_columns, target_groups = _build_uniform_point_group_columns(
+        target_columns,
+        target_points_per_group=target_points_per_group,
+    )
+    sorted_target_points = _pack_point_columns_for_optix(sorted_target_columns)
+    witness_radius = float(upper_bound) if radius is None else float(radius)
+    radius_strategy = "xhd_sample_seed_threshold_prune" if seed_with_threshold else "bbox_upper_bound"
+    threshold_iterations = 0
+    threshold_elapsed_sec = 0.0
+    seed_distance = -1.0
+    unsafe_count = int(source_columns["ids"].size)
+    selected: dict[str, object] | None = None
+    search_start = time.perf_counter()
+    with prepare_optix_point_group_nearest_witness_2d(
+        sorted_target_points,
+        target_groups,
+        max_radius=witness_radius,
+    ) as prepared:
+        if seed_with_threshold and int(source_columns["ids"].size) > int(seed_sample_count) > 0:
+            seed_columns, _seed_indices = _seed_sample_point_columns(
+                source_columns,
+                sample_count=seed_sample_count,
+                seed=2131 + int(source_columns["ids"].size),
+            )
+            seed_points = _pack_point_columns_for_optix(seed_columns)
+            seed_row = prepared.nearest_max_distance_row(seed_points, radius=witness_radius)
+            seed_reduced = _reduce_nearest_max_distance_row(source_columns, target_columns, seed_row)
+            seed_distance = float(seed_reduced["distance"])
+            safety_margin = max(1.0e-7, abs(seed_distance) * 1.0e-6)
+            threshold_radius = max(0.0, seed_distance - safety_margin)
+            flags = np.asarray(
+                prepared.threshold_flags(source_points, radius=threshold_radius, threshold=1),
+                dtype=np.uint32,
+            )
+            unsafe_indices = np.nonzero(flags == 0)[0].astype(np.int64)
+            unsafe_count = int(unsafe_indices.size)
+            threshold_iterations = 1
+            if unsafe_count == 0:
+                selected = seed_reduced
+            else:
+                unsafe_columns = _subset_point_columns(source_columns, unsafe_indices)
+                unsafe_points = _pack_point_columns_for_optix(unsafe_columns)
+                unsafe_row = prepared.nearest_max_distance_row(unsafe_points, radius=witness_radius)
+                unsafe_reduced = _reduce_nearest_max_distance_row(source_columns, target_columns, unsafe_row)
+                if (
+                    float(unsafe_reduced["distance"]) > seed_distance
+                    or (
+                        math.isclose(float(unsafe_reduced["distance"]), seed_distance)
+                        and int(unsafe_reduced["source_index"]) < int(seed_reduced["source_index"])
+                    )
+                ):
+                    selected = unsafe_reduced
+                else:
+                    selected = seed_reduced
+        if selected is None:
+            row = prepared.nearest_max_distance_row(source_points, radius=witness_radius)
+            selected = _reduce_nearest_max_distance_row(source_columns, target_columns, row)
+            seed_distance = float(selected["distance"])
+            unsafe_count = int(source_columns["ids"].size)
+    selected["witness_radius"] = witness_radius
+    selected["radius_strategy"] = radius_strategy
+    selected["threshold_iterations"] = threshold_iterations
+    selected["threshold_elapsed_sec"] = time.perf_counter() - search_start
+    selected["target_group_count"] = len(target_groups)
+    selected["target_points_per_group"] = target_points_per_group
+    selected["native_reduction"] = "point_group_nearest_max_distance_with_threshold_flags"
+    selected["seed_sample_count"] = min(int(seed_sample_count), int(source_columns["ids"].size))
+    selected["seed_distance"] = seed_distance
+    selected["unsafe_count"] = unsafe_count
+    return selected
 
 
 def _directed_rt_grouped_adaptive_nearest_witness(
@@ -713,6 +835,69 @@ def hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
     )
 
 
+def hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
+    points_a: Sequence[Sequence[float]] | np.ndarray,
+    points_b: Sequence[Sequence[float]] | np.ndarray,
+    *,
+    radius: float | None = None,
+    seed_with_threshold: bool = True,
+    seed_sample_count: int = 8192,
+    target_points_per_group: int = 64,
+) -> HausdorffRtNearestResult:
+    """Return exact HD using X-HD-style sample seeding and safe-point pruning.
+
+    A sample exact pass produces a real lower-bound witness. A generic
+    point-group threshold-flags pass then marks source points that already have
+    a target within that distance; those points cannot improve the directed HD,
+    so only the remaining unsafe subset needs the exact nearest-witness
+    reduction. The native engine still only sees generic point/group/radius
+    operations.
+    """
+
+    columns_a = _as_point_columns(points_a, name="points_a")
+    columns_b = _as_point_columns(points_b, name="points_b")
+    upper_bound = _point_set_upper_bound(columns_a, columns_b)
+    start = time.perf_counter()
+    ab = _directed_rt_grouped_seeded_pruned_nearest_witness(
+        columns_a,
+        columns_b,
+        upper_bound=upper_bound,
+        radius=radius,
+        seed_with_threshold=seed_with_threshold,
+        seed_sample_count=seed_sample_count,
+        target_points_per_group=target_points_per_group,
+    )
+    ba = _directed_rt_grouped_seeded_pruned_nearest_witness(
+        columns_b,
+        columns_a,
+        upper_bound=upper_bound,
+        radius=radius,
+        seed_with_threshold=seed_with_threshold,
+        seed_sample_count=seed_sample_count,
+        target_points_per_group=target_points_per_group,
+    )
+    if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
+        selected = ab
+        direction = "a_to_b"
+    else:
+        selected = ba
+        direction = "b_to_a"
+    return HausdorffRtNearestResult(
+        distance=float(selected["distance"]),
+        direction=direction,
+        source_index=int(selected["source_index"]),
+        target_index=int(selected["target_index"]),
+        elapsed_sec=time.perf_counter() - start,
+        method="rtdl_rt_grouped_seeded_pruned_nearest_witness",
+        backend="optix",
+        rt_core_accelerated=True,
+        exact_value=True,
+        witness_radius=max(float(ab["witness_radius"]), float(ba["witness_radius"])),
+        radius_strategy=str(selected["radius_strategy"]),
+        threshold_iterations=int(ab["threshold_iterations"]) + int(ba["threshold_iterations"]),
+    )
+
+
 def hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
     points_a: Sequence[Sequence[float]] | np.ndarray,
     points_b: Sequence[Sequence[float]] | np.ndarray,
@@ -915,6 +1100,16 @@ def hausdorff_distance_2d(
             elapsed_sec=rt_result.elapsed_sec,
             method=method,
         )
+    if method == "rtdl_rt_grouped_seeded_pruned_nearest_witness":
+        rt_result = hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(points_a, points_b)
+        return HausdorffResult(
+            distance=rt_result.distance,
+            direction=rt_result.direction,
+            source_index=rt_result.source_index,
+            target_index=rt_result.target_index,
+            elapsed_sec=rt_result.elapsed_sec,
+            method=method,
+        )
     if method == "rtdl_rt_grouped_adaptive_nearest_witness":
         rt_result = hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(points_a, points_b)
         return HausdorffResult(
@@ -961,6 +1156,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             "rtdl_rt_nearest_witness",
             "rtdl_rt_grouped_nearest_witness",
             "rtdl_rt_grouped_reduced_nearest_witness",
+            "rtdl_rt_grouped_seeded_pruned_nearest_witness",
             "rtdl_rt_grouped_adaptive_nearest_witness",
             "rtdl_rt_threshold_search",
             "openmp_cpu",
@@ -1022,6 +1218,15 @@ def main(argv: Iterable[str] | None = None) -> int:
             seed_with_threshold=not args.rt_nearest_no_threshold_seed,
             threshold_tolerance=args.rt_tolerance,
             threshold_max_iterations=args.rt_max_iterations,
+        )
+        primary_distance = rt_exact.distance
+        payload = {"primary": asdict(rt_exact)}
+    elif args.method == "rtdl_rt_grouped_seeded_pruned_nearest_witness":
+        rt_exact = hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
+            points_a,
+            points_b,
+            radius=args.rt_nearest_radius,
+            seed_with_threshold=not args.rt_nearest_no_threshold_seed,
         )
         primary_distance = rt_exact.distance
         payload = {"primary": asdict(rt_exact)}

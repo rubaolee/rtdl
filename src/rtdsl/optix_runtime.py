@@ -71,6 +71,7 @@ from .embree_runtime import PackedVertexFrontier
 from .embree_runtime import PackedVertexSet
 from .embree_runtime import PackedEdgeSet
 from .embree_runtime import _encode_all_db_text_columns
+from .embree_runtime import _pack_points_columns_numpy
 from .db_reference import PredicateClause
 from .db_reference import normalize_denorm_table
 from .db_reference import normalize_grouped_query
@@ -1252,6 +1253,55 @@ class PreparedOptixPointGroupNearestWitness2D:
         )
         _check_status(status, error)
         return int(threshold_reached_count.value)
+
+    def threshold_flags(self, query_points, *, radius: float, threshold: int = 0):
+        """Return one uint32 threshold-reached flag per query point.
+
+        This is the per-query form of ``count_threshold_reached``. It remains
+        app-agnostic: callers provide points, group bounds, a radius, and a
+        threshold; higher-level code decides how to use the safe/unsafe mask.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX point-group handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixPointGroupNearestWitness2D.threshold_flags requires 2-D points")
+
+        import numpy as _np
+
+        if packed_queries.count == 0:
+            return _np.asarray([], dtype=_np.uint32)
+        if self._packed_search.count == 0 or self._group_count == 0:
+            value = 1 if int(threshold) == 0 else 0
+            return _np.full(packed_queries.count, value, dtype=_np.uint32)
+
+        lib = _load_optix_library()
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_write_prepared_point_group_threshold_flags_2d")
+        if symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_write_prepared_point_group_threshold_flags_2d; rebuild the OptiX backend from current main"
+            )
+        flags = (ctypes.c_uint32 * packed_queries.count)()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            flags,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return _np.ctypeslib.as_array(flags).copy()
 
     def nearest_witness_rows(self, query_points, *, radius: float) -> tuple[dict[str, object], ...]:
         if self._closed:
@@ -2571,11 +2621,14 @@ def pack_points(records=None, *, ids=None, x=None, y=None, z=None, dimension: in
                 raise ValueError("points packed for a 2D layout must provide 2D point records")
         arr = (_RtdlPoint * len(norm))(*[_RtdlPoint(r.id, r.x, r.y) for r in norm])
         return PackedPoints(records=arr, count=len(norm), dimension=2)
+    if dimension not in {None, 2, 3}:
+        raise ValueError("points dimension must be one of: 2, 3")
+    vectorized = _pack_points_columns_numpy(ids, x, y, z, dimension=dimension)
+    if vectorized is not None:
+        return vectorized
     ids_l = _coerce_list("ids", ids)
     x_l = _coerce_list("x", x)
     y_l = _coerce_list("y", y)
-    if dimension not in {None, 2, 3}:
-        raise ValueError("points dimension must be one of: 2, 3")
     if dimension == 3 or z is not None:
         z_l = _coerce_list("z", z)
         n = _validate_equal_lengths("points", ids_l, x_l, y_l, z_l)
@@ -5678,6 +5731,20 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_point_group_threshold.restype = ctypes.c_int
+
+    optional_write_point_group_threshold_flags = _find_optional_backend_symbol(
+        lib, "rtdl_optix_write_prepared_point_group_threshold_flags_2d"
+    )
+    if optional_write_point_group_threshold_flags is not None:
+        optional_write_point_group_threshold_flags.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_write_point_group_threshold_flags.restype = ctypes.c_int
 
     optional_run_point_group_nearest = _find_optional_backend_symbol(
         lib, "rtdl_optix_run_prepared_point_group_nearest_witness_2d"

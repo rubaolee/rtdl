@@ -3675,6 +3675,7 @@ struct PointGroupThresholdParams {
     const GpuPoint* search_points;
     const PointGroupBounds* groups;
     uint32_t* threshold_reached_count;
+    uint32_t* threshold_flags;
     uint32_t query_count;
     uint32_t threshold;
     float radius;
@@ -3708,6 +3709,9 @@ extern "C" __global__ void __raygen__point_group_threshold_probe() {
                p0, p1, p2);
     if (params.threshold_reached_count && p2 != 0u) {
         atomicAdd(params.threshold_reached_count, 1u);
+    }
+    if (params.threshold_flags) {
+        params.threshold_flags[idx] = p2 != 0u ? 1u : 0u;
     }
 }
 
