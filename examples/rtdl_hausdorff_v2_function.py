@@ -145,6 +145,117 @@ def _directed_rt_nearest_witness(
     }
 
 
+def _reduce_nearest_witness_rows(
+    source_points: tuple[Point, ...],
+    target_points: tuple[Point, ...],
+    target_columns: dict[str, np.ndarray],
+    rows: tuple[dict[str, object], ...],
+) -> dict[str, object]:
+    if len(rows) != len(source_points):
+        raise RuntimeError("nearest_witness_rows must return one row per source point")
+    target_by_id = {int(point.id): point for point in target_points}
+    target_id_to_index = {int(target_columns["ids"][i]): i for i in range(int(target_columns["ids"].size))}
+    best_distance = -1.0
+    best_source_index = -1
+    best_target_index = -1
+    for source_index, row in enumerate(rows):
+        neighbor_id = int(row["neighbor_id"])
+        if neighbor_id == 0xFFFFFFFF:
+            raise RuntimeError("nearest_witness_rows did not find a witness; increase radius")
+        target_point = target_by_id[neighbor_id]
+        source_point = source_points[source_index]
+        distance = math.hypot(source_point.x - target_point.x, source_point.y - target_point.y)
+        if distance > best_distance or (
+            math.isclose(distance, best_distance) and source_index < best_source_index
+        ):
+            best_distance = distance
+            best_source_index = source_index
+            best_target_index = target_id_to_index[neighbor_id]
+    return {
+        "distance": best_distance,
+        "source_index": best_source_index,
+        "target_index": best_target_index,
+        "row_count": len(rows),
+    }
+
+
+def _threshold_search_prepared(
+    source_points: tuple[Point, ...],
+    prepared,
+    *,
+    tolerance: float,
+    max_iterations: int,
+    upper_bound: float,
+) -> dict[str, object]:
+    low = 0.0
+    high = float(upper_bound)
+    if high <= 0.0:
+        return {"lower_bound": 0.0, "upper_bound": 0.0, "iterations": 0, "elapsed_sec": 0.0}
+    start = time.perf_counter()
+    for iteration in range(1, max_iterations + 1):
+        mid = (low + high) * 0.5
+        result = prepared.count_threshold_reached(source_points, radius=mid, threshold=1)
+        if int(result["threshold_reached_count"]) == len(source_points):
+            high = mid
+        else:
+            low = mid
+        if high - low <= tolerance:
+            break
+    else:
+        iteration = max_iterations
+    return {
+        "lower_bound": low,
+        "upper_bound": high,
+        "iterations": iteration,
+        "elapsed_sec": time.perf_counter() - start,
+    }
+
+
+def _directed_rt_threshold_seeded_nearest_witness(
+    source_columns: dict[str, np.ndarray],
+    target_columns: dict[str, np.ndarray],
+    *,
+    backend: str,
+    upper_bound: float,
+    radius: float | None,
+    seed_with_threshold: bool,
+    threshold_tolerance: float,
+    threshold_max_iterations: int,
+) -> dict[str, object]:
+    source_points = _columns_to_points(source_columns)
+    target_points = _columns_to_points(target_columns)
+    witness_radius = float(upper_bound) if radius is None else float(radius)
+    threshold_iterations = 0
+    threshold_elapsed_sec = 0.0
+    radius_strategy = "bbox_upper_bound" if radius is None else "explicit_radius"
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(
+        search_points=target_points,
+        backend=backend,
+        max_radius=upper_bound if backend == "optix" else None,
+    ) as prepared:
+        if radius is None and seed_with_threshold:
+            threshold = _threshold_search_prepared(
+                source_points,
+                prepared,
+                tolerance=threshold_tolerance,
+                max_iterations=threshold_max_iterations,
+                upper_bound=upper_bound,
+            )
+            witness_radius = float(threshold["upper_bound"])
+            threshold_iterations = int(threshold["iterations"])
+            threshold_elapsed_sec = float(threshold["elapsed_sec"])
+            radius_strategy = "rt_threshold_upper_bound"
+        if not hasattr(prepared._prepared_scene, "nearest_witness_rows"):
+            raise RuntimeError(f"{backend} prepared fixed-radius scene does not expose nearest_witness_rows")
+        rows = prepared._prepared_scene.nearest_witness_rows(source_points, radius=witness_radius)
+    reduced = _reduce_nearest_witness_rows(source_points, target_points, target_columns, rows)
+    reduced["witness_radius"] = witness_radius
+    reduced["radius_strategy"] = radius_strategy
+    reduced["threshold_iterations"] = threshold_iterations
+    reduced["threshold_elapsed_sec"] = threshold_elapsed_sec
+    return reduced
+
+
 def hausdorff_distance_2d_rt_nearest_witness(
     points_a: Sequence[Sequence[float]] | np.ndarray,
     points_b: Sequence[Sequence[float]] | np.ndarray,
@@ -167,23 +278,28 @@ def hausdorff_distance_2d_rt_nearest_witness(
         raise ValueError("rt nearest-witness HD currently requires backend='optix'")
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
-    threshold_iterations = 0
-    radius_strategy = "bbox_upper_bound"
-    witness_radius = _point_set_upper_bound(columns_a, columns_b) if radius is None else float(radius)
+    upper_bound = _point_set_upper_bound(columns_a, columns_b)
     start = time.perf_counter()
-    if radius is None and seed_with_threshold:
-        threshold = hausdorff_distance_2d_rt_threshold_search(
-            points_a,
-            points_b,
-            backend=backend,
-            tolerance=threshold_tolerance,
-            max_iterations=threshold_max_iterations,
-        )
-        witness_radius = threshold.distance_upper_bound
-        threshold_iterations = threshold.iterations
-        radius_strategy = "rt_threshold_upper_bound"
-    ab = _directed_rt_nearest_witness(columns_a, columns_b, backend=backend, radius=witness_radius)
-    ba = _directed_rt_nearest_witness(columns_b, columns_a, backend=backend, radius=witness_radius)
+    ab = _directed_rt_threshold_seeded_nearest_witness(
+        columns_a,
+        columns_b,
+        backend=backend,
+        upper_bound=upper_bound,
+        radius=radius,
+        seed_with_threshold=seed_with_threshold,
+        threshold_tolerance=threshold_tolerance,
+        threshold_max_iterations=threshold_max_iterations,
+    )
+    ba = _directed_rt_threshold_seeded_nearest_witness(
+        columns_b,
+        columns_a,
+        backend=backend,
+        upper_bound=upper_bound,
+        radius=radius,
+        seed_with_threshold=seed_with_threshold,
+        threshold_tolerance=threshold_tolerance,
+        threshold_max_iterations=threshold_max_iterations,
+    )
     if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
         selected = ab
         direction = "a_to_b"
@@ -200,9 +316,9 @@ def hausdorff_distance_2d_rt_nearest_witness(
         backend=backend,
         rt_core_accelerated=True,
         exact_value=True,
-        witness_radius=witness_radius,
-        radius_strategy=radius_strategy,
-        threshold_iterations=threshold_iterations,
+        witness_radius=max(float(ab["witness_radius"]), float(ba["witness_radius"])),
+        radius_strategy=str(selected["radius_strategy"]),
+        threshold_iterations=int(ab["threshold_iterations"]) + int(ba["threshold_iterations"]),
     )
 
 
@@ -228,23 +344,15 @@ def _directed_hd_threshold_search(
         backend=backend,
         max_radius=high if backend == "optix" else None,
     ) as prepared:
-        for iteration in range(1, max_iterations + 1):
-            mid = (low + high) * 0.5
-            result = prepared.count_threshold_reached(source_points, radius=mid, threshold=1)
-            if int(result["threshold_reached_count"]) == len(source_points):
-                high = mid
-            else:
-                low = mid
-            if high - low <= tolerance:
-                break
-        else:
-            iteration = max_iterations
-    return {
-        "lower_bound": low,
-        "upper_bound": high,
-        "iterations": iteration,
-        "elapsed_sec": time.perf_counter() - start,
-    }
+        result = _threshold_search_prepared(
+            source_points,
+            prepared,
+            tolerance=tolerance,
+            max_iterations=max_iterations,
+            upper_bound=high,
+        )
+    result["elapsed_sec"] = time.perf_counter() - start
+    return result
 
 
 def hausdorff_distance_2d_rt_threshold_search(

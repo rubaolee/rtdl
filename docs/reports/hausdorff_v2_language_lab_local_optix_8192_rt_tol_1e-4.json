@@ -1,0 +1,66 @@
+{
+  "exact_reference": {
+    "direction": "a_to_b",
+    "distance": 0.12003618286664636,
+    "method": "openmp_cpu",
+    "source_index": 8034,
+    "target_index": 3950
+  },
+  "results": {
+    "openmp_cpu": {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "distance_for_compare": 0.12003618286664636,
+      "elapsed_sec": 0.06538323394488543,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "multi-threaded C++/OpenMP double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "openmp_cpu",
+      "ok": true,
+      "source_index": 8034,
+      "target_index": 3950
+    },
+    "rtdl_rt_nearest_witness": {
+      "backend": "optix",
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "distance_for_compare": 0.12003618286664636,
+      "elapsed_sec": 1.6336996878962964,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "OptiX nearest-witness traversal seeded by threshold-search upper bound",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_nearest_witness",
+      "ok": true,
+      "radius_strategy": "rt_threshold_upper_bound",
+      "rt_core_accelerated": true,
+      "source_index": 8034,
+      "target_index": 3950,
+      "threshold_iterations": 32,
+      "witness_radius": 0.1200579068598398
+    }
+  },
+  "scenario": {
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "points_a": 8192,
+    "points_b": 8192,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}
