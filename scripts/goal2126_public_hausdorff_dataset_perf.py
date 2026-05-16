@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import math
 import shutil
@@ -38,6 +39,68 @@ STANFORD_DATASETS = {
         "source": "Stanford 3D Scanning Repository",
     },
 }
+
+XHD_GRAPHICS_DATASETS = {
+    "dragon": {
+        "kind": "tar_gz",
+        "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz",
+        "archive": "dragon_recon.tar.gz",
+        "preferred_ply": "dragon_vrip.ply",
+        "source": "Stanford 3D Scanning Repository; X-HD graphics pair member",
+    },
+    "happy_buddha": {
+        "kind": "tar_gz",
+        "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz",
+        "archive": "happy_recon.tar.gz",
+        "preferred_ply": "happy_vrip.ply",
+        "source": "Stanford 3D Scanning Repository; X-HD graphics pair member",
+    },
+    "asian_dragon": {
+        "kind": "ply_gz",
+        "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz",
+        "archive": "xyzrgb_dragon.ply.gz",
+        "ply_name": "asian_dragon.ply",
+        "source": "Stanford 3D Scanning Repository XYZ RGB model; X-HD graphics pair member",
+    },
+    "thai_statuette": {
+        "kind": "ply_gz",
+        "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz",
+        "archive": "xyzrgb_statuette.ply.gz",
+        "ply_name": "thai_statuette.ply",
+        "source": "Stanford 3D Scanning Repository XYZ RGB model; X-HD graphics pair member",
+    },
+}
+
+XHD_GRAPHICS_PAIRS = (
+    (
+        "xhd_graphics_dragon_vs_asian_dragon_xy",
+        "dragon",
+        "asian_dragon",
+        "X-HD graphics pair: Stanford Dragon vs XYZ RGB Asian Dragon, projected to XY.",
+        "mixed-density",
+    ),
+    (
+        "xhd_graphics_thai_statuette_vs_happy_buddha_xy",
+        "thai_statuette",
+        "happy_buddha",
+        "X-HD graphics pair: XYZ RGB Thai Statuette vs Happy Buddha, projected to XY.",
+        "dense-to-medium",
+    ),
+    (
+        "xhd_graphics_dragon_vs_happy_buddha_xy",
+        "dragon",
+        "happy_buddha",
+        "X-HD graphics pair: Stanford Dragon vs Happy Buddha, projected to XY.",
+        "medium",
+    ),
+    (
+        "xhd_graphics_thai_statuette_vs_asian_dragon_xy",
+        "thai_statuette",
+        "asian_dragon",
+        "X-HD graphics pair: XYZ RGB Thai Statuette vs XYZ RGB Asian Dragon, projected to XY.",
+        "dense",
+    ),
+)
 
 
 PLY_SCALAR_TYPES = {
@@ -191,6 +254,18 @@ def _extract_archive(archive: Path, extract_dir: Path) -> None:
     marker.write_text("ok\n", encoding="ascii")
 
 
+def _decompress_gzip(archive: Path, out_path: Path) -> None:
+    marker = out_path.with_suffix(out_path.suffix + ".decompressed")
+    if marker.exists() and out_path.exists() and out_path.stat().st_size > 0:
+        print(f"[goal2126] using decompressed {out_path}", flush=True)
+        return
+    print(f"[goal2126] decompressing {archive} -> {out_path}", flush=True)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with gzip.open(archive, "rb") as src, out_path.open("wb") as dst:
+        shutil.copyfileobj(src, dst, length=1024 * 1024)
+    marker.write_text("ok\n", encoding="ascii")
+
+
 def ensure_stanford_dataset(name: str, data_dir: Path) -> Path:
     dataset = STANFORD_DATASETS[name]
     archive = data_dir / dataset["archive"]
@@ -205,6 +280,29 @@ def ensure_stanford_dataset(name: str, data_dir: Path) -> Path:
     if not candidates:
         raise FileNotFoundError(f"no PLY files found under {extract_dir}")
     return candidates[0]
+
+
+def ensure_xhd_graphics_dataset(name: str, data_dir: Path) -> Path:
+    dataset = XHD_GRAPHICS_DATASETS[name]
+    archive = data_dir / str(dataset["archive"])
+    _download(str(dataset["url"]), archive)
+    kind = str(dataset["kind"])
+    if kind == "tar_gz":
+        extract_dir = data_dir / name
+        _extract_archive(archive, extract_dir)
+        preferred = str(dataset["preferred_ply"])
+        candidates = sorted(extract_dir.rglob("*.ply"))
+        for candidate in candidates:
+            if candidate.name == preferred:
+                return candidate
+        if not candidates:
+            raise FileNotFoundError(f"no PLY files found under {extract_dir}")
+        return candidates[0]
+    if kind == "ply_gz":
+        out_path = data_dir / str(dataset["ply_name"])
+        _decompress_gzip(archive, out_path)
+        return out_path
+    raise ValueError(f"unsupported X-HD graphics dataset kind {kind!r}")
 
 
 def deterministic_sample(points: np.ndarray, count: int, *, seed: int) -> np.ndarray:
@@ -225,7 +323,7 @@ def normalize_project_xy(points: np.ndarray) -> np.ndarray:
     return np.ascontiguousarray((xy - lo) / span, dtype=np.float64)
 
 
-def make_public_cases(data_dir: Path, *, sample_count: int) -> dict[str, dict[str, object]]:
+def make_stanford_cases(data_dir: Path, *, sample_count: int) -> dict[str, dict[str, object]]:
     dragon_ply = ensure_stanford_dataset("dragon", data_dir)
     happy_ply = ensure_stanford_dataset("happy", data_dir)
     print(f"[goal2126] loading {dragon_ply}", flush=True)
@@ -247,6 +345,48 @@ def make_public_cases(data_dir: Path, *, sample_count: int) -> dict[str, dict[st
             "description": "Dragon and Happy Buddha vertices independently normalized and projected to XY.",
         },
     }
+
+
+def make_xhd_graphics_cases(data_dir: Path, *, sample_count: int) -> dict[str, dict[str, object]]:
+    loaded: dict[str, tuple[Path, np.ndarray]] = {}
+    for index, name in enumerate(XHD_GRAPHICS_DATASETS):
+        ply = ensure_xhd_graphics_dataset(name, data_dir)
+        print(f"[goal2126] loading X-HD graphics {name}: {ply}", flush=True)
+        points = normalize_project_xy(
+            deterministic_sample(load_ply_xyz(ply), sample_count, seed=2134 + index)
+        )
+        loaded[name] = (ply, points)
+
+    cases: dict[str, dict[str, object]] = {}
+    for case_name, left, right, description, density_class in XHD_GRAPHICS_PAIRS:
+        left_path, points_a = loaded[left]
+        right_path, points_b = loaded[right]
+        cases[case_name] = {
+            "points_a": points_a,
+            "points_b": points_b,
+            "source_paths": [str(left_path), str(right_path)],
+            "description": description,
+            "density_class": density_class,
+            "xhd_paper_graphics_pair": True,
+        }
+    return cases
+
+
+def make_public_cases(
+    data_dir: Path,
+    *,
+    sample_count: int,
+    case_suite: str,
+) -> dict[str, dict[str, object]]:
+    if case_suite == "stanford":
+        return make_stanford_cases(data_dir, sample_count=sample_count)
+    if case_suite == "xhd-graphics":
+        return make_xhd_graphics_cases(data_dir, sample_count=sample_count)
+    if case_suite == "all":
+        cases = make_stanford_cases(data_dir, sample_count=sample_count)
+        cases.update(make_xhd_graphics_cases(data_dir, sample_count=sample_count))
+        return cases
+    raise ValueError(f"unsupported case suite {case_suite!r}")
 
 
 def _run_cupy(points_a: np.ndarray, points_b: np.ndarray, *, warmup: int) -> dict[str, object]:
@@ -389,7 +529,11 @@ def _gpu_summary() -> str:
 
 
 def run(args: argparse.Namespace) -> dict[str, object]:
-    cases = make_public_cases(args.data_dir, sample_count=args.sample_count)
+    cases = make_public_cases(
+        args.data_dir,
+        sample_count=args.sample_count,
+        case_suite=args.case_suite,
+    )
     rows: list[dict[str, object]] = []
     for name, case in cases.items():
         points_a = np.asarray(case["points_a"], dtype=np.float64)
@@ -400,6 +544,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "case": name,
             "sample_count": int(points_a.shape[0]),
             "description": case["description"],
+            "density_class": case.get("density_class", "not-classified"),
             "source_paths": case["source_paths"],
             "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
             "target_points_per_group": group_size,
@@ -507,12 +652,15 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "commit": args.commit_label,
         "gpu": _gpu_summary(),
         "datasets": STANFORD_DATASETS,
+        "xhd_graphics_datasets": XHD_GRAPHICS_DATASETS,
+        "case_suite": args.case_suite,
         "sample_count": args.sample_count,
         "rows": rows,
         "claim_boundary": {
             "public_dataset_evidence": True,
             "cupy_grouped_grid_fairness_baseline": not args.skip_cupy_grouped_grid,
             "xhd_seeded_pruned_rtdl_path": not args.skip_rtdl_pruned,
+            "xhd_paper_graphics_dataset_names": args.case_suite in {"xhd-graphics", "all"},
             "xhd_paper_exact_dataset_evidence": False,
             "xy_projection_only": True,
             "three_dimensional_surface_hausdorff_claim": False,
@@ -524,6 +672,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Public Stanford-scan Hausdorff dataset perf harness.")
     parser.add_argument("--data-dir", type=Path, default=ROOT / "scratch" / "public_hausdorff")
+    parser.add_argument("--case-suite", choices=("stanford", "xhd-graphics", "all"), default="stanford")
     parser.add_argument("--sample-count", type=int, default=131072)
     parser.add_argument("--group-size", type=int)
     parser.add_argument("--seed-sample-count", type=int, default=8192)
