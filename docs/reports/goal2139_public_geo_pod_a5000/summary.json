@@ -1,0 +1,132 @@
+{
+  "rows": [
+    {
+      "artifact": "public_geo_xy_131072_group_1024.json",
+      "case": "public_geo_census_counties_vs_zcta_xy",
+      "cupy_grouped_sec": 1.0182653814554214,
+      "density_class": "detailed-census",
+      "distance": 0.43828739928004823,
+      "group": 1024,
+      "match": true,
+      "ratio": 0.1413062941305326,
+      "rtdl_seeded_pruned_sec": 0.14388730749487877,
+      "sample_count": 131072,
+      "source_total_points": {
+        "census_counties": 8201082,
+        "census_zcta": 51216593
+      }
+    },
+    {
+      "artifact": "public_geo_xy_131072_group_1024.json",
+      "case": "public_geo_lakes_vs_parks_xy",
+      "cupy_grouped_sec": 0.08567051216959953,
+      "density_class": "sparse-naturalearth",
+      "distance": 0.3578780855875698,
+      "group": 1024,
+      "match": true,
+      "ratio": 0.8309753231758069,
+      "rtdl_seeded_pruned_sec": 0.07119008153676987,
+      "sample_count": 131072,
+      "source_total_points": {
+        "naturalearth_lakes": 162852,
+        "naturalearth_parks": 7041
+      }
+    },
+    {
+      "artifact": "public_geo_xy_131072_group_2048.json",
+      "case": "public_geo_census_counties_vs_zcta_xy",
+      "cupy_grouped_sec": 1.0144856069236994,
+      "density_class": "detailed-census",
+      "distance": 0.43828739928004823,
+      "group": 2048,
+      "match": true,
+      "ratio": 0.14620664969052213,
+      "rtdl_seeded_pruned_sec": 0.14832454174757004,
+      "sample_count": 131072,
+      "source_total_points": {
+        "census_counties": 8201082,
+        "census_zcta": 51216593
+      }
+    },
+    {
+      "artifact": "public_geo_xy_131072_group_2048.json",
+      "case": "public_geo_lakes_vs_parks_xy",
+      "cupy_grouped_sec": 0.0920633114874363,
+      "density_class": "sparse-naturalearth",
+      "distance": 0.3578780855875698,
+      "group": 2048,
+      "match": true,
+      "ratio": 0.7756240355047941,
+      "rtdl_seeded_pruned_sec": 0.0714065171778202,
+      "sample_count": 131072,
+      "source_total_points": {
+        "naturalearth_lakes": 162852,
+        "naturalearth_parks": 7041
+      }
+    },
+    {
+      "artifact": "public_geo_xy_262144_group_1024.json",
+      "case": "public_geo_census_counties_vs_zcta_xy",
+      "cupy_grouped_sec": 3.7601283360272646,
+      "density_class": "detailed-census",
+      "distance": 0.44176296446773294,
+      "group": 1024,
+      "match": true,
+      "ratio": 0.08006508567410346,
+      "rtdl_seeded_pruned_sec": 0.301054997369647,
+      "sample_count": 262144,
+      "source_total_points": {
+        "census_counties": 8201082,
+        "census_zcta": 51216593
+      }
+    },
+    {
+      "artifact": "public_geo_xy_262144_group_1024.json",
+      "case": "public_geo_lakes_vs_parks_xy",
+      "cupy_grouped_sec": 0.09207329526543617,
+      "density_class": "sparse-naturalearth",
+      "distance": 0.3578780855875698,
+      "group": 1024,
+      "match": true,
+      "ratio": 0.7117690036918584,
+      "rtdl_seeded_pruned_sec": 0.0655349176377058,
+      "sample_count": 162852,
+      "source_total_points": {
+        "naturalearth_lakes": 162852,
+        "naturalearth_parks": 7041
+      }
+    },
+    {
+      "artifact": "public_geo_xy_262144_group_2048.json",
+      "case": "public_geo_census_counties_vs_zcta_xy",
+      "cupy_grouped_sec": 3.9044198486953974,
+      "density_class": "detailed-census",
+      "distance": 0.44176296446773294,
+      "group": 2048,
+      "match": true,
+      "ratio": 0.08628805530556716,
+      "rtdl_seeded_pruned_sec": 0.3369047958403826,
+      "sample_count": 262144,
+      "source_total_points": {
+        "census_counties": 8201082,
+        "census_zcta": 51216593
+      }
+    },
+    {
+      "artifact": "public_geo_xy_262144_group_2048.json",
+      "case": "public_geo_lakes_vs_parks_xy",
+      "cupy_grouped_sec": 0.113681485876441,
+      "density_class": "sparse-naturalearth",
+      "distance": 0.3578780855875698,
+      "group": 2048,
+      "match": true,
+      "ratio": 0.6760142005502235,
+      "rtdl_seeded_pruned_sec": 0.0768502987921238,
+      "sample_count": 162852,
+      "source_total_points": {
+        "naturalearth_lakes": 162852,
+        "naturalearth_parks": 7041
+      }
+    }
+  ]
+}

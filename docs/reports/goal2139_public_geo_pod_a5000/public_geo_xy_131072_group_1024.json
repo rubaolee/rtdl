@@ -1,0 +1,161 @@
+{
+  "case_suite": "public-geo",
+  "claim_boundary": {
+    "cupy_grouped_grid_fairness_baseline": true,
+    "public_dataset_evidence": true,
+    "public_geo_dataset_family": true,
+    "release_speedup_claim_authorized": false,
+    "three_dimensional_surface_hausdorff_claim": false,
+    "xhd_original_wkt_files": false,
+    "xhd_paper_exact_dataset_evidence": false,
+    "xhd_paper_graphics_dataset_names": false,
+    "xhd_seeded_pruned_rtdl_path": true,
+    "xy_projection_only": true
+  },
+  "commit": "5370a8eeaf3cd8017b8573216e541961a5737468",
+  "datasets": {
+    "dragon": {
+      "archive": "dragon_recon.tar.gz",
+      "preferred_ply": "dragon_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+    },
+    "happy": {
+      "archive": "happy_recon.tar.gz",
+      "preferred_ply": "happy_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+    }
+  },
+  "goal": "goal2126_public_hausdorff_dataset_perf",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "public_geo_datasets": {
+    "census_counties": {
+      "archive": "tl_2023_us_county.zip",
+      "shp_name": "tl_2023_us_county.shp",
+      "source": "U.S. Census TIGER/Line 2023 county boundaries; public analogue for X-HD dtl_cnty.wkt",
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip"
+    },
+    "census_zcta": {
+      "archive": "tl_2023_us_zcta520.zip",
+      "shp_name": "tl_2023_us_zcta520.shp",
+      "source": "U.S. Census TIGER/Line 2023 2020 ZCTA boundaries; public analogue for X-HD uszipcode.wkt",
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/ZCTA520/tl_2023_us_zcta520.zip"
+    },
+    "naturalearth_lakes": {
+      "archive": "ne_10m_lakes.zip",
+      "shp_name": "ne_10m_lakes.shp",
+      "source": "Natural Earth 1:10m lakes and reservoirs; public analogue for X-HD lakes.wkt",
+      "url": "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_lakes.zip"
+    },
+    "naturalearth_parks": {
+      "archive": "ne_10m_parks_and_protected_lands.zip",
+      "shp_name": "ne_10m_parks_and_protected_lands.shp",
+      "source": "Natural Earth 1:10m parks and protected lands; public analogue for X-HD parks.wkt",
+      "url": "https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_parks_and_protected_lands.zip"
+    }
+  },
+  "rows": [
+    {
+      "case": "public_geo_census_counties_vs_zcta_xy",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.43828739928004823,
+        "elapsed_sec": 1.0182653814554214,
+        "ok": true,
+        "source_index": 54283,
+        "target_index": 120427
+      },
+      "density_class": "detailed-census",
+      "description": "Public geo pair mirroring X-HD dtl_cnty.wkt vs uszipcode.wkt: Census counties vs ZCTA boundaries.",
+      "matches_cupy_grouped_grid_seeded_pruned": true,
+      "projection": "Normalized lon/lat vertex coordinates from public shapefiles; not an original X-HD WKT-file reproduction",
+      "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.43828739928004823,
+        "elapsed_sec": 0.14388730749487877,
+        "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+        "ok": true,
+        "source_index": 54283,
+        "target_index": 120427
+      },
+      "rtdl_seeded_pruned_vs_cupy_grouped_grid_ratio": 0.1413062941305326,
+      "sample_count": 131072,
+      "source_paths": [
+        "/root/work/rtdl_goal2139/scratch/public_hausdorff/census_counties/tl_2023_us_county.shp",
+        "/root/work/rtdl_goal2139/scratch/public_hausdorff/census_zcta/tl_2023_us_zcta520.shp"
+      ],
+      "source_total_points": {
+        "census_counties": 8201082,
+        "census_zcta": 51216593
+      },
+      "target_points_per_group": 1024
+    },
+    {
+      "case": "public_geo_lakes_vs_parks_xy",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "a_to_b",
+        "distance": 0.3578780855875698,
+        "elapsed_sec": 0.08567051216959953,
+        "ok": true,
+        "source_index": 64433,
+        "target_index": 5672
+      },
+      "density_class": "sparse-naturalearth",
+      "description": "Public geo pair mirroring X-HD lakes.wkt vs parks.wkt: Natural Earth lakes vs parks/protected lands.",
+      "matches_cupy_grouped_grid_seeded_pruned": true,
+      "projection": "Normalized lon/lat vertex coordinates from public shapefiles; not an original X-HD WKT-file reproduction",
+      "rtdl_rt_grouped_seeded_pruned_nearest_witness": {
+        "direction": "a_to_b",
+        "distance": 0.3578780855875698,
+        "elapsed_sec": 0.07119008153676987,
+        "method": "rtdl_rt_grouped_seeded_pruned_nearest_witness",
+        "ok": true,
+        "source_index": 64433,
+        "target_index": 5672
+      },
+      "rtdl_seeded_pruned_vs_cupy_grouped_grid_ratio": 0.8309753231758069,
+      "sample_count": 131072,
+      "source_paths": [
+        "/root/work/rtdl_goal2139/scratch/public_hausdorff/naturalearth_lakes/ne_10m_lakes.shp",
+        "/root/work/rtdl_goal2139/scratch/public_hausdorff/naturalearth_parks/ne_10m_parks_and_protected_lands_area.shp"
+      ],
+      "source_total_points": {
+        "naturalearth_lakes": 162852,
+        "naturalearth_parks": 7041
+      },
+      "target_points_per_group": 1024
+    }
+  ],
+  "sample_count": 131072,
+  "xhd_graphics_datasets": {
+    "asian_dragon": {
+      "archive": "xyzrgb_dragon.ply.gz",
+      "kind": "ply_gz",
+      "ply_name": "asian_dragon.ply",
+      "source": "Stanford 3D Scanning Repository XYZ RGB model; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz"
+    },
+    "dragon": {
+      "archive": "dragon_recon.tar.gz",
+      "kind": "tar_gz",
+      "preferred_ply": "dragon_vrip.ply",
+      "source": "Stanford 3D Scanning Repository; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+    },
+    "happy_buddha": {
+      "archive": "happy_recon.tar.gz",
+      "kind": "tar_gz",
+      "preferred_ply": "happy_vrip.ply",
+      "source": "Stanford 3D Scanning Repository; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+    },
+    "thai_statuette": {
+      "archive": "xyzrgb_statuette.ply.gz",
+      "kind": "ply_gz",
+      "ply_name": "thai_statuette.ply",
+      "source": "Stanford 3D Scanning Repository XYZ RGB model; X-HD graphics pair member",
+      "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz"
+    }
+  }
+}
