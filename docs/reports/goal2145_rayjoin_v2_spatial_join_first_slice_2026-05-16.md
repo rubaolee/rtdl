@@ -12,7 +12,7 @@ The answer after this slice is yes for a bounded first step:
 
 - Point-in-polygon point-location is implemented as sparse positive-hit rows.
 - Line-segment intersection is implemented as generic segment/segment intersection rows.
-- Polygon overlay is represented as a seed-generation stage that identifies pairs needing LSI/PIP continuation.
+- Polygon overlay is represented as pair-dependency rows with `requires_lsi` / `requires_pip` flags, from which active continuation seeds are derived.
 - RayJoin app policy, face metadata, overlay continuation, and paper-specific tuning stay outside native engine code.
 
 ## Paper And Source Basis
@@ -45,7 +45,7 @@ Supported workloads:
 | --- | --- | --- | --- |
 | `pip` | `point_in_polygon(..., result_mode="positive_hits")` | `point_to_polygon_positive_hit_rows` | Sparse point-location rows; no full matrix materialization. |
 | `lsi` | `segment_intersection(exact=False)` | `segment_segment_intersection_rows` | Generic intersection rows on fixture/derived segment sets. |
-| `overlay_seed` | `overlay_compose()` | `overlay_seed_rows_requiring_lsi_and_pip_continuation` | Seed-level overlay dependency rows, not full overlay topology. |
+| `overlay_seed` | `overlay_compose()` | `overlay_pair_dependency_rows_with_lsi_pip_flags` | Pair-dependency rows plus active seed summary, not full overlay topology. |
 
 The app exposes:
 

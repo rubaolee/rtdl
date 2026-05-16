@@ -20,7 +20,7 @@ class Goal2145RayjoinV2SpatialJoinFirstSliceReportTest(unittest.TestCase):
             "https://github.com/pwrliang/RayJoin",
             "point_to_polygon_positive_hit_rows",
             "segment_segment_intersection_rows",
-            "overlay_seed_rows_requiring_lsi_and_pip_continuation",
+            "overlay_pair_dependency_rows_with_lsi_pip_flags",
             "Full RayJoin paper reproduction",
             "OptiX/RT-core speedup evidence",
             "does not add app-specific native ABI names",

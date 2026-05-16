@@ -54,9 +54,11 @@ class Goal2145RayjoinV2SpatialJoinAppTest(unittest.TestCase):
         self.assertIn("intersection_count", lsi["summary"])
         self.assertEqual(
             overlay["summary"]["output_contract"],
-            "overlay_seed_rows_requiring_lsi_and_pip_continuation",
+            "overlay_pair_dependency_rows_with_lsi_pip_flags",
         )
-        self.assertIn("overlay_seed_count", overlay["summary"])
+        self.assertIn("pair_dependency_row_count", overlay["summary"])
+        self.assertIn("active_seed_count", overlay["summary"])
+        self.assertIn("active_seed_pairs", overlay["summary"])
 
     def test_cli_outputs_json_without_rows(self) -> None:
         completed = subprocess.run(

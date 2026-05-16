@@ -91,9 +91,21 @@ def _summarize_rows(workload: str, rows: tuple[dict[str, object], ...]) -> dict[
             "intersection_count": len(rows),
             "output_contract": "segment_segment_intersection_rows",
         }
+    active_seed_pairs = tuple(
+        {
+            "left_polygon_id": int(row["left_polygon_id"]),
+            "right_polygon_id": int(row["right_polygon_id"]),
+            "requires_lsi": int(row["requires_lsi"]),
+            "requires_pip": int(row["requires_pip"]),
+        }
+        for row in rows
+        if int(row["requires_lsi"]) == 1 or int(row["requires_pip"]) == 1
+    )
     return {
-        "overlay_seed_count": len(rows),
-        "output_contract": "overlay_seed_rows_requiring_lsi_and_pip_continuation",
+        "pair_dependency_row_count": len(rows),
+        "active_seed_count": len(active_seed_pairs),
+        "active_seed_pairs": active_seed_pairs,
+        "output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
     }
 
 
