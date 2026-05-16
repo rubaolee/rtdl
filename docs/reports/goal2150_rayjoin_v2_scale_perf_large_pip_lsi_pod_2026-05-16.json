@@ -1,0 +1,105 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "goal": "2147",
+  "notes": "Synthetic deterministic scale cases are designed to exercise RTDL row contracts. They are not the RayJoin paper datasets and do not authorize paper-scale claims.",
+  "scale": "large",
+  "workloads": {
+    "lsi": {
+      "backends": {
+        "cpu": {
+          "backend": "cpu",
+          "elapsed_sec_max": 0.0965487826615572,
+          "elapsed_sec_median": 0.0935958381742239,
+          "elapsed_sec_min": 0.09315736405551434,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 65536,
+          "warmups": 1
+        },
+        "embree": {
+          "backend": "embree",
+          "elapsed_sec_max": 0.07395391631871462,
+          "elapsed_sec_median": 0.07141842506825924,
+          "elapsed_sec_min": 0.07059692312031984,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 65536,
+          "warmups": 1
+        },
+        "optix": {
+          "backend": "optix",
+          "elapsed_sec_max": 0.06962978467345238,
+          "elapsed_sec_median": 0.06561522278934717,
+          "elapsed_sec_min": 0.06400755606591702,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 65536,
+          "warmups": 1
+        }
+      },
+      "input_counts": {
+        "left": 256,
+        "right": 256
+      },
+      "output_contract": "segment_segment_intersection_rows",
+      "reference_elapsed_sec": 0.08859625272452831,
+      "reference_row_count": 65536,
+      "reference_summary": {
+        "intersection_count": 65536,
+        "output_contract": "segment_segment_intersection_rows"
+      }
+    },
+    "pip": {
+      "backends": {
+        "cpu": {
+          "backend": "cpu",
+          "elapsed_sec_max": 0.018881927244365215,
+          "elapsed_sec_median": 0.018510330468416214,
+          "elapsed_sec_min": 0.01829416025429964,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 4096,
+          "warmups": 1
+        },
+        "embree": {
+          "backend": "embree",
+          "elapsed_sec_max": 0.006034402176737785,
+          "elapsed_sec_median": 0.005657565779983997,
+          "elapsed_sec_min": 0.00563705712556839,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 4096,
+          "warmups": 1
+        },
+        "optix": {
+          "backend": "optix",
+          "elapsed_sec_max": 0.014599865302443504,
+          "elapsed_sec_median": 0.01436036080121994,
+          "elapsed_sec_min": 0.014043688774108887,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 4096,
+          "warmups": 1
+        }
+      },
+      "input_counts": {
+        "points": 4096,
+        "polygons": 1024
+      },
+      "output_contract": "point_to_polygon_positive_hit_rows",
+      "reference_elapsed_sec": 0.29240351542830467,
+      "reference_row_count": 4096,
+      "reference_summary": {
+        "output_contract": "point_to_polygon_positive_hit_rows",
+        "positive_assignment_count": 4096,
+        "positive_hit_row_count": 4096
+      }
+    }
+  }
+}

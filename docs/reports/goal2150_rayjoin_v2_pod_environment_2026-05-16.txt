@@ -1,0 +1,15 @@
+goal2150 pod environment
+2026-05-16T22:49:12+00:00
+commit b05c07df0c1e08d7babf3b17fdee85febffb711f
+gpu NVIDIA RTX 4000 Ada Generation, 580.65.06, 20475 MiB
+cuda_home /usr/local/cuda-12.8
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Fri_Feb_21_20:23:50_PST_2025
+Cuda compilation tools, release 12.8, V12.8.93
+optix_sdk v8.1.0
+optix_lib /root/rtdl_rayjoin_pod/build/librtdl_optix.so
+-rwxr-xr-x 1 root root 941K May 16 22:45 build/librtdl_optix.so
+geos libgeos_c.so.1 (libc6,x86-64) => /lib/x86_64-linux-gnu/libgeos_c.so.1
+embree libembree4.so.4 (libc6,x86-64) => /lib/x86_64-linux-gnu/libembree4.so.4
+env RTDL_OPTIX_PTX_COMPILER=nvcc RTDL_OPTIX_PTX_ARCH=compute_89 RTDL_EMBREE_PREFIX=/usr
