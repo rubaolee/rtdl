@@ -77,6 +77,84 @@ struct PreparedKnnRows2DImpl {
   }
 };
 
+struct SegmentEndpointKey {
+  double x;
+  double y;
+
+  bool operator==(const SegmentEndpointKey& other) const {
+    return x == other.x && y == other.y;
+  }
+};
+
+uint64_t stable_double_bits(double value) {
+  if (value == 0.0) {
+    value = 0.0;
+  }
+  uint64_t bits = 0;
+  std::memcpy(&bits, &value, sizeof(bits));
+  return bits;
+}
+
+struct SegmentEndpointKeyHash {
+  size_t operator()(const SegmentEndpointKey& key) const {
+    const uint64_t x_bits = stable_double_bits(key.x);
+    const uint64_t y_bits = stable_double_bits(key.y);
+    return static_cast<size_t>(x_bits ^ (y_bits + 0x9e3779b97f4a7c15ULL + (x_bits << 6) + (x_bits >> 2)));
+  }
+};
+
+SegmentEndpointKey segment_endpoint_key(const Vec2& point) {
+  return {point.x == 0.0 ? 0.0 : point.x, point.y == 0.0 ? 0.0 : point.y};
+}
+
+using SegmentEndpointIndex = std::unordered_map<SegmentEndpointKey, std::vector<size_t>, SegmentEndpointKeyHash>;
+
+SegmentEndpointIndex build_segment_endpoint_index(const std::vector<Segment2D>& segments) {
+  SegmentEndpointIndex index;
+  index.reserve(segments.size() * 2);
+  for (size_t segment_index = 0; segment_index < segments.size(); ++segment_index) {
+    const Segment2D& segment = segments[segment_index];
+    index[segment_endpoint_key(segment.a)].push_back(segment_index);
+    index[segment_endpoint_key(segment.b)].push_back(segment_index);
+  }
+  return index;
+}
+
+void append_shared_endpoint_segment_hits(
+    const Segment2D& probe,
+    const std::vector<Segment2D>& right_segments,
+    const SegmentEndpointIndex& endpoint_index,
+    std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>& query_rows) {
+  std::unordered_set<size_t> existing;
+  existing.reserve(query_rows.size());
+  for (const auto& row : query_rows) {
+    existing.insert(row.first);
+  }
+
+  const Vec2 endpoints[2] = {probe.a, probe.b};
+  for (const Vec2& endpoint : endpoints) {
+    const auto found = endpoint_index.find(segment_endpoint_key(endpoint));
+    if (found == endpoint_index.end()) {
+      continue;
+    }
+    for (const size_t right_index : found->second) {
+      if (existing.find(right_index) != existing.end()) {
+        continue;
+      }
+      Vec2 point {};
+      const Segment2D& right = right_segments[right_index];
+      if (!segment_intersection(probe, right, &point)) {
+        continue;
+      }
+      query_rows.push_back({
+          right_index,
+          {probe.id, right.id, point.x, point.y},
+      });
+      existing.insert(right_index);
+    }
+  }
+}
+
 size_t embree_hardware_threads() {
   const unsigned int detected = std::thread::hardware_concurrency();
   return std::max<size_t>(1, static_cast<size_t>(detected == 0 ? 1 : detected));
@@ -613,6 +691,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
     for (size_t index = 0; index < build_order_by_primitive.size(); ++index) {
       build_order_by_primitive[index] = index;
     }
+    const SegmentEndpointIndex endpoint_index = build_segment_endpoint_index(right_segments);
 
     std::vector<RtdlSegmentPairIntersectionRow> rows = run_query_ranges<RtdlSegmentPairIntersectionRow>(
         left_segments.size(),
@@ -639,12 +718,6 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
             rtdlRtcIntersect1(holder.scene, &rayhit, &args);
             g_query_kind = QueryKind::kNone;
             g_query_state = nullptr;
-            std::stable_sort(
-                query_rows.begin(),
-                query_rows.end(),
-                [](const auto& left_pair, const auto& right_pair) {
-                  return left_pair.first < right_pair.first;
-                });
             if (query_rows.empty()) {
               for (size_t right_index = 0; right_index < right_segments.size(); ++right_index) {
                 Vec2 point {};
@@ -656,6 +729,13 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
                 }
               }
             }
+            append_shared_endpoint_segment_hits(probe, right_segments, endpoint_index, query_rows);
+            std::stable_sort(
+                query_rows.begin(),
+                query_rows.end(),
+                [](const auto& left_pair, const auto& right_pair) {
+                  return left_pair.first < right_pair.first;
+                });
             for (const auto& hit : query_rows) {
               local_rows.push_back(hit.second);
             }
