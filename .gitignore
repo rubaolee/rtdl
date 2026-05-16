@@ -6,4 +6,5 @@ deck_status/
 *.log
 *.tmp.py
 /HANDOFF_*.md
+scratch/public_hausdorff/
 docs/reports/goal155_external_review_gemini_2026-04-07.md

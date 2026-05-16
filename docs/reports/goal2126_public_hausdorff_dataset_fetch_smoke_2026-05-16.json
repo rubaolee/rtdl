@@ -1,0 +1,50 @@
+{
+  "claim_boundary": {
+    "public_dataset_evidence": true,
+    "release_speedup_claim_authorized": false,
+    "three_dimensional_surface_hausdorff_claim": false,
+    "xhd_paper_exact_dataset_evidence": false,
+    "xy_projection_only": true
+  },
+  "commit": "",
+  "datasets": {
+    "dragon": {
+      "archive": "dragon_recon.tar.gz",
+      "preferred_ply": "dragon_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+    },
+    "happy": {
+      "archive": "happy_recon.tar.gz",
+      "preferred_ply": "happy_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+    }
+  },
+  "goal": "goal2126_public_hausdorff_dataset_perf",
+  "gpu": "",
+  "rows": [
+    {
+      "case": "stanford_dragon_xy_shifted",
+      "description": "Dragon vertices projected to XY, compared with a deterministic shifted copy.",
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "sample_count": 2048,
+      "source_paths": [
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\public_hausdorff\\dragon\\dragon_recon\\dragon_vrip.ply"
+      ],
+      "target_points_per_group": 64
+    },
+    {
+      "case": "stanford_dragon_vs_happy_xy",
+      "description": "Dragon and Happy Buddha vertices independently normalized and projected to XY.",
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "sample_count": 2048,
+      "source_paths": [
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\public_hausdorff\\dragon\\dragon_recon\\dragon_vrip.ply",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\public_hausdorff\\happy\\happy_recon\\happy_vrip.ply"
+      ],
+      "target_points_per_group": 64
+    }
+  ],
+  "sample_count": 2048
+}
