@@ -18,6 +18,7 @@ METHODS = (
     "rtdl_v2_user_cuda",
     "rtdl_rt_threshold_search",
     "rtdl_rt_nearest_witness",
+    "rtdl_rt_nearest_witness_oracle_radius",
 )
 
 
@@ -70,10 +71,18 @@ METHOD_METADATA = {
         "exact_value": True,
         "notes": "OptiX nearest-witness traversal seeded by threshold-search upper bound",
     },
+    "rtdl_rt_nearest_witness_oracle_radius": {
+        "role": "diagnostic_lower_bound",
+        "uses_rtdl": True,
+        "uses_partner": False,
+        "uses_rt_cores": True,
+        "exact_value": True,
+        "notes": "OptiX nearest-witness traversal using exact-reference radius plus slack; diagnostic only",
+    },
 }
 
 
-def _run_method(method: str, points_a, points_b, args) -> dict[str, object]:
+def _run_method(method: str, points_a, points_b, args, exact_reference: dict[str, object] | None) -> dict[str, object]:
     start = time.perf_counter()
     try:
         if method == "rtdl_rt_threshold_search":
@@ -98,6 +107,33 @@ def _run_method(method: str, points_a, points_b, args) -> dict[str, object]:
             )
             payload = asdict(result)
             payload["distance_for_compare"] = result.distance
+        elif method == "rtdl_rt_nearest_witness_oracle_radius":
+            if args.rt_nearest_radius is not None:
+                oracle_radius = float(args.rt_nearest_radius)
+                radius_source = "explicit_radius"
+            else:
+                if exact_reference is None:
+                    raise RuntimeError(
+                        "rtdl_rt_nearest_witness_oracle_radius requires an earlier exact reference method "
+                        "or --rt-nearest-radius"
+                    )
+                oracle_radius = float(exact_reference["distance"]) + float(args.oracle_radius_slack)
+                radius_source = "exact_reference_plus_slack"
+            result = hd.hausdorff_distance_2d_rt_nearest_witness(
+                points_a,
+                points_b,
+                backend=args.rt_backend,
+                radius=oracle_radius,
+                seed_with_threshold=False,
+                threshold_tolerance=args.rt_tolerance,
+                threshold_max_iterations=args.rt_max_iterations,
+            )
+            payload = asdict(result)
+            payload["base_method"] = result.method
+            payload["method"] = "rtdl_rt_nearest_witness_oracle_radius"
+            payload["distance_for_compare"] = result.distance
+            payload["oracle_radius"] = oracle_radius
+            payload["oracle_radius_source"] = radius_source
         else:
             result = hd.hausdorff_distance_2d(points_a, points_b, method=method, warmup=args.warmup)
             payload = asdict(result)
@@ -117,7 +153,7 @@ def run_lab(args) -> dict[str, object]:
     exact_reference = None
     for method in methods:
         print(f"[hausdorff-lab] running {method} for {args.points_a}x{args.points_b}", flush=True)
-        result = _run_method(method, points_a, points_b, args)
+        result = _run_method(method, points_a, points_b, args, exact_reference)
         results[method] = result
         if result.get("ok") and METHOD_METADATA[method]["exact_value"] and exact_reference is None:
             exact_reference = {
@@ -140,6 +176,7 @@ def run_lab(args) -> dict[str, object]:
             )
     return {
         "scenario": {
+            "methods": list(methods),
             "points_a": args.points_a,
             "points_b": args.points_b,
             "seed_a": args.seed_a,
@@ -149,6 +186,7 @@ def run_lab(args) -> dict[str, object]:
             "rt_backend": args.rt_backend,
             "rt_tolerance": args.rt_tolerance,
             "rt_nearest_seed_strategy": "bbox_upper_bound" if args.rt_nearest_no_threshold_seed else "rt_threshold_upper_bound",
+            "oracle_radius_slack": args.oracle_radius_slack,
         },
         "exact_reference": exact_reference,
         "results": results,
@@ -170,6 +208,12 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--rt-max-iterations", type=int, default=32)
     parser.add_argument("--rt-nearest-radius", type=float, default=None)
     parser.add_argument("--rt-nearest-no-threshold-seed", action="store_true")
+    parser.add_argument(
+        "--oracle-radius-slack",
+        type=float,
+        default=1e-7,
+        help="extra radius added to the exact reference for the oracle-radius RT diagnostic",
+    )
     parser.add_argument("--exact-tolerance", type=float, default=1e-9)
     parser.add_argument("--json-out", type=Path)
     args = parser.parse_args(list(argv) if argv is not None else None)

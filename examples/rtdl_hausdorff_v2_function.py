@@ -100,51 +100,6 @@ def _point_set_upper_bound(points_a: dict[str, np.ndarray], points_b: dict[str, 
     return math.hypot(max_x - min_x, max_y - min_y)
 
 
-def _directed_rt_nearest_witness(
-    source_columns: dict[str, np.ndarray],
-    target_columns: dict[str, np.ndarray],
-    *,
-    backend: str,
-    radius: float,
-) -> dict[str, object]:
-    source_points = _columns_to_points(source_columns)
-    target_points = _columns_to_points(target_columns)
-    target_by_id = {int(point.id): point for point in target_points}
-    with rt.prepare_generic_fixed_radius_count_threshold_2d(
-        search_points=target_points,
-        backend=backend,
-        max_radius=radius if backend == "optix" else None,
-    ) as prepared:
-        if not hasattr(prepared._prepared_scene, "nearest_witness_rows"):
-            raise RuntimeError(f"{backend} prepared fixed-radius scene does not expose nearest_witness_rows")
-        rows = prepared._prepared_scene.nearest_witness_rows(source_points, radius=radius)
-    if len(rows) != len(source_points):
-        raise RuntimeError("nearest_witness_rows must return one row per source point")
-    best_distance = -1.0
-    best_source_index = -1
-    best_target_index = -1
-    target_id_to_index = {int(target_columns["ids"][i]): i for i in range(int(target_columns["ids"].size))}
-    for source_index, row in enumerate(rows):
-        neighbor_id = int(row["neighbor_id"])
-        if neighbor_id == 0xFFFFFFFF:
-            raise RuntimeError("nearest_witness_rows did not find a witness; increase radius")
-        target_point = target_by_id[neighbor_id]
-        source_point = source_points[source_index]
-        distance = math.hypot(source_point.x - target_point.x, source_point.y - target_point.y)
-        if distance > best_distance or (
-            math.isclose(distance, best_distance) and source_index < best_source_index
-        ):
-            best_distance = distance
-            best_source_index = source_index
-            best_target_index = target_id_to_index[neighbor_id]
-    return {
-        "distance": best_distance,
-        "source_index": best_source_index,
-        "target_index": best_target_index,
-        "row_count": len(rows),
-    }
-
-
 def _reduce_nearest_witness_rows(
     source_points: tuple[Point, ...],
     target_points: tuple[Point, ...],

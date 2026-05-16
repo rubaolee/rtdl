@@ -15,7 +15,8 @@ class Goal2110HausdorffExactRtNearestWitnessTest(unittest.TestCase):
         tree = ast.parse(source)
         names = {node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
         self.assertIn("hausdorff_distance_2d_rt_nearest_witness", names)
-        self.assertIn("_directed_rt_nearest_witness", names)
+        self.assertIn("_directed_rt_threshold_seeded_nearest_witness", names)
+        self.assertIn("_reduce_nearest_witness_rows", names)
         self.assertIn("rtdl_rt_nearest_witness", source)
         self.assertIn("nearest_witness_rows", source)
         self.assertIn("rt_threshold_upper_bound", source)
@@ -26,6 +27,7 @@ class Goal2110HausdorffExactRtNearestWitnessTest(unittest.TestCase):
         self.assertIn('"rtdl_v2_user_cuda"', source)
         self.assertIn('"rtdl_rt_threshold_search"', source)
         self.assertIn('"rtdl_rt_nearest_witness"', source)
+        self.assertIn('"rtdl_rt_nearest_witness_oracle_radius"', source)
         self.assertIn('"openmp_cpu"', source)
         self.assertIn('"cuda_cpp"', source)
         self.assertIn('"cupy_rawkernel"', source)

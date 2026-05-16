@@ -1,0 +1,74 @@
+{
+  "exact_reference": {
+    "direction": "a_to_b",
+    "distance": 0.12003618286664636,
+    "method": "cuda_cpp",
+    "source_index": 8034,
+    "target_index": 3950
+  },
+  "results": {
+    "cuda_cpp": {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "distance_for_compare": 0.12003618286664636,
+      "elapsed_sec": 0.010040037101134658,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "standalone CUDA C++ tiled double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cuda_cpp",
+      "ok": true,
+      "source_index": 8034,
+      "target_index": 3950
+    },
+    "rtdl_rt_nearest_witness_oracle_radius": {
+      "backend": "optix",
+      "base_method": "rtdl_rt_nearest_witness",
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "distance_for_compare": 0.12003618286664636,
+      "elapsed_sec": 1.0560365420533344,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "OptiX nearest-witness traversal using exact-reference radius plus slack; diagnostic only",
+        "role": "diagnostic_lower_bound",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_nearest_witness_oracle_radius",
+      "ok": true,
+      "oracle_radius": 0.12003628286664636,
+      "oracle_radius_source": "exact_reference_plus_slack",
+      "radius_strategy": "explicit_radius",
+      "rt_core_accelerated": true,
+      "source_index": 8034,
+      "target_index": 3950,
+      "threshold_iterations": 0,
+      "witness_radius": 0.12003628286664636
+    }
+  },
+  "scenario": {
+    "methods": [
+      "cuda_cpp",
+      "rtdl_rt_nearest_witness_oracle_radius"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 8192,
+    "points_b": 8192,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}

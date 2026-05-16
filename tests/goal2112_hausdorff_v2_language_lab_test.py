@@ -53,6 +53,14 @@ class Goal2112HausdorffV2LanguageLabTest(unittest.TestCase):
         self.assertFalse(data["results"]["rtdl_rt_nearest_witness"]["metadata"]["uses_partner"])
         self.assertTrue(data["results"]["rtdl_rt_nearest_witness"]["metadata"]["uses_rt_cores"])
 
+    def test_language_lab_has_oracle_radius_diagnostic(self) -> None:
+        source = (ROOT / "examples" / "rtdl_hausdorff_v2_language_lab.py").read_text()
+        self.assertIn("rtdl_rt_nearest_witness_oracle_radius", source)
+        self.assertIn("diagnostic_lower_bound", source)
+        self.assertIn("exact_reference_plus_slack", source)
+        self.assertIn("base_method", source)
+        self.assertIn("oracle_radius_slack", source)
+
 
 if __name__ == "__main__":
     unittest.main()
