@@ -1,0 +1,85 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "goal": "2147",
+  "notes": "Synthetic deterministic scale cases are designed to exercise RTDL row contracts. They are not the RayJoin paper datasets and do not authorize paper-scale claims.",
+  "scale": "medium",
+  "workloads": {
+    "lsi": {
+      "backends": {
+        "cpu": {
+          "backend": "cpu",
+          "elapsed_sec_max": 0.021458431030623615,
+          "elapsed_sec_median": 0.020502339000813663,
+          "elapsed_sec_min": 0.020108497003093362,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 16384,
+          "warmups": 1
+        },
+        "embree": {
+          "backend": "embree",
+          "elapsed_sec_max": 0.017780449939891696,
+          "elapsed_sec_median": 0.016190981026738882,
+          "elapsed_sec_min": 0.015909804962575436,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 16384,
+          "warmups": 1
+        }
+      },
+      "input_counts": {
+        "left": 128,
+        "right": 128
+      },
+      "output_contract": "segment_segment_intersection_rows",
+      "reference_elapsed_sec": 0.026970118982717395,
+      "reference_row_count": 16384,
+      "reference_summary": {
+        "intersection_count": 16384,
+        "output_contract": "segment_segment_intersection_rows"
+      }
+    },
+    "pip": {
+      "backends": {
+        "cpu": {
+          "backend": "cpu",
+          "elapsed_sec_max": 0.0035962280817329884,
+          "elapsed_sec_median": 0.003546596970409155,
+          "elapsed_sec_min": 0.0035296051064506173,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 1024,
+          "warmups": 1
+        },
+        "embree": {
+          "backend": "embree",
+          "elapsed_sec_max": 0.0019353620009496808,
+          "elapsed_sec_median": 0.0018009580671787262,
+          "elapsed_sec_min": 0.0017686670180410147,
+          "parity_vs_cpu_python_reference": true,
+          "repeats": 3,
+          "row_count": 1024,
+          "warmups": 1
+        }
+      },
+      "input_counts": {
+        "points": 1024,
+        "polygons": 256
+      },
+      "output_contract": "point_to_polygon_positive_hit_rows",
+      "reference_elapsed_sec": 0.01887407898902893,
+      "reference_row_count": 1024,
+      "reference_summary": {
+        "output_contract": "point_to_polygon_positive_hit_rows",
+        "positive_assignment_count": 1024,
+        "positive_hit_row_count": 1024
+      }
+    }
+  }
+}

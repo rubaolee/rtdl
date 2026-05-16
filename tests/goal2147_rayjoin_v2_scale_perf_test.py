@@ -13,6 +13,8 @@ from scripts import goal2147_rayjoin_v2_scale_perf as perf
 
 REPORT = ROOT / "docs" / "reports" / "goal2147_rayjoin_v2_scale_perf_harness_2026-05-16.md"
 QUICK_ARTIFACT = ROOT / "docs" / "reports" / "goal2147_rayjoin_v2_scale_perf_quick_local_2026-05-16.json"
+LINUX_QUICK_ARTIFACT = ROOT / "docs" / "reports" / "goal2147_rayjoin_v2_scale_perf_quick_linux_2026-05-16.json"
+LINUX_MEDIUM_ARTIFACT = ROOT / "docs" / "reports" / "goal2147_rayjoin_v2_scale_perf_medium_pip_lsi_linux_2026-05-16.json"
 
 
 class Goal2147RayjoinV2ScalePerfTest(unittest.TestCase):
@@ -72,6 +74,15 @@ class Goal2147RayjoinV2ScalePerfTest(unittest.TestCase):
                 self.assertIn(phrase, report)
         self.assertIn('"rt_core_speedup_claim_authorized": false', artifact)
         self.assertIn('"parity_vs_cpu_python_reference": true', artifact)
+        self.assertIn("goal2147_rayjoin_v2_scale_perf_quick_linux_2026-05-16.json", report)
+        self.assertIn("future pod tables must use warmups", report)
+
+    def test_linux_artifacts_keep_claims_bounded(self) -> None:
+        for artifact_path in (LINUX_QUICK_ARTIFACT, LINUX_MEDIUM_ARTIFACT):
+            with self.subTest(artifact=artifact_path.name):
+                artifact = artifact_path.read_text(encoding="utf-8")
+                self.assertIn('"rt_core_speedup_claim_authorized": false', artifact)
+                self.assertIn('"parity_vs_cpu_python_reference": true', artifact)
 
 
 if __name__ == "__main__":

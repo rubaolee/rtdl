@@ -15,6 +15,8 @@ New script:
 Committed local artifact:
 
 - `docs/reports/goal2147_rayjoin_v2_scale_perf_quick_local_2026-05-16.json`
+- `docs/reports/goal2147_rayjoin_v2_scale_perf_quick_linux_2026-05-16.json`
+- `docs/reports/goal2147_rayjoin_v2_scale_perf_medium_pip_lsi_linux_2026-05-16.json`
 
 ## Harness Design
 
@@ -81,6 +83,27 @@ An exploratory local medium run was also executed to stress the shape:
 | `overlay_seed` | 128 left / 128 right polygons | 16,384 pair rows / 128 active seeds | CPU and Embree parity held, but Python truth generation was slow enough to require progress logs for future runs. |
 
 The medium observation is local development evidence only. It does not authorize a paper-scale RayJoin claim.
+
+## Local Linux Evidence
+
+After the Goal2147 commit was pushed, Codex validated a separate clean Linux clone at `/home/lestat/work/rtdl_rayjoin_goal2147_check` on `192.168.1.20` without touching the dirty primary Linux checkout.
+
+Validated commands:
+
+```bash
+PYTHONPATH=src:. python3 -m unittest tests.goal2145_rayjoin_v2_spatial_join_app_test tests.goal2147_rayjoin_v2_scale_perf_test
+PYTHONPATH=src:. python3 scripts/goal2147_rayjoin_v2_scale_perf.py --scale quick --backends cpu,embree --repeats 2 --warmups 0 --output docs/reports/goal2147_rayjoin_v2_scale_perf_quick_linux_2026-05-16.json
+PYTHONPATH=src:. python3 scripts/goal2147_rayjoin_v2_scale_perf.py --scale medium --workloads pip,lsi --backends cpu,embree --repeats 3 --warmups 1 --output docs/reports/goal2147_rayjoin_v2_scale_perf_medium_pip_lsi_linux_2026-05-16.json
+```
+
+Linux focused tests passed. The medium PIP/LSI run preserved CPU and Embree parity:
+
+| Workload | Scale | Rows | CPU median sec | Embree median sec | Note |
+| --- | --- | ---: | ---: | ---: | --- |
+| `pip` | medium | 1,024 | 0.00355 | 0.00180 | Warmed Embree path is stable and faster than local CPU backend. |
+| `lsi` | medium | 16,384 | 0.02050 | 0.01619 | Warmed Embree path is stable and faster than local CPU backend. |
+
+The quick Linux run intentionally used zero warmups and exposed an Embree PIP cold-start outlier. That is useful harness evidence: future pod tables must use warmups and report min/median/max, not single-shot timings.
 
 ## Claim Boundary
 
