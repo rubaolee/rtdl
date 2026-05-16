@@ -1,0 +1,146 @@
+{
+  "exact_reference": {
+    "direction": "b_to_a",
+    "distance": 0.14627873169442843,
+    "method": "openmp_cpu",
+    "source_index": 447,
+    "target_index": 486
+  },
+  "results": {
+    "cuda_cpp": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.001020113006234169,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "standalone CUDA C++ tiled double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cuda_cpp",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    },
+    "cupy_rawkernel": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.0005315688904374838,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "CuPy RawKernel exact nearest-neighbor continuation",
+        "role": "baseline",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cupy_rawkernel",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    },
+    "openmp_cpu": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.000681626028381288,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "multi-threaded C++/OpenMP double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "openmp_cpu",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    },
+    "rtdl_rt_nearest_witness": {
+      "backend": "optix",
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.4699414180358872,
+      "exact_value": true,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "OptiX nearest-witness traversal seeded by threshold-search upper bound",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_nearest_witness",
+      "ok": true,
+      "radius_strategy": "rt_threshold_upper_bound",
+      "rt_core_accelerated": true,
+      "source_index": 447,
+      "target_index": 486,
+      "threshold_iterations": 32,
+      "witness_radius": 0.1463211370727418
+    },
+    "rtdl_rt_threshold_search": {
+      "backend": "optix",
+      "direction": "b_to_a",
+      "distance_for_compare": 0.1463211370727418,
+      "distance_lower_bound": 0.14626844671009406,
+      "distance_upper_bound": 0.1463211370727418,
+      "elapsed_sec": 0.5398297719657421,
+      "exact_value": false,
+      "iterations": 32,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": false,
+        "notes": "OptiX fixed-radius decision search returns a tolerance-bounded interval",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_rt_threshold_search",
+      "ok": true,
+      "rt_core_accelerated": true,
+      "tolerance": 0.0001
+    },
+    "rtdl_v2_user_cuda": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.0005303709767758846,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "RTDL converts rows to partner columns; CuPy continuation computes exact HD",
+        "role": "rtdl_v2_language",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_v2_user_cuda",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    }
+  },
+  "scenario": {
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "points_a": 512,
+    "points_b": 512,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}

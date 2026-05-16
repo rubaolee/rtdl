@@ -18,6 +18,18 @@ class Goal2110HausdorffExactRtNearestWitnessTest(unittest.TestCase):
         self.assertIn("_directed_rt_nearest_witness", names)
         self.assertIn("rtdl_rt_nearest_witness", source)
         self.assertIn("nearest_witness_rows", source)
+        self.assertIn("rt_threshold_upper_bound", source)
+
+    def test_language_lab_records_method_contracts(self) -> None:
+        source = (ROOT / "examples" / "rtdl_hausdorff_v2_language_lab.py").read_text()
+        self.assertIn("METHOD_METADATA", source)
+        self.assertIn('"rtdl_v2_user_cuda"', source)
+        self.assertIn('"rtdl_rt_threshold_search"', source)
+        self.assertIn('"rtdl_rt_nearest_witness"', source)
+        self.assertIn('"openmp_cpu"', source)
+        self.assertIn('"cuda_cpp"', source)
+        self.assertIn('"cupy_rawkernel"', source)
+        self.assertIn("uses_rt_cores", source)
 
     def test_optix_binding_and_native_abi_are_present(self) -> None:
         optix_runtime = (ROOT / "src" / "rtdsl" / "optix_runtime.py").read_text()

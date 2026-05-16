@@ -55,6 +55,9 @@ class HausdorffRtNearestResult:
     backend: str
     rt_core_accelerated: bool
     exact_value: bool
+    witness_radius: float
+    radius_strategy: str
+    threshold_iterations: int
 
 
 def _as_point_columns(points: Sequence[Sequence[float]] | np.ndarray, *, name: str) -> dict[str, np.ndarray]:
@@ -147,6 +150,10 @@ def hausdorff_distance_2d_rt_nearest_witness(
     points_b: Sequence[Sequence[float]] | np.ndarray,
     *,
     backend: str = "optix",
+    radius: float | None = None,
+    seed_with_threshold: bool = True,
+    threshold_tolerance: float = 1e-4,
+    threshold_max_iterations: int = 32,
 ) -> HausdorffRtNearestResult:
     """Return exact HD using RTDL fixed-radius nearest-witness traversal.
 
@@ -160,10 +167,23 @@ def hausdorff_distance_2d_rt_nearest_witness(
         raise ValueError("rt nearest-witness HD currently requires backend='optix'")
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
-    radius = _point_set_upper_bound(columns_a, columns_b)
+    threshold_iterations = 0
+    radius_strategy = "bbox_upper_bound"
+    witness_radius = _point_set_upper_bound(columns_a, columns_b) if radius is None else float(radius)
     start = time.perf_counter()
-    ab = _directed_rt_nearest_witness(columns_a, columns_b, backend=backend, radius=radius)
-    ba = _directed_rt_nearest_witness(columns_b, columns_a, backend=backend, radius=radius)
+    if radius is None and seed_with_threshold:
+        threshold = hausdorff_distance_2d_rt_threshold_search(
+            points_a,
+            points_b,
+            backend=backend,
+            tolerance=threshold_tolerance,
+            max_iterations=threshold_max_iterations,
+        )
+        witness_radius = threshold.distance_upper_bound
+        threshold_iterations = threshold.iterations
+        radius_strategy = "rt_threshold_upper_bound"
+    ab = _directed_rt_nearest_witness(columns_a, columns_b, backend=backend, radius=witness_radius)
+    ba = _directed_rt_nearest_witness(columns_b, columns_a, backend=backend, radius=witness_radius)
     if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
         selected = ab
         direction = "a_to_b"
@@ -180,6 +200,9 @@ def hausdorff_distance_2d_rt_nearest_witness(
         backend=backend,
         rt_core_accelerated=True,
         exact_value=True,
+        witness_radius=witness_radius,
+        radius_strategy=radius_strategy,
+        threshold_iterations=threshold_iterations,
     )
 
 
@@ -361,6 +384,17 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--rt-backend", choices=("optix", "embree"), default="optix")
     parser.add_argument("--rt-tolerance", type=float, default=1e-5)
     parser.add_argument("--rt-max-iterations", type=int, default=32)
+    parser.add_argument(
+        "--rt-nearest-radius",
+        type=float,
+        default=None,
+        help="explicit radius for rtdl_rt_nearest_witness; defaults to an RT threshold-search upper bound",
+    )
+    parser.add_argument(
+        "--rt-nearest-no-threshold-seed",
+        action="store_true",
+        help="use the dataset bounding-box diagonal for rtdl_rt_nearest_witness instead of threshold seeding",
+    )
     parser.add_argument("--compare", action="store_true", help="also run all available baselines and compare")
     parser.add_argument("--warmup", type=int, default=1)
     parser.add_argument("--json-out", type=Path)
@@ -369,7 +403,15 @@ def main(argv: Iterable[str] | None = None) -> int:
     points_a = make_demo_points(args.points_a, seed=11)
     points_b = make_demo_points(args.points_b, seed=29, offset=(0.08, -0.06))
     if args.method == "rtdl_rt_nearest_witness":
-        rt_exact = hausdorff_distance_2d_rt_nearest_witness(points_a, points_b, backend=args.rt_backend)
+        rt_exact = hausdorff_distance_2d_rt_nearest_witness(
+            points_a,
+            points_b,
+            backend=args.rt_backend,
+            radius=args.rt_nearest_radius,
+            seed_with_threshold=not args.rt_nearest_no_threshold_seed,
+            threshold_tolerance=args.rt_tolerance,
+            threshold_max_iterations=args.rt_max_iterations,
+        )
         primary_distance = rt_exact.distance
         payload: dict[str, object] = {"primary": asdict(rt_exact)}
     elif args.method == "rtdl_rt_threshold_search":
