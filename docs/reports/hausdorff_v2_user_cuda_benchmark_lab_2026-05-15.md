@@ -32,6 +32,22 @@ The script is:
 examples/rtdl_hausdorff_v2_user_benchmark.py
 ```
 
+The user-facing function wrapper is:
+
+```text
+examples/rtdl_hausdorff_v2_function.py
+```
+
+Its main API is:
+
+```python
+hausdorff_distance_2d(points_a, points_b, method="rtdl_v2_user_cuda")
+```
+
+where `points_a` and `points_b` are ordinary `Nx2` array-like point sets and
+the return value is the exact undirected Hausdorff distance plus witness
+indices and timing metadata.
+
 No RTDL runtime, native engine, ABI, or partner primitive implementation was
 changed.
 
@@ -49,6 +65,11 @@ For exact point-cloud Hausdorff, the core operation is a dense nearest-distance
 reduction. That maps naturally to CUDA tiling and partner reductions. RT cores
 are more relevant for RTDL's threshold/candidate spatial query subproblems than
 for this dense exact all-pairs point-distance reduction.
+
+This is still a real Hausdorff-distance function. It accepts two point sets and
+returns the exact scalar HD result. The boundary above only says which hardware
+unit owns the speed: CUDA cores and user-owned continuation code, not an
+RT-core traversal claim.
 
 ## Local Linux Environment
 
@@ -75,6 +96,25 @@ This GTX 1070 host is useful for development and correctness/perf shape, but it
 is not final release-grade RTX/RT-core performance evidence.
 
 ## Results
+
+### Function API Smoke
+
+Command:
+
+```text
+PYTHONPATH=src:. OMP_NUM_THREADS=$(nproc) python3 examples/rtdl_hausdorff_v2_function.py \
+  --points-a 8192 --points-b 8192 --method rtdl_v2_user_cuda --compare --warmup 1
+```
+
+Result:
+
+| Method | Seconds | Distance | Matches primary |
+| --- | ---: | ---: | --- |
+| RTDL v2 user CUDA primary | 0.009526 | 0.120036182867 | primary |
+| OpenMP CPU | 0.065374 | 0.120036182867 | yes |
+| independent nvcc CUDA C++ | 0.009764 | 0.120036182867 | yes |
+| independent CuPy RawKernel | 0.009595 | 0.120036182867 | yes |
+| RTDL v2 user CUDA comparison | 0.009528 | 0.120036182867 | yes |
 
 ### 8192 x 8192
 
