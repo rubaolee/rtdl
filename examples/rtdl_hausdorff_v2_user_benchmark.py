@@ -294,6 +294,14 @@ struct DirectedHausdorffResult {
     int64_t target_index;
 };
 
+static DirectedHausdorffResult make_cuda_error_result(cudaError_t status, int64_t stage) {
+    DirectedHausdorffResult result;
+    result.distance = NAN;
+    result.source_index = -stage;
+    result.target_index = -static_cast<int64_t>(status);
+    return result;
+}
+
 __global__ void directed_hausdorff_tiled_kernel(
     const double* sx,
     const double* sy,
@@ -388,17 +396,28 @@ DirectedHausdorffResult directed_hausdorff_cuda(
     double* d_values = nullptr;
     long long* d_sources = nullptr;
     long long* d_targets = nullptr;
-    cudaMalloc(&d_sx, source_count * sizeof(double));
-    cudaMalloc(&d_sy, source_count * sizeof(double));
-    cudaMalloc(&d_tx, target_count * sizeof(double));
-    cudaMalloc(&d_ty, target_count * sizeof(double));
-    cudaMalloc(&d_values, blocks * sizeof(double));
-    cudaMalloc(&d_sources, blocks * sizeof(long long));
-    cudaMalloc(&d_targets, blocks * sizeof(long long));
-    cudaMemcpy(d_sx, h_sx, source_count * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_sy, h_sy, source_count * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_tx, h_tx, target_count * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_ty, h_ty, target_count * sizeof(double), cudaMemcpyHostToDevice);
+    cudaError_t status = cudaMalloc(&d_sx, source_count * sizeof(double));
+    if (status != cudaSuccess) return make_cuda_error_result(status, 1);
+    status = cudaMalloc(&d_sy, source_count * sizeof(double));
+    if (status != cudaSuccess) return make_cuda_error_result(status, 2);
+    status = cudaMalloc(&d_tx, target_count * sizeof(double));
+    if (status != cudaSuccess) return make_cuda_error_result(status, 3);
+    status = cudaMalloc(&d_ty, target_count * sizeof(double));
+    if (status != cudaSuccess) return make_cuda_error_result(status, 4);
+    status = cudaMalloc(&d_values, blocks * sizeof(double));
+    if (status != cudaSuccess) return make_cuda_error_result(status, 5);
+    status = cudaMalloc(&d_sources, blocks * sizeof(long long));
+    if (status != cudaSuccess) return make_cuda_error_result(status, 6);
+    status = cudaMalloc(&d_targets, blocks * sizeof(long long));
+    if (status != cudaSuccess) return make_cuda_error_result(status, 7);
+    status = cudaMemcpy(d_sx, h_sx, source_count * sizeof(double), cudaMemcpyHostToDevice);
+    if (status != cudaSuccess) return make_cuda_error_result(status, 8);
+    status = cudaMemcpy(d_sy, h_sy, source_count * sizeof(double), cudaMemcpyHostToDevice);
+    if (status != cudaSuccess) return make_cuda_error_result(status, 9);
+    status = cudaMemcpy(d_tx, h_tx, target_count * sizeof(double), cudaMemcpyHostToDevice);
+    if (status != cudaSuccess) return make_cuda_error_result(status, 10);
+    status = cudaMemcpy(d_ty, h_ty, target_count * sizeof(double), cudaMemcpyHostToDevice);
+    if (status != cudaSuccess) return make_cuda_error_result(status, 11);
     directed_hausdorff_tiled_kernel<<<blocks, threads, threads * 2 * sizeof(double)>>>(
         d_sx,
         d_sy,
@@ -410,13 +429,20 @@ DirectedHausdorffResult directed_hausdorff_cuda(
         d_sources,
         d_targets
     );
-    cudaDeviceSynchronize();
+    status = cudaGetLastError();
+    if (status != cudaSuccess) return make_cuda_error_result(status, 12);
+    status = cudaDeviceSynchronize();
+    if (status != cudaSuccess) return make_cuda_error_result(status, 13);
     double* h_values = static_cast<double*>(std::malloc(blocks * sizeof(double)));
     long long* h_sources = static_cast<long long*>(std::malloc(blocks * sizeof(long long)));
     long long* h_targets = static_cast<long long*>(std::malloc(blocks * sizeof(long long)));
-    cudaMemcpy(h_values, d_values, blocks * sizeof(double), cudaMemcpyDeviceToHost);
-    cudaMemcpy(h_sources, d_sources, blocks * sizeof(long long), cudaMemcpyDeviceToHost);
-    cudaMemcpy(h_targets, d_targets, blocks * sizeof(long long), cudaMemcpyDeviceToHost);
+    if (h_values == nullptr || h_sources == nullptr || h_targets == nullptr) return make_cuda_error_result(cudaErrorMemoryAllocation, 14);
+    status = cudaMemcpy(h_values, d_values, blocks * sizeof(double), cudaMemcpyDeviceToHost);
+    if (status != cudaSuccess) return make_cuda_error_result(status, 15);
+    status = cudaMemcpy(h_sources, d_sources, blocks * sizeof(long long), cudaMemcpyDeviceToHost);
+    if (status != cudaSuccess) return make_cuda_error_result(status, 16);
+    status = cudaMemcpy(h_targets, d_targets, blocks * sizeof(long long), cudaMemcpyDeviceToHost);
+    if (status != cudaSuccess) return make_cuda_error_result(status, 17);
     double best = -1.0;
     long long best_source = -1;
     long long best_target = -1;
@@ -455,6 +481,7 @@ def build_cuda_ctypes_library(cache_dir: Path) -> Path:
     if library.exists() and library.stat().st_mtime >= source.stat().st_mtime:
         return library
     nvcc = os.environ.get("NVCC", "nvcc")
+    cuda_arch = os.environ.get("RTDL_HAUSDORFF_CUDA_ARCH")
     cmd = [
         nvcc,
         "-O3",
@@ -466,6 +493,8 @@ def build_cuda_ctypes_library(cache_dir: Path) -> Path:
         "-o",
         str(library),
     ]
+    if cuda_arch:
+        cmd.insert(1, f"-arch={cuda_arch}")
     subprocess.run(cmd, check=True)
     return library
 
@@ -505,6 +534,11 @@ def run_cuda_ctypes_baseline(source: dict[str, np.ndarray], target: dict[str, np
         ctypes.c_int64(tx.size),
     )
     elapsed = time.perf_counter() - start
+    if math.isnan(float(result.distance)):
+        raise RuntimeError(
+            "CUDA C++ Hausdorff baseline failed: "
+            f"stage={-int(result.source_index)} cuda_status={-int(result.target_index)}"
+        )
     return DirectedResult(float(result.distance), int(result.source_index), int(result.target_index), elapsed)
 
 

@@ -1,0 +1,85 @@
+{
+  "exact_reference": {
+    "direction": "a_to_b",
+    "distance": 0.13085040452901578,
+    "method": "cuda_cpp",
+    "source_index": 48139,
+    "target_index": 55536
+  },
+  "results": {
+    "cuda_cpp": {
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "distance_for_compare": 0.13085040452901578,
+      "elapsed_sec": 0.5857883766293526,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "standalone CUDA C++ tiled double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cuda_cpp",
+      "ok": true,
+      "source_index": 48139,
+      "target_index": 55536
+    },
+    "cupy_rawkernel": {
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "distance_for_compare": 0.13085040452901578,
+      "elapsed_sec": 0.582640565931797,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "CuPy RawKernel exact nearest-neighbor continuation",
+        "role": "baseline",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cupy_rawkernel",
+      "ok": true,
+      "source_index": 48139,
+      "target_index": 55536
+    },
+    "rtdl_v2_user_cuda": {
+      "direction": "a_to_b",
+      "distance": 0.13085040452901578,
+      "distance_for_compare": 0.13085040452901578,
+      "elapsed_sec": 0.582772970199585,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "RTDL converts rows to partner columns; CuPy continuation computes exact HD",
+        "role": "rtdl_v2_language",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_v2_user_cuda",
+      "ok": true,
+      "source_index": 48139,
+      "target_index": 55536
+    }
+  },
+  "scenario": {
+    "methods": [
+      "cuda_cpp",
+      "cupy_rawkernel",
+      "rtdl_v2_user_cuda"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 65536,
+    "points_b": 65536,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}

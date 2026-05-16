@@ -1,0 +1,85 @@
+{
+  "exact_reference": {
+    "direction": "a_to_b",
+    "distance": 0.12003618286664636,
+    "method": "openmp_cpu",
+    "source_index": 8034,
+    "target_index": 3950
+  },
+  "results": {
+    "cupy_rawkernel": {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "distance_for_compare": 0.12003618286664636,
+      "elapsed_sec": 0.01390724629163742,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "CuPy RawKernel exact nearest-neighbor continuation",
+        "role": "baseline",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cupy_rawkernel",
+      "ok": true,
+      "source_index": 8034,
+      "target_index": 3950
+    },
+    "openmp_cpu": {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "distance_for_compare": 0.12003618286664636,
+      "elapsed_sec": 0.016847364604473114,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "multi-threaded C++/OpenMP double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "openmp_cpu",
+      "ok": true,
+      "source_index": 8034,
+      "target_index": 3950
+    },
+    "rtdl_v2_user_cuda": {
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "distance_for_compare": 0.12003618286664636,
+      "elapsed_sec": 0.013905733823776245,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "RTDL converts rows to partner columns; CuPy continuation computes exact HD",
+        "role": "rtdl_v2_language",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_v2_user_cuda",
+      "ok": true,
+      "source_index": 8034,
+      "target_index": 3950
+    }
+  },
+  "scenario": {
+    "methods": [
+      "openmp_cpu",
+      "cupy_rawkernel",
+      "rtdl_v2_user_cuda"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 8192,
+    "points_b": 8192,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "exact_reference": {
+    "direction": "b_to_a",
+    "distance": 0.14627873169442843,
+    "method": "openmp_cpu",
+    "source_index": 447,
+    "target_index": 486
+  },
+  "results": {
+    "cupy_rawkernel": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.0006395354866981506,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "CuPy RawKernel exact nearest-neighbor continuation",
+        "role": "baseline",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cupy_rawkernel",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    },
+    "openmp_cpu": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.08647048473358154,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "multi-threaded C++/OpenMP double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "openmp_cpu",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    },
+    "rtdl_rt_nearest_witness": {
+      "elapsed_sec": 0.4018203094601631,
+      "error": "RuntimeError('OptiX module compile error: Internal compiler error\\nCOMPILE ERROR: Module compilation failed\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__miss__frn_count_host_miss\"\\n\\tsemantic type                :                   MISS\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      1\\n\\tinstruction(s)               :                      1\\nInfo: Properties for entry function \"__intersection__frn_count_host_isect\"\\n\\tsemantic type                :           INTERSECTION\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      3\\n\\tinstruction(s)               :                     37\\nInfo: Properties for entry function \"__anyhit__frn_count_host_anyhit\"\\n\\tsemantic type                :                 ANYHIT\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      4\\n\\tinstruction(s)               :                     13\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0\\nInfo: Pipeline parameter \"params\" size is 56 bytes\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__raygen__frn_count_host_probe\"\\n\\tsemantic type                :                 RAYGEN\\n\\ttrace call(s)                :                      1\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      6\\n\\tinstruction(s)               :                     65\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0')",
+      "metadata": {
+        "exact_value": true,
+        "notes": "OptiX nearest-witness traversal seeded by threshold-search upper bound",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "ok": false
+    },
+    "rtdl_rt_nearest_witness_oracle_radius": {
+      "elapsed_sec": 0.40098752826452255,
+      "error": "RuntimeError('OptiX module compile error: Internal compiler error\\nCOMPILE ERROR: Module compilation failed\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__miss__frn_count_host_miss\"\\n\\tsemantic type                :                   MISS\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      1\\n\\tinstruction(s)               :                      1\\nInfo: Properties for entry function \"__intersection__frn_count_host_isect\"\\n\\tsemantic type                :           INTERSECTION\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      3\\n\\tinstruction(s)               :                     37\\nInfo: Properties for entry function \"__anyhit__frn_count_host_anyhit\"\\n\\tsemantic type                :                 ANYHIT\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      4\\n\\tinstruction(s)               :                     13\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0\\nInfo: Pipeline parameter \"params\" size is 56 bytes\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__raygen__frn_count_host_probe\"\\n\\tsemantic type                :                 RAYGEN\\n\\ttrace call(s)                :                      1\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      6\\n\\tinstruction(s)               :                     65\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0')",
+      "metadata": {
+        "exact_value": true,
+        "notes": "OptiX nearest-witness traversal using exact-reference radius plus slack; diagnostic only",
+        "role": "diagnostic_lower_bound",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "ok": false
+    },
+    "rtdl_rt_threshold_search": {
+      "elapsed_sec": 0.5009441748261452,
+      "error": "RuntimeError('OptiX module compile error: Internal compiler error\\nCOMPILE ERROR: Module compilation failed\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__miss__frn_count_host_miss\"\\n\\tsemantic type                :                   MISS\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      1\\n\\tinstruction(s)               :                      1\\nInfo: Properties for entry function \"__intersection__frn_count_host_isect\"\\n\\tsemantic type                :           INTERSECTION\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      3\\n\\tinstruction(s)               :                     37\\nInfo: Properties for entry function \"__anyhit__frn_count_host_anyhit\"\\n\\tsemantic type                :                 ANYHIT\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      4\\n\\tinstruction(s)               :                     13\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0\\nInfo: Pipeline parameter \"params\" size is 56 bytes\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__raygen__frn_count_host_probe\"\\n\\tsemantic type                :                 RAYGEN\\n\\ttrace call(s)                :                      1\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      6\\n\\tinstruction(s)               :                     65\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0')",
+      "metadata": {
+        "exact_value": false,
+        "notes": "OptiX fixed-radius decision search returns a tolerance-bounded interval",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "ok": false
+    },
+    "rtdl_v2_user_cuda": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.0006403848528862,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "RTDL converts rows to partner columns; CuPy continuation computes exact HD",
+        "role": "rtdl_v2_language",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_v2_user_cuda",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    }
+  },
+  "scenario": {
+    "methods": [
+      "openmp_cpu",
+      "cupy_rawkernel",
+      "rtdl_v2_user_cuda",
+      "rtdl_rt_threshold_search",
+      "rtdl_rt_nearest_witness",
+      "rtdl_rt_nearest_witness_oracle_radius"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 512,
+    "points_b": 512,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}

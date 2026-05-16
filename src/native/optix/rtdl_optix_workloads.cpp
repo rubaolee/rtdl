@@ -5331,6 +5331,18 @@ struct FixedRadiusCountRtLaunchParams {
     float trace_tmax;
 };
 
+struct FixedRadiusCountHostRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    GpuFixedRadiusCountRecord* output;
+    uint32_t* threshold_reached_count;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
 struct GpuFixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
 
 struct FixedRadiusNearestRtLaunchParams {
@@ -5590,14 +5602,14 @@ static PreparedFixedRadiusCountThreshold2D* prepare_fixed_radius_count_threshold
         size_t search_count,
         double max_radius)
 {
-    std::call_once(g_frn_count_rt.init, [&]() {
-        std::string ptx = compile_to_ptx(kFixedRadiusCountRtKernelSrc, "frn_count_rt_kernel.cu");
-        g_frn_count_rt.pipe = build_pipeline(
+    std::call_once(g_frn_count_host_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusCountHostRtKernelSrc, "frn_count_host_rt_kernel.cu");
+        g_frn_count_host_rt.pipe = build_pipeline(
             get_optix_context(), ptx,
-            "__raygen__frn_count_probe",
-            "__miss__frn_count_miss",
-            "__intersection__frn_count_isect",
-            "__anyhit__frn_count_anyhit",
+            "__raygen__frn_count_host_probe",
+            "__miss__frn_count_host_miss",
+            "__intersection__frn_count_host_isect",
+            "__anyhit__frn_count_host_anyhit",
             nullptr, 3).release();
     });
     return new PreparedFixedRadiusCountThreshold2D(search_points, search_count, max_radius);
@@ -5660,36 +5672,26 @@ static void run_prepared_fixed_radius_count_threshold_2d_optix(
     DevPtr d_output(sizeof(GpuFixedRadiusCountRecord) * query_count);
     upload(d_queries.ptr, gpu_queries.data(), query_count);
 
-    FixedRadiusCountRtLaunchParams lp;
+    FixedRadiusCountHostRtLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
-    lp.query_ids = nullptr;
-    lp.query_x = nullptr;
-    lp.query_y = nullptr;
-    lp.search_ids = nullptr;
-    lp.search_x = nullptr;
-    lp.search_y = nullptr;
     lp.output = reinterpret_cast<GpuFixedRadiusCountRecord*>(d_output.ptr);
-    lp.query_ids_out = nullptr;
-    lp.neighbor_counts_out = nullptr;
-    lp.threshold_flags_out = nullptr;
     lp.threshold_reached_count = nullptr;
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
-    lp.use_device_columns = 0u;
     lp.radius = static_cast<float>(radius);
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 
-    DevPtr d_params(sizeof(FixedRadiusCountRtLaunchParams));
+    DevPtr d_params(sizeof(FixedRadiusCountHostRtLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
     g_optix_last_bvh_build_s = 0.0;
     auto t_start_trav = std::chrono::steady_clock::now();
-    OPTIX_CHECK(optixLaunch(g_frn_count_rt.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(FixedRadiusCountRtLaunchParams),
-                             &g_frn_count_rt.pipe->sbt,
+    OPTIX_CHECK(optixLaunch(g_frn_count_host_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusCountHostRtLaunchParams),
+                             &g_frn_count_host_rt.pipe->sbt,
                              static_cast<unsigned>(query_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
     auto t_end_trav = std::chrono::steady_clock::now();
@@ -5826,36 +5828,26 @@ static void count_prepared_fixed_radius_threshold_reached_2d_optix(
     uint32_t zero = 0;
     upload(d_threshold_reached_count.ptr, &zero, 1);
 
-    FixedRadiusCountRtLaunchParams lp;
+    FixedRadiusCountHostRtLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
-    lp.query_ids = nullptr;
-    lp.query_x = nullptr;
-    lp.query_y = nullptr;
-    lp.search_ids = nullptr;
-    lp.search_x = nullptr;
-    lp.search_y = nullptr;
     lp.output = nullptr;
-    lp.query_ids_out = nullptr;
-    lp.neighbor_counts_out = nullptr;
-    lp.threshold_flags_out = nullptr;
     lp.threshold_reached_count = reinterpret_cast<uint32_t*>(d_threshold_reached_count.ptr);
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
-    lp.use_device_columns = 0u;
     lp.radius = static_cast<float>(radius);
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 
-    DevPtr d_params(sizeof(FixedRadiusCountRtLaunchParams));
+    DevPtr d_params(sizeof(FixedRadiusCountHostRtLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
     g_optix_last_bvh_build_s = 0.0;
     auto t_start_trav = std::chrono::steady_clock::now();
-    OPTIX_CHECK(optixLaunch(g_frn_count_rt.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(FixedRadiusCountRtLaunchParams),
-                             &g_frn_count_rt.pipe->sbt,
+    OPTIX_CHECK(optixLaunch(g_frn_count_host_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusCountHostRtLaunchParams),
+                             &g_frn_count_host_rt.pipe->sbt,
                              static_cast<unsigned>(query_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
     auto t_end_trav = std::chrono::steady_clock::now();
