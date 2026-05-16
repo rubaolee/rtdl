@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from scripts import goal2126_public_hausdorff_dataset_perf as goal2126
+from examples import rtdl_hausdorff_v2_user_benchmark as lab
 
 
 class PublicHausdorffDatasetPerfHarnessTest(unittest.TestCase):
@@ -67,6 +68,33 @@ class PublicHausdorffDatasetPerfHarnessTest(unittest.TestCase):
         np.testing.assert_allclose(first, second)
         self.assertGreaterEqual(float(first.min()), 0.0)
         self.assertLessEqual(float(first.max()), 1.0)
+
+    def test_grouped_grid_metadata_covers_target_columns_once(self) -> None:
+        target = {
+            "ids": np.arange(10, dtype=np.int64),
+            "x": np.asarray([0.0, 0.1, 0.2, 0.9, 1.0, 1.1, 2.0, 2.1, 2.2, 3.0], dtype=np.float64),
+            "y": np.asarray([0.0, 0.0, 0.0, 0.9, 1.0, 1.1, 2.0, 2.1, 2.2, 3.0], dtype=np.float64),
+        }
+        grouped = lab.build_cupy_grouped_grid_target_columns(target, target_points_per_group=2)
+        self.assertEqual(sorted(grouped["ids"].tolist()), list(range(10)))
+        self.assertEqual(int(grouped["group_counts"].sum()), 10)
+        for offset, count, min_x, min_y, max_x, max_y in zip(
+            grouped["group_offsets"],
+            grouped["group_counts"],
+            grouped["group_min_x"],
+            grouped["group_min_y"],
+            grouped["group_max_x"],
+            grouped["group_max_y"],
+        ):
+            start = int(offset)
+            end = start + int(count)
+            xs = grouped["x"][start:end]
+            ys = grouped["y"][start:end]
+            self.assertGreater(int(count), 0)
+            self.assertAlmostEqual(float(xs.min()), float(min_x))
+            self.assertAlmostEqual(float(ys.min()), float(min_y))
+            self.assertAlmostEqual(float(xs.max()), float(max_x))
+            self.assertAlmostEqual(float(ys.max()), float(max_y))
 
 
 if __name__ == "__main__":

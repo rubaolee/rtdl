@@ -82,7 +82,12 @@ def _select_directed_runner(method: str, *, cache_dir: Path):
         return lambda source, target: lab.run_cuda_ctypes_baseline(source, target, cache_dir=cache_dir)
     if method == "cupy_rawkernel":
         return lab.run_cuda_rawkernel
-    raise ValueError("method must be one of: rtdl_v2_user_cuda, openmp_cpu, cuda_cpp, cupy_rawkernel")
+    if method == "cupy_grouped_grid_rawkernel":
+        return lab.run_cuda_grouped_grid_rawkernel
+    raise ValueError(
+        "method must be one of: rtdl_v2_user_cuda, openmp_cpu, cuda_cpp, "
+        "cupy_rawkernel, cupy_grouped_grid_rawkernel"
+    )
 
 
 def _columns_to_points(columns: dict[str, np.ndarray]) -> tuple[Point, ...]:
@@ -875,8 +880,9 @@ def hausdorff_distance_2d(
     - user-owned CUDA/CuPy continuation computes exact directed HD;
     - Python combines A->B and B->A into the final undirected HD.
 
-    The `openmp_cpu`, `cuda_cpp`, and `cupy_rawkernel` methods are independent
-    validation/performance baselines for the same exact function.
+    The `openmp_cpu`, `cuda_cpp`, `cupy_rawkernel`, and
+    `cupy_grouped_grid_rawkernel` methods are independent validation/performance
+    baselines for the same exact function.
     """
 
     if method == "rtdl_rt_nearest_witness":
@@ -960,6 +966,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             "openmp_cpu",
             "cuda_cpp",
             "cupy_rawkernel",
+            "cupy_grouped_grid_rawkernel",
         ),
         default="rtdl_v2_user_cuda",
     )
@@ -1042,7 +1049,13 @@ def main(argv: Iterable[str] | None = None) -> int:
         payload = {"primary": asdict(primary)}
     if args.compare:
         comparisons = {}
-        for method in ("openmp_cpu", "cuda_cpp", "cupy_rawkernel", "rtdl_v2_user_cuda"):
+        for method in (
+            "openmp_cpu",
+            "cuda_cpp",
+            "cupy_rawkernel",
+            "cupy_grouped_grid_rawkernel",
+            "rtdl_v2_user_cuda",
+        ):
             start = time.perf_counter()
             try:
                 result = hausdorff_distance_2d(points_a, points_b, method=method, warmup=args.warmup)

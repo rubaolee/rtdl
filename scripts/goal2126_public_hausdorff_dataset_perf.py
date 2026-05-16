@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from examples import rtdl_hausdorff_v2_function as hd
+from examples import rtdl_hausdorff_v2_user_benchmark as lab
 
 
 STANFORD_DATASETS = {
@@ -261,6 +262,36 @@ def _run_cupy(points_a: np.ndarray, points_b: np.ndarray, *, warmup: int) -> dic
     }
 
 
+def _run_cupy_grouped_grid(
+    points_a: np.ndarray,
+    points_b: np.ndarray,
+    *,
+    group_size: int,
+    warmup: int,
+) -> dict[str, object]:
+    columns_a = hd._as_point_columns(points_a, name="points_a")
+    columns_b = hd._as_point_columns(points_b, name="points_b")
+    start = time.perf_counter()
+    result = lab.undirected(
+        lambda source, target: lab.run_cuda_grouped_grid_rawkernel(
+            source,
+            target,
+            target_points_per_group=group_size,
+        ),
+        columns_a,
+        columns_b,
+        warmup=warmup,
+    )
+    return {
+        "ok": True,
+        "elapsed_sec": time.perf_counter() - start,
+        "distance": float(result["distance"]),
+        "direction": result["direction"],
+        "source_index": result[f"directed_{result['direction']}"]["source_index"],
+        "target_index": result[f"directed_{result['direction']}"]["target_index"],
+    }
+
+
 def _run_rtdl_grouped_reduced(points_a: np.ndarray, points_b: np.ndarray, *, group_size: int) -> dict[str, object]:
     start = time.perf_counter()
     result = hd.hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
@@ -330,6 +361,22 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 f"sec={row['cupy_rawkernel'].get('elapsed_sec')}",
                 flush=True,
             )
+        if not args.skip_cupy_grouped_grid:
+            print(f"[goal2126] case={name} CuPy grouped-grid baseline start", flush=True)
+            row["cupy_grouped_grid_rawkernel"] = _safe_call(
+                "cupy_grouped_grid_rawkernel",
+                lambda: _run_cupy_grouped_grid(
+                    points_a,
+                    points_b,
+                    group_size=group_size,
+                    warmup=args.warmup,
+                ),
+            )
+            print(
+                f"[goal2126] case={name} CuPy grouped-grid done ok={row['cupy_grouped_grid_rawkernel'].get('ok')} "
+                f"sec={row['cupy_grouped_grid_rawkernel'].get('elapsed_sec')}",
+                flush=True,
+            )
         if not args.skip_rtdl:
             print(f"[goal2126] case={name} RTDL/OptiX grouped reduced start", flush=True)
             row["rtdl_rt_grouped_reduced_nearest_witness"] = _safe_call(
@@ -342,6 +389,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 flush=True,
             )
         cupy = row.get("cupy_rawkernel")
+        cupy_grouped = row.get("cupy_grouped_grid_rawkernel")
         rtdl = row.get("rtdl_rt_grouped_reduced_nearest_witness")
         if isinstance(cupy, dict) and isinstance(rtdl, dict) and cupy.get("ok") and rtdl.get("ok"):
             row["matches_cupy"] = math.isclose(
@@ -351,6 +399,18 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 abs_tol=args.tolerance,
             )
             row["rtdl_vs_cupy_ratio"] = float(rtdl["elapsed_sec"]) / float(cupy["elapsed_sec"])
+        if isinstance(cupy_grouped, dict) and isinstance(rtdl, dict) and cupy_grouped.get("ok") and rtdl.get("ok"):
+            row["matches_cupy_grouped_grid"] = math.isclose(
+                float(cupy_grouped["distance"]),
+                float(rtdl["distance"]),
+                rel_tol=args.tolerance,
+                abs_tol=args.tolerance,
+            )
+            row["rtdl_vs_cupy_grouped_grid_ratio"] = float(rtdl["elapsed_sec"]) / float(cupy_grouped["elapsed_sec"])
+        if isinstance(cupy, dict) and isinstance(cupy_grouped, dict) and cupy.get("ok") and cupy_grouped.get("ok"):
+            row["cupy_grouped_grid_vs_dense_ratio"] = (
+                float(cupy_grouped["elapsed_sec"]) / float(cupy["elapsed_sec"])
+            )
         rows.append(row)
     return {
         "goal": "goal2126_public_hausdorff_dataset_perf",
@@ -361,6 +421,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "rows": rows,
         "claim_boundary": {
             "public_dataset_evidence": True,
+            "cupy_grouped_grid_fairness_baseline": not args.skip_cupy_grouped_grid,
             "xhd_paper_exact_dataset_evidence": False,
             "xy_projection_only": True,
             "three_dimensional_surface_hausdorff_claim": False,
@@ -377,6 +438,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--warmup", type=int, default=1)
     parser.add_argument("--tolerance", type=float, default=1e-6)
     parser.add_argument("--skip-cupy", action="store_true")
+    parser.add_argument("--skip-cupy-grouped-grid", action="store_true")
     parser.add_argument("--skip-rtdl", action="store_true")
     parser.add_argument("--commit-label", default="")
     parser.add_argument("--json-out", type=Path, required=True)

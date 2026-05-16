@@ -281,6 +281,106 @@ void directed_hausdorff_tiled(
 """
 
 
+CUPY_GROUPED_GRID_KERNEL = r"""
+extern "C" __global__
+void directed_hausdorff_grouped_grid(
+    const double* sx,
+    const double* sy,
+    const long long source_count,
+    const long long* target_ids,
+    const double* tx,
+    const double* ty,
+    const long long target_count,
+    const double* group_min_x,
+    const double* group_min_y,
+    const double* group_max_x,
+    const double* group_max_y,
+    const long long* group_offsets,
+    const long long* group_counts,
+    const long long group_count,
+    double* block_values,
+    long long* block_sources,
+    long long* block_targets
+) {
+    const long long source_index = static_cast<long long>(blockIdx.x) * blockDim.x + threadIdx.x;
+    double nearest_sq = 1.0 / 0.0;
+    long long nearest_target = 9223372036854775807LL;
+    const bool active = source_index < source_count;
+    const double x = active ? sx[source_index] : 0.0;
+    const double y = active ? sy[source_index] : 0.0;
+
+    if (active) {
+        for (long long group = 0; group < group_count; ++group) {
+            double dx = 0.0;
+            double dy = 0.0;
+            if (x < group_min_x[group]) {
+                dx = group_min_x[group] - x;
+            } else if (x > group_max_x[group]) {
+                dx = x - group_max_x[group];
+            }
+            if (y < group_min_y[group]) {
+                dy = group_min_y[group] - y;
+            } else if (y > group_max_y[group]) {
+                dy = y - group_max_y[group];
+            }
+            const double group_lower_bound_sq = dx * dx + dy * dy;
+            if (group_lower_bound_sq > nearest_sq) {
+                continue;
+            }
+            const long long begin = group_offsets[group];
+            const long long end = begin + group_counts[group];
+            for (long long idx = begin; idx < end; ++idx) {
+                if (idx < 0 || idx >= target_count) {
+                    continue;
+                }
+                const double px = tx[idx];
+                const double py = ty[idx];
+                const double pdx = x - px;
+                const double pdy = y - py;
+                const double d2 = pdx * pdx + pdy * pdy;
+                const long long target_id = target_ids[idx];
+                if (d2 < nearest_sq || (d2 == nearest_sq && target_id < nearest_target)) {
+                    nearest_sq = d2;
+                    nearest_target = target_id;
+                }
+            }
+        }
+    }
+
+    __shared__ double local_values[256];
+    __shared__ long long local_sources[256];
+    __shared__ long long local_targets[256];
+    local_values[threadIdx.x] = active ? nearest_sq : -1.0;
+    local_sources[threadIdx.x] = active ? source_index : 9223372036854775807LL;
+    local_targets[threadIdx.x] = active ? nearest_target : 9223372036854775807LL;
+    __syncthreads();
+
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride) {
+            const int other = threadIdx.x + stride;
+            const double other_value = local_values[other];
+            const long long other_source = local_sources[other];
+            if (
+                other_value > local_values[threadIdx.x] ||
+                (other_value == local_values[threadIdx.x] && other_source < local_sources[threadIdx.x])
+            ) {
+                local_values[threadIdx.x] = other_value;
+                local_sources[threadIdx.x] = other_source;
+                local_targets[threadIdx.x] = local_targets[other];
+            }
+        }
+        __syncthreads();
+    }
+
+    if (threadIdx.x == 0) {
+        block_values[blockIdx.x] = local_values[0];
+        block_sources[blockIdx.x] = local_sources[0];
+        block_targets[blockIdx.x] = local_targets[0];
+    }
+}
+"""
+
+
 CUDA_CPP = r"""
 #include <cmath>
 #include <cstdint>
@@ -571,6 +671,150 @@ def run_cuda_rawkernel(
         (threads,),
         (sx, sy, source_count, tx, ty, target_count, values, sources, targets),
         shared_mem=shared_bytes,
+    )
+    best_block = int(cupy.argmax(values).item())
+    distance = float(cupy.sqrt(values[best_block]).item())
+    source_index = int(sources[best_block].item())
+    target_index = int(targets[best_block].item())
+    cupy.cuda.runtime.deviceSynchronize()
+    elapsed = time.perf_counter() - start
+    return DirectedResult(distance, source_index, target_index, elapsed)
+
+
+def _target_points_per_group(target_count: int, requested: int | None = None) -> int:
+    if requested is not None:
+        value = int(requested)
+    else:
+        value = int(os.environ.get("RTDL_CUPY_HD_GRID_TARGET_POINTS_PER_GROUP", "0") or "0")
+    if value <= 0:
+        value = max(64, int(target_count) // 256)
+    return max(1, value)
+
+
+def build_cupy_grouped_grid_target_columns(
+    target: dict[str, object],
+    *,
+    target_points_per_group: int | None = None,
+) -> dict[str, np.ndarray]:
+    ids = np.asarray(target["ids"], dtype=np.int64)
+    x = np.asarray(target["x"], dtype=np.float64)
+    y = np.asarray(target["y"], dtype=np.float64)
+    if ids.ndim != 1 or x.ndim != 1 or y.ndim != 1 or not (ids.size == x.size == y.size):
+        raise ValueError("target ids/x/y columns must be same-length 1D arrays")
+    count = int(ids.size)
+    if count == 0:
+        raise ValueError("target point set must not be empty")
+    points_per_group = _target_points_per_group(count, target_points_per_group)
+    grid_width = max(1, int(math.ceil(math.sqrt(count / float(points_per_group)))))
+    min_x = float(x.min())
+    max_x = float(x.max())
+    min_y = float(y.min())
+    max_y = float(y.max())
+    span_x = max(max_x - min_x, 1.0e-12)
+    span_y = max(max_y - min_y, 1.0e-12)
+    cell_x = np.floor((x - min_x) / span_x * grid_width).astype(np.int64)
+    cell_y = np.floor((y - min_y) / span_y * grid_width).astype(np.int64)
+    np.clip(cell_x, 0, grid_width - 1, out=cell_x)
+    np.clip(cell_y, 0, grid_width - 1, out=cell_y)
+    cell_ids = cell_y * grid_width + cell_x
+    order = np.argsort(cell_ids, kind="stable")
+    sorted_ids = np.ascontiguousarray(ids[order], dtype=np.int64)
+    sorted_x = np.ascontiguousarray(x[order], dtype=np.float64)
+    sorted_y = np.ascontiguousarray(y[order], dtype=np.float64)
+    sorted_cells = cell_ids[order]
+    group_min_x: list[float] = []
+    group_min_y: list[float] = []
+    group_max_x: list[float] = []
+    group_max_y: list[float] = []
+    group_offsets: list[int] = []
+    group_counts: list[int] = []
+    start = 0
+    while start < count:
+        cell_id = int(sorted_cells[start])
+        end = start + 1
+        while end < count and int(sorted_cells[end]) == cell_id:
+            end += 1
+        group_x = sorted_x[start:end]
+        group_y = sorted_y[start:end]
+        group_offsets.append(start)
+        group_counts.append(end - start)
+        group_min_x.append(float(group_x.min()))
+        group_min_y.append(float(group_y.min()))
+        group_max_x.append(float(group_x.max()))
+        group_max_y.append(float(group_y.max()))
+        start = end
+    return {
+        "ids": sorted_ids,
+        "x": sorted_x,
+        "y": sorted_y,
+        "group_min_x": np.ascontiguousarray(group_min_x, dtype=np.float64),
+        "group_min_y": np.ascontiguousarray(group_min_y, dtype=np.float64),
+        "group_max_x": np.ascontiguousarray(group_max_x, dtype=np.float64),
+        "group_max_y": np.ascontiguousarray(group_max_y, dtype=np.float64),
+        "group_offsets": np.ascontiguousarray(group_offsets, dtype=np.int64),
+        "group_counts": np.ascontiguousarray(group_counts, dtype=np.int64),
+        "grid_width": np.asarray([grid_width], dtype=np.int64),
+        "target_points_per_group": np.asarray([points_per_group], dtype=np.int64),
+    }
+
+
+def run_cuda_grouped_grid_rawkernel(
+    source: dict[str, object],
+    target: dict[str, object],
+    *,
+    target_points_per_group: int | None = None,
+    source_is_device: bool = False,
+) -> DirectedResult:
+    import cupy
+
+    grouped = build_cupy_grouped_grid_target_columns(
+        target,
+        target_points_per_group=target_points_per_group,
+    )
+    sx = source["x"] if source_is_device else cupy.asarray(source["x"], dtype=cupy.float64)
+    sy = source["y"] if source_is_device else cupy.asarray(source["y"], dtype=cupy.float64)
+    target_ids = cupy.asarray(grouped["ids"], dtype=cupy.int64)
+    tx = cupy.asarray(grouped["x"], dtype=cupy.float64)
+    ty = cupy.asarray(grouped["y"], dtype=cupy.float64)
+    group_min_x = cupy.asarray(grouped["group_min_x"], dtype=cupy.float64)
+    group_min_y = cupy.asarray(grouped["group_min_y"], dtype=cupy.float64)
+    group_max_x = cupy.asarray(grouped["group_max_x"], dtype=cupy.float64)
+    group_max_y = cupy.asarray(grouped["group_max_y"], dtype=cupy.float64)
+    group_offsets = cupy.asarray(grouped["group_offsets"], dtype=cupy.int64)
+    group_counts = cupy.asarray(grouped["group_counts"], dtype=cupy.int64)
+    source_count = int(sx.size)
+    target_count = int(tx.size)
+    group_count = int(group_offsets.size)
+    threads = 256
+    blocks = (source_count + threads - 1) // threads
+    values = cupy.empty((blocks,), dtype=cupy.float64)
+    sources = cupy.empty((blocks,), dtype=cupy.int64)
+    targets = cupy.empty((blocks,), dtype=cupy.int64)
+    kernel = cupy.RawKernel(CUPY_GROUPED_GRID_KERNEL, "directed_hausdorff_grouped_grid")
+    cupy.cuda.runtime.deviceSynchronize()
+    start = time.perf_counter()
+    kernel(
+        (blocks,),
+        (threads,),
+        (
+            sx,
+            sy,
+            source_count,
+            target_ids,
+            tx,
+            ty,
+            target_count,
+            group_min_x,
+            group_min_y,
+            group_max_x,
+            group_max_y,
+            group_offsets,
+            group_counts,
+            group_count,
+            values,
+            sources,
+            targets,
+        ),
     )
     best_block = int(cupy.argmax(values).item())
     distance = float(cupy.sqrt(values[best_block]).item())
