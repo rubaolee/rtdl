@@ -5,9 +5,14 @@ import json
 import os
 import signal
 import statistics
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
 from examples.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
 from rtdsl.datasets import CdbDataset
@@ -17,7 +22,6 @@ from rtdsl.datasets import load_cdb
 from rtdsl.datasets import write_cdb
 
 
-ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_DIR = ROOT / "data" / "rayjoin"
 
 
