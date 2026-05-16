@@ -1,0 +1,82 @@
+{
+  "app": "hausdorff_distance",
+  "methods": {
+    "cuda_ctypes_baseline": {
+      "directed_a_to_b": {
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.09268913604319096,
+        "source_index": 17108,
+        "target_index": 17833
+      },
+      "directed_b_to_a": {
+        "distance": 0.10892475640667248,
+        "elapsed_sec": 0.08351006603334099,
+        "source_index": 31703,
+        "target_index": 17292
+      },
+      "direction": "a_to_b",
+      "distance": 0.11607729155254294,
+      "elapsed_sec": 0.17619920207653195,
+      "matches_oracle": true
+    },
+    "cupy_rawkernel_baseline": {
+      "directed_a_to_b": {
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.08339921094011515,
+        "source_index": 17108,
+        "target_index": 17833
+      },
+      "directed_b_to_a": {
+        "distance": 0.10892475640667248,
+        "elapsed_sec": 0.09237622004002333,
+        "source_index": 31703,
+        "target_index": 17292
+      },
+      "direction": "a_to_b",
+      "distance": 0.11607729155254294,
+      "elapsed_sec": 0.17577543098013848,
+      "matches_oracle": true
+    },
+    "openmp_cpu": {
+      "directed_a_to_b": {
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.5229206499643624,
+        "source_index": 17108,
+        "target_index": 17833
+      },
+      "directed_b_to_a": {
+        "distance": 0.10892475640667248,
+        "elapsed_sec": 0.5205563199706376,
+        "source_index": 31703,
+        "target_index": 17292
+      },
+      "direction": "a_to_b",
+      "distance": 0.11607729155254294,
+      "elapsed_sec": 1.043476969935
+    },
+    "rtdl_v2_partner_columns_user_cuda": {
+      "directed_a_to_b": {
+        "distance": 0.11607729155254294,
+        "elapsed_sec": 0.08317582402378321,
+        "source_index": 17108,
+        "target_index": 17833
+      },
+      "directed_b_to_a": {
+        "distance": 0.10892475640667248,
+        "elapsed_sec": 0.08319109200965613,
+        "source_index": 31703,
+        "target_index": 17292
+      },
+      "direction": "a_to_b",
+      "distance": 0.11607729155254294,
+      "elapsed_sec": 0.16636691603343934,
+      "matches_oracle": true
+    }
+  },
+  "oracle_distance": 0.11607729155254294,
+  "points_a": 32768,
+  "points_b": 32768,
+  "ratio_rtdl_v2_user_cuda_vs_cupy_cuda_baseline": 0.9464742319547363,
+  "role": "user_level_v2_0_benchmark_no_rtdl_runtime_mutation",
+  "speedup_rtdl_v2_user_cuda_vs_openmp_cpu": 6.272142291351146
+}

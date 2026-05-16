@@ -1,0 +1,100 @@
+{
+  "app": "hausdorff_distance",
+  "methods": {
+    "cuda_ctypes_baseline": {
+      "directed_a_to_b": {
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.005025701015256345,
+        "source_index": 8034,
+        "target_index": 3950
+      },
+      "directed_b_to_a": {
+        "distance": 0.11461068372529339,
+        "elapsed_sec": 0.005092169041745365,
+        "source_index": 5098,
+        "target_index": 1414
+      },
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "elapsed_sec": 0.01011787005700171,
+      "matches_oracle": true
+    },
+    "cupy_rawkernel_baseline": {
+      "directed_a_to_b": {
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.004752565990202129,
+        "source_index": 8034,
+        "target_index": 3950
+      },
+      "directed_b_to_a": {
+        "distance": 0.11461068372529339,
+        "elapsed_sec": 0.0047489190474152565,
+        "source_index": 5098,
+        "target_index": 1414
+      },
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "elapsed_sec": 0.009501485037617385,
+      "matches_oracle": true
+    },
+    "openmp_cpu": {
+      "directed_a_to_b": {
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.034501077025197446,
+        "source_index": 8034,
+        "target_index": 3950
+      },
+      "directed_b_to_a": {
+        "distance": 0.1146106837252934,
+        "elapsed_sec": 0.03261637594550848,
+        "source_index": 5098,
+        "target_index": 1414
+      },
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "elapsed_sec": 0.06711745297070593
+    },
+    "rtdl_v2_builtin_cupy_partner_exact": {
+      "directed_a_to_b": {
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.030832209042273462,
+        "source_index": 8034,
+        "target_index": 3950
+      },
+      "directed_b_to_a": {
+        "distance": 0.1146106837252934,
+        "elapsed_sec": 0.030816923012025654,
+        "source_index": 5098,
+        "target_index": 1414
+      },
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "elapsed_sec": 0.061649132054299116,
+      "matches_oracle": true
+    },
+    "rtdl_v2_partner_columns_user_cuda": {
+      "directed_a_to_b": {
+        "distance": 0.12003618286664636,
+        "elapsed_sec": 0.004762460011988878,
+        "source_index": 8034,
+        "target_index": 3950
+      },
+      "directed_b_to_a": {
+        "distance": 0.11461068372529339,
+        "elapsed_sec": 0.004774399916641414,
+        "source_index": 5098,
+        "target_index": 1414
+      },
+      "direction": "a_to_b",
+      "distance": 0.12003618286664636,
+      "elapsed_sec": 0.009536859928630292,
+      "matches_oracle": true
+    }
+  },
+  "oracle_distance": 0.12003618286664636,
+  "points_a": 8192,
+  "points_b": 8192,
+  "ratio_rtdl_v2_user_cuda_vs_cupy_cuda_baseline": 1.0037230907455892,
+  "role": "user_level_v2_0_benchmark_no_rtdl_runtime_mutation",
+  "speedup_rtdl_v2_user_cuda_vs_openmp_cpu": 7.037688869605271
+}
