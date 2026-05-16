@@ -2,7 +2,7 @@
 
 Date: 2026-05-16
 
-Status: local fixture evidence collected; pod/public-data evidence pending.
+Status: local fixture evidence collected; pod/public-data evidence collected in Goal2153.
 
 ## Purpose
 
@@ -61,7 +61,7 @@ py -3 -m py_compile examples\rtdl_rayjoin_v2_spatial_join_app.py tests\goal2145_
 
 Result: all focused tests passed locally.
 
-## Next Pod Step
+## Pod Follow-Up
 
 Use the working repo key, not the rejected default SSH key:
 
@@ -69,7 +69,7 @@ Use the working repo key, not the rejected default SSH key:
 ssh root@157.157.221.29 -p 24240 -i id_ed25519_rtdl_codex
 ```
 
-On the pod, pull the current commit, rebuild OptiX if needed, download public RayJoin sample CDBs through `rtdsl.datasets.download_rayjoin_sample`, and run the app with absolute external CDB paths for PIP, LSI, and overlay seed.
+Goal2153 pulled this commit to the pod, downloaded public RayJoin sample CDBs through `rtdsl.datasets.download_rayjoin_sample`, built deterministic bounded CDB slices, and ran the app with absolute external CDB paths for PIP, LSI, and overlay seed.
 
 ## Claim Boundary
 
@@ -89,4 +89,4 @@ This goal does not authorize:
 
 ## Verdict
 
-Goal2152 is accepted as an app-level data-ingestion improvement that keeps RTDL v2 engine boundaries clean. Pod/public-data evidence is still required before using it for performance conclusions.
+Goal2152 is accepted as an app-level data-ingestion improvement that keeps RTDL v2 engine boundaries clean. Goal2153 carries the first pod/public-data evidence and the remaining performance/semantic boundaries.

@@ -20,7 +20,7 @@ class Goal2152RayjoinExternalCdbAdapterReportTest(unittest.TestCase):
             "This goal changes only the Python app-level adapter",
             "does not add C/C++ symbols",
             "new native app-specific engine functionality",
-            "Pod/public-data evidence is still required",
+            "Goal2153 carries the first pod/public-data evidence",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
