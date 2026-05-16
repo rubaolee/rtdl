@@ -1,0 +1,111 @@
+{
+  "claim_boundary": {
+    "cupy_grouped_grid_fairness_baseline": true,
+    "public_dataset_evidence": true,
+    "release_speedup_claim_authorized": false,
+    "three_dimensional_surface_hausdorff_claim": false,
+    "xhd_paper_exact_dataset_evidence": false,
+    "xy_projection_only": true
+  },
+  "commit": "934f252dc35cb6c44ba64752c30d025496630ccd",
+  "datasets": {
+    "dragon": {
+      "archive": "dragon_recon.tar.gz",
+      "preferred_ply": "dragon_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+    },
+    "happy": {
+      "archive": "happy_recon.tar.gz",
+      "preferred_ply": "happy_vrip.ply",
+      "source": "Stanford 3D Scanning Repository",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+    }
+  },
+  "goal": "goal2126_public_hausdorff_dataset_perf",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "rows": [
+    {
+      "case": "stanford_dragon_xy_shifted",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.025000000000000022,
+        "elapsed_sec": 0.15254376828670502,
+        "ok": true,
+        "source_index": 9385,
+        "target_index": 9385
+      },
+      "cupy_grouped_grid_vs_dense_ratio": 0.6344708441049423,
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.025000000000000022,
+        "elapsed_sec": 0.24042675830423832,
+        "ok": true,
+        "source_index": 9385,
+        "target_index": 9385
+      },
+      "description": "Dragon vertices projected to XY, compared with a deterministic shifted copy.",
+      "matches_cupy": true,
+      "matches_cupy_grouped_grid": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.025000000000000022,
+        "elapsed_sec": 0.5796969551593065,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 9385,
+        "target_index": 64966
+      },
+      "rtdl_vs_cupy_grouped_grid_ratio": 3.800200831998393,
+      "rtdl_vs_cupy_ratio": 2.4111166296463242,
+      "sample_count": 65536,
+      "source_paths": [
+        "/root/rtdl/scratch/public_hausdorff/dragon/dragon_recon/dragon_vrip.ply"
+      ],
+      "target_points_per_group": 256
+    },
+    {
+      "case": "stanford_dragon_vs_happy_xy",
+      "cupy_grouped_grid_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.30216863203703764,
+        "elapsed_sec": 0.1610119827091694,
+        "ok": true,
+        "source_index": 27771,
+        "target_index": 31788
+      },
+      "cupy_grouped_grid_vs_dense_ratio": 0.6697465125902287,
+      "cupy_rawkernel": {
+        "direction": "b_to_a",
+        "distance": 0.30216863203703764,
+        "elapsed_sec": 0.24040734767913818,
+        "ok": true,
+        "source_index": 27771,
+        "target_index": 31788
+      },
+      "description": "Dragon and Happy Buddha vertices independently normalized and projected to XY.",
+      "matches_cupy": true,
+      "matches_cupy_grouped_grid": true,
+      "projection": "XY projection from public 3D PLY vertices; not a 3D surface Hausdorff claim",
+      "rtdl_rt_grouped_reduced_nearest_witness": {
+        "direction": "b_to_a",
+        "distance": 0.30216863203703764,
+        "elapsed_sec": 0.5490355435758829,
+        "method": "rtdl_rt_grouped_reduced_nearest_witness",
+        "ok": true,
+        "source_index": 27771,
+        "target_index": 51862
+      },
+      "rtdl_vs_cupy_grouped_grid_ratio": 3.4099048675624823,
+      "rtdl_vs_cupy_ratio": 2.2837718933144178,
+      "sample_count": 65536,
+      "source_paths": [
+        "/root/rtdl/scratch/public_hausdorff/dragon/dragon_recon/dragon_vrip.ply",
+        "/root/rtdl/scratch/public_hausdorff/happy/happy_recon/happy_vrip.ply"
+      ],
+      "target_points_per_group": 256
+    }
+  ],
+  "sample_count": 65536
+}
