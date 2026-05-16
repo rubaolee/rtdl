@@ -1,0 +1,65 @@
+{
+  "exact_reference": {
+    "direction": "b_to_a",
+    "distance": 0.13528455701336056,
+    "method": "cupy_rawkernel",
+    "source_index": 472,
+    "target_index": 1183
+  },
+  "results": {
+    "cupy_rawkernel": {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "distance_for_compare": 0.13528455701336056,
+      "elapsed_sec": 0.0036441832780838013,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "CuPy RawKernel exact nearest-neighbor continuation",
+        "role": "baseline",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "cupy_rawkernel",
+      "ok": true,
+      "source_index": 472,
+      "target_index": 1183
+    },
+    "rtdl_v2_user_cuda": {
+      "direction": "b_to_a",
+      "distance": 0.13528455701336056,
+      "distance_for_compare": 0.13528455701336056,
+      "elapsed_sec": 0.0036420226097106934,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "RTDL converts rows to partner columns; CuPy continuation computes exact HD",
+        "role": "rtdl_v2_language",
+        "uses_partner": true,
+        "uses_rt_cores": false,
+        "uses_rtdl": true
+      },
+      "method": "rtdl_v2_user_cuda",
+      "ok": true,
+      "source_index": 472,
+      "target_index": 1183
+    }
+  },
+  "scenario": {
+    "methods": [
+      "cupy_rawkernel",
+      "rtdl_v2_user_cuda"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 4096,
+    "points_b": 4096,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "rt_threshold_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}

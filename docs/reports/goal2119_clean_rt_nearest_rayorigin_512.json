@@ -1,0 +1,59 @@
+{
+  "exact_reference": {
+    "direction": "b_to_a",
+    "distance": 0.14627873169442843,
+    "method": "openmp_cpu",
+    "source_index": 447,
+    "target_index": 486
+  },
+  "results": {
+    "openmp_cpu": {
+      "direction": "b_to_a",
+      "distance": 0.14627873169442843,
+      "distance_for_compare": 0.14627873169442843,
+      "elapsed_sec": 0.0032988563179969788,
+      "matches_exact_reference": true,
+      "metadata": {
+        "exact_value": true,
+        "notes": "multi-threaded C++/OpenMP double loop",
+        "role": "baseline",
+        "uses_partner": false,
+        "uses_rt_cores": false,
+        "uses_rtdl": false
+      },
+      "method": "openmp_cpu",
+      "ok": true,
+      "source_index": 447,
+      "target_index": 486
+    },
+    "rtdl_rt_nearest_witness": {
+      "elapsed_sec": 0.7729307934641838,
+      "error": "RuntimeError('OptiX module compile error: Internal compiler error\\nCOMPILE ERROR: Module compilation failed\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__miss__frn_nearest_miss\"\\n\\tsemantic type                :                   MISS\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      1\\n\\tinstruction(s)               :                      1\\nInfo: Properties for entry function \"__intersection__frn_nearest_isect\"\\n\\tsemantic type                :           INTERSECTION\\n\\ttrace call(s)                :                      0\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      4\\n\\tinstruction(s)               :                     44\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0\\nInfo: Pipeline parameter \"params\" size is 48 bytes\\nInfo: Module Statistics\\n\\tpayload values        :          3\\n\\tattribute values      :          0\\nInfo: Properties for entry function \"__raygen__frn_nearest_probe\"\\n\\tsemantic type                :                 RAYGEN\\n\\ttrace call(s)                :                      1\\n\\tcontinuation callable call(s):                      0\\n\\tbasic block(s)               :                      3\\n\\tinstruction(s)               :                     52\\nInfo: Compiled Module Summary\\n\\tnon-entry function(s):     0\\n\\tbasic block(s)       :     0\\n\\tinstruction(s)       :     0')",
+      "metadata": {
+        "exact_value": true,
+        "notes": "OptiX nearest-witness traversal seeded by threshold-search upper bound",
+        "role": "rtdl_v2_language",
+        "uses_partner": false,
+        "uses_rt_cores": true,
+        "uses_rtdl": true
+      },
+      "ok": false
+    }
+  },
+  "scenario": {
+    "methods": [
+      "openmp_cpu",
+      "rtdl_rt_nearest_witness"
+    ],
+    "offset_x": 0.08,
+    "offset_y": -0.06,
+    "oracle_radius_slack": 1e-07,
+    "points_a": 512,
+    "points_b": 512,
+    "rt_backend": "optix",
+    "rt_nearest_seed_strategy": "bbox_upper_bound",
+    "rt_tolerance": 0.0001,
+    "seed_a": 11,
+    "seed_b": 29
+  }
+}
