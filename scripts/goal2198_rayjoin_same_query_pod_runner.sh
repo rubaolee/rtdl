@@ -404,6 +404,11 @@ summary = {
 (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 print(json.dumps(summary, indent=2, sort_keys=True))
 PY
+  run_step write_evidence_report env PYTHONPATH="${RTDL_DIR}/src:${RTDL_DIR}" "${PYTHON_BIN}" \
+    "${RTDL_DIR}/scripts/goal2201_rayjoin_same_query_evidence_report.py" \
+    --artifact-dir "${OUT_DIR}" \
+    --output-json "${OUT_DIR}/evidence_summary.json" \
+    --output-md "${OUT_DIR}/evidence_report.md"
 }
 
 main() {
