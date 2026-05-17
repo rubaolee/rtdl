@@ -70,6 +70,15 @@ thread_local double g_optix_last_db_output_pack_s = 0.0;
 thread_local size_t g_optix_last_db_raw_candidate_count = 0;
 thread_local size_t g_optix_last_db_emitted_count = 0;
 
+thread_local double g_optix_last_segment_pair_left_upload_s = 0.0;
+thread_local double g_optix_last_segment_pair_candidate_count_s = 0.0;
+thread_local double g_optix_last_segment_pair_candidate_write_s = 0.0;
+thread_local double g_optix_last_segment_pair_candidate_download_s = 0.0;
+thread_local double g_optix_last_segment_pair_exact_refine_s = 0.0;
+thread_local size_t g_optix_last_segment_pair_raw_candidate_count = 0;
+thread_local size_t g_optix_last_segment_pair_emitted_count = 0;
+thread_local uint32_t g_optix_last_segment_pair_mode = 0;
+
 extern "C" int rtdl_optix_columnar_payload_get_last_phase_timings(
         double* traversal,
         double* bitset_copy,
@@ -85,6 +94,39 @@ extern "C" int rtdl_optix_columnar_payload_get_last_phase_timings(
     if (raw_candidate_count) *raw_candidate_count = g_optix_last_db_raw_candidate_count;
     if (emitted_count) *emitted_count = g_optix_last_db_emitted_count;
     return 0;
+}
+
+extern "C" int rtdl_optix_segment_pair_intersection_get_last_phase_timings(
+        double* left_upload,
+        double* candidate_count,
+        double* candidate_write,
+        double* candidate_download,
+        double* exact_refine,
+        size_t* raw_candidate_count,
+        size_t* emitted_count,
+        uint32_t* mode)
+{
+    if (left_upload) *left_upload = g_optix_last_segment_pair_left_upload_s;
+    if (candidate_count) *candidate_count = g_optix_last_segment_pair_candidate_count_s;
+    if (candidate_write) *candidate_write = g_optix_last_segment_pair_candidate_write_s;
+    if (candidate_download) *candidate_download = g_optix_last_segment_pair_candidate_download_s;
+    if (exact_refine) *exact_refine = g_optix_last_segment_pair_exact_refine_s;
+    if (raw_candidate_count) *raw_candidate_count = g_optix_last_segment_pair_raw_candidate_count;
+    if (emitted_count) *emitted_count = g_optix_last_segment_pair_emitted_count;
+    if (mode) *mode = g_optix_last_segment_pair_mode;
+    return 0;
+}
+
+static void reset_segment_pair_phase_timings(uint32_t mode)
+{
+    g_optix_last_segment_pair_left_upload_s = 0.0;
+    g_optix_last_segment_pair_candidate_count_s = 0.0;
+    g_optix_last_segment_pair_candidate_write_s = 0.0;
+    g_optix_last_segment_pair_candidate_download_s = 0.0;
+    g_optix_last_segment_pair_exact_refine_s = 0.0;
+    g_optix_last_segment_pair_raw_candidate_count = 0;
+    g_optix_last_segment_pair_emitted_count = 0;
+    g_optix_last_segment_pair_mode = mode;
 }
 
 static size_t db_find_field_index_or_throw(
@@ -2430,21 +2472,34 @@ static std::vector<GpuSegmentPairIntersectionRecord> collect_segment_pair_inters
     std::vector<GpuSegmentPairIntersectionRecord> gpu_rows;
     for (size_t left_offset = 0; left_offset < left_count; left_offset += max_left_per_launch) {
         const size_t chunk_left_count = std::min(max_left_per_launch, left_count - left_offset);
+        const auto t_count_start = std::chrono::steady_clock::now();
         const uint32_t gpu_count = launch_candidate_pass(left_offset, chunk_left_count, 0, 0);
+        const auto t_count_end = std::chrono::steady_clock::now();
+        g_optix_last_segment_pair_candidate_count_s +=
+            std::chrono::duration<double>(t_count_end - t_count_start).count();
+        g_optix_last_segment_pair_raw_candidate_count += static_cast<size_t>(gpu_count);
         if (gpu_count == 0) {
             continue;
         }
 
         DevPtr d_output(sizeof(GpuSegmentPairIntersectionRecord) * gpu_count);
+        const auto t_write_start = std::chrono::steady_clock::now();
         const uint32_t written_count =
             launch_candidate_pass(left_offset, chunk_left_count, d_output.ptr, gpu_count);
+        const auto t_write_end = std::chrono::steady_clock::now();
+        g_optix_last_segment_pair_candidate_write_s +=
+            std::chrono::duration<double>(t_write_end - t_write_start).count();
         if (written_count != gpu_count) {
             throw std::runtime_error("segment-pair intersection candidate count changed between count and write passes");
         }
 
         const size_t old_size = gpu_rows.size();
         gpu_rows.resize(old_size + gpu_count);
+        const auto t_download_start = std::chrono::steady_clock::now();
         download(gpu_rows.data() + old_size, d_output.ptr, gpu_count);
+        const auto t_download_end = std::chrono::steady_clock::now();
+        g_optix_last_segment_pair_candidate_download_s +=
+            std::chrono::duration<double>(t_download_end - t_download_start).count();
     }
 
     return gpu_rows;
@@ -2468,6 +2523,7 @@ static void launch_segment_pair_intersection_optix(
     const std::vector<GpuSegmentPairIntersectionRecord> gpu_rows =
         collect_segment_pair_intersection_candidates_optix(
             left_count, d_left_ptr, d_right_ptr, right_count, traversable);
+    const auto t_refine_start = std::chrono::steady_clock::now();
     finalize_segment_pair_intersection_rows(
         left, left_count,
         right_host, right_count,
@@ -2475,6 +2531,10 @@ static void launch_segment_pair_intersection_optix(
         rows_out,
         row_count_out,
         prepared_right_by_id);
+    const auto t_refine_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_exact_refine_s =
+        std::chrono::duration<double>(t_refine_end - t_refine_start).count();
+    g_optix_last_segment_pair_emitted_count = *row_count_out;
 }
 
 static void run_segment_pair_intersection_optix(
@@ -2483,6 +2543,7 @@ static void run_segment_pair_intersection_optix(
         RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out)
 {
     ensure_segment_pair_intersection_pipeline();
+    reset_segment_pair_phase_timings(1u);
 
     // Upload segments
     std::vector<GpuSegment> gpu_left(left_count), gpu_right(right_count);
@@ -2495,8 +2556,12 @@ static void run_segment_pair_intersection_optix(
 
     DevPtr d_left (sizeof(GpuSegment) * left_count);
     DevPtr d_right(sizeof(GpuSegment) * right_count);
+    const auto t_upload_start = std::chrono::steady_clock::now();
     upload(d_left.ptr,  gpu_left.data(),  left_count);
     upload(d_right.ptr, gpu_right.data(), right_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_left_upload_s =
+        std::chrono::duration<double>(t_upload_end - t_upload_start).count();
 
     // Build BVH over right (build) segments
     std::vector<OptixAabb> aabbs(right_count);
@@ -2532,6 +2597,7 @@ static void run_prepared_segment_pair_intersection_optix(
         throw std::runtime_error("prepared segment-pair handle must not be null");
     }
     ensure_segment_pair_intersection_pipeline();
+    reset_segment_pair_phase_timings(1u);
     std::vector<GpuSegment> gpu_left(left_count);
     for (size_t i = 0; i < left_count; ++i) {
         gpu_left[i] = {
@@ -2543,7 +2609,11 @@ static void run_prepared_segment_pair_intersection_optix(
         };
     }
     DevPtr d_left(sizeof(GpuSegment) * left_count);
+    const auto t_upload_start = std::chrono::steady_clock::now();
     upload(d_left.ptr, gpu_left.data(), gpu_left.size());
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_left_upload_s =
+        std::chrono::duration<double>(t_upload_end - t_upload_start).count();
 
     launch_segment_pair_intersection_optix(
         left, left_count,
@@ -2569,6 +2639,7 @@ static void count_prepared_segment_pair_intersection_optix(
         throw std::runtime_error("segment-pair count output pointer must not be null");
     }
     *count_out = 0;
+    reset_segment_pair_phase_timings(2u);
     if (left_count == 0 || prepared->right_count == 0) {
         return;
     }
@@ -2584,7 +2655,11 @@ static void count_prepared_segment_pair_intersection_optix(
         };
     }
     DevPtr d_left(sizeof(GpuSegment) * left_count);
+    const auto t_upload_start = std::chrono::steady_clock::now();
     upload(d_left.ptr, gpu_left.data(), gpu_left.size());
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_left_upload_s =
+        std::chrono::duration<double>(t_upload_end - t_upload_start).count();
 
     const std::vector<GpuSegmentPairIntersectionRecord> gpu_rows =
         collect_segment_pair_intersection_candidates_optix(
@@ -2593,6 +2668,7 @@ static void count_prepared_segment_pair_intersection_optix(
             prepared->d_right.ptr,
             prepared->right_count,
             prepared->accel.handle);
+    const auto t_refine_start = std::chrono::steady_clock::now();
     *count_out = count_segment_pair_intersection_rows(
         left,
         left_count,
@@ -2600,6 +2676,10 @@ static void count_prepared_segment_pair_intersection_optix(
         prepared->right_count,
         gpu_rows,
         &prepared->right_by_id);
+    const auto t_refine_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_exact_refine_s =
+        std::chrono::duration<double>(t_refine_end - t_refine_start).count();
+    g_optix_last_segment_pair_emitted_count = *count_out;
 }
 
 static void run_ray_segment_group_count_2d_optix(

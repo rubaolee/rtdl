@@ -609,6 +609,9 @@ class PreparedOptixSegmentPairIntersection:
         _check_status(status, error)
         return int(count.value)
 
+    def last_phase_timings(self) -> dict[str, float | int | str] | None:
+        return _get_last_segment_pair_phase_timings_from_library(self.library)
+
     def close(self) -> None:
         if not self._closed:
             destroy = _find_optional_backend_symbol(
@@ -2006,6 +2009,58 @@ def get_last_phase_timings() -> dict[str, float] | None:
 
 def get_last_db_phase_timings() -> dict[str, float | int] | None:
     return _get_last_db_phase_timings_from_library(_load_optix_library())
+
+
+def get_last_segment_pair_phase_timings() -> dict[str, float | int | str] | None:
+    return _get_last_segment_pair_phase_timings_from_library(_load_optix_library())
+
+
+def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | int | str] | None:
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_segment_pair_intersection_get_last_phase_timings")
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    )
+    symbol.restype = ctypes.c_int
+    left_upload = ctypes.c_double(0.0)
+    candidate_count = ctypes.c_double(0.0)
+    candidate_write = ctypes.c_double(0.0)
+    candidate_download = ctypes.c_double(0.0)
+    exact_refine = ctypes.c_double(0.0)
+    raw_candidates = ctypes.c_size_t(0)
+    emitted = ctypes.c_size_t(0)
+    mode = ctypes.c_uint32(0)
+    status = symbol(
+        ctypes.byref(left_upload),
+        ctypes.byref(candidate_count),
+        ctypes.byref(candidate_write),
+        ctypes.byref(candidate_download),
+        ctypes.byref(exact_refine),
+        ctypes.byref(raw_candidates),
+        ctypes.byref(emitted),
+        ctypes.byref(mode),
+    )
+    if status != 0:
+        return None
+    mode_value = int(mode.value)
+    return {
+        "mode": "rows" if mode_value == 1 else "count" if mode_value == 2 else "none",
+        "left_upload": float(left_upload.value),
+        "candidate_count_pass": float(candidate_count.value),
+        "candidate_write_pass": float(candidate_write.value),
+        "candidate_download": float(candidate_download.value),
+        "exact_refine": float(exact_refine.value),
+        "raw_candidate_count": int(raw_candidates.value),
+        "emitted_count": int(emitted.value),
+    }
 
 
 def _get_last_db_phase_timings_from_library(lib) -> dict[str, float | int] | None:

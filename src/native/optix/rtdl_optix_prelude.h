@@ -823,6 +823,15 @@ int  rtdl_optix_columnar_payload_get_last_phase_timings(
          double* output_pack_out,
          size_t* raw_candidate_count_out,
          size_t* emitted_count_out);
+int  rtdl_optix_segment_pair_intersection_get_last_phase_timings(
+         double* left_upload_out,
+         double* candidate_count_out,
+         double* candidate_write_out,
+         double* candidate_download_out,
+         double* exact_refine_out,
+         size_t* raw_candidate_count_out,
+         size_t* emitted_count_out,
+         uint32_t* mode_out);
 int  rtdl_optix_get_last_phase_timings(
          double* bvh_build_out,
          double* traversal_out,
