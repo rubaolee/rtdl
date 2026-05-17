@@ -16,7 +16,8 @@ Rules:
 
 ### Generic Closed-Shape Membership / Predicate Primitive
 
-Origin: Goal2233/Goal2235 RayJoin-style probes.
+Origin: Goal2233/Goal2235 RayJoin-style probes; sharpened by Goal2295 and
+Goal2299 current prepared closed-shape telemetry/negative probes.
 
 Observation:
 
@@ -25,6 +26,15 @@ Observation:
 - Compact odd-parity output improves the generic path, but remains slower than
   the old optimized positive-output path because it still traverses boundary
   segments and reduces grouped crossings.
+- Goal2295 measured the current prepared closed-shape path and found the
+  largest PIP-style cost is RT candidate traversal/write, not Python point
+  packing or upload. On the 100,000-point RayJoin-exported probe,
+  candidate-write time was about 37.5 ms, while point packing/upload was under
+  2 ms and exact refinement was about 10-13 ms.
+- Goal2299 compared the accepted closed-shape primitive with the older
+  ray/segment odd-parity route on the same 100,000-point stream. The
+  ray/segment route was exact, but 56x-74x slower, so it is a rejected fallback
+  for this workload shape.
 
 Future work:
 
@@ -36,6 +46,12 @@ Future work:
   ABI.
 - Prefer a prepared variant so static closed-shape geometry can be reused across
   query batches.
+- Optimize the accepted closed-shape primitive directly before reopening
+  boundary ray/segment grouping. The next likely work is tighter generic
+  candidate traversal, device-resident continuation, or partner-side reduction
+  over the closed-shape stream.
+- Do not prioritize Python packing, upload reuse, or replacing GEOS exact
+  refinement unless a new profile contradicts the Goal2295/Goal2298 evidence.
 - Keep app semantics in Python/partner code: the engine should not know that a
   shape means a county, region, join relation, or GIS layer.
 
