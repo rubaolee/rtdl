@@ -2315,20 +2315,38 @@ static void launch_segment_pair_intersection_optix(
         *row_count_out = 0;
         return;
     }
-    const uint64_t capacity64 = static_cast<uint64_t>(left_count) * static_cast<uint64_t>(right_count);
-    if (capacity64 > std::numeric_limits<uint32_t>::max()) {
-        throw std::runtime_error("segment-pair intersection output capacity exceeds uint32_t");
+    if (right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair intersection right segment count exceeds uint32_t launch capacity");
     }
-    const uint32_t max_candidate_count = static_cast<uint32_t>(capacity64);
+    const uint64_t max_left_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(right_count);
+    if (max_left_per_launch64 == 0) {
+        throw std::runtime_error("segment-pair intersection cannot chunk right segment set into uint32_t launch capacity");
+    }
+    const size_t max_left_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_left_per_launch64, static_cast<uint64_t>(left_count)));
     DevPtr d_count(sizeof(uint32_t));
 
-    auto launch_candidate_pass = [&](CUdeviceptr output_ptr, uint32_t output_capacity) -> uint32_t {
+    auto launch_candidate_pass = [&](
+            size_t left_offset,
+            size_t chunk_left_count,
+            CUdeviceptr output_ptr,
+            uint32_t output_capacity) -> uint32_t {
         uint32_t zero = 0;
         upload<uint32_t>(d_count.ptr, &zero, 1);
+        const uint64_t chunk_capacity64 =
+            static_cast<uint64_t>(chunk_left_count) * static_cast<uint64_t>(right_count);
+        if (chunk_capacity64 > static_cast<uint64_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("segment-pair intersection chunk output capacity exceeds uint32_t");
+        }
+        const uint32_t max_candidate_count = static_cast<uint32_t>(chunk_capacity64);
+        const CUdeviceptr chunk_left_ptr =
+            d_left_ptr + static_cast<CUdeviceptr>(sizeof(GpuSegment) * left_offset);
 
         SegmentPairIntersectionLaunchParams lp;
         lp.traversable = traversable;
-        lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
+        lp.left_segs = reinterpret_cast<const GpuSegment*>(chunk_left_ptr);
         lp.right_segs = reinterpret_cast<const GpuSegment*>(d_right_ptr);
         lp.output = output_capacity == 0
             ? nullptr
@@ -2344,7 +2362,7 @@ static void launch_segment_pair_intersection_optix(
         OPTIX_CHECK(optixLaunch(g_segment_pair_intersection.pipe->pipeline, stream,
                                  d_params.ptr, sizeof(SegmentPairIntersectionLaunchParams),
                                  &g_segment_pair_intersection.pipe->sbt,
-                                 static_cast<unsigned>(left_count), 1, 1));
+                                 static_cast<unsigned>(chunk_left_count), 1, 1));
         CU_CHECK(cuStreamSynchronize(stream));
 
         uint32_t emitted = 0;
@@ -2358,8 +2376,27 @@ static void launch_segment_pair_intersection_optix(
         return emitted;
     };
 
-    const uint32_t gpu_count = launch_candidate_pass(0, 0);
-    if (gpu_count == 0) {
+    std::vector<GpuSegmentPairIntersectionRecord> gpu_rows;
+    for (size_t left_offset = 0; left_offset < left_count; left_offset += max_left_per_launch) {
+        const size_t chunk_left_count = std::min(max_left_per_launch, left_count - left_offset);
+        const uint32_t gpu_count = launch_candidate_pass(left_offset, chunk_left_count, 0, 0);
+        if (gpu_count == 0) {
+            continue;
+        }
+
+        DevPtr d_output(sizeof(GpuSegmentPairIntersectionRecord) * gpu_count);
+        const uint32_t written_count =
+            launch_candidate_pass(left_offset, chunk_left_count, d_output.ptr, gpu_count);
+        if (written_count != gpu_count) {
+            throw std::runtime_error("segment-pair intersection candidate count changed between count and write passes");
+        }
+
+        const size_t old_size = gpu_rows.size();
+        gpu_rows.resize(old_size + gpu_count);
+        download(gpu_rows.data() + old_size, d_output.ptr, gpu_count);
+    }
+
+    if (gpu_rows.empty()) {
         finalize_segment_pair_intersection_rows(
             left, left_count,
             right_host, right_count,
@@ -2368,15 +2405,6 @@ static void launch_segment_pair_intersection_optix(
             row_count_out);
         return;
     }
-
-    DevPtr d_output(sizeof(GpuSegmentPairIntersectionRecord) * gpu_count);
-    const uint32_t written_count = launch_candidate_pass(d_output.ptr, gpu_count);
-    if (written_count != gpu_count) {
-        throw std::runtime_error("segment-pair intersection candidate count changed between count and write passes");
-    }
-
-    std::vector<GpuSegmentPairIntersectionRecord> gpu_rows(gpu_count);
-    download(gpu_rows.data(), d_output.ptr, gpu_count);
     finalize_segment_pair_intersection_rows(
         left, left_count,
         right_host, right_count,
