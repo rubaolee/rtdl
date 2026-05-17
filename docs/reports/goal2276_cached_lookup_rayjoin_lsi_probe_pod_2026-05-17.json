@@ -1,0 +1,55 @@
+{
+  "goal": 2276,
+  "generated_at_utc": "2026-05-17T20:19:15Z",
+  "commit": "5c41ade112fb7ebbcdd6ed593eea96eb806db75f",
+  "compared_baseline_goal2273_commit": "dffabc1317f382dcb19cd3ea30087692a0b69e48",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "prepare_sec": 1.4414417278021574,
+  "raw_row_count": 8921,
+  "scalar_count": 8921,
+  "parity": true,
+  "row_raw_seconds": [
+    0.17717985808849335,
+    0.16079325415194035,
+    0.16586234420537949,
+    0.11527726799249649,
+    0.15889197401702404,
+    0.16502647660672665,
+    0.16753259673714638
+  ],
+  "count_seconds": [
+    0.1329998355358839,
+    0.17147098295390606,
+    0.16414989903569221,
+    0.11275316029787064,
+    0.15995669923722744,
+    0.16418947651982307,
+    0.11257950030267239
+  ],
+  "row_raw_median_sec": 0.16502647660672665,
+  "count_median_sec": 0.15995669923722744,
+  "count_to_row_ratio": 0.9692790061707434,
+  "row_to_count_speedup": 1.0316946860848908,
+  "baseline_goal2273": {
+    "row_raw_median_sec": 0.18188928626477718,
+    "count_median_sec": 0.1853126920759678
+  },
+  "improvement_vs_goal2273": {
+    "row_raw_speedup": 1.102182449778869,
+    "count_speedup": 1.158517854892314
+  },
+  "claim_boundary": {
+    "measured_scope": "cached prepared right lookup on RayJoin-exported 100k LSI stream, raw witness rows and exact scalar count",
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  }
+}

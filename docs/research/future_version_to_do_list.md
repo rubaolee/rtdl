@@ -62,6 +62,8 @@ Observation:
 - Goal2273 showed that sparse RayJoin-exported LSI does not benefit from
   scalar count alone because witness output is already small; the next
   improvement needs to reduce segment-pair candidate/refinement cost itself.
+- Goal2276 showed that prepared-scene host metadata caching helps sparse LSI
+  modestly, but it does not remove the candidate/refinement boundary.
 - The remaining gap to RayJoin's paper benchmark is not the predicate itself:
   RTDL still returns host-visible rows through the Python boundary, while the
   RayJoin paper reports a tighter pure GPU query-execution metric.
