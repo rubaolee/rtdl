@@ -1,0 +1,13 @@
+[goal2192] warmup pip/cpu 1/1 rows=8686 elapsed=2.718936s
+[goal2192] repeat pip/cpu 1/3 rows=8686 parity=True elapsed=2.785631s
+[goal2192] repeat pip/cpu 2/3 rows=8686 parity=True elapsed=2.791117s
+[goal2192] repeat pip/cpu 3/3 rows=8686 parity=True elapsed=2.726437s
+[goal2192] warmup pip/embree 1/1 rows=8686 elapsed=0.257958s
+[goal2192] repeat pip/embree 1/3 rows=8686 parity=True elapsed=0.106592s
+[goal2192] repeat pip/embree 2/3 rows=8686 parity=True elapsed=0.111970s
+[goal2192] repeat pip/embree 3/3 rows=8686 parity=True elapsed=0.110135s
+[goal2192] warmup pip/optix 1/1 rows=8686 elapsed=2.134214s
+[goal2192] repeat pip/optix 1/3 rows=8686 parity=True elapsed=0.547134s
+[goal2192] repeat pip/optix 2/3 rows=8686 parity=True elapsed=0.627965s
+[goal2192] repeat pip/optix 3/3 rows=8686 parity=True elapsed=0.618395s
+[goal2192] wrote /root/goal2212_pip_compact_pod/artifacts/rtdl_pip_same_rayjoin_stream.json

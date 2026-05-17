@@ -1,0 +1,83 @@
+{
+  "backends": {
+    "cpu": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 2.785630775615573,
+      "elapsed_sec_values": [
+        2.785630775615573,
+        2.791117312386632,
+        2.7264372762292624
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    },
+    "embree": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.11013531498610973,
+      "elapsed_sec_values": [
+        0.10659183748066425,
+        0.11196962371468544,
+        0.11013531498610973
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    },
+    "optix": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.6183945741504431,
+      "elapsed_sec_values": [
+        0.5471344664692879,
+        0.6279650330543518,
+        0.6183945741504431
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": true,
+      "status": "ok"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false
+  },
+  "derived": {
+    "optix_speedup_over_previous_goal2209": 6.6422710712293656,
+    "optix_vs_cpu_ratio": 0.22199445079500504,
+    "optix_vs_embree_ratio": 5.614861810931716,
+    "optix_vs_previous_goal2209_ratio": 0.15055091688917147
+  },
+  "goal": "2213",
+  "pod": "root@69.30.85.202 -p 22064",
+  "previous_goal2209_pip_optix_sec": 4.107544390484691,
+  "query_count": 100000,
+  "reference_backend": "cpu",
+  "reference_row_count": 8686,
+  "rtdl_commit": "09b1b4122e63d911187701a11d4e86d118ef201c",
+  "source_artifact_dir": "/root/goal2212_pip_compact_pod/artifacts",
+  "status": "parsed",
+  "workload": "pip"
+}
