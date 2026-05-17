@@ -1,0 +1,17 @@
+{
+  "query_count": 100000,
+  "polygon_count": 15700,
+  "segment_count": 341048,
+  "closed_prepare_sec": 1.1621194407343864,
+  "group_prepare_sec": 1.2092193271964788,
+  "closed_rows": 8686,
+  "odd_rows": 8686,
+  "sets_match": true,
+  "missing_from_odd": 0,
+  "extra_in_odd": 0,
+  "closed_rows_median_sec": 0.055879781022667885,
+  "closed_count_median_sec": 0.04231861233711243,
+  "odd_parity_median_sec": 3.145604308694601,
+  "odd_vs_closed_rows_ratio": 56.29235210171229,
+  "odd_vs_closed_count_ratio": 74.33146161874453
+}
