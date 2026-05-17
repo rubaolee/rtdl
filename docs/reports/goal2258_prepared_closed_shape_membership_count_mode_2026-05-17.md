@@ -1,6 +1,6 @@
 # Goal2258: Prepared Closed-Shape Membership Count Mode
 
-Status: implementation pending pod timing.
+Status: implemented; pod timing recorded by Goal2259.
 
 ## Purpose
 
@@ -35,5 +35,6 @@ Pod timing should compare:
 - prepared membership count return,
 - and the existing RayJoin same-query CPU parity count.
 
-No speedup claim is authorized until a pushed-commit pod artifact and external
-review exist.
+Pushed-commit pod timing is recorded by Goal2259. Goal2258 remains the
+implementation report; the measured count-mode claim lives in the Goal2259
+evidence report and its review chain.

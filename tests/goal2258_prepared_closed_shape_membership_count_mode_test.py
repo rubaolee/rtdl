@@ -32,7 +32,8 @@ class Goal2258PreparedClosedShapeMembershipCountModeTest(unittest.TestCase):
         self.assertIn("generic count-only surface", text)
         self.assertIn("not a RayJoin-specific primitive", text)
         self.assertIn("not yet", text)
-        self.assertIn("No speedup claim is authorized", text)
+        self.assertIn("pod timing recorded by Goal2259", text)
+        self.assertIn("the measured count-mode claim lives in the Goal2259", text)
 
 
 if __name__ == "__main__":

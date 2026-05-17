@@ -1,0 +1,68 @@
+{
+  "claim_boundary": {
+    "count_mode_speedup_claim_authorized": false,
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "commit": "73f58a059e393788cf48b66694223c2c08944dd3",
+  "goal": "2259",
+  "prepared_count": {
+    "all_match_reference_count": true,
+    "counts": [
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686
+    ],
+    "elapsed_sec_median": 0.041955990716814995,
+    "elapsed_sec_values": [
+      0.04736103489995003,
+      0.04189972020685673,
+      0.041955990716814995,
+      0.04209870286285877,
+      0.04253465496003628,
+      0.04172736220061779,
+      0.04148493707180023,
+      0.041256505995988846,
+      0.04210794344544411
+    ]
+  },
+  "prepared_rows": {
+    "all_match_reference_count": true,
+    "counts": [
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686,
+      8686
+    ],
+    "elapsed_sec_median": 0.05280204117298126,
+    "elapsed_sec_values": [
+      0.0628562718629837,
+      0.05725654028356075,
+      0.05280204117298126,
+      0.05320672318339348,
+      0.05216011591255665,
+      0.05110115744173527,
+      0.05134458467364311,
+      0.052154187113046646,
+      0.055687254294753075
+    ]
+  },
+  "query_count": 100000,
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json",
+  "reference_count": 8686,
+  "repeats": 9,
+  "schema": "rtdl.rayjoin.prepared_closed_shape_count_probe.v1",
+  "warmups": 1
+}
