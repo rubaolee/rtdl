@@ -15,6 +15,8 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from examples.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
+from rtdsl.baseline_contracts import compare_baseline_rows
+from rtdsl.baseline_runner import segments_from_records
 from rtdsl.datasets import CdbDataset
 from rtdsl.datasets import chains_to_segments
 from rtdsl.datasets import download_rayjoin_sample
@@ -114,6 +116,51 @@ class StepTimeout(Exception):
     pass
 
 
+_CUPY_LSI_KERNEL_SOURCE = r"""
+extern "C" __global__
+void rtdl_goal2159_lsi_flags(
+    const double* left,
+    const double* right,
+    const int n_left,
+    const int n_right,
+    unsigned char* flags
+) {
+    const long long total = (long long)n_left * (long long)n_right;
+    const long long index = (long long)blockDim.x * (long long)blockIdx.x + threadIdx.x;
+    if (index >= total) {
+        return;
+    }
+    const int left_index = (int)(index / n_right);
+    const int right_index = (int)(index - (long long)left_index * (long long)n_right);
+
+    const double px = left[left_index * 4 + 0];
+    const double py = left[left_index * 4 + 1];
+    const double lx1 = left[left_index * 4 + 2];
+    const double ly1 = left[left_index * 4 + 3];
+    const double rx = lx1 - px;
+    const double ry = ly1 - py;
+
+    const double qx = right[right_index * 4 + 0];
+    const double qy = right[right_index * 4 + 1];
+    const double sx1 = right[right_index * 4 + 2];
+    const double sy1 = right[right_index * 4 + 3];
+    const double sx = sx1 - qx;
+    const double sy = sy1 - qy;
+
+    const double denom = rx * sy - ry * sx;
+    if (fabs(denom) < 1.0e-7) {
+        flags[index] = 0;
+        return;
+    }
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    const double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    flags[index] = (t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0) ? 1 : 0;
+}
+"""
+
+
 def _signal_handler(signum, frame) -> None:
     raise StepTimeout()
 
@@ -177,6 +224,134 @@ def _median(values: list[float]) -> float | None:
     return statistics.median(values) if values else None
 
 
+def _split_dataset_paths(dataset: str) -> tuple[Path, ...]:
+    return tuple(Path(part.strip()) for part in dataset.split("+") if part.strip())
+
+
+def _load_lsi_segments(dataset: str) -> tuple[tuple[object, ...], tuple[object, ...]]:
+    paths = _split_dataset_paths(dataset)
+    if len(paths) != 2:
+        raise ValueError("cupy_lsi_bruteforce requires an LSI dataset shaped as `left.cdb + right.cdb`")
+    left = segments_from_records(chains_to_segments(load_cdb(paths[0])))
+    right = segments_from_records(chains_to_segments(load_cdb(paths[1])))
+    return left, right
+
+
+def _segment_intersection_row(left, right) -> dict[str, float | int] | None:
+    px = float(left.x0)
+    py = float(left.y0)
+    rx = float(left.x1) - float(left.x0)
+    ry = float(left.y1) - float(left.y0)
+    qx = float(right.x0)
+    qy = float(right.y0)
+    sx = float(right.x1) - float(right.x0)
+    sy = float(right.y1) - float(right.y0)
+
+    denom = rx * sy - ry * sx
+    if abs(denom) < 1.0e-7:
+        return None
+    qpx = qx - px
+    qpy = qy - py
+    t = (qpx * sy - qpy * sx) / denom
+    u = (qpx * ry - qpy * rx) / denom
+    if not (0.0 <= t <= 1.0 and 0.0 <= u <= 1.0):
+        return None
+    return {
+        "left_id": int(left.id),
+        "right_id": int(right.id),
+        "intersection_point_x": px + t * rx,
+        "intersection_point_y": py + t * ry,
+    }
+
+
+def _cupy_lsi_rows(left_segments: tuple[object, ...], right_segments: tuple[object, ...]):
+    import numpy as np
+    import cupy as cp
+
+    left_coords = np.asarray(
+        [(segment.x0, segment.y0, segment.x1, segment.y1) for segment in left_segments],
+        dtype=np.float64,
+    )
+    right_coords = np.asarray(
+        [(segment.x0, segment.y0, segment.x1, segment.y1) for segment in right_segments],
+        dtype=np.float64,
+    )
+    n_left = int(left_coords.shape[0])
+    n_right = int(right_coords.shape[0])
+    left_gpu = cp.asarray(left_coords)
+    right_gpu = cp.asarray(right_coords)
+    flags = cp.zeros(n_left * n_right, dtype=cp.uint8)
+    kernel = cp.RawKernel(_CUPY_LSI_KERNEL_SOURCE, "rtdl_goal2159_lsi_flags")
+    threads = 256
+    blocks = (flags.size + threads - 1) // threads
+    kernel((blocks,), (threads,), (left_gpu, right_gpu, n_left, n_right, flags))
+    hit_indexes = cp.asnumpy(cp.nonzero(flags)[0])
+    cp.cuda.runtime.deviceSynchronize()
+
+    rows = []
+    for flat_index in hit_indexes:
+        left_index = int(flat_index // n_right)
+        right_index = int(flat_index - left_index * n_right)
+        row = _segment_intersection_row(left_segments[left_index], right_segments[right_index])
+        if row is not None:
+            rows.append(row)
+    return tuple(rows)
+
+
+def _run_cupy_lsi_backend(
+    case: CaseSpec,
+    dataset: str,
+    *,
+    warmups: int,
+    repeats: int,
+) -> dict[str, object]:
+    if case.workload != "lsi":
+        raise ValueError("cupy_lsi_bruteforce currently supports only the LSI workload")
+    left_segments, right_segments = _load_lsi_segments(dataset)
+    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+    reference_rows = tuple(reference["rows"])
+
+    times: list[float] = []
+    rows: list[int] = []
+    parity: list[bool] = []
+    for index in range(warmups):
+        start = time.perf_counter()
+        result_rows = _cupy_lsi_rows(left_segments, right_segments)
+        elapsed = time.perf_counter() - start
+        print(
+            f"[goal2159] warmup {case.label}/cupy_lsi_bruteforce {index + 1}/{warmups} "
+            f"app={elapsed:.6f}s rows={len(result_rows)} "
+            f"parity={compare_baseline_rows('lsi', reference_rows, result_rows)}",
+            flush=True,
+        )
+    for index in range(repeats):
+        start = time.perf_counter()
+        result_rows = _cupy_lsi_rows(left_segments, right_segments)
+        elapsed = time.perf_counter() - start
+        times.append(elapsed)
+        rows.append(len(result_rows))
+        parity.append(compare_baseline_rows("lsi", reference_rows, result_rows))
+        print(
+            f"[goal2159] repeat {case.label}/cupy_lsi_bruteforce {index + 1}/{repeats} "
+            f"app={times[-1]:.6f}s rows={rows[-1]} parity={parity[-1]}",
+            flush=True,
+        )
+    return {
+        "status": "ok",
+        "app_elapsed_sec_values": times,
+        "app_elapsed_sec_median": _median(times),
+        "row_counts": rows,
+        "row_count_consistent": len(set(rows)) == 1,
+        "all_parity_vs_cpu_python_reference": all(parity),
+        "rt_core_accelerated": False,
+        "partner_accelerated": True,
+        "baseline_kind": "cupy_rawkernel_cuda_core_bruteforce_lsi",
+        "left_segment_count": len(left_segments),
+        "right_segment_count": len(right_segments),
+        "candidate_pair_count": len(left_segments) * len(right_segments),
+    }
+
+
 def _run_case(
     case: CaseSpec,
     dataset: str,
@@ -201,6 +376,18 @@ def _run_case(
         if hasattr(signal, "SIGALRM"):
             signal.alarm(step_timeout)
         try:
+            if backend == "cupy_lsi_bruteforce":
+                backend_payload = _run_cupy_lsi_backend(
+                    case,
+                    dataset,
+                    warmups=warmups,
+                    repeats=repeats,
+                )
+                backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
+                payload["backends"][backend] = backend_payload
+                if hasattr(signal, "SIGALRM"):
+                    signal.alarm(0)
+                continue
             for index in range(warmups):
                 result = run_rayjoin_workload(case.workload, backend=backend, dataset=dataset, include_rows=False)
                 print(
@@ -312,6 +499,8 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    if hasattr(signal, "SIGALRM"):
+        signal.signal(signal.SIGALRM, _signal_handler)
     args = parse_args()
     artifact = build_artifact(args)
     output = Path(args.output)
