@@ -34,6 +34,39 @@ The accepted narrow conclusion is that the generic closed-shape wrapper reaches
 the same performance class as the existing optimized closed-boundary path on
 this probe, while preserving the app-agnostic public surface.
 
+## Pushed-Commit Rerun
+
+After Goal2240 was committed and pushed, the pod was reset to `origin/main` at
+`b6bbba120c86697454cbf876113fbbf965755282` and rebuilt from Git without local
+patches:
+
+```text
+timeout 600 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX=/usr/local/cuda-12.8
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2238_closed_shape_membership_primitive_test \
+  tests.goal2240_closed_shape_membership_2ai_consensus_test
+Ran 9 tests: OK
+```
+
+The pushed-commit RayJoin-style timing rerun produced:
+
+```json
+{
+  "closed_shape_median_sec": 0.03516587242484093,
+  "closed_shape_over_legacy_ratio": 0.8500515311435861,
+  "closed_shape_rows": 879,
+  "legacy_median_sec": 0.041369106620550156,
+  "legacy_rows": 879,
+  "limit": 10000,
+  "repeats": 5,
+  "row_match": true
+}
+```
+
+This confirms the online commit preserves the exact row contract and reaches the
+same-or-better performance class than the legacy optimized closed-boundary path
+on this bounded probe.
+
 ## Boundary
 
 This does not authorize:

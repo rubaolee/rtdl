@@ -173,3 +173,33 @@ This supports the design conclusion: point/closed-shape membership should not be
 lowered through boundary-segment grouped parity when the user wants compact
 membership rows. The correct generic primitive shape is closed-shape membership
 or a future caller-supplied predicate path.
+
+## Pushed-Commit Pod Rerun
+
+After the Goal2240 consensus commit was pushed, the RTX pod was reset to
+`origin/main` at `b6bbba120c86697454cbf876113fbbf965755282`, rebuilt from Git,
+and rerun without local patches:
+
+```text
+timeout 600 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX=/usr/local/cuda-12.8
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2238_closed_shape_membership_primitive_test \
+  tests.goal2240_closed_shape_membership_2ai_consensus_test
+Ran 9 tests: OK
+```
+
+The same functional probe returned the two expected positive membership rows,
+and the timing probe produced:
+
+```json
+{
+  "closed_shape_median_sec": 0.03516587242484093,
+  "closed_shape_over_legacy_ratio": 0.8500515311435861,
+  "closed_shape_rows": 879,
+  "legacy_median_sec": 0.041369106620550156,
+  "legacy_rows": 879,
+  "limit": 10000,
+  "repeats": 5,
+  "row_match": true
+}
+```
