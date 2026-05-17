@@ -154,6 +154,26 @@ CASES: dict[str, CaseSpec] = {
         ),
         note="Larger bounded overlay dependency row slice.",
     ),
+    "overlay_county384_soil384": CaseSpec(
+        label="overlay_county384_soil384",
+        workload="overlay_seed",
+        dataset="{county_0_384} + {soil_0_384}",
+        slices=(
+            SliceSpec("br_county", 0, 384, "br_county_start0_count384.cdb"),
+            SliceSpec("br_soil", 0, 384, "br_soil_start0_count384.cdb"),
+        ),
+        note="Mid-scale bounded overlay dependency row slice for OptiX/Embree scaling checks.",
+    ),
+    "overlay_county512_soil512": CaseSpec(
+        label="overlay_county512_soil512",
+        workload="overlay_seed",
+        dataset="{county_0_512} + {soil_0_512}",
+        slices=(
+            SliceSpec("br_county", 0, 512, "br_county_start0_count512.cdb"),
+            SliceSpec("br_soil", 0, 512, "br_soil_start0_count512.cdb"),
+        ),
+        note="Larger bounded overlay dependency row slice for OptiX/Embree scaling checks.",
+    ),
 }
 
 

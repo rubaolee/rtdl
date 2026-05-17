@@ -71,6 +71,8 @@ class Goal2175RayjoinOverlayRunnerDirectReferenceTest(unittest.TestCase):
         self.assertIn("prepare shared", text)
         self.assertIn("reused_by_backends", text)
         self.assertIn("overlay_county256_soil256", text)
+        self.assertIn("overlay_county384_soil384", text)
+        self.assertIn("overlay_county512_soil512", text)
 
 
 if __name__ == "__main__":
