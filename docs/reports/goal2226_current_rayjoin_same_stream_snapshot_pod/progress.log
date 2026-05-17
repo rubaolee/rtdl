@@ -1,0 +1,6 @@
+[goal2226] start 2026-05-17T17:32:17+00:00
+[goal2226] fetch/reset
+[goal2226] build optix
+[goal2226] run LSI cpu,optix 5 repeats
+[goal2226] run PIP embree,optix 10 repeats
+[goal2226] done 2026-05-17T17:33:02+00:00

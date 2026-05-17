@@ -1,0 +1,69 @@
+{
+  "backends": {
+    "cpu": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 1.36784016340971,
+      "elapsed_sec_values": [
+        1.132620345801115,
+        1.2281215619295835,
+        1.36784016340971,
+        1.375944409519434,
+        1.3791454322636127
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8921,
+        8921,
+        8921,
+        8921,
+        8921
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    },
+    "optix": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.08404444716870785,
+      "elapsed_sec_values": [
+        0.08993873558938503,
+        0.09098171629011631,
+        0.08404444716870785,
+        0.07995117083191872,
+        0.08190738037228584
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8921,
+        8921,
+        8921,
+        8921,
+        8921
+      ],
+      "rt_core_accelerated": true,
+      "status": "ok"
+    }
+  },
+  "base_cdb": "/root/goal2198_rayjoin_same_query_pod_r6/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false
+  },
+  "commit": "0ff12cef73ca2d7808d4dd1827d2db6395a7ff80",
+  "goal": "2192",
+  "query_count": 100000,
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "reference_backend": "cpu",
+  "reference_row_count": 8921,
+  "repeats": 5,
+  "schema": "rtdl.rayjoin.same_query_result.v1",
+  "warmups": 1,
+  "workload": "lsi"
+}

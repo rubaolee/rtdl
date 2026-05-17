@@ -1,0 +1,13 @@
+[goal2192] warmup lsi/cpu 1/1 rows=8921 elapsed=1.280670s
+[goal2192] repeat lsi/cpu 1/5 rows=8921 parity=True elapsed=1.132620s
+[goal2192] repeat lsi/cpu 2/5 rows=8921 parity=True elapsed=1.228122s
+[goal2192] repeat lsi/cpu 3/5 rows=8921 parity=True elapsed=1.367840s
+[goal2192] repeat lsi/cpu 4/5 rows=8921 parity=True elapsed=1.375944s
+[goal2192] repeat lsi/cpu 5/5 rows=8921 parity=True elapsed=1.379145s
+[goal2192] warmup lsi/optix 1/1 rows=8921 elapsed=1.576003s
+[goal2192] repeat lsi/optix 1/5 rows=8921 parity=True elapsed=0.089939s
+[goal2192] repeat lsi/optix 2/5 rows=8921 parity=True elapsed=0.090982s
+[goal2192] repeat lsi/optix 3/5 rows=8921 parity=True elapsed=0.084044s
+[goal2192] repeat lsi/optix 4/5 rows=8921 parity=True elapsed=0.079951s
+[goal2192] repeat lsi/optix 5/5 rows=8921 parity=True elapsed=0.081907s
+[goal2192] wrote /root/goal2226_current_rayjoin_snapshot_pod/artifacts/rtdl_lsi_current_cpu_optix.json

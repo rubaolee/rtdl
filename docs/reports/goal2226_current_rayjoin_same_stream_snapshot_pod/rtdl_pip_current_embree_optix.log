@@ -1,0 +1,38 @@
+[goal2192] warmup pip/embree 1/2 rows=8686 elapsed=0.300927s
+[goal2192] warmup pip/embree 2/2 rows=8686 elapsed=0.113004s
+[goal2192] repeat pip/embree 1/10 rows=8686 parity=True elapsed=0.104296s
+[goal2192] repeat pip/embree 2/10 rows=8686 parity=True elapsed=0.096769s
+[goal2192] repeat pip/embree 3/10 rows=8686 parity=True elapsed=0.095742s
+[goal2192] repeat pip/embree 4/10 rows=8686 parity=True elapsed=0.111630s
+[goal2192] repeat pip/embree 5/10 rows=8686 parity=True elapsed=0.110305s
+[goal2192] repeat pip/embree 6/10 rows=8686 parity=True elapsed=0.110896s
+[goal2192] repeat pip/embree 7/10 rows=8686 parity=True elapsed=0.107923s
+[goal2192] repeat pip/embree 8/10 rows=8686 parity=True elapsed=0.109020s
+[goal2192] repeat pip/embree 9/10 rows=8686 parity=True elapsed=0.109626s
+[goal2192] repeat pip/embree 10/10 rows=8686 parity=True elapsed=0.109105s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.002178747 upload_s=0.000734734 accel_build_s=0.001759835 count_pass_s=0.000000000 write_pass_s=0.037161591 compact_download_s=0.000047898 exact_refine_s=0.029845999 total_s=0.071898911
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001304652 upload_s=0.000790559 accel_build_s=0.001558702 count_pass_s=0.000000000 write_pass_s=0.037423287 compact_download_s=0.000032964 exact_refine_s=0.023299688 total_s=0.064537005
+[goal2192] warmup pip/optix 1/2 rows=8686 elapsed=1.235742s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001299286 upload_s=0.000788223 accel_build_s=0.001543625 count_pass_s=0.000000000 write_pass_s=0.037575201 compact_download_s=0.000042470 exact_refine_s=0.023643352 total_s=0.065014411
+[goal2192] warmup pip/optix 2/2 rows=8686 elapsed=0.120982s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001335076 upload_s=0.000782564 accel_build_s=0.001579405 count_pass_s=0.000000000 write_pass_s=0.038192202 compact_download_s=0.000033624 exact_refine_s=0.024245753 total_s=0.066314218
+[goal2192] repeat pip/optix 1/10 rows=8686 parity=True elapsed=0.091050s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001311303 upload_s=0.004409717 accel_build_s=0.002562217 count_pass_s=0.000000000 write_pass_s=0.037723898 compact_download_s=0.000033586 exact_refine_s=0.023896878 total_s=0.070082674
+[goal2192] repeat pip/optix 2/10 rows=8686 parity=True elapsed=0.094734s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001322661 upload_s=0.000812209 accel_build_s=0.001628600 count_pass_s=0.000000000 write_pass_s=0.037551230 compact_download_s=0.000034734 exact_refine_s=0.023496579 total_s=0.064999185
+[goal2192] repeat pip/optix 3/10 rows=8686 parity=True elapsed=0.089306s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001366394 upload_s=0.000778919 accel_build_s=0.001566157 count_pass_s=0.000000000 write_pass_s=0.037509267 compact_download_s=0.000048371 exact_refine_s=0.023661947 total_s=0.065071523
+[goal2192] repeat pip/optix 4/10 rows=8686 parity=True elapsed=0.089846s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001328901 upload_s=0.000810188 accel_build_s=0.001651652 count_pass_s=0.000000000 write_pass_s=0.037404040 compact_download_s=0.000034244 exact_refine_s=0.024159861 total_s=0.065533686
+[goal2192] repeat pip/optix 5/10 rows=8686 parity=True elapsed=0.091256s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001305781 upload_s=0.000791599 accel_build_s=0.001560937 count_pass_s=0.000000000 write_pass_s=0.037465302 compact_download_s=0.000036714 exact_refine_s=0.036107744 total_s=0.077422293
+[goal2192] repeat pip/optix 6/10 rows=8686 parity=True elapsed=0.113907s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001356151 upload_s=0.000848103 accel_build_s=0.001721768 count_pass_s=0.000000000 write_pass_s=0.037405169 compact_download_s=0.000034069 exact_refine_s=0.023509771 total_s=0.065025511
+[goal2192] repeat pip/optix 7/10 rows=8686 parity=True elapsed=0.090169s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001361727 upload_s=0.000810667 accel_build_s=0.001592435 count_pass_s=0.000000000 write_pass_s=0.037683876 compact_download_s=0.000034050 exact_refine_s=0.023326610 total_s=0.064965259
+[goal2192] repeat pip/optix 8/10 rows=8686 parity=True elapsed=0.090163s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001343553 upload_s=0.000797815 accel_build_s=0.001573254 count_pass_s=0.000000000 write_pass_s=0.037744015 compact_download_s=0.000033134 exact_refine_s=0.023746656 total_s=0.065388252
+[goal2192] repeat pip/optix 9/10 rows=8686 parity=True elapsed=0.091021s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001310563 upload_s=0.000794897 accel_build_s=0.001601805 count_pass_s=0.000000000 write_pass_s=0.037519896 compact_download_s=0.000033268 exact_refine_s=0.023653980 total_s=0.065057415
+[goal2192] repeat pip/optix 10/10 rows=8686 parity=True elapsed=0.097117s
+[goal2192] wrote /root/goal2226_current_rayjoin_snapshot_pod/artifacts/rtdl_pip_current_embree_optix.json
