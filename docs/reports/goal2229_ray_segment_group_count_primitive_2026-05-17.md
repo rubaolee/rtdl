@@ -92,6 +92,7 @@ RTX pod:
 - Key: local RTDL working pod key
 - Pod checkout: `/root/rtdl_goal2198_launcher/rtdl`
 - Base commit during patch validation: `c4279f6d`
+- Clean pushed commit validation: `2b32f876`
 - OptiX SDK: `/root/vendor/optix-sdk`
 - CUDA prefix: `/usr/local/cuda-12.8`
 
@@ -133,4 +134,27 @@ Pod static gate:
 ```text
 PYTHONPATH=src:. python3 -m unittest tests.goal2229_ray_segment_group_count_primitive_test
 Ran 4 tests: OK
+```
+
+Clean pushed-commit rerun:
+
+```text
+git fetch origin main
+git reset --hard origin/main
+git rev-parse --short HEAD
+2b32f876
+
+timeout 600 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX=/usr/local/cuda-12.8
+
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2229_ray_segment_group_count_primitive_test \
+  tests.goal2231_ray_segment_group_count_2ai_consensus_test
+Ran 7 tests: OK
+
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=/root/rtdl_goal2198_launcher/rtdl/build/librtdl_optix.so \
+  python3 /root/goal2229_probe.py
+[
+  {"group_id": 7, "hit_count": 2, "parity": 0, "ray_id": 1},
+  {"group_id": 8, "hit_count": 1, "parity": 1, "ray_id": 1}
+]
 ```
