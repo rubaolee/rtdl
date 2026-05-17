@@ -1,0 +1,82 @@
+{
+  "base_cdb": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\tests\\fixtures\\rayjoin\\br_county_subset.cdb",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": false,
+    "v2_0_release_authorized": false
+  },
+  "producer": "rtdl_demo_generator_not_rayjoin_cpp",
+  "queries": [
+    {
+      "id": 1,
+      "x": -51.97556518053749,
+      "y": -32.082160387802425
+    },
+    {
+      "id": 2,
+      "x": -51.21739726123902,
+      "y": -31.385062255459218
+    },
+    {
+      "id": 3,
+      "x": -51.738014244569534,
+      "y": -31.586058219456664
+    },
+    {
+      "id": 4,
+      "x": -51.86289465024612,
+      "y": -31.346003346685585
+    },
+    {
+      "id": 5,
+      "x": -51.326857848145785,
+      "y": -31.679922191380363
+    },
+    {
+      "id": 6,
+      "x": -51.632852207819376,
+      "y": -31.347469666702747
+    },
+    {
+      "id": 7,
+      "x": -50.9785336023288,
+      "y": -31.916277906137005
+    },
+    {
+      "id": 8,
+      "x": -51.465688247417646,
+      "y": -31.98915537905104
+    },
+    {
+      "id": 9,
+      "x": -51.56077249056116,
+      "y": -31.559684740228338
+    },
+    {
+      "id": 10,
+      "x": -50.99463414304802,
+      "y": -31.720238724258422
+    },
+    {
+      "id": 11,
+      "x": -51.603020298735615,
+      "y": -31.92301518170213
+    },
+    {
+      "id": 12,
+      "x": -51.40209328080523,
+      "y": -31.753608151733843
+    }
+  ],
+  "query_count": 12,
+  "rayjoin_query_exec_flags": {
+    "gen_n": 12,
+    "gen_t": 0.1,
+    "poly1": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\tests\\fixtures\\rayjoin\\br_county_subset.cdb",
+    "query": "pip",
+    "seed": 2192
+  },
+  "schema": "rtdl.rayjoin.same_query_stream.v1",
+  "workload": "pip"
+}

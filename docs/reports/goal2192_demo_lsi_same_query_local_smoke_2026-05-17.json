@@ -1,0 +1,52 @@
+{
+  "backends": {
+    "cpu": {
+      "all_parity_vs_cpu_python_reference": true,
+      "elapsed_sec_median": 0.015093900030478835,
+      "elapsed_sec_values": [
+        0.02992199989967048,
+        0.00026580016128718853
+      ],
+      "row_count_consistent": true,
+      "row_counts": [
+        2,
+        2
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    },
+    "cpu_python_reference": {
+      "all_parity_vs_cpu_python_reference": true,
+      "elapsed_sec_median": 0.00057715002913028,
+      "elapsed_sec_values": [
+        0.0006250001024454832,
+        0.0005292999558150768
+      ],
+      "row_count_consistent": true,
+      "row_counts": [
+        2,
+        2
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    }
+  },
+  "base_cdb": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\tests\\fixtures\\rayjoin\\br_county_subset.cdb",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": false,
+    "v2_0_release_authorized": false
+  },
+  "commit": "eb1c7596202ca1ddc2ee8c2dd7fd32f1b6383b4f",
+  "goal": "2192",
+  "query_count": 12,
+  "query_stream": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2192_demo_lsi_query_stream_2026-05-17.json",
+  "query_stream_producer": "rtdl_demo_generator_not_rayjoin_cpp",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "reference_row_count": 2,
+  "repeats": 2,
+  "schema": "rtdl.rayjoin.same_query_result.v1",
+  "warmups": 0,
+  "workload": "lsi"
+}
