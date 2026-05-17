@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
+from examples.rtdl_rayjoin_v2_spatial_join_app import rayjoin_point_location_positive_hits_reference
 from examples.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
 from examples.reference.rtdl_language_reference import county_soil_overlay_reference
 from examples.reference.rtdl_language_reference import county_zip_join_reference
@@ -303,6 +304,18 @@ def _load_lsi_segments(dataset: str) -> tuple[tuple[object, ...], tuple[object, 
     return left, right
 
 
+def _load_pip_inputs(dataset: str) -> tuple[tuple[object, ...], tuple[object, ...]]:
+    paths = _split_dataset_paths(dataset)
+    if len(paths) == 1:
+        point_dataset = polygon_dataset = load_cdb(paths[0])
+    elif len(paths) == 2:
+        point_dataset = load_cdb(paths[0])
+        polygon_dataset = load_cdb(paths[1])
+    else:
+        raise ValueError("direct PIP backend requires `path.cdb` or `points.cdb + polygons.cdb`")
+    return chains_to_probe_points(point_dataset), chains_to_polygons(polygon_dataset)
+
+
 def _load_overlay_polygons(dataset: str) -> tuple[tuple[object, ...], tuple[object, ...]]:
     paths = _split_dataset_paths(dataset)
     if len(paths) != 2:
@@ -558,6 +571,71 @@ def _run_lsi_direct_backend(
     }
 
 
+def _run_pip_direct_backend(
+    case: CaseSpec,
+    dataset: str,
+    backend: str,
+    *,
+    warmups: int,
+    repeats: int,
+    reference_rows: tuple[dict[str, object], ...] | None = None,
+) -> dict[str, object]:
+    if case.workload != "pip":
+        raise ValueError("direct PIP backend currently supports only the PIP workload")
+    runners = {
+        "cpu": rt.run_cpu,
+        "embree": rt.run_embree,
+        "optix": rt.run_optix,
+    }
+    if backend not in runners:
+        raise ValueError(f"unsupported direct PIP backend: {backend!r}")
+    points, polygons = _load_pip_inputs(dataset)
+    if reference_rows is None:
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        reference_rows = tuple(reference["rows"])
+
+    times: list[float] = []
+    rows: list[int] = []
+    parity: list[bool] = []
+    runner = runners[backend]
+    for index in range(warmups):
+        start = time.perf_counter()
+        result_rows = runner(rayjoin_point_location_positive_hits_reference, points=points, polygons=polygons)
+        elapsed = time.perf_counter() - start
+        print(
+            f"[goal2159] warmup {case.label}/{backend} {index + 1}/{warmups} "
+            f"app={elapsed:.6f}s rows={len(result_rows)} "
+            f"parity={compare_baseline_rows('pip', reference_rows, result_rows)}",
+            flush=True,
+        )
+    for index in range(repeats):
+        start = time.perf_counter()
+        result_rows = runner(rayjoin_point_location_positive_hits_reference, points=points, polygons=polygons)
+        elapsed = time.perf_counter() - start
+        times.append(elapsed)
+        rows.append(len(result_rows))
+        parity.append(compare_baseline_rows("pip", reference_rows, result_rows))
+        print(
+            f"[goal2159] repeat {case.label}/{backend} {index + 1}/{repeats} "
+            f"app={times[-1]:.6f}s rows={rows[-1]} parity={parity[-1]}",
+            flush=True,
+        )
+    return {
+        "status": "ok",
+        "app_elapsed_sec_values": times,
+        "app_elapsed_sec_median": _median(times),
+        "row_counts": rows,
+        "row_count_consistent": len(set(rows)) == 1,
+        "all_parity_vs_cpu_python_reference": all(parity),
+        "rt_core_accelerated": backend == "optix",
+        "direct_pip_runner": True,
+        "reference_reused_per_backend": True,
+        "point_count": len(points),
+        "polygon_count": len(polygons),
+        "candidate_pair_count": len(points) * len(polygons),
+    }
+
+
 def _run_optix_prepared_overlay_seed_backend(
     case: CaseSpec,
     dataset: str,
@@ -702,6 +780,25 @@ def _run_case(
         "note": case.note,
         "backends": {},
     }
+    shared_pip_reference_rows: tuple[dict[str, object], ...] | None = None
+    pip_reference_backends = {"cpu", "embree", "optix"}
+    if case.workload == "pip" and any(backend in pip_reference_backends for backend in backends):
+        print(f"[goal2159] prepare shared {case.label}/cpu_python_reference rows", flush=True)
+        reference_start = time.perf_counter()
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        shared_pip_reference_rows = tuple(reference["rows"])
+        reference_elapsed = time.perf_counter() - reference_start
+        payload["shared_reference"] = {
+            "backend": "cpu_python_reference",
+            "elapsed_sec": reference_elapsed,
+            "row_count": len(shared_pip_reference_rows),
+            "reused_by_backends": tuple(backend for backend in backends if backend in pip_reference_backends),
+        }
+        print(
+            f"[goal2159] shared {case.label}/cpu_python_reference "
+            f"rows={len(shared_pip_reference_rows)} elapsed={reference_elapsed:.6f}s",
+            flush=True,
+        )
     shared_lsi_reference_rows: tuple[dict[str, object], ...] | None = None
     lsi_reference_backends = {"cpu", "embree", "optix", "optix_prepared_lsi", "cupy_lsi_bruteforce"}
     if case.workload == "lsi" and any(backend in lsi_reference_backends for backend in backends):
@@ -769,6 +866,20 @@ def _run_case(
                     warmups=warmups,
                     repeats=repeats,
                     reference_rows=shared_lsi_reference_rows,
+                )
+                backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
+                payload["backends"][backend] = backend_payload
+                if hasattr(signal, "SIGALRM"):
+                    signal.alarm(0)
+                continue
+            if case.workload == "pip" and backend in {"cpu", "embree", "optix"}:
+                backend_payload = _run_pip_direct_backend(
+                    case,
+                    dataset,
+                    backend,
+                    warmups=warmups,
+                    repeats=repeats,
+                    reference_rows=shared_pip_reference_rows,
                 )
                 backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
                 payload["backends"][backend] = backend_payload
