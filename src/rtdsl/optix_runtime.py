@@ -4063,6 +4063,133 @@ def ray_segment_group_count_2d_optix(rays, segments, segment_group_ids) -> tuple
         view.close()
 
 
+class PreparedOptixRaySegmentGroupCount2D:
+    """Prepared generic 2-D ray/segment group-count scene.
+
+    The segment set and its caller-supplied group ids are prepared once. Each
+    ``run`` call uploads only rays and returns count/parity rows.
+    """
+
+    def __init__(self, segments, segment_group_ids):
+        packed_segments = segments if isinstance(segments, PackedSegments) else pack_segments(records=segments)
+        group_ids = list(segment_group_ids)
+        if len(group_ids) != packed_segments.count:
+            raise ValueError("segment_group_ids length must match segment count")
+        for group_id in group_ids:
+            if int(group_id) < 0 or int(group_id) > 0xFFFFFFFF:
+                raise ValueError("segment_group_ids must fit uint32")
+        self._packed_segments = packed_segments
+        self._group_ids = (ctypes.c_uint32 * len(group_ids))(*[int(value) for value in group_ids])
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_ray_segment_group_count_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_ray_segment_group_count_2d; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed_segments.records,
+            packed_segments.count,
+            self._group_ids,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self, rays) -> tuple[dict[str, int], ...]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX ray/segment group-count handle is closed")
+        return self._run_with_symbol(rays, "rtdl_optix_run_prepared_ray_segment_group_count_2d")
+
+    def run_odd_parity(self, rays) -> tuple[dict[str, int], ...]:
+        """Return only rows whose grouped hit-count parity is odd."""
+
+        if self._closed:
+            raise RuntimeError("prepared OptiX ray/segment group-count handle is closed")
+        return self._run_with_symbol(rays, "rtdl_optix_run_prepared_ray_segment_group_odd_parity_2d")
+
+    def _run_with_symbol(self, rays, symbol_name: str) -> tuple[dict[str, int], ...]:
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(records=rays, dimension=2)
+        if packed_rays.dimension != 2:
+            raise ValueError("PreparedOptixRaySegmentGroupCount2D requires 2-D rays")
+        lib = _load_optix_library()
+        run_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlRaySegmentGroupCountRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRaySegmentGroupCountRow,
+            field_names=("ray_id", "group_id", "hit_count", "parity"),
+        )
+        try:
+            return tuple(
+                {
+                    "ray_id": int(row["ray_id"]),
+                    "group_id": int(row["group_id"]),
+                    "hit_count": int(row["hit_count"]),
+                    "parity": int(row["parity"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_ray_segment_group_count_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixRaySegmentGroupCount2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_ray_segment_group_count_2d_optix(segments, segment_group_ids) -> PreparedOptixRaySegmentGroupCount2D:
+    return PreparedOptixRaySegmentGroupCount2D(segments, segment_group_ids)
+
+
 @dataclass(frozen=True)
 class _DeviceTriangleScene2D:
     count: int
@@ -5514,6 +5641,51 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_ray_segment_group_count.restype = ctypes.c_int
+    optional_prepare_ray_segment_group_count = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_ray_segment_group_count_2d",
+    )
+    if optional_prepare_ray_segment_group_count is not None:
+        optional_prepare_ray_segment_group_count.argtypes = [
+            ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_ray_segment_group_count.restype = ctypes.c_int
+    optional_run_prepared_ray_segment_group_count = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_ray_segment_group_count_2d",
+    )
+    if optional_run_prepared_ray_segment_group_count is not None:
+        optional_run_prepared_ray_segment_group_count.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRaySegmentGroupCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_ray_segment_group_count.restype = ctypes.c_int
+    optional_run_prepared_ray_segment_group_odd_parity = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_ray_segment_group_odd_parity_2d",
+    )
+    if optional_run_prepared_ray_segment_group_odd_parity is not None:
+        optional_run_prepared_ray_segment_group_odd_parity.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRaySegmentGroupCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_ray_segment_group_odd_parity.restype = ctypes.c_int
+    optional_destroy_prepared_ray_segment_group_count = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_destroy_prepared_ray_segment_group_count_2d",
+    )
+    if optional_destroy_prepared_ray_segment_group_count is not None:
+        optional_destroy_prepared_ray_segment_group_count.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_ray_segment_group_count.restype = None
     optional_prepare_anyhit2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_ray_anyhit_2d")
     if optional_prepare_anyhit2d is not None:
         optional_prepare_anyhit2d.argtypes = [

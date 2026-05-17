@@ -356,9 +356,11 @@ from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangles
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
+from .optix_runtime import prepare_ray_segment_group_count_2d_optix
 from .optix_runtime import prepare_optix_group_indices_2d
 from .optix_runtime import prepare_optix_pose_indices_2d
 from .optix_runtime import prepare_optix_rays_2d
+from .optix_runtime import PreparedOptixRaySegmentGroupCount2D
 from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
@@ -367,6 +369,7 @@ from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
 from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
 from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
+from .optix_runtime import ray_segment_group_count_2d_optix
 from .optix_runtime import run_optix
 from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
 from .partner_adapters import segment_polygon_anyhit_rows_optix_partner
@@ -1296,9 +1299,11 @@ __all__ = [
     "prepare_optix_ray_triangle_any_hit_2d",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangles",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene",
+    "prepare_ray_segment_group_count_2d_optix",
     "prepare_optix_group_indices_2d",
     "prepare_optix_pose_indices_2d",
     "prepare_optix_rays_2d",
+    "PreparedOptixRaySegmentGroupCount2D",
     "PreparedOptixDbDataset",
     "PreparedOptixExecution",
     "PreparedOptixFixedRadiusCountThreshold2D",
@@ -1307,6 +1312,7 @@ __all__ = [
     "PreparedOptixSegmentPolygonAnyHitRows2D",
     "PreparedOptixSegmentPolygonHitcount2D",
     "collect_polygon_pair_candidates_bounded_optix",
+    "ray_segment_group_count_2d_optix",
     "run_optix",
     "segment_polygon_anyhit_rows_native_bounded_optix",
     "segment_polygon_anyhit_rows_optix_partner",

@@ -2614,6 +2614,223 @@ static void run_ray_segment_group_count_2d_optix(
     *row_count_out = rows.size();
 }
 
+struct PreparedRaySegmentGroupCount2D {
+    std::unique_ptr<PreparedSegmentPairIntersectionBuild> segment_pairs;
+    std::unordered_map<uint32_t, uint32_t> group_by_segment_id;
+
+    PreparedRaySegmentGroupCount2D(
+            const RtdlSegment* segments,
+            size_t segment_count,
+            const uint32_t* segment_group_ids)
+        : segment_pairs(nullptr),
+          group_by_segment_id()
+    {
+        if (!segments && segment_count != 0) {
+            throw std::runtime_error("segments pointer must not be null when segment_count is nonzero");
+        }
+        if (!segment_group_ids && segment_count != 0) {
+            throw std::runtime_error("segment_group_ids pointer must not be null when segment_count is nonzero");
+        }
+        group_by_segment_id.reserve(segment_count * 2 + 1);
+        for (size_t i = 0; i < segment_count; ++i) {
+            if (!std::isfinite(segments[i].x0) || !std::isfinite(segments[i].y0) ||
+                !std::isfinite(segments[i].x1) || !std::isfinite(segments[i].y1)) {
+                throw std::runtime_error("ray_segment_group_count requires finite segment coordinates");
+            }
+            const auto inserted = group_by_segment_id.emplace(segments[i].id, segment_group_ids[i]);
+            if (!inserted.second) {
+                throw std::runtime_error("ray_segment_group_count requires unique segment ids");
+            }
+        }
+        segment_pairs = std::make_unique<PreparedSegmentPairIntersectionBuild>(segments, segment_count);
+    }
+};
+
+static std::vector<RtdlSegment> ray_segments_from_finite_rays(
+        const RtdlRay2D* rays,
+        size_t ray_count)
+{
+    if (!rays && ray_count != 0) {
+        throw std::runtime_error("rays pointer must not be null when ray_count is nonzero");
+    }
+    std::vector<RtdlSegment> ray_segments(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        const RtdlRay2D& ray = rays[i];
+        if (!std::isfinite(ray.ox) || !std::isfinite(ray.oy) ||
+            !std::isfinite(ray.dx) || !std::isfinite(ray.dy) ||
+            !std::isfinite(ray.tmax)) {
+            throw std::runtime_error("ray_segment_group_count requires finite ray coordinates and tmax");
+        }
+        if (ray.tmax < 0.0) {
+            throw std::runtime_error("ray_segment_group_count requires non-negative ray tmax");
+        }
+        ray_segments[i] = RtdlSegment{
+            ray.id,
+            ray.ox,
+            ray.oy,
+            ray.ox + ray.dx * ray.tmax,
+            ray.oy + ray.dy * ray.tmax,
+        };
+    }
+    return ray_segments;
+}
+
+static void finalize_ray_segment_group_count_rows(
+        const RtdlSegmentPairIntersectionRow* pair_rows,
+        size_t pair_count,
+        const std::unordered_map<uint32_t, uint32_t>& group_by_segment_id,
+        bool odd_parity_only,
+        RtdlRaySegmentGroupCountRow** rows_out,
+        size_t* row_count_out)
+{
+    std::unordered_map<uint64_t, uint32_t> counts;
+    counts.reserve(pair_count * 2 + 1);
+    for (size_t i = 0; i < pair_count; ++i) {
+        const uint32_t ray_id = pair_rows[i].left_id;
+        const uint32_t segment_id = pair_rows[i].right_id;
+        const auto group_it = group_by_segment_id.find(segment_id);
+        if (group_it == group_by_segment_id.end()) {
+            continue;
+        }
+        const uint32_t group_id = group_it->second;
+        const uint64_t key =
+            (static_cast<uint64_t>(ray_id) << 32) |
+            static_cast<uint64_t>(group_id);
+        uint32_t& count = counts[key];
+        if (count == std::numeric_limits<uint32_t>::max()) {
+            throw std::runtime_error("ray_segment_group_count hit count overflowed uint32");
+        }
+        ++count;
+    }
+
+    std::vector<RtdlRaySegmentGroupCountRow> rows;
+    rows.reserve(counts.size());
+    for (const auto& item : counts) {
+        const uint32_t ray_id = static_cast<uint32_t>(item.first >> 32);
+        const uint32_t group_id = static_cast<uint32_t>(item.first & 0xffffffffu);
+        const uint32_t hit_count = item.second;
+        if (odd_parity_only && ((hit_count & 1u) == 0u)) {
+            continue;
+        }
+        rows.push_back(RtdlRaySegmentGroupCountRow{
+            ray_id,
+            group_id,
+            hit_count,
+            hit_count & 1u,
+        });
+    }
+    std::sort(rows.begin(), rows.end(), [](const auto& left, const auto& right) {
+        if (left.ray_id != right.ray_id) return left.ray_id < right.ray_id;
+        return left.group_id < right.group_id;
+    });
+
+    auto* out = static_cast<RtdlRaySegmentGroupCountRow*>(
+        std::malloc(sizeof(RtdlRaySegmentGroupCountRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < rows.size(); ++i) {
+        out[i] = rows[i];
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static PreparedRaySegmentGroupCount2D* prepare_ray_segment_group_count_2d_optix(
+        const RtdlSegment* segments,
+        size_t segment_count,
+        const uint32_t* segment_group_ids)
+{
+    ensure_segment_pair_intersection_pipeline();
+    return new PreparedRaySegmentGroupCount2D(segments, segment_count, segment_group_ids);
+}
+
+static void run_prepared_ray_segment_group_count_2d_optix(
+        PreparedRaySegmentGroupCount2D* prepared,
+        const RtdlRay2D* rays,
+        size_t ray_count,
+        RtdlRaySegmentGroupCountRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared ray_segment_group_count handle must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (ray_count == 0 || prepared->group_by_segment_id.empty()) {
+        return;
+    }
+
+    std::vector<RtdlSegment> ray_segments = ray_segments_from_finite_rays(rays, ray_count);
+    RtdlSegmentPairIntersectionRow* pair_rows = nullptr;
+    size_t pair_count = 0;
+    run_prepared_segment_pair_intersection_optix(
+        prepared->segment_pairs.get(),
+        ray_segments.data(),
+        ray_segments.size(),
+        &pair_rows,
+        &pair_count);
+
+    struct PairRowsGuard {
+        RtdlSegmentPairIntersectionRow* rows = nullptr;
+        ~PairRowsGuard() { std::free(rows); }
+    } guard{pair_rows};
+
+    finalize_ray_segment_group_count_rows(
+        pair_rows,
+        pair_count,
+        prepared->group_by_segment_id,
+        false,
+        rows_out,
+        row_count_out);
+}
+
+static void run_prepared_ray_segment_group_odd_parity_2d_optix(
+        PreparedRaySegmentGroupCount2D* prepared,
+        const RtdlRay2D* rays,
+        size_t ray_count,
+        RtdlRaySegmentGroupCountRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared ray_segment_group_count handle must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (ray_count == 0 || prepared->group_by_segment_id.empty()) {
+        return;
+    }
+
+    std::vector<RtdlSegment> ray_segments = ray_segments_from_finite_rays(rays, ray_count);
+    RtdlSegmentPairIntersectionRow* pair_rows = nullptr;
+    size_t pair_count = 0;
+    run_prepared_segment_pair_intersection_optix(
+        prepared->segment_pairs.get(),
+        ray_segments.data(),
+        ray_segments.size(),
+        &pair_rows,
+        &pair_count);
+
+    struct PairRowsGuard {
+        RtdlSegmentPairIntersectionRow* rows = nullptr;
+        ~PairRowsGuard() { std::free(rows); }
+    } guard{pair_rows};
+
+    finalize_ray_segment_group_count_rows(
+        pair_rows,
+        pair_count,
+        prepared->group_by_segment_id,
+        true,
+        rows_out,
+        row_count_out);
+}
+
 // ---------- PIP --------------------------------------------------------------
 
 struct PipLaunchParams {

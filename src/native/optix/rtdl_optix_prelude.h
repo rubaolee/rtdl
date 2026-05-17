@@ -353,6 +353,22 @@ int  rtdl_optix_run_ray_segment_group_count_2d(
          const uint32_t* segment_group_ids,
          RtdlRaySegmentGroupCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_ray_segment_group_count_2d(
+         const RtdlSegment* segments, size_t segment_count,
+         const uint32_t* segment_group_ids,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_ray_segment_group_count_2d(
+         void* prepared,
+         const RtdlRay2D* rays, size_t ray_count,
+         RtdlRaySegmentGroupCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_ray_segment_group_odd_parity_2d(
+         void* prepared,
+         const RtdlRay2D* rays, size_t ray_count,
+         RtdlRaySegmentGroupCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_ray_segment_group_count_2d(void* prepared);
 int  rtdl_optix_prepare_ray_anyhit_2d(
          const RtdlTriangle* triangles, size_t triangle_count,
          void** prepared_out,
