@@ -1,0 +1,100 @@
+{
+  "cases": {
+    "lsi_county256_soil256_count192": {
+      "backends": {
+        "cupy_lsi_bruteforce": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.010791255161166191,
+          "app_elapsed_sec_values": [
+            0.010881377384066582,
+            0.01076549757272005,
+            0.010791255161166191,
+            0.010884572751820087,
+            0.01069602370262146
+          ],
+          "baseline_kind": "cupy_rawkernel_cuda_core_bruteforce_lsi",
+          "candidate_pair_count": 26016768,
+          "elapsed_outer_sec": 10.123165637254715,
+          "left_segment_count": 9216,
+          "partner_accelerated": true,
+          "right_segment_count": 2823,
+          "row_count_consistent": true,
+          "row_counts": [
+            85,
+            85,
+            85,
+            85,
+            85
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix_prepared_lsi": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.010135428979992867,
+          "app_elapsed_sec_values": [
+            0.010339836589992046,
+            0.01000241469591856,
+            0.010135428979992867,
+            0.00981014035642147,
+            0.021631252951920033
+          ],
+          "baseline_kind": "prepared_optix_segment_pair_intersection_reused_build_side",
+          "candidate_pair_count": 26016768,
+          "elapsed_outer_sec": 10.76857082080096,
+          "left_segment_count": 9216,
+          "partner_accelerated": false,
+          "prepare_elapsed_sec": 0.7755433833226562,
+          "prepared_build_side_reused": true,
+          "right_segment_count": 2823,
+          "row_count_consistent": true,
+          "row_counts": [
+            85,
+            85,
+            85,
+            85,
+            85
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count192.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count192.cdb",
+      "note": "Best Goal2157 bounded nonzero county/soil LSI slice.",
+      "workload": "lsi"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "c204698dd85cdf8f2df263a4f5100429f9798049",
+  "data_dir": "/root/rtdl_rayjoin_pod/data/rayjoin",
+  "goal": "2159",
+  "repeats": 5,
+  "slices": {
+    "county_256_192": {
+      "bytes": 341418,
+      "chains": 192,
+      "count": 192,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count192.cdb",
+      "segments": 9216,
+      "source": "br_county",
+      "start": 256
+    },
+    "soil_256_192": {
+      "bytes": 110218,
+      "chains": 192,
+      "count": 192,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count192.cdb",
+      "segments": 2823,
+      "source": "br_soil",
+      "start": 256
+    }
+  },
+  "step_timeout_sec": 600,
+  "warmups": 1
+}

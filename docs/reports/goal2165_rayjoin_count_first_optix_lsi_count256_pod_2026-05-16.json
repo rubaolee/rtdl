@@ -1,0 +1,100 @@
+{
+  "cases": {
+    "lsi_county256_soil256_count256": {
+      "backends": {
+        "cupy_lsi_bruteforce": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.01658004056662321,
+          "app_elapsed_sec_values": [
+            0.03054704423993826,
+            0.01647848729044199,
+            0.01658004056662321,
+            0.016679870896041393,
+            0.01654869131743908
+          ],
+          "baseline_kind": "cupy_rawkernel_cuda_core_bruteforce_lsi",
+          "candidate_pair_count": 44938225,
+          "elapsed_outer_sec": 17.374891432002187,
+          "left_segment_count": 12295,
+          "partner_accelerated": true,
+          "right_segment_count": 3655,
+          "row_count_consistent": true,
+          "row_counts": [
+            88,
+            88,
+            88,
+            88,
+            88
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix_prepared_lsi": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.013383244164288044,
+          "app_elapsed_sec_values": [
+            0.026171755976974964,
+            0.013383244164288044,
+            0.013376601040363312,
+            0.013420144096016884,
+            0.013223429210484028
+          ],
+          "baseline_kind": "prepared_optix_segment_pair_intersection_reused_build_side",
+          "candidate_pair_count": 44938225,
+          "elapsed_outer_sec": 17.919450104236603,
+          "left_segment_count": 12295,
+          "partner_accelerated": false,
+          "prepare_elapsed_sec": 0.7460618056356907,
+          "prepared_build_side_reused": true,
+          "right_segment_count": 3655,
+          "row_count_consistent": true,
+          "row_counts": [
+            88,
+            88,
+            88,
+            88,
+            88
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count256.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count256.cdb",
+      "note": "Larger nonzero county/soil LSI slice for prepared OptiX amortization checks.",
+      "workload": "lsi"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "c204698dd85cdf8f2df263a4f5100429f9798049",
+  "data_dir": "/root/rtdl_rayjoin_pod/data/rayjoin",
+  "goal": "2159",
+  "repeats": 5,
+  "slices": {
+    "county_256_256": {
+      "bytes": 455902,
+      "chains": 256,
+      "count": 256,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count256.cdb",
+      "segments": 12295,
+      "source": "br_county",
+      "start": 256
+    },
+    "soil_256_256": {
+      "bytes": 143277,
+      "chains": 256,
+      "count": 256,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count256.cdb",
+      "segments": 3655,
+      "source": "br_soil",
+      "start": 256
+    }
+  },
+  "step_timeout_sec": 600,
+  "warmups": 1
+}
