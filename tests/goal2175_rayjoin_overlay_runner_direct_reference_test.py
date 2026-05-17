@@ -82,6 +82,23 @@ class Goal2175RayjoinOverlayRunnerDirectReferenceTest(unittest.TestCase):
         self.assertIn("overlay_county384_soil384", text)
         self.assertIn("overlay_county512_soil512", text)
 
+    def test_pip_input_loader_reads_probe_points_and_polygons(self) -> None:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("goal2159_runner", SCRIPT)
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+
+        points, polygons = module._load_pip_inputs(str(FIXTURES / "br_county_subset.cdb"))
+
+        self.assertGreater(len(points), 0)
+        self.assertGreater(len(polygons), 0)
+        self.assertTrue(hasattr(points[0], "x"))
+        self.assertTrue(hasattr(polygons[0], "vertices"))
+
 
 if __name__ == "__main__":
     unittest.main()

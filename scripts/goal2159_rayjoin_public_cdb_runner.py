@@ -23,6 +23,7 @@ from rtdsl.baseline_contracts import compare_baseline_rows
 from rtdsl.baseline_runner import segments_from_records
 from rtdsl.datasets import CdbDataset
 from rtdsl.datasets import chains_to_polygons
+from rtdsl.datasets import chains_to_probe_points
 from rtdsl.datasets import chains_to_segments
 from rtdsl.datasets import download_rayjoin_sample
 from rtdsl.datasets import load_cdb
