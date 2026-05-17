@@ -1,0 +1,205 @@
+diff --git a/src/flags.cc b/src/flags.cc
+index 9740e23..89ac0bf 100644
+--- a/src/flags.cc
++++ b/src/flags.cc
+@@ -12,6 +12,8 @@ DEFINE_bool(fau, false, "Free after use");
+ DEFINE_int32(warmup, 5, "");
+ DEFINE_int32(repeat, 5, "");
+ DEFINE_string(serialize, "", "");
++DEFINE_string(query_stream_output, "",
++              "Optional Goal2192 JSON path for exporting generated query points/segments");
+ DEFINE_int32(ag, 1, "AG method, 0: disable, 1: paper stated, 2: simple");
+ DEFINE_int32(ag_iter, 5, "Max iteration of grouping");
+ DEFINE_int32(win, 32, "Window size for AABB compression");
+@@ -30,4 +32,4 @@ DEFINE_int32(gen_n, 10000, "Number of generated edges/points");
+ DEFINE_bool(histo, false, "Whether to print histogram");
+ DEFINE_bool(
+     profile, false,
+-    "Enable profiling, some counters are only compiled available under debug");
+\ No newline at end of file
++    "Enable profiling, some counters are only compiled available under debug");
+diff --git a/src/flags.h b/src/flags.h
+index 1cb0703..260ad04 100644
+--- a/src/flags.h
++++ b/src/flags.h
+@@ -21,6 +21,7 @@ DECLARE_bool(fau);
+ DECLARE_int32(warmup);
+ DECLARE_int32(repeat);
+ DECLARE_string(serialize);
++DECLARE_string(query_stream_output);
+ 
+ DECLARE_int32(win);
+ DECLARE_double(enlarge);
+diff --git a/src/query.cc b/src/query.cc
+index d5e7b5e..52e5178 100644
+--- a/src/query.cc
++++ b/src/query.cc
+@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
+   config.query_path = FLAGS_poly2;
+   config.output_path = FLAGS_output;
+   config.serialize_prefix = FLAGS_serialize;
++  config.query_stream_output = FLAGS_query_stream_output;
+   config.warmup = FLAGS_warmup;
+   config.repeat = FLAGS_repeat;
+   config.grid_size = FLAGS_grid_size;
+@@ -56,4 +57,4 @@ int main(int argc, char* argv[]) {
+   }
+ 
+   google::ShutdownGoogleLogging();
+-}
+\ No newline at end of file
++}
+diff --git a/src/run_query.cu b/src/run_query.cu
+index 66a31a8..f1beda6 100644
+--- a/src/run_query.cu
++++ b/src/run_query.cu
+@@ -1,6 +1,10 @@
+ #include <algorithm>
++#include <fstream>
++#include <iomanip>
+ #include <memory>
+ #include <random>
++#include <utility>
++#include <vector>
+ 
+ #include "app/lsi_grid.h"
+ #include "app/lsi_lbvh.h"
+@@ -18,6 +22,93 @@
+ 
+ namespace rayjoin {
+ 
++static bool HasQueryStreamOutput(const QueryConfig& config) {
++  return !config.query_stream_output.empty();
++}
++
++static void WriteQueryStreamPrefix(std::ofstream& out,
++                                   const QueryConfig& config,
++                                   const char* workload,
++                                   size_t query_count) {
++  out << std::setprecision(17);
++  out << "{\n";
++  out << "  \"base_cdb\": \"" << config.map_path << "\",\n";
++  out << "  \"claim_boundary\": {\n";
++  out << "    \"paper_scale_perf_claim_authorized\": false,\n";
++  out << "    \"rtdl_beats_rayjoin_claim_authorized\": false,\n";
++  out << "    \"same_contract_with_rayjoin_query_exec\": true,\n";
++  out << "    \"v2_0_release_authorized\": false\n";
++  out << "  },\n";
++  out << "  \"producer\": \"rayjoin_query_exec_export_patch\",\n";
++  out << "  \"query_count\": " << query_count << ",\n";
++  out << "  \"rayjoin_query_exec_flags\": {\n";
++  out << "    \"gen_n\": " << config.gen_n << ",\n";
++  out << "    \"gen_t\": " << config.gen_t << ",\n";
++  out << "    \"mode\": \"" << config.mode << "\",\n";
++  out << "    \"poly1\": \"" << config.map_path << "\",\n";
++  out << "    \"query\": \"" << workload << "\",\n";
++  out << "    \"seed\": " << config.random_seed << "\n";
++  out << "  },\n";
++  out << "  \"queries\": [\n";
++}
++
++static void WriteQueryStreamSuffix(std::ofstream& out,
++                                   const char* workload) {
++  out << "\n";
++  out << "  ],\n";
++  out << "  \"schema\": \"rtdl.rayjoin.same_query_stream.v1\",\n";
++  out << "  \"workload\": \"" << workload << "\"\n";
++  out << "}\n";
++}
++
++template <typename POINT_T, typename EDGE_T>
++static void MaybeExportLSIQueryStream(const QueryConfig& config,
++                                      const pinned_vector<POINT_T>& points,
++                                      const pinned_vector<EDGE_T>& edges) {
++  if (!HasQueryStreamOutput(config)) {
++    return;
++  }
++  std::ofstream out(config.query_stream_output);
++  CHECK(out) << "Failed to open query stream output: "
++             << config.query_stream_output;
++  WriteQueryStreamPrefix(out, config, "lsi", edges.size());
++  for (size_t i = 0; i < edges.size(); i++) {
++    const auto& edge = edges[i];
++    const auto& p0 = points[edge.p1_idx];
++    const auto& p1 = points[edge.p2_idx];
++    out << "    {\"id\": " << edge.eid << ", \"x0\": " << p0.x
++        << ", \"x1\": " << p1.x << ", \"y0\": " << p0.y
++        << ", \"y1\": " << p1.y << "}";
++    if (i + 1 != edges.size()) {
++      out << ",";
++    }
++    out << "\n";
++  }
++  WriteQueryStreamSuffix(out, "lsi");
++}
++
++static void MaybeExportPIPQueryStream(
++    const QueryConfig& config,
++    const std::vector<std::pair<double, double>>& unscaled_points) {
++  if (!HasQueryStreamOutput(config)) {
++    return;
++  }
++  std::ofstream out(config.query_stream_output);
++  CHECK(out) << "Failed to open query stream output: "
++             << config.query_stream_output;
++  WriteQueryStreamPrefix(out, config, "pip", unscaled_points.size());
++  for (size_t i = 0; i < unscaled_points.size(); i++) {
++    out << "    {\"id\": " << i << ", \"x\": "
++        << unscaled_points[i].first << ", \"y\": "
++        << unscaled_points[i].second << "}";
++    if (i + 1 != unscaled_points.size()) {
++      out << ",";
++    }
++    out << "\n";
++  }
++  WriteQueryStreamSuffix(out, "pip");
++}
++
+ template <typename CONTEXT_T>
+ void CheckPIPResult(
+     CONTEXT_T& ctx, QueryConfig config,
+@@ -139,6 +230,7 @@ std::shared_ptr<typename CONTEXT_T::map_t> GenerateLSIQueries(
+     edges[i].p2_idx = 2 * i + 1;
+     edges[i].left_polygon_id = edges[i].right_polygon_id = 0;
+   }
++  MaybeExportLSIQueryStream(config, points, edges);
+   query_map->LoadFrom(stream, scaling, points, edges);
+   return query_map;
+ }
+@@ -156,13 +248,17 @@ thrust::host_vector<typename CONTEXT_T::map_t::point_t> GeneratePIPQueries(
+   std::uniform_real_distribution<> dist_y(bb.min_y, bb.max_y);
+ 
+   thrust::host_vector<typename CONTEXT_T::map_t::point_t> points;
++  std::vector<std::pair<double, double>> unscaled_points;
++  unscaled_points.reserve(config.gen_n);
+ 
+   for (size_t i = 0; i < config.gen_n; i++) {
+     auto x = dist_x(gen), y = dist_y(gen);
+ 
++    unscaled_points.push_back({x, y});
+     points.push_back({scaling.ScaleX(x), scaling.ScaleY(y)});
+   }
+ 
++  MaybeExportPIPQueryStream(config, unscaled_points);
+   return points;
+ }
+ 
+@@ -461,4 +557,4 @@ void RunPIPQuery(const QueryConfig& config) {
+   delete pip;
+   timer_end();
+ }
+-}  // namespace rayjoin
+\ No newline at end of file
++}  // namespace rayjoin
+diff --git a/src/run_query.cuh b/src/run_query.cuh
+index d27d32e..2d8b5a3 100644
+--- a/src/run_query.cuh
++++ b/src/run_query.cuh
+@@ -7,6 +7,7 @@ struct QueryConfig {
+   std::string query_path;
+   std::string output_path;
+   std::string serialize_prefix;
++  std::string query_stream_output;
+   int warmup;
+   int repeat;
+   unsigned int grid_size;
