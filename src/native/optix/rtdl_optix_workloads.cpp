@@ -2225,6 +2225,7 @@ struct SegmentPairIntersectionLaunchParams {
     uint32_t*         output_count;
     uint32_t          output_capacity;
     uint32_t          probe_count;
+    uint32_t          left_offset;
 };
 
 struct PreparedSegmentPairIntersectionBuild {
@@ -2314,27 +2315,36 @@ static void finalize_segment_pair_intersection_rows(
     seen_pairs.reserve(gpu_rows.size() * 2 + 1);
 
     for (const auto& gpu_row : gpu_rows) {
-        const auto left_it = left_by_id.find(gpu_row.left_id);
-        const auto right_it = right_lookup->find(gpu_row.right_id);
-        if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
-            continue;
+        const RtdlSegment* left_seg = nullptr;
+        const RtdlSegment* right_seg = nullptr;
+        if (gpu_row.left_index < left_count && gpu_row.right_index < right_count) {
+            left_seg = &left[gpu_row.left_index];
+            right_seg = &right[gpu_row.right_index];
+        } else {
+            const auto left_it = left_by_id.find(gpu_row.left_id);
+            const auto right_it = right_lookup->find(gpu_row.right_id);
+            if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
+                continue;
+            }
+            left_seg = left_it->second;
+            right_seg = right_it->second;
         }
         const uint64_t pair_key =
-            (static_cast<uint64_t>(gpu_row.left_id) << 32) |
-            static_cast<uint64_t>(gpu_row.right_id);
+            (static_cast<uint64_t>(left_seg->id) << 32) |
+            static_cast<uint64_t>(right_seg->id);
         if (seen_pairs.find(pair_key) != seen_pairs.end()) {
             continue;
         }
         double ix = 0.0;
         double iy = 0.0;
-        if (!exact_segment_intersection(*left_it->second, *right_it->second, &ix, &iy)) {
+        if (!exact_segment_intersection(*left_seg, *right_seg, &ix, &iy)) {
             continue;
         }
         seen_pairs.insert(pair_key);
         refined.push_back(
             RtdlSegmentPairIntersectionRow{
-                gpu_row.left_id,
-                gpu_row.right_id,
+                left_seg->id,
+                right_seg->id,
                 ix,
                 iy,
             });
@@ -2376,20 +2386,29 @@ static size_t count_segment_pair_intersection_rows(
     seen_pairs.reserve(gpu_rows.size() * 2 + 1);
 
     for (const auto& gpu_row : gpu_rows) {
-        const auto left_it = left_by_id.find(gpu_row.left_id);
-        const auto right_it = right_lookup->find(gpu_row.right_id);
-        if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
-            continue;
+        const RtdlSegment* left_seg = nullptr;
+        const RtdlSegment* right_seg = nullptr;
+        if (gpu_row.left_index < left_count && gpu_row.right_index < right_count) {
+            left_seg = &left[gpu_row.left_index];
+            right_seg = &right[gpu_row.right_index];
+        } else {
+            const auto left_it = left_by_id.find(gpu_row.left_id);
+            const auto right_it = right_lookup->find(gpu_row.right_id);
+            if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
+                continue;
+            }
+            left_seg = left_it->second;
+            right_seg = right_it->second;
         }
         const uint64_t pair_key =
-            (static_cast<uint64_t>(gpu_row.left_id) << 32) |
-            static_cast<uint64_t>(gpu_row.right_id);
+            (static_cast<uint64_t>(left_seg->id) << 32) |
+            static_cast<uint64_t>(right_seg->id);
         if (seen_pairs.find(pair_key) != seen_pairs.end()) {
             continue;
         }
         double ix = 0.0;
         double iy = 0.0;
-        if (!exact_segment_intersection(*left_it->second, *right_it->second, &ix, &iy)) {
+        if (!exact_segment_intersection(*left_seg, *right_seg, &ix, &iy)) {
             continue;
         }
         seen_pairs.insert(pair_key);
@@ -2447,6 +2466,11 @@ static std::vector<GpuSegmentPairIntersectionRecord> collect_segment_pair_inters
         lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
         lp.output_capacity = output_capacity;
         lp.probe_count = static_cast<uint32_t>(chunk_left_count);
+        if (left_offset > static_cast<size_t>(std::numeric_limits<uint32_t>::max()) ||
+            chunk_left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()) - left_offset) {
+            throw std::runtime_error("segment-pair intersection direct candidate index exceeds uint32_t");
+        }
+        lp.left_offset = static_cast<uint32_t>(left_offset);
 
         DevPtr d_params(sizeof(SegmentPairIntersectionLaunchParams));
         upload(d_params.ptr, &lp, 1);

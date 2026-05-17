@@ -1,0 +1,190 @@
+{
+  "goal": 2285,
+  "generated_at_utc": "2026-05-17T22:46:05Z",
+  "commit": "6f3bac513f8db763acd4366932cbe64065aa8008",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "one_time_left_pack_sec": 0.11940914951264858,
+  "prepare_sec": 1.4821136835962534,
+  "raw_row_count": 8921,
+  "scalar_count": 8921,
+  "parity": true,
+  "raw_seconds": [
+    0.010127473622560501,
+    0.009156379848718643,
+    0.009197911247611046,
+    0.00902978703379631,
+    0.008984478190541267,
+    0.009018059819936752,
+    0.009001115337014198
+  ],
+  "count_seconds": [
+    0.01161389984190464,
+    0.009284395724534988,
+    0.009206036105751991,
+    0.009139083325862885,
+    0.00906137004494667,
+    0.00906245969235897,
+    0.009093347936868668
+  ],
+  "raw_median_sec": 0.00902978703379631,
+  "count_median_sec": 0.009139083325862885,
+  "raw_phase_samples": [
+    {
+      "mode": "rows",
+      "left_upload": 0.000148675,
+      "candidate_count_pass": 0.000507994,
+      "candidate_write_pass": 0.00045458,
+      "candidate_download": 9.408700000000001e-05,
+      "exact_refine": 0.008207113,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000172211,
+      "candidate_count_pass": 0.000512999,
+      "candidate_write_pass": 0.00045758599999999995,
+      "candidate_download": 0.00010178800000000001,
+      "exact_refine": 0.007399313,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000163921,
+      "candidate_count_pass": 0.000521399,
+      "candidate_write_pass": 0.000462076,
+      "candidate_download": 0.000107899,
+      "exact_refine": 0.007440772,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000152907,
+      "candidate_count_pass": 0.0005026459999999999,
+      "candidate_write_pass": 0.00045013199999999995,
+      "candidate_download": 9.718400000000001e-05,
+      "exact_refine": 0.007359903,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000148556,
+      "candidate_count_pass": 0.000505825,
+      "candidate_write_pass": 0.00045132699999999996,
+      "candidate_download": 0.000103804,
+      "exact_refine": 0.007312768,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000140957,
+      "candidate_count_pass": 0.00049545,
+      "candidate_write_pass": 0.000442013,
+      "candidate_download": 9.2417e-05,
+      "exact_refine": 0.007371517,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000149408,
+      "candidate_count_pass": 0.000506392,
+      "candidate_write_pass": 0.00046653800000000007,
+      "candidate_download": 9.4103e-05,
+      "exact_refine": 0.007331727,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "count_phase_samples": [
+    {
+      "mode": "count",
+      "left_upload": 0.000164904,
+      "candidate_count_pass": 0.0005182679999999999,
+      "candidate_write_pass": 0.00045703299999999997,
+      "candidate_download": 9.552100000000001e-05,
+      "exact_refine": 0.009830462,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000162475,
+      "candidate_count_pass": 0.0005046339999999999,
+      "candidate_write_pass": 0.00045164799999999997,
+      "candidate_download": 0.000101245,
+      "exact_refine": 0.007559275,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000162513,
+      "candidate_count_pass": 0.000512375,
+      "candidate_write_pass": 0.000461808,
+      "candidate_download": 0.00010175800000000001,
+      "exact_refine": 0.00748315,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.00014711,
+      "candidate_count_pass": 0.000499601,
+      "candidate_write_pass": 0.000446986,
+      "candidate_download": 9.669399999999999e-05,
+      "exact_refine": 0.007494906,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000147283,
+      "candidate_count_pass": 0.0005014969999999999,
+      "candidate_write_pass": 0.0004460270000000001,
+      "candidate_download": 9.649700000000002e-05,
+      "exact_refine": 0.00741567,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000141711,
+      "candidate_count_pass": 0.00050276,
+      "candidate_write_pass": 0.000443469,
+      "candidate_download": 9.015100000000001e-05,
+      "exact_refine": 0.0074368,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000141238,
+      "candidate_count_pass": 0.000496818,
+      "candidate_write_pass": 0.000448437,
+      "candidate_download": 9.423499999999998e-05,
+      "exact_refine": 0.00746517,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "claim_boundary": {
+    "measured_scope": "prepacked left/query segment reuse for generic prepared segment-pair path on RayJoin-exported 100k LSI stream",
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  },
+  "goal2289_ab_label": "candidate_direct_index_packed_patch",
+  "goal2289_git_status_short": "M docs/reports/goal2285_segment_pair_packed_left_probe_pod_2026-05-17.json\n M src/native/optix/rtdl_optix_core.cpp\n M src/native/optix/rtdl_optix_workloads.cpp\n?? docs/reports/goal2280_direct_index_rayjoin_lsi_probe_pod_2026-05-17.json\n?? tmp_goal2248_files/"
+}

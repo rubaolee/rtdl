@@ -1,0 +1,190 @@
+{
+  "goal": 2285,
+  "generated_at_utc": "2026-05-17T22:45:39Z",
+  "commit": "6f3bac513f8db763acd4366932cbe64065aa8008",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "one_time_left_pack_sec": 0.12760783173143864,
+  "prepare_sec": 1.4275083560496569,
+  "raw_row_count": 8921,
+  "scalar_count": 8921,
+  "parity": true,
+  "raw_seconds": [
+    0.010015308856964111,
+    0.009872019290924072,
+    0.009887304157018661,
+    0.010052680969238281,
+    0.009753605350852013,
+    0.009876187890768051,
+    0.009929608553647995
+  ],
+  "count_seconds": [
+    0.009363966062664986,
+    0.009486408904194832,
+    0.009520085528492928,
+    0.009432835504412651,
+    0.009436467662453651,
+    0.009562080726027489,
+    0.009603723883628845
+  ],
+  "raw_median_sec": 0.009887304157018661,
+  "count_median_sec": 0.009486408904194832,
+  "raw_phase_samples": [
+    {
+      "mode": "rows",
+      "left_upload": 0.000123282,
+      "candidate_count_pass": 0.000500469,
+      "candidate_write_pass": 0.000450138,
+      "candidate_download": 9.091399999999999e-05,
+      "exact_refine": 0.008419325,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000122235,
+      "candidate_count_pass": 0.0004950509999999999,
+      "candidate_write_pass": 0.000444717,
+      "candidate_download": 9.246300000000001e-05,
+      "exact_refine": 0.00829404,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000122018,
+      "candidate_count_pass": 0.000490933,
+      "candidate_write_pass": 0.00044871600000000005,
+      "candidate_download": 8.847400000000001e-05,
+      "exact_refine": 0.008311678,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.00012285,
+      "candidate_count_pass": 0.00048047099999999995,
+      "candidate_write_pass": 0.000432504,
+      "candidate_download": 9.0928e-05,
+      "exact_refine": 0.008472691,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000122592,
+      "candidate_count_pass": 0.000495376,
+      "candidate_write_pass": 0.00043607600000000003,
+      "candidate_download": 8.954000000000001e-05,
+      "exact_refine": 0.008201272,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.00012133,
+      "candidate_count_pass": 0.0004930140000000001,
+      "candidate_write_pass": 0.00043438,
+      "candidate_download": 8.943699999999999e-05,
+      "exact_refine": 0.008329118,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000121297,
+      "candidate_count_pass": 0.00049062,
+      "candidate_write_pass": 0.000437994,
+      "candidate_download": 9.3054e-05,
+      "exact_refine": 0.008317234,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "count_phase_samples": [
+    {
+      "mode": "count",
+      "left_upload": 0.000123513,
+      "candidate_count_pass": 0.000487157,
+      "candidate_write_pass": 0.00043538099999999993,
+      "candidate_download": 9.012899999999999e-05,
+      "exact_refine": 0.007820829,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000122244,
+      "candidate_count_pass": 0.000524208,
+      "candidate_write_pass": 0.000470844,
+      "candidate_download": 9.3695e-05,
+      "exact_refine": 0.007859844,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000126811,
+      "candidate_count_pass": 0.000484468,
+      "candidate_write_pass": 0.00043342399999999996,
+      "candidate_download": 0.00010001500000000001,
+      "exact_refine": 0.007961964,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000122887,
+      "candidate_count_pass": 0.00048811000000000004,
+      "candidate_write_pass": 0.000442076,
+      "candidate_download": 9.083899999999999e-05,
+      "exact_refine": 0.007886156,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000122009,
+      "candidate_count_pass": 0.000486726,
+      "candidate_write_pass": 0.000439504,
+      "candidate_download": 9.0124e-05,
+      "exact_refine": 0.007885055,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.00012339,
+      "candidate_count_pass": 0.00048814600000000007,
+      "candidate_write_pass": 0.00043552,
+      "candidate_download": 9.0639e-05,
+      "exact_refine": 0.008004348,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000121215,
+      "candidate_count_pass": 0.000487201,
+      "candidate_write_pass": 0.00044764,
+      "candidate_download": 8.9987e-05,
+      "exact_refine": 0.00805588,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "claim_boundary": {
+    "measured_scope": "prepacked left/query segment reuse for generic prepared segment-pair path on RayJoin-exported 100k LSI stream",
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  },
+  "goal2289_ab_label": "baseline_origin_main",
+  "goal2289_git_status_short": "M docs/reports/goal2285_segment_pair_packed_left_probe_pod_2026-05-17.json\n?? docs/reports/goal2280_direct_index_rayjoin_lsi_probe_pod_2026-05-17.json\n?? tmp_goal2248_files/"
+}
