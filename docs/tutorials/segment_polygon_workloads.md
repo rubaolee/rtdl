@@ -155,6 +155,23 @@ Use when:
 
 ---
 
+## Repeated OptiX Calls
+
+When you repeatedly query the same segment batch against the same static scene,
+use the v2 prepared/packed pattern from
+[v2.0 App Building](v2_app_building.md#reuse-prepared-and-packed-inputs).
+Prepare the static build-side geometry once, pack reusable probe/query geometry
+once, and then call the RTDL primitive over those objects.
+
+This matters because tuple records are convenient, but repacking a large Python
+tuple on every call can dominate the measured runtime. The reviewed Goal2284/2285
+LSI probe showed about `20x` faster repeated prepared segment-pair raw/count
+calls on one RTX A5000 stream when the left/query segments were prepacked. Keep
+that claim narrow: it is a measured segment-pair pattern, not a broad
+segment/polygon or RayJoin speedup claim.
+
+---
+
 ## OptiX mode boundary
 
 The segment/polygon family exposes OptiX for compatibility work, but the public

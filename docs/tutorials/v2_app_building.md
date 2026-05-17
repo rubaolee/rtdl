@@ -76,6 +76,43 @@ Examples:
 That split is intentional. It keeps RTDL general-purpose without putting
 application-specific reducers inside the native engine.
 
+## Reuse Prepared And Packed Inputs
+
+For repeated calls, do not rebuild the same RTDL boundary objects each time.
+Use this pattern:
+
+1. prepare static build-side geometry once;
+2. pack reusable probe/query geometry once;
+3. run raw/count/reduction calls over the prepared and packed objects.
+
+For a segment-pair workload on OptiX:
+
+```python
+from rtdsl.optix_runtime import pack_segments
+from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
+
+prepared_right = prepare_segment_pair_intersection_optix(right_segments)
+packed_left = pack_segments(records=left_segments)
+
+rows = prepared_right.run_raw(packed_left)
+try:
+    row_count = rows.row_count
+finally:
+    rows.close()
+
+exact_count = prepared_right.count(packed_left)
+```
+
+The same idea applies broadly: prepared objects avoid rebuilding static scene
+state, and packed objects avoid repacking Python records when the same batch is
+used more than once.
+
+Reviewed Goal2284/2285 evidence measured this effect on one RTX A5000
+RayJoin-exported 100k LSI stream: repeated prepared segment-pair calls improved
+by about `20x` when the left/query segments were prepacked instead of passed as
+tuple records every time. That is a narrow measured contract, not a promise that
+every workload gets a 20x gain.
+
 ## What To Avoid
 
 Do not turn a Python app name into a native engine feature. Prefer generic RTDL
