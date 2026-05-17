@@ -1,6 +1,6 @@
 # Goal2248: Prepared Closed-Shape Membership
 
-Status: implementation pending pod timing.
+Status: implemented; pod timing recorded by Goal2249.
 
 ## Purpose
 
@@ -45,5 +45,6 @@ The same-query runner now records:
 }
 ```
 
-Pod timing from a pushed commit is required before claiming an actual speed
-improvement over Goal2245.
+Pushed-commit pod timing is recorded in Goal2249. Goal2248 by itself remains an
+implementation report; the measured performance claim lives in the Goal2249
+evidence report and its review chain.

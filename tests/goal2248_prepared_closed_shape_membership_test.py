@@ -45,7 +45,8 @@ class Goal2248PreparedClosedShapeMembershipTest(unittest.TestCase):
 
         self.assertIn("Goal2248", text)
         self.assertIn("prepared generic closed-shape membership", text)
-        self.assertIn("Pod timing from a pushed commit is required", text)
+        self.assertIn("pod timing recorded by Goal2249", text)
+        self.assertIn("the measured performance claim lives in the Goal2249", text)
         self.assertIn("RayJoin/PIP/polygon naming remains in the Python application", text)
 
 

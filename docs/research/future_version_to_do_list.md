@@ -46,6 +46,33 @@ Boundary:
 
 ## v2.5+ Optimization Lane
 
+### Device-Resident Prepared Scene Output Streams
+
+Origin: Goal2249 RayJoin same-query PIP prepared closed-shape pod evidence.
+
+Observation:
+
+- Prepared closed-shape membership removes repeated scene upload/build overhead
+  and improves the 100,000-query same-query PIP path.
+- The remaining gap to RayJoin's paper benchmark is not the predicate itself:
+  RTDL still returns host-visible rows through the Python boundary, while the
+  RayJoin paper reports a tighter pure GPU query-execution metric.
+
+Future work:
+
+- Study a generic device-resident output stream contract for prepared RTDL
+  scenes.
+- Keep the primitive vocabulary generic: point, shape, membership, row stream,
+  compact positives.
+- Let Python/partner code decide whether to materialize rows, reduce them, or
+  keep them GPU-resident for a downstream partner primitive.
+
+Boundary:
+
+- This is not part of the Goal2249 claim and does not authorize a RayJoin-beat
+  claim.
+- Promotion needs a separate report, pod evidence, and external review.
+
 ### Device-Resident Grouped Count / Parity Reduction
 
 Origin: Goal2233/Goal2235 output materialization measurements.
