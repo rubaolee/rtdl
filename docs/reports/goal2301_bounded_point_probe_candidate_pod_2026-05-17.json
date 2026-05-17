@@ -1,0 +1,293 @@
+{
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "commit": "9d159de6ae551f8f669cf0d44fd77e0b37e2eab9",
+  "generated_at_utc": "2026-05-17T23:29:41Z",
+  "goal": 2292,
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "lsi": {
+    "expected_rows_from_prior_cpu_verified_artifacts": 8921,
+    "left_segments": 100000,
+    "matches_prior_expected_count": true,
+    "one_time_left_pack_sec": 0.20959776267409325,
+    "prepare_sec": 1.2495820932090282,
+    "query_count": 100000,
+    "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+    "query_stream_producer": "rayjoin_query_exec_export_patch",
+    "raw_rows": {
+      "median_sec": 0.007650064304471016,
+      "phase_samples": [
+        {
+          "candidate_count_pass": 0.00046739199999999996,
+          "candidate_download": 8.1865e-05,
+          "candidate_write_pass": 0.00041588899999999996,
+          "emitted_count": 8921,
+          "exact_refine": 0.006431165,
+          "left_upload": 0.000119082,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00045570299999999996,
+          "candidate_download": 7.72e-05,
+          "candidate_write_pass": 0.00040845100000000005,
+          "emitted_count": 8921,
+          "exact_refine": 0.006240869,
+          "left_upload": 0.000116423,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00045977299999999996,
+          "candidate_download": 8.0699e-05,
+          "candidate_write_pass": 0.00040628499999999994,
+          "emitted_count": 8921,
+          "exact_refine": 0.006202084,
+          "left_upload": 0.000114598,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00045712699999999993,
+          "candidate_download": 8.1066e-05,
+          "candidate_write_pass": 0.00041034299999999997,
+          "emitted_count": 8921,
+          "exact_refine": 0.00612827,
+          "left_upload": 0.000115307,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0004508390000000001,
+          "candidate_download": 8.115000000000001e-05,
+          "candidate_write_pass": 0.00040979,
+          "emitted_count": 8921,
+          "exact_refine": 0.00610804,
+          "left_upload": 0.000115801,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00045128100000000005,
+          "candidate_download": 7.9548e-05,
+          "candidate_write_pass": 0.00040669899999999995,
+          "emitted_count": 8921,
+          "exact_refine": 0.006113846,
+          "left_upload": 0.000124793,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000466831,
+          "candidate_download": 8.2422e-05,
+          "candidate_write_pass": 0.00042471599999999995,
+          "emitted_count": 8921,
+          "exact_refine": 0.006212307,
+          "left_upload": 0.000117198,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        }
+      ],
+      "seconds": [
+        0.00795210525393486,
+        0.007691923528909683,
+        0.007650064304471016,
+        0.007573191076517105,
+        0.007540425285696983,
+        0.007552454248070717,
+        0.007764292880892754
+      ],
+      "value_consistent": true,
+      "values": [
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921
+      ]
+    },
+    "right_segments": 326193,
+    "route": "prepared_segment_pair_intersection_optix_with_prepacked_left",
+    "row_count_parity": true,
+    "scalar_count": {
+      "median_sec": 0.007558831945061684,
+      "phase_samples": [
+        {
+          "candidate_count_pass": 0.0004576459999999999,
+          "candidate_download": 8.6789e-05,
+          "candidate_write_pass": 0.00040502,
+          "emitted_count": 8921,
+          "exact_refine": 0.006120712,
+          "left_upload": 0.00011487,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00045263100000000005,
+          "candidate_download": 8.7778e-05,
+          "candidate_write_pass": 0.00040498000000000004,
+          "emitted_count": 8921,
+          "exact_refine": 0.00612216,
+          "left_upload": 0.00011541,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00046234600000000004,
+          "candidate_download": 8.142099999999999e-05,
+          "candidate_write_pass": 0.000403164,
+          "emitted_count": 8921,
+          "exact_refine": 0.006128949,
+          "left_upload": 0.000115292,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00047306,
+          "candidate_download": 7.9248e-05,
+          "candidate_write_pass": 0.00042552899999999996,
+          "emitted_count": 8921,
+          "exact_refine": 0.006132835,
+          "left_upload": 0.000115441,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00045124099999999996,
+          "candidate_download": 8.0797e-05,
+          "candidate_write_pass": 0.000406958,
+          "emitted_count": 8921,
+          "exact_refine": 0.006144359,
+          "left_upload": 0.000115782,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.00046793500000000005,
+          "candidate_download": 7.5604e-05,
+          "candidate_write_pass": 0.000411478,
+          "emitted_count": 8921,
+          "exact_refine": 0.006180757,
+          "left_upload": 0.00011722,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000455416,
+          "candidate_download": 7.793600000000001e-05,
+          "candidate_write_pass": 0.000406073,
+          "emitted_count": 8921,
+          "exact_refine": 0.006118884,
+          "left_upload": 0.00011781,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        }
+      ],
+      "seconds": [
+        0.007558831945061684,
+        0.007547961547970772,
+        0.007554732263088226,
+        0.007598618045449257,
+        0.007565556094050407,
+        0.007626885548233986,
+        0.00754474475979805
+      ],
+      "value_consistent": true,
+      "values": [
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921
+      ]
+    }
+  },
+  "pip": {
+    "expected_rows_from_prior_cpu_verified_artifacts": 8686,
+    "matches_prior_expected_count": true,
+    "one_time_point_pack_sec": 0.1937896404415369,
+    "one_time_shape_pack_sec": 0.19535933248698711,
+    "points": 100000,
+    "positive_rows": {
+      "median_sec": 0.01821899227797985,
+      "phase_samples": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "seconds": [
+        0.02256733737885952,
+        0.01866762340068817,
+        0.01821899227797985,
+        0.018282359465956688,
+        0.01819024421274662,
+        0.01802091673016548,
+        0.0180278979241848
+      ],
+      "value_consistent": true,
+      "values": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ]
+    },
+    "prepare_sec": 0.3661948200315237,
+    "query_count": 100000,
+    "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json",
+    "query_stream_producer": "rayjoin_query_exec_export_patch",
+    "route": "prepared_point_closed_shape_membership_2d_optix_with_prepacked_points",
+    "row_count_parity": true,
+    "scalar_count": {
+      "median_sec": 0.007748827338218689,
+      "phase_samples": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "seconds": [
+        0.00783521868288517,
+        0.007801832631230354,
+        0.007724188268184662,
+        0.007715078070759773,
+        0.007702138274908066,
+        0.007748827338218689,
+        0.007769256830215454
+      ],
+      "value_consistent": true,
+      "values": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ]
+    },
+    "shapes": 15700
+  },
+  "repeats": 7,
+  "schema": "rtdl.rayjoin.current_prepared_comparison.v1",
+  "warmups": 1
+}

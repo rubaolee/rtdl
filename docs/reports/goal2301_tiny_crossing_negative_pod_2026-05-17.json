@@ -1,0 +1,102 @@
+{
+  "matches_expected": false,
+  "median_sec": 0.0026023872196674347,
+  "phases": [
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.001703454,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "count",
+      "point_pack": 0.000282532,
+      "point_upload": 0.000284379,
+      "raw_candidate_count": 0
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.00169624,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "count",
+      "point_pack": 0.000274185,
+      "point_upload": 0.000272318,
+      "raw_candidate_count": 0
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.001716173,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "count",
+      "point_pack": 0.000263544,
+      "point_upload": 0.000268595,
+      "raw_candidate_count": 0
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.001696124,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "count",
+      "point_pack": 0.000262087,
+      "point_upload": 0.000267226,
+      "raw_candidate_count": 0
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.001701447,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "count",
+      "point_pack": 0.000261764,
+      "point_upload": 0.000264598,
+      "raw_candidate_count": 0
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.001698587,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "count",
+      "point_pack": 0.00026111,
+      "point_upload": 0.000266033,
+      "raw_candidate_count": 0
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.001711884,
+      "emitted_count": 0,
+      "exact_refine": 0.0,
+      "mode": "count",
+      "point_pack": 0.00026175,
+      "point_upload": 0.000265745,
+      "raw_candidate_count": 0
+    }
+  ],
+  "seconds": [
+    0.002675335854291916,
+    0.002627110108733177,
+    0.0026204846799373627,
+    0.0025979168713092804,
+    0.002602357417345047,
+    0.0025890450924634933,
+    0.0026023872196674347
+  ],
+  "value_consistent": true,
+  "values": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}

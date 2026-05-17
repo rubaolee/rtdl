@@ -1,0 +1,102 @@
+{
+  "matches_expected": true,
+  "median_sec": 0.008475933223962784,
+  "phases": [
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 3.1615e-05,
+      "candidate_write_pass": 0.003096368,
+      "emitted_count": 8686,
+      "exact_refine": 0.009178546,
+      "mode": "count",
+      "point_pack": 0.000295269,
+      "point_upload": 0.000264653,
+      "raw_candidate_count": 8798
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 2.63e-05,
+      "candidate_write_pass": 0.003117292,
+      "emitted_count": 8686,
+      "exact_refine": 0.004582871,
+      "mode": "count",
+      "point_pack": 0.000273578,
+      "point_upload": 0.000263524,
+      "raw_candidate_count": 8798
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 3.0856e-05,
+      "candidate_write_pass": 0.003085082,
+      "emitted_count": 8686,
+      "exact_refine": 0.004459939,
+      "mode": "count",
+      "point_pack": 0.000266534,
+      "point_upload": 0.000251577,
+      "raw_candidate_count": 8798
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 3.9763e-05,
+      "candidate_write_pass": 0.003083712,
+      "emitted_count": 8686,
+      "exact_refine": 0.00439576,
+      "mode": "count",
+      "point_pack": 0.000266229,
+      "point_upload": 0.000250561,
+      "raw_candidate_count": 8798
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 3.0797e-05,
+      "candidate_write_pass": 0.003098273,
+      "emitted_count": 8686,
+      "exact_refine": 0.00438964,
+      "mode": "count",
+      "point_pack": 0.00025952,
+      "point_upload": 0.000250761,
+      "raw_candidate_count": 8798
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 3.0058e-05,
+      "candidate_write_pass": 0.003108671,
+      "emitted_count": 8686,
+      "exact_refine": 0.004361776,
+      "mode": "count",
+      "point_pack": 0.000260036,
+      "point_upload": 0.000263775,
+      "raw_candidate_count": 8798
+    },
+    {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 3.9907e-05,
+      "candidate_write_pass": 0.003070413,
+      "emitted_count": 8686,
+      "exact_refine": 0.004371728,
+      "mode": "count",
+      "point_pack": 0.000259472,
+      "point_upload": 0.000248268,
+      "raw_candidate_count": 8798
+    }
+  ],
+  "seconds": [
+    0.013352379202842712,
+    0.00872688740491867,
+    0.008536586537957191,
+    0.008475933223962784,
+    0.008460544049739838,
+    0.008463414385914803,
+    0.008426791056990623
+  ],
+  "value_consistent": true,
+  "values": [
+    8686,
+    8686,
+    8686,
+    8686,
+    8686,
+    8686,
+    8686
+  ]
+}

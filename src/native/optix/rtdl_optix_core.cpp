@@ -974,11 +974,13 @@ extern "C" __global__ void __raygen__pip_probe() {
     float px = params.points_x[idx];
     float py = params.points_y[idx];
     unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
-    // Vertical ray upward from the point
+    const float query_half_extent = 0.5f;
+    // Bounded vertical probe through the point. Closed-shape membership only
+    // needs shapes whose AABB contains the point, not every shape above it.
     optixTrace(params.traversable,
-               make_float3(px, py, 0.0f),
+               make_float3(px, py - query_half_extent, 0.0f),
                make_float3(0.0f, 1.0f, 0.0f),
-               0.0f, 1.0e30f, 0.0f,
+               0.0f, 2.0f * query_half_extent, 0.0f,
                OptixVisibilityMask(255),
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
