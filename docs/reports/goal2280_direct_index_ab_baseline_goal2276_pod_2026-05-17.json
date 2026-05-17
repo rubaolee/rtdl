@@ -1,0 +1,68 @@
+{
+  "goal": 2280,
+  "generated_at_utc": "2026-05-17T22:21:25Z",
+  "commit": "5c41ade112fb7ebbcdd6ed593eea96eb806db75f",
+  "compared_baseline_goal2276_commit": "5c41ade112fb7ebbcdd6ed593eea96eb806db75f",
+  "compared_baseline_goal2273_commit": "dffabc1317f382dcb19cd3ea30087692a0b69e48",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "prepare_sec": 1.5423845816403627,
+  "raw_row_count": 8921,
+  "scalar_count": 8921,
+  "parity": true,
+  "row_raw_seconds": [
+    0.21604619547724724,
+    0.21772374399006367,
+    0.1992424763739109,
+    0.116845041513443,
+    0.17341791838407516,
+    0.1679151337593794,
+    0.17394218407571316,
+    0.1789155062288046,
+    0.1170734241604805
+  ],
+  "count_seconds": [
+    0.20959376730024815,
+    0.14149940013885498,
+    0.18128902278840542,
+    0.16696185804903507,
+    0.11563822627067566,
+    0.17008032836019993,
+    0.12115405686199665,
+    0.17084032855927944,
+    0.16711091808974743
+  ],
+  "row_raw_median_sec": 0.17394218407571316,
+  "count_median_sec": 0.16711091808974743,
+  "count_to_row_ratio": 0.9607268011364498,
+  "row_to_count_speedup": 1.0408786335689746,
+  "baseline_goal2276": {
+    "row_raw_median_sec": 0.16502647660672665,
+    "count_median_sec": 0.15995669923722744
+  },
+  "baseline_goal2273": {
+    "row_raw_median_sec": 0.18188928626477718,
+    "count_median_sec": 0.1853126920759678
+  },
+  "improvement_vs_goal2276": {
+    "row_raw_speedup": 0.9487432705507153,
+    "count_speedup": 0.957188800502683
+  },
+  "improvement_vs_goal2273": {
+    "row_raw_speedup": 1.0456881821468036,
+    "count_speedup": 1.1089203158853154
+  },
+  "claim_boundary": {
+    "measured_scope": "direct-index exact refinement on RayJoin-exported 100k LSI stream, raw witness rows and exact scalar count",
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  }
+}

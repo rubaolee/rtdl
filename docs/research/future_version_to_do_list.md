@@ -64,6 +64,9 @@ Observation:
   improvement needs to reduce segment-pair candidate/refinement cost itself.
 - Goal2276 showed that prepared-scene host metadata caching helps sparse LSI
   modestly, but it does not remove the candidate/refinement boundary.
+- Goal2280 showed that direct primitive indices in host exact refinement are
+  not enough: same-pod A/B on the RayJoin-exported 100k LSI stream regressed
+  raw witness rows and left scalar count effectively neutral.
 - The remaining gap to RayJoin's paper benchmark is not the predicate itself:
   RTDL still returns host-visible rows through the Python boundary, while the
   RayJoin paper reports a tighter pure GPU query-execution metric.
@@ -76,6 +79,9 @@ Future work:
   compact positives.
 - Include segment-pair predicate/count continuation as a generic stream case,
   not as an LSI or RayJoin-specialized path.
+- Avoid further host metadata micro-optimizations unless a profile shows a new
+  bottleneck; the next likely win is to remove candidate copyback or host exact
+  refinement from the reduction path.
 - Let Python/partner code decide whether to materialize rows, reduce them, or
   keep them GPU-resident for a downstream partner primitive.
 

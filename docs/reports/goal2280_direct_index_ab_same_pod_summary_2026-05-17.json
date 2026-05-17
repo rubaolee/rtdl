@@ -1,0 +1,36 @@
+{
+  "goal": 2280,
+  "schema": "rtdl.goal2280.direct_index_ab_summary.v1",
+  "baseline_artifact": "docs/reports/goal2280_direct_index_ab_baseline_goal2276_pod_2026-05-17.json",
+  "candidate_artifact": "docs/reports/goal2280_direct_index_ab_current_goal2279_pod_2026-05-17.json",
+  "baseline_commit": "5c41ade112fb7ebbcdd6ed593eea96eb806db75f",
+  "candidate_commit": "2a63e71dcb31f7227673d2055b749757aa5e8f9b",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "exact_intersections": 8921,
+  "baseline_medians_sec": {
+    "raw_rows": 0.17394218407571316,
+    "count": 0.16711091808974743
+  },
+  "candidate_medians_sec": {
+    "raw_rows": 0.18419421464204788,
+    "count": 0.16638685390353203
+  },
+  "same_pod_speedups": {
+    "raw_rows": 0.9443411912461099,
+    "count": 1.0043516910695072
+  },
+  "decision": "reject_and_revert_direct_index_refinement",
+  "claim_boundary": {
+    "direct_index_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  }
+}
