@@ -2900,13 +2900,7 @@ struct ShapePairRelationLaunchParams {
     uint32_t  max_edges_per_poly;
 };
 
-static void run_shape_pair_relation_flags_optix(
-        const RtdlPolygonRef* left_polys,  size_t left_count,
-        const double* left_verts_xy,       size_t left_vert_xy_count,
-        const RtdlPolygonRef* right_polys, size_t right_count,
-        const double* right_verts_xy,      size_t right_vert_xy_count,
-        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
-{
+static void ensure_shape_pair_relation_pipeline() {
     std::call_once(g_shape_pair_relation.init, [&]() {
         std::string ptx = compile_to_ptx(kShapePairRelationKernelSrc, "shape_pair_relation_kernel.cu");
         g_shape_pair_relation.pipe = build_pipeline(
@@ -2917,24 +2911,111 @@ static void run_shape_pair_relation_flags_optix(
             "__anyhit__shape_pair_relation_anyhit",
             nullptr, 4).release();
     });
+}
+
+struct PreparedShapePairRelationBuild {
+    std::vector<RtdlPolygonRef> host_right_polygons;
+    std::vector<double> host_right_vertices_xy;
+    std::vector<GpuPolygonRef> right_polygons;
+    std::vector<float> right_vx;
+    std::vector<float> right_vy;
+    size_t right_count = 0;
+    size_t right_vert_xy_count = 0;
+    size_t right_vert_count = 0;
+    DevPtr d_right_polygons;
+    DevPtr d_right_vx;
+    DevPtr d_right_vy;
+    AccelHolder accel;
+#if RTDL_OPTIX_HAS_GEOS
+    std::unique_ptr<GeosPreparedPolygonRefs> right_geos;
+#endif
+
+    PreparedShapePairRelationBuild(
+            const RtdlPolygonRef* polys,
+            size_t poly_count,
+            const double* verts_xy,
+            size_t vert_xy_count)
+        : host_right_polygons(),
+          host_right_vertices_xy(),
+          right_polygons(poly_count),
+          right_vx(vert_xy_count / 2u),
+          right_vy(vert_xy_count / 2u),
+          right_count(poly_count),
+          right_vert_xy_count(vert_xy_count),
+          right_vert_count(vert_xy_count / 2u),
+          d_right_polygons(sizeof(GpuPolygonRef) * poly_count),
+          d_right_vx(sizeof(float) * (vert_xy_count / 2u)),
+          d_right_vy(sizeof(float) * (vert_xy_count / 2u))
+    {
+        if (poly_count > 0) {
+            host_right_polygons.assign(polys, polys + poly_count);
+        }
+        if (vert_xy_count > 0) {
+            host_right_vertices_xy.assign(verts_xy, verts_xy + vert_xy_count);
+        }
+        for (size_t i = 0; i < poly_count; ++i) {
+            right_polygons[i] = {
+                polys[i].id,
+                polys[i].vertex_offset,
+                polys[i].vertex_count,
+            };
+        }
+        for (size_t i = 0; i < right_vert_count; ++i) {
+            right_vx[i] = static_cast<float>(verts_xy[i * 2u]);
+            right_vy[i] = static_cast<float>(verts_xy[i * 2u + 1u]);
+        }
+        upload(d_right_polygons.ptr, right_polygons.data(), right_polygons.size());
+        upload(d_right_vx.ptr, right_vx.data(), right_vx.size());
+        upload(d_right_vy.ptr, right_vy.data(), right_vy.size());
+
+        if (!right_polygons.empty()) {
+            std::vector<OptixAabb> aabbs(poly_count);
+            for (size_t i = 0; i < poly_count; ++i) {
+                aabbs[i] = aabb_for_polygon(
+                    host_right_vertices_xy.data(),
+                    host_right_polygons[i].vertex_offset,
+                    host_right_polygons[i].vertex_count);
+            }
+            accel = build_custom_accel(get_optix_context(), aabbs);
+        }
+#if RTDL_OPTIX_HAS_GEOS
+        if (!host_right_polygons.empty()) {
+            right_geos = std::make_unique<GeosPreparedPolygonRefs>(
+                host_right_polygons.data(),
+                host_right_polygons.size(),
+                host_right_vertices_xy.data());
+        }
+#endif
+    }
+};
+
+static void run_shape_pair_relation_flags_with_prepared_right_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPolygonRef* left_polys,  size_t left_count,
+        const double* left_verts_xy,       size_t left_vert_xy_count,
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared shape-pair relation handle must not be null");
+    }
+    ensure_shape_pair_relation_pipeline();
+    const size_t right_count = prepared->right_count;
+    if (left_count == 0 || right_count == 0) {
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        return;
+    }
 
     size_t lv_count = left_vert_xy_count / 2;
-    size_t rv_count = right_vert_xy_count / 2;
 
-    std::vector<GpuPolygonRef> gpu_lp(left_count), gpu_rp(right_count);
+    std::vector<GpuPolygonRef> gpu_lp(left_count);
     for (size_t i = 0; i < left_count;  ++i)
         gpu_lp[i] = {left_polys[i].id,  left_polys[i].vertex_offset,  left_polys[i].vertex_count};
-    for (size_t i = 0; i < right_count; ++i)
-        gpu_rp[i] = {right_polys[i].id, right_polys[i].vertex_offset, right_polys[i].vertex_count};
 
-    std::vector<float> lvx(lv_count), lvy(lv_count), rvx(rv_count), rvy(rv_count);
+    std::vector<float> lvx(lv_count), lvy(lv_count);
     for (size_t i = 0; i < lv_count; ++i) {
         lvx[i] = static_cast<float>(left_verts_xy[i * 2]);
         lvy[i] = static_cast<float>(left_verts_xy[i * 2 + 1]);
-    }
-    for (size_t i = 0; i < rv_count; ++i) {
-        rvx[i] = static_cast<float>(right_verts_xy[i * 2]);
-        rvy[i] = static_cast<float>(right_verts_xy[i * 2 + 1]);
     }
 
     // Find max edges across all left polygons for launch stride
@@ -2943,23 +3024,11 @@ static void run_shape_pair_relation_flags_optix(
         max_edges = std::max(max_edges, left_polys[i].vertex_count);
 
     DevPtr d_lp  (sizeof(GpuPolygonRef) * left_count);
-    DevPtr d_rp  (sizeof(GpuPolygonRef) * right_count);
     DevPtr d_lvx (sizeof(float) * lv_count);
     DevPtr d_lvy (sizeof(float) * lv_count);
-    DevPtr d_rvx (sizeof(float) * rv_count);
-    DevPtr d_rvy (sizeof(float) * rv_count);
     upload(d_lp.ptr,  gpu_lp.data(), left_count);
-    upload(d_rp.ptr,  gpu_rp.data(), right_count);
     upload(d_lvx.ptr, lvx.data(), lv_count);
     upload(d_lvy.ptr, lvy.data(), lv_count);
-    upload(d_rvx.ptr, rvx.data(), rv_count);
-    upload(d_rvy.ptr, rvy.data(), rv_count);
-
-    // BVH over right polygon bboxes
-    std::vector<OptixAabb> aabbs(right_count);
-    for (size_t i = 0; i < right_count; ++i)
-        aabbs[i] = aabb_for_polygon(right_verts_xy, right_polys[i].vertex_offset, right_polys[i].vertex_count);
-    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
 
     // Pre-allocated output: left_count * right_count, all zeros
     size_t out_count = left_count * right_count;
@@ -2969,13 +3038,13 @@ static void run_shape_pair_relation_flags_optix(
     uint32_t launch_count = static_cast<uint32_t>(left_count) * max_edges;
 
     ShapePairRelationLaunchParams lp;
-    lp.traversable         = accel.handle;
+    lp.traversable         = prepared->accel.handle;
     lp.left_polygons       = reinterpret_cast<const GpuPolygonRef*>(d_lp.ptr);
-    lp.right_polygons      = reinterpret_cast<const GpuPolygonRef*>(d_rp.ptr);
+    lp.right_polygons      = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
     lp.left_vx             = reinterpret_cast<const float*>(d_lvx.ptr);
     lp.left_vy             = reinterpret_cast<const float*>(d_lvy.ptr);
-    lp.right_vx            = reinterpret_cast<const float*>(d_rvx.ptr);
-    lp.right_vy            = reinterpret_cast<const float*>(d_rvy.ptr);
+    lp.right_vx            = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+    lp.right_vy            = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
     lp.output              = reinterpret_cast<GpuShapePairRelationFlags*>(d_output.ptr);
     lp.right_count         = static_cast<uint32_t>(right_count);
     lp.left_count          = static_cast<uint32_t>(left_count);
@@ -3002,7 +3071,6 @@ static void run_shape_pair_relation_flags_optix(
     // shape_pair_relation_comgroup_cpu checks only the first vertex of each polygon.
 #if RTDL_OPTIX_HAS_GEOS
     GeosPreparedPolygonRefs left_geos(left_polys, left_count, left_verts_xy);
-    GeosPreparedPolygonRefs right_geos(right_polys, right_count, right_verts_xy);
 #endif
 
     for (size_t li = 0; li < left_count; ++li) {
@@ -3014,15 +3082,19 @@ static void run_shape_pair_relation_flags_optix(
                 double lxv = left_verts_xy[left_polys[li].vertex_offset * 2];
                 double lyv = left_verts_xy[left_polys[li].vertex_offset * 2 + 1];
 #if RTDL_OPTIX_HAS_GEOS
-                if (right_geos.covers(ri, lxv, lyv))
+                if (prepared->right_geos && prepared->right_geos->covers(ri, lxv, lyv))
 #else
-                if (exact_point_in_polygon(lxv, lyv, right_polys[ri], right_verts_xy))
+                if (exact_point_in_polygon(
+                        lxv, lyv,
+                        prepared->host_right_polygons[ri],
+                        prepared->host_right_vertices_xy.data()))
 #endif
                     found = true;
             }
-            if (!found && right_polys[ri].vertex_count > 0) {
-                double rxv = right_verts_xy[right_polys[ri].vertex_offset * 2];
-                double ryv = right_verts_xy[right_polys[ri].vertex_offset * 2 + 1];
+            if (!found && prepared->host_right_polygons[ri].vertex_count > 0) {
+                const RtdlPolygonRef& right_poly = prepared->host_right_polygons[ri];
+                double rxv = prepared->host_right_vertices_xy[right_poly.vertex_offset * 2];
+                double ryv = prepared->host_right_vertices_xy[right_poly.vertex_offset * 2 + 1];
 #if RTDL_OPTIX_HAS_GEOS
                 if (left_geos.covers(li, rxv, ryv))
 #else
@@ -3040,12 +3112,49 @@ static void run_shape_pair_relation_flags_optix(
     for (size_t i = 0; i < out_count; ++i) {
         size_t li = i / right_count, ri = i % right_count;
         out[i].left_polygon_id  = left_polys[li].id;
-        out[i].right_polygon_id = right_polys[ri].id;
+        out[i].right_polygon_id = prepared->host_right_polygons[ri].id;
         out[i].requires_segment_intersection     = gpu_flags[i].requires_segment_intersection;
         out[i].requires_point_containment     = gpu_flags[i].requires_point_containment;
     }
     *rows_out      = out;
     *row_count_out = out_count;
+}
+
+static void run_shape_pair_relation_flags_optix(
+        const RtdlPolygonRef* left_polys,  size_t left_count,
+        const double* left_verts_xy,       size_t left_vert_xy_count,
+        const RtdlPolygonRef* right_polys, size_t right_count,
+        const double* right_verts_xy,      size_t right_vert_xy_count,
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
+{
+    ensure_shape_pair_relation_pipeline();
+    PreparedShapePairRelationBuild prepared(right_polys, right_count, right_verts_xy, right_vert_xy_count);
+    run_shape_pair_relation_flags_with_prepared_right_optix(
+        &prepared,
+        left_polys, left_count, left_verts_xy, left_vert_xy_count,
+        rows_out, row_count_out);
+}
+
+static PreparedShapePairRelationBuild* prepare_shape_pair_relation_flags_optix(
+        const RtdlPolygonRef* right_polys,
+        size_t right_count,
+        const double* right_verts_xy,
+        size_t right_vert_xy_count)
+{
+    ensure_shape_pair_relation_pipeline();
+    return new PreparedShapePairRelationBuild(right_polys, right_count, right_verts_xy, right_vert_xy_count);
+}
+
+static void run_prepared_shape_pair_relation_flags_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPolygonRef* left_polys, size_t left_count,
+        const double* left_verts_xy, size_t left_vert_xy_count,
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out)
+{
+    run_shape_pair_relation_flags_with_prepared_right_optix(
+        prepared,
+        left_polys, left_count, left_verts_xy, left_vert_xy_count,
+        rows_out, row_count_out);
 }
 
 // ---------- Ray-triangle hit count ------------------------------------------

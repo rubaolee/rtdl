@@ -23,6 +23,7 @@ from rtdsl.datasets import download_rayjoin_sample
 from rtdsl.datasets import load_cdb
 from rtdsl.datasets import write_cdb
 from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
+from rtdsl.optix_runtime import prepare_shape_pair_relation_flags_optix
 
 
 DEFAULT_DATA_DIR = ROOT / "data" / "rayjoin"
@@ -445,6 +446,70 @@ def _run_optix_prepared_lsi_backend(
     }
 
 
+def _run_optix_prepared_overlay_seed_backend(
+    case: CaseSpec,
+    dataset: str,
+    *,
+    warmups: int,
+    repeats: int,
+) -> dict[str, object]:
+    if case.workload != "overlay_seed":
+        raise ValueError("optix_prepared_overlay_seed currently supports only the overlay_seed workload")
+    rayjoin_case = _load_rayjoin_case(case.workload, dataset)
+    left_polygons = rayjoin_case.inputs["left"]
+    right_polygons = rayjoin_case.inputs["right"]
+    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+    reference_rows = tuple(reference["rows"])
+
+    prepare_start = time.perf_counter()
+    prepared = prepare_shape_pair_relation_flags_optix(right_polygons)
+    prepare_elapsed = time.perf_counter() - prepare_start
+    times: list[float] = []
+    rows: list[int] = []
+    parity: list[bool] = []
+    try:
+        for index in range(warmups):
+            start = time.perf_counter()
+            result_rows = prepared.run(left_polygons)
+            elapsed = time.perf_counter() - start
+            print(
+                f"[goal2159] warmup {case.label}/optix_prepared_overlay_seed {index + 1}/{warmups} "
+                f"app={elapsed:.6f}s rows={len(result_rows)} "
+                f"parity={compare_baseline_rows('overlay', reference_rows, result_rows)}",
+                flush=True,
+            )
+        for index in range(repeats):
+            start = time.perf_counter()
+            result_rows = prepared.run(left_polygons)
+            elapsed = time.perf_counter() - start
+            times.append(elapsed)
+            rows.append(len(result_rows))
+            parity.append(compare_baseline_rows("overlay", reference_rows, result_rows))
+            print(
+                f"[goal2159] repeat {case.label}/optix_prepared_overlay_seed {index + 1}/{repeats} "
+                f"app={times[-1]:.6f}s rows={rows[-1]} parity={parity[-1]}",
+                flush=True,
+            )
+    finally:
+        prepared.close()
+    return {
+        "status": "ok",
+        "prepare_elapsed_sec": prepare_elapsed,
+        "app_elapsed_sec_values": times,
+        "app_elapsed_sec_median": _median(times),
+        "row_counts": rows,
+        "row_count_consistent": len(set(rows)) == 1,
+        "all_parity_vs_cpu_python_reference": all(parity),
+        "rt_core_accelerated": True,
+        "partner_accelerated": False,
+        "baseline_kind": "prepared_optix_shape_pair_relation_reused_build_side",
+        "prepared_build_side_reused": True,
+        "left_polygon_count": len(left_polygons),
+        "right_polygon_count": len(right_polygons),
+        "candidate_pair_count": len(left_polygons) * len(right_polygons),
+    }
+
+
 def _run_case(
     case: CaseSpec,
     dataset: str,
@@ -483,6 +548,18 @@ def _run_case(
                 continue
             if backend == "optix_prepared_lsi":
                 backend_payload = _run_optix_prepared_lsi_backend(
+                    case,
+                    dataset,
+                    warmups=warmups,
+                    repeats=repeats,
+                )
+                backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
+                payload["backends"][backend] = backend_payload
+                if hasattr(signal, "SIGALRM"):
+                    signal.alarm(0)
+                continue
+            if backend == "optix_prepared_overlay_seed":
+                backend_payload = _run_optix_prepared_overlay_seed_backend(
                     case,
                     dataset,
                     warmups=warmups,

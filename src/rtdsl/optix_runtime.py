@@ -601,6 +601,92 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
     )
 
 
+@dataclass
+class PreparedOptixShapePairRelation:
+    library: object
+    prepared_handle: ctypes.c_void_p
+    _closed: bool = False
+
+    def run_raw(self, left_polygons) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX shape-pair relation handle is closed")
+        left = left_polygons if isinstance(left_polygons, PackedPolygons) else pack_polygons(records=left_polygons)
+        rows_ptr = ctypes.POINTER(_RtdlOverlayRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_optix_run_prepared_shape_pair_relation_flags(
+            self.prepared_handle,
+            left.refs,
+            left.polygon_count,
+            left.vertices_xy,
+            left.vertex_xy_count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlOverlayRow,
+            field_names=("left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"),
+        )
+
+    def run(self, left_polygons) -> tuple:
+        rows = self.run_raw(left_polygons)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy = _find_optional_backend_symbol(
+                self.library,
+                "rtdl_optix_destroy_prepared_shape_pair_relation_flags",
+            )
+            if destroy is not None:
+                destroy(self.prepared_handle)
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_shape_pair_relation_flags_optix(right_polygons) -> PreparedOptixShapePairRelation:
+    lib = _load_optix_library()
+    prepare_symbol = _require_backend_symbol(lib, "rtdl_optix_prepare_shape_pair_relation_flags")
+    _require_backend_symbol(lib, "rtdl_optix_run_prepared_shape_pair_relation_flags")
+    right = right_polygons if isinstance(right_polygons, PackedPolygons) else pack_polygons(records=right_polygons)
+    prepared = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        right.refs,
+        right.polygon_count,
+        right.vertices_xy,
+        right.vertex_xy_count,
+        ctypes.byref(prepared),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedOptixShapePairRelation(
+        library=lib,
+        prepared_handle=prepared,
+    )
+
+
 def clear_optix_prepared_cache() -> None:
     _prepared_optix_execution_cache.clear()
 
@@ -5264,6 +5350,45 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_optix_run_shape_pair_relation_flags.restype = ctypes.c_int
+    optional_prepare_shape_pair_relation = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_shape_pair_relation_flags",
+    )
+    if optional_prepare_shape_pair_relation is not None:
+        optional_prepare_shape_pair_relation.argtypes = [
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_shape_pair_relation.restype = ctypes.c_int
+    optional_run_prepared_shape_pair_relation = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_shape_pair_relation_flags",
+    )
+    if optional_run_prepared_shape_pair_relation is not None:
+        optional_run_prepared_shape_pair_relation.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPolygonRef),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlOverlayRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_run_prepared_shape_pair_relation.restype = ctypes.c_int
+    optional_destroy_prepared_shape_pair_relation = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_destroy_prepared_shape_pair_relation_flags",
+    )
+    if optional_destroy_prepared_shape_pair_relation is not None:
+        optional_destroy_prepared_shape_pair_relation.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_shape_pair_relation.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_ray_hitcount").argtypes = [
         ctypes.POINTER(_RtdlRay2D),      ctypes.c_size_t,

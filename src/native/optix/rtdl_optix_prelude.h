@@ -311,6 +311,18 @@ int  rtdl_optix_run_shape_pair_relation_flags(
          const double* right_verts_xy,      size_t right_vert_xy_count,
          RtdlShapePairRelationRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_shape_pair_relation_flags(
+         const RtdlPolygonRef* right_polys, size_t right_count,
+         const double* right_verts_xy,      size_t right_vert_xy_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_shape_pair_relation_flags(
+         void* prepared,
+         const RtdlPolygonRef* left_polys, size_t left_count,
+         const double* left_verts_xy,      size_t left_vert_xy_count,
+         RtdlShapePairRelationRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_shape_pair_relation_flags(void* prepared);
 int  rtdl_optix_run_ray_hitcount(
          const RtdlRay2D*    rays,      size_t ray_count,
          const RtdlTriangle* triangles, size_t triangle_count,

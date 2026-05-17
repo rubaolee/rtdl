@@ -209,6 +209,54 @@ extern "C" int rtdl_optix_run_shape_pair_relation_flags(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_shape_pair_relation_flags(
+        const RtdlPolygonRef* right_polys, size_t right_count,
+        const double* right_verts_xy,      size_t right_vert_xy_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!right_polys && right_count != 0)
+            throw std::runtime_error("right polygon pointer must not be null when right_count is nonzero");
+        if (!right_verts_xy && right_vert_xy_count != 0)
+            throw std::runtime_error("right vertices pointer must not be null when right_vert_xy_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_shape_pair_relation_flags_optix(
+            right_polys, right_count, right_verts_xy, right_vert_xy_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_shape_pair_relation_flags(
+        void* prepared,
+        const RtdlPolygonRef* left_polys,  size_t left_count,
+        const double* left_verts_xy,       size_t left_vert_xy_count,
+        RtdlShapePairRelationRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared shape-pair relation handle must not be null");
+        if (!left_polys && left_count != 0)
+            throw std::runtime_error("left polygon pointer must not be null when left_count is nonzero");
+        if (!left_verts_xy && left_vert_xy_count != 0)
+            throw std::runtime_error("left vertices pointer must not be null when left_vert_xy_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        run_prepared_shape_pair_relation_flags_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            left_polys, left_count, left_verts_xy, left_vert_xy_count,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_shape_pair_relation_flags(void* prepared)
+{
+    delete reinterpret_cast<PreparedShapePairRelationBuild*>(prepared);
+}
+
 extern "C" int rtdl_optix_run_ray_hitcount(
         const RtdlRay2D*    rays,      size_t ray_count,
         const RtdlTriangle* triangles, size_t triangle_count,
