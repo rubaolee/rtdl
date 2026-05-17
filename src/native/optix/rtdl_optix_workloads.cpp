@@ -2319,41 +2319,64 @@ static void launch_segment_pair_intersection_optix(
     if (capacity64 > std::numeric_limits<uint32_t>::max()) {
         throw std::runtime_error("segment-pair intersection output capacity exceeds uint32_t");
     }
-    const uint32_t capacity = static_cast<uint32_t>(capacity64);
-    DevPtr d_output(sizeof(GpuSegmentPairIntersectionRecord) * capacity);
+    const uint32_t max_candidate_count = static_cast<uint32_t>(capacity64);
     DevPtr d_count(sizeof(uint32_t));
-    uint32_t zero = 0;
-    upload<uint32_t>(d_count.ptr, &zero, 1);
 
-    SegmentPairIntersectionLaunchParams lp;
-    lp.traversable = traversable;
-    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
-    lp.right_segs = reinterpret_cast<const GpuSegment*>(d_right_ptr);
-    lp.output = reinterpret_cast<GpuSegmentPairIntersectionRecord*>(d_output.ptr);
-    lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
-    lp.output_capacity = capacity;
-    lp.probe_count = static_cast<uint32_t>(left_count);
+    auto launch_candidate_pass = [&](CUdeviceptr output_ptr, uint32_t output_capacity) -> uint32_t {
+        uint32_t zero = 0;
+        upload<uint32_t>(d_count.ptr, &zero, 1);
 
-    DevPtr d_params(sizeof(SegmentPairIntersectionLaunchParams));
-    upload(d_params.ptr, &lp, 1);
+        SegmentPairIntersectionLaunchParams lp;
+        lp.traversable = traversable;
+        lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
+        lp.right_segs = reinterpret_cast<const GpuSegment*>(d_right_ptr);
+        lp.output = output_capacity == 0
+            ? nullptr
+            : reinterpret_cast<GpuSegmentPairIntersectionRecord*>(output_ptr);
+        lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
+        lp.output_capacity = output_capacity;
+        lp.probe_count = static_cast<uint32_t>(left_count);
 
-    CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_segment_pair_intersection.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(SegmentPairIntersectionLaunchParams),
-                             &g_segment_pair_intersection.pipe->sbt,
-                             static_cast<unsigned>(left_count), 1, 1));
-    CU_CHECK(cuStreamSynchronize(stream));
+        DevPtr d_params(sizeof(SegmentPairIntersectionLaunchParams));
+        upload(d_params.ptr, &lp, 1);
 
-    uint32_t gpu_count = 0;
-    download(&gpu_count, d_count.ptr, 1);
-    if (gpu_count > capacity) {
-        throw std::runtime_error("segment-pair intersection output overflowed capacity");
+        CUstream stream = 0;
+        OPTIX_CHECK(optixLaunch(g_segment_pair_intersection.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(SegmentPairIntersectionLaunchParams),
+                                 &g_segment_pair_intersection.pipe->sbt,
+                                 static_cast<unsigned>(left_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+
+        uint32_t emitted = 0;
+        download(&emitted, d_count.ptr, 1);
+        if (emitted > max_candidate_count) {
+            throw std::runtime_error("segment-pair intersection candidate count exceeded pair limit");
+        }
+        if (emitted > output_capacity && output_capacity != 0) {
+            throw std::runtime_error("segment-pair intersection output overflowed capacity");
+        }
+        return emitted;
+    };
+
+    const uint32_t gpu_count = launch_candidate_pass(0, 0);
+    if (gpu_count == 0) {
+        finalize_segment_pair_intersection_rows(
+            left, left_count,
+            right_host, right_count,
+            {},
+            rows_out,
+            row_count_out);
+        return;
+    }
+
+    DevPtr d_output(sizeof(GpuSegmentPairIntersectionRecord) * gpu_count);
+    const uint32_t written_count = launch_candidate_pass(d_output.ptr, gpu_count);
+    if (written_count != gpu_count) {
+        throw std::runtime_error("segment-pair intersection candidate count changed between count and write passes");
     }
 
     std::vector<GpuSegmentPairIntersectionRecord> gpu_rows(gpu_count);
-    if (gpu_count > 0) {
-        download(gpu_rows.data(), d_output.ptr, gpu_count);
-    }
+    download(gpu_rows.data(), d_output.ptr, gpu_count);
     finalize_segment_pair_intersection_rows(
         left, left_count,
         right_host, right_count,
