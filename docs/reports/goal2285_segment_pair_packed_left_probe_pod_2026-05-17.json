@@ -1,0 +1,188 @@
+{
+  "goal": 2285,
+  "generated_at_utc": "2026-05-17T22:34:15Z",
+  "commit": "ae2f56680aa122940dc4fc234be74eed644af563",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "one_time_left_pack_sec": 0.1330629251897335,
+  "prepare_sec": 1.6982133202254772,
+  "raw_row_count": 8921,
+  "scalar_count": 8921,
+  "parity": true,
+  "raw_seconds": [
+    0.010002080351114273,
+    0.009971359744668007,
+    0.00996956042945385,
+    0.010008744895458221,
+    0.011659353971481323,
+    0.009658746421337128,
+    0.009700139984488487
+  ],
+  "count_seconds": [
+    0.009910378605127335,
+    0.010046020150184631,
+    0.009847918525338173,
+    0.009757304564118385,
+    0.009628940373659134,
+    0.009683191776275635,
+    0.009673338383436203
+  ],
+  "raw_median_sec": 0.009971359744668007,
+  "count_median_sec": 0.009757304564118385,
+  "raw_phase_samples": [
+    {
+      "mode": "rows",
+      "left_upload": 0.000147939,
+      "candidate_count_pass": 0.00048884,
+      "candidate_write_pass": 0.000433608,
+      "candidate_download": 8.977200000000001e-05,
+      "exact_refine": 0.00829385,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000141833,
+      "candidate_count_pass": 0.00048412,
+      "candidate_write_pass": 0.000427146,
+      "candidate_download": 8.7875e-05,
+      "exact_refine": 0.008326733,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000142125,
+      "candidate_count_pass": 0.000482756,
+      "candidate_write_pass": 0.00042682800000000003,
+      "candidate_download": 8.338300000000001e-05,
+      "exact_refine": 0.008343474,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000140488,
+      "candidate_count_pass": 0.00048226100000000005,
+      "candidate_write_pass": 0.00042879,
+      "candidate_download": 8.259399999999999e-05,
+      "exact_refine": 0.008427758,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000141319,
+      "candidate_count_pass": 0.000482213,
+      "candidate_write_pass": 0.000430266,
+      "candidate_download": 8.2325e-05,
+      "exact_refine": 0.010064368,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000139333,
+      "candidate_count_pass": 0.00047875300000000006,
+      "candidate_write_pass": 0.00043688500000000003,
+      "candidate_download": 8.3339e-05,
+      "exact_refine": 0.00807503,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000140619,
+      "candidate_count_pass": 0.000491689,
+      "candidate_write_pass": 0.000440469,
+      "candidate_download": 9.1623e-05,
+      "exact_refine": 0.008080413,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "count_phase_samples": [
+    {
+      "mode": "count",
+      "left_upload": 0.000141504,
+      "candidate_count_pass": 0.000493541,
+      "candidate_write_pass": 0.00044266300000000004,
+      "candidate_download": 9.2852e-05,
+      "exact_refine": 0.008272253,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000142019,
+      "candidate_count_pass": 0.000489547,
+      "candidate_write_pass": 0.000427551,
+      "candidate_download": 8.6755e-05,
+      "exact_refine": 0.008423639,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000142547,
+      "candidate_count_pass": 0.000483597,
+      "candidate_write_pass": 0.00042648900000000006,
+      "candidate_download": 8.6605e-05,
+      "exact_refine": 0.0082549,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000141256,
+      "candidate_count_pass": 0.00047963099999999995,
+      "candidate_write_pass": 0.00042634000000000004,
+      "candidate_download": 8.6362e-05,
+      "exact_refine": 0.008187524,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000142581,
+      "candidate_count_pass": 0.00048014900000000003,
+      "candidate_write_pass": 0.00042673799999999997,
+      "candidate_download": 9.046999999999999e-05,
+      "exact_refine": 0.008045201,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.00014009,
+      "candidate_count_pass": 0.000495825,
+      "candidate_write_pass": 0.0004485740000000001,
+      "candidate_download": 9.143699999999999e-05,
+      "exact_refine": 0.00807105,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000139525,
+      "candidate_count_pass": 0.000477881,
+      "candidate_write_pass": 0.00042575200000000005,
+      "candidate_download": 8.911500000000002e-05,
+      "exact_refine": 0.008097073,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "claim_boundary": {
+    "measured_scope": "prepacked left/query segment reuse for generic prepared segment-pair path on RayJoin-exported 100k LSI stream",
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  }
+}

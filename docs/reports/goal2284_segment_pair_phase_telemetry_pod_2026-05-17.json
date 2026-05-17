@@ -1,0 +1,203 @@
+{
+  "goal": 2284,
+  "generated_at_utc": "2026-05-17T22:33:05Z",
+  "commit": "ae2f56680aa122940dc4fc234be74eed644af563",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "prepare_sec": 1.972952900454402,
+  "raw_row_count": 8921,
+  "scalar_count": 8921,
+  "parity": true,
+  "raw_seconds": [
+    0.22860605455935,
+    0.1998528577387333,
+    0.19543909654021263,
+    0.1978669073432684,
+    0.1947766225785017,
+    0.20428302884101868,
+    0.19899938628077507
+  ],
+  "count_seconds": [
+    0.20572146959602833,
+    0.13622443936765194,
+    0.20123584382236004,
+    0.13518517091870308,
+    0.2004938405007124,
+    0.13958857208490372,
+    0.2049938440322876
+  ],
+  "raw_median_sec": 0.19899938628077507,
+  "count_median_sec": 0.2004938405007124,
+  "raw_phase_samples": [
+    {
+      "mode": "rows",
+      "left_upload": 0.000208955,
+      "candidate_count_pass": 0.000955666,
+      "candidate_write_pass": 0.0007017319999999999,
+      "candidate_download": 9.551200000000002e-05,
+      "exact_refine": 0.023674705,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000164736,
+      "candidate_count_pass": 0.000689257,
+      "candidate_write_pass": 0.000599349,
+      "candidate_download": 9.8334e-05,
+      "exact_refine": 0.010744757,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000166156,
+      "candidate_count_pass": 0.0006894889999999999,
+      "candidate_write_pass": 0.0005663189999999999,
+      "candidate_download": 0.0001182,
+      "exact_refine": 0.01076489,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000165279,
+      "candidate_count_pass": 0.000555903,
+      "candidate_write_pass": 0.00048475499999999996,
+      "candidate_download": 9.104600000000002e-05,
+      "exact_refine": 0.010715579,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000178735,
+      "candidate_count_pass": 0.0005713420000000001,
+      "candidate_write_pass": 0.000488558,
+      "candidate_download": 9.400100000000001e-05,
+      "exact_refine": 0.010874855,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000164519,
+      "candidate_count_pass": 0.000572674,
+      "candidate_write_pass": 0.000493747,
+      "candidate_download": 0.000103904,
+      "exact_refine": 0.011129225,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "rows",
+      "left_upload": 0.000185198,
+      "candidate_count_pass": 0.000589742,
+      "candidate_write_pass": 0.000498023,
+      "candidate_download": 9.3213e-05,
+      "exact_refine": 0.011001267,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "count_phase_samples": [
+    {
+      "mode": "count",
+      "left_upload": 0.000222778,
+      "candidate_count_pass": 0.0007263749999999999,
+      "candidate_write_pass": 0.0006507040000000001,
+      "candidate_download": 0.00011063699999999999,
+      "exact_refine": 0.010752156,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000164033,
+      "candidate_count_pass": 0.0006700640000000001,
+      "candidate_write_pass": 0.000602204,
+      "candidate_download": 9.2499e-05,
+      "exact_refine": 0.010564558,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000164748,
+      "candidate_count_pass": 0.000559292,
+      "candidate_write_pass": 0.0004911630000000001,
+      "candidate_download": 9.1623e-05,
+      "exact_refine": 0.010785849,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000162771,
+      "candidate_count_pass": 0.000550354,
+      "candidate_write_pass": 0.0004897850000000001,
+      "candidate_download": 9.3845e-05,
+      "exact_refine": 0.01055403,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000166376,
+      "candidate_count_pass": 0.00055995,
+      "candidate_write_pass": 0.000479275,
+      "candidate_download": 9.1346e-05,
+      "exact_refine": 0.010585568,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000166186,
+      "candidate_count_pass": 0.000557033,
+      "candidate_write_pass": 0.0004866,
+      "candidate_download": 9.374999999999999e-05,
+      "exact_refine": 0.010878243,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    },
+    {
+      "mode": "count",
+      "left_upload": 0.000167521,
+      "candidate_count_pass": 0.0005684389999999999,
+      "candidate_write_pass": 0.00049105,
+      "candidate_download": 9.011e-05,
+      "exact_refine": 0.010765893,
+      "raw_candidate_count": 8926,
+      "emitted_count": 8921
+    }
+  ],
+  "raw_phase_medians_sec": {
+    "left_upload": 0.000166156,
+    "candidate_count_pass": 0.000589742,
+    "candidate_write_pass": 0.000498023,
+    "candidate_download": 9.551200000000002e-05,
+    "exact_refine": 0.010874855
+  },
+  "count_phase_medians_sec": {
+    "left_upload": 0.000166186,
+    "candidate_count_pass": 0.00055995,
+    "candidate_write_pass": 0.00049105,
+    "candidate_download": 9.2499e-05,
+    "exact_refine": 0.010752156
+  },
+  "claim_boundary": {
+    "measured_scope": "phase telemetry for generic prepared segment-pair path on RayJoin-exported 100k LSI stream",
+    "speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  }
+}
