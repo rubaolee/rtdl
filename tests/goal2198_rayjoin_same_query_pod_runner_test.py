@@ -18,6 +18,8 @@ class Goal2198RayJoinSameQueryPodRunnerTest(unittest.TestCase):
         self.assertIn("goal2192_rayjoin_same_query_stream_runner.py", text)
         self.assertIn("--backends cpu,embree,optix", text)
         self.assertIn("--reference-backend cpu", text)
+        self.assertIn("all_parity_vs_reference", text)
+        self.assertIn("reference_backend", text)
         self.assertIn("rayjoin_query_exec_export_patch", text)
         self.assertIn("same_contract_with_rayjoin_query_exec", text)
 

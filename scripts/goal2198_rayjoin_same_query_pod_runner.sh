@@ -412,13 +412,18 @@ for workload in ("lsi", "pip"):
     ):
         if boundary.get(blocked_key):
             raise SystemExit(f"{artifact}: {blocked_key} unexpectedly true")
+    reference_backend = data.get("reference_backend", "cpu_python_reference")
     for backend_name, backend in data["backends"].items():
-        if not backend.get("all_parity_vs_cpu_python_reference"):
+        parity_ok = backend.get("all_parity_vs_reference")
+        if parity_ok is None:
+            parity_ok = backend.get("all_parity_vs_cpu_python_reference")
+        if not parity_ok:
             raise SystemExit(f"{artifact}: {backend_name} parity failed")
     results[workload] = {
         "query_count": data["query_count"],
         "stream": str(out_dir / f"rayjoin_{workload}_gen{data['query_count']}_stream.json"),
         "rtdl_artifact": str(artifact),
+        "reference_backend": reference_backend,
         "backends": data["backends"],
     }
 
