@@ -1,0 +1,110 @@
+{
+  "cases": {
+    "overlay_county128_soil128": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.15251125488430262,
+          "app_elapsed_sec_values": [
+            0.15221794694662094,
+            0.15229439176619053,
+            0.15251125488430262,
+            0.15308026690036058,
+            0.15280578564852476
+          ],
+          "elapsed_outer_sec": 219.53286107536405,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036,
+            14036,
+            14036,
+            14036,
+            14036
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.02216548379510641,
+          "app_elapsed_sec_values": [
+            0.02216548379510641,
+            0.022457540035247803,
+            0.02195501420646906,
+            0.022344624623656273,
+            0.02207253687083721
+          ],
+          "elapsed_outer_sec": 218.11749526578933,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036,
+            14036,
+            14036,
+            14036,
+            14036
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.025159044191241264,
+          "app_elapsed_sec_values": [
+            0.02523342613130808,
+            0.025202286429703236,
+            0.025159044191241264,
+            0.024982008151710033,
+            0.02514762245118618
+          ],
+          "elapsed_outer_sec": 218.7238773368299,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036,
+            14036,
+            14036,
+            14036,
+            14036
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start0_count128.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start0_count128.cdb",
+      "note": "Bounded overlay dependency row slice.",
+      "workload": "overlay_seed"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "7e4f440425b8e19caed147097945504b47aa9b81",
+  "data_dir": "/root/rtdl_rayjoin_pod/data/rayjoin",
+  "goal": "2159",
+  "repeats": 5,
+  "slices": {
+    "county_0_128": {
+      "bytes": 186939,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start0_count128.cdb",
+      "segments": 4981,
+      "source": "br_county",
+      "start": 0
+    },
+    "soil_0_128": {
+      "bytes": 109524,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start0_count128.cdb",
+      "segments": 2885,
+      "source": "br_soil",
+      "start": 0
+    }
+  },
+  "step_timeout_sec": 900,
+  "warmups": 1
+}
