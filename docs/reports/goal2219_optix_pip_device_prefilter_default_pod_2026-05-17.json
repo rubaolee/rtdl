@@ -1,0 +1,73 @@
+{
+  "goal": "2219",
+  "status": "parsed",
+  "pod": "root@69.30.85.202 -p 22064",
+  "rtdl_commit": "4c839305ac3e2284aa34be3a19641af9fa474564",
+  "source_artifact_dir": "/root/goal2218_pip_prefilter_default_pod/artifacts",
+  "workload": "pip",
+  "query_count": 100000,
+  "reference_backend": "cpu",
+  "reference_row_count": 8686,
+  "backends": {
+    "cpu": {
+      "status": "ok",
+      "elapsed_sec_values": [3.1248188987374306, 3.3286132253706455, 2.765293475240469],
+      "elapsed_sec_median": 3.1248188987374306,
+      "row_counts": [8686, 8686, 8686],
+      "row_count_consistent": true,
+      "parity_reference_backend": "cpu",
+      "all_parity_vs_reference": true,
+      "all_parity_vs_cpu_python_reference": null,
+      "rt_core_accelerated": false
+    },
+    "embree": {
+      "status": "ok",
+      "elapsed_sec_values": [0.10598065704107285, 0.10955274850130081, 0.11045529134571552],
+      "elapsed_sec_median": 0.10955274850130081,
+      "row_counts": [8686, 8686, 8686],
+      "row_count_consistent": true,
+      "parity_reference_backend": "cpu",
+      "all_parity_vs_reference": true,
+      "all_parity_vs_cpu_python_reference": null,
+      "rt_core_accelerated": false
+    },
+    "optix": {
+      "status": "ok",
+      "elapsed_sec_values": [0.12895505875349045, 0.12171008065342903, 0.1157612930983305],
+      "elapsed_sec_median": 0.12171008065342903,
+      "row_counts": [8686, 8686, 8686],
+      "row_count_consistent": true,
+      "parity_reference_backend": "cpu",
+      "all_parity_vs_reference": true,
+      "all_parity_vs_cpu_python_reference": null,
+      "rt_core_accelerated": true
+    }
+  },
+  "profile_repeat_medians": {
+    "candidates": 8793,
+    "emitted": 8686,
+    "count_pass_s": 0.032659885,
+    "write_pass_s": 0.032736524,
+    "compact_download_s": 0.000035707,
+    "exact_refine_s": 0.022901244,
+    "total_s": 0.096580738
+  },
+  "previous_baselines": {
+    "goal2209_optix_pip_sec": 4.107544390484691,
+    "goal2213_compact_optix_pip_sec": 0.6183945741504431,
+    "goal2213_candidates": 2797698
+  },
+  "derived": {
+    "optix_speedup_over_goal2209": 33.74859787003942,
+    "optix_speedup_over_goal2213_compact": 5.080881986476844,
+    "candidate_reduction_vs_goal2213": 318.15762538382807,
+    "optix_vs_cpu_ratio": 0.03894948398455098,
+    "optix_vs_embree_ratio": 1.110969832953748
+  },
+  "claim_boundary": {
+    "same_contract_with_rayjoin_query_exec": true,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false
+  }
+}
