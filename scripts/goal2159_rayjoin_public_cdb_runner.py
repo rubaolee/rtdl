@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
+import rtdsl as rt
 from examples.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
+from examples.reference.rtdl_language_reference import county_soil_overlay_reference
 from rtdsl.baseline_contracts import compare_baseline_rows
 from rtdsl.baseline_runner import segments_from_records
 from rtdsl.datasets import CdbDataset
@@ -141,6 +143,16 @@ CASES: dict[str, CaseSpec] = {
             SliceSpec("br_soil", 0, 128, "br_soil_start0_count128.cdb"),
         ),
         note="Bounded overlay dependency row slice.",
+    ),
+    "overlay_county256_soil256": CaseSpec(
+        label="overlay_county256_soil256",
+        workload="overlay_seed",
+        dataset="{county_0_256} + {soil_0_256}",
+        slices=(
+            SliceSpec("br_county", 0, 256, "br_county_start0_count256.cdb"),
+            SliceSpec("br_soil", 0, 256, "br_soil_start0_count256.cdb"),
+        ),
+        note="Larger bounded overlay dependency row slice.",
     ),
 }
 
@@ -518,6 +530,69 @@ def _run_optix_prepared_overlay_seed_backend(
     }
 
 
+def _run_overlay_seed_direct_backend(
+    case: CaseSpec,
+    dataset: str,
+    backend: str,
+    *,
+    warmups: int,
+    repeats: int,
+) -> dict[str, object]:
+    if case.workload != "overlay_seed":
+        raise ValueError("direct overlay backend currently supports only the overlay_seed workload")
+    runners = {
+        "cpu": rt.run_cpu,
+        "embree": rt.run_embree,
+        "optix": rt.run_optix,
+    }
+    if backend not in runners:
+        raise ValueError(f"unsupported direct overlay backend: {backend!r}")
+    left_polygons, right_polygons = _load_overlay_polygons(dataset)
+    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+    reference_rows = tuple(reference["rows"])
+
+    times: list[float] = []
+    rows: list[int] = []
+    parity: list[bool] = []
+    runner = runners[backend]
+    for index in range(warmups):
+        start = time.perf_counter()
+        result_rows = runner(county_soil_overlay_reference, left=left_polygons, right=right_polygons)
+        elapsed = time.perf_counter() - start
+        print(
+            f"[goal2159] warmup {case.label}/{backend} {index + 1}/{warmups} "
+            f"app={elapsed:.6f}s rows={len(result_rows)} "
+            f"parity={compare_baseline_rows('overlay', reference_rows, result_rows)}",
+            flush=True,
+        )
+    for index in range(repeats):
+        start = time.perf_counter()
+        result_rows = runner(county_soil_overlay_reference, left=left_polygons, right=right_polygons)
+        elapsed = time.perf_counter() - start
+        times.append(elapsed)
+        rows.append(len(result_rows))
+        parity.append(compare_baseline_rows("overlay", reference_rows, result_rows))
+        print(
+            f"[goal2159] repeat {case.label}/{backend} {index + 1}/{repeats} "
+            f"app={times[-1]:.6f}s rows={rows[-1]} parity={parity[-1]}",
+            flush=True,
+        )
+    return {
+        "status": "ok",
+        "app_elapsed_sec_values": times,
+        "app_elapsed_sec_median": _median(times),
+        "row_counts": rows,
+        "row_count_consistent": len(set(rows)) == 1,
+        "all_parity_vs_cpu_python_reference": all(parity),
+        "rt_core_accelerated": backend == "optix",
+        "direct_overlay_seed_runner": True,
+        "reference_reused_per_backend": True,
+        "left_polygon_count": len(left_polygons),
+        "right_polygon_count": len(right_polygons),
+        "candidate_pair_count": len(left_polygons) * len(right_polygons),
+    }
+
+
 def _run_case(
     case: CaseSpec,
     dataset: str,
@@ -558,6 +633,19 @@ def _run_case(
                 backend_payload = _run_optix_prepared_lsi_backend(
                     case,
                     dataset,
+                    warmups=warmups,
+                    repeats=repeats,
+                )
+                backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
+                payload["backends"][backend] = backend_payload
+                if hasattr(signal, "SIGALRM"):
+                    signal.alarm(0)
+                continue
+            if case.workload == "overlay_seed" and backend in {"cpu", "embree", "optix"}:
+                backend_payload = _run_overlay_seed_direct_backend(
+                    case,
+                    dataset,
+                    backend,
                     warmups=warmups,
                     repeats=repeats,
                 )

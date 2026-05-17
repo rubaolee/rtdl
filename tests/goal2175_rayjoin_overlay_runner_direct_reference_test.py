@@ -1,0 +1,74 @@
+from __future__ import annotations
+
+import json
+import os
+import pathlib
+import subprocess
+import sys
+import tempfile
+import unittest
+
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "goal2159_rayjoin_public_cdb_runner.py"
+FIXTURES = ROOT / "tests" / "fixtures" / "rayjoin"
+
+
+class Goal2175RayjoinOverlayRunnerDirectReferenceTest(unittest.TestCase):
+    def test_dry_run_exposes_larger_overlay_case_and_prepared_backend(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = pathlib.Path(temp_dir)
+            data_dir = temp / "data"
+            data_dir.mkdir()
+            (data_dir / "br_county.cdb").write_text(
+                (FIXTURES / "br_county_subset.cdb").read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            (data_dir / "br_soil.cdb").write_text(
+                (FIXTURES / "br_soil_subset.cdb").read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            output = temp / "dry_run.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--data-dir",
+                    str(data_dir),
+                    "--output",
+                    str(output),
+                    "--cases",
+                    "overlay_county256_soil256",
+                    "--backends",
+                    "cpu,embree,optix,optix_prepared_overlay_seed",
+                    "--dry-run",
+                ],
+                cwd=ROOT,
+                check=True,
+                env={
+                    **os.environ,
+                    "PYTHONPATH": f"{ROOT / 'src'}{';' if sys.platform == 'win32' else ':'}{ROOT}",
+                },
+            )
+            artifact = json.loads(output.read_text(encoding="utf-8"))
+
+        case = artifact["cases"]["overlay_county256_soil256"]
+        self.assertEqual(case["workload"], "overlay_seed")
+        self.assertIn("optix_prepared_overlay_seed", case["backends"])
+        self.assertIn("county_0_256", artifact["slices"])
+        self.assertIn("soil_0_256", artifact["slices"])
+        self.assertFalse(artifact["claim_boundary"]["full_rayjoin_reproduction"])
+        self.assertFalse(artifact["claim_boundary"]["v2_0_release_authorized"])
+
+    def test_runner_source_reuses_reference_for_direct_overlay_timings(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+
+        self.assertIn("_run_overlay_seed_direct_backend", text)
+        self.assertIn("county_soil_overlay_reference", text)
+        self.assertIn("direct_overlay_seed_runner", text)
+        self.assertIn("reference_reused_per_backend", text)
+        self.assertIn("overlay_county256_soil256", text)
+
+
+if __name__ == "__main__":
+    unittest.main()
