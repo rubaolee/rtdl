@@ -37,9 +37,8 @@ Pod:
 
 - SSH: `root@69.30.85.202 -p 22064`
 - GPU: `NVIDIA RTX A5000, 570.211.01`
-- Base commit: `9d159de6ae551f8f669cf0d44fd77e0b37e2eab9`
-- Candidate source state: `9d159de6` plus the one-line bounded-probe source
-  diff now committed by this goal.
+- Baseline commit: `9d159de6ae551f8f669cf0d44fd77e0b37e2eab9`
+- Candidate commit: `c84f52193b99337ba88c6d09543d286209f2247c`
 - Build:
   `make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX=/usr/local/cuda-12.8`
 - Runtime:
@@ -66,8 +65,8 @@ Same 100,000-query RayJoin-exported PIP stream, same prepared
 
 | Mode | Current baseline median | Bounded probe median | Speedup |
 | --- | ---: | ---: | ---: |
-| Positive rows | 0.051157122 s | 0.018218992 s | 2.808x |
-| Scalar count | 0.037854942 s | 0.007748827 s | 4.885x |
+| Positive rows | 0.051157122 s | 0.023158047 s | 2.209x |
+| Scalar count | 0.037854942 s | 0.009362523 s | 4.043x |
 
 Candidate row/count values were stable across all seven repeats:
 
@@ -79,8 +78,8 @@ The focused count-phase artifact shows why this works:
 
 - Raw candidate count: `8798`
 - Emitted exact count: `8686`
-- Candidate traversal/write phase: about `0.0031 s`
-- Exact refine phase after warmup: about `0.0044 s`
+- Candidate traversal/write phase median: about `0.0031 s`
+- Exact refine phase median after warmup: about `0.0058 s`
 
 Compared with Goal2295's current baseline, candidate traversal/write drops from
 about `0.0375 s` to about `0.0031 s` while preserving exact output.
@@ -111,4 +110,3 @@ Not claimed:
 - No broad whole-app acceleration claim.
 - No true zero-copy claim.
 - No v2.0 release authorization.
-
