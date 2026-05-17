@@ -152,6 +152,10 @@ struct RtdlRayAnyHitRow {
     uint32_t ray_id, any_hit;
 };
 
+struct RtdlRaySegmentGroupCountRow {
+    uint32_t ray_id, group_id, hit_count, parity;
+};
+
 struct RtdlSegmentPolygonHitCountRow {
     uint32_t segment_id, hit_count;
 };
@@ -342,6 +346,12 @@ int  rtdl_optix_run_ray_anyhit_3d(
          const RtdlRay3D*    rays,      size_t ray_count,
          const RtdlTriangle3D* triangles, size_t triangle_count,
          RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_ray_segment_group_count_2d(
+         const RtdlRay2D* rays, size_t ray_count,
+         const RtdlSegment* segments, size_t segment_count,
+         const uint32_t* segment_group_ids,
+         RtdlRaySegmentGroupCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_prepare_ray_anyhit_2d(
          const RtdlTriangle* triangles, size_t triangle_count,

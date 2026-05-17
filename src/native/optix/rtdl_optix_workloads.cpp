@@ -2492,6 +2492,128 @@ static void run_prepared_segment_pair_intersection_optix(
         prepared->host_right_segments.data());
 }
 
+static void run_ray_segment_group_count_2d_optix(
+        const RtdlRay2D* rays, size_t ray_count,
+        const RtdlSegment* segments, size_t segment_count,
+        const uint32_t* segment_group_ids,
+        RtdlRaySegmentGroupCountRow** rows_out, size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (ray_count == 0 || segment_count == 0) {
+        return;
+    }
+    if (!rays) {
+        throw std::runtime_error("rays pointer must not be null when ray_count is nonzero");
+    }
+    if (!segments) {
+        throw std::runtime_error("segments pointer must not be null when segment_count is nonzero");
+    }
+    if (!segment_group_ids) {
+        throw std::runtime_error("segment_group_ids pointer must not be null when segment_count is nonzero");
+    }
+
+    std::vector<RtdlSegment> ray_segments(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        const RtdlRay2D& ray = rays[i];
+        if (!std::isfinite(ray.ox) || !std::isfinite(ray.oy) ||
+            !std::isfinite(ray.dx) || !std::isfinite(ray.dy) ||
+            !std::isfinite(ray.tmax)) {
+            throw std::runtime_error("ray_segment_group_count requires finite ray coordinates and tmax");
+        }
+        if (ray.tmax < 0.0) {
+            throw std::runtime_error("ray_segment_group_count requires non-negative ray tmax");
+        }
+        ray_segments[i] = RtdlSegment{
+            ray.id,
+            ray.ox,
+            ray.oy,
+            ray.ox + ray.dx * ray.tmax,
+            ray.oy + ray.dy * ray.tmax,
+        };
+    }
+
+    std::unordered_map<uint32_t, uint32_t> group_by_segment_id;
+    group_by_segment_id.reserve(segment_count * 2 + 1);
+    for (size_t i = 0; i < segment_count; ++i) {
+        if (!std::isfinite(segments[i].x0) || !std::isfinite(segments[i].y0) ||
+            !std::isfinite(segments[i].x1) || !std::isfinite(segments[i].y1)) {
+            throw std::runtime_error("ray_segment_group_count requires finite segment coordinates");
+        }
+        const auto inserted = group_by_segment_id.emplace(segments[i].id, segment_group_ids[i]);
+        if (!inserted.second) {
+            throw std::runtime_error("ray_segment_group_count requires unique segment ids");
+        }
+    }
+
+    RtdlSegmentPairIntersectionRow* pair_rows = nullptr;
+    size_t pair_count = 0;
+    run_segment_pair_intersection_optix(
+        ray_segments.data(),
+        ray_segments.size(),
+        segments,
+        segment_count,
+        &pair_rows,
+        &pair_count);
+
+    struct PairRowsGuard {
+        RtdlSegmentPairIntersectionRow* rows = nullptr;
+        ~PairRowsGuard() { std::free(rows); }
+    } guard{pair_rows};
+
+    std::unordered_map<uint64_t, uint32_t> counts;
+    counts.reserve(pair_count * 2 + 1);
+    for (size_t i = 0; i < pair_count; ++i) {
+        const uint32_t ray_id = pair_rows[i].left_id;
+        const uint32_t segment_id = pair_rows[i].right_id;
+        const auto group_it = group_by_segment_id.find(segment_id);
+        if (group_it == group_by_segment_id.end()) {
+            continue;
+        }
+        const uint32_t group_id = group_it->second;
+        const uint64_t key =
+            (static_cast<uint64_t>(ray_id) << 32) |
+            static_cast<uint64_t>(group_id);
+        uint32_t& count = counts[key];
+        if (count == std::numeric_limits<uint32_t>::max()) {
+            throw std::runtime_error("ray_segment_group_count hit count overflowed uint32");
+        }
+        ++count;
+    }
+
+    std::vector<RtdlRaySegmentGroupCountRow> rows;
+    rows.reserve(counts.size());
+    for (const auto& item : counts) {
+        const uint32_t ray_id = static_cast<uint32_t>(item.first >> 32);
+        const uint32_t group_id = static_cast<uint32_t>(item.first & 0xffffffffu);
+        const uint32_t hit_count = item.second;
+        rows.push_back(RtdlRaySegmentGroupCountRow{
+            ray_id,
+            group_id,
+            hit_count,
+            hit_count & 1u,
+        });
+    }
+    std::sort(rows.begin(), rows.end(), [](const auto& left, const auto& right) {
+        if (left.ray_id != right.ray_id) return left.ray_id < right.ray_id;
+        return left.group_id < right.group_id;
+    });
+
+    auto* out = static_cast<RtdlRaySegmentGroupCountRow*>(
+        std::malloc(sizeof(RtdlRaySegmentGroupCountRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < rows.size(); ++i) {
+        out[i] = rows[i];
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
 // ---------- PIP --------------------------------------------------------------
 
 struct PipLaunchParams {
