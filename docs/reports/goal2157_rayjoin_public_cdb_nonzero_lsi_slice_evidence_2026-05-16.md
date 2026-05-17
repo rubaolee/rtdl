@@ -4,6 +4,15 @@ Date: 2026-05-16
 
 Status: pod evidence collected; external review pending.
 
+## Goal2159 Follow-Up Correction
+
+Goal2159 turns the one-off Goal2157 commands into a committed reusable runner. Its cleaner reruns show that the `count192` OptiX result has warm-state sensitivity:
+
+- running `count192` alone gives a conservative warm median of CPU `0.016228` sec, Embree `0.030806` sec, OptiX `0.015426` sec
+- running `count128` before `count192` in the same process gives the faster OptiX median around `0.003090` sec
+
+Therefore, the safest public-facing interpretation is the conservative single-case runner result unless a future benchmark protocol explicitly defines a multi-case warmed OptiX state. The original Goal2157 table remains a real artifact, but Goal2159 is the repeatability correction.
+
 ## Purpose
 
 Goal2153 proved that the RayJoin v2 external-CDB adapter can run public sample CDB files, but its first county/soil LSI prefix slice had zero intersections. Goal2157 searches for and measures bounded public RayJoin sample slices with real cross-dataset line-segment intersections.
