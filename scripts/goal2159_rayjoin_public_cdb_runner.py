@@ -113,6 +113,16 @@ CASES: dict[str, CaseSpec] = {
         ),
         note="Larger bounded county/soil LSI stress slice for RT-vs-CUDA-core comparison.",
     ),
+    "lsi_county256_soil256_count512": CaseSpec(
+        label="lsi_county256_soil256_count512",
+        workload="lsi",
+        dataset="{county_256_512} + {soil_256_512}",
+        slices=(
+            SliceSpec("br_county", 256, 512, "br_county_start256_count512.cdb"),
+            SliceSpec("br_soil", 256, 512, "br_soil_start256_count512.cdb"),
+        ),
+        note="Larger bounded county/soil LSI stress slice for count-first prepared OptiX checks.",
+    ),
     "lsi_county64_self_positive_control": CaseSpec(
         label="lsi_county64_self_positive_control",
         workload="lsi",
