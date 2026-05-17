@@ -1,0 +1,126 @@
+{
+  "cases": {
+    "pip_county512": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.01641024276614189,
+          "app_elapsed_sec_values": [
+            0.01641024276614189,
+            0.01621310692280531,
+            0.016105592250823975,
+            0.02598888985812664,
+            0.016515362076461315
+          ],
+          "candidate_pair_count": 246272,
+          "direct_pip_runner": true,
+          "elapsed_outer_sec": 0.2247979138046503,
+          "point_count": 512,
+          "polygon_count": 481,
+          "reference_reused_per_backend": true,
+          "row_count_consistent": true,
+          "row_counts": [
+            1430,
+            1430,
+            1430,
+            1430,
+            1430
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.004545821808278561,
+          "app_elapsed_sec_values": [
+            0.004545821808278561,
+            0.004421033896505833,
+            0.004477139562368393,
+            0.0050291987136006355,
+            0.004558263346552849
+          ],
+          "candidate_pair_count": 246272,
+          "direct_pip_runner": true,
+          "elapsed_outer_sec": 0.13811227213591337,
+          "point_count": 512,
+          "polygon_count": 481,
+          "reference_reused_per_backend": true,
+          "row_count_consistent": true,
+          "row_counts": [
+            1430,
+            1430,
+            1430,
+            1430,
+            1430
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.0047996435314416885,
+          "app_elapsed_sec_values": [
+            0.005133298225700855,
+            0.004820913076400757,
+            0.004785565659403801,
+            0.0047996435314416885,
+            0.004785886965692043
+          ],
+          "candidate_pair_count": 246272,
+          "direct_pip_runner": true,
+          "elapsed_outer_sec": 0.9422690961509943,
+          "point_count": 512,
+          "polygon_count": 481,
+          "reference_reused_per_backend": true,
+          "row_count_consistent": true,
+          "row_counts": [
+            1430,
+            1430,
+            1430,
+            1430,
+            1430
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "data/rayjoin/br_county_start0_count512.cdb",
+      "note": "Point-in-polygon over a bounded county slice.",
+      "shared_reference": {
+        "backend": "cpu_python_reference",
+        "elapsed_sec": 0.11133138742297888,
+        "reused_by_backends": [
+          "cpu",
+          "embree",
+          "optix"
+        ],
+        "row_count": 1430
+      },
+      "workload": "pip"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "173a12bca288a9bbddff4386fb1417c4d388be75",
+  "data_dir": "data/rayjoin",
+  "goal": "2159",
+  "repeats": 5,
+  "slices": {
+    "county_0_512": {
+      "bytes": 924476,
+      "chains": 512,
+      "count": 512,
+      "path": "data/rayjoin/br_county_start0_count512.cdb",
+      "segments": 24880,
+      "source": "br_county",
+      "start": 0
+    }
+  },
+  "step_timeout_sec": 360,
+  "warmups": 1
+}
