@@ -1,0 +1,190 @@
+run_start=2026-05-17T14:49:13+00:00
+--- query workload=lsi mode=grid gen_n=100000 ---
+tail query lsi grid:
+I20260517 14:49:17.588305  3145 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:17.588577  3145 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 14:49:17.588587  3145 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:17.604096  3145 run_query.cu:229] Queue capacity: 85238
+I20260517 14:49:17.604131  3145 lsi.h:22] Queue size: 3 MB
+I20260517 14:49:17.612116  3145 run_query.cu:301] Iter: 0
+I20260517 14:49:17.616760  3145 run_query.cu:301] Iter: 1
+I20260517 14:49:17.621346  3145 run_query.cu:301] Iter: 2
+I20260517 14:49:17.625934  3145 run_query.cu:306] Intersections: 8921 Queue Load Factor: 0.10466
+Timing results:
+ - Read map 0: 3759.95 ms
+
+ - Generate Workloads: 14.7409 ms
+
+ - Create App: 0.328064 ms
+
+ - Load Data: 0.788927 ms
+
+ - Init: 0.576019 ms
+
+ - Build Index: 2.76518 ms
+
+ - Warmup: 4.68087 ms
+
+ - Query: 4.61539 ms
+
+ - Cleanup: 5.09095 ms
+
+--- query workload=lsi mode=lbvh gen_n=100000 ---
+tail query lsi lbvh:
+I20260517 14:49:21.368085  3154 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:21.368351  3154 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 14:49:21.368359  3154 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:21.382692  3154 run_query.cu:229] Queue capacity: 85238
+I20260517 14:49:21.382722  3154 lsi.h:22] Queue size: 3 MB
+I20260517 14:49:21.399507  3154 run_query.cu:301] Iter: 0
+I20260517 14:49:21.401068  3154 run_query.cu:301] Iter: 1
+I20260517 14:49:21.402626  3154 run_query.cu:301] Iter: 2
+I20260517 14:49:21.404258  3154 run_query.cu:306] Intersections: 8921 Queue Load Factor: 0.10466
+Timing results:
+ - Read map 0: 3623.73 ms
+
+ - Generate Workloads: 13.5989 ms
+
+ - Create App: 0.320911 ms
+
+ - Load Data: 0.735998 ms
+
+ - Init: 0.988007 ms
+
+ - Build Index: 14.081 ms
+
+ - Warmup: 1.75095 ms
+
+ - Query: 1.58866 ms
+
+ - Cleanup: 16.675 ms
+
+--- query workload=lsi mode=rt gen_n=100000 ---
+tail query lsi rt:
+I20260517 14:49:24.949043  3163 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:24.949312  3163 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 14:49:24.949321  3163 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:25.123430  3163 run_query.cu:229] Queue capacity: 85238
+I20260517 14:49:25.123471  3163 lsi.h:22] Queue size: 3 MB
+I20260517 14:49:25.124974  3163 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.488 ms
+I20260517 14:49:25.125769  3163 lsi_rt.h:50] queries: 100000
+I20260517 14:49:25.125891  3163 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:25.126591  3163 run_query.cu:301] Iter: 0
+I20260517 14:49:25.126600  3163 lsi_rt.h:50] queries: 100000
+I20260517 14:49:25.126626  3163 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:25.127194  3163 run_query.cu:301] Iter: 1
+I20260517 14:49:25.127202  3163 lsi_rt.h:50] queries: 100000
+I20260517 14:49:25.127224  3163 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:25.127794  3163 run_query.cu:301] Iter: 2
+I20260517 14:49:25.127801  3163 lsi_rt.h:50] queries: 100000
+I20260517 14:49:25.127823  3163 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:25.128424  3163 run_query.cu:306] Intersections: 8921 Queue Load Factor: 0.10466
+Timing results:
+ - Read map 0: 3346.06 ms
+
+ - Generate Workloads: 15.0111 ms
+
+ - Create App: 158.597 ms
+
+ - Load Data: 0.813007 ms
+
+ - Init: 1.05405 ms
+
+ - Adaptive Grouping: 0.534058 ms
+
+ - Build Index: 0.754833 ms
+
+ - Warmup: 0.822067 ms
+
+ - Query: 0.615358 ms
+
+ - Cleanup: 20.9029 ms
+
+--- query workload=pip mode=grid gen_n=100000 ---
+tail query pip grid:
+I20260517 14:49:28.964928  3172 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:28.965212  3172 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 14:49:28.965222  3172 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+Timing results:
+ - Read map 0: 3576.19 ms
+
+ - Generate Workloads: 3.82805 ms
+
+ - Load Data: 1.07598 ms
+
+ - Create App: 0.193119 ms
+
+ - Init: 0.00500679 ms
+
+ - Build Index: 2.62284 ms
+
+ - Warmup: 17.1461 ms
+
+ - Query: 16.7463 ms
+
+ - Cleanup: 2.33722 ms
+
+--- query workload=pip mode=lbvh gen_n=100000 ---
+tail query pip lbvh:
+I20260517 14:49:32.584071  3181 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:32.584337  3181 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 14:49:32.584347  3181 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:32.636147  3181 run_query.cu:32] Checking point in polygon
+I20260517 14:49:32.666087  3181 run_query.cu:97] Map: 0 passed check
+Timing results:
+ - Read map 0: 3432.96 ms
+
+ - Generate Workloads: 3.07798 ms
+
+ - Load Data: 0.808954 ms
+
+ - Create App: 0.106096 ms
+
+ - Init: 0.00500679 ms
+
+ - Build Index: 3.95584 ms
+
+ - Warmup: 10.7472 ms
+
+ - Query: 10.5449 ms
+
+ - Check: 34.2002 ms
+
+ - Cleanup: 1.91498 ms
+
+--- query workload=pip mode=rt gen_n=100000 ---
+tail query pip rt:
+I20260517 14:49:36.295389  3190 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:36.295650  3190 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 14:49:36.295658  3190 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 14:49:36.483865  3190 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.877 ms
+I20260517 14:49:36.488984  3190 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:36.489598  3190 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:36.490175  3190 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:36.490753  3190 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 14:49:36.500892  3190 run_query.cu:32] Checking point in polygon
+I20260517 14:49:36.533023  3190 run_query.cu:97] Map: 0 passed check
+Timing results:
+ - Read map 0: 3524.57 ms
+
+ - Generate Workloads: 3.69811 ms
+
+ - Load Data: 1.03188 ms
+
+ - Create App: 177.69 ms
+
+ - Init: 5.2321 ms
+
+ - Adaptive Grouping: 0.945807 ms
+
+ - Build Index: 4.91118 ms
+
+ - Warmup: 0.737906 ms
+
+ - Query: 0.57737 ms
+
+ - Check: 44.4288 ms
+
+ - Cleanup: 3.04317 ms
+
+run_end=2026-05-17T14:49:36+00:00

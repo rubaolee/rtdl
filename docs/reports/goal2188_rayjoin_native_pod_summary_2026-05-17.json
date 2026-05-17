@@ -1,0 +1,192 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "v2_0_release_authorized": false
+  },
+  "external_rayjoin_patches": [
+    "src/CMakeLists.txt ENABLED_ARCHS set to 86 for RTX A5000",
+    "src/app/output_chain.h local vector hash/equality predicate for current GCC/CUDA unordered_map compatibility",
+    "src/util/markers.h includes nvtx3/nvToolsExt.h for CUDA 12.8 NVTX compatibility"
+  ],
+  "goal": "2188",
+  "pod": {
+    "cuda": "Build cuda_12.8.r12.8/compiler.35583870_0",
+    "gpu": "NVIDIA RTX A5000, 570.211.01, 24564 MiB",
+    "hostname": "7fd5fd40ae4b",
+    "optix_sdk": "/root/vendor/optix-sdk"
+  },
+  "rayjoin_commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+  "rayjoin_overlay_sample": {
+    "grid": {
+      "answer_diff_passed": true,
+      "optix_launch_count": 0,
+      "status": "ok",
+      "timing_ms": {
+        "Build Index": 14.4949,
+        "Computer output polygons": 14.818,
+        "Create App": 0.128984,
+        "Init": 5.934,
+        "Intersection edges": 9.44805,
+        "Load Data": 12.4931,
+        "Map 0: Locate vertices in other map": 3.6099,
+        "Map 1: Locate vertices in other map": 3.05605,
+        "Read map 0": 3790.02,
+        "Read map 1": 2307.29,
+        "Write to file": 715.898
+      }
+    },
+    "lbvh": {
+      "answer_diff_passed": true,
+      "optix_launch_count": 0,
+      "status": "ok",
+      "timing_ms": {
+        "Build Index": 6.248,
+        "Computer output polygons": 17.251,
+        "Create App": 0.638008,
+        "Init": 0.584841,
+        "Intersection edges": 2.62117,
+        "Load Data": 1.26696,
+        "Map 0: Locate vertices in other map": 25.2049,
+        "Map 1: Locate vertices in other map": 15.45,
+        "Read map 0": 3585.88,
+        "Read map 1": 2318.04,
+        "Write to file": 709.239
+      }
+    },
+    "rt": {
+      "answer_diff_passed": true,
+      "optix_launch_count": 5,
+      "status": "ok",
+      "timing_ms": {
+        "Build Index": 1.98698,
+        "Computer output polygons": 8.19516,
+        "Create App": 1.75285,
+        "Init": 763.252,
+        "Intersection edges": 1.266,
+        "Load Data": 3.48306,
+        "Map 0: Locate vertices in other map": 1.23692,
+        "Map 1: Locate vertices in other map": 0.916958,
+        "Read map 0": 3551.9,
+        "Read map 1": 2317.7,
+        "Write to file": 838.643
+      }
+    }
+  },
+  "rayjoin_query_generated_100k": {
+    "lsi": {
+      "grid": {
+        "built_in_check_passed": false,
+        "generated_query_count": 100000,
+        "intersections": 8921,
+        "optix_launch_count": 0,
+        "status": "ok",
+        "timing_ms": {
+          "Build Index": 2.76518,
+          "Cleanup": 5.09095,
+          "Create App": 0.328064,
+          "Generate Workloads": 14.7409,
+          "Init": 0.576019,
+          "Load Data": 0.788927,
+          "Query": 4.61539,
+          "Read map 0": 3759.95,
+          "Warmup": 4.68087
+        }
+      },
+      "lbvh": {
+        "built_in_check_passed": false,
+        "generated_query_count": 100000,
+        "intersections": 8921,
+        "optix_launch_count": 0,
+        "status": "ok",
+        "timing_ms": {
+          "Build Index": 14.081,
+          "Cleanup": 16.675,
+          "Create App": 0.320911,
+          "Generate Workloads": 13.5989,
+          "Init": 0.988007,
+          "Load Data": 0.735998,
+          "Query": 1.58866,
+          "Read map 0": 3623.73,
+          "Warmup": 1.75095
+        }
+      },
+      "rt": {
+        "built_in_check_passed": false,
+        "generated_query_count": 100000,
+        "intersections": 8921,
+        "optix_launch_count": 4,
+        "status": "ok",
+        "timing_ms": {
+          "Adaptive Grouping": 0.534058,
+          "Build Index": 0.754833,
+          "Cleanup": 20.9029,
+          "Create App": 158.597,
+          "Generate Workloads": 15.0111,
+          "Init": 1.05405,
+          "Load Data": 0.813007,
+          "Query": 0.615358,
+          "Read map 0": 3346.06,
+          "Warmup": 0.822067
+        }
+      }
+    },
+    "pip": {
+      "grid": {
+        "built_in_check_passed": false,
+        "generated_query_count": 100000,
+        "optix_launch_count": 0,
+        "status": "ok",
+        "timing_ms": {
+          "Build Index": 2.62284,
+          "Cleanup": 2.33722,
+          "Create App": 0.193119,
+          "Generate Workloads": 3.82805,
+          "Init": 0.00500679,
+          "Load Data": 1.07598,
+          "Query": 16.7463,
+          "Read map 0": 3576.19,
+          "Warmup": 17.1461
+        }
+      },
+      "lbvh": {
+        "built_in_check_passed": true,
+        "generated_query_count": 100000,
+        "optix_launch_count": 0,
+        "status": "ok",
+        "timing_ms": {
+          "Build Index": 3.95584,
+          "Check": 34.2002,
+          "Cleanup": 1.91498,
+          "Create App": 0.106096,
+          "Generate Workloads": 3.07798,
+          "Init": 0.00500679,
+          "Load Data": 0.808954,
+          "Query": 10.5449,
+          "Read map 0": 3432.96,
+          "Warmup": 10.7472
+        }
+      },
+      "rt": {
+        "built_in_check_passed": true,
+        "generated_query_count": 100000,
+        "optix_launch_count": 4,
+        "status": "ok",
+        "timing_ms": {
+          "Adaptive Grouping": 0.945807,
+          "Build Index": 4.91118,
+          "Check": 44.4288,
+          "Cleanup": 3.04317,
+          "Create App": 177.69,
+          "Generate Workloads": 3.69811,
+          "Init": 5.2321,
+          "Load Data": 1.03188,
+          "Query": 0.57737,
+          "Read map 0": 3524.57,
+          "Warmup": 0.737906
+        }
+      }
+    }
+  }
+}

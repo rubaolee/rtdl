@@ -1,0 +1,110 @@
+run_start=2026-05-17T14:47:15+00:00
+gpu=NVIDIA RTX A5000, 570.211.01, 24564 MiB
+--- polyover sample mode=grid ---
+I20260517 14:47:15.410768  2923 run_overlay.cu:148] Reading map 0 from /root/goal2184_pod/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt
+I20260517 14:47:19.200784  2923 run_overlay.cu:152] Reading map 1 from /root/goal2184_pod/RayJoin/test/dataset/br_soil_ascii_odyssey_final.txt
+I20260517 14:47:21.508098  2923 context.h:51] Bounding Box, Bottom-left: (-73.9909, -35.8075), Top-right: (-25.7463, 7.0518)
+I20260517 14:47:21.508165  2923 context.h:58] Scaled Bounding Box, Bottom-left: (-67567699565941, -67231435116770), Top-right: (67567699565940, 67231435116769)
+I20260517 14:47:21.508172  2923 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -35.8075), Top-right: (-25.7463, 7.0518)
+I20260517 14:47:21.524600  2923 lsi.h:22] Queue size: 5 MB
+I20260517 14:47:21.579208  2923 output_chain.h:107] Map 0, Xsect: 20860 19916
+I20260517 14:47:21.598927  2923 output_chain.h:107] Map 1, Xsect: 20860 17266
+I20260517 14:47:21.767575  2923 output_chain.h:202] Total chains: 64459 Total faces: 19399
+Timing results:
+ - Read map 0: 3790.02 ms
+
+ - Read map 1: 2307.29 ms
+
+ - Create App: 0.128984 ms
+
+ - Load Data: 12.4931 ms
+
+ - Init: 5.934 ms
+
+ - Build Index: 14.4949 ms
+
+ - Intersection edges: 9.44805 ms
+
+ - Map 0: Locate vertices in other map: 3.6099 ms
+
+ - Map 1: Locate vertices in other map: 3.05605 ms
+
+ - Computer output polygons: 14.818 ms
+
+ - Write to file: 715.898 ms
+
+--- polyover sample mode=lbvh ---
+I20260517 14:47:22.414814  2934 run_overlay.cu:148] Reading map 0 from /root/goal2184_pod/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt
+I20260517 14:47:26.000690  2934 run_overlay.cu:152] Reading map 1 from /root/goal2184_pod/RayJoin/test/dataset/br_soil_ascii_odyssey_final.txt
+I20260517 14:47:28.318768  2934 context.h:51] Bounding Box, Bottom-left: (-73.9909, -35.8075), Top-right: (-25.7463, 7.0518)
+I20260517 14:47:28.318836  2934 context.h:58] Scaled Bounding Box, Bottom-left: (-67567699565941, -67231435116770), Top-right: (67567699565940, 67231435116769)
+I20260517 14:47:28.318841  2934 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -35.8075), Top-right: (-25.7463, 7.0518)
+I20260517 14:47:28.320863  2934 lsi.h:22] Queue size: 5 MB
+I20260517 14:47:28.391619  2934 output_chain.h:107] Map 0, Xsect: 20860 19916
+I20260517 14:47:28.412086  2934 output_chain.h:107] Map 1, Xsect: 20860 17266
+I20260517 14:47:28.586833  2934 output_chain.h:202] Total chains: 64459 Total faces: 19399
+Timing results:
+ - Read map 0: 3585.88 ms
+
+ - Read map 1: 2318.04 ms
+
+ - Create App: 0.638008 ms
+
+ - Load Data: 1.26696 ms
+
+ - Init: 0.584841 ms
+
+ - Build Index: 6.248 ms
+
+ - Intersection edges: 2.62117 ms
+
+ - Map 0: Locate vertices in other map: 25.2049 ms
+
+ - Map 1: Locate vertices in other map: 15.45 ms
+
+ - Computer output polygons: 17.251 ms
+
+ - Write to file: 709.239 ms
+
+--- polyover sample mode=rt ---
+I20260517 14:47:29.290737  2945 run_overlay.cu:148] Reading map 0 from /root/goal2184_pod/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt
+I20260517 14:47:32.842628  2945 run_overlay.cu:152] Reading map 1 from /root/goal2184_pod/RayJoin/test/dataset/br_soil_ascii_odyssey_final.txt
+I20260517 14:47:35.160365  2945 context.h:51] Bounding Box, Bottom-left: (-73.9909, -35.8075), Top-right: (-25.7463, 7.0518)
+I20260517 14:47:35.160430  2945 context.h:58] Scaled Bounding Box, Bottom-left: (-67567699565941, -67231435116770), Top-right: (67567699565940, 67231435116769)
+I20260517 14:47:35.160435  2945 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -35.8075), Top-right: (-25.7463, 7.0518)
+I20260517 14:47:35.928225  2945 lsi.h:22] Queue size: 5 MB
+I20260517 14:47:35.929247  2945 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.413 ms
+I20260517 14:47:35.930261  2945 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 251011 aabbs: 33401 Compress ratio: 0.866934 Time: 0.262 ms
+I20260517 14:47:35.930805  2945 lsi_rt.h:50] queries: 326193
+I20260517 14:47:35.930884  2945 rt_engine.cu:554] optixLaunch, [w,h,d] = 326193,1,1
+I20260517 14:47:35.932121  2945 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260517 14:47:35.933331  2945 rt_engine.cu:554] optixLaunch, [w,h,d] = 258961,1,1
+I20260517 14:47:35.938505  2945 rt_engine.cu:554] optixLaunch, [w,h,d] = 944,1,1
+I20260517 14:47:35.942127  2945 rt_engine.cu:554] optixLaunch, [w,h,d] = 3594,1,1
+I20260517 14:47:35.946666  2945 output_chain.h:107] Map 0, Xsect: 20860 19916
+I20260517 14:47:35.969206  2945 output_chain.h:107] Map 1, Xsect: 20860 17266
+I20260517 14:47:36.174130  2945 output_chain.h:202] Total chains: 64459 Total faces: 19399
+Timing results:
+ - Read map 0: 3551.9 ms
+
+ - Read map 1: 2317.7 ms
+
+ - Create App: 1.75285 ms
+
+ - Load Data: 3.48306 ms
+
+ - Init: 763.252 ms
+
+ - Build Index: 1.98698 ms
+
+ - Intersection edges: 1.266 ms
+
+ - Map 0: Locate vertices in other map: 1.23692 ms
+
+ - Map 1: Locate vertices in other map: 0.916958 ms
+
+ - Computer output polygons: 8.19516 ms
+
+ - Write to file: 838.643 ms
+
+run_end=2026-05-17T14:47:36+00:00

@@ -1,0 +1,174 @@
+{
+  "cases": {
+    "lsi_county256_soil256_count512": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.03656831942498684,
+          "app_elapsed_sec_values": [
+            0.04560762643814087,
+            0.036376532167196274,
+            0.03656831942498684
+          ],
+          "candidate_pair_count": 136411275,
+          "direct_lsi_runner": true,
+          "elapsed_outer_sec": 0.28287194669246674,
+          "left_segment_count": 19987,
+          "reference_reused_per_backend": true,
+          "right_segment_count": 6825,
+          "row_count_consistent": true,
+          "row_counts": [
+            269,
+            269,
+            269
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "cupy_lsi_bruteforce": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.040760934352874756,
+          "app_elapsed_sec_values": [
+            0.04148172214627266,
+            0.04052688740193844,
+            0.040760934352874756
+          ],
+          "baseline_kind": "cupy_rawkernel_cuda_core_bruteforce_lsi",
+          "candidate_pair_count": 136411275,
+          "elapsed_outer_sec": 1.0434484668076038,
+          "left_segment_count": 19987,
+          "partner_accelerated": true,
+          "right_segment_count": 6825,
+          "row_count_consistent": true,
+          "row_counts": [
+            269,
+            269,
+            269
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.40758383460342884,
+          "app_elapsed_sec_values": [
+            0.382530203089118,
+            0.40758383460342884,
+            0.5788147654384375
+          ],
+          "candidate_pair_count": 136411275,
+          "direct_lsi_runner": true,
+          "elapsed_outer_sec": 1.9667343385517597,
+          "left_segment_count": 19987,
+          "reference_reused_per_backend": true,
+          "right_segment_count": 6825,
+          "row_count_consistent": true,
+          "row_counts": [
+            269,
+            269,
+            269
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.004452476277947426,
+          "app_elapsed_sec_values": [
+            0.004620039835572243,
+            0.004452476277947426,
+            0.004339030012488365
+          ],
+          "candidate_pair_count": 136411275,
+          "direct_lsi_runner": true,
+          "elapsed_outer_sec": 0.9774077162146568,
+          "left_segment_count": 19987,
+          "reference_reused_per_backend": true,
+          "right_segment_count": 6825,
+          "row_count_consistent": true,
+          "row_counts": [
+            269,
+            269,
+            269
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        },
+        "optix_prepared_lsi": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.025803368538618088,
+          "app_elapsed_sec_values": [
+            0.026279065757989883,
+            0.02576533891260624,
+            0.025803368538618088
+          ],
+          "baseline_kind": "prepared_optix_segment_pair_intersection_reused_build_side",
+          "candidate_pair_count": 136411275,
+          "elapsed_outer_sec": 0.254919670522213,
+          "left_segment_count": 19987,
+          "partner_accelerated": false,
+          "prepare_elapsed_sec": 0.008503729477524757,
+          "prepared_build_side_reused": true,
+          "right_segment_count": 6825,
+          "row_count_consistent": true,
+          "row_counts": [
+            269,
+            269,
+            269
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "data/rayjoin/br_county_start256_count512.cdb + data/rayjoin/br_soil_start256_count512.cdb",
+      "note": "Larger bounded county/soil LSI stress slice for count-first prepared OptiX checks.",
+      "shared_reference": {
+        "backend": "cpu_python_reference",
+        "elapsed_sec": 82.00559604540467,
+        "reused_by_backends": [
+          "cpu",
+          "embree",
+          "optix",
+          "optix_prepared_lsi",
+          "cupy_lsi_bruteforce"
+        ],
+        "row_count": 269
+      },
+      "workload": "lsi"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "8af5f62d3062d757ede52ad4309f40ebcc6dcc6c",
+  "data_dir": "data/rayjoin",
+  "goal": "2188",
+  "repeats": 3,
+  "slices": {
+    "county_256_512": {
+      "bytes": 746884,
+      "chains": 512,
+      "count": 512,
+      "path": "data/rayjoin/br_county_start256_count512.cdb",
+      "segments": 19987,
+      "source": "br_county",
+      "start": 256
+    },
+    "soil_256_512": {
+      "bytes": 272430,
+      "chains": 512,
+      "count": 512,
+      "path": "data/rayjoin/br_soil_start256_count512.cdb",
+      "segments": 6825,
+      "source": "br_soil",
+      "start": 256
+    }
+  },
+  "source_runner_goal": "2159",
+  "step_timeout_sec": 420,
+  "warmups": 1
+}
