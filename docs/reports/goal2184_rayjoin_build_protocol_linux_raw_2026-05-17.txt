@@ -1,0 +1,86 @@
+rayjoin_commit=02bf6220d6d20b04af77ee20364eced75cc029c9
+rayjoin_status_start
+ M src/CMakeLists.txt
+ M src/app/output_chain.h
+?? build-debug/
+?? build-release/
+?? debug
+?? diff.txt
+?? release
+?? test/dataset/br_countyXbr_soil_result.txt
+?? test/dataset/br_countyXbr_soil_result_release_grid.txt
+?? test/dataset/br_countyXbr_soil_result_release_lbvh.txt
+?? test/dataset/br_countyXbr_soil_result_release_rt.txt
+rayjoin_status_end
+rayjoin_external_patch_start
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 753b752..db7f6b8 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -6,7 +6,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
+ 
+ set(OPTIX_MODULE_EXTENSION ".ptx")
+ set(OPTIX_PROGRAM_TARGET "--ptx")
+-set(ENABLED_ARCHS "86")
++set(ENABLED_ARCHS 61)
+ 
+ set(SHADERS
+         algo/rt_lsi_custom.cu
+@@ -27,6 +27,8 @@ NVCUDA_COMPILE_MODULE(
+         "--prec-div=true"
+         "-I${OptiX_INCLUDE}"
+         "-I${CMAKE_CURRENT_SOURCE_DIR}"
++        -I${GLOG_INCLUDE_DIRS}
++        -I${GFLAGS_INCLUDE_DIRS}
+ )
+ 
+ message("PROGRAM_MODULES: ${PROGRAM_MODULES}")
+diff --git a/src/app/output_chain.h b/src/app/output_chain.h
+index 8964955..1852859 100644
+--- a/src/app/output_chain.h
++++ b/src/app/output_chain.h
+@@ -14,6 +14,24 @@
+ #include "map/scaling.h"
+ #include "util/type_traits.h"
+ 
++#ifndef GOAL2184_VEC2_HASH_EQUAL_PATCH
++#define GOAL2184_VEC2_HASH_EQUAL_PATCH
++template <typename PointT>
++struct Goal2184Vec2Hash {
++  size_t operator()(const PointT& p) const {
++    return std::hash<decltype(p.x)>{}(p.x) ^
++           (std::hash<decltype(p.y)>{}(p.y) << 1);
++  }
++};
++template <typename PointT>
++struct Goal2184Vec2Equal {
++  bool operator()(const PointT& a, const PointT& b) const {
++    return a.x == b.x && a.y == b.y;
++  }
++};
++#endif
++
++
+ namespace rayjoin {
+ template <typename COORD_T>
+ struct OutputChain {
+@@ -139,7 +157,7 @@ void WriteOutputChain(
+   }
+ 
+   std::map<std::pair<int64_t, int64_t>, size_t> face_ids;
+-  std::unordered_map<typename cuda_vec<coord_t>::type_2d, index_t> point_ids;
++  std::unordered_map<typename cuda_vec<coord_t>::type_2d, index_t, Goal2184Vec2Hash<typename cuda_vec<coord_t>::type_2d>, Goal2184Vec2Equal<typename cuda_vec<coord_t>::type_2d>> point_ids;
+   index_t point_counter = 0;
+ 
+   auto create_polygon = [&](int64_t polygon_id1,
+rayjoin_external_patch_end
+environment_start
+lx1
+NVIDIA GeForce GTX 1070, 580.126.09
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Fri_Jan__6_16:45:21_PST_2023
+Cuda compilation tools, release 12.0, V12.0.140
+Build cuda_12.0.r12.0/compiler.32267302_0
+cmake version 3.28.3
+optix=/home/lestat/vendor/optix-dev
+environment_end

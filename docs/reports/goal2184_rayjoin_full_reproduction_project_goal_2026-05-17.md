@@ -2,7 +2,10 @@
 
 Date: 2026-05-17
 
-Status: proposed serious project goal.
+Status: project goal defined; local source/protocol/sample execution completed
+in `docs/reports/goal2184_rayjoin_phase0_protocol_and_sample_evidence_2026-05-17.md`.
+Full paper-scale reproduction remains blocked pending RTX pod evidence and
+3-AI consensus.
 
 ## Purpose
 

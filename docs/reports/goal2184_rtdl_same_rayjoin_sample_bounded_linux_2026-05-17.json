@@ -1,0 +1,226 @@
+{
+  "cases": {
+    "lsi_county256_soil256_count128": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.010143474908545613,
+          "app_elapsed_sec_values": [
+            0.010143474908545613
+          ],
+          "candidate_pair_count": 12334176,
+          "direct_lsi_runner": true,
+          "elapsed_outer_sec": 0.03532487095799297,
+          "left_segment_count": 6064,
+          "reference_reused_per_backend": true,
+          "right_segment_count": 2034,
+          "row_count_consistent": true,
+          "row_counts": [
+            56
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.030657685012556612,
+          "app_elapsed_sec_values": [
+            0.030657685012556612
+          ],
+          "candidate_pair_count": 12334176,
+          "direct_lsi_runner": true,
+          "elapsed_outer_sec": 0.055917638004757464,
+          "left_segment_count": 6064,
+          "reference_reused_per_backend": true,
+          "right_segment_count": 2034,
+          "row_count_consistent": true,
+          "row_counts": [
+            56
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        }
+      },
+      "dataset": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_county_start256_count128.cdb + /home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_soil_start256_count128.cdb",
+      "note": "Larger nonzero county/soil LSI slice with a mild warm OptiX win.",
+      "shared_reference": {
+        "backend": "cpu_python_reference",
+        "elapsed_sec": 4.225036014104262,
+        "reused_by_backends": [
+          "cpu",
+          "embree"
+        ],
+        "row_count": 56
+      },
+      "workload": "lsi"
+    },
+    "overlay_county128_soil128": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.19681409106124192,
+          "app_elapsed_sec_values": [
+            0.19681409106124192
+          ],
+          "candidate_pair_count": 14036,
+          "direct_overlay_seed_runner": true,
+          "elapsed_outer_sec": 0.25964366097468883,
+          "left_polygon_count": 121,
+          "reference_reused_per_backend": true,
+          "right_polygon_count": 116,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.020783619955182076,
+          "app_elapsed_sec_values": [
+            0.020783619955182076
+          ],
+          "candidate_pair_count": 14036,
+          "direct_overlay_seed_runner": true,
+          "elapsed_outer_sec": 0.09221151610836387,
+          "left_polygon_count": 121,
+          "reference_reused_per_backend": true,
+          "right_polygon_count": 116,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        }
+      },
+      "dataset": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_county_start0_count128.cdb + /home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_soil_start0_count128.cdb",
+      "note": "Bounded overlay dependency row slice.",
+      "shared_reference": {
+        "backend": "cpu_python_reference",
+        "elapsed_sec": 5.682672368944623,
+        "reused_by_backends": [
+          "cpu",
+          "embree"
+        ],
+        "row_count": 14036
+      },
+      "workload": "overlay_seed"
+    },
+    "pip_county512": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 5.502368956920691,
+          "app_elapsed_sec_values": [
+            5.502368956920691
+          ],
+          "candidate_pair_count": 246272,
+          "direct_pip_runner": true,
+          "elapsed_outer_sec": 5.554766790010035,
+          "point_count": 512,
+          "polygon_count": 481,
+          "reference_reused_per_backend": true,
+          "row_count_consistent": true,
+          "row_counts": [
+            1430
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.018952791928313673,
+          "app_elapsed_sec_values": [
+            0.018952791928313673
+          ],
+          "candidate_pair_count": 246272,
+          "direct_pip_runner": true,
+          "elapsed_outer_sec": 0.07212412904482335,
+          "point_count": 512,
+          "polygon_count": 481,
+          "reference_reused_per_backend": true,
+          "row_count_consistent": true,
+          "row_counts": [
+            1430
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        }
+      },
+      "dataset": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_county_start0_count512.cdb",
+      "note": "Point-in-polygon over a bounded county slice.",
+      "shared_reference": {
+        "backend": "cpu_python_reference",
+        "elapsed_sec": 0.08859460602980107,
+        "reused_by_backends": [
+          "cpu",
+          "embree"
+        ],
+        "row_count": 1430
+      },
+      "workload": "pip"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "f54441a4475bbbf96e20ffc28127255c30aeb850",
+  "data_dir": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data",
+  "goal": "2184",
+  "repeats": 1,
+  "slices": {
+    "county_0_128": {
+      "bytes": 186939,
+      "chains": 128,
+      "count": 128,
+      "path": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_county_start0_count128.cdb",
+      "segments": 4981,
+      "source": "br_county",
+      "start": 0
+    },
+    "county_0_512": {
+      "bytes": 924476,
+      "chains": 512,
+      "count": 512,
+      "path": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_county_start0_count512.cdb",
+      "segments": 24880,
+      "source": "br_county",
+      "start": 0
+    },
+    "county_256_128": {
+      "bytes": 223955,
+      "chains": 128,
+      "count": 128,
+      "path": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_county_start256_count128.cdb",
+      "segments": 6064,
+      "source": "br_county",
+      "start": 256
+    },
+    "soil_0_128": {
+      "bytes": 109524,
+      "chains": 128,
+      "count": 128,
+      "path": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_soil_start0_count128.cdb",
+      "segments": 2885,
+      "source": "br_soil",
+      "start": 0
+    },
+    "soil_256_128": {
+      "bytes": 78719,
+      "chains": 128,
+      "count": 128,
+      "path": "/home/lestat/work/rayjoin_goal2184/rtdl_sample_data/br_soil_start256_count128.cdb",
+      "segments": 2034,
+      "source": "br_soil",
+      "start": 256
+    }
+  },
+  "step_timeout_sec": 360,
+  "warmups": 0
+}
