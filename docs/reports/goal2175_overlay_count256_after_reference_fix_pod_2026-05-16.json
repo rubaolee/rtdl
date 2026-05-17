@@ -1,0 +1,154 @@
+{
+  "cases": {
+    "overlay_county256_soil256": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 2.2157856402918696,
+          "app_elapsed_sec_values": [
+            2.177933583036065,
+            2.2157856402918696,
+            2.2390739610418677,
+            2.2501190369948745,
+            2.164689164608717
+          ],
+          "candidate_pair_count": 56876,
+          "direct_overlay_seed_runner": true,
+          "elapsed_outer_sec": 41.970410300418735,
+          "left_polygon_count": 241,
+          "reference_reused_per_backend": true,
+          "right_polygon_count": 236,
+          "row_count_consistent": true,
+          "row_counts": [
+            56876,
+            56876,
+            56876,
+            56876,
+            56876
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.13370752800256014,
+          "app_elapsed_sec_values": [
+            0.13531907182186842,
+            0.13186949398368597,
+            0.13393190503120422,
+            0.1308254487812519,
+            0.13370752800256014
+          ],
+          "candidate_pair_count": 56876,
+          "direct_overlay_seed_runner": true,
+          "elapsed_outer_sec": 29.68952147383243,
+          "left_polygon_count": 241,
+          "reference_reused_per_backend": true,
+          "right_polygon_count": 236,
+          "row_count_consistent": true,
+          "row_counts": [
+            56876,
+            56876,
+            56876,
+            56876,
+            56876
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.07277857232838869,
+          "app_elapsed_sec_values": [
+            0.077833641320467,
+            0.07055804133415222,
+            0.07353066094219685,
+            0.07073613908141851,
+            0.07277857232838869
+          ],
+          "candidate_pair_count": 56876,
+          "direct_overlay_seed_runner": true,
+          "elapsed_outer_sec": 29.965114946477115,
+          "left_polygon_count": 241,
+          "reference_reused_per_backend": true,
+          "right_polygon_count": 236,
+          "row_count_consistent": true,
+          "row_counts": [
+            56876,
+            56876,
+            56876,
+            56876,
+            56876
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        },
+        "optix_prepared_overlay_seed": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.07718004006892443,
+          "app_elapsed_sec_values": [
+            0.07996787875890732,
+            0.0780875338241458,
+            0.07718004006892443,
+            0.07517606019973755,
+            0.07630166970193386
+          ],
+          "baseline_kind": "prepared_optix_shape_pair_relation_reused_build_side",
+          "candidate_pair_count": 56876,
+          "elapsed_outer_sec": 29.221318220719695,
+          "left_polygon_count": 241,
+          "partner_accelerated": false,
+          "prepare_elapsed_sec": 0.012168031185865402,
+          "prepared_build_side_reused": true,
+          "right_polygon_count": 236,
+          "row_count_consistent": true,
+          "row_counts": [
+            56876,
+            56876,
+            56876,
+            56876,
+            56876
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "data/rayjoin/br_county_start0_count256.cdb + data/rayjoin/br_soil_start0_count256.cdb",
+      "note": "Larger bounded overlay dependency row slice.",
+      "workload": "overlay_seed"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "de6caced016b2631ab21cb20ef69e0b6b760fca0",
+  "data_dir": "data/rayjoin",
+  "goal": "2159",
+  "repeats": 5,
+  "slices": {
+    "county_0_256": {
+      "bytes": 468574,
+      "chains": 256,
+      "count": 256,
+      "path": "data/rayjoin/br_county_start0_count256.cdb",
+      "segments": 12585,
+      "source": "br_county",
+      "start": 0
+    },
+    "soil_0_256": {
+      "bytes": 190086,
+      "chains": 256,
+      "count": 256,
+      "path": "data/rayjoin/br_soil_start0_count256.cdb",
+      "segments": 4964,
+      "source": "br_soil",
+      "start": 0
+    }
+  },
+  "step_timeout_sec": 240,
+  "warmups": 1
+}
