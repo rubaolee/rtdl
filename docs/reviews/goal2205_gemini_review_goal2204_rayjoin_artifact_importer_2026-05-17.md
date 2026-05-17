@@ -50,4 +50,3 @@ This review confirms the integrity and intended function of the Goal2204 importe
 - v2.0 release readiness
 
 These stronger claims require separate, external review and consensus reports over the imported artifacts.
-
