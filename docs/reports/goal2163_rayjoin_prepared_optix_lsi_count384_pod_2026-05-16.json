@@ -1,0 +1,100 @@
+{
+  "cases": {
+    "lsi_county256_soil256_count384": {
+      "backends": {
+        "cupy_lsi_bruteforce": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.026799429208040237,
+          "app_elapsed_sec_values": [
+            0.02690846659243107,
+            0.04057235363870859,
+            0.026693718507885933,
+            0.026738543063402176,
+            0.026799429208040237
+          ],
+          "baseline_kind": "cupy_rawkernel_cuda_core_bruteforce_lsi",
+          "candidate_pair_count": 83323218,
+          "elapsed_outer_sec": 31.798711999319494,
+          "left_segment_count": 15763,
+          "partner_accelerated": true,
+          "right_segment_count": 5286,
+          "row_count_consistent": true,
+          "row_counts": [
+            116,
+            116,
+            116,
+            116,
+            116
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix_prepared_lsi": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.022391589358448982,
+          "app_elapsed_sec_values": [
+            0.022206196561455727,
+            0.02257541846483946,
+            0.022324020974338055,
+            0.022391589358448982,
+            0.03302851226180792
+          ],
+          "baseline_kind": "prepared_optix_segment_pair_intersection_reused_build_side",
+          "candidate_pair_count": 83323218,
+          "elapsed_outer_sec": 32.47724730800837,
+          "left_segment_count": 15763,
+          "partner_accelerated": false,
+          "prepare_elapsed_sec": 0.7836560271680355,
+          "prepared_build_side_reused": true,
+          "right_segment_count": 5286,
+          "row_count_consistent": true,
+          "row_counts": [
+            116,
+            116,
+            116,
+            116,
+            116
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count384.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count384.cdb",
+      "note": "Larger bounded county/soil LSI stress slice for RT-vs-CUDA-core comparison.",
+      "workload": "lsi"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "3b1e9d86d024497b7772b807ac309e6c41b65219",
+  "data_dir": "/root/rtdl_rayjoin_pod/data/rayjoin",
+  "goal": "2159",
+  "repeats": 5,
+  "slices": {
+    "county_256_384": {
+      "bytes": 588696,
+      "chains": 384,
+      "count": 384,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start256_count384.cdb",
+      "segments": 15763,
+      "source": "br_county",
+      "start": 256
+    },
+    "soil_256_384": {
+      "bytes": 209295,
+      "chains": 384,
+      "count": 384,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start256_count384.cdb",
+      "segments": 5286,
+      "source": "br_soil",
+      "start": 256
+    }
+  },
+  "step_timeout_sec": 900,
+  "warmups": 1
+}
