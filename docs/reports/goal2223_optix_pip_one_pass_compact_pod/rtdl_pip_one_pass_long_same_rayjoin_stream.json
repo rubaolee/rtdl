@@ -1,0 +1,89 @@
+{
+  "backends": {
+    "embree": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.1097912946715951,
+      "elapsed_sec_values": [
+        0.08596454560756683,
+        0.10694318450987339,
+        0.10928843729197979,
+        0.10835597850382328,
+        0.10970720835030079,
+        0.1098753809928894,
+        0.20294879004359245,
+        0.11124632321298122,
+        0.1120773795992136,
+        0.11513151228427887
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    },
+    "optix": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.09023490361869335,
+      "elapsed_sec_values": [
+        0.09150171838700771,
+        0.08995992504060268,
+        0.09029180370271206,
+        0.08876570127904415,
+        0.09017800353467464,
+        0.09396947920322418,
+        0.09125220216810703,
+        0.08775477670133114,
+        0.08895538188517094,
+        0.09858652018010616
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": true,
+      "status": "ok"
+    }
+  },
+  "base_cdb": "/root/goal2198_rayjoin_same_query_pod_r6/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false
+  },
+  "commit": "7426c257674d32c4fb33567456c21683bf364ca4",
+  "goal": "2192",
+  "query_count": 100000,
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "reference_backend": "cpu",
+  "reference_row_count": 8686,
+  "repeats": 10,
+  "schema": "rtdl.rayjoin.same_query_result.v1",
+  "warmups": 2,
+  "workload": "pip"
+}

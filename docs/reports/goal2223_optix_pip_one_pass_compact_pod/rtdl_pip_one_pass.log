@@ -1,0 +1,18 @@
+[goal2192] warmup pip/cpu 1/1 rows=8686 elapsed=3.289382s
+[goal2192] repeat pip/cpu 1/3 rows=8686 parity=True elapsed=3.055962s
+[goal2192] repeat pip/cpu 2/3 rows=8686 parity=True elapsed=3.220490s
+[goal2192] repeat pip/cpu 3/3 rows=8686 parity=True elapsed=2.759770s
+[goal2192] warmup pip/embree 1/1 rows=8686 elapsed=0.242153s
+[goal2192] repeat pip/embree 1/3 rows=8686 parity=True elapsed=0.092447s
+[goal2192] repeat pip/embree 2/3 rows=8686 parity=True elapsed=0.090172s
+[goal2192] repeat pip/embree 3/3 rows=8686 parity=True elapsed=0.090863s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.003257785 upload_s=0.000667536 accel_build_s=0.001603158 count_pass_s=0.000000000 write_pass_s=0.037392708 compact_download_s=0.000028903 exact_refine_s=0.029883925 total_s=0.073010601
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001149137 upload_s=0.000770435 accel_build_s=0.001488083 count_pass_s=0.000000000 write_pass_s=0.037579005 compact_download_s=0.000042747 exact_refine_s=0.022348757 total_s=0.063511373
+[goal2192] warmup pip/optix 1/1 rows=8686 elapsed=1.155508s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001102906 upload_s=0.000761426 accel_build_s=0.001532178 count_pass_s=0.000000000 write_pass_s=0.035377772 compact_download_s=0.000045222 exact_refine_s=0.022858948 total_s=0.061801051
+[goal2192] repeat pip/optix 1/3 rows=8686 parity=True elapsed=0.086962s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001153578 upload_s=0.000781570 accel_build_s=0.001451373 count_pass_s=0.000000000 write_pass_s=0.032840903 compact_download_s=0.000040836 exact_refine_s=0.023659809 total_s=0.060054367
+[goal2192] repeat pip/optix 2/3 rows=8686 parity=True elapsed=0.083461s
+[rtdl_optix_pip_profile] positive_only=1 one_pass=1 fallback_chunks=0 points=100000 polygons=15700 chunks=1 candidates=8793 emitted=8686 host_pack_s=0.001083410 upload_s=0.007407080 accel_build_s=0.003190822 count_pass_s=0.000000000 write_pass_s=0.032484345 compact_download_s=0.000042845 exact_refine_s=0.025412440 total_s=0.069753938
+[goal2192] repeat pip/optix 3/3 rows=8686 parity=True elapsed=0.093121s
+[goal2192] wrote /root/goal2222_pip_one_pass_pod/artifacts/rtdl_pip_one_pass_same_rayjoin_stream.json

@@ -1,0 +1,7 @@
+[goal2222] start 2026-05-17T17:26:39+00:00
+[goal2222] fetch/reset
+[goal2222] build optix
+[goal2222] run default one-pass same-stream PIP
+[goal2222] done 2026-05-17T17:27:18+00:00
+[goal2222] long repeat start 2026-05-17T17:27:33+00:00
+[goal2222] long repeat done 2026-05-17T17:27:43+00:00
