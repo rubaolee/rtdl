@@ -252,6 +252,26 @@ extern "C" int rtdl_optix_run_prepared_point_closed_shape_membership_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_point_closed_shape_membership_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        size_t* count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+        if (!count_out)
+            throw std::runtime_error("count output pointer must not be null");
+        *count_out = 0;
+        count_prepared_point_closed_shape_membership_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            points, point_count, count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared)
 {
     delete reinterpret_cast<PreparedShapePairRelationBuild*>(prepared);

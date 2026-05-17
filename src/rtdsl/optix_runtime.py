@@ -4072,6 +4072,37 @@ class PreparedOptixPointClosedShapeMembership2D:
         finally:
             view.close()
 
+    def count(self, points) -> int:
+        """Return the count of positive membership rows without Python row materialization."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.count requires 2-D points")
+        if packed_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            return 0
+        count_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_point_closed_shape_membership_2d; rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
     def close(self) -> None:
         if not self._closed:
             destroy_symbol = _find_optional_backend_symbol(
@@ -5773,6 +5804,19 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_run_prepared_closed_shape_membership.restype = ctypes.c_int
+
+    optional_count_prepared_closed_shape_membership = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+    )
+    if optional_count_prepared_closed_shape_membership is not None:
+        optional_count_prepared_closed_shape_membership.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_prepared_closed_shape_membership.restype = ctypes.c_int
 
     optional_destroy_prepared_closed_shape_membership = _find_optional_backend_symbol(
         lib,

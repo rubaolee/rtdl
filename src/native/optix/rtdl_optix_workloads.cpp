@@ -3781,6 +3781,29 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
     *row_count_out = rows.size();
 }
 
+static void count_prepared_point_closed_shape_membership_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t* count_out)
+{
+    if (!count_out) {
+        throw std::runtime_error("count output pointer must not be null");
+    }
+    *count_out = 0;
+    RtdlPointClosedShapeMembershipRow* rows = nullptr;
+    size_t row_count = 0;
+    run_prepared_point_closed_shape_membership_2d_optix(
+        prepared,
+        points,
+        point_count,
+        1u,
+        &rows,
+        &row_count);
+    std::free(rows);
+    *count_out = row_count;
+}
+
 static void run_shape_pair_relation_flags_with_prepared_right_optix(
         PreparedShapePairRelationBuild* prepared,
         const RtdlPolygonRef* left_polys,  size_t left_count,

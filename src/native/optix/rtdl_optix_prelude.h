@@ -336,6 +336,11 @@ int  rtdl_optix_run_prepared_point_closed_shape_membership_2d(
          uint32_t positive_only,
          RtdlPointClosedShapeMembershipRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_point_closed_shape_membership_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         size_t* count_out,
+         char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared);
 int  rtdl_optix_run_shape_pair_relation_flags(
          const RtdlPolygonRef* left_polys,  size_t left_count,
