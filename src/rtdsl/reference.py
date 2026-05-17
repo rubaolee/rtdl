@@ -137,21 +137,29 @@ def overlay_compose_cpu(
     left_segments = _segments_from_polygons(left_polygons)
     right_segments = _segments_from_polygons(right_polygons)
     lsi_hits = lsi_cpu(left_segments, right_segments)
+    lsi_pairs = {(int(hit["left_id"]), int(hit["right_id"])) for hit in lsi_hits}
 
     left_points = tuple(Point(id=polygon.id, x=polygon.vertices[0][0], y=polygon.vertices[0][1]) for polygon in left_polygons)
     right_points = tuple(Point(id=polygon.id, x=polygon.vertices[0][0], y=polygon.vertices[0][1]) for polygon in right_polygons)
     left_in_right = pip_cpu(left_points, right_polygons, boundary_mode="inclusive")
     right_in_left = pip_cpu(right_points, left_polygons, boundary_mode="inclusive")
+    pip_pairs = {
+        (int(hit["point_id"]), int(hit["polygon_id"]))
+        for hit in left_in_right
+        if int(hit["contains"]) == 1
+    }
+    pip_pairs.update(
+        (int(hit["polygon_id"]), int(hit["point_id"]))
+        for hit in right_in_left
+        if int(hit["contains"]) == 1
+    )
 
     results = []
     for left_polygon in left_polygons:
         for right_polygon in right_polygons:
-            requires_lsi = 1 if any(hit["left_id"] == left_polygon.id and hit["right_id"] == right_polygon.id for hit in lsi_hits) else 0
-            requires_pip = 1 if any(
-                (hit["point_id"] == left_polygon.id and hit["polygon_id"] == right_polygon.id and hit["contains"] == 1)
-                or (hit["point_id"] == right_polygon.id and hit["polygon_id"] == left_polygon.id and hit["contains"] == 1)
-                for hit in (*left_in_right, *right_in_left)
-            ) else 0
+            pair = (int(left_polygon.id), int(right_polygon.id))
+            requires_lsi = 1 if pair in lsi_pairs else 0
+            requires_pip = 1 if pair in pip_pairs else 0
             results.append(
                 {
                     "left_polygon_id": left_polygon.id,
