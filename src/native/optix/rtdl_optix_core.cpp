@@ -917,6 +917,7 @@ struct PipParams {
     uint32_t polygon_count;
     uint32_t probe_count;
     uint32_t point_index_offset;
+    uint32_t device_prefilter;
 };
 
 extern "C" {
@@ -927,11 +928,9 @@ static __forceinline__ __device__ bool point_in_polygon(
         float px, float py,
         const GpuPolygonRef& poly)
 {
-    // This helper is used only outside positive_only mode. In positive_only
-    // mode, candidate generation now bypasses this test entirely and reports
-    // all AABB candidates so host exact finalize sees every plausible hit. The
-    // wider epsilon here is still useful for the non-positive-only float32
-    // path, where false negatives are also undesirable.
+    // The wider epsilon is useful for the non-positive-only float32 path and
+    // for the opt-in positive-only device prefilter, where false negatives are
+    // worse than extra host exact-refine candidates.
     const float point_eps = 1.0e-4f;
     uint32_t n = poly.vertex_count;
     uint32_t off = poly.vertex_offset;
@@ -990,10 +989,18 @@ extern "C" __global__ void __intersection__pip_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t pidx = optixGetPayload_0();
     if (params.positive_only != 0u) {
+        if (params.device_prefilter != 0u) {
+            const GpuPolygonRef poly = params.polygons[prim];
+            const float px = params.points_x[pidx];
+            const float py = params.points_y[pidx];
+            if (!point_in_polygon(px, py, poly)) {
+                return;
+            }
+        }
         // In positive-hit mode, OptiX is only a conservative candidate
-        // generator. Final inclusive truth is decided on the host. Reporting
-        // every AABB candidate here avoids float32 false negatives in the GPU
-        // point-in-polygon path.
+        // generator. Final inclusive truth is decided on the host. The default
+        // reports every AABB candidate; the opt-in device prefilter only
+        // removes obvious non-hits before host exact refinement.
         optixSetPayload_1(prim);
         optixReportIntersection(0.5f, 0u);
         return;
