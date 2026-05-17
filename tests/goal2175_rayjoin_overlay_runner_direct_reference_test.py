@@ -64,9 +64,13 @@ class Goal2175RayjoinOverlayRunnerDirectReferenceTest(unittest.TestCase):
         text = SCRIPT.read_text(encoding="utf-8")
 
         self.assertIn("_run_overlay_seed_direct_backend", text)
+        self.assertIn("_run_lsi_direct_backend", text)
         self.assertIn("county_soil_overlay_reference", text)
+        self.assertIn("county_zip_join_reference", text)
         self.assertIn("direct_overlay_seed_runner", text)
+        self.assertIn("direct_lsi_runner", text)
         self.assertIn("reference_reused_per_backend", text)
+        self.assertIn("shared_lsi_reference_rows", text)
         self.assertIn("shared_overlay_reference_rows", text)
         self.assertIn("prepare shared", text)
         self.assertIn("reused_by_backends", text)

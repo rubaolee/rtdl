@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 import rtdsl as rt
 from examples.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
 from examples.reference.rtdl_language_reference import county_soil_overlay_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
 from rtdsl.baseline_contracts import compare_baseline_rows
 from rtdsl.baseline_runner import segments_from_records
 from rtdsl.datasets import CdbDataset
@@ -378,12 +379,14 @@ def _run_cupy_lsi_backend(
     *,
     warmups: int,
     repeats: int,
+    reference_rows: tuple[dict[str, object], ...] | None = None,
 ) -> dict[str, object]:
     if case.workload != "lsi":
         raise ValueError("cupy_lsi_bruteforce currently supports only the LSI workload")
     left_segments, right_segments = _load_lsi_segments(dataset)
-    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
-    reference_rows = tuple(reference["rows"])
+    if reference_rows is None:
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        reference_rows = tuple(reference["rows"])
 
     times: list[float] = []
     rows: list[int] = []
@@ -432,12 +435,14 @@ def _run_optix_prepared_lsi_backend(
     *,
     warmups: int,
     repeats: int,
+    reference_rows: tuple[dict[str, object], ...] | None = None,
 ) -> dict[str, object]:
     if case.workload != "lsi":
         raise ValueError("optix_prepared_lsi currently supports only the LSI workload")
     left_segments, right_segments = _load_lsi_segments(dataset)
-    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
-    reference_rows = tuple(reference["rows"])
+    if reference_rows is None:
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        reference_rows = tuple(reference["rows"])
 
     prepare_start = time.perf_counter()
     prepared = prepare_segment_pair_intersection_optix(right_segments)
@@ -482,6 +487,71 @@ def _run_optix_prepared_lsi_backend(
         "partner_accelerated": False,
         "baseline_kind": "prepared_optix_segment_pair_intersection_reused_build_side",
         "prepared_build_side_reused": True,
+        "left_segment_count": len(left_segments),
+        "right_segment_count": len(right_segments),
+        "candidate_pair_count": len(left_segments) * len(right_segments),
+    }
+
+
+def _run_lsi_direct_backend(
+    case: CaseSpec,
+    dataset: str,
+    backend: str,
+    *,
+    warmups: int,
+    repeats: int,
+    reference_rows: tuple[dict[str, object], ...] | None = None,
+) -> dict[str, object]:
+    if case.workload != "lsi":
+        raise ValueError("direct LSI backend currently supports only the LSI workload")
+    runners = {
+        "cpu": rt.run_cpu,
+        "embree": rt.run_embree,
+        "optix": rt.run_optix,
+    }
+    if backend not in runners:
+        raise ValueError(f"unsupported direct LSI backend: {backend!r}")
+    left_segments, right_segments = _load_lsi_segments(dataset)
+    if reference_rows is None:
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        reference_rows = tuple(reference["rows"])
+
+    times: list[float] = []
+    rows: list[int] = []
+    parity: list[bool] = []
+    runner = runners[backend]
+    for index in range(warmups):
+        start = time.perf_counter()
+        result_rows = runner(county_zip_join_reference, left=left_segments, right=right_segments)
+        elapsed = time.perf_counter() - start
+        print(
+            f"[goal2159] warmup {case.label}/{backend} {index + 1}/{warmups} "
+            f"app={elapsed:.6f}s rows={len(result_rows)} "
+            f"parity={compare_baseline_rows('lsi', reference_rows, result_rows)}",
+            flush=True,
+        )
+    for index in range(repeats):
+        start = time.perf_counter()
+        result_rows = runner(county_zip_join_reference, left=left_segments, right=right_segments)
+        elapsed = time.perf_counter() - start
+        times.append(elapsed)
+        rows.append(len(result_rows))
+        parity.append(compare_baseline_rows("lsi", reference_rows, result_rows))
+        print(
+            f"[goal2159] repeat {case.label}/{backend} {index + 1}/{repeats} "
+            f"app={times[-1]:.6f}s rows={rows[-1]} parity={parity[-1]}",
+            flush=True,
+        )
+    return {
+        "status": "ok",
+        "app_elapsed_sec_values": times,
+        "app_elapsed_sec_median": _median(times),
+        "row_counts": rows,
+        "row_count_consistent": len(set(rows)) == 1,
+        "all_parity_vs_cpu_python_reference": all(parity),
+        "rt_core_accelerated": backend == "optix",
+        "direct_lsi_runner": True,
+        "reference_reused_per_backend": True,
         "left_segment_count": len(left_segments),
         "right_segment_count": len(right_segments),
         "candidate_pair_count": len(left_segments) * len(right_segments),
@@ -632,6 +702,25 @@ def _run_case(
         "note": case.note,
         "backends": {},
     }
+    shared_lsi_reference_rows: tuple[dict[str, object], ...] | None = None
+    lsi_reference_backends = {"cpu", "embree", "optix", "optix_prepared_lsi", "cupy_lsi_bruteforce"}
+    if case.workload == "lsi" and any(backend in lsi_reference_backends for backend in backends):
+        print(f"[goal2159] prepare shared {case.label}/cpu_python_reference rows", flush=True)
+        reference_start = time.perf_counter()
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        shared_lsi_reference_rows = tuple(reference["rows"])
+        reference_elapsed = time.perf_counter() - reference_start
+        payload["shared_reference"] = {
+            "backend": "cpu_python_reference",
+            "elapsed_sec": reference_elapsed,
+            "row_count": len(shared_lsi_reference_rows),
+            "reused_by_backends": tuple(backend for backend in backends if backend in lsi_reference_backends),
+        }
+        print(
+            f"[goal2159] shared {case.label}/cpu_python_reference "
+            f"rows={len(shared_lsi_reference_rows)} elapsed={reference_elapsed:.6f}s",
+            flush=True,
+        )
     shared_overlay_reference_rows: tuple[dict[str, object], ...] | None = None
     overlay_reference_backends = {"cpu", "embree", "optix", "optix_prepared_overlay_seed"}
     if case.workload == "overlay_seed" and any(backend in overlay_reference_backends for backend in backends):
@@ -666,6 +755,7 @@ def _run_case(
                     dataset,
                     warmups=warmups,
                     repeats=repeats,
+                    reference_rows=shared_lsi_reference_rows,
                 )
                 backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
                 payload["backends"][backend] = backend_payload
@@ -678,6 +768,21 @@ def _run_case(
                     dataset,
                     warmups=warmups,
                     repeats=repeats,
+                    reference_rows=shared_lsi_reference_rows,
+                )
+                backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
+                payload["backends"][backend] = backend_payload
+                if hasattr(signal, "SIGALRM"):
+                    signal.alarm(0)
+                continue
+            if case.workload == "lsi" and backend in {"cpu", "embree", "optix"}:
+                backend_payload = _run_lsi_direct_backend(
+                    case,
+                    dataset,
+                    backend,
+                    warmups=warmups,
+                    repeats=repeats,
+                    reference_rows=shared_lsi_reference_rows,
                 )
                 backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
                 payload["backends"][backend] = backend_payload
