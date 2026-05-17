@@ -2531,6 +2531,14 @@ static void run_pip_optix(
             nullptr, 4).release();
     });
 
+    const bool profile_pip = std::getenv("RTDL_OPTIX_PIP_PROFILE") != nullptr;
+    const auto t_total_start = std::chrono::steady_clock::now();
+    auto seconds_between = [](std::chrono::steady_clock::time_point start,
+                              std::chrono::steady_clock::time_point end) -> double {
+        return std::chrono::duration<double>(end - start).count();
+    };
+
+    const auto t_pack_start = std::chrono::steady_clock::now();
     size_t vert_count = vertex_xy_count / 2;
 
     // Build GPU polygon refs and vertex arrays
@@ -2551,7 +2559,9 @@ static void run_pip_optix(
         pts_y[i] = static_cast<float>(points[i].y);
         pt_ids[i] = points[i].id;
     }
+    const auto t_pack_end = std::chrono::steady_clock::now();
 
+    const auto t_upload_start = std::chrono::steady_clock::now();
     DevPtr d_polys  (sizeof(GpuPolygonRef) * poly_count);
     DevPtr d_vx     (sizeof(float) * vert_count);
     DevPtr d_vy     (sizeof(float) * vert_count);
@@ -2564,12 +2574,15 @@ static void run_pip_optix(
     upload(d_pts_x.ptr,   pts_x.data(),     point_count);
     upload(d_pts_y.ptr,   pts_y.data(),     point_count);
     upload(d_pt_ids.ptr,  pt_ids.data(),    point_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
 
     // BVH over polygons
+    const auto t_accel_start = std::chrono::steady_clock::now();
     std::vector<OptixAabb> aabbs(poly_count);
     for (size_t i = 0; i < poly_count; ++i)
         aabbs[i] = aabb_for_polygon(vertices_xy, polys[i].vertex_offset, polys[i].vertex_count);
     AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+    const auto t_accel_end = std::chrono::steady_clock::now();
 
     size_t out_count = point_count * poly_count;
     DevPtr d_count(sizeof(uint32_t));
@@ -2608,12 +2621,21 @@ static void run_pip_optix(
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
+    double pip_count_pass_s = 0.0;
+    double pip_write_pass_s = 0.0;
+    double pip_download_s = 0.0;
+    double pip_refine_s = 0.0;
+    size_t pip_candidate_count = 0;
+    size_t pip_chunks = 0;
     if (positive_only == 0u) {
+        const auto t_launch_start = std::chrono::steady_clock::now();
         OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
                                  d_params.ptr, sizeof(PipLaunchParams),
                                  &g_pip.pipe->sbt,
                                  static_cast<unsigned>(point_count), 1, 1));
         CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        pip_write_pass_s += seconds_between(t_launch_start, t_launch_end);
     }
 
     if (positive_only != 0u) {
@@ -2655,11 +2677,18 @@ static void run_pip_optix(
             lp.probe_count = static_cast<uint32_t>(chunk_point_count);
             lp.point_index_offset = static_cast<uint32_t>(point_offset);
             upload(d_params.ptr, &lp, 1);
+            const auto t_launch_start = std::chrono::steady_clock::now();
             OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
                                      d_params.ptr, sizeof(PipLaunchParams),
                                      &g_pip.pipe->sbt,
                                      static_cast<unsigned>(chunk_point_count), 1, 1));
             CU_CHECK(cuStreamSynchronize(stream));
+            const auto t_launch_end = std::chrono::steady_clock::now();
+            if (output_capacity == 0u) {
+                pip_count_pass_s += seconds_between(t_launch_start, t_launch_end);
+            } else {
+                pip_write_pass_s += seconds_between(t_launch_start, t_launch_end);
+            }
             uint32_t emitted = 0;
             download(&emitted, d_count.ptr, 1);
             if (emitted > output_capacity && output_capacity != 0u) {
@@ -2670,7 +2699,9 @@ static void run_pip_optix(
 
         for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
             const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+            ++pip_chunks;
             const uint32_t gpu_count = launch_positive_candidate_pass(point_offset, chunk_point_count, 0, 0);
+            pip_candidate_count += static_cast<size_t>(gpu_count);
             if (gpu_count == 0u) {
                 continue;
             }
@@ -2682,9 +2713,13 @@ static void run_pip_optix(
             }
             const size_t old_size = gpu_rows.size();
             gpu_rows.resize(old_size + gpu_count);
+            const auto t_download_start = std::chrono::steady_clock::now();
             download(gpu_rows.data() + old_size, d_positive_output.ptr, gpu_count);
+            const auto t_download_end = std::chrono::steady_clock::now();
+            pip_download_s += seconds_between(t_download_start, t_download_end);
         }
 
+        const auto t_refine_start = std::chrono::steady_clock::now();
         std::vector<RtdlPipRow> rows;
         rows.reserve(gpu_rows.size());
 #if RTDL_OPTIX_HAS_GEOS
@@ -2709,6 +2744,8 @@ static void run_pip_optix(
 #endif
             rows.push_back({point.id, polygon.id, 1u});
         }
+        const auto t_refine_end = std::chrono::steady_clock::now();
+        pip_refine_s = seconds_between(t_refine_start, t_refine_end);
         auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * rows.size()));
         if (!out && !rows.empty()) throw std::bad_alloc();
         for (size_t i = 0; i < rows.size(); ++i) {
@@ -2716,6 +2753,25 @@ static void run_pip_optix(
         }
         *rows_out = out;
         *row_count_out = rows.size();
+        if (profile_pip) {
+            const auto t_total_end = std::chrono::steady_clock::now();
+            std::fprintf(stderr,
+                "[rtdl_optix_pip_profile] positive_only=%u points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
+                positive_only,
+                point_count,
+                poly_count,
+                pip_chunks,
+                pip_candidate_count,
+                rows.size(),
+                seconds_between(t_pack_start, t_pack_end),
+                seconds_between(t_upload_start, t_upload_end),
+                seconds_between(t_accel_start, t_accel_end),
+                pip_count_pass_s,
+                pip_write_pass_s,
+                pip_download_s,
+                pip_refine_s,
+                seconds_between(t_total_start, t_total_end));
+        }
         return;
     }
 
@@ -2769,6 +2825,25 @@ static void run_pip_optix(
 #endif
     *rows_out      = out;
     *row_count_out = out_count;
+    if (profile_pip) {
+        const auto t_total_end = std::chrono::steady_clock::now();
+        std::fprintf(stderr,
+            "[rtdl_optix_pip_profile] positive_only=%u points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
+            positive_only,
+            point_count,
+            poly_count,
+            pip_chunks,
+            out_count,
+            out_count,
+            seconds_between(t_pack_start, t_pack_end),
+            seconds_between(t_upload_start, t_upload_end),
+            seconds_between(t_accel_start, t_accel_end),
+            pip_count_pass_s,
+            pip_write_pass_s,
+            pip_download_s,
+            pip_refine_s,
+            seconds_between(t_total_start, t_total_end));
+    }
 }
 
 static void validate_polygon_ref_span_for_collection(
