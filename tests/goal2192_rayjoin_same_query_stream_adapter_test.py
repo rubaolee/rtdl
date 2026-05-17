@@ -125,6 +125,37 @@ class Goal2192RayjoinSameQueryStreamAdapterTest(unittest.TestCase):
         self.assertTrue(result["backends"]["cpu"]["all_parity_vs_reference"])
         self.assertIsNone(result["backends"]["cpu"]["all_parity_vs_cpu_python_reference"])
 
+    def test_pip_optix_backend_uses_generic_closed_shape_membership_path(self) -> None:
+        runner = _load_runner()
+        calls: list[dict[str, object]] = []
+        original = runner.rt.closed_shape_membership_2d_optix
+
+        def fake_closed_shape_membership_2d_optix(*, points, shapes, result_mode):
+            calls.append({"points": points, "shapes": shapes, "result_mode": result_mode})
+            return (
+                {"point_id": 7, "shape_id": 11, "membership": 1},
+                {"point_id": 8, "shape_id": 12, "membership": 1},
+            )
+
+        try:
+            runner.rt.closed_shape_membership_2d_optix = fake_closed_shape_membership_2d_optix
+            rows = runner._run_backend(
+                "pip",
+                "optix",
+                {"points": ("p",), "polygons": ("shape",)},
+            )
+        finally:
+            runner.rt.closed_shape_membership_2d_optix = original
+
+        self.assertEqual(calls, [{"points": ("p",), "shapes": ("shape",), "result_mode": "positive_hits"}])
+        self.assertEqual(
+            rows,
+            (
+                {"point_id": 7, "polygon_id": 11, "contains": 1},
+                {"point_id": 8, "polygon_id": 12, "contains": 1},
+            ),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

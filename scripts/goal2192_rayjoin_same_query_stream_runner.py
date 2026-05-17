@@ -168,8 +168,26 @@ def _run_backend(workload: str, backend: str, inputs: dict[str, object]) -> tupl
     if backend == "embree":
         return rt.run_embree(kernel, **inputs)
     if backend == "optix":
+        if workload == "pip":
+            return _run_pip_optix_closed_shape(inputs)
         return rt.run_optix(kernel, **inputs)
     raise ValueError("backend must be cpu_python_reference, cpu, embree, or optix")
+
+
+def _run_pip_optix_closed_shape(inputs: dict[str, object]) -> tuple[dict[str, object], ...]:
+    rows = rt.closed_shape_membership_2d_optix(
+        points=inputs["points"],
+        shapes=inputs["polygons"],
+        result_mode="positive_hits",
+    )
+    return tuple(
+        {
+            "point_id": int(row["point_id"]),
+            "polygon_id": int(row["shape_id"]),
+            "contains": int(row["membership"]),
+        }
+        for row in rows
+    )
 
 
 def _inputs_from_stream(stream: dict[str, object]) -> dict[str, object]:
@@ -271,6 +289,10 @@ def run_stream(
             if reference_backend == "cpu_python_reference"
             else None,
             "rt_core_accelerated": backend == "optix",
+            "implementation_path": "closed_shape_membership_2d_optix"
+            if workload == "pip" and backend == "optix"
+            else "compiled_rtdl_kernel",
+            "uses_generic_closed_shape_membership": workload == "pip" and backend == "optix",
         }
     return payload
 
