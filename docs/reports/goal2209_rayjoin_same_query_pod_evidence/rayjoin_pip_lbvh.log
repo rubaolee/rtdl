@@ -1,0 +1,26 @@
+I20260517 16:47:09.989835 16467 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 16:47:09.990123 16467 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 16:47:09.990132 16467 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 16:47:10.072902 16467 run_query.cu:123] Checking point in polygon
+I20260517 16:47:10.104557 16467 run_query.cu:188] Map: 0 passed check
+Timing results:
+ - Read map 0: 3628.12 ms
+
+ - Generate Workloads: 6.69694 ms
+
+ - Load Data: 5.70202 ms
+
+ - Create App: 0.110865 ms
+
+ - Init: 0.00500679 ms
+
+ - Build Index: 21.0481 ms
+
+ - Warmup: 10.4339 ms
+
+ - Query: 10.2307 ms
+
+ - Check: 42.948 ms
+
+ - Cleanup: 2.17104 ms
+

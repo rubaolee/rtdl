@@ -1,0 +1,33 @@
+I20260517 16:47:13.689210 16479 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 16:47:13.689476 16479 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 16:47:13.689483 16479 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 16:47:13.935856 16479 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.485 ms
+I20260517 16:47:13.936826 16479 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 16:47:13.937422 16479 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 16:47:13.937994 16479 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 16:47:13.938573 16479 rt_engine.cu:554] optixLaunch, [w,h,d] = 100000,1,1
+I20260517 16:47:13.941006 16479 run_query.cu:123] Checking point in polygon
+I20260517 16:47:13.970127 16479 run_query.cu:188] Map: 0 passed check
+Timing results:
+ - Read map 0: 3471.04 ms
+
+ - Generate Workloads: 103.553 ms
+
+ - Load Data: 0.833035 ms
+
+ - Create App: 141.501 ms
+
+ - Init: 0.302076 ms
+
+ - Adaptive Grouping: 0.550985 ms
+
+ - Build Index: 0.818968 ms
+
+ - Warmup: 0.665903 ms
+
+ - Query: 0.575066 ms
+
+ - Check: 33.5839 ms
+
+ - Cleanup: 2.97594 ms
+

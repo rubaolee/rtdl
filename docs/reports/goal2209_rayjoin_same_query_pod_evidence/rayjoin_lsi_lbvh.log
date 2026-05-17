@@ -1,0 +1,28 @@
+I20260517 16:46:58.324965 16431 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 16:46:58.325256 16431 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 16:46:58.325266 16431 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 16:46:58.340456 16431 run_query.cu:325] Queue capacity: 85238
+I20260517 16:46:58.340495 16431 lsi.h:22] Queue size: 3 MB
+I20260517 16:46:58.347333 16431 run_query.cu:397] Iter: 0
+I20260517 16:46:58.348845 16431 run_query.cu:397] Iter: 1
+I20260517 16:46:58.350320 16431 run_query.cu:397] Iter: 2
+I20260517 16:46:58.351893 16431 run_query.cu:402] Intersections: 8921 Queue Load Factor: 0.10466
+Timing results:
+ - Read map 0: 3685.76 ms
+
+ - Generate Workloads: 14.4498 ms
+
+ - Create App: 0.347137 ms
+
+ - Load Data: 0.752926 ms
+
+ - Init: 0.722885 ms
+
+ - Build Index: 4.31705 ms
+
+ - Warmup: 1.84011 ms
+
+ - Query: 1.52763 ms
+
+ - Cleanup: 2.7051 ms
+

@@ -1,0 +1,22 @@
+I20260517 16:47:06.185901 16455 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260517 16:47:06.186210 16455 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260517 16:47:06.186219 16455 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+Timing results:
+ - Read map 0: 3335.11 ms
+
+ - Generate Workloads: 3.7868 ms
+
+ - Load Data: 0.8111 ms
+
+ - Create App: 0.0989437 ms
+
+ - Init: 0.00405312 ms
+
+ - Build Index: 1.86205 ms
+
+ - Warmup: 16.6578 ms
+
+ - Query: 16.8404 ms
+
+ - Cleanup: 2.26188 ms
+
