@@ -805,6 +805,31 @@ static __forceinline__ __device__ bool seg_intersect(
     return true;
 }
 
+static __forceinline__ __device__ bool seg_intersect_conservative_candidate(
+        float ax0, float ay0, float ax1, float ay1,
+        float bx0, float by0, float bx1, float by1,
+        float* ix_out, float* iy_out)
+{
+    float rx = ax1 - ax0, ry = ay1 - ay0;
+    float sx = bx1 - bx0, sy = by1 - by0;
+    float denom = rx * sy - ry * sx;
+    if (dabsf(denom) < 1.0e-7f) {
+        *ix_out = ax0;
+        *iy_out = ay0;
+        return true;
+    }
+    float qpx = bx0 - ax0, qpy = by0 - ay0;
+    float t = (qpx * sy - qpy * sx) / denom;
+    float u = (qpx * ry - qpy * rx) / denom;
+    const float slack = 1.0e-4f;
+    if (t < -slack || t > 1.0f + slack || u < -slack || u > 1.0f + slack) {
+        return false;
+    }
+    *ix_out = ax0 + t * rx;
+    *iy_out = ay0 + t * ry;
+    return true;
+}
+
 extern "C" __global__ void __raygen__segment_pair_intersection_probe() {
     const unsigned int idx = optixGetLaunchIndex().x;
     if (idx >= params.probe_count) return;
@@ -827,21 +852,30 @@ extern "C" __global__ void __intersection__segment_pair_intersection_isect() {
     optixSetPayload_1(prim);
     optixSetPayload_2(0u);
     optixSetPayload_3(0u);
-    // Report the AABB overlap as a candidate; host-side exact refine decides
-    // the true segment-segment intersection and removes false positives.
+    // Report the AABB overlap as a candidate; the any-hit stage may compact
+    // obvious misses, and host-side exact refine remains the final authority.
     optixReportIntersection(0.5f, 0u);
 }
 
 extern "C" __global__ void __anyhit__segment_pair_intersection_anyhit() {
     const unsigned int pidx = optixGetPayload_0();
     const unsigned int bidx = optixGetPayload_1();
-    const float    ix   = __uint_as_float(optixGetPayload_2());
-    const float    iy   = __uint_as_float(optixGetPayload_3());
+    const GpuSegment left = params.left_segs[pidx];
+    const GpuSegment right = params.right_segs[bidx];
+    float ix = 0.0f;
+    float iy = 0.0f;
+    if (!seg_intersect_conservative_candidate(
+            left.x0, left.y0, left.x1, left.y1,
+            right.x0, right.y0, right.x1, right.y1,
+            &ix, &iy)) {
+        optixIgnoreIntersection();
+        return;
+    }
     const unsigned int slot = atomicAdd(params.output_count, 1u);
     if (slot < params.output_capacity) {
         SegmentPairIntersectionRecord r;
-        r.left_id  = params.left_segs[pidx].id;
-        r.right_id = params.right_segs[bidx].id;
+        r.left_id  = left.id;
+        r.right_id = right.id;
         r.ix = ix; r.iy = iy;
         params.output[slot] = r;
     }
