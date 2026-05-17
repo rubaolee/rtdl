@@ -12,9 +12,11 @@ class Goal2241RayjoinSameQueryPipClosedShapePathTest(unittest.TestCase):
         text = RUNNER.read_text(encoding="utf-8")
 
         self.assertIn("def _run_pip_optix_closed_shape", text)
+        self.assertIn("def _prepare_backend_inputs", text)
         self.assertIn("rt.closed_shape_membership_2d_optix", text)
         self.assertIn('"implementation_path": "closed_shape_membership_2d_optix"', text)
         self.assertIn('"uses_generic_closed_shape_membership": workload == "pip" and backend == "optix"', text)
+        self.assertIn('"input_preparation_path": "prepacked_points_and_shapes_once_per_run_stream"', text)
 
     def test_runner_preserves_rayjoin_row_contract_in_python(self) -> None:
         text = RUNNER.read_text(encoding="utf-8")
@@ -29,6 +31,7 @@ class Goal2241RayjoinSameQueryPipClosedShapePathTest(unittest.TestCase):
         self.assertIn("Goal2241", text)
         self.assertIn("native surface app-agnostic", text)
         self.assertIn("This mapping is deliberately in Python", text)
+        self.assertIn("packs the PIP points and shapes once", text)
         self.assertIn("not a full RayJoin reproduction", text)
 
 

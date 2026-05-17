@@ -5,6 +5,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CONSENSUS = ROOT / "docs" / "reports" / "goal2243_rayjoin_pip_closed_shape_path_2ai_consensus_2026-05-17.md"
 REVIEW = ROOT / "docs" / "reviews" / "goal2242_gemini_review_goal2241_rayjoin_pip_closed_shape_path_2026-05-17.md"
+ADDENDUM = ROOT / "docs" / "reviews" / "goal2244_gemini_review_goal2241_prepack_addendum_2026-05-17.md"
 REPORT = ROOT / "docs" / "reports" / "goal2241_rayjoin_same_query_pip_closed_shape_path_2026-05-17.md"
 
 
@@ -13,6 +14,7 @@ class Goal2243RayjoinPipClosedShapePath2AiConsensusTest(unittest.TestCase):
         text = CONSENSUS.read_text(encoding="utf-8")
 
         self.assertIn(str(REVIEW.relative_to(ROOT)).replace("\\", "/"), text)
+        self.assertIn(str(ADDENDUM.relative_to(ROOT)).replace("\\", "/"), text)
         self.assertIn(str(REPORT.relative_to(ROOT)).replace("\\", "/"), text)
         self.assertIn("Codex and Gemini agree", text)
 
@@ -30,6 +32,13 @@ class Goal2243RayjoinPipClosedShapePath2AiConsensusTest(unittest.TestCase):
         self.assertIn("independent Gemini review", text)
         self.assertIn("Verdict: `accept`", text)
         self.assertIn("closed_shape_membership_2d_optix", text)
+
+    def test_gemini_addendum_accepts_prepack_update(self) -> None:
+        text = ADDENDUM.read_text(encoding="utf-8")
+
+        self.assertIn("independent Gemini addendum review", text)
+        self.assertIn("prepack-once", text)
+        self.assertIn("Verdict: `accept`", text)
 
 
 if __name__ == "__main__":

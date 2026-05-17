@@ -37,6 +37,12 @@ This mapping is deliberately in Python because `polygon_id` is RayJoin
 application vocabulary. The engine still sees only points, closed shapes, and
 membership rows.
 
+The runner also packs the PIP points and shapes once per `run-stream`
+invocation and reuses those packed buffers across warmups and repeats. This is
+important for fair timing because the primitive accepts `PackedPoints` and
+`PackedPolygons`; timing repeated Python packing would measure harness overhead,
+not the closed-shape membership primitive.
+
 ## Output Metadata
 
 The same-query artifact now records:
@@ -44,7 +50,8 @@ The same-query artifact now records:
 ```json
 {
   "implementation_path": "closed_shape_membership_2d_optix",
-  "uses_generic_closed_shape_membership": true
+  "uses_generic_closed_shape_membership": true,
+  "input_preparation_path": "prepacked_points_and_shapes_once_per_run_stream"
 }
 ```
 

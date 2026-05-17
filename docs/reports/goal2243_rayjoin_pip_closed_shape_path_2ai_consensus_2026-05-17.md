@@ -8,6 +8,8 @@ Status: accepted.
   `docs/reports/goal2241_rayjoin_same_query_pip_closed_shape_path_2026-05-17.md`
 - Gemini review:
   `docs/reviews/goal2242_gemini_review_goal2241_rayjoin_pip_closed_shape_path_2026-05-17.md`
+- Gemini addendum review for the post-review prepack update:
+  `docs/reviews/goal2244_gemini_review_goal2241_prepack_addendum_2026-05-17.md`
 - Tests:
   `tests/goal2192_rayjoin_same_query_stream_adapter_test.py`
   `tests/goal2241_rayjoin_same_query_pip_closed_shape_path_test.py`
@@ -25,6 +27,10 @@ The runner preserves the RayJoin-facing row contract in Python by mapping
 `shape_id` to `polygon_id` and `membership` to `contains`. This is the correct
 boundary: the native engine keeps generic closed-shape vocabulary, while
 RayJoin-specific naming remains in the application harness.
+
+Gemini also accepts the prepack-once update: PIP/OptiX points and shapes are
+packed once per `run-stream` invocation and reused across warmups and repeats,
+which measures the primitive path rather than repeated Python packing overhead.
 
 ## Boundary
 

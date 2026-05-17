@@ -190,6 +190,17 @@ def _run_pip_optix_closed_shape(inputs: dict[str, object]) -> tuple[dict[str, ob
     )
 
 
+def _prepare_backend_inputs(workload: str, backend: str, inputs: dict[str, object]) -> dict[str, object]:
+    if workload == "pip" and backend == "optix":
+        points = inputs["points"]
+        polygons = inputs["polygons"]
+        return {
+            "points": points if isinstance(points, rt.PackedPoints) else rt.pack_points(records=points, dimension=2),
+            "polygons": polygons if isinstance(polygons, rt.PackedPolygons) else rt.pack_polygons(records=polygons),
+        }
+    return inputs
+
+
 def _inputs_from_stream(stream: dict[str, object]) -> dict[str, object]:
     base_path = Path(str(stream["base_cdb"]))
     if not base_path.is_absolute():
@@ -220,6 +231,10 @@ def run_stream(
     workload = str(stream["workload"])
     inputs = _inputs_from_stream(stream)
     reference_rows = _run_backend(workload, reference_backend, inputs)
+    backend_inputs = {
+        backend: _prepare_backend_inputs(workload, backend, inputs)
+        for backend in backends
+    }
     baseline_workload = "pip" if workload == "pip" else "lsi"
 
     payload: dict[str, object] = {
@@ -257,7 +272,7 @@ def run_stream(
         parity = []
         for index in range(warmups):
             start = time.perf_counter()
-            rows = _run_backend(workload, backend, inputs)
+            rows = _run_backend(workload, backend, backend_inputs[backend])
             elapsed = time.perf_counter() - start
             print(
                 f"[goal2192] warmup {workload}/{backend} {index + 1}/{warmups} "
@@ -266,7 +281,7 @@ def run_stream(
             )
         for index in range(repeats):
             start = time.perf_counter()
-            rows = _run_backend(workload, backend, inputs)
+            rows = _run_backend(workload, backend, backend_inputs[backend])
             elapsed = time.perf_counter() - start
             timings.append(elapsed)
             row_counts.append(len(rows))
@@ -293,6 +308,9 @@ def run_stream(
             if workload == "pip" and backend == "optix"
             else "compiled_rtdl_kernel",
             "uses_generic_closed_shape_membership": workload == "pip" and backend == "optix",
+            "input_preparation_path": "prepacked_points_and_shapes_once_per_run_stream"
+            if workload == "pip" and backend == "optix"
+            else "backend_default",
         }
     return payload
 
