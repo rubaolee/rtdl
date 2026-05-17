@@ -2630,6 +2630,9 @@ static void run_pip_optix(
     double pip_refine_s = 0.0;
     size_t pip_candidate_count = 0;
     size_t pip_chunks = 0;
+    size_t pip_fallback_chunks = 0;
+    const bool pip_one_pass_compact =
+        std::getenv("RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT") == nullptr;
     if (positive_only == 0u) {
         const auto t_launch_start = std::chrono::steady_clock::now();
         OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
@@ -2662,7 +2665,8 @@ static void run_pip_optix(
                 size_t point_offset,
                 size_t chunk_point_count,
                 CUdeviceptr output_ptr,
-                uint32_t output_capacity) -> uint32_t {
+                uint32_t output_capacity,
+                bool allow_overflow) -> uint32_t {
             upload<uint32_t>(d_count.ptr, &zero, 1);
             const CUdeviceptr chunk_points_x =
                 d_pts_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
@@ -2694,7 +2698,7 @@ static void run_pip_optix(
             }
             uint32_t emitted = 0;
             download(&emitted, d_count.ptr, 1);
-            if (emitted > output_capacity && output_capacity != 0u) {
+            if (emitted > output_capacity && output_capacity != 0u && !allow_overflow) {
                 throw std::runtime_error("PIP positive-hit output overflowed compact capacity");
             }
             return emitted;
@@ -2703,14 +2707,39 @@ static void run_pip_optix(
         for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
             const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
             ++pip_chunks;
-            const uint32_t gpu_count = launch_positive_candidate_pass(point_offset, chunk_point_count, 0, 0);
-            pip_candidate_count += static_cast<size_t>(gpu_count);
-            if (gpu_count == 0u) {
-                continue;
+            uint32_t gpu_count = 0;
+            if (pip_one_pass_compact) {
+                const size_t optimistic_capacity_size = std::min<size_t>(
+                    (std::max)(chunk_point_count, size_t{4096}),
+                    static_cast<size_t>(std::numeric_limits<uint32_t>::max()));
+                const uint32_t optimistic_capacity = static_cast<uint32_t>(optimistic_capacity_size);
+                DevPtr d_positive_output(sizeof(GpuPipRecord) * optimistic_capacity);
+                gpu_count = launch_positive_candidate_pass(
+                    point_offset, chunk_point_count, d_positive_output.ptr, optimistic_capacity, true);
+                pip_candidate_count += static_cast<size_t>(gpu_count);
+                if (gpu_count <= optimistic_capacity) {
+                    if (gpu_count == 0u) {
+                        continue;
+                    }
+                    const size_t old_size = gpu_rows.size();
+                    gpu_rows.resize(old_size + gpu_count);
+                    const auto t_download_start = std::chrono::steady_clock::now();
+                    download(gpu_rows.data() + old_size, d_positive_output.ptr, gpu_count);
+                    const auto t_download_end = std::chrono::steady_clock::now();
+                    pip_download_s += seconds_between(t_download_start, t_download_end);
+                    continue;
+                }
+                ++pip_fallback_chunks;
+            } else {
+                gpu_count = launch_positive_candidate_pass(point_offset, chunk_point_count, 0, 0, false);
+                pip_candidate_count += static_cast<size_t>(gpu_count);
+                if (gpu_count == 0u) {
+                    continue;
+                }
             }
             DevPtr d_positive_output(sizeof(GpuPipRecord) * gpu_count);
             const uint32_t written_count =
-                launch_positive_candidate_pass(point_offset, chunk_point_count, d_positive_output.ptr, gpu_count);
+                launch_positive_candidate_pass(point_offset, chunk_point_count, d_positive_output.ptr, gpu_count, false);
             if (written_count != gpu_count) {
                 throw std::runtime_error("PIP positive-hit candidate count changed between count and write passes");
             }
@@ -2759,8 +2788,10 @@ static void run_pip_optix(
         if (profile_pip) {
             const auto t_total_end = std::chrono::steady_clock::now();
             std::fprintf(stderr,
-                "[rtdl_optix_pip_profile] positive_only=%u points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
+                "[rtdl_optix_pip_profile] positive_only=%u one_pass=%u fallback_chunks=%zu points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
                 positive_only,
+                pip_one_pass_compact ? 1u : 0u,
+                pip_fallback_chunks,
                 point_count,
                 poly_count,
                 pip_chunks,
@@ -2831,8 +2862,10 @@ static void run_pip_optix(
     if (profile_pip) {
         const auto t_total_end = std::chrono::steady_clock::now();
         std::fprintf(stderr,
-            "[rtdl_optix_pip_profile] positive_only=%u points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
+            "[rtdl_optix_pip_profile] positive_only=%u one_pass=%u fallback_chunks=%zu points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
             positive_only,
+            pip_one_pass_compact ? 1u : 0u,
+            pip_fallback_chunks,
             point_count,
             poly_count,
             pip_chunks,
