@@ -916,6 +916,7 @@ struct PipParams {
     uint32_t hit_word_count;
     uint32_t polygon_count;
     uint32_t probe_count;
+    uint32_t point_index_offset;
 };
 
 extern "C" {
@@ -1009,11 +1010,13 @@ extern "C" __global__ void __intersection__pip_isect() {
         const uint32_t pidx = optixGetPayload_0();
         const uint32_t prim = optixGetPayload_1();
         if (params.positive_only != 0u) {
-            const uint32_t slot = pidx * params.polygon_count + prim;
-            const uint32_t word = slot >> 5;
-            const uint32_t bit  = 1u << (slot & 31u);
-            if (word < params.hit_word_count) {
-                atomicOr(&params.hit_words[word], bit);
+            const uint32_t slot = atomicAdd(params.output_count, 1u);
+            if (slot < params.output_capacity && params.output != nullptr) {
+                PipRecord r;
+                r.point_id = params.point_index_offset + pidx;
+                r.polygon_id = prim;
+                r.contains = 1u;
+                params.output[slot] = r;
             }
             optixIgnoreIntersection();
             return;

@@ -2510,6 +2510,7 @@ struct PipLaunchParams {
     uint32_t         hit_word_count;
     uint32_t         polygon_count;
     uint32_t         probe_count;
+    uint32_t         point_index_offset;
 };
 
 static void run_pip_optix(
@@ -2574,7 +2575,6 @@ static void run_pip_optix(
     DevPtr d_count(sizeof(uint32_t));
     uint32_t zero = 0;
     upload<uint32_t>(d_count.ptr, &zero, 1);
-    std::unique_ptr<DevPtr> d_hit_words;
     std::unique_ptr<DevPtr> d_output;
     if (positive_only == 0u) {
         d_output = std::make_unique<DevPtr>(sizeof(GpuPipRecord) * out_count);
@@ -2582,12 +2582,8 @@ static void run_pip_optix(
         for (size_t pi = 0; pi < point_count; ++pi)
             for (size_t qi = 0; qi < poly_count; ++qi) {
                 init_output[pi * poly_count + qi] = {pt_ids[pi], gpu_polys[qi].id, 0u};
-            }
+        }
         upload(d_output->ptr, init_output.data(), out_count);
-    } else {
-        const size_t hit_word_count = (out_count + 31u) / 32u;
-        d_hit_words = std::make_unique<DevPtr>(sizeof(uint32_t) * hit_word_count);
-        CU_CHECK(cuMemsetD8(d_hit_words->ptr, 0, sizeof(uint32_t) * hit_word_count));
     }
 
     PipLaunchParams lp;
@@ -2598,17 +2594,15 @@ static void run_pip_optix(
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(d_polys.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(d_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(d_vy.ptr);
-    const uint32_t hit_word_count = positive_only == 0u
-        ? 0u
-        : static_cast<uint32_t>((out_count + 31u) / 32u);
-    lp.hit_words      = d_hit_words ? reinterpret_cast<uint32_t*>(d_hit_words->ptr) : nullptr;
+    lp.hit_words      = nullptr;
     lp.output         = d_output ? reinterpret_cast<GpuPipRecord*>(d_output->ptr) : nullptr;
     lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
     lp.output_capacity = d_output ? static_cast<uint32_t>(out_count) : 0u;
     lp.positive_only  = positive_only;
-    lp.hit_word_count = hit_word_count;
+    lp.hit_word_count = 0u;
     lp.polygon_count  = static_cast<uint32_t>(poly_count);
     lp.probe_count    = static_cast<uint32_t>(point_count);
+    lp.point_index_offset = 0u;
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -2622,46 +2616,98 @@ static void run_pip_optix(
         CU_CHECK(cuStreamSynchronize(stream));
     }
 
-    // Read back
     if (positive_only != 0u) {
-        // Single positive-only launch: reset the shared output counter just
-        // before launch. The launch params themselves are unchanged.
-        upload<uint32_t>(d_count.ptr, &zero, 1);
-        OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
-                                 d_params.ptr, sizeof(PipLaunchParams),
-                                 &g_pip.pipe->sbt,
-                                 static_cast<unsigned>(point_count), 1, 1));
-        CU_CHECK(cuStreamSynchronize(stream));
-        std::vector<uint32_t> hit_words(hit_word_count);
-        if (hit_word_count > 0) {
-            download(hit_words.data(), d_hit_words->ptr, hit_word_count);
+        if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("PIP positive-hit point count exceeds uint32_t chunk offset capacity");
         }
+        if (poly_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("PIP positive-hit polygon count exceeds uint32_t launch capacity");
+        }
+        const uint64_t max_points_per_launch64 =
+            static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+            static_cast<uint64_t>(poly_count);
+        if (max_points_per_launch64 == 0) {
+            throw std::runtime_error("PIP positive-hit launch cannot chunk polygon set into uint32_t capacity");
+        }
+        const size_t max_points_per_launch = static_cast<size_t>(
+            std::min<uint64_t>(max_points_per_launch64, static_cast<uint64_t>(point_count)));
+        std::vector<GpuPipRecord> gpu_rows;
+
+        auto launch_positive_candidate_pass = [&](
+                size_t point_offset,
+                size_t chunk_point_count,
+                CUdeviceptr output_ptr,
+                uint32_t output_capacity) -> uint32_t {
+            upload<uint32_t>(d_count.ptr, &zero, 1);
+            const CUdeviceptr chunk_points_x =
+                d_pts_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+            const CUdeviceptr chunk_points_y =
+                d_pts_y.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+            const CUdeviceptr chunk_point_ids =
+                d_pt_ids.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * point_offset);
+            lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
+            lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
+            lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+            lp.output = output_capacity == 0u
+                ? nullptr
+                : reinterpret_cast<GpuPipRecord*>(output_ptr);
+            lp.output_capacity = output_capacity;
+            lp.probe_count = static_cast<uint32_t>(chunk_point_count);
+            lp.point_index_offset = static_cast<uint32_t>(point_offset);
+            upload(d_params.ptr, &lp, 1);
+            OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
+                                     d_params.ptr, sizeof(PipLaunchParams),
+                                     &g_pip.pipe->sbt,
+                                     static_cast<unsigned>(chunk_point_count), 1, 1));
+            CU_CHECK(cuStreamSynchronize(stream));
+            uint32_t emitted = 0;
+            download(&emitted, d_count.ptr, 1);
+            if (emitted > output_capacity && output_capacity != 0u) {
+                throw std::runtime_error("PIP positive-hit output overflowed compact capacity");
+            }
+            return emitted;
+        };
+
+        for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
+            const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+            const uint32_t gpu_count = launch_positive_candidate_pass(point_offset, chunk_point_count, 0, 0);
+            if (gpu_count == 0u) {
+                continue;
+            }
+            DevPtr d_positive_output(sizeof(GpuPipRecord) * gpu_count);
+            const uint32_t written_count =
+                launch_positive_candidate_pass(point_offset, chunk_point_count, d_positive_output.ptr, gpu_count);
+            if (written_count != gpu_count) {
+                throw std::runtime_error("PIP positive-hit candidate count changed between count and write passes");
+            }
+            const size_t old_size = gpu_rows.size();
+            gpu_rows.resize(old_size + gpu_count);
+            download(gpu_rows.data() + old_size, d_positive_output.ptr, gpu_count);
+        }
+
         std::vector<RtdlPipRow> rows;
-        rows.reserve(out_count / 64u);
+        rows.reserve(gpu_rows.size());
 #if RTDL_OPTIX_HAS_GEOS
         GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
 #endif
-        for (size_t pi = 0; pi < point_count; ++pi) {
-            for (size_t qi = 0; qi < poly_count; ++qi) {
-                const size_t slot = pi * poly_count + qi;
-                const uint32_t word = static_cast<uint32_t>(slot >> 5);
-                const uint32_t bit  = 1u << (slot & 31u);
-                if ((hit_words[word] & bit) == 0u) {
-                    continue;
-                }
-                const RtdlPoint& point = points[pi];
-                const RtdlPolygonRef& polygon = polys[qi];
-#if RTDL_OPTIX_HAS_GEOS
-                if (!geos.covers(qi, point.x, point.y)) {
-                    continue;
-                }
-#else
-                if (!exact_point_in_polygon(point.x, point.y, polygon, vertices_xy)) {
-                    continue;
-                }
-#endif
-                rows.push_back({point.id, polygon.id, 1u});
+        for (const auto& gpu_row : gpu_rows) {
+            const size_t pi = static_cast<size_t>(gpu_row.point_id);
+            const size_t qi = static_cast<size_t>(gpu_row.polygon_id);
+            if (pi >= point_count || qi >= poly_count) {
+                continue;
             }
+            const RtdlPoint& point = points[pi];
+            const RtdlPolygonRef& polygon = polys[qi];
+#if RTDL_OPTIX_HAS_GEOS
+            if (!geos.covers(qi, point.x, point.y)) {
+                continue;
+            }
+#else
+            if (!exact_point_in_polygon(point.x, point.y, polygon, vertices_xy)) {
+                continue;
+            }
+#endif
+            rows.push_back({point.id, polygon.id, 1u});
         }
         auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * rows.size()));
         if (!out && !rows.empty()) throw std::bad_alloc();
