@@ -17,7 +17,8 @@ Rules:
 ### Generic Closed-Shape Membership / Predicate Primitive
 
 Origin: Goal2233/Goal2235 RayJoin-style probes; sharpened by Goal2295 and
-Goal2299 current prepared closed-shape telemetry/negative probes.
+Goal2299 current prepared closed-shape telemetry/negative probes, then partly
+closed by Goal2301/Goal2303 bounded point-probe evidence.
 
 Observation:
 
@@ -35,21 +36,30 @@ Observation:
   ray/segment odd-parity route on the same 100,000-point stream. The
   ray/segment route was exact, but 56x-74x slower, so it is a rejected fallback
   for this workload shape.
+- Goal2301/Goal2303 replaced the infinite upward point probe with a bounded
+  vertical point probe and reduced the current RayJoin-exported PIP scalar-count
+  median from 37.9 ms to 9.4 ms while preserving the exact expected count.
+- Goal2308/Goal2310 added a synthetic single-shape coordinate-magnitude smoke
+  pass, but did not prove broad coordinate-system or performance generality.
 
 Future work:
 
-- Add an app-agnostic primitive that receives points plus closed shape geometry
-  and emits compact positive membership rows.
+- Maintain the app-agnostic primitive that receives points plus closed shape
+  geometry and emits compact positive membership rows.
 - Keep vocabulary generic: point, closed shape, membership, predicate, positive
   rows.
 - Avoid RayJoin, PIP, polygon, county, map, or spatial-join names in the public
   ABI.
 - Prefer a prepared variant so static closed-shape geometry can be reused across
   query batches.
-- Optimize the accepted closed-shape primitive directly before reopening
-  boundary ray/segment grouping. The next likely work is tighter generic
-  candidate traversal, device-resident continuation, or partner-side reduction
-  over the closed-shape stream.
+- Do not reopen boundary ray/segment grouping for this workload shape unless a
+  new profile overturns Goal2299.
+- Study whether the bounded point-probe half-extent should become configurable
+  or derived from prepared-scene metadata before claiming broad
+  coordinate-scale generality.
+- After the bounded-probe traversal win, the next likely work is
+  device-resident continuation or partner-side reduction over the closed-shape
+  stream, plus broader data-shape validation.
 - Do not prioritize Python packing, upload reuse, or replacing GEOS exact
   refinement unless a new profile contradicts the Goal2295/Goal2298 evidence.
 - Keep app semantics in Python/partner code: the engine should not know that a
