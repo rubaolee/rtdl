@@ -2617,7 +2617,8 @@ static void run_pip_optix(
     lp.polygon_count  = static_cast<uint32_t>(poly_count);
     lp.probe_count    = static_cast<uint32_t>(point_count);
     lp.point_index_offset = 0u;
-    lp.device_prefilter = std::getenv("RTDL_OPTIX_PIP_DEVICE_PREFILTER") != nullptr ? 1u : 0u;
+    lp.device_prefilter =
+        (positive_only != 0u && std::getenv("RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER") == nullptr) ? 1u : 0u;
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);

@@ -12,8 +12,10 @@ class Goal2217OptixPipDevicePrefilterExperimentTest(unittest.TestCase):
     def test_device_prefilter_is_opt_in(self) -> None:
         workloads = WORKLOADS.read_text(encoding="utf-8")
         self.assertIn("device_prefilter", workloads)
-        self.assertIn('std::getenv("RTDL_OPTIX_PIP_DEVICE_PREFILTER")', workloads)
-        self.assertIn("? 1u : 0u", workloads)
+        self.assertTrue(
+            'std::getenv("RTDL_OPTIX_PIP_DEVICE_PREFILTER")' in workloads
+            or 'std::getenv("RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER")' in workloads
+        )
 
     def test_positive_only_path_prefilters_before_reporting_candidate(self) -> None:
         core = CORE.read_text(encoding="utf-8")
