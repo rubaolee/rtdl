@@ -1,0 +1,117 @@
+{
+  "cases": {
+    "overlay_county128_soil128": {
+      "backends": {
+        "embree": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.021841061301529408,
+          "app_elapsed_sec_values": [
+            0.021842485293745995,
+            0.02175736241042614,
+            0.021841061301529408,
+            0.021933366544544697,
+            0.021659537218511105
+          ],
+          "elapsed_outer_sec": 218.73926639277488,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036,
+            14036,
+            14036,
+            14036,
+            14036
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.0248165475204587,
+          "app_elapsed_sec_values": [
+            0.0248165475204587,
+            0.024912400171160698,
+            0.025331496261060238,
+            0.0246710404753685,
+            0.024796979501843452
+          ],
+          "elapsed_outer_sec": 219.88444135338068,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036,
+            14036,
+            14036,
+            14036,
+            14036
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        },
+        "optix_prepared_overlay_seed": {
+          "all_parity_vs_cpu_python_reference": true,
+          "app_elapsed_sec_median": 0.019190984778106213,
+          "app_elapsed_sec_values": [
+            0.019135829992592335,
+            0.019190984778106213,
+            0.0194166237488389,
+            0.019487899728119373,
+            0.019177690148353577
+          ],
+          "baseline_kind": "prepared_optix_shape_pair_relation_reused_build_side",
+          "candidate_pair_count": 14036,
+          "elapsed_outer_sec": 36.70707674138248,
+          "left_polygon_count": 121,
+          "partner_accelerated": false,
+          "prepare_elapsed_sec": 0.009707760997116566,
+          "prepared_build_side_reused": true,
+          "right_polygon_count": 116,
+          "row_count_consistent": true,
+          "row_counts": [
+            14036,
+            14036,
+            14036,
+            14036,
+            14036
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "dataset": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start0_count128.cdb + /root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start0_count128.cdb",
+      "note": "Bounded overlay dependency row slice.",
+      "workload": "overlay_seed"
+    }
+  },
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_rayjoin_speedup_claim_authorized": false
+  },
+  "commit": "7ab56c1fe382c58f2500ce7aed98696c065d9323",
+  "data_dir": "/root/rtdl_rayjoin_pod/data/rayjoin",
+  "goal": "2159",
+  "repeats": 5,
+  "slices": {
+    "county_0_128": {
+      "bytes": 186939,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_county_start0_count128.cdb",
+      "segments": 4981,
+      "source": "br_county",
+      "start": 0
+    },
+    "soil_0_128": {
+      "bytes": 109524,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl_rayjoin_pod/data/rayjoin/br_soil_start0_count128.cdb",
+      "segments": 2885,
+      "source": "br_soil",
+      "start": 0
+    }
+  },
+  "step_timeout_sec": 900,
+  "warmups": 1
+}
