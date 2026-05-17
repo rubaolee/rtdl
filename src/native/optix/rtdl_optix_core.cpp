@@ -766,7 +766,6 @@ struct GpuSegment {
 struct SegmentPairIntersectionRecord {
     unsigned int left_id, right_id;
     unsigned int left_index, right_index;
-    float ix, iy;
 };
 
 struct SegmentPairIntersectionParams {
@@ -880,7 +879,6 @@ extern "C" __global__ void __anyhit__segment_pair_intersection_anyhit() {
         r.right_id = right.id;
         r.left_index = params.left_offset + pidx;
         r.right_index = bidx;
-        r.ix = ix; r.iy = iy;
         params.output[slot] = r;
     }
     optixIgnoreIntersection();
@@ -4584,7 +4582,7 @@ struct GpuTriangle3DHost { float x0, y0, z0, x1, y1, z1, x2, y2, z2; uint32_t id
 
 // Output structs (GPU-side, float coords)
 #pragma pack(push, 1)
-struct GpuSegmentPairIntersectionRecord  { uint32_t left_id, right_id, left_index, right_index; float ix, iy; };
+struct GpuSegmentPairIntersectionRecord  { uint32_t left_id, right_id, left_index, right_index; };
 struct GpuPipRecord  { uint32_t point_id, polygon_id, contains; };
 struct GpuShapePairRelationFlags { uint32_t requires_segment_intersection, requires_point_containment; };
 struct GpuRayHitRecord { uint32_t ray_id, hit_count; };

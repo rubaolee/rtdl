@@ -17,6 +17,7 @@ class Goal2279SegmentPairDirectIndexRefinementTest(unittest.TestCase):
 
         self.assertIn("unsigned int left_id, right_id", record_body)
         self.assertIn("unsigned int left_index, right_index", record_body)
+        self.assertNotIn("float ix, iy", record_body)
 
     def test_anyhit_writes_left_offset_and_hit_index(self) -> None:
         text = CORE.read_text(encoding="utf-8")
@@ -27,12 +28,14 @@ class Goal2279SegmentPairDirectIndexRefinementTest(unittest.TestCase):
         self.assertIn("unsigned int  left_offset", text)
         self.assertIn("r.left_index = params.left_offset + pidx", anyhit_body)
         self.assertIn("r.right_index = bidx", anyhit_body)
+        self.assertNotIn("r.ix = ix; r.iy = iy", anyhit_body)
 
     def test_host_candidate_record_and_launch_params_match_device(self) -> None:
         core = CORE.read_text(encoding="utf-8")
         workloads = WORKLOADS.read_text(encoding="utf-8")
 
         self.assertIn("uint32_t left_id, right_id, left_index, right_index", core)
+        self.assertNotIn("left_id, right_id, left_index, right_index; float ix, iy", core)
         self.assertIn("uint32_t          left_offset", workloads)
         self.assertIn("lp.left_offset = static_cast<uint32_t>(left_offset)", workloads)
         self.assertIn("segment-pair intersection direct candidate index exceeds uint32_t", workloads)
@@ -63,6 +66,7 @@ class Goal2279SegmentPairDirectIndexRefinementTest(unittest.TestCase):
         self.assertIn("not a RayJoin-specific primitive", text)
         self.assertIn("does not claim a speedup by itself", text)
         self.assertIn("Pod timing should compare", text)
+        self.assertIn("candidate row remains the same size", text)
 
 
 if __name__ == "__main__":

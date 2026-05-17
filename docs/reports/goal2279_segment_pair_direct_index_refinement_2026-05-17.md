@@ -18,7 +18,9 @@ Goal2279 records direct primitive indices in each OptiX candidate row:
 
 The row-producing and count-only exact-refinement paths now use those indices
 directly when they are in bounds. The existing ID-based maps remain as defensive
-fallbacks for invalid or future legacy candidate rows.
+fallbacks for invalid or future legacy candidate rows. The candidate row keeps
+the prior 16-byte copyback size by dropping the GPU-computed intersection point,
+because the host exact predicate already recomputes the final point.
 
 ## Boundary
 
@@ -41,6 +43,6 @@ This implementation report does not claim a speedup by itself. Pod timing should
 - Goal2276 raw-row median: `0.16502647660672665` seconds;
 - Goal2276 scalar-count median: `0.15995669923722744` seconds.
 
-Because the candidate row is wider after adding two indices, dense candidate
-streams may see a copyback penalty. Sparse streams should be the best diagnostic
-for whether the removed host hash lookups matter in practice.
+Because the candidate row remains the same size as the earlier ID-only record,
+pod timing should isolate whether the removed host hash lookups matter in
+practice without adding a candidate-copyback penalty.
