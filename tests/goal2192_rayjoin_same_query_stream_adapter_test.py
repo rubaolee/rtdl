@@ -52,6 +52,7 @@ class Goal2192RayjoinSameQueryStreamAdapterTest(unittest.TestCase):
             result = runner.run_stream(
                 query_stream=stream,
                 backends=("cpu_python_reference", "cpu"),
+                reference_backend="cpu_python_reference",
                 warmups=0,
                 repeats=1,
             )
@@ -77,6 +78,7 @@ class Goal2192RayjoinSameQueryStreamAdapterTest(unittest.TestCase):
             result = runner.run_stream(
                 query_stream=stream,
                 backends=("cpu_python_reference", "cpu"),
+                reference_backend="cpu_python_reference",
                 warmups=0,
                 repeats=1,
             )
@@ -95,9 +97,33 @@ class Goal2192RayjoinSameQueryStreamAdapterTest(unittest.TestCase):
             self.assertEqual(artifact["workload"], workload)
             self.assertEqual(artifact["query_stream_schema"], "rtdl.rayjoin.same_query_stream.v1")
             self.assertEqual(artifact["query_stream_producer"], "rtdl_demo_generator_not_rayjoin_cpp")
+            self.assertEqual(artifact.get("reference_backend", "cpu_python_reference"), "cpu_python_reference")
             self.assertFalse(artifact["claim_boundary"]["same_contract_with_rayjoin_query_exec"])
             self.assertFalse(artifact["claim_boundary"]["rtdl_beats_rayjoin_claim_authorized"])
             self.assertTrue(artifact["backends"]["cpu"]["all_parity_vs_cpu_python_reference"])
+
+    def test_large_run_can_use_declared_non_python_reference_backend(self) -> None:
+        runner = _load_runner()
+        with tempfile.TemporaryDirectory() as tmp:
+            stream = pathlib.Path(tmp) / "pip_stream.json"
+            runner.materialize_demo_stream(
+                workload="pip",
+                base_cdb=FIXTURE,
+                output=stream,
+                gen_n=8,
+                gen_t=0.1,
+                seed=2207,
+            )
+            result = runner.run_stream(
+                query_stream=stream,
+                backends=("cpu",),
+                reference_backend="cpu",
+                warmups=0,
+                repeats=1,
+            )
+        self.assertEqual(result["reference_backend"], "cpu")
+        self.assertTrue(result["backends"]["cpu"]["all_parity_vs_reference"])
+        self.assertIsNone(result["backends"]["cpu"]["all_parity_vs_cpu_python_reference"])
 
 
 if __name__ == "__main__":

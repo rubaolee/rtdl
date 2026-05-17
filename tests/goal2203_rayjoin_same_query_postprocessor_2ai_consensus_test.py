@@ -27,6 +27,7 @@ class Goal2203RayJoinSameQueryPostprocessorConsensusTest(unittest.TestCase):
 
         self.assertIn("missing required RayJoin log", text)
         self.assertIn("missing required RTDL same-stream artifact", text)
+        self.assertIn("declared reference backend", text)
         self.assertIn("_read_required_text", script)
         self.assertIn("missing required", script)
 

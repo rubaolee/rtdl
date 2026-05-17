@@ -55,7 +55,8 @@ The parser refuses to summarize RTDL artifacts unless:
 - every required RayJoin log and RTDL same-stream artifact is present;
 - `query_stream_producer` is `rayjoin_query_exec_export_patch`;
 - `claim_boundary.same_contract_with_rayjoin_query_exec` is true;
-- every requested RTDL backend passed parity against the CPU Python reference;
+- every requested RTDL backend passed parity against the declared reference
+  backend;
 - all stronger public claim flags remain false.
 
 This prevents a demo stream, a mismatched stream, or a premature public claim
@@ -65,6 +66,10 @@ Gemini's Goal2202 review recommended making missing RTDL artifacts fail with a
 specific error instead of relying on a generic file read exception. The
 postprocessor now uses explicit required-file checks for both RayJoin logs and
 RTDL same-stream artifacts.
+
+The 100k pod run uses `reference_backend: cpu` so the report can validate
+large same-query streams without first running an unbounded CPU-Python all-pairs
+reference. Small local tests keep `cpu_python_reference` as the default.
 
 ## Boundary
 

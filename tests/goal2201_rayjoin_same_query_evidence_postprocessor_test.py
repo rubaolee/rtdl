@@ -36,12 +36,15 @@ def _rtdl_artifact(workload: str) -> dict[str, object]:
         "base_cdb": "/tmp/base.cdb",
         "warmups": 1,
         "repeats": 3,
+        "reference_backend": "cpu",
         "reference_row_count": 42,
         "backends": {
             "cpu": {
                 "elapsed_sec_values": [0.3, 0.31, 0.32],
                 "elapsed_sec_median": 0.31,
                 "row_counts": [42, 42, 42],
+                "parity_reference_backend": "cpu",
+                "all_parity_vs_reference": True,
                 "all_parity_vs_cpu_python_reference": True,
                 "rt_core_accelerated": False,
             },
@@ -49,6 +52,8 @@ def _rtdl_artifact(workload: str) -> dict[str, object]:
                 "elapsed_sec_values": [0.2, 0.21, 0.22],
                 "elapsed_sec_median": 0.21,
                 "row_counts": [42, 42, 42],
+                "parity_reference_backend": "cpu",
+                "all_parity_vs_reference": True,
                 "all_parity_vs_cpu_python_reference": True,
                 "rt_core_accelerated": False,
             },
@@ -56,6 +61,8 @@ def _rtdl_artifact(workload: str) -> dict[str, object]:
                 "elapsed_sec_values": [0.1, 0.11, 0.12],
                 "elapsed_sec_median": 0.11,
                 "row_counts": [42, 42, 42],
+                "parity_reference_backend": "cpu",
+                "all_parity_vs_reference": True,
                 "all_parity_vs_cpu_python_reference": True,
                 "rt_core_accelerated": True,
             },
@@ -108,6 +115,7 @@ class Goal2201RayJoinSameQueryEvidencePostprocessorTest(unittest.TestCase):
             summary = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(summary["rayjoin"]["lsi"]["rt"]["optix_launch_count"], 4)
             self.assertEqual(summary["rayjoin"]["lsi"]["rt"]["intersections"], 7)
+            self.assertEqual(summary["rtdl"]["lsi"]["reference_backend"], "cpu")
             self.assertAlmostEqual(summary["derived"]["lsi"]["rayjoin_rt_vs_grid_query_ratio"], 0.25)
             self.assertAlmostEqual(summary["derived"]["pip"]["rtdl_optix_vs_cpu_ratio"], 0.11 / 0.31)
             self.assertFalse(summary["claim_boundary"]["v2_0_release_authorized"])

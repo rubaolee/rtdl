@@ -88,7 +88,12 @@ The RTDL artifacts must report:
 
 - `query_stream_producer: rayjoin_query_exec_export_patch`
 - `claim_boundary.same_contract_with_rayjoin_query_exec: true`
-- parity for every requested RTDL backend against the CPU Python reference
+- parity for every requested RTDL backend against the declared reference backend
+
+For local smoke tests the default reference remains `cpu_python_reference`.
+For the 100k RayJoin pod stream, the runner uses `--reference-backend cpu`
+because CPU Python all-pairs reference construction is intentionally not a
+large-scale timing dependency.
 
 The summary intentionally keeps these claim flags false:
 

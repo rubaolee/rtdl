@@ -336,6 +336,7 @@ run_rtdl_same_stream() {
       --query-stream "${stream_path}" \
       --output "${result_path}" \
       --backends cpu,embree,optix \
+      --reference-backend cpu \
       --warmups "${WARMUP}" \
       --repeats "${REPEAT}"
 }

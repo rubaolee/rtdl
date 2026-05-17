@@ -90,15 +90,21 @@ def parse_rtdl_artifact(path: Path) -> dict[str, Any]:
     if not boundary.get("same_contract_with_rayjoin_query_exec"):
         raise ValueError(f"{path}: same_contract_with_rayjoin_query_exec is not true")
 
+    reference_backend = str(data.get("reference_backend", "cpu_python_reference"))
     backends: dict[str, Any] = {}
     for name, backend in data.get("backends", {}).items():
         elapsed_values = [float(value) for value in backend.get("elapsed_sec_values", [])]
-        if not backend.get("all_parity_vs_cpu_python_reference"):
+        parity_ok = backend.get("all_parity_vs_reference")
+        if parity_ok is None:
+            parity_ok = backend.get("all_parity_vs_cpu_python_reference")
+        if not parity_ok:
             raise ValueError(f"{path}: backend {name} failed parity")
         backends[name] = {
             "elapsed_sec_values": elapsed_values,
             "elapsed_sec_median": backend.get("elapsed_sec_median", _median(elapsed_values)),
             "row_counts": backend.get("row_counts", []),
+            "parity_reference_backend": backend.get("parity_reference_backend", reference_backend),
+            "all_parity_vs_reference": bool(parity_ok),
             "all_parity_vs_cpu_python_reference": bool(backend.get("all_parity_vs_cpu_python_reference")),
             "rt_core_accelerated": bool(backend.get("rt_core_accelerated")),
         }
@@ -109,6 +115,7 @@ def parse_rtdl_artifact(path: Path) -> dict[str, Any]:
         "query_count": int(data["query_count"]),
         "query_stream": data["query_stream"],
         "query_stream_producer": data["query_stream_producer"],
+        "reference_backend": reference_backend,
         "reference_row_count": int(data["reference_row_count"]),
         "backends": backends,
         "claim_boundary": boundary,

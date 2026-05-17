@@ -42,7 +42,7 @@ The postprocessor is accepted because it:
 - reads RTDL same-stream replay artifacts for CPU, Embree, and OptiX;
 - verifies the RTDL stream producer is `rayjoin_query_exec_export_patch`;
 - verifies `same_contract_with_rayjoin_query_exec` is true;
-- verifies RTDL backend parity against the CPU Python reference;
+- verifies RTDL backend parity against the declared reference backend;
 - fails closed if stronger public claim flags are true;
 - writes `evidence_summary.json` and `evidence_report.md`.
 

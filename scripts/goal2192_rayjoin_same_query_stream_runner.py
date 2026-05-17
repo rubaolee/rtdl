@@ -192,6 +192,7 @@ def run_stream(
     *,
     query_stream: str | Path,
     backends: tuple[str, ...],
+    reference_backend: str,
     warmups: int,
     repeats: int,
 ) -> dict[str, object]:
@@ -200,7 +201,7 @@ def run_stream(
     stream = load_query_stream(query_stream)
     workload = str(stream["workload"])
     inputs = _inputs_from_stream(stream)
-    reference_rows = _run_backend(workload, "cpu_python_reference", inputs)
+    reference_rows = _run_backend(workload, reference_backend, inputs)
     baseline_workload = "pip" if workload == "pip" else "lsi"
 
     payload: dict[str, object] = {
@@ -212,6 +213,7 @@ def run_stream(
         "workload": workload,
         "query_count": int(stream["query_count"]),
         "base_cdb": stream["base_cdb"],
+        "reference_backend": reference_backend,
         "commit": subprocess.run(
             ["git", "rev-parse", "HEAD"],
             check=True,
@@ -263,7 +265,11 @@ def run_stream(
             "elapsed_sec_median": statistics.median(timings),
             "row_counts": row_counts,
             "row_count_consistent": len(set(row_counts)) == 1,
-            "all_parity_vs_cpu_python_reference": all(parity),
+            "parity_reference_backend": reference_backend,
+            "all_parity_vs_reference": all(parity),
+            "all_parity_vs_cpu_python_reference": all(parity)
+            if reference_backend == "cpu_python_reference"
+            else None,
             "rt_core_accelerated": backend == "optix",
         }
     return payload
@@ -285,6 +291,7 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--query-stream", required=True)
     run.add_argument("--output", required=True)
     run.add_argument("--backends", default="cpu_python_reference,cpu")
+    run.add_argument("--reference-backend", default="cpu_python_reference")
     run.add_argument("--warmups", type=int, default=0)
     run.add_argument("--repeats", type=int, default=1)
 
@@ -305,6 +312,7 @@ def main(argv: list[str] | None = None) -> int:
     payload = run_stream(
         query_stream=args.query_stream,
         backends=backends,
+        reference_backend=args.reference_backend,
         warmups=args.warmups,
         repeats=args.repeats,
     )
