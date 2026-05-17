@@ -74,6 +74,12 @@ detect_cuda_major() {
   echo "${version_text}" | sed -n 's/.*release \([0-9][0-9]*\)\..*/\1/p' | head -n 1
 }
 
+detect_cuda_major_minor_dash() {
+  local version_text
+  version_text="$("${CUDA_PREFIX}/bin/nvcc" --version 2>/dev/null || true)"
+  echo "${version_text}" | sed -n 's/.*release \([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1-\2/p' | head -n 1
+}
+
 require_cuda12_for_cupy_package() {
   local cuda_major
   cuda_major="$(detect_cuda_major)"
@@ -87,6 +93,25 @@ require_cuda12_for_cupy_package() {
   fi
   log "CUDA major ${cuda_major:-unknown} does not match cupy-cuda12x; set CUDA_PREFIX to CUDA 12.x or ALLOW_NON_CUDA12=1 for manual debugging"
   exit 5
+}
+
+install_cuda_nvtx_if_available() {
+  local cuda_major_minor
+  cuda_major_minor="$(detect_cuda_major_minor_dash)"
+  if [[ -z "${cuda_major_minor}" ]]; then
+    log "could not infer CUDA major/minor for optional NVTX package"
+    return
+  fi
+  local package="cuda-nvtx-${cuda_major_minor}"
+  if dpkg -s "${package}" >/dev/null 2>&1; then
+    log "${package} already installed"
+    return
+  fi
+  if apt-cache show "${package}" >/dev/null 2>&1; then
+    run_step "apt_install_${package}" env DEBIAN_FRONTEND=noninteractive apt-get install -y "${package}"
+    return
+  fi
+  log "${package} not available; relying on CUDA include tree for NVTX headers"
 }
 
 install_host_dependencies() {
@@ -111,13 +136,13 @@ install_host_dependencies() {
     libgeos-dev \
     libgflags-dev \
     libgoogle-glog-dev \
-    libnvtx3-dev \
     libtbb-dev \
     ninja-build \
     nlohmann-json3-dev \
     python3 \
     python3-pip \
     python3-venv
+  install_cuda_nvtx_if_available
 }
 
 install_optix_sdk_if_needed() {

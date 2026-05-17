@@ -16,15 +16,17 @@ Goal2198 connects those pieces into one repeatable pod procedure:
 
 1. clone RTDL from Git,
 2. clone RayJoin at commit `02bf6220d6d20b04af77ee20364eced75cc029c9`,
-3. apply the known RayJoin build-compatibility patches for current CUDA/OptiX
+3. install host dependencies without assuming Ubuntu provides `libnvtx3-dev`
+   and use CUDA's `cuda-nvtx-<major>-<minor>` package when available,
+4. apply the known RayJoin build-compatibility patches for current CUDA/OptiX
    pods,
-4. apply the Goal2195 `-query_stream_output` export patch,
-5. build RayJoin and RTDL Embree/OptiX,
-6. run RayJoin `grid`, `lbvh`, and `rt` modes for generated PIP and LSI
+5. apply the Goal2195 `-query_stream_output` export patch,
+6. build RayJoin and RTDL Embree/OptiX,
+7. run RayJoin `grid`, `lbvh`, and `rt` modes for generated PIP and LSI
    workloads,
-7. feed the RayJoin-exported query streams to RTDL `cpu`, `embree`, and
+8. feed the RayJoin-exported query streams to RTDL `cpu`, `embree`, and
    `optix` backends,
-8. write a bounded summary artifact.
+9. write a bounded summary artifact.
 
 This is the next pod step toward a fair RayJoin comparison because RTDL no
 longer consumes a different query protocol.
@@ -116,6 +118,12 @@ Gemini's Goal2199 review accepted the runbook with one concrete boundary: the
 runner originally installed `cupy-cuda12x` without an explicit CUDA-major guard.
 The runner now parses `nvcc --version` and fails closed unless CUDA 12.x is
 detected, or `ALLOW_NON_CUDA12=1` is set for manual debugging.
+
+The first 2026-05-17 pod attempt also showed that Ubuntu 24.04 does not expose
+`libnvtx3-dev` even though CUDA's `cuda-nvtx-12-8` package and `nvtx3` headers
+are present. The runner no longer requires `libnvtx3-dev`; it installs the
+matching CUDA NVTX package when available and otherwise relies on the CUDA
+include tree.
 
 ## Next Hardware Step
 
