@@ -59,6 +59,9 @@ Observation:
 - Generic scalar count APIs help when witness rows are large, but both
   closed-shape membership and segment-pair intersection still pay candidate
   copyback plus host exact refinement.
+- Goal2273 showed that sparse RayJoin-exported LSI does not benefit from
+  scalar count alone because witness output is already small; the next
+  improvement needs to reduce segment-pair candidate/refinement cost itself.
 - The remaining gap to RayJoin's paper benchmark is not the predicate itself:
   RTDL still returns host-visible rows through the Python boundary, while the
   RayJoin paper reports a tighter pure GPU query-execution metric.
@@ -69,6 +72,8 @@ Future work:
   scenes.
 - Keep the primitive vocabulary generic: point, shape, membership, row stream,
   compact positives.
+- Include segment-pair predicate/count continuation as a generic stream case,
+  not as an LSI or RayJoin-specialized path.
 - Let Python/partner code decide whether to materialize rows, reduce them, or
   keep them GPU-resident for a downstream partner primitive.
 

@@ -1,0 +1,42 @@
+{
+  "goal": 2273,
+  "generated_at_utc": "2026-05-17T20:13:26Z",
+  "commit": "dffabc1317f382dcb19cd3ea30087692a0b69e48",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "workload": "lsi",
+  "query_count": 100000,
+  "left_segments": 100000,
+  "right_segments": 326193,
+  "prepare_sec": 1.1301910672336817,
+  "raw_row_count": 8921,
+  "scalar_count": 8921,
+  "parity": true,
+  "row_raw_seconds": [
+    0.1828813124448061,
+    0.18188928626477718,
+    0.1887139156460762,
+    0.13384674489498138,
+    0.17845917493104935
+  ],
+  "count_seconds": [
+    0.1853126920759678,
+    0.19014975428581238,
+    0.13295472040772438,
+    0.1810839083045721,
+    0.18973241560161114
+  ],
+  "row_raw_median_sec": 0.18188928626477718,
+  "count_median_sec": 0.1853126920759678,
+  "count_to_row_ratio": 1.0188213714039602,
+  "row_to_count_speedup": 0.9815263284298563,
+  "claim_boundary": {
+    "measured_scope": "prepared OptiX segment-pair exact scalar count vs raw witness-row return on RayJoin-exported 100k LSI query stream",
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false
+  }
+}
