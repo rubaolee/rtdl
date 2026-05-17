@@ -1,0 +1,160 @@
+{
+  "goal": 2270,
+  "generated_at_utc": "2026-05-17T20:08:15Z",
+  "commit": "dffabc1317f382dcb19cd3ea30087692a0b69e48",
+  "pod_ssh": "root@69.30.85.202 -p 22064 -i C:/Users/Lestat/.ssh/id_ed25519_rtdl_codex_current_pod",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "python": "3.12.3",
+  "claim_boundary": {
+    "measured_scope": "prepared OptiX segment-pair intersection exact scalar count vs raw witness-row return on synthetic crossing grids",
+    "rt_core_claim": "same OptiX custom primitive traversal path as row-return segment-pair intersection; scalar count avoids final native row allocation and Python row conversion only",
+    "whole_app_speedup_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false
+  },
+  "results": [
+    {
+      "n": 256,
+      "left_segments": 256,
+      "right_segments": 256,
+      "expected_intersections": 65536,
+      "prepare_sec": 0.9204360246658325,
+      "raw_row_count": 65536,
+      "scalar_count": 65536,
+      "parity": true,
+      "row_raw_seconds": [
+        0.007055297493934631,
+        0.006879925727844238,
+        0.006861032918095589
+      ],
+      "count_seconds": [
+        0.006541313603520393,
+        0.006627285853028297,
+        0.00662761926651001
+      ],
+      "row_raw_median_sec": 0.006879925727844238,
+      "count_median_sec": 0.006627285853028297,
+      "count_to_row_ratio": 0.9632786915426333,
+      "row_to_count_speedup": 1.038121167612002
+    },
+    {
+      "n": 512,
+      "left_segments": 512,
+      "right_segments": 512,
+      "expected_intersections": 262144,
+      "prepare_sec": 0.0009789802134037018,
+      "raw_row_count": 262144,
+      "scalar_count": 262144,
+      "parity": true,
+      "row_raw_seconds": [
+        0.026872269809246063,
+        0.02690059132874012,
+        0.02667662501335144
+      ],
+      "count_seconds": [
+        0.029557084664702415,
+        0.026943478733301163,
+        0.02456120029091835
+      ],
+      "row_raw_median_sec": 0.026872269809246063,
+      "count_median_sec": 0.026943478733301163,
+      "count_to_row_ratio": 1.0026499035831575,
+      "row_to_count_speedup": 0.9973570998474266
+    },
+    {
+      "n": 768,
+      "left_segments": 768,
+      "right_segments": 768,
+      "expected_intersections": 589824,
+      "prepare_sec": 0.0014022216200828552,
+      "raw_row_count": 589824,
+      "scalar_count": 589824,
+      "parity": true,
+      "row_raw_seconds": [
+        0.07664026878774166,
+        0.08041419275105,
+        0.07685628347098827
+      ],
+      "count_seconds": [
+        0.060240600258111954,
+        0.054058944806456566,
+        0.053617820143699646
+      ],
+      "row_raw_median_sec": 0.07685628347098827,
+      "count_median_sec": 0.054058944806456566,
+      "count_to_row_ratio": 0.7033770352278711,
+      "row_to_count_speedup": 1.42171260919264
+    },
+    {
+      "n": 1024,
+      "left_segments": 1024,
+      "right_segments": 1024,
+      "expected_intersections": 1048576,
+      "prepare_sec": 0.0016897860914468765,
+      "raw_row_count": 1048576,
+      "scalar_count": 1048576,
+      "parity": true,
+      "row_raw_seconds": [
+        0.12920685671269894,
+        0.11150529608130455,
+        0.13729861937463284
+      ],
+      "count_seconds": [
+        0.10613448917865753,
+        0.10670428350567818,
+        0.10605890490114689
+      ],
+      "row_raw_median_sec": 0.12920685671269894,
+      "count_median_sec": 0.10613448917865753,
+      "count_to_row_ratio": 0.8214307806795074,
+      "row_to_count_speedup": 1.217388030154867
+    },
+    {
+      "n": 1536,
+      "left_segments": 1536,
+      "right_segments": 1536,
+      "expected_intersections": 2359296,
+      "prepare_sec": 0.002438364550471306,
+      "raw_row_count": 2359296,
+      "scalar_count": 2359296,
+      "parity": true,
+      "row_raw_seconds": [
+        0.2601097356528044,
+        0.2667544651776552,
+        0.2956619393080473
+      ],
+      "count_seconds": [
+        0.2112883236259222,
+        0.22853726893663406,
+        0.2107168398797512
+      ],
+      "row_raw_median_sec": 0.2667544651776552,
+      "count_median_sec": 0.2112883236259222,
+      "count_to_row_ratio": 0.7920704288312729,
+      "row_to_count_speedup": 1.2625139932007492
+    },
+    {
+      "n": 2048,
+      "left_segments": 2048,
+      "right_segments": 2048,
+      "expected_intersections": 4194304,
+      "prepare_sec": 0.0026383958756923676,
+      "raw_row_count": 4194304,
+      "scalar_count": 4194304,
+      "parity": true,
+      "row_raw_seconds": [
+        0.49297941848635674,
+        0.4665037915110588,
+        0.519499808549881
+      ],
+      "count_seconds": [
+        0.37381972558796406,
+        0.38892591930925846,
+        0.37032647244632244
+      ],
+      "row_raw_median_sec": 0.49297941848635674,
+      "count_median_sec": 0.37381972558796406,
+      "count_to_row_ratio": 0.75828667804376,
+      "row_to_count_speedup": 1.318762453508765
+    }
+  ]
+}

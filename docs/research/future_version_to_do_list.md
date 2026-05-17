@@ -48,12 +48,17 @@ Boundary:
 
 ### Device-Resident Prepared Scene Output Streams
 
-Origin: Goal2249 RayJoin same-query PIP prepared closed-shape pod evidence.
+Origin: Goal2249 RayJoin same-query PIP prepared closed-shape pod evidence;
+reinforced by Goal2266 prepared closed-shape count scaling and Goal2270
+prepared segment-pair count scaling.
 
 Observation:
 
 - Prepared closed-shape membership removes repeated scene upload/build overhead
   and improves the 100,000-query same-query PIP path.
+- Generic scalar count APIs help when witness rows are large, but both
+  closed-shape membership and segment-pair intersection still pay candidate
+  copyback plus host exact refinement.
 - The remaining gap to RayJoin's paper benchmark is not the predicate itself:
   RTDL still returns host-visible rows through the Python boundary, while the
   RayJoin paper reports a tighter pure GPU query-execution metric.
