@@ -583,6 +583,32 @@ class PreparedOptixSegmentPairIntersection:
         finally:
             rows.close()
 
+    def count(self, left_segments) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        left = _pack_for_geometry("segments", left_segments)
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            "rtdl_optix_count_prepared_segment_pair_intersection",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_segment_pair_intersection; rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            left.records,
+            left.count,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
     def close(self) -> None:
         if not self._closed:
             destroy = _find_optional_backend_symbol(
@@ -5742,6 +5768,20 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_run_prepared_segment_pair.restype = ctypes.c_int
+    optional_count_prepared_segment_pair = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_segment_pair_intersection",
+    )
+    if optional_count_prepared_segment_pair is not None:
+        optional_count_prepared_segment_pair.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_segment_pair.restype = ctypes.c_int
     optional_destroy_prepared_segment_pair = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_destroy_prepared_segment_pair_intersection",
