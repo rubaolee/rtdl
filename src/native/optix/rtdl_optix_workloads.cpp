@@ -2188,6 +2188,7 @@ struct SegmentPairIntersectionLaunchParams {
 struct PreparedSegmentPairIntersectionBuild {
     std::vector<GpuSegment> right_segments;
     std::vector<RtdlSegment> host_right_segments;
+    std::unordered_map<uint32_t, const RtdlSegment*> right_by_id;
     size_t right_count = 0;
     DevPtr d_right;
     AccelHolder accel;
@@ -2200,6 +2201,10 @@ struct PreparedSegmentPairIntersectionBuild {
     {
         if (count > 0) {
             host_right_segments.assign(right, right + count);
+            right_by_id.reserve(count);
+            for (size_t i = 0; i < count; ++i) {
+                right_by_id.emplace(host_right_segments[i].id, &host_right_segments[i]);
+            }
         }
         for (size_t i = 0; i < count; ++i) {
             right_segments[i] = {
@@ -2243,17 +2248,22 @@ static void finalize_segment_pair_intersection_rows(
         const RtdlSegment* right, size_t right_count,
         const std::vector<GpuSegmentPairIntersectionRecord>& gpu_rows,
         RtdlSegmentPairIntersectionRow** rows_out,
-        size_t* row_count_out)
+        size_t* row_count_out,
+        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
 {
     std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
-    std::unordered_map<uint32_t, const RtdlSegment*> right_by_id;
     left_by_id.reserve(left_count);
-    right_by_id.reserve(right_count);
     for (size_t i = 0; i < left_count; ++i) {
         left_by_id.emplace(left[i].id, &left[i]);
     }
-    for (size_t i = 0; i < right_count; ++i) {
-        right_by_id.emplace(right[i].id, &right[i]);
+    std::unordered_map<uint32_t, const RtdlSegment*> local_right_by_id;
+    const std::unordered_map<uint32_t, const RtdlSegment*>* right_lookup = prepared_right_by_id;
+    if (!right_lookup) {
+        local_right_by_id.reserve(right_count);
+        for (size_t i = 0; i < right_count; ++i) {
+            local_right_by_id.emplace(right[i].id, &right[i]);
+        }
+        right_lookup = &local_right_by_id;
     }
 
     std::vector<RtdlSegmentPairIntersectionRow> refined;
@@ -2263,8 +2273,8 @@ static void finalize_segment_pair_intersection_rows(
 
     for (const auto& gpu_row : gpu_rows) {
         const auto left_it = left_by_id.find(gpu_row.left_id);
-        const auto right_it = right_by_id.find(gpu_row.right_id);
-        if (left_it == left_by_id.end() || right_it == right_by_id.end()) {
+        const auto right_it = right_lookup->find(gpu_row.right_id);
+        if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
             continue;
         }
         const uint64_t pair_key =
@@ -2301,17 +2311,22 @@ static void finalize_segment_pair_intersection_rows(
 static size_t count_segment_pair_intersection_rows(
         const RtdlSegment* left, size_t left_count,
         const RtdlSegment* right, size_t right_count,
-        const std::vector<GpuSegmentPairIntersectionRecord>& gpu_rows)
+        const std::vector<GpuSegmentPairIntersectionRecord>& gpu_rows,
+        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
 {
     std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
-    std::unordered_map<uint32_t, const RtdlSegment*> right_by_id;
     left_by_id.reserve(left_count);
-    right_by_id.reserve(right_count);
     for (size_t i = 0; i < left_count; ++i) {
         left_by_id.emplace(left[i].id, &left[i]);
     }
-    for (size_t i = 0; i < right_count; ++i) {
-        right_by_id.emplace(right[i].id, &right[i]);
+    std::unordered_map<uint32_t, const RtdlSegment*> local_right_by_id;
+    const std::unordered_map<uint32_t, const RtdlSegment*>* right_lookup = prepared_right_by_id;
+    if (!right_lookup) {
+        local_right_by_id.reserve(right_count);
+        for (size_t i = 0; i < right_count; ++i) {
+            local_right_by_id.emplace(right[i].id, &right[i]);
+        }
+        right_lookup = &local_right_by_id;
     }
 
     size_t exact_count = 0;
@@ -2320,8 +2335,8 @@ static size_t count_segment_pair_intersection_rows(
 
     for (const auto& gpu_row : gpu_rows) {
         const auto left_it = left_by_id.find(gpu_row.left_id);
-        const auto right_it = right_by_id.find(gpu_row.right_id);
-        if (left_it == left_by_id.end() || right_it == right_by_id.end()) {
+        const auto right_it = right_lookup->find(gpu_row.right_id);
+        if (left_it == left_by_id.end() || right_it == right_lookup->end()) {
             continue;
         }
         const uint64_t pair_key =
@@ -2445,7 +2460,8 @@ static void launch_segment_pair_intersection_optix(
         OptixTraversableHandle traversable,
         RtdlSegmentPairIntersectionRow** rows_out,
         size_t* row_count_out,
-        const RtdlSegment* right_host)
+        const RtdlSegment* right_host,
+        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
 {
     (void)gpu_left_host;
     (void)gpu_right_host;
@@ -2457,7 +2473,8 @@ static void launch_segment_pair_intersection_optix(
         right_host, right_count,
         gpu_rows,
         rows_out,
-        row_count_out);
+        row_count_out,
+        prepared_right_by_id);
 }
 
 static void run_segment_pair_intersection_optix(
@@ -2536,7 +2553,8 @@ static void run_prepared_segment_pair_intersection_optix(
         prepared->accel.handle,
         rows_out,
         row_count_out,
-        prepared->host_right_segments.data());
+        prepared->host_right_segments.data(),
+        &prepared->right_by_id);
 }
 
 static void count_prepared_segment_pair_intersection_optix(
@@ -2580,7 +2598,8 @@ static void count_prepared_segment_pair_intersection_optix(
         left_count,
         prepared->host_right_segments.data(),
         prepared->right_count,
-        gpu_rows);
+        gpu_rows,
+        &prepared->right_by_id);
 }
 
 static void run_ray_segment_group_count_2d_optix(
