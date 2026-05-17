@@ -42,3 +42,33 @@ Goal2235 pod probe.
 The next performance target is a still-generic closed-shape membership or
 caller-supplied predicate primitive. The engine must not regress to app-named
 RayJoin or PIP exports, and these goals do not close the v2.0 release gate.
+
+## Clean Pushed-Commit Rerun
+
+After publishing commit `d02fd5b1`, the RTX pod was reset to `origin/main` and
+rerun without a local patch:
+
+```text
+git fetch origin main
+git reset --hard origin/main
+git rev-parse --short HEAD
+d02fd5b1
+
+timeout 600 make build-optix OPTIX_PREFIX=/root/vendor/optix-sdk CUDA_PREFIX=/usr/local/cuda-12.8
+
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal2229_ray_segment_group_count_primitive_test \
+  tests.goal2231_ray_segment_group_count_2ai_consensus_test \
+  tests.goal2233_prepared_ray_segment_group_count_test \
+  tests.goal2235_prepared_ray_segment_odd_parity_test \
+  tests.goal2237_prepared_group_count_2ai_consensus_test
+Ran 18 tests: OK
+```
+
+The compact odd-parity functional probe on the clean pushed commit returned:
+
+```json
+[
+  {"group_id": 8, "hit_count": 1, "parity": 1, "ray_id": 1}
+]
+```
