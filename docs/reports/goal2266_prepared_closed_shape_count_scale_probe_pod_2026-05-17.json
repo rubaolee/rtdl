@@ -1,0 +1,172 @@
+{
+  "base_expected_count": 8686,
+  "base_query_count": 100000,
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rayjoin_paper_dataset_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "synthetic_scale_probe_only": true,
+    "v2_0_release_authorized": false
+  },
+  "commit": "749158335c6a2d86832890c5d627b803a32041a7",
+  "goal": "2266",
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json",
+  "query_stream_transform": "repeat_rayjoin_exported_100k_queries_with_new_ids",
+  "repeats": 5,
+  "results": [
+    {
+      "count_all_match_expected": true,
+      "count_elapsed_sec_median": 0.043399712070822716,
+      "count_elapsed_sec_values": [
+        0.043399712070822716,
+        0.04548119194805622,
+        0.04404236935079098,
+        0.04246268421411514,
+        0.038933290168643
+      ],
+      "count_values": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ],
+      "count_vs_rows_ratio": 0.6857051516844683,
+      "expected_count": 8686,
+      "factor": 1,
+      "query_count": 100000,
+      "row_counts": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ],
+      "rows_all_match_expected": true,
+      "rows_elapsed_sec_median": 0.06329208984971046,
+      "rows_elapsed_sec_values": [
+        0.06329208984971046,
+        0.06385503150522709,
+        0.07242696732282639,
+        0.0578751303255558,
+        0.05229079723358154
+      ]
+    },
+    {
+      "count_all_match_expected": true,
+      "count_elapsed_sec_median": 0.07056158594787121,
+      "count_elapsed_sec_values": [
+        0.06968409568071365,
+        0.07652949914336205,
+        0.07357894815504551,
+        0.07056158594787121,
+        0.07048293575644493
+      ],
+      "count_values": [
+        17372,
+        17372,
+        17372,
+        17372,
+        17372
+      ],
+      "count_vs_rows_ratio": 0.726484526770595,
+      "expected_count": 17372,
+      "factor": 2,
+      "query_count": 200000,
+      "row_counts": [
+        17372,
+        17372,
+        17372,
+        17372,
+        17372
+      ],
+      "rows_all_match_expected": true,
+      "rows_elapsed_sec_median": 0.09712744504213333,
+      "rows_elapsed_sec_values": [
+        0.10175029933452606,
+        0.10239353217184544,
+        0.09697622619569302,
+        0.09712744504213333,
+        0.09649188816547394
+      ]
+    },
+    {
+      "count_all_match_expected": true,
+      "count_elapsed_sec_median": 0.17201292887330055,
+      "count_elapsed_sec_values": [
+        0.17796715535223484,
+        0.1712458524852991,
+        0.1701560765504837,
+        0.17378811910748482,
+        0.17201292887330055
+      ],
+      "count_values": [
+        43430,
+        43430,
+        43430,
+        43430,
+        43430
+      ],
+      "count_vs_rows_ratio": 0.7457342228442421,
+      "expected_count": 43430,
+      "factor": 5,
+      "query_count": 500000,
+      "row_counts": [
+        43430,
+        43430,
+        43430,
+        43430,
+        43430
+      ],
+      "rows_all_match_expected": true,
+      "rows_elapsed_sec_median": 0.23066251166164875,
+      "rows_elapsed_sec_values": [
+        0.23083021491765976,
+        0.23066251166164875,
+        0.23735264129936695,
+        0.23044924437999725,
+        0.2267716582864523
+      ]
+    },
+    {
+      "count_all_match_expected": true,
+      "count_elapsed_sec_median": 0.3518645130097866,
+      "count_elapsed_sec_values": [
+        0.34902128018438816,
+        0.3524675089865923,
+        0.3518645130097866,
+        0.35216010361909866,
+        0.35125509090721607
+      ],
+      "count_values": [
+        86860,
+        86860,
+        86860,
+        86860,
+        86860
+      ],
+      "count_vs_rows_ratio": 0.7555960200508284,
+      "expected_count": 86860,
+      "factor": 10,
+      "query_count": 1000000,
+      "row_counts": [
+        86860,
+        86860,
+        86860,
+        86860,
+        86860
+      ],
+      "rows_all_match_expected": true,
+      "rows_elapsed_sec_median": 0.4656780920922756,
+      "rows_elapsed_sec_values": [
+        0.4650375619530678,
+        0.4642650578171015,
+        0.4677771143615246,
+        0.46980256773531437,
+        0.4656780920922756
+      ]
+    }
+  ],
+  "schema": "rtdl.rayjoin.prepared_closed_shape_count_scale_probe.v1",
+  "warmups": 1
+}
