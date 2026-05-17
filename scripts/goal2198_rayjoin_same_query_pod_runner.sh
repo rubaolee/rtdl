@@ -12,6 +12,8 @@ OPTIX_PREFIX="${OPTIX_PREFIX:-/root/vendor/optix-sdk}"
 OPTIX_TAG="${OPTIX_TAG:-v8.0.0}"
 CUDA_PREFIX="${CUDA_PREFIX:-}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+USE_PYTHON_VENV="${USE_PYTHON_VENV:-1}"
+VENV_DIR="${VENV_DIR:-${WORK_DIR}/.venv}"
 GEN_N="${GEN_N:-100000}"
 GEN_T="${GEN_T:-0.1}"
 SEED="${SEED:-2184}"
@@ -143,6 +145,21 @@ install_host_dependencies() {
     python3-pip \
     python3-venv
   install_cuda_nvtx_if_available
+}
+
+prepare_python_environment() {
+  if [[ "${RUN_PIP_INSTALL}" != "1" ]]; then
+    log "skip Python venv preparation because RUN_PIP_INSTALL=${RUN_PIP_INSTALL}"
+    return
+  fi
+  if [[ "${USE_PYTHON_VENV}" != "1" ]]; then
+    log "using caller-provided Python environment: ${PYTHON_BIN}"
+    return
+  fi
+  local bootstrap_python="${PYTHON_BIN}"
+  run_step create_python_venv "${bootstrap_python}" -m venv "${VENV_DIR}"
+  PYTHON_BIN="${VENV_DIR}/bin/python"
+  log "using Python venv ${VENV_DIR}"
 }
 
 install_optix_sdk_if_needed() {
@@ -336,6 +353,8 @@ write_environment() {
     echo "optix_tag=${OPTIX_TAG}"
     echo "cuda_prefix=${CUDA_PREFIX}"
     echo "python=$(${PYTHON_BIN} --version 2>&1)"
+    echo "use_python_venv=${USE_PYTHON_VENV}"
+    echo "venv_dir=${VENV_DIR}"
     echo "gen_n=${GEN_N}"
     echo "gen_t=${GEN_T}"
     echo "seed=${SEED}"
@@ -453,6 +472,7 @@ main() {
 
   write_environment
   install_host_dependencies
+  prepare_python_environment
   install_python_dependencies
   install_optix_sdk_if_needed
   clone_or_update_rtdl

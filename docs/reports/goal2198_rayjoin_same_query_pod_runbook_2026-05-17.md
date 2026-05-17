@@ -56,6 +56,8 @@ Important environment knobs:
 | `OPTIX_PREFIX` | `/root/vendor/optix-sdk` | OptiX SDK header location. |
 | `OPTIX_TAG` | `v8.0.0` | SDK tag cloned if headers are missing. |
 | `CUDA_PREFIX` | auto-detected | Prefer `/usr/local/cuda-12.8`, then CUDA 12, then `/usr/local/cuda`. |
+| `USE_PYTHON_VENV` | `1` | Create a local pod venv before pip installs, avoiding Ubuntu 24.04 PEP 668 system-Python blocking. |
+| `VENV_DIR` | `$WORK_DIR/.venv` | Virtual environment path when `USE_PYTHON_VENV=1`. |
 | `ALLOW_NON_CUDA12` | `0` | Fail closed if `nvcc` is not CUDA 12.x because the runner installs `cupy-cuda12x`; set to `1` only for manual debugging. |
 | `GEN_N` | `100000` | Generated query count. |
 | `GEN_T` | `0.1` | RayJoin generated-query size parameter. |
@@ -124,6 +126,10 @@ The first 2026-05-17 pod attempt also showed that Ubuntu 24.04 does not expose
 are present. The runner no longer requires `libnvtx3-dev`; it installs the
 matching CUDA NVTX package when available and otherwise relies on the CUDA
 include tree.
+
+The second 2026-05-17 pod attempt showed Ubuntu 24.04's PEP 668
+`externally-managed-environment` guard blocking system-wide `pip` installs. The
+runner now creates a local venv by default and installs Python packages there.
 
 ## Next Hardware Step
 

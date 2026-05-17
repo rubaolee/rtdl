@@ -37,6 +37,9 @@ class Goal2198RayJoinSameQueryPodRunnerTest(unittest.TestCase):
         self.assertIn("detect_cuda_major", text)
         self.assertIn("ALLOW_NON_CUDA12", text)
         self.assertIn("cupy-cuda12x", text)
+        self.assertIn("prepare_python_environment", text)
+        self.assertIn("USE_PYTHON_VENV", text)
+        self.assertIn("-m venv", text)
 
     def test_runner_preserves_external_rayjoin_and_claim_boundaries(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
