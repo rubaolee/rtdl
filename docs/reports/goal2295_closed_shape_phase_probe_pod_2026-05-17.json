@@ -1,0 +1,28 @@
+{
+  "row_count": 8686,
+  "count": 8686,
+  "row_wall_sec": 0.06598453782498837,
+  "count_wall_sec": 0.048410043120384216,
+  "row_phase": {
+    "mode": "rows",
+    "point_pack": 0.001307263,
+    "point_upload": 0.000312892,
+    "candidate_count_pass": 0.0,
+    "candidate_write_pass": 0.037341257,
+    "candidate_download": 4.2015e-05,
+    "exact_refine": 0.012925899,
+    "raw_candidate_count": 8793,
+    "emitted_count": 8686
+  },
+  "count_phase": {
+    "mode": "count",
+    "point_pack": 0.00032462,
+    "point_upload": 0.000287538,
+    "candidate_count_pass": 0.0,
+    "candidate_write_pass": 0.037544275,
+    "candidate_download": 2.7711e-05,
+    "exact_refine": 0.009765691,
+    "raw_candidate_count": 8793,
+    "emitted_count": 8686
+  }
+}

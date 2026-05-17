@@ -79,6 +79,16 @@ thread_local size_t g_optix_last_segment_pair_raw_candidate_count = 0;
 thread_local size_t g_optix_last_segment_pair_emitted_count = 0;
 thread_local uint32_t g_optix_last_segment_pair_mode = 0;
 
+thread_local double g_optix_last_closed_shape_point_pack_s = 0.0;
+thread_local double g_optix_last_closed_shape_point_upload_s = 0.0;
+thread_local double g_optix_last_closed_shape_candidate_count_s = 0.0;
+thread_local double g_optix_last_closed_shape_candidate_write_s = 0.0;
+thread_local double g_optix_last_closed_shape_candidate_download_s = 0.0;
+thread_local double g_optix_last_closed_shape_exact_refine_s = 0.0;
+thread_local size_t g_optix_last_closed_shape_raw_candidate_count = 0;
+thread_local size_t g_optix_last_closed_shape_emitted_count = 0;
+thread_local uint32_t g_optix_last_closed_shape_mode = 0;
+
 extern "C" int rtdl_optix_columnar_payload_get_last_phase_timings(
         double* traversal,
         double* bitset_copy,
@@ -117,6 +127,29 @@ extern "C" int rtdl_optix_segment_pair_intersection_get_last_phase_timings(
     return 0;
 }
 
+extern "C" int rtdl_optix_closed_shape_membership_get_last_phase_timings(
+        double* point_pack,
+        double* point_upload,
+        double* candidate_count,
+        double* candidate_write,
+        double* candidate_download,
+        double* exact_refine,
+        size_t* raw_candidate_count,
+        size_t* emitted_count,
+        uint32_t* mode)
+{
+    if (point_pack) *point_pack = g_optix_last_closed_shape_point_pack_s;
+    if (point_upload) *point_upload = g_optix_last_closed_shape_point_upload_s;
+    if (candidate_count) *candidate_count = g_optix_last_closed_shape_candidate_count_s;
+    if (candidate_write) *candidate_write = g_optix_last_closed_shape_candidate_write_s;
+    if (candidate_download) *candidate_download = g_optix_last_closed_shape_candidate_download_s;
+    if (exact_refine) *exact_refine = g_optix_last_closed_shape_exact_refine_s;
+    if (raw_candidate_count) *raw_candidate_count = g_optix_last_closed_shape_raw_candidate_count;
+    if (emitted_count) *emitted_count = g_optix_last_closed_shape_emitted_count;
+    if (mode) *mode = g_optix_last_closed_shape_mode;
+    return 0;
+}
+
 static void reset_segment_pair_phase_timings(uint32_t mode)
 {
     g_optix_last_segment_pair_left_upload_s = 0.0;
@@ -127,6 +160,26 @@ static void reset_segment_pair_phase_timings(uint32_t mode)
     g_optix_last_segment_pair_raw_candidate_count = 0;
     g_optix_last_segment_pair_emitted_count = 0;
     g_optix_last_segment_pair_mode = mode;
+}
+
+static void reset_closed_shape_membership_phase_timings(uint32_t mode)
+{
+    g_optix_last_closed_shape_point_pack_s = 0.0;
+    g_optix_last_closed_shape_point_upload_s = 0.0;
+    g_optix_last_closed_shape_candidate_count_s = 0.0;
+    g_optix_last_closed_shape_candidate_write_s = 0.0;
+    g_optix_last_closed_shape_candidate_download_s = 0.0;
+    g_optix_last_closed_shape_exact_refine_s = 0.0;
+    g_optix_last_closed_shape_raw_candidate_count = 0;
+    g_optix_last_closed_shape_emitted_count = 0;
+    g_optix_last_closed_shape_mode = mode;
+}
+
+static double seconds_between(
+        std::chrono::steady_clock::time_point start,
+        std::chrono::steady_clock::time_point end)
+{
+    return std::chrono::duration<double>(end - start).count();
 }
 
 static size_t db_find_field_index_or_throw(
@@ -3830,8 +3883,10 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
         throw std::runtime_error("prepared closed-shape membership shape count exceeds uint32_t launch capacity");
     }
 
+    reset_closed_shape_membership_phase_timings(1u);
     ensure_pip_pipeline();
 
+    const auto t_pack_start = std::chrono::steady_clock::now();
     std::vector<float> pts_x(point_count), pts_y(point_count);
     std::vector<uint32_t> pt_ids(point_count);
     for (size_t i = 0; i < point_count; ++i) {
@@ -3839,13 +3894,18 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
         pts_y[i] = static_cast<float>(points[i].y);
         pt_ids[i] = points[i].id;
     }
+    const auto t_pack_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_pack_s = seconds_between(t_pack_start, t_pack_end);
 
+    const auto t_upload_start = std::chrono::steady_clock::now();
     DevPtr d_pts_x(sizeof(float) * point_count);
     DevPtr d_pts_y(sizeof(float) * point_count);
     DevPtr d_pt_ids(sizeof(uint32_t) * point_count);
     upload(d_pts_x.ptr, pts_x.data(), point_count);
     upload(d_pts_y.ptr, pts_y.data(), point_count);
     upload(d_pt_ids.ptr, pt_ids.data(), point_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_upload_s = seconds_between(t_upload_start, t_upload_end);
 
     DevPtr d_count(sizeof(uint32_t));
     uint32_t zero = 0;
@@ -3911,11 +3971,18 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
         lp.probe_count = static_cast<uint32_t>(chunk_point_count);
         lp.point_index_offset = static_cast<uint32_t>(point_offset);
         upload(d_params.ptr, &lp, 1);
+        const auto t_launch_start = std::chrono::steady_clock::now();
         OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
                                  d_params.ptr, sizeof(PipLaunchParams),
                                  &g_pip.pipe->sbt,
                                  static_cast<unsigned>(chunk_point_count), 1, 1));
         CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        if (output_capacity == 0u) {
+            g_optix_last_closed_shape_candidate_count_s += seconds_between(t_launch_start, t_launch_end);
+        } else {
+            g_optix_last_closed_shape_candidate_write_s += seconds_between(t_launch_start, t_launch_end);
+        }
         uint32_t emitted = 0;
         download(&emitted, d_count.ptr, 1);
         if (emitted > output_capacity && output_capacity != 0u && !allow_overflow) {
@@ -3941,7 +4008,11 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
                 }
                 const size_t old_size = gpu_rows.size();
                 gpu_rows.resize(old_size + gpu_count);
+                const auto t_download_start = std::chrono::steady_clock::now();
                 download(gpu_rows.data() + old_size, d_positive_output.ptr, gpu_count);
+                const auto t_download_end = std::chrono::steady_clock::now();
+                g_optix_last_closed_shape_candidate_download_s += seconds_between(t_download_start, t_download_end);
+                g_optix_last_closed_shape_raw_candidate_count += gpu_count;
                 continue;
             }
         } else {
@@ -3958,11 +4029,16 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
         }
         const size_t old_size = gpu_rows.size();
         gpu_rows.resize(old_size + gpu_count);
+        const auto t_download_start = std::chrono::steady_clock::now();
         download(gpu_rows.data() + old_size, d_positive_output.ptr, gpu_count);
+        const auto t_download_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_candidate_download_s += seconds_between(t_download_start, t_download_end);
+        g_optix_last_closed_shape_raw_candidate_count += gpu_count;
     }
 
     std::vector<RtdlPointClosedShapeMembershipRow> rows;
     rows.reserve(gpu_rows.size());
+    const auto t_refine_start = std::chrono::steady_clock::now();
     for (const auto& gpu_row : gpu_rows) {
         const size_t pi = static_cast<size_t>(gpu_row.point_id);
         const size_t qi = static_cast<size_t>(gpu_row.polygon_id);
@@ -3982,6 +4058,9 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
 #endif
         rows.push_back({point.id, shape.id, 1u});
     }
+    const auto t_refine_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_exact_refine_s = seconds_between(t_refine_start, t_refine_end);
+    g_optix_last_closed_shape_emitted_count = rows.size();
 
     auto* out = static_cast<RtdlPointClosedShapeMembershipRow*>(
         std::malloc(sizeof(RtdlPointClosedShapeMembershipRow) * rows.size()));
@@ -4018,8 +4097,10 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
         throw std::runtime_error("prepared closed-shape membership count shape count exceeds uint32_t launch capacity");
     }
 
+    reset_closed_shape_membership_phase_timings(2u);
     ensure_pip_pipeline();
 
+    const auto t_pack_start = std::chrono::steady_clock::now();
     std::vector<float> pts_x(point_count), pts_y(point_count);
     std::vector<uint32_t> pt_ids(point_count);
     for (size_t i = 0; i < point_count; ++i) {
@@ -4027,13 +4108,18 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
         pts_y[i] = static_cast<float>(points[i].y);
         pt_ids[i] = points[i].id;
     }
+    const auto t_pack_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_pack_s = seconds_between(t_pack_start, t_pack_end);
 
+    const auto t_upload_start = std::chrono::steady_clock::now();
     DevPtr d_pts_x(sizeof(float) * point_count);
     DevPtr d_pts_y(sizeof(float) * point_count);
     DevPtr d_pt_ids(sizeof(uint32_t) * point_count);
     upload(d_pts_x.ptr, pts_x.data(), point_count);
     upload(d_pts_y.ptr, pts_y.data(), point_count);
     upload(d_pt_ids.ptr, pt_ids.data(), point_count);
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_closed_shape_point_upload_s = seconds_between(t_upload_start, t_upload_end);
 
     DevPtr d_count(sizeof(uint32_t));
     uint32_t zero = 0;
@@ -4095,11 +4181,18 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
         lp.probe_count = static_cast<uint32_t>(chunk_point_count);
         lp.point_index_offset = static_cast<uint32_t>(point_offset);
         upload(d_params.ptr, &lp, 1);
+        const auto t_launch_start = std::chrono::steady_clock::now();
         OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
                                  d_params.ptr, sizeof(PipLaunchParams),
                                  &g_pip.pipe->sbt,
                                  static_cast<unsigned>(chunk_point_count), 1, 1));
         CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        if (output_capacity == 0u) {
+            g_optix_last_closed_shape_candidate_count_s += seconds_between(t_launch_start, t_launch_end);
+        } else {
+            g_optix_last_closed_shape_candidate_write_s += seconds_between(t_launch_start, t_launch_end);
+        }
         uint32_t emitted = 0;
         download(&emitted, d_count.ptr, 1);
         if (emitted > output_capacity && output_capacity != 0u && !allow_overflow) {
@@ -4112,6 +4205,7 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
         std::getenv("RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT") == nullptr;
     size_t exact_count = 0;
     auto count_exact_hits = [&](const std::vector<GpuPipRecord>& gpu_rows) {
+        const auto t_refine_start = std::chrono::steady_clock::now();
         for (const auto& gpu_row : gpu_rows) {
             const size_t pi = static_cast<size_t>(gpu_row.point_id);
             const size_t qi = static_cast<size_t>(gpu_row.polygon_id);
@@ -4131,6 +4225,8 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
 #endif
             ++exact_count;
         }
+        const auto t_refine_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_exact_refine_s += seconds_between(t_refine_start, t_refine_end);
     };
 
     for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
@@ -4149,7 +4245,11 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
                     continue;
                 }
                 std::vector<GpuPipRecord> chunk_rows(gpu_count);
+                const auto t_download_start = std::chrono::steady_clock::now();
                 download(chunk_rows.data(), d_positive_output.ptr, gpu_count);
+                const auto t_download_end = std::chrono::steady_clock::now();
+                g_optix_last_closed_shape_candidate_download_s += seconds_between(t_download_start, t_download_end);
+                g_optix_last_closed_shape_raw_candidate_count += gpu_count;
                 count_exact_hits(chunk_rows);
                 continue;
             }
@@ -4166,10 +4266,15 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
             throw std::runtime_error("prepared closed-shape membership count candidate count changed between count and write passes");
         }
         std::vector<GpuPipRecord> chunk_rows(gpu_count);
+        const auto t_download_start = std::chrono::steady_clock::now();
         download(chunk_rows.data(), d_positive_output.ptr, gpu_count);
+        const auto t_download_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_candidate_download_s += seconds_between(t_download_start, t_download_end);
+        g_optix_last_closed_shape_raw_candidate_count += gpu_count;
         count_exact_hits(chunk_rows);
     }
 
+    g_optix_last_closed_shape_emitted_count = exact_count;
     *count_out = exact_count;
 }
 
