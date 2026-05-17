@@ -40,7 +40,7 @@ class Goal2159RayjoinPublicCdbRunnerTest(unittest.TestCase):
                     "--cases",
                     "pip_county512,lsi_county256_soil256_count192",
                     "--backends",
-                    "cpu,optix,cupy_lsi_bruteforce",
+                    "cpu,optix,cupy_lsi_bruteforce,optix_prepared_lsi",
                     "--dry-run",
                 ],
                 cwd=ROOT,
@@ -63,6 +63,10 @@ class Goal2159RayjoinPublicCdbRunnerTest(unittest.TestCase):
             artifact["cases"]["lsi_county256_soil256_count192"]["backends"]["cupy_lsi_bruteforce"]["status"],
             "dry_run",
         )
+        self.assertEqual(
+            artifact["cases"]["lsi_county256_soil256_count192"]["backends"]["optix_prepared_lsi"]["status"],
+            "dry_run",
+        )
         self.assertIn("county_256_192", artifact["slices"])
 
     def test_runner_source_keeps_claim_boundary_flags(self) -> None:
@@ -75,7 +79,9 @@ class Goal2159RayjoinPublicCdbRunnerTest(unittest.TestCase):
             "whole_app_rayjoin_speedup_claim_authorized",
             "v2_0_release_authorized",
             "cupy_lsi_bruteforce",
+            "optix_prepared_lsi",
             "partner_accelerated",
+            "prepared_build_side_reused",
             "rt_core_accelerated\": False",
         ):
             with self.subTest(phrase=phrase):

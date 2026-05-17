@@ -287,6 +287,16 @@ int  rtdl_optix_run_segment_pair_intersection(
          const RtdlSegment* right, size_t right_count,
          RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_segment_pair_intersection(
+         const RtdlSegment* right, size_t right_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_pair_intersection(
+         void* prepared,
+         const RtdlSegment* left, size_t left_count,
+         RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared);
 int  rtdl_optix_run_point_primitive_anyhit_packet(
          const RtdlPoint* points,     size_t point_count,
          const RtdlPolygonRef* polys, size_t poly_count,

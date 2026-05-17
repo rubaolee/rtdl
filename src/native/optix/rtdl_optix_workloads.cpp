@@ -2185,11 +2185,46 @@ struct SegmentPairIntersectionLaunchParams {
     uint32_t          probe_count;
 };
 
-static void run_segment_pair_intersection_optix(
-        const RtdlSegment* left,  size_t left_count,
-        const RtdlSegment* right, size_t right_count,
-        RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out)
-{
+struct PreparedSegmentPairIntersectionBuild {
+    std::vector<GpuSegment> right_segments;
+    std::vector<RtdlSegment> host_right_segments;
+    size_t right_count = 0;
+    DevPtr d_right;
+    AccelHolder accel;
+
+    PreparedSegmentPairIntersectionBuild(const RtdlSegment* right, size_t count)
+        : right_segments(count),
+          host_right_segments(),
+          right_count(count),
+          d_right(sizeof(GpuSegment) * count)
+    {
+        if (count > 0) {
+            host_right_segments.assign(right, right + count);
+        }
+        for (size_t i = 0; i < count; ++i) {
+            right_segments[i] = {
+                static_cast<float>(right[i].x0),
+                static_cast<float>(right[i].y0),
+                static_cast<float>(right[i].x1),
+                static_cast<float>(right[i].y1),
+                right[i].id,
+            };
+        }
+        upload(d_right.ptr, right_segments.data(), right_segments.size());
+
+        if (!right_segments.empty()) {
+            std::vector<OptixAabb> aabbs(right_segments.size());
+            for (size_t i = 0; i < right_segments.size(); ++i) {
+                aabbs[i] = aabb_for_segment(
+                    right_segments[i].x0, right_segments[i].y0,
+                    right_segments[i].x1, right_segments[i].y1);
+            }
+            accel = build_custom_accel(get_optix_context(), aabbs);
+        }
+    }
+};
+
+static void ensure_segment_pair_intersection_pipeline() {
     std::call_once(g_segment_pair_intersection.init, [&]() {
         std::string ptx = compile_to_ptx(kSegmentPairIntersectionKernelSrc, "segment_pair_intersection_kernel.cu");
         g_segment_pair_intersection.pipe = build_pipeline(
@@ -2201,6 +2236,138 @@ static void run_segment_pair_intersection_optix(
             nullptr,   // no closesthit
             4).release();
     });
+}
+
+static void finalize_segment_pair_intersection_rows(
+        const RtdlSegment* left, size_t left_count,
+        const RtdlSegment* right, size_t right_count,
+        const std::vector<GpuSegmentPairIntersectionRecord>& gpu_rows,
+        RtdlSegmentPairIntersectionRow** rows_out,
+        size_t* row_count_out)
+{
+    std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
+    std::unordered_map<uint32_t, const RtdlSegment*> right_by_id;
+    left_by_id.reserve(left_count);
+    right_by_id.reserve(right_count);
+    for (size_t i = 0; i < left_count; ++i) {
+        left_by_id.emplace(left[i].id, &left[i]);
+    }
+    for (size_t i = 0; i < right_count; ++i) {
+        right_by_id.emplace(right[i].id, &right[i]);
+    }
+
+    std::vector<RtdlSegmentPairIntersectionRow> refined;
+    refined.reserve(gpu_rows.size());
+    std::unordered_set<uint64_t> seen_pairs;
+    seen_pairs.reserve(gpu_rows.size() * 2 + 1);
+
+    for (const auto& gpu_row : gpu_rows) {
+        const auto left_it = left_by_id.find(gpu_row.left_id);
+        const auto right_it = right_by_id.find(gpu_row.right_id);
+        if (left_it == left_by_id.end() || right_it == right_by_id.end()) {
+            continue;
+        }
+        const uint64_t pair_key =
+            (static_cast<uint64_t>(gpu_row.left_id) << 32) |
+            static_cast<uint64_t>(gpu_row.right_id);
+        if (seen_pairs.find(pair_key) != seen_pairs.end()) {
+            continue;
+        }
+        double ix = 0.0;
+        double iy = 0.0;
+        if (!exact_segment_intersection(*left_it->second, *right_it->second, &ix, &iy)) {
+            continue;
+        }
+        seen_pairs.insert(pair_key);
+        refined.push_back(
+            RtdlSegmentPairIntersectionRow{
+                gpu_row.left_id,
+                gpu_row.right_id,
+                ix,
+                iy,
+            });
+    }
+
+    auto* out = static_cast<RtdlSegmentPairIntersectionRow*>(
+        std::malloc(sizeof(RtdlSegmentPairIntersectionRow) * refined.size()));
+    if (!out && !refined.empty()) throw std::bad_alloc();
+    for (size_t i = 0; i < refined.size(); ++i) {
+        out[i] = refined[i];
+    }
+    *rows_out = out;
+    *row_count_out = refined.size();
+}
+
+static void launch_segment_pair_intersection_optix(
+        const RtdlSegment* left, size_t left_count,
+        const GpuSegment* gpu_left_host,
+        CUdeviceptr d_left_ptr,
+        const GpuSegment* gpu_right_host,
+        CUdeviceptr d_right_ptr,
+        size_t right_count,
+        OptixTraversableHandle traversable,
+        RtdlSegmentPairIntersectionRow** rows_out,
+        size_t* row_count_out,
+        const RtdlSegment* right_host)
+{
+    if (left_count == 0 || right_count == 0) {
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        return;
+    }
+    const uint64_t capacity64 = static_cast<uint64_t>(left_count) * static_cast<uint64_t>(right_count);
+    if (capacity64 > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("segment-pair intersection output capacity exceeds uint32_t");
+    }
+    const uint32_t capacity = static_cast<uint32_t>(capacity64);
+    DevPtr d_output(sizeof(GpuSegmentPairIntersectionRecord) * capacity);
+    DevPtr d_count(sizeof(uint32_t));
+    uint32_t zero = 0;
+    upload<uint32_t>(d_count.ptr, &zero, 1);
+
+    SegmentPairIntersectionLaunchParams lp;
+    lp.traversable = traversable;
+    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
+    lp.right_segs = reinterpret_cast<const GpuSegment*>(d_right_ptr);
+    lp.output = reinterpret_cast<GpuSegmentPairIntersectionRecord*>(d_output.ptr);
+    lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = capacity;
+    lp.probe_count = static_cast<uint32_t>(left_count);
+
+    DevPtr d_params(sizeof(SegmentPairIntersectionLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_segment_pair_intersection.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(SegmentPairIntersectionLaunchParams),
+                             &g_segment_pair_intersection.pipe->sbt,
+                             static_cast<unsigned>(left_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    uint32_t gpu_count = 0;
+    download(&gpu_count, d_count.ptr, 1);
+    if (gpu_count > capacity) {
+        throw std::runtime_error("segment-pair intersection output overflowed capacity");
+    }
+
+    std::vector<GpuSegmentPairIntersectionRecord> gpu_rows(gpu_count);
+    if (gpu_count > 0) {
+        download(gpu_rows.data(), d_output.ptr, gpu_count);
+    }
+    finalize_segment_pair_intersection_rows(
+        left, left_count,
+        right_host, right_count,
+        gpu_rows,
+        rows_out,
+        row_count_out);
+}
+
+static void run_segment_pair_intersection_optix(
+        const RtdlSegment* left,  size_t left_count,
+        const RtdlSegment* right, size_t right_count,
+        RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out)
+{
+    ensure_segment_pair_intersection_pipeline();
 
     // Upload segments
     std::vector<GpuSegment> gpu_left(left_count), gpu_right(right_count);
@@ -2223,93 +2390,55 @@ static void run_segment_pair_intersection_optix(
                                     gpu_right[i].x1, gpu_right[i].y1);
     AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
 
-    // Output buffer
-    uint32_t capacity = static_cast<uint32_t>(left_count * right_count);
-    DevPtr d_output  (sizeof(GpuSegmentPairIntersectionRecord) * capacity);
-    DevPtr d_count   (sizeof(uint32_t));
-    uint32_t zero = 0;
-    upload<uint32_t>(d_count.ptr, &zero, 1);
+    launch_segment_pair_intersection_optix(
+        left, left_count,
+        gpu_left.data(), d_left.ptr,
+        gpu_right.data(), d_right.ptr,
+        right_count,
+        accel.handle,
+        rows_out,
+        row_count_out,
+        right);
+}
 
-    // Launch params
-    SegmentPairIntersectionLaunchParams lp;
-    lp.traversable      = accel.handle;
-    lp.left_segs        = reinterpret_cast<const GpuSegment*>(d_left.ptr);
-    lp.right_segs       = reinterpret_cast<const GpuSegment*>(d_right.ptr);
-    lp.output           = reinterpret_cast<GpuSegmentPairIntersectionRecord*>(d_output.ptr);
-    lp.output_count     = reinterpret_cast<uint32_t*>(d_count.ptr);
-    lp.output_capacity  = capacity;
-    lp.probe_count      = static_cast<uint32_t>(left_count);
+static PreparedSegmentPairIntersectionBuild* prepare_segment_pair_intersection_optix(
+        const RtdlSegment* right, size_t right_count)
+{
+    ensure_segment_pair_intersection_pipeline();
+    return new PreparedSegmentPairIntersectionBuild(right, right_count);
+}
 
-    DevPtr d_params(sizeof(SegmentPairIntersectionLaunchParams));
-    upload(d_params.ptr, &lp, 1);
-
-    CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_segment_pair_intersection.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(SegmentPairIntersectionLaunchParams),
-                             &g_segment_pair_intersection.pipe->sbt,
-                             static_cast<unsigned>(left_count), 1, 1));
-    CU_CHECK(cuStreamSynchronize(stream));
-
-    // Read back results
-    uint32_t gpu_count = 0;
-    download(&gpu_count, d_count.ptr, 1);
-    if (gpu_count > capacity)
-        throw std::runtime_error("segment-pair intersection output overflowed capacity");
-
-    std::vector<GpuSegmentPairIntersectionRecord> gpu_rows(gpu_count);
-    if (gpu_count > 0)
-        download(gpu_rows.data(), d_output.ptr, gpu_count);
-
-    std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
-    std::unordered_map<uint32_t, const RtdlSegment*> right_by_id;
-    left_by_id.reserve(left_count);
-    right_by_id.reserve(right_count);
+static void run_prepared_segment_pair_intersection_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        const RtdlSegment* left, size_t left_count,
+        RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    ensure_segment_pair_intersection_pipeline();
+    std::vector<GpuSegment> gpu_left(left_count);
     for (size_t i = 0; i < left_count; ++i) {
-        left_by_id.emplace(left[i].id, &left[i]);
+        gpu_left[i] = {
+            static_cast<float>(left[i].x0),
+            static_cast<float>(left[i].y0),
+            static_cast<float>(left[i].x1),
+            static_cast<float>(left[i].y1),
+            left[i].id,
+        };
     }
-    for (size_t i = 0; i < right_count; ++i) {
-        right_by_id.emplace(right[i].id, &right[i]);
-    }
+    DevPtr d_left(sizeof(GpuSegment) * left_count);
+    upload(d_left.ptr, gpu_left.data(), gpu_left.size());
 
-    std::vector<RtdlSegmentPairIntersectionRow> refined;
-    refined.reserve(gpu_count);
-    std::unordered_set<uint64_t> seen_pairs;
-    seen_pairs.reserve(gpu_count * 2 + 1);
-
-    for (uint32_t i = 0; i < gpu_count; ++i) {
-        const auto left_it = left_by_id.find(gpu_rows[i].left_id);
-        const auto right_it = right_by_id.find(gpu_rows[i].right_id);
-        if (left_it == left_by_id.end() || right_it == right_by_id.end()) {
-            continue;
-        }
-        const uint64_t pair_key =
-            (static_cast<uint64_t>(gpu_rows[i].left_id) << 32) |
-            static_cast<uint64_t>(gpu_rows[i].right_id);
-        if (seen_pairs.find(pair_key) != seen_pairs.end()) {
-            continue;
-        }
-        double ix = 0.0;
-        double iy = 0.0;
-        if (!exact_segment_intersection(*left_it->second, *right_it->second, &ix, &iy)) {
-            continue;
-        }
-        seen_pairs.insert(pair_key);
-        refined.push_back(
-            RtdlSegmentPairIntersectionRow{
-                gpu_rows[i].left_id,
-                gpu_rows[i].right_id,
-                ix,
-                iy,
-            });
-    }
-
-    auto* out = static_cast<RtdlSegmentPairIntersectionRow*>(std::malloc(sizeof(RtdlSegmentPairIntersectionRow) * refined.size()));
-    if (!out && !refined.empty()) throw std::bad_alloc();
-    for (size_t i = 0; i < refined.size(); ++i) {
-        out[i] = refined[i];
-    }
-    *rows_out      = out;
-    *row_count_out = refined.size();
+    launch_segment_pair_intersection_optix(
+        left, left_count,
+        gpu_left.data(), d_left.ptr,
+        prepared->right_segments.data(), prepared->d_right.ptr,
+        prepared->right_count,
+        prepared->accel.handle,
+        rows_out,
+        row_count_out,
+        prepared->host_right_segments.data());
 }
 
 // ---------- PIP --------------------------------------------------------------

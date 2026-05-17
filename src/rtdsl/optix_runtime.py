@@ -519,6 +519,88 @@ def prepare_optix(kernel_fn_or_compiled) -> PreparedOptixKernel:
     return PreparedOptixKernel(kernel_fn_or_compiled)
 
 
+@dataclass
+class PreparedOptixSegmentPairIntersection:
+    library: object
+    prepared_handle: ctypes.c_void_p
+    _closed: bool = False
+
+    def run_raw(self, left_segments) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        left = _pack_for_geometry("segments", left_segments)
+        rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_optix_run_prepared_segment_pair_intersection(
+            self.prepared_handle,
+            left.records,
+            left.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlLsiRow,
+            field_names=("left_id", "right_id", "intersection_point_x", "intersection_point_y"),
+        )
+
+    def run(self, left_segments) -> tuple:
+        rows = self.run_raw(left_segments)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy = _find_optional_backend_symbol(
+                self.library,
+                "rtdl_optix_destroy_prepared_segment_pair_intersection",
+            )
+            if destroy is not None:
+                destroy(self.prepared_handle)
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegmentPairIntersection:
+    lib = _load_optix_library()
+    prepare_symbol = _require_backend_symbol(lib, "rtdl_optix_prepare_segment_pair_intersection")
+    _require_backend_symbol(lib, "rtdl_optix_run_prepared_segment_pair_intersection")
+    right = _pack_for_geometry("segments", right_segments)
+    prepared = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        right.records,
+        right.count,
+        ctypes.byref(prepared),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedOptixSegmentPairIntersection(
+        library=lib,
+        prepared_handle=prepared,
+    )
+
+
 def clear_optix_prepared_cache() -> None:
     _prepared_optix_execution_cache.clear()
 
@@ -5125,6 +5207,41 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_optix_run_segment_pair_intersection.restype = ctypes.c_int
+    optional_prepare_segment_pair = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_segment_pair_intersection",
+    )
+    if optional_prepare_segment_pair is not None:
+        optional_prepare_segment_pair.argtypes = [
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_segment_pair.restype = ctypes.c_int
+    optional_run_prepared_segment_pair = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_segment_pair_intersection",
+    )
+    if optional_run_prepared_segment_pair is not None:
+        optional_run_prepared_segment_pair.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_run_prepared_segment_pair.restype = ctypes.c_int
+    optional_destroy_prepared_segment_pair = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_destroy_prepared_segment_pair_intersection",
+    )
+    if optional_destroy_prepared_segment_pair is not None:
+        optional_destroy_prepared_segment_pair.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_segment_pair.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_point_primitive_anyhit_packet").argtypes = [
         ctypes.POINTER(_RtdlPoint),      ctypes.c_size_t,

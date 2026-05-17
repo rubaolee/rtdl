@@ -131,6 +131,47 @@ extern "C" int rtdl_optix_run_segment_pair_intersection(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_segment_pair_intersection(
+        const RtdlSegment* right, size_t right_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!right && right_count != 0)
+            throw std::runtime_error("right pointer must not be null when right_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_segment_pair_intersection_optix(right, right_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_pair_intersection(
+        void* prepared,
+        const RtdlSegment* left, size_t left_count,
+        RtdlSegmentPairIntersectionRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!left && left_count != 0)
+            throw std::runtime_error("left pointer must not be null when left_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        run_prepared_segment_pair_intersection_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            left, left_count,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared)
+{
+    delete reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared);
+}
+
 extern "C" int rtdl_optix_run_point_primitive_anyhit_packet(
         const RtdlPoint* points,     size_t point_count,
         const RtdlPolygonRef* polys, size_t poly_count,

@@ -22,6 +22,7 @@ from rtdsl.datasets import chains_to_segments
 from rtdsl.datasets import download_rayjoin_sample
 from rtdsl.datasets import load_cdb
 from rtdsl.datasets import write_cdb
+from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
 
 
 DEFAULT_DATA_DIR = ROOT / "data" / "rayjoin"
@@ -91,6 +92,26 @@ CASES: dict[str, CaseSpec] = {
             SliceSpec("br_soil", 256, 192, "br_soil_start256_count192.cdb"),
         ),
         note="Best Goal2157 bounded nonzero county/soil LSI slice.",
+    ),
+    "lsi_county256_soil256_count256": CaseSpec(
+        label="lsi_county256_soil256_count256",
+        workload="lsi",
+        dataset="{county_256_256} + {soil_256_256}",
+        slices=(
+            SliceSpec("br_county", 256, 256, "br_county_start256_count256.cdb"),
+            SliceSpec("br_soil", 256, 256, "br_soil_start256_count256.cdb"),
+        ),
+        note="Larger nonzero county/soil LSI slice for prepared OptiX amortization checks.",
+    ),
+    "lsi_county256_soil256_count384": CaseSpec(
+        label="lsi_county256_soil256_count384",
+        workload="lsi",
+        dataset="{county_256_384} + {soil_256_384}",
+        slices=(
+            SliceSpec("br_county", 256, 384, "br_county_start256_count384.cdb"),
+            SliceSpec("br_soil", 256, 384, "br_soil_start256_count384.cdb"),
+        ),
+        note="Larger bounded county/soil LSI stress slice for RT-vs-CUDA-core comparison.",
     ),
     "lsi_county64_self_positive_control": CaseSpec(
         label="lsi_county64_self_positive_control",
@@ -352,6 +373,68 @@ def _run_cupy_lsi_backend(
     }
 
 
+def _run_optix_prepared_lsi_backend(
+    case: CaseSpec,
+    dataset: str,
+    *,
+    warmups: int,
+    repeats: int,
+) -> dict[str, object]:
+    if case.workload != "lsi":
+        raise ValueError("optix_prepared_lsi currently supports only the LSI workload")
+    left_segments, right_segments = _load_lsi_segments(dataset)
+    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+    reference_rows = tuple(reference["rows"])
+
+    prepare_start = time.perf_counter()
+    prepared = prepare_segment_pair_intersection_optix(right_segments)
+    prepare_elapsed = time.perf_counter() - prepare_start
+    times: list[float] = []
+    rows: list[int] = []
+    parity: list[bool] = []
+    try:
+        for index in range(warmups):
+            start = time.perf_counter()
+            result_rows = prepared.run(left_segments)
+            elapsed = time.perf_counter() - start
+            print(
+                f"[goal2159] warmup {case.label}/optix_prepared_lsi {index + 1}/{warmups} "
+                f"app={elapsed:.6f}s rows={len(result_rows)} "
+                f"parity={compare_baseline_rows('lsi', reference_rows, result_rows)}",
+                flush=True,
+            )
+        for index in range(repeats):
+            start = time.perf_counter()
+            result_rows = prepared.run(left_segments)
+            elapsed = time.perf_counter() - start
+            times.append(elapsed)
+            rows.append(len(result_rows))
+            parity.append(compare_baseline_rows("lsi", reference_rows, result_rows))
+            print(
+                f"[goal2159] repeat {case.label}/optix_prepared_lsi {index + 1}/{repeats} "
+                f"app={times[-1]:.6f}s rows={rows[-1]} parity={parity[-1]}",
+                flush=True,
+            )
+    finally:
+        prepared.close()
+    return {
+        "status": "ok",
+        "prepare_elapsed_sec": prepare_elapsed,
+        "app_elapsed_sec_values": times,
+        "app_elapsed_sec_median": _median(times),
+        "row_counts": rows,
+        "row_count_consistent": len(set(rows)) == 1,
+        "all_parity_vs_cpu_python_reference": all(parity),
+        "rt_core_accelerated": True,
+        "partner_accelerated": False,
+        "baseline_kind": "prepared_optix_segment_pair_intersection_reused_build_side",
+        "prepared_build_side_reused": True,
+        "left_segment_count": len(left_segments),
+        "right_segment_count": len(right_segments),
+        "candidate_pair_count": len(left_segments) * len(right_segments),
+    }
+
+
 def _run_case(
     case: CaseSpec,
     dataset: str,
@@ -378,6 +461,18 @@ def _run_case(
         try:
             if backend == "cupy_lsi_bruteforce":
                 backend_payload = _run_cupy_lsi_backend(
+                    case,
+                    dataset,
+                    warmups=warmups,
+                    repeats=repeats,
+                )
+                backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
+                payload["backends"][backend] = backend_payload
+                if hasattr(signal, "SIGALRM"):
+                    signal.alarm(0)
+                continue
+            if backend == "optix_prepared_lsi":
+                backend_payload = _run_optix_prepared_lsi_backend(
                     case,
                     dataset,
                     warmups=warmups,
