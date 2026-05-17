@@ -1,0 +1,256 @@
+{
+  "all_match_expected": true,
+  "claim_boundary": {
+    "broad_coordinate_scale_claim_authorized": false,
+    "broad_performance_claim_authorized": false,
+    "synthetic_single_shape_correctness_smoke": true,
+    "v2_0_release_authorized": false
+  },
+  "commit": "ec7f2dd5aabc65fc53ae655da52d726e7836f870",
+  "generated_at_utc": "2026-05-17T23:45:04Z",
+  "goal": 2308,
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "records": [
+    {
+      "center": 0.0,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.6e-06,
+        "candidate_write_pass": 3.5676e-05,
+        "emitted_count": 1,
+        "exact_refine": 1.022e-06,
+        "mode": "rows",
+        "point_pack": 2.04e-07,
+        "point_upload": 2.2951e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1.0
+    },
+    {
+      "center": 1e-12,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.676e-06,
+        "candidate_write_pass": 3.4307e-05,
+        "emitted_count": 1,
+        "exact_refine": 8.73e-07,
+        "mode": "rows",
+        "point_pack": 1.26e-07,
+        "point_upload": 2.2301e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1.0
+    },
+    {
+      "center": 1e-09,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.455e-06,
+        "candidate_write_pass": 3.1958e-05,
+        "emitted_count": 1,
+        "exact_refine": 7.12e-07,
+        "mode": "rows",
+        "point_pack": 1.01e-07,
+        "point_upload": 2.1468e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1.0
+    },
+    {
+      "center": 1e-06,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.406e-06,
+        "candidate_write_pass": 3.2132e-05,
+        "emitted_count": 1,
+        "exact_refine": 7.69e-07,
+        "mode": "rows",
+        "point_pack": 1.01e-07,
+        "point_upload": 2.0968e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1.0
+    },
+    {
+      "center": 0.001,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.442e-06,
+        "candidate_write_pass": 3.0925e-05,
+        "emitted_count": 1,
+        "exact_refine": 9.41e-07,
+        "mode": "rows",
+        "point_pack": 1.02e-07,
+        "point_upload": 2.0849e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1.0
+    },
+    {
+      "center": 1.0,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.588e-06,
+        "candidate_write_pass": 3.2038e-05,
+        "emitted_count": 1,
+        "exact_refine": 8.39e-07,
+        "mode": "rows",
+        "point_pack": 9e-08,
+        "point_upload": 2.0152e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1.0
+    },
+    {
+      "center": 1000.0,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.372e-06,
+        "candidate_write_pass": 3.1397e-05,
+        "emitted_count": 1,
+        "exact_refine": 8.23e-07,
+        "mode": "rows",
+        "point_pack": 8e-08,
+        "point_upload": 1.9741e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1.0
+    },
+    {
+      "center": 1000000.0,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.416e-06,
+        "candidate_write_pass": 3.381e-05,
+        "emitted_count": 1,
+        "exact_refine": 9.13e-07,
+        "mode": "rows",
+        "point_pack": 1.05e-07,
+        "point_upload": 1.9637e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 10.0
+    },
+    {
+      "center": 100000000.0,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.392e-06,
+        "candidate_write_pass": 3.9492e-05,
+        "emitted_count": 1,
+        "exact_refine": 8.79e-07,
+        "mode": "rows",
+        "point_pack": 8.3e-08,
+        "point_upload": 2.0071e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 1000.0000000000001
+    },
+    {
+      "center": 1000000000.0,
+      "count": 1,
+      "matches_expected": true,
+      "phase": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 6.32e-06,
+        "candidate_write_pass": 3.9655e-05,
+        "emitted_count": 1,
+        "exact_refine": 9.31e-07,
+        "mode": "rows",
+        "point_pack": 8.7e-08,
+        "point_upload": 1.9971e-05,
+        "raw_candidate_count": 1
+      },
+      "rows": [
+        {
+          "membership": 1,
+          "point_id": 1,
+          "shape_id": 7
+        }
+      ],
+      "shape_half_extent": 10000.0
+    }
+  ],
+  "schema": "rtdl.closed_shape_bounded_probe_scale_smoke.v1"
+}
