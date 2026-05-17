@@ -1,0 +1,80 @@
+{
+  "backends": {
+    "cpu": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 2.7581064254045486,
+      "elapsed_sec_values": [
+        2.7581064254045486,
+        2.747183410450816,
+        2.7737789899110794
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    },
+    "embree": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.10624785907566547,
+      "elapsed_sec_values": [
+        0.10831251554191113,
+        0.10608446784317493,
+        0.10624785907566547
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok"
+    },
+    "optix": {
+      "all_parity_vs_cpu_python_reference": null,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 4.107544390484691,
+      "elapsed_sec_values": [
+        4.107544390484691,
+        4.30337099917233,
+        4.080679252743721
+      ],
+      "parity_reference_backend": "cpu",
+      "row_count_consistent": true,
+      "row_counts": [
+        8686,
+        8686,
+        8686
+      ],
+      "rt_core_accelerated": true,
+      "status": "ok"
+    }
+  },
+  "base_cdb": "/root/goal2198_rayjoin_same_query_pod_r6/RayJoin/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false
+  },
+  "commit": "7c80b901b6326e8c4e15e7bbeae7f97f786cb352",
+  "goal": "2192",
+  "query_count": 100000,
+  "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json",
+  "query_stream_producer": "rayjoin_query_exec_export_patch",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "reference_backend": "cpu",
+  "reference_row_count": 8686,
+  "repeats": 3,
+  "schema": "rtdl.rayjoin.same_query_result.v1",
+  "warmups": 1,
+  "workload": "pip"
+}

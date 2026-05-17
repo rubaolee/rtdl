@@ -1,0 +1,439 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false
+  },
+  "evidence_summary": {
+    "artifact_dir": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517",
+    "claim_boundary": {
+      "broad_rt_core_speedup_claim_authorized": false,
+      "paper_scale_perf_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "same_contract_with_rayjoin_query_exec": true,
+      "v2_0_release_authorized": false
+    },
+    "derived": {
+      "lsi": {
+        "rayjoin_rt_vs_grid_query_ratio": 0.13042948840978397,
+        "rayjoin_rt_vs_lbvh_query_ratio": 0.4003737816094211,
+        "rtdl_cpu_sec": 1.1534354332834482,
+        "rtdl_embree_sec": 106.04764894582331,
+        "rtdl_optix_sec": 0.08306415379047394,
+        "rtdl_optix_vs_cpu_ratio": 0.07201456743358216,
+        "rtdl_optix_vs_embree_ratio": 0.0007832719972218245
+      },
+      "pip": {
+        "rayjoin_rt_vs_grid_query_ratio": 0.034148001235125056,
+        "rayjoin_rt_vs_lbvh_query_ratio": 0.05620983901394821,
+        "rtdl_cpu_sec": 2.7581064254045486,
+        "rtdl_embree_sec": 0.10624785907566547,
+        "rtdl_optix_sec": 4.107544390484691,
+        "rtdl_optix_vs_cpu_ratio": 1.4892624710383362,
+        "rtdl_optix_vs_embree_ratio": 38.66002031682786
+      }
+    },
+    "goal": "2201",
+    "rayjoin": {
+      "lsi": {
+        "grid": {
+          "adaptive_grouping_ms": null,
+          "build_index_ms": 2.72202,
+          "built_in_check_passed": false,
+          "exists": true,
+          "intersections": 8921,
+          "optix_launch_count": 0,
+          "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_lsi_grid.log",
+          "query_count_from_log": null,
+          "query_ms": 4.6893,
+          "timing_ms": {
+            "Build Index": 2.72202,
+            "Cleanup": 5.07808,
+            "Create App": 0.324965,
+            "Generate Workloads": 14.5419,
+            "Init": 0.584126,
+            "Load Data": 0.746012,
+            "Query": 4.6893,
+            "Read map 0": 3672.71,
+            "Warmup": 4.89902
+          }
+        },
+        "lbvh": {
+          "adaptive_grouping_ms": null,
+          "build_index_ms": 4.31705,
+          "built_in_check_passed": false,
+          "exists": true,
+          "intersections": 8921,
+          "optix_launch_count": 0,
+          "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_lsi_lbvh.log",
+          "query_count_from_log": null,
+          "query_ms": 1.52763,
+          "timing_ms": {
+            "Build Index": 4.31705,
+            "Cleanup": 2.7051,
+            "Create App": 0.347137,
+            "Generate Workloads": 14.4498,
+            "Init": 0.722885,
+            "Load Data": 0.752926,
+            "Query": 1.52763,
+            "Read map 0": 3685.76,
+            "Warmup": 1.84011
+          }
+        },
+        "rt": {
+          "adaptive_grouping_ms": 0.431061,
+          "build_index_ms": 0.721931,
+          "built_in_check_passed": false,
+          "exists": true,
+          "intersections": 8921,
+          "optix_launch_count": 4,
+          "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_lsi_rt.log",
+          "query_count_from_log": 100000,
+          "query_ms": 0.611623,
+          "timing_ms": {
+            "Adaptive Grouping": 0.431061,
+            "Build Index": 0.721931,
+            "Cleanup": 9.08113,
+            "Create App": 374.773,
+            "Generate Workloads": 211.97,
+            "Init": 0.475883,
+            "Load Data": 0.824928,
+            "Query": 0.611623,
+            "Read map 0": 3605.18,
+            "Warmup": 0.732183
+          }
+        }
+      },
+      "pip": {
+        "grid": {
+          "adaptive_grouping_ms": null,
+          "build_index_ms": 1.86205,
+          "built_in_check_passed": false,
+          "exists": true,
+          "intersections": null,
+          "optix_launch_count": 0,
+          "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_pip_grid.log",
+          "query_count_from_log": null,
+          "query_ms": 16.8404,
+          "timing_ms": {
+            "Build Index": 1.86205,
+            "Cleanup": 2.26188,
+            "Create App": 0.0989437,
+            "Generate Workloads": 3.7868,
+            "Init": 0.00405312,
+            "Load Data": 0.8111,
+            "Query": 16.8404,
+            "Read map 0": 3335.11,
+            "Warmup": 16.6578
+          }
+        },
+        "lbvh": {
+          "adaptive_grouping_ms": null,
+          "build_index_ms": 21.0481,
+          "built_in_check_passed": true,
+          "exists": true,
+          "intersections": null,
+          "optix_launch_count": 0,
+          "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_pip_lbvh.log",
+          "query_count_from_log": null,
+          "query_ms": 10.2307,
+          "timing_ms": {
+            "Build Index": 21.0481,
+            "Check": 42.948,
+            "Cleanup": 2.17104,
+            "Create App": 0.110865,
+            "Generate Workloads": 6.69694,
+            "Init": 0.00500679,
+            "Load Data": 5.70202,
+            "Query": 10.2307,
+            "Read map 0": 3628.12,
+            "Warmup": 10.4339
+          }
+        },
+        "rt": {
+          "adaptive_grouping_ms": 0.550985,
+          "build_index_ms": 0.818968,
+          "built_in_check_passed": true,
+          "exists": true,
+          "intersections": null,
+          "optix_launch_count": 4,
+          "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_pip_rt.log",
+          "query_count_from_log": null,
+          "query_ms": 0.575066,
+          "timing_ms": {
+            "Adaptive Grouping": 0.550985,
+            "Build Index": 0.818968,
+            "Check": 33.5839,
+            "Cleanup": 2.97594,
+            "Create App": 141.501,
+            "Generate Workloads": 103.553,
+            "Init": 0.302076,
+            "Load Data": 0.833035,
+            "Query": 0.575066,
+            "Read map 0": 3471.04,
+            "Warmup": 0.665903
+          }
+        }
+      }
+    },
+    "rtdl": {
+      "lsi": {
+        "backends": {
+          "cpu": {
+            "all_parity_vs_cpu_python_reference": false,
+            "all_parity_vs_reference": true,
+            "elapsed_sec_median": 1.1534354332834482,
+            "elapsed_sec_values": [
+              1.1826816815882921,
+              1.0912442449480295,
+              1.1534354332834482
+            ],
+            "parity_reference_backend": "cpu",
+            "row_counts": [
+              8921,
+              8921,
+              8921
+            ],
+            "rt_core_accelerated": false
+          },
+          "embree": {
+            "all_parity_vs_cpu_python_reference": false,
+            "all_parity_vs_reference": true,
+            "elapsed_sec_median": 106.04764894582331,
+            "elapsed_sec_values": [
+              66.15045622363687,
+              109.74988750740886,
+              106.04764894582331
+            ],
+            "parity_reference_backend": "cpu",
+            "row_counts": [
+              8921,
+              8921,
+              8921
+            ],
+            "rt_core_accelerated": false
+          },
+          "optix": {
+            "all_parity_vs_cpu_python_reference": false,
+            "all_parity_vs_reference": true,
+            "elapsed_sec_median": 0.08306415379047394,
+            "elapsed_sec_values": [
+              0.08306415379047394,
+              0.07971083745360374,
+              0.09056658111512661
+            ],
+            "parity_reference_backend": "cpu",
+            "row_counts": [
+              8921,
+              8921,
+              8921
+            ],
+            "rt_core_accelerated": true
+          }
+        },
+        "claim_boundary": {
+          "paper_scale_perf_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "same_contract_with_rayjoin_query_exec": true,
+          "v2_0_release_authorized": false
+        },
+        "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rtdl_lsi_same_rayjoin_stream.json",
+        "query_count": 100000,
+        "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+        "query_stream_producer": "rayjoin_query_exec_export_patch",
+        "reference_backend": "cpu",
+        "reference_row_count": 8921,
+        "workload": "lsi"
+      },
+      "pip": {
+        "backends": {
+          "cpu": {
+            "all_parity_vs_cpu_python_reference": false,
+            "all_parity_vs_reference": true,
+            "elapsed_sec_median": 2.7581064254045486,
+            "elapsed_sec_values": [
+              2.7581064254045486,
+              2.747183410450816,
+              2.7737789899110794
+            ],
+            "parity_reference_backend": "cpu",
+            "row_counts": [
+              8686,
+              8686,
+              8686
+            ],
+            "rt_core_accelerated": false
+          },
+          "embree": {
+            "all_parity_vs_cpu_python_reference": false,
+            "all_parity_vs_reference": true,
+            "elapsed_sec_median": 0.10624785907566547,
+            "elapsed_sec_values": [
+              0.10831251554191113,
+              0.10608446784317493,
+              0.10624785907566547
+            ],
+            "parity_reference_backend": "cpu",
+            "row_counts": [
+              8686,
+              8686,
+              8686
+            ],
+            "rt_core_accelerated": false
+          },
+          "optix": {
+            "all_parity_vs_cpu_python_reference": false,
+            "all_parity_vs_reference": true,
+            "elapsed_sec_median": 4.107544390484691,
+            "elapsed_sec_values": [
+              4.107544390484691,
+              4.30337099917233,
+              4.080679252743721
+            ],
+            "parity_reference_backend": "cpu",
+            "row_counts": [
+              8686,
+              8686,
+              8686
+            ],
+            "rt_core_accelerated": true
+          }
+        },
+        "claim_boundary": {
+          "paper_scale_perf_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "same_contract_with_rayjoin_query_exec": true,
+          "v2_0_release_authorized": false
+        },
+        "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rtdl_pip_same_rayjoin_stream.json",
+        "query_count": 100000,
+        "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json",
+        "query_stream_producer": "rayjoin_query_exec_export_patch",
+        "reference_backend": "cpu",
+        "reference_row_count": 8686,
+        "workload": "pip"
+      }
+    },
+    "rtdl_commit": "7c80b901b6326e8c4e15e7bbeae7f97f786cb352",
+    "status": "parsed"
+  },
+  "goal": "2204",
+  "imported_files": [
+    {
+      "bytes": 3243,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\environment.txt",
+      "name": "environment.txt",
+      "sha256": "b4a624786d2627f0cb694c0c9b7389c08e303eae24ecea6717cbd46f250f0266",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\environment.txt"
+    },
+    {
+      "bytes": 4175,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\progress.log",
+      "name": "progress.log",
+      "sha256": "e70735d4d815c2719770fe0324255ec7f51aad6a72648494d7b5bde833c61b34",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\progress.log"
+    },
+    {
+      "bytes": 5160,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\summary.json",
+      "name": "summary.json",
+      "sha256": "f17d9943f6d15f5e8b592fd88124dc1e3e7e867ff05f6dfce8f0c5a8b5bbd92b",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\summary.json"
+    },
+    {
+      "bytes": 1074,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rayjoin_lsi_grid.log",
+      "name": "rayjoin_lsi_grid.log",
+      "sha256": "98dff30bfe2ca576c1047cbcd230fc32e7546d883cf00e07b8a4b38412540913",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_lsi_grid.log"
+    },
+    {
+      "bytes": 1074,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rayjoin_lsi_lbvh.log",
+      "name": "rayjoin_lsi_lbvh.log",
+      "sha256": "5ab7272c870294904b1b65ce1b35aa3fa02c1792cbab4e1179de41f8908bd435",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_lsi_lbvh.log"
+    },
+    {
+      "bytes": 1832,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rayjoin_lsi_rt.log",
+      "name": "rayjoin_lsi_rt.log",
+      "sha256": "aa7d34676a89e3279bab1813d9a383a538b4a8c3132012d504033ea8f020206a",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_lsi_rt.log"
+    },
+    {
+      "bytes": 2305,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rtdl_lsi_same_rayjoin_stream.json",
+      "name": "rtdl_lsi_same_rayjoin_stream.json",
+      "sha256": "ca89ac866330b184cb06a63fa2e540ce630bc0cbf0eb1a066b6c7656a3376aeb",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rtdl_lsi_same_rayjoin_stream.json"
+    },
+    {
+      "bytes": 673,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rayjoin_pip_grid.log",
+      "name": "rayjoin_pip_grid.log",
+      "sha256": "ab4f8f7a94ec49165f1bbe6d5fd3c520c7a36177bd5c0fff435cf13f437f7b46",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_pip_grid.log"
+    },
+    {
+      "bytes": 841,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rayjoin_pip_lbvh.log",
+      "name": "rayjoin_pip_lbvh.log",
+      "sha256": "86110c3f0c9c39e290d1d3caa13205f038947791a7cf9271460b3360d367385f",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_pip_lbvh.log"
+    },
+    {
+      "bytes": 1355,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rayjoin_pip_rt.log",
+      "name": "rayjoin_pip_rt.log",
+      "sha256": "8aee5f74d06b71c1eac0e7e87deef009e5df91b06e5ac6236ce4d9a8d35e2cb9",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_pip_rt.log"
+    },
+    {
+      "bytes": 2300,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\rtdl_pip_same_rayjoin_stream.json",
+      "name": "rtdl_pip_same_rayjoin_stream.json",
+      "sha256": "562c8dc2a4080b0e63b07bd5c04c8f8da933774f28b9b15a19c3a85ab411ed43",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rtdl_pip_same_rayjoin_stream.json"
+    },
+    {
+      "bytes": 10840,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\evidence_summary.regenerated.json",
+      "name": "evidence_summary.regenerated.json",
+      "sha256": "cc0d77a7cff64a2effc87e8d9ebf37b582be02ff72677281e608d3badda84b37",
+      "source": "generated by Goal2204 importer from imported raw artifacts"
+    },
+    {
+      "bytes": 1601,
+      "imported": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence\\evidence_report.regenerated.md",
+      "name": "evidence_report.regenerated.md",
+      "sha256": "c4e7d74fecc048455ecd70ec5216e24baa7ea38246cb8420686d2ac0e818e201",
+      "source": "generated by Goal2204 importer from imported raw artifacts"
+    }
+  ],
+  "include_streams": false,
+  "output_dir": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reports\\goal2209_rayjoin_same_query_pod_evidence",
+  "rtdl_commit": "7c80b901b6326e8c4e15e7bbeae7f97f786cb352",
+  "source_artifact_dir": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517",
+  "status": "imported",
+  "stream_provenance": [
+    {
+      "bytes": 12629253,
+      "copied_into_repo": false,
+      "name": "rayjoin_lsi_gen100000_stream.json",
+      "sha256": "5755c364fa968e084c944830d78fb9450df4caf9d71d56be6a4d891fde599d15",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_lsi_gen100000_stream.json",
+      "workload": "lsi"
+    },
+    {
+      "bytes": 7059386,
+      "copied_into_repo": false,
+      "name": "rayjoin_pip_gen100000_stream.json",
+      "sha256": "71a2efed61b4642aff795bdff17cb9c944f5435606326c3df7578f6fd6df6e2d",
+      "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scratch\\goal2198_r6_artifacts_20260517\\rayjoin_pip_gen100000_stream.json",
+      "workload": "pip"
+    }
+  ]
+}

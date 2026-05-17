@@ -1,0 +1,155 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false
+  },
+  "expected_rayjoin_commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+  "goal": "2198",
+  "rayjoin_commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+  "rayjoin_logs": {
+    "lsi_grid": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_grid.log",
+    "lsi_lbvh": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_lbvh.log",
+    "lsi_rt": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_rt.log",
+    "pip_grid": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_grid.log",
+    "pip_lbvh": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_lbvh.log",
+    "pip_rt": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_rt.log"
+  },
+  "results": {
+    "lsi": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": null,
+          "all_parity_vs_reference": true,
+          "elapsed_sec_median": 1.1534354332834482,
+          "elapsed_sec_values": [
+            1.1826816815882921,
+            1.0912442449480295,
+            1.1534354332834482
+          ],
+          "parity_reference_backend": "cpu",
+          "row_count_consistent": true,
+          "row_counts": [
+            8921,
+            8921,
+            8921
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": null,
+          "all_parity_vs_reference": true,
+          "elapsed_sec_median": 106.04764894582331,
+          "elapsed_sec_values": [
+            66.15045622363687,
+            109.74988750740886,
+            106.04764894582331
+          ],
+          "parity_reference_backend": "cpu",
+          "row_count_consistent": true,
+          "row_counts": [
+            8921,
+            8921,
+            8921
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": null,
+          "all_parity_vs_reference": true,
+          "elapsed_sec_median": 0.08306415379047394,
+          "elapsed_sec_values": [
+            0.08306415379047394,
+            0.07971083745360374,
+            0.09056658111512661
+          ],
+          "parity_reference_backend": "cpu",
+          "row_count_consistent": true,
+          "row_counts": [
+            8921,
+            8921,
+            8921
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "query_count": 100000,
+      "reference_backend": "cpu",
+      "rtdl_artifact": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rtdl_lsi_same_rayjoin_stream.json",
+      "stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json"
+    },
+    "pip": {
+      "backends": {
+        "cpu": {
+          "all_parity_vs_cpu_python_reference": null,
+          "all_parity_vs_reference": true,
+          "elapsed_sec_median": 2.7581064254045486,
+          "elapsed_sec_values": [
+            2.7581064254045486,
+            2.747183410450816,
+            2.7737789899110794
+          ],
+          "parity_reference_backend": "cpu",
+          "row_count_consistent": true,
+          "row_counts": [
+            8686,
+            8686,
+            8686
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "embree": {
+          "all_parity_vs_cpu_python_reference": null,
+          "all_parity_vs_reference": true,
+          "elapsed_sec_median": 0.10624785907566547,
+          "elapsed_sec_values": [
+            0.10831251554191113,
+            0.10608446784317493,
+            0.10624785907566547
+          ],
+          "parity_reference_backend": "cpu",
+          "row_count_consistent": true,
+          "row_counts": [
+            8686,
+            8686,
+            8686
+          ],
+          "rt_core_accelerated": false,
+          "status": "ok"
+        },
+        "optix": {
+          "all_parity_vs_cpu_python_reference": null,
+          "all_parity_vs_reference": true,
+          "elapsed_sec_median": 4.107544390484691,
+          "elapsed_sec_values": [
+            4.107544390484691,
+            4.30337099917233,
+            4.080679252743721
+          ],
+          "parity_reference_backend": "cpu",
+          "row_count_consistent": true,
+          "row_counts": [
+            8686,
+            8686,
+            8686
+          ],
+          "rt_core_accelerated": true,
+          "status": "ok"
+        }
+      },
+      "query_count": 100000,
+      "reference_backend": "cpu",
+      "rtdl_artifact": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rtdl_pip_same_rayjoin_stream.json",
+      "stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json"
+    }
+  },
+  "rtdl_commit": "7c80b901b6326e8c4e15e7bbeae7f97f786cb352",
+  "schema": "rtdl.rayjoin.same_query_stream.v1",
+  "status": "pass"
+}

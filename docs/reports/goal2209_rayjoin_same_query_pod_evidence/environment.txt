@@ -1,0 +1,64 @@
+goal=goal2198
+work_dir=/root/goal2198_rayjoin_same_query_pod_r6
+out_dir=/root/goal2198_rayjoin_same_query_pod_r6/artifacts
+rtdl_repo=https://github.com/rubaolee/rtdl.git
+rtdl_ref=main
+rayjoin_repo=https://github.com/rubaolee/RayJoin.git
+rayjoin_commit=02bf6220d6d20b04af77ee20364eced75cc029c9
+optix_prefix=/root/vendor/optix-sdk
+optix_tag=v8.0.0
+cuda_prefix=/usr/local/cuda-12.8
+python=Python 3.12.3
+use_python_venv=1
+venv_dir=/root/goal2198_rayjoin_same_query_pod_r6/.venv
+gen_n=100000
+gen_t=0.1
+seed=2184
+warmup=1
+repeat=3
+Linux 7fd5fd40ae4b 5.15.0-102-generic #112-Ubuntu SMP Tue Mar 5 16:50:32 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+PRETTY_NAME="Ubuntu 24.04.3 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.3 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+Sun May 17 16:44:37 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA RTX A5000               On  |   00000000:57:00.0 Off |                  Off |
+| 30%   24C    P8             24W /  230W |       1MiB /  24564MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+NVIDIA RTX A5000, 570.211.01, 24564 MiB
+/usr/local/cuda
+/usr/local/cuda-12
+/usr/local/cuda-12.8
+/usr/local/cuda-12.8/bin/nvcc
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Fri_Feb_21_20:23:50_PST_2025
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+/usr/lib/x86_64-linux-gnu/libnvoptix.so.570.211.01
+/usr/lib/x86_64-linux-gnu/libnvoptix.so.1
