@@ -14,9 +14,10 @@ class Goal2241RayjoinSameQueryPipClosedShapePathTest(unittest.TestCase):
         self.assertIn("def _run_pip_optix_closed_shape", text)
         self.assertIn("def _prepare_backend_inputs", text)
         self.assertIn("rt.closed_shape_membership_2d_optix", text)
-        self.assertIn('"implementation_path": "closed_shape_membership_2d_optix"', text)
+        self.assertIn("rt.prepare_point_closed_shape_membership_2d_optix", text)
+        self.assertIn('"implementation_path": "prepared_closed_shape_membership_2d_optix"', text)
         self.assertIn('"uses_generic_closed_shape_membership": workload == "pip" and backend == "optix"', text)
-        self.assertIn('"input_preparation_path": "prepacked_points_and_shapes_once_per_run_stream"', text)
+        self.assertIn('"input_preparation_path": "prepared_shape_scene_and_prepacked_points_once_per_run_stream"', text)
 
     def test_runner_preserves_rayjoin_row_contract_in_python(self) -> None:
         text = RUNNER.read_text(encoding="utf-8")

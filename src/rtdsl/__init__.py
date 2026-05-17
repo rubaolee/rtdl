@@ -368,8 +368,10 @@ from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
 from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
+from .optix_runtime import PreparedOptixPointClosedShapeMembership2D
 from .optix_runtime import closed_shape_membership_2d_optix
 from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
+from .optix_runtime import prepare_point_closed_shape_membership_2d_optix
 from .optix_runtime import ray_segment_group_count_2d_optix
 from .optix_runtime import run_optix
 from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
@@ -1312,8 +1314,10 @@ __all__ = [
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixSegmentPolygonAnyHitRows2D",
     "PreparedOptixSegmentPolygonHitcount2D",
+    "PreparedOptixPointClosedShapeMembership2D",
     "closed_shape_membership_2d_optix",
     "collect_polygon_pair_candidates_bounded_optix",
+    "prepare_point_closed_shape_membership_2d_optix",
     "ray_segment_group_count_2d_optix",
     "run_optix",
     "segment_polygon_anyhit_rows_native_bounded_optix",

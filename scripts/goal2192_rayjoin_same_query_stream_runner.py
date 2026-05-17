@@ -175,11 +175,15 @@ def _run_backend(workload: str, backend: str, inputs: dict[str, object]) -> tupl
 
 
 def _run_pip_optix_closed_shape(inputs: dict[str, object]) -> tuple[dict[str, object], ...]:
-    rows = rt.closed_shape_membership_2d_optix(
-        points=inputs["points"],
-        shapes=inputs["polygons"],
-        result_mode="positive_hits",
-    )
+    prepared = inputs.get("prepared_closed_shape_membership")
+    if prepared is not None:
+        rows = prepared.run(inputs["points"], result_mode="positive_hits")
+    else:
+        rows = rt.closed_shape_membership_2d_optix(
+            points=inputs["points"],
+            shapes=inputs["polygons"],
+            result_mode="positive_hits",
+        )
     return tuple(
         {
             "point_id": int(row["point_id"]),
@@ -194,9 +198,12 @@ def _prepare_backend_inputs(workload: str, backend: str, inputs: dict[str, objec
     if workload == "pip" and backend == "optix":
         points = inputs["points"]
         polygons = inputs["polygons"]
+        packed_points = points if isinstance(points, rt.PackedPoints) else rt.pack_points(records=points, dimension=2)
+        packed_polygons = polygons if isinstance(polygons, rt.PackedPolygons) else rt.pack_polygons(records=polygons)
         return {
-            "points": points if isinstance(points, rt.PackedPoints) else rt.pack_points(records=points, dimension=2),
-            "polygons": polygons if isinstance(polygons, rt.PackedPolygons) else rt.pack_polygons(records=polygons),
+            "points": packed_points,
+            "polygons": packed_polygons,
+            "prepared_closed_shape_membership": rt.prepare_point_closed_shape_membership_2d_optix(packed_polygons),
         }
     return inputs
 
@@ -231,10 +238,14 @@ def run_stream(
     workload = str(stream["workload"])
     inputs = _inputs_from_stream(stream)
     reference_rows = _run_backend(workload, reference_backend, inputs)
-    backend_inputs = {
-        backend: _prepare_backend_inputs(workload, backend, inputs)
-        for backend in backends
-    }
+    backend_inputs = {}
+    prepared_handles = []
+    for backend in backends:
+        prepared_inputs = _prepare_backend_inputs(workload, backend, inputs)
+        backend_inputs[backend] = prepared_inputs
+        prepared = prepared_inputs.get("prepared_closed_shape_membership")
+        if prepared is not None:
+            prepared_handles.append(prepared)
     baseline_workload = "pip" if workload == "pip" else "lsi"
 
     payload: dict[str, object] = {
@@ -266,52 +277,56 @@ def run_stream(
         },
     }
 
-    for backend in backends:
-        timings = []
-        row_counts = []
-        parity = []
-        for index in range(warmups):
-            start = time.perf_counter()
-            rows = _run_backend(workload, backend, backend_inputs[backend])
-            elapsed = time.perf_counter() - start
-            print(
-                f"[goal2192] warmup {workload}/{backend} {index + 1}/{warmups} "
-                f"rows={len(rows)} elapsed={elapsed:.6f}s",
-                flush=True,
-            )
-        for index in range(repeats):
-            start = time.perf_counter()
-            rows = _run_backend(workload, backend, backend_inputs[backend])
-            elapsed = time.perf_counter() - start
-            timings.append(elapsed)
-            row_counts.append(len(rows))
-            parity_value = rt.compare_baseline_rows(baseline_workload, reference_rows, rows)
-            parity.append(bool(parity_value))
-            print(
-                f"[goal2192] repeat {workload}/{backend} {index + 1}/{repeats} "
-                f"rows={len(rows)} parity={parity[-1]} elapsed={elapsed:.6f}s",
-                flush=True,
-            )
-        payload["backends"][backend] = {
-            "status": "ok",
-            "elapsed_sec_values": timings,
-            "elapsed_sec_median": statistics.median(timings),
-            "row_counts": row_counts,
-            "row_count_consistent": len(set(row_counts)) == 1,
-            "parity_reference_backend": reference_backend,
-            "all_parity_vs_reference": all(parity),
-            "all_parity_vs_cpu_python_reference": all(parity)
-            if reference_backend == "cpu_python_reference"
-            else None,
-            "rt_core_accelerated": backend == "optix",
-            "implementation_path": "closed_shape_membership_2d_optix"
-            if workload == "pip" and backend == "optix"
-            else "compiled_rtdl_kernel",
-            "uses_generic_closed_shape_membership": workload == "pip" and backend == "optix",
-            "input_preparation_path": "prepacked_points_and_shapes_once_per_run_stream"
-            if workload == "pip" and backend == "optix"
-            else "backend_default",
-        }
+    try:
+        for backend in backends:
+            timings = []
+            row_counts = []
+            parity = []
+            for index in range(warmups):
+                start = time.perf_counter()
+                rows = _run_backend(workload, backend, backend_inputs[backend])
+                elapsed = time.perf_counter() - start
+                print(
+                    f"[goal2192] warmup {workload}/{backend} {index + 1}/{warmups} "
+                    f"rows={len(rows)} elapsed={elapsed:.6f}s",
+                    flush=True,
+                )
+            for index in range(repeats):
+                start = time.perf_counter()
+                rows = _run_backend(workload, backend, backend_inputs[backend])
+                elapsed = time.perf_counter() - start
+                timings.append(elapsed)
+                row_counts.append(len(rows))
+                parity_value = rt.compare_baseline_rows(baseline_workload, reference_rows, rows)
+                parity.append(bool(parity_value))
+                print(
+                    f"[goal2192] repeat {workload}/{backend} {index + 1}/{repeats} "
+                    f"rows={len(rows)} parity={parity[-1]} elapsed={elapsed:.6f}s",
+                    flush=True,
+                )
+            payload["backends"][backend] = {
+                "status": "ok",
+                "elapsed_sec_values": timings,
+                "elapsed_sec_median": statistics.median(timings),
+                "row_counts": row_counts,
+                "row_count_consistent": len(set(row_counts)) == 1,
+                "parity_reference_backend": reference_backend,
+                "all_parity_vs_reference": all(parity),
+                "all_parity_vs_cpu_python_reference": all(parity)
+                if reference_backend == "cpu_python_reference"
+                else None,
+                "rt_core_accelerated": backend == "optix",
+                "implementation_path": "prepared_closed_shape_membership_2d_optix"
+                if workload == "pip" and backend == "optix"
+                else "compiled_rtdl_kernel",
+                "uses_generic_closed_shape_membership": workload == "pip" and backend == "optix",
+                "input_preparation_path": "prepared_shape_scene_and_prepacked_points_once_per_run_stream"
+                if workload == "pip" and backend == "optix"
+                else "backend_default",
+            }
+    finally:
+        for prepared in prepared_handles:
+            prepared.close()
     return payload
 
 

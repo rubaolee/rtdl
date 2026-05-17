@@ -3985,6 +3985,120 @@ def closed_shape_membership_2d_optix(points, shapes, *, result_mode: str = "posi
         view.close()
 
 
+class PreparedOptixPointClosedShapeMembership2D:
+    """Prepared generic 2-D point/closed-shape membership scene."""
+
+    def __init__(self, shapes):
+        packed_shapes = shapes if isinstance(shapes, PackedPolygons) else pack_polygons(records=shapes)
+        self._packed_shapes = packed_shapes
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_prepare_point_closed_shape_membership_2d",
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_point_closed_shape_membership_2d; rebuild the OptiX backend from current main"
+            )
+        shape_refs = ctypes.cast(packed_shapes.refs, ctypes.POINTER(_RtdlClosedShapeRef))
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            shape_refs,
+            packed_shapes.polygon_count,
+            packed_shapes.vertices_xy,
+            packed_shapes.vertex_xy_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self, points, *, result_mode: str = "positive_hits") -> tuple[dict[str, int], ...]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if result_mode != "positive_hits":
+            raise ValueError("prepared closed-shape membership currently supports result_mode='positive_hits'")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        if packed_points.dimension != 2:
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.run requires 2-D points")
+        if packed_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            return ()
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_run_prepared_point_closed_shape_membership_2d",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_point_closed_shape_membership_2d; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlPointClosedShapeMembershipRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            1,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=self._lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlPointClosedShapeMembershipRow,
+            field_names=("point_id", "shape_id", "membership"),
+        )
+        try:
+            return tuple(
+                {
+                    "point_id": int(row["point_id"]),
+                    "shape_id": int(row["shape_id"]),
+                    "membership": int(row["membership"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                "rtdl_optix_destroy_prepared_point_closed_shape_membership_2d",
+            )
+            if destroy_symbol is not None and self._handle:
+                destroy_symbol(self._handle)
+            self._closed = True
+
+    def __enter__(self) -> "PreparedOptixPointClosedShapeMembership2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_point_closed_shape_membership_2d_optix(shapes) -> PreparedOptixPointClosedShapeMembership2D:
+    return PreparedOptixPointClosedShapeMembership2D(shapes)
+
+
 def _call_overlay_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     left  = packed[compiled.candidates.left.name]
     right = packed[compiled.candidates.right.name]
@@ -5631,6 +5745,42 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_closed_shape_membership.restype = ctypes.c_int
+
+    optional_prepare_closed_shape_membership = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_point_closed_shape_membership_2d",
+    )
+    if optional_prepare_closed_shape_membership is not None:
+        optional_prepare_closed_shape_membership.argtypes = [
+            ctypes.POINTER(_RtdlClosedShapeRef), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_closed_shape_membership.restype = ctypes.c_int
+
+    optional_run_prepared_closed_shape_membership = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_point_closed_shape_membership_2d",
+    )
+    if optional_run_prepared_closed_shape_membership is not None:
+        optional_run_prepared_closed_shape_membership.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlPointClosedShapeMembershipRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_closed_shape_membership.restype = ctypes.c_int
+
+    optional_destroy_prepared_closed_shape_membership = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_destroy_prepared_point_closed_shape_membership_2d",
+    )
+    if optional_destroy_prepared_closed_shape_membership is not None:
+        optional_destroy_prepared_closed_shape_membership.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_closed_shape_membership.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_shape_pair_relation_flags").argtypes = [
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,

@@ -212,6 +212,51 @@ extern "C" int rtdl_optix_run_point_closed_shape_membership_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_point_closed_shape_membership_2d(
+        const RtdlClosedShapeRef* shapes, size_t shape_count,
+        const double* vertices_xy,        size_t vertex_xy_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!shapes && shape_count != 0)
+            throw std::runtime_error("shape pointer must not be null when shape_count is nonzero");
+        if (!vertices_xy && vertex_xy_count != 0)
+            throw std::runtime_error("vertices pointer must not be null when vertex_xy_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_point_closed_shape_membership_2d_optix(
+            shapes, shape_count, vertices_xy, vertex_xy_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_point_closed_shape_membership_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        uint32_t positive_only,
+        RtdlPointClosedShapeMembershipRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        run_prepared_point_closed_shape_membership_2d_optix(
+            reinterpret_cast<PreparedShapePairRelationBuild*>(prepared),
+            points, point_count, positive_only, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedShapePairRelationBuild*>(prepared);
+}
+
 extern "C" int rtdl_optix_run_shape_pair_relation_flags(
         const RtdlPolygonRef* left_polys,  size_t left_count,
         const double* left_verts_xy,       size_t left_vert_xy_count,

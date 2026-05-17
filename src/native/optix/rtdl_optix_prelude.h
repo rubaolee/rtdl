@@ -325,6 +325,18 @@ int  rtdl_optix_run_point_closed_shape_membership_2d(
          uint32_t positive_only,
          RtdlPointClosedShapeMembershipRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_point_closed_shape_membership_2d(
+         const RtdlClosedShapeRef* shapes, size_t shape_count,
+         const double* vertices_xy,        size_t vertex_xy_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_point_closed_shape_membership_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         uint32_t positive_only,
+         RtdlPointClosedShapeMembershipRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_point_closed_shape_membership_2d(void* prepared);
 int  rtdl_optix_run_shape_pair_relation_flags(
          const RtdlPolygonRef* left_polys,  size_t left_count,
          const double* left_verts_xy,       size_t left_vert_xy_count,
