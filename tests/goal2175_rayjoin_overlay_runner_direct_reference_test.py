@@ -67,6 +67,9 @@ class Goal2175RayjoinOverlayRunnerDirectReferenceTest(unittest.TestCase):
         self.assertIn("county_soil_overlay_reference", text)
         self.assertIn("direct_overlay_seed_runner", text)
         self.assertIn("reference_reused_per_backend", text)
+        self.assertIn("shared_overlay_reference_rows", text)
+        self.assertIn("prepare shared", text)
+        self.assertIn("reused_by_backends", text)
         self.assertIn("overlay_county256_soil256", text)
 
 

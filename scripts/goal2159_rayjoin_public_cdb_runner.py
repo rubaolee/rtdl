@@ -474,12 +474,14 @@ def _run_optix_prepared_overlay_seed_backend(
     *,
     warmups: int,
     repeats: int,
+    reference_rows: tuple[dict[str, object], ...] | None = None,
 ) -> dict[str, object]:
     if case.workload != "overlay_seed":
         raise ValueError("optix_prepared_overlay_seed currently supports only the overlay_seed workload")
     left_polygons, right_polygons = _load_overlay_polygons(dataset)
-    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
-    reference_rows = tuple(reference["rows"])
+    if reference_rows is None:
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        reference_rows = tuple(reference["rows"])
 
     prepare_start = time.perf_counter()
     prepared = prepare_shape_pair_relation_flags_optix(right_polygons)
@@ -537,6 +539,7 @@ def _run_overlay_seed_direct_backend(
     *,
     warmups: int,
     repeats: int,
+    reference_rows: tuple[dict[str, object], ...] | None = None,
 ) -> dict[str, object]:
     if case.workload != "overlay_seed":
         raise ValueError("direct overlay backend currently supports only the overlay_seed workload")
@@ -548,8 +551,9 @@ def _run_overlay_seed_direct_backend(
     if backend not in runners:
         raise ValueError(f"unsupported direct overlay backend: {backend!r}")
     left_polygons, right_polygons = _load_overlay_polygons(dataset)
-    reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
-    reference_rows = tuple(reference["rows"])
+    if reference_rows is None:
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        reference_rows = tuple(reference["rows"])
 
     times: list[float] = []
     rows: list[int] = []
@@ -608,6 +612,25 @@ def _run_case(
         "note": case.note,
         "backends": {},
     }
+    shared_overlay_reference_rows: tuple[dict[str, object], ...] | None = None
+    overlay_reference_backends = {"cpu", "embree", "optix", "optix_prepared_overlay_seed"}
+    if case.workload == "overlay_seed" and any(backend in overlay_reference_backends for backend in backends):
+        print(f"[goal2159] prepare shared {case.label}/cpu_python_reference rows", flush=True)
+        reference_start = time.perf_counter()
+        reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
+        shared_overlay_reference_rows = tuple(reference["rows"])
+        reference_elapsed = time.perf_counter() - reference_start
+        payload["shared_reference"] = {
+            "backend": "cpu_python_reference",
+            "elapsed_sec": reference_elapsed,
+            "row_count": len(shared_overlay_reference_rows),
+            "reused_by_backends": tuple(backend for backend in backends if backend in overlay_reference_backends),
+        }
+        print(
+            f"[goal2159] shared {case.label}/cpu_python_reference "
+            f"rows={len(shared_overlay_reference_rows)} elapsed={reference_elapsed:.6f}s",
+            flush=True,
+        )
     for backend in backends:
         print(f"[goal2159] start {case.label}/{backend}", flush=True)
         start = time.perf_counter()
@@ -648,6 +671,7 @@ def _run_case(
                     backend,
                     warmups=warmups,
                     repeats=repeats,
+                    reference_rows=shared_overlay_reference_rows,
                 )
                 backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
                 payload["backends"][backend] = backend_payload
@@ -660,6 +684,7 @@ def _run_case(
                     dataset,
                     warmups=warmups,
                     repeats=repeats,
+                    reference_rows=shared_overlay_reference_rows,
                 )
                 backend_payload["elapsed_outer_sec"] = time.perf_counter() - start
                 payload["backends"][backend] = backend_payload
