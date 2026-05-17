@@ -1,6 +1,6 @@
 # Goal2262: Exact Prepared Closed-Shape Count Without Final Rows
 
-Status: implementation pending pod timing.
+Status: implemented; pod timing recorded by Goal2263.
 
 ## Purpose
 
@@ -25,6 +25,6 @@ membership, prepared scene, and count.
 
 ## Expected Measurement
 
-Pod timing should compare Goal2259's first count mode to this direct native
-count. No speedup claim is authorized until pushed-commit pod evidence and
-external review exist.
+Pushed-commit pod timing is recorded by Goal2263. Goal2262 remains the
+implementation report; the measured exact-count claim lives in the Goal2263
+evidence report and its review chain.

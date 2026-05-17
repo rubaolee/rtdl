@@ -34,7 +34,8 @@ class Goal2262ExactPreparedClosedShapeCountWithoutFinalRowsTest(unittest.TestCas
 
         self.assertIn("Without Final Rows", text)
         self.assertIn("not a pure", text)
-        self.assertIn("No speedup claim is authorized", text)
+        self.assertIn("pod timing recorded by Goal2263", text)
+        self.assertIn("the measured exact-count claim lives in the Goal2263", text)
 
 
 if __name__ == "__main__":
