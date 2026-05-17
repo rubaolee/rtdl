@@ -16,10 +16,10 @@ ARTIFACT = (
     ROOT
     / "docs"
     / "reports"
-    / "goal2175_overlay_count256_after_reference_fix_pod_2026-05-16.json"
+    / "goal2175_overlay_count256_shared_reference_pod_2026-05-16.json"
 )
 
-EXPECTED_COMMIT = "de6caced016b2631ab21cb20ef69e0b6b760fca0"
+EXPECTED_COMMIT = "9a4b8ae1ef054406eeda8475a51f24ed3f225459"
 
 
 class Goal2175LargerRayjoinOverlaySeedEvidenceTest(unittest.TestCase):
@@ -29,7 +29,7 @@ class Goal2175LargerRayjoinOverlaySeedEvidenceTest(unittest.TestCase):
         self.assertIn("lsi_pairs", text)
         self.assertIn("pip_pairs", text)
         self.assertIn("overlay_county256_soil256", text)
-        self.assertIn("1.837x", text)
+        self.assertIn("1.844x", text)
         self.assertIn("v2.0 release authorization", text)
         self.assertIn("does not authorize", text)
 
@@ -43,9 +43,15 @@ class Goal2175LargerRayjoinOverlaySeedEvidenceTest(unittest.TestCase):
         self.assertEqual(backends["cpu"]["candidate_pair_count"], 56876)
         self.assertEqual(backends["cpu"]["left_polygon_count"], 241)
         self.assertEqual(backends["cpu"]["right_polygon_count"], 236)
+        self.assertEqual(case["shared_reference"]["backend"], "cpu_python_reference")
+        self.assertEqual(case["shared_reference"]["row_count"], 56876)
+        self.assertEqual(
+            case["shared_reference"]["reused_by_backends"],
+            ["cpu", "embree", "optix", "optix_prepared_overlay_seed"],
+        )
 
         for backend in ("cpu", "embree", "optix", "optix_prepared_overlay_seed"):
-            self.assertEqual(backends[backend]["row_counts"], [56876] * 5)
+            self.assertEqual(backends[backend]["row_counts"], [56876] * 3)
             self.assertTrue(backends[backend]["row_count_consistent"])
             self.assertTrue(backends[backend]["all_parity_vs_cpu_python_reference"])
 

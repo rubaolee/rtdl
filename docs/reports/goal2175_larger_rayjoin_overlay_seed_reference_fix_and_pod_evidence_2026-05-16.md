@@ -53,38 +53,40 @@ Runtime facts inherited from the active RayJoin pod lane:
 - Driver: 580.65.06
 - CUDA: 12.8
 - OptiX SDK: v8.1.0
-- RTDL runner commit: `de6caced016b2631ab21cb20ef69e0b6b760fca0`
+- RTDL runner commit: `9a4b8ae1ef054406eeda8475a51f24ed3f225459`
 
 Collected artifact:
 
-- `docs/reports/goal2175_overlay_count256_after_reference_fix_pod_2026-05-16.json`
+- `docs/reports/goal2175_overlay_count256_shared_reference_pod_2026-05-16.json`
 
-The run used one warmup and five measured repeats on:
+The current run used one warmup and three measured repeats on:
 
 - county slice: `br_county_start0_count256.cdb`
 - soil slice: `br_soil_start0_count256.cdb`
 - loaded polygons: 241 left, 236 right
 - emitted dependency rows: 56,876
+- shared CPU Python reference rows: 56,876, built once in `27.386` sec and
+  reused by CPU/native-oracle, Embree, one-shot OptiX, and prepared OptiX
 
 ## Result
 
 | Backend | Median sec | Rows | Parity vs CPU Python reference |
 | --- | ---: | ---: | --- |
-| CPU/native-oracle | 2.215786 | 56,876 | pass |
-| Embree | 0.133708 | 56,876 | pass |
-| OptiX one-shot | 0.072779 | 56,876 | pass |
-| OptiX prepared overlay seed | 0.077180 | 56,876 | pass |
+| CPU/native-oracle | 2.185177 | 56,876 | pass |
+| Embree | 0.134782 | 56,876 | pass |
+| OptiX one-shot | 0.073110 | 56,876 | pass |
+| OptiX prepared overlay seed | 0.078009 | 56,876 | pass |
 
 Derived ratios:
 
 | Ratio | Value |
 | --- | ---: |
-| CPU/native-oracle vs Embree | 16.572x |
-| CPU/native-oracle vs OptiX one-shot | 30.446x |
-| CPU/native-oracle vs prepared OptiX | 28.709x |
-| Embree vs OptiX one-shot | 1.837x |
-| Embree vs prepared OptiX | 1.732x |
-| Prepared OptiX vs one-shot OptiX | 0.943x |
+| CPU/native-oracle vs Embree | 16.213x |
+| CPU/native-oracle vs OptiX one-shot | 29.889x |
+| CPU/native-oracle vs prepared OptiX | 28.012x |
+| Embree vs OptiX one-shot | 1.844x |
+| Embree vs prepared OptiX | 1.728x |
+| Prepared OptiX vs one-shot OptiX | 0.937x |
 
 The important update is that the larger count256 row is now parity-clean and
 OptiX is clearly faster than Embree on this exact overlay-seed dependency
@@ -97,8 +99,8 @@ sharply:
 
 - Earlier larger-overlay evidence was blocked by the reference harness, not by
   the native relation result.
-- Once the reference was repaired, the count256 row shows OptiX at `0.072779`
-  sec versus Embree at `0.133708` sec, a `1.837x` same-contract OptiX win.
+- Once the reference was repaired, the count256 row shows OptiX at `0.073110`
+  sec versus Embree at `0.134782` sec, a `1.844x` same-contract OptiX win.
 - Prepared state remains a valid design pattern, but this row shows that the
   current one-shot OptiX path can be faster at this scale. That means the
   runtime should select between one-shot and prepared paths based on workload
@@ -111,8 +113,8 @@ This goal authorizes:
 
 - a narrow statement that `overlay_county256_soil256` is parity-clean across
   CPU/native-oracle, Embree, one-shot OptiX, and prepared OptiX
-- a narrow statement that one-shot OptiX beats Embree by `1.837x` on this row
-- a narrow statement that prepared OptiX beats Embree by `1.732x` on this row
+- a narrow statement that one-shot OptiX beats Embree by `1.844x` on this row
+- a narrow statement that prepared OptiX beats Embree by `1.728x` on this row
 - using pair-set reference materialization as the required correctness harness
   for larger overlay-seed rows
 
