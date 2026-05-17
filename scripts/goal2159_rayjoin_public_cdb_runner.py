@@ -18,6 +18,7 @@ from examples.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
 from rtdsl.baseline_contracts import compare_baseline_rows
 from rtdsl.baseline_runner import segments_from_records
 from rtdsl.datasets import CdbDataset
+from rtdsl.datasets import chains_to_polygons
 from rtdsl.datasets import chains_to_segments
 from rtdsl.datasets import download_rayjoin_sample
 from rtdsl.datasets import load_cdb
@@ -269,6 +270,15 @@ def _load_lsi_segments(dataset: str) -> tuple[tuple[object, ...], tuple[object, 
     return left, right
 
 
+def _load_overlay_polygons(dataset: str) -> tuple[tuple[object, ...], tuple[object, ...]]:
+    paths = _split_dataset_paths(dataset)
+    if len(paths) != 2:
+        raise ValueError("optix_prepared_overlay_seed requires an overlay dataset shaped as `left.cdb + right.cdb`")
+    left = chains_to_polygons(load_cdb(paths[0]))
+    right = chains_to_polygons(load_cdb(paths[1]))
+    return left, right
+
+
 def _segment_intersection_row(left, right) -> dict[str, float | int] | None:
     px = float(left.x0)
     py = float(left.y0)
@@ -455,9 +465,7 @@ def _run_optix_prepared_overlay_seed_backend(
 ) -> dict[str, object]:
     if case.workload != "overlay_seed":
         raise ValueError("optix_prepared_overlay_seed currently supports only the overlay_seed workload")
-    rayjoin_case = _load_rayjoin_case(case.workload, dataset)
-    left_polygons = rayjoin_case.inputs["left"]
-    right_polygons = rayjoin_case.inputs["right"]
+    left_polygons, right_polygons = _load_overlay_polygons(dataset)
     reference = run_rayjoin_workload(case.workload, backend="cpu_python_reference", dataset=dataset, include_rows=True)
     reference_rows = tuple(reference["rows"])
 
