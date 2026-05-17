@@ -3221,6 +3221,61 @@ static void run_pip_optix(
     }
 }
 
+static void run_point_closed_shape_membership_2d_optix(
+        const RtdlPoint* points,           size_t point_count,
+        const RtdlClosedShapeRef* shapes,  size_t shape_count,
+        const double* vertices_xy,         size_t vertex_xy_count,
+        uint32_t positive_only,
+        RtdlPointClosedShapeMembershipRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (point_count == 0 || shape_count == 0) {
+        return;
+    }
+    if (!shapes) {
+        throw std::runtime_error("closed shapes pointer must not be null when shape_count is nonzero");
+    }
+    const auto* refs = reinterpret_cast<const RtdlPolygonRef*>(shapes);
+
+    RtdlPipRow* raw_rows = nullptr;
+    size_t raw_count = 0;
+    run_pip_optix(
+        points,
+        point_count,
+        refs,
+        shape_count,
+        vertices_xy,
+        vertex_xy_count,
+        positive_only,
+        &raw_rows,
+        &raw_count);
+
+    struct RowsGuard {
+        RtdlPipRow* rows = nullptr;
+        ~RowsGuard() { std::free(rows); }
+    } guard{raw_rows};
+
+    auto* out = static_cast<RtdlPointClosedShapeMembershipRow*>(
+        std::malloc(sizeof(RtdlPointClosedShapeMembershipRow) * raw_count));
+    if (!out && raw_count != 0) {
+        throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < raw_count; ++i) {
+        out[i] = RtdlPointClosedShapeMembershipRow{
+            raw_rows[i].point_id,
+            raw_rows[i].polygon_id,
+            raw_rows[i].contains,
+        };
+    }
+    *rows_out = out;
+    *row_count_out = raw_count;
+}
+
 static void validate_polygon_ref_span_for_collection(
         const RtdlPolygonRef* polygons,
         size_t polygon_count,

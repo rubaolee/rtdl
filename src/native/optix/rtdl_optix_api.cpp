@@ -190,6 +190,28 @@ extern "C" int rtdl_optix_run_point_primitive_anyhit_packet(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_point_closed_shape_membership_2d(
+        const RtdlPoint* points,          size_t point_count,
+        const RtdlClosedShapeRef* shapes, size_t shape_count,
+        const double* vertices_xy,        size_t vertex_xy_count,
+        uint32_t positive_only,
+        RtdlPointClosedShapeMembershipRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_point_closed_shape_membership_2d_optix(
+            points,
+            point_count,
+            shapes,
+            shape_count,
+            vertices_xy,
+            vertex_xy_count,
+            positive_only,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_shape_pair_relation_flags(
         const RtdlPolygonRef* left_polys,  size_t left_count,
         const double* left_verts_xy,       size_t left_vert_xy_count,

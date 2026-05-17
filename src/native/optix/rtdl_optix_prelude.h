@@ -103,6 +103,12 @@ struct RtdlPolygonRef {
     uint32_t vertex_count;
 };
 
+struct RtdlClosedShapeRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
 struct RtdlPolygonPairCandidate {
     uint32_t left_polygon_id;
     uint32_t right_polygon_id;
@@ -137,6 +143,10 @@ struct RtdlSegmentPairIntersectionRow {
 
 struct RtdlPipRow {
     uint32_t point_id, polygon_id, contains;
+};
+
+struct RtdlPointClosedShapeMembershipRow {
+    uint32_t point_id, shape_id, membership;
 };
 
 struct RtdlShapePairRelationRow {
@@ -307,6 +317,13 @@ int  rtdl_optix_run_point_primitive_anyhit_packet(
          const double* vertices_xy,   size_t vertex_xy_count,
          uint32_t positive_only,
          RtdlPipRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_point_closed_shape_membership_2d(
+         const RtdlPoint* points,          size_t point_count,
+         const RtdlClosedShapeRef* shapes, size_t shape_count,
+         const double* vertices_xy,        size_t vertex_xy_count,
+         uint32_t positive_only,
+         RtdlPointClosedShapeMembershipRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_shape_pair_relation_flags(
          const RtdlPolygonRef* left_polys,  size_t left_count,

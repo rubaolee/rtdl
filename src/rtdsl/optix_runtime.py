@@ -199,6 +199,22 @@ class _RtdlPipRow(ctypes.Structure):
     ]
 
 
+class _RtdlClosedShapeRef(ctypes.Structure):
+    _fields_ = [
+        ("id",            ctypes.c_uint32),
+        ("vertex_offset", ctypes.c_uint32),
+        ("vertex_count",  ctypes.c_uint32),
+    ]
+
+
+class _RtdlPointClosedShapeMembershipRow(ctypes.Structure):
+    _fields_ = [
+        ("point_id",   ctypes.c_uint32),
+        ("shape_id",   ctypes.c_uint32),
+        ("membership", ctypes.c_uint32),
+    ]
+
+
 class _RtdlOverlayRow(ctypes.Structure):
     _fields_ = [
         ("left_polygon_id",  ctypes.c_uint32),
@@ -3908,6 +3924,67 @@ def _call_pip_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowVie
         field_names=("point_id", "polygon_id", "contains"))
 
 
+def closed_shape_membership_2d_optix(points, shapes, *, result_mode: str = "positive_hits") -> tuple[dict[str, int], ...]:
+    """Evaluate generic 2-D point/closed-shape membership on OptiX.
+
+    This public helper intentionally uses shape/membership vocabulary. Higher
+    layers may interpret the shape ids as regions, cells, app groups, or
+    anything else; the engine surface does not encode that meaning.
+    """
+
+    if result_mode not in {"positive_hits", "full_matrix"}:
+        raise ValueError("result_mode must be 'positive_hits' or 'full_matrix'")
+    packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+    packed_shapes = shapes if isinstance(shapes, PackedPolygons) else pack_polygons(records=shapes)
+    if packed_points.dimension != 2:
+        raise ValueError("closed_shape_membership_2d_optix requires 2-D points")
+
+    shape_refs = ctypes.cast(packed_shapes.refs, ctypes.POINTER(_RtdlClosedShapeRef))
+
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_point_closed_shape_membership_2d")
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export "
+            "rtdl_optix_run_point_closed_shape_membership_2d; rebuild the OptiX backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlPointClosedShapeMembershipRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        packed_points.records,
+        packed_points.count,
+        shape_refs,
+        packed_shapes.polygon_count,
+        packed_shapes.vertices_xy,
+        packed_shapes.vertex_xy_count,
+        1 if result_mode == "positive_hits" else 0,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    view = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlPointClosedShapeMembershipRow,
+        field_names=("point_id", "shape_id", "membership"),
+    )
+    try:
+        return tuple(
+            {
+                "point_id": int(row["point_id"]),
+                "shape_id": int(row["shape_id"]),
+                "membership": int(row["membership"]),
+            }
+            for row in view.to_dict_rows()
+        )
+    finally:
+        view.close()
+
+
 def _call_overlay_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     left  = packed[compiled.candidates.left.name]
     right = packed[compiled.candidates.right.name]
@@ -5538,6 +5615,22 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_optix_run_point_primitive_anyhit_packet.restype = ctypes.c_int
+
+    optional_closed_shape_membership = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_point_closed_shape_membership_2d",
+    )
+    if optional_closed_shape_membership is not None:
+        optional_closed_shape_membership.argtypes = [
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlClosedShapeRef), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlPointClosedShapeMembershipRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_closed_shape_membership.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_optix_run_shape_pair_relation_flags").argtypes = [
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
