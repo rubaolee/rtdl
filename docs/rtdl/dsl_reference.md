@@ -38,6 +38,43 @@ This reference only describes the RTDL features that are implemented today:
 
 Anything outside this surface is not part of the current language.
 
+## Contract-First Public Surface
+
+RTDL v2.0 treats the language as a set of generic contracts, not as a fixed
+application library. Application policies such as Hausdorff, RayJoin, road
+hazard screening, DBSCAN, or facility assignment belong in examples, tutorials,
+recipes, and user code. The core RTDL surface should expose:
+
+- data contracts: points, segments, polygons/shapes, rays, graphs, columnar
+  payloads
+- execution contracts: traversal, refinement, collection, reductions, grouping
+- partner contracts: NumPy/CuPy/PyTorch handoff and validation
+- explanation contracts: `rt.ExecutionPolicy`, `rt.ExecutionReport`, and
+  `rt.run(...)`
+
+New user-facing code should prefer generic primitive names from
+`rt.primitives`, such as `any_hit`, `hit_count`, `nearest`, `within_radius`,
+`shape_any_hit_rows`, and `shape_pair_overlap_rows`, when those names describe
+the program clearly. Historical predicate names remain available for
+compatibility and for feature-specific tutorials.
+
+`rt.run(...)` returns rows plus an execution report:
+
+```python
+result = rt.run(
+    my_kernel,
+    inputs={"queries": query_points, "shapes": shapes},
+    execution=rt.ExecutionPolicy(backend="cpu_python_reference", explain=True),
+)
+
+rows = result.rows
+report = result.execution_report
+```
+
+The report records selected backend, partner request, fallback status,
+memory/copy status, acceleration status, output schema, and claim boundaries.
+Use it whenever a result may be quoted outside a local correctness check.
+
 ## Kernel Grammar
 
 RTDL kernels are written in Python, but the accepted authoring shape is fixed.

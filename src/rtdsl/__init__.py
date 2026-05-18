@@ -38,6 +38,22 @@ from .api import segment_polygon_anyhit_rows
 from .api import segment_polygon_hitcount
 from .api import triangle_match
 from .api import traverse
+from . import primitives
+from .execution import ExecutionPolicy
+from .execution import ExecutionReport
+from .execution import ExecutionResult
+from .execution import run
+from .primitives import any_hit
+from .primitives import bounded_nearest
+from .primitives import closest_hit
+from .primitives import hit_count
+from .primitives import intersections
+from .primitives import nearest
+from .primitives import shape_any_hit_rows
+from .primitives import shape_hit_count
+from .primitives import shape_pair_overlap_rows
+from .primitives import shape_set_similarity
+from .primitives import within_radius
 from .adaptive_runtime import ADAPTIVE_BACKEND_NAME
 from .adaptive_runtime import ADAPTIVE_COMPAT_MODE
 from .adaptive_runtime import ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE
@@ -1784,4 +1800,57 @@ __all__ = [
     "write_goal114_artifacts",
     "write_goal116_artifacts",
     "WorkloadContract",
+    "any_hit",
+    "bounded_nearest",
+    "closest_hit",
+    "ExecutionPolicy",
+    "ExecutionReport",
+    "ExecutionResult",
+    "hit_count",
+    "intersections",
+    "nearest",
+    "primitives",
+    "run",
+    "shape_any_hit_rows",
+    "shape_hit_count",
+    "shape_pair_overlap_rows",
+    "shape_set_similarity",
+    "within_radius",
 ]
+
+_CONTRACT_FIRST_DIR_EXPORTS = (
+    "ExecutionPolicy",
+    "ExecutionReport",
+    "ExecutionResult",
+    "any_hit",
+    "bounded_nearest",
+    "closest_hit",
+    "compile_kernel",
+    "emit",
+    "grouped_count",
+    "grouped_sum",
+    "hit_count",
+    "input",
+    "intersections",
+    "kernel",
+    "nearest",
+    "primitives",
+    "refine",
+    "run",
+    "shape_any_hit_rows",
+    "shape_hit_count",
+    "shape_pair_overlap_rows",
+    "shape_set_similarity",
+    "traverse",
+    "within_radius",
+)
+
+
+def __dir__() -> list[str]:
+    """Expose the v2 contract-first learning surface to interactive users.
+
+    Historical compatibility exports remain importable, but tab-completion and
+    `dir(rtdsl)` should teach the generic language facade first.
+    """
+
+    return sorted(_CONTRACT_FIRST_DIR_EXPORTS)

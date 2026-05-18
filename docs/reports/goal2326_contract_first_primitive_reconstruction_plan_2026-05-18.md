@@ -1,6 +1,6 @@
 # Goal2326: Contract-First RTDSL Primitive Reconstruction Plan
 
-Status: `planned`
+Status: `closed-accept-with-boundary`
 
 Date: 2026-05-18
 
@@ -207,3 +207,65 @@ adapter modules and migrate examples/docs.
 The intended end state is a language that feels small and learnable at the top,
 explicit and reproducible in the middle, and performance-direct internally -
 without ever putting app customization inside the RTDL engine.
+
+## Local Implementation Slice Completed
+
+The first Goal2326 implementation slice is now in place:
+
+| Area | Local change |
+| --- | --- |
+| Execution substrate | Added `src/rtdsl/execution.py` with `ExecutionPolicy`, `ExecutionReport`, `ExecutionResult`, and `run(...)` |
+| Public primitive facade | Added `src/rtdsl/primitives.py` with generic aliases such as `any_hit`, `hit_count`, `nearest`, `within_radius`, `shape_any_hit_rows`, and `shape_pair_overlap_rows` |
+| Top-level exports | Exposed the contract-first execution and primitive facade from `rtdsl.__init__` |
+| Adapter skeleton | Added `src/rtdsl/adapters/` modules grouped by generic contract family: traversal, collection, reductions, columnar payload, partner handoff, and prepared handles |
+| Docs | Updated `docs/rtdl/dsl_reference.md` with the contract-first public surface and execution-report boundary |
+| Guard tests | Added the four Goal2326 tests named above |
+
+The adapter split is compatibility-preserving: the new adapter-family modules
+re-export selected functions from the historical flat `partner_adapters.py`
+instead of moving hundreds of call sites in one risky patch.
+
+## Local Validation
+
+Windows local validation:
+
+```powershell
+$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal2326_public_primitive_contract_test tests.goal2326_execution_report_contract_test tests.goal2326_adapter_partition_test tests.goal2326_examples_recipe_boundary_test
+$env:PYTHONPATH='src;.'; py -3 -m compileall -q src\rtdsl tests\goal2326_public_primitive_contract_test.py tests\goal2326_execution_report_contract_test.py tests\goal2326_adapter_partition_test.py tests\goal2326_examples_recipe_boundary_test.py
+```
+
+Result: `10` Goal2326 tests pass; compileall passes.
+
+## Remaining Adoption Gate
+
+This local implementation did not by itself complete the architecture-adoption
+decision. Because Goal2326 changes language direction and public API shape, it
+required Claude and Gemini architecture reviews plus the consensus file before
+the architecture could be considered accepted for release governance.
+
+## External Review Resolution
+
+| Reviewer | Artifact | Verdict | Resolution |
+| --- | --- | --- | --- |
+| Claude | `docs/reviews/goal2326_claude_contract_first_primitive_architecture_review_2026-05-18.md` | `accept-with-boundary` | Found one blocker-grade adapter export leak plus guard-test/sentinel boundaries; Codex fixed the blocker and strengthened the tests |
+| Gemini | `docs/reviews/goal2326_gemini_contract_first_primitive_architecture_review_2026-05-18.md` | `accept-with-boundary` | Accepted the direction with future enforcement boundaries |
+| Gemini follow-up | `docs/reviews/goal2326_gemini_followup_post_fix_review_2026-05-18.md` | `accept-with-boundary` | Verified the post-review fixes and the bounded legacy top-level compatibility surface |
+| Consensus | `docs/reports/goal2326_contract_first_primitive_architecture_consensus_2026-05-18.md` | `accept-with-boundary` | Closes Goal2326 as an accepted contract-first architecture slice, not as a v2.0 release authorization |
+
+Post-review fixes:
+
+| Issue | Fix |
+| --- | --- |
+| App-shaped prepared-handle re-export | Removed `allocate_robot_collision_pose_partner_device_output_columns` from `rtdsl.adapters.prepared_handles` |
+| Adapter test only scanned filenames | Extended `tests.goal2326_adapter_partition_test` to scan adapter `__all__` symbols for forbidden app/domain fragments |
+| Ambiguous `not_measured` sentinel | Changed `memory_status` and `copy_status` to `not_reported_by_runtime` and covered the value in the execution-report test |
+| Historical top-level namespace visible in `dir(rtdsl)` | Added a curated `__dir__()` that teaches the contract-first v2 surface first while preserving explicit legacy imports |
+
+Final local validation:
+
+```powershell
+$env:PYTHONPATH='src;.'; py -3 -m unittest tests.goal2326_public_primitive_contract_test tests.goal2326_execution_report_contract_test tests.goal2326_adapter_partition_test tests.goal2326_examples_recipe_boundary_test tests.goal2324_examples_v2_0_directory_reorganization_test tests.goal1765_github_learner_readiness_double_check_test
+$env:PYTHONPATH='src;.'; py -3 -m compileall -q src\rtdsl examples\v2_0 tests\goal2326_public_primitive_contract_test.py tests\goal2326_execution_report_contract_test.py tests\goal2326_adapter_partition_test.py tests\goal2326_examples_recipe_boundary_test.py
+```
+
+Result: `20` focused tests pass; compileall passes.
