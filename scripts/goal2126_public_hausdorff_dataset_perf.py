@@ -700,7 +700,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     for name, case in cases.items():
         points_a = np.asarray(case["points_a"], dtype=np.float64)
         points_b = np.asarray(case["points_b"], dtype=np.float64)
-        group_size = int(args.group_size or max(64, args.sample_count // 256))
+        group_size = int(args.group_size or hd.default_target_points_per_group(points_b.shape[0]))
         print(f"[goal2126] case={name} n={points_a.shape[0]} group={group_size}", flush=True)
         row: dict[str, object] = {
             "case": name,

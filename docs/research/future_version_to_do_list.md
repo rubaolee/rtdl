@@ -231,6 +231,38 @@ Boundary:
   custom shader injection unless we decide users should author their own
   traversal shaders.
 
+### Hausdorff Beyond Projected Point Sets
+
+Origin: Goal2143 RTDL/X-HD technical report and Goal2340 v2.1 benchmark
+refresh.
+
+Observation:
+
+- The current Hausdorff benchmark is exact for 2D projected point sets and uses
+  app-level X-HD-style seeding/pruning over generic point-group RTDL
+  primitives.
+- It intentionally does not implement full 3D surface Hausdorff, MRI/BraTS
+  volume workflows, original X-HD WKT-file reproduction, or continuous
+  segment/surface Hausdorff semantics.
+- Goal2340 made the user default more scale-aware for large point-set rows, but
+  did not add a new native Hausdorff kernel or app-shaped engine code.
+
+Future work:
+
+- If promoted, study continuous or surface Hausdorff through generic prepared
+  primitives: point groups, segment/surface distance probes, bounded witnesses,
+  and device-side max-distance reduction.
+- Keep X-HD relationship as inspiration and validation guidance unless exact
+  dataset/protocol reproduction is performed.
+- Do not introduce native `hausdorff` or `xhd` ABI names.
+- Consider whether v2.x generic device-resident reductions are enough before
+  moving this to a v3.0 user-defined shader-extension lane.
+
+Boundary:
+
+- Do not block the current v2.x learner/release lane on full X-HD reproduction.
+- Promotion needs a separate design report, pod evidence, and external review.
+
 ## v3.0+ Architecture Ideas
 
 ### User-Defined Predicate Extension Surface

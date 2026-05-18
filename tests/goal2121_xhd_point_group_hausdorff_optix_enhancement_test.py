@@ -12,8 +12,8 @@ CORE = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 API = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
 OPTIX_RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
-APP = ROOT / "examples" / "rtdl_hausdorff_v2_function.py"
-LAB = ROOT / "examples" / "rtdl_hausdorff_v2_language_lab.py"
+APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "hausdorff_xhd" / "rtdl_hausdorff_v2_function.py"
+LAB = ROOT / "examples" / "v2_0" / "research_benchmarks" / "hausdorff_xhd" / "rtdl_hausdorff_v2_language_lab.py"
 
 
 def _text(path: pathlib.Path) -> str:

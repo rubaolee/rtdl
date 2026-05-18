@@ -12,7 +12,7 @@ CORE = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
 WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 API = ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp"
 OPTIX_RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
-APP = ROOT / "examples" / "rtdl_hausdorff_v2_function.py"
+APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "hausdorff_xhd" / "rtdl_hausdorff_v2_function.py"
 PUBLIC_PERF = ROOT / "scripts" / "goal2126_public_hausdorff_dataset_perf.py"
 
 

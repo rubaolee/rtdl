@@ -1,10 +1,10 @@
 # Hausdorff / X-HD-Style Study
 
-This directory shows how a v2.0 user can implement Hausdorff distance with
+This directory shows how a v2.x user can implement Hausdorff distance with
 RTDL plus partner code, then compare that program with CPU, CUDA, and CuPy
-baselines. The RTDL/OptiX paths are informed by X-HD-style ideas: threshold
-search, witness extraction, grouping, and reducing the amount of pairwise work
-that must survive to the continuation phase.
+baselines. The current v2.1-compatible RTDL/OptiX path is informed by
+X-HD-style ideas: threshold search, witness extraction, grouping, and reducing
+the amount of pairwise work that must survive to the continuation phase.
 
 The study is deliberately honest: it does not claim that every Hausdorff input
 beats every CUDA implementation. It gives a concrete language/runtime program,
@@ -65,7 +65,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hau
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 8192 --points-b 8192 --method cupy_grouped_grid_rawkernel --compare --json-out scratch/hausdorff_cupy_grid.json
 ```
 
-Run the RTDL v2.0 user CUDA continuation path:
+Run the RTDL v2.x user CUDA continuation path:
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 8192 --points-b 8192 --method rtdl_v2_user_cuda --compare --json-out scratch/hausdorff_rtdl_user_cuda.json
@@ -75,8 +75,14 @@ Run an RTDL/OptiX witness path on an NVIDIA machine:
 
 ```bash
 export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 8192 --points-b 8192 --method rtdl_rt_grouped_reduced_nearest_witness --rt-backend optix --compare --json-out scratch/hausdorff_rtdl_optix.json
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py --points-a 8192 --points-b 8192 --method rtdl_rt_grouped_seeded_pruned_nearest_witness --rt-backend optix --compare --json-out scratch/hausdorff_rtdl_optix.json
 ```
+
+Grouped RT witness methods choose a scale-aware target group size by default:
+small point sets keep 64 target points per group, while larger X-HD-style rows
+use coarser powers of two up to 8192. Use `--target-points-per-group` when you
+need an exact reproduction of a published sweep, and `--seed-sample-count` to
+control the sample pass used by `rtdl_rt_grouped_seeded_pruned_nearest_witness`.
 
 ## Multi-Method Lab
 
@@ -109,6 +115,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hau
 | `rtdl_rt_nearest_witness` | yes | no | yes on OptiX | yes | RTDL/OptiX nearest witness extraction |
 | `rtdl_rt_grouped_nearest_witness` | yes | no | yes on OptiX | yes | X-HD-style grouped witness traversal |
 | `rtdl_rt_grouped_reduced_nearest_witness` | yes | no | yes on OptiX | yes | Grouped traversal plus device-side max-distance reduction |
+| `rtdl_rt_grouped_seeded_pruned_nearest_witness` | yes | no | yes on OptiX | yes | X-HD-style seed lower bound, threshold flags, and exact unsafe-subset reduction |
 | `rtdl_rt_grouped_adaptive_nearest_witness` | yes | no | yes on OptiX | yes | Adaptive grouped traversal with shrinking active work |
 
 ## Interpreting JSON
@@ -125,12 +132,13 @@ Check these fields before quoting a result:
 
 ## Claim Boundary
 
-- `rtdl_v2_user_cuda` is an RTDL v2.0 program, but it is CUDA-core partner
+- `rtdl_v2_user_cuda` is an RTDL v2.x program, but it is CUDA-core partner
   continuation, not RT-core acceleration.
 - `rtdl_rt_threshold_search` uses RTDL/OptiX traversal but returns a bounded
   interval, not the exact Hausdorff value.
 - Exact RTDL/OptiX Hausdorff claims should use an exact witness method such as
-  `rtdl_rt_grouped_reduced_nearest_witness` or
+  `rtdl_rt_grouped_seeded_pruned_nearest_witness`,
+  `rtdl_rt_grouped_reduced_nearest_witness`, or
   `rtdl_rt_grouped_adaptive_nearest_witness`, cite the dataset and hardware,
   and include correctness evidence.
 - Do not use this directory to claim that RTDL universally beats X-HD or every

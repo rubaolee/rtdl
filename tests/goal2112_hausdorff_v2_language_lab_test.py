@@ -6,6 +6,7 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+HAUSDORFF_BENCH = ROOT / "examples" / "v2_0" / "research_benchmarks" / "hausdorff_xhd"
 
 
 class Goal2112HausdorffV2LanguageLabTest(unittest.TestCase):
@@ -54,7 +55,7 @@ class Goal2112HausdorffV2LanguageLabTest(unittest.TestCase):
         self.assertTrue(data["results"]["rtdl_rt_nearest_witness"]["metadata"]["uses_rt_cores"])
 
     def test_language_lab_has_oracle_radius_diagnostic(self) -> None:
-        source = (ROOT / "examples" / "rtdl_hausdorff_v2_language_lab.py").read_text()
+        source = (HAUSDORFF_BENCH / "rtdl_hausdorff_v2_language_lab.py").read_text()
         self.assertIn("rtdl_rt_nearest_witness_oracle_radius", source)
         self.assertIn("diagnostic_lower_bound", source)
         self.assertIn("exact_reference_plus_slack", source)

@@ -167,6 +167,27 @@ def _build_uniform_point_group_columns(
     return sorted_columns, tuple(groups)
 
 
+def default_target_points_per_group(point_count: int) -> int:
+    """Return a scale-aware default for grouped point-set RT traversal.
+
+    Small rows should keep groups fine enough for useful pruning. Large rows
+    need coarser groups to keep OptiX primitive count and launch-side metadata
+    under control. The powers-of-two shape keeps benchmark sweeps reproducible.
+    """
+
+    count = max(1, int(point_count))
+    target = max(64, count // 128)
+    return min(8192, 1 << int(math.ceil(math.log2(target))))
+
+
+def _resolve_target_points_per_group(columns: dict[str, np.ndarray], target_points_per_group: int | None) -> int:
+    if target_points_per_group is None:
+        return default_target_points_per_group(int(columns["ids"].size))
+    if target_points_per_group <= 0:
+        raise ValueError("target_points_per_group must be positive")
+    return int(target_points_per_group)
+
+
 def _build_uniform_point_groups(
     columns: dict[str, np.ndarray],
     *,
@@ -721,7 +742,7 @@ def hausdorff_distance_2d_rt_grouped_nearest_witness(
     seed_with_threshold: bool = True,
     threshold_tolerance: float = 1e-4,
     threshold_max_iterations: int = 32,
-    target_points_per_group: int = 64,
+    target_points_per_group: int | None = None,
 ) -> HausdorffRtNearestResult:
     """Return exact HD using X-HD-style grouped point-bound traversal.
 
@@ -733,6 +754,8 @@ def hausdorff_distance_2d_rt_grouped_nearest_witness(
 
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
+    group_size_ab = _resolve_target_points_per_group(columns_b, target_points_per_group)
+    group_size_ba = _resolve_target_points_per_group(columns_a, target_points_per_group)
     upper_bound = _point_set_upper_bound(columns_a, columns_b)
     start = time.perf_counter()
     ab = _directed_rt_grouped_threshold_seeded_nearest_witness(
@@ -743,7 +766,7 @@ def hausdorff_distance_2d_rt_grouped_nearest_witness(
         seed_with_threshold=seed_with_threshold,
         threshold_tolerance=threshold_tolerance,
         threshold_max_iterations=threshold_max_iterations,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ab,
     )
     ba = _directed_rt_grouped_threshold_seeded_nearest_witness(
         columns_b,
@@ -753,7 +776,7 @@ def hausdorff_distance_2d_rt_grouped_nearest_witness(
         seed_with_threshold=seed_with_threshold,
         threshold_tolerance=threshold_tolerance,
         threshold_max_iterations=threshold_max_iterations,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ba,
     )
     if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
         selected = ab
@@ -785,12 +808,14 @@ def hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
     seed_with_threshold: bool = True,
     threshold_tolerance: float = 1e-4,
     threshold_max_iterations: int = 32,
-    target_points_per_group: int = 64,
+    target_points_per_group: int | None = None,
 ) -> HausdorffRtNearestResult:
     """Return exact HD using grouped RT traversal plus device-side max reduction."""
 
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
+    group_size_ab = _resolve_target_points_per_group(columns_b, target_points_per_group)
+    group_size_ba = _resolve_target_points_per_group(columns_a, target_points_per_group)
     upper_bound = _point_set_upper_bound(columns_a, columns_b)
     start = time.perf_counter()
     ab = _directed_rt_grouped_reduced_nearest_witness(
@@ -801,7 +826,7 @@ def hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
         seed_with_threshold=seed_with_threshold,
         threshold_tolerance=threshold_tolerance,
         threshold_max_iterations=threshold_max_iterations,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ab,
     )
     ba = _directed_rt_grouped_reduced_nearest_witness(
         columns_b,
@@ -811,7 +836,7 @@ def hausdorff_distance_2d_rt_grouped_reduced_nearest_witness(
         seed_with_threshold=seed_with_threshold,
         threshold_tolerance=threshold_tolerance,
         threshold_max_iterations=threshold_max_iterations,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ba,
     )
     if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
         selected = ab
@@ -842,7 +867,7 @@ def hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
     radius: float | None = None,
     seed_with_threshold: bool = True,
     seed_sample_count: int = 8192,
-    target_points_per_group: int = 64,
+    target_points_per_group: int | None = None,
 ) -> HausdorffRtNearestResult:
     """Return exact HD using X-HD-style sample seeding and safe-point pruning.
 
@@ -856,6 +881,8 @@ def hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
 
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
+    group_size_ab = _resolve_target_points_per_group(columns_b, target_points_per_group)
+    group_size_ba = _resolve_target_points_per_group(columns_a, target_points_per_group)
     upper_bound = _point_set_upper_bound(columns_a, columns_b)
     start = time.perf_counter()
     ab = _directed_rt_grouped_seeded_pruned_nearest_witness(
@@ -865,7 +892,7 @@ def hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
         radius=radius,
         seed_with_threshold=seed_with_threshold,
         seed_sample_count=seed_sample_count,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ab,
     )
     ba = _directed_rt_grouped_seeded_pruned_nearest_witness(
         columns_b,
@@ -874,7 +901,7 @@ def hausdorff_distance_2d_rt_grouped_seeded_pruned_nearest_witness(
         radius=radius,
         seed_with_threshold=seed_with_threshold,
         seed_sample_count=seed_sample_count,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ba,
     )
     if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
         selected = ab
@@ -905,12 +932,14 @@ def hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
     initial_radius: float | None = None,
     growth_factor: float = 2.0,
     max_iterations: int = 12,
-    target_points_per_group: int = 64,
+    target_points_per_group: int | None = None,
 ) -> HausdorffRtNearestResult:
     """Return exact HD using grouped RT traversal with X-HD-style worklist shrink."""
 
     columns_a = _as_point_columns(points_a, name="points_a")
     columns_b = _as_point_columns(points_b, name="points_b")
+    group_size_ab = _resolve_target_points_per_group(columns_b, target_points_per_group)
+    group_size_ba = _resolve_target_points_per_group(columns_a, target_points_per_group)
     upper_bound = _point_set_upper_bound(columns_a, columns_b)
     start = time.perf_counter()
     ab = _directed_rt_grouped_adaptive_nearest_witness(
@@ -920,7 +949,7 @@ def hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
         initial_radius=initial_radius,
         growth_factor=growth_factor,
         max_iterations=max_iterations,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ab,
     )
     ba = _directed_rt_grouped_adaptive_nearest_witness(
         columns_b,
@@ -929,7 +958,7 @@ def hausdorff_distance_2d_rt_grouped_adaptive_nearest_witness(
         initial_radius=initial_radius,
         growth_factor=growth_factor,
         max_iterations=max_iterations,
-        target_points_per_group=target_points_per_group,
+        target_points_per_group=group_size_ba,
     )
     if (float(ab["distance"]), "a_to_b") >= (float(ba["distance"]), "b_to_a"):
         selected = ab
@@ -1180,6 +1209,18 @@ def main(argv: Iterable[str] | None = None) -> int:
         action="store_true",
         help="use the dataset bounding-box diagonal for rtdl_rt_nearest_witness instead of threshold seeding",
     )
+    parser.add_argument(
+        "--target-points-per-group",
+        type=int,
+        default=None,
+        help="override the scale-aware grouped RT target group size",
+    )
+    parser.add_argument(
+        "--seed-sample-count",
+        type=int,
+        default=8192,
+        help="sample count for X-HD-style seeded-pruned RT witness methods",
+    )
     parser.add_argument("--compare", action="store_true", help="also run all available baselines and compare")
     parser.add_argument("--warmup", type=int, default=1)
     parser.add_argument("--json-out", type=Path)
@@ -1207,6 +1248,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             seed_with_threshold=not args.rt_nearest_no_threshold_seed,
             threshold_tolerance=args.rt_tolerance,
             threshold_max_iterations=args.rt_max_iterations,
+            target_points_per_group=args.target_points_per_group,
         )
         primary_distance = rt_exact.distance
         payload = {"primary": asdict(rt_exact)}
@@ -1218,6 +1260,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             seed_with_threshold=not args.rt_nearest_no_threshold_seed,
             threshold_tolerance=args.rt_tolerance,
             threshold_max_iterations=args.rt_max_iterations,
+            target_points_per_group=args.target_points_per_group,
         )
         primary_distance = rt_exact.distance
         payload = {"primary": asdict(rt_exact)}
@@ -1227,6 +1270,8 @@ def main(argv: Iterable[str] | None = None) -> int:
             points_b,
             radius=args.rt_nearest_radius,
             seed_with_threshold=not args.rt_nearest_no_threshold_seed,
+            seed_sample_count=args.seed_sample_count,
+            target_points_per_group=args.target_points_per_group,
         )
         primary_distance = rt_exact.distance
         payload = {"primary": asdict(rt_exact)}
@@ -1235,6 +1280,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             points_a,
             points_b,
             max_iterations=args.rt_max_iterations,
+            target_points_per_group=args.target_points_per_group,
         )
         primary_distance = rt_exact.distance
         payload = {"primary": asdict(rt_exact)}

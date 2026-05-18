@@ -7,11 +7,12 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+HAUSDORFF_BENCH = ROOT / "examples" / "v2_0" / "research_benchmarks" / "hausdorff_xhd"
 
 
 class Goal2110HausdorffExactRtNearestWitnessTest(unittest.TestCase):
     def test_python_example_exposes_exact_rt_method(self) -> None:
-        source = (ROOT / "examples" / "rtdl_hausdorff_v2_function.py").read_text()
+        source = (HAUSDORFF_BENCH / "rtdl_hausdorff_v2_function.py").read_text()
         tree = ast.parse(source)
         names = {node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
         self.assertIn("hausdorff_distance_2d_rt_nearest_witness", names)
@@ -22,7 +23,7 @@ class Goal2110HausdorffExactRtNearestWitnessTest(unittest.TestCase):
         self.assertIn("rt_threshold_upper_bound", source)
 
     def test_language_lab_records_method_contracts(self) -> None:
-        source = (ROOT / "examples" / "rtdl_hausdorff_v2_language_lab.py").read_text()
+        source = (HAUSDORFF_BENCH / "rtdl_hausdorff_v2_language_lab.py").read_text()
         self.assertIn("METHOD_METADATA", source)
         self.assertIn('"rtdl_v2_user_cuda"', source)
         self.assertIn('"rtdl_rt_threshold_search"', source)
