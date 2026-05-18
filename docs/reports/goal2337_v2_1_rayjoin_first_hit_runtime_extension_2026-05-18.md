@@ -39,8 +39,8 @@ Artifacts:
 
 | Query count | RayJoin positives | RTDL positives | Missing | Extra | v2.0 query+reduce | v2.1 native query | v2.1 query+validation | v2.1 speedup vs v2.0 | v2.1 native / RayJoin query |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 4,096 | 3,374 | 3,374 | 0 | 0 | 26.399 ms | 0.823 ms | 1.485 ms | 17.77x | 3.49x slower |
-| 65,536 | 53,372 | 53,372 | 0 | 0 | 734.597 ms | 2.855 ms | 12.181 ms | 60.30x | 1.91x slower |
+| 4,096 | 3,374 | 3,374 | 0 | 0 | 26.394 ms | 0.796 ms | 1.363 ms | 19.37x | 3.37x slower |
+| 65,536 | 53,372 | 53,372 | 0 | 0 | 734.597 ms | 2.654 ms | 10.073 ms | 72.93x | 1.78x slower |
 
 `v2.1 query+validation` includes the Python/NumPy positive-set validation used only to prove equality with RayJoin's exported result set. The native RTDL query is the relevant runtime primitive time.
 
@@ -68,8 +68,8 @@ This does authorize:
 
 - RTDL v2.1 has a measured generic first-hit/nearest-boundary OptiX primitive.
 - The RayJoin PIP support contract can be expressed with RTDL v2.1 using generic native traversal and Python application mapping.
-- The measured same-query path is about `60.30x` faster than the v2.0 vertical-probe route at 65,536 queries.
-- The native query time is within about `1.91x` of RayJoin's query time at 65,536 queries on this pod.
+- The measured same-query path is about `72.93x` faster than the v2.0 vertical-probe route at 65,536 queries.
+- The native query time is within about `1.78x` of RayJoin's query time at 65,536 queries on this pod.
 
 This does not authorize:
 
@@ -82,4 +82,3 @@ This does not authorize:
 ## v3.0 Boundary
 
 This goal deliberately does not require user-defined shader injection. The remaining future v3.0 item is still user-extensible shader/code injection. The v2.1 primitive added here is generic runtime functionality: prepared segment first-hit and bounded witness emission.
-

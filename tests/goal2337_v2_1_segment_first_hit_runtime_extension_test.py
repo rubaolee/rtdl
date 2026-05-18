@@ -82,8 +82,8 @@ class Goal2337V21SegmentFirstHitRuntimeExtensionTest(unittest.TestCase):
     def test_report_names_v2_1_boundary_without_overclaiming(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("v2.1-candidate-evidence-collected", text)
-        self.assertIn("60.30x", text)
-        self.assertIn("1.91x slower", text)
+        self.assertIn("72.93x", text)
+        self.assertIn("1.78x slower", text)
         self.assertIn("does not require user-defined shader injection", text)
         self.assertIn("does not authorize", text)
         self.assertIn("RTDL beats RayJoin", text)
