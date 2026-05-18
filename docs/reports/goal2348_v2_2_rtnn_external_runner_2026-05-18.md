@@ -104,8 +104,9 @@ RTDL row and record whether the RTDL row is current-v2.1 2-D smoke evidence or
 new v2.2 3-D bounded-neighbor evidence.
 
 The CUDA 12 patch subcommand only edits an external RTNN checkout. It adds
-missing Thrust includes and updates legacy NVRTC intrinsic names; it does not
-change RTDL source or RTNN algorithms.
+missing Thrust includes, pins the host-side Thrust namespace macro to RTNN's
+NVCC default for link compatibility, and updates legacy NVRTC intrinsic names;
+it does not change RTDL source or RTNN algorithms.
 
 ## Validation
 

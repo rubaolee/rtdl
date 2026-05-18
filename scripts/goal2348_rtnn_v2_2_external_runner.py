@@ -89,6 +89,17 @@ def _insert_after_last_prefixed_line(text: str, prefix: str, addition: str) -> t
     return "".join(lines), True
 
 
+def _insert_before_first_prefixed_line(text: str, prefix: str, addition: str) -> tuple[str, bool]:
+    if addition in text:
+        return text, False
+    lines = text.splitlines(keepends=True)
+    for index, line in enumerate(lines):
+        if line.startswith(prefix):
+            lines.insert(index, addition)
+            return "".join(lines), True
+    raise ValueError(f"prefix anchor not found: {prefix!r}")
+
+
 def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
     """Apply compatibility-only patches to a disposable external RTNN checkout.
 
@@ -122,6 +133,23 @@ def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
         if changed:
             path.write_text(text, encoding="utf-8", newline="\n")
         patches.append({"path": str(path), "changed": changed, "kind": "missing_thrust_include"})
+
+    arch_macro = (
+        "#ifndef __CUDA_ARCH_LIST__\n"
+        "#define __CUDA_ARCH_LIST__ 600\n"
+        "#endif\n"
+    )
+    for path in [
+        rtnn_root / "src" / "optixNSearch" / "func.h",
+        rtnn_root / "src" / "optixNSearch" / "search.cpp",
+        rtnn_root / "src" / "optixNSearch" / "sort.cpp",
+        rtnn_root / "src" / "optixNSearch" / "util.cpp",
+    ]:
+        text = path.read_text(encoding="utf-8")
+        text, changed = _insert_before_first_prefixed_line(text, "#include <thrust/", arch_macro)
+        if changed:
+            path.write_text(text, encoding="utf-8", newline="\n")
+        patches.append({"path": str(path), "changed": changed, "kind": "thrust_cuda_arch_namespace"})
 
     geometry = rtnn_root / "src" / "optixNSearch" / "geometry.cu"
     text = geometry.read_text(encoding="utf-8")

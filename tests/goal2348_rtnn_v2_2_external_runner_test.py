@@ -92,8 +92,20 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
                 "#include <thrust/execution_policy.h>\nvoid f() {}\n",
                 encoding="utf-8",
             )
+            (source / "func.h").write_text(
+                "#pragma once\n#include <thrust/device_vector.h>\n",
+                encoding="utf-8",
+            )
+            (source / "search.cpp").write_text(
+                "#include <thrust/device_vector.h>\nvoid s() {}\n",
+                encoding="utf-8",
+            )
             (source / "sort.cpp").write_text(
                 "#include <thrust/gather.h>\nvoid g() { thrust::host_vector<int> v; }\n",
+                encoding="utf-8",
+            )
+            (source / "util.cpp").write_text(
+                "#include <thrust/device_vector.h>\nvoid u() {}\n",
                 encoding="utf-8",
             )
             (source / "geometry.cu").write_text(
@@ -103,11 +115,15 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
 
             first = runner.patch_rtnn_cuda12_checkout(root)
             self.assertEqual(first["operation"], "patch-rtnn-cuda12")
-            self.assertEqual(first["changed_count"], 3)
+            self.assertEqual(first["changed_count"], 7)
             self.assertFalse(first["claim_boundary"]["rtdl_source_changed"])
             self.assertFalse(first["claim_boundary"]["algorithm_changed"])
             self.assertIn("thrust/count.h", (source / "thrust_helper.cu").read_text(encoding="utf-8"))
             self.assertIn("thrust/host_vector.h", (source / "sort.cpp").read_text(encoding="utf-8"))
+            self.assertIn("__CUDA_ARCH_LIST__ 600", (source / "func.h").read_text(encoding="utf-8"))
+            self.assertIn("__CUDA_ARCH_LIST__ 600", (source / "search.cpp").read_text(encoding="utf-8"))
+            self.assertIn("__CUDA_ARCH_LIST__ 600", (source / "sort.cpp").read_text(encoding="utf-8"))
+            self.assertIn("__CUDA_ARCH_LIST__ 600", (source / "util.cpp").read_text(encoding="utf-8"))
             geometry = (source / "geometry.cu").read_text(encoding="utf-8")
             self.assertIn("__uint_as_float", geometry)
             self.assertIn("__float_as_uint", geometry)
@@ -124,7 +140,10 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
                 "#include <thrust/execution_policy.h>\n",
                 encoding="utf-8",
             )
+            (source / "func.h").write_text("#include <thrust/device_vector.h>\n", encoding="utf-8")
+            (source / "search.cpp").write_text("#include <thrust/device_vector.h>\n", encoding="utf-8")
             (source / "sort.cpp").write_text("#include <thrust/gather.h>\n", encoding="utf-8")
+            (source / "util.cpp").write_text("#include <thrust/device_vector.h>\n", encoding="utf-8")
             (source / "geometry.cu").write_text(
                 "uint_as_float(1); float_as_uint(1.0f);\n",
                 encoding="utf-8",
@@ -148,7 +167,7 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, completed.stderr)
             payload = json.loads(json_out.read_text(encoding="utf-8"))
             self.assertTrue(payload["claim_boundary"]["external_rtnn_source_patch_only"])
-            self.assertEqual(payload["changed_count"], 3)
+            self.assertEqual(payload["changed_count"], 7)
 
     def test_report_names_runner_as_next_harness(self) -> None:
         campaign = (
