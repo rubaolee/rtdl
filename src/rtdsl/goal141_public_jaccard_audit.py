@@ -285,7 +285,7 @@ def run_goal141_public_jaccard_audit(
     copies: tuple[int, ...] = (1, 4),
 ) -> dict[str, object]:
     import rtdsl as rt
-    from examples.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
+    from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
 
     case = build_goal141_public_case(
         zip_path,

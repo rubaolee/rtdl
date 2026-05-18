@@ -132,11 +132,11 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
         combined = "\n".join(
             (ROOT / relative).read_text(encoding="utf-8")
             for relative in (
-                "examples/rtdl_ann_candidate_app.py",
-                "examples/rtdl_barnes_hut_force_app.py",
-                "examples/rtdl_graph_bfs.py",
-                "examples/rtdl_graph_triangle_count.py",
-                "examples/rtdl_graph_analytics_app.py",
+                "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
+                "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
+                "examples/v2_0/features/graph/rtdl_graph_bfs.py",
+                "examples/v2_0/features/graph/rtdl_graph_triangle_count.py",
+                "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
                 "examples/README.md",
                 "docs/application_catalog.md",
                 "docs/app_engine_support_matrix.md",

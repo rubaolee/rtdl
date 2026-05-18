@@ -13,7 +13,7 @@ from scripts import goal509_app_perf_linux
 class Goal509AppPerfHarnessTest(unittest.TestCase):
     def test_robot_cli_exposes_only_correctness_validated_gpu_backend(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "examples/rtdl_robot_collision_screening_app.py", "--help"],
+            [sys.executable, "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "--help"],
             check=True,
             capture_output=True,
             text=True,
@@ -23,7 +23,7 @@ class Goal509AppPerfHarnessTest(unittest.TestCase):
 
     def test_barnes_cli_exposes_validated_gpu_backends(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "examples/rtdl_barnes_hut_force_app.py", "--help"],
+            [sys.executable, "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", "--help"],
             check=True,
             capture_output=True,
             text=True,

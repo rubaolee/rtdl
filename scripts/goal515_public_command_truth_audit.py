@@ -23,58 +23,58 @@ PUBLIC_DOCS = [
 ]
 
 GOAL513_COMMANDS = [
-    "python examples/rtdl_hello_world.py",
-    "python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
-    "python examples/rtdl_feature_quickstart_cookbook.py",
-    "python examples/rtdl_ray_triangle_any_hit.py",
-    "python examples/rtdl_visibility_rows.py",
-    "python examples/rtdl_reduce_rows.py",
-    "python examples/rtdl_graph_analytics_app.py --backend cpu_python_reference",
-    "python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
-    "python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
-    "python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
-    "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
-    "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
-    "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
-    "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
-    "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
-    "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
+    "python examples/v2_0/getting_started/rtdl_hello_world.py",
+    "python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
+    "python examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py",
+    "python examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py",
+    "python examples/v2_0/features/ray_queries/rtdl_visibility_rows.py",
+    "python examples/v2_0/features/ray_queries/rtdl_reduce_rows.py",
+    "python examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py --backend cpu_python_reference",
+    "python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend cpu_python_reference",
+    "python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend cpu_python_reference",
+    "python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference",
+    "python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
+    "python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend cpu_python_reference",
+    "python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend cpu_python_reference",
+    "python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
+    "python examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
+    "python examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
 ]
 
 GOAL593_COMMANDS = [
-    "python examples/rtdl_hiprt_ray_triangle_hitcount.py",
-    "python examples/rtdl_apple_rt_demo_app.py",
+    "python examples/legacy_or_backend_proofs/rtdl_hiprt_ray_triangle_hitcount.py",
+    "python examples/legacy_or_backend_proofs/rtdl_apple_rt_demo_app.py",
 ]
 
 GOAL821_COMMANDS = [
-    "python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core",
-    "python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
-    "python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
-    "python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core",
+    "python examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core",
+    "python examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
+    "python examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
+    "python examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core",
 ]
 
 GOAL942_COMMANDS = [
-    "python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
-    "python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core",
+    "python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
+    "python examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core",
     "python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared",
     "python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded",
-    "python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
-    "python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core",
-    "python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core",
+    "python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
+    "python examples/v2_0/apps/ml/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core",
+    "python examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core",
 ]
 
 GOAL992_COMMANDS = [
-    "python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
-    "python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
+    "python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
+    "python examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
 ]
 
 GOAL878_COMMANDS = [
-    "python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4",
-    "python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4",
-    "python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4",
-    "python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000",
-    "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
-    "python examples/rtdl_polygon_set_jaccard.py --backend optix",
+    "python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4",
+    "python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4",
+    "python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4",
+    "python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000",
+    "python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
+    "python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend optix",
 ]
 
 PUBLIC_VALIDATION_COMMAND_KEYS = {

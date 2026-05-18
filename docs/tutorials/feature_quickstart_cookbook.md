@@ -12,7 +12,7 @@ It complements the longer tutorials:
 Run the companion example first:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py
 ```
 
 The command uses `cpu_python_reference` so it is portable and easy to inspect.
@@ -52,7 +52,7 @@ claims.
 - Kernel predicate: `rt.segment_intersection(exact=False)`.
 - Learn from:
   - [LSI feature home](../features/lsi/README.md)
-  - `examples/rtdl_feature_quickstart_cookbook.py`
+  - `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`
 
 ### `pip`
 
@@ -61,7 +61,7 @@ claims.
 - Kernel predicate: `rt.point_in_polygon(exact=False, boundary_mode="inclusive")`.
 - Learn from:
   - [PIP feature home](../features/pip/README.md)
-  - `examples/rtdl_feature_quickstart_cookbook.py`
+  - `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`
 
 ### `overlay`
 
@@ -71,7 +71,7 @@ claims.
 - Boundary: this is not full polygon overlay materialization.
 - Learn from:
   - [Overlay feature home](../features/overlay/README.md)
-  - `examples/rtdl_feature_quickstart_cookbook.py`
+  - `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`
 
 ### `ray_tri_hitcount`
 
@@ -80,7 +80,7 @@ claims.
 - Kernel predicate: `rt.ray_triangle_hit_count(exact=False)`.
 - Learn from:
   - [Ray/Triangle Hit Count feature home](../features/ray_tri_hitcount/README.md)
-  - `examples/rtdl_feature_quickstart_cookbook.py`
+  - `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`
   - [RTDL Plus Python Rendering](rendering_and_visual_demos.md)
 
 ### `ray_tri_anyhit`
@@ -92,7 +92,7 @@ claims.
   counting every hit is unnecessary.
 - Learn from:
   - [Ray/Triangle Any Hit feature home](../features/ray_tri_anyhit/README.md)
-  - `examples/rtdl_ray_triangle_any_hit.py`
+  - `examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py`
 
 ### `visibility_rows`
 
@@ -107,7 +107,7 @@ claims.
   with exact 2D acceptance, not programmable shader-level any-hit.
 - Learn from:
   - [Visibility Rows feature home](../features/visibility_rows/README.md)
-  - `examples/rtdl_visibility_rows.py`
+  - `examples/v2_0/features/ray_queries/rtdl_visibility_rows.py`
 
 ### `reduce_rows`
 
@@ -120,12 +120,12 @@ claims.
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
+PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_reduce_rows.py
 ```
 
 - Learn from:
   - [Reduce Rows feature home](../features/reduce_rows/README.md)
-  - `examples/rtdl_reduce_rows.py`
+  - `examples/v2_0/features/ray_queries/rtdl_reduce_rows.py`
 
 ### `robot_collision_screening_app`
 
@@ -140,11 +140,11 @@ PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
 ```
 
 - Learn from:
-  - `examples/rtdl_robot_collision_screening_app.py`
+  - `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py`
   - [Ray/Triangle Any Hit feature home](../features/ray_tri_anyhit/README.md)
   - [Reduce Rows feature home](../features/reduce_rows/README.md)
   - [Capability Boundaries](../capability_boundaries.md)
@@ -161,11 +161,11 @@ PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
 ```
 
 - Learn from:
-  - `examples/rtdl_barnes_hut_force_app.py`
+  - `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py`
   - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
   - [Capability Boundaries](../capability_boundaries.md)
 
@@ -176,7 +176,7 @@ PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_pyth
 - Kernel predicate: `rt.point_nearest_segment(exact=False)`.
 - Learn from:
   - [Point/Nearest Segment feature home](../features/point_nearest_segment/README.md)
-  - `examples/rtdl_feature_quickstart_cookbook.py`
+  - `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`
 
 ### `segment_polygon_hitcount`
 
@@ -185,7 +185,7 @@ PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_pyth
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 - Learn from:
@@ -199,7 +199,7 @@ PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference
 ```
 
 - Learn from:
@@ -213,7 +213,7 @@ PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend c
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py
 ```
 
 - Learn from:
@@ -226,7 +226,7 @@ PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py
 ```
 
 - Learn from:
@@ -239,7 +239,7 @@ PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
 - Learn from:
@@ -253,7 +253,7 @@ PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_py
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
 - Learn from:
@@ -276,14 +276,14 @@ PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --hausdorff-threshold 0.4 --require-rt-core
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --hausdorff-threshold 0.4 --require-rt-core
 ```
 
 - Learn from:
   - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
   - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
-  - `examples/rtdl_hausdorff_distance_app.py`
+  - `examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py`
 
 ### `bfs`
 
@@ -292,7 +292,7 @@ PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix 
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend cpu_python_reference
 ```
 
 - Learn from:
@@ -305,7 +305,7 @@ PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_referenc
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
 - Learn from:
@@ -318,7 +318,7 @@ PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_pyth
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
 ```
 
 - Learn from:
@@ -332,7 +332,7 @@ PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_pytho
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend cpu_python_reference
 ```
 
 - Learn from:
@@ -346,7 +346,7 @@ PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_r
 - Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend cpu_python_reference
 ```
 
 - Learn from:

@@ -54,7 +54,7 @@ For the current release status, read
 Start with the portable partner tutorial first:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree
 ```
 
 Move to OptiX only on a configured NVIDIA host with the OptiX backend built.

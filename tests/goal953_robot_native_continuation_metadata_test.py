@@ -147,7 +147,7 @@ class Goal953RobotNativeContinuationMetadataTest(unittest.TestCase):
         )
         with (
             mock.patch(
-                "examples.rtdl_robot_collision_screening_app.rt.ray_triangle_any_hit_cpu",
+                "examples.v2_0.apps.robotics.rtdl_robot_collision_screening_app.rt.ray_triangle_any_hit_cpu",
                 return_value=oracle_rows,
             ),
             mock.patch.object(
@@ -170,7 +170,7 @@ class Goal953RobotNativeContinuationMetadataTest(unittest.TestCase):
     def test_prepared_count_can_skip_cpu_validation_for_timing(self) -> None:
         with (
             mock.patch(
-                "examples.rtdl_robot_collision_screening_app.rt.ray_triangle_any_hit_cpu",
+                "examples.v2_0.apps.robotics.rtdl_robot_collision_screening_app.rt.ray_triangle_any_hit_cpu",
                 side_effect=AssertionError("skip_validation should not run CPU oracle"),
             ),
             mock.patch.object(

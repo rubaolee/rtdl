@@ -28,7 +28,7 @@ class Goal1741V18SourceTreeInstallBoundaryTest(unittest.TestCase):
         env = dict(os.environ)
         env["PYTHONPATH"] = "src;." if os.name == "nt" else "src:."
         completed = subprocess.run(
-            [sys.executable, "examples/rtdl_hello_world.py"],
+            [sys.executable, "examples/v2_0/getting_started/rtdl_hello_world.py"],
             cwd=ROOT,
             env=env,
             text=True,
@@ -42,7 +42,7 @@ class Goal1741V18SourceTreeInstallBoundaryTest(unittest.TestCase):
         env = dict(os.environ)
         env["PYTHONPATH"] = "src;." if os.name == "nt" else "src:."
         completed = subprocess.run(
-            [sys.executable, "examples/rtdl_hello_world_backends.py", "--backend", "cpu_python_reference"],
+            [sys.executable, "examples/v2_0/getting_started/rtdl_hello_world_backends.py", "--backend", "cpu_python_reference"],
             cwd=ROOT,
             env=env,
             text=True,

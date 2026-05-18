@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.rtdl_hausdorff_distance_app import hausdorff_nearest_rows_kernel
+from examples.v2_0.research_benchmarks.hausdorff_xhd.rtdl_hausdorff_distance_app import hausdorff_nearest_rows_kernel
 from rtdsl.reference import Point
 
 

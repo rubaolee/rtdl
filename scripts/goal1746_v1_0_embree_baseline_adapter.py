@@ -28,7 +28,7 @@ def _cmd(app: str, *args: str, scale: str = "goal1660") -> dict[str, Any]:
 RECOVERABLE_ROWS: list[dict[str, Any]] = [
     _cmd(
         "service_coverage_gaps",
-        "examples/rtdl_service_coverage_gaps.py",
+        "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py",
         "--backend",
         "embree",
         "--copies",
@@ -38,7 +38,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "event_hotspot_screening",
-        "examples/rtdl_event_hotspot_screening.py",
+        "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py",
         "--backend",
         "embree",
         "--copies",
@@ -48,7 +48,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "facility_knn_assignment",
-        "examples/rtdl_facility_knn_assignment.py",
+        "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py",
         "--backend",
         "embree",
         "--copies",
@@ -58,7 +58,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "road_hazard_screening",
-        "examples/rtdl_road_hazard_screening.py",
+        "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",
         "--backend",
         "embree",
         "--copies",
@@ -68,7 +68,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "segment_polygon_hitcount",
-        "examples/rtdl_segment_polygon_hitcount.py",
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py",
         "--backend",
         "embree",
         "--copies",
@@ -76,7 +76,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "segment_polygon_anyhit_rows",
-        "examples/rtdl_segment_polygon_anyhit_rows.py",
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
         "--backend",
         "embree",
         "--copies",
@@ -88,7 +88,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "graph_visibility_edges",
-        "examples/rtdl_graph_analytics_app.py",
+        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
         "--backend",
         "embree",
         "--scenario",
@@ -100,7 +100,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "graph_bfs",
-        "examples/rtdl_graph_analytics_app.py",
+        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
         "--backend",
         "embree",
         "--scenario",
@@ -112,7 +112,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "graph_triangle_count",
-        "examples/rtdl_graph_analytics_app.py",
+        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
         "--backend",
         "embree",
         "--scenario",
@@ -124,7 +124,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "hausdorff_distance",
-        "examples/rtdl_hausdorff_distance_app.py",
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
         "--backend",
         "embree",
         "--copies",
@@ -134,7 +134,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "ann_candidate_search",
-        "examples/rtdl_ann_candidate_app.py",
+        "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
         "--backend",
         "embree",
         "--copies",
@@ -144,7 +144,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "barnes_hut_force_app",
-        "examples/rtdl_barnes_hut_force_app.py",
+        "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
         "--backend",
         "embree",
         "--body-count",
@@ -154,7 +154,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "polygon_pair_overlap_area_rows",
-        "examples/rtdl_polygon_pair_overlap_area_rows.py",
+        "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
         "--backend",
         "embree",
         "--copies",
@@ -164,7 +164,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "polygon_set_jaccard",
-        "examples/rtdl_polygon_set_jaccard.py",
+        "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",
         "--backend",
         "embree",
         "--copies",

@@ -38,7 +38,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "claim_contract": "prepared native road-hazard compact hit-count summary only",
         "scale_choice": {"copies": 20000, "iterations": 5, "reason": "Goal1184 already cleared floor with median 0.108167s"},
         "optix_command": "python3 scripts/goal933_prepared_segment_polygon_optix_profiler.py --scenario road_hazard_prepared_summary --copies 20000 --iterations 5 --mode run --output-json docs/reports/goal1189_next_rtx_pod_contract_batch/road_hazard_native_summary_optix.json",
-        "baseline_command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 20000 --output-mode summary",
+        "baseline_command": "python3 examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend embree --copies 20000 --output-mode summary",
         "boundary": "no whole-app speedup claim, full GIS, routing, default app, or broad road-hazard speedup claim",
     },
     {
@@ -67,7 +67,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "claim_contract": "prepared Hausdorff <= radius decision only",
         "scale_choice": {"copies": 200000, "iterations": 10, "radius": 0.4, "reason": "Goal1184 copies=20000 was 0.001296s, far below floor; 10x scale targets reviewable timing while preserving threshold semantics"},
         "optix_command": "python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode optix --copies 200000 --iterations 10 --radius 0.4 --output-json docs/reports/goal1189_next_rtx_pod_contract_batch/hausdorff_threshold_prepared_optix.json",
-        "baseline_command": "python3 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 200000 --embree-result-mode directed_summary --hausdorff-threshold 0.4",
+        "baseline_command": "python3 examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree --copies 200000 --embree-result-mode directed_summary --hausdorff-threshold 0.4",
         "boundary": "no exact Hausdorff distance, nearest-neighbor ranking, KNN rows, or whole-app speedup claim",
     },
 )

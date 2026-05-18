@@ -64,8 +64,8 @@ optimizes arbitrary PyTorch or CuPy programs.
 ## Minimal Smoke Commands
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world.py
-PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py
 PYTHONPATH=src:. python -m unittest tests.goal2323_v2_0_release_action_test
 ```
 

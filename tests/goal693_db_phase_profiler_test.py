@@ -64,7 +64,7 @@ class Goal693DbPhaseProfilerTest(unittest.TestCase):
         self.assertIn("promo_order_ids", output["results"])
 
     def test_unified_db_app_cpu_backend_no_longer_crashes(self) -> None:
-        payload = run_json("examples/rtdl_database_analytics_app.py", "--backend", "cpu")
+        payload = run_json("examples/v2_0/apps/analytics/rtdl_database_analytics_app.py", "--backend", "cpu")
         self.assertEqual(payload["app"], "database_analytics")
         self.assertEqual(payload["sections"]["regional_dashboard"]["backend"], "cpu_reference")
         self.assertEqual(payload["sections"]["sales_risk"]["backend"], "cpu")

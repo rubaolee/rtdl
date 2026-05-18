@@ -34,7 +34,7 @@ It does not return the first blocker id or closest distance.
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_ray_triangle_any_hit.py
+PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py
 ```
 
 Use `python3` instead if that is what your shell exposes.

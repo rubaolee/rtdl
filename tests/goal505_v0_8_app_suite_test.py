@@ -62,24 +62,24 @@ class Goal505V08AppSuiteTest(unittest.TestCase):
 
     def test_v0_8_app_building_tutorial_links_examples(self) -> None:
         tutorial = (REPO_ROOT / "docs" / "tutorials" / "v0_8_app_building.md").read_text(encoding="utf-8")
-        self.assertIn("examples/rtdl_hausdorff_distance_app.py", tutorial)
-        self.assertIn("examples/rtdl_ann_candidate_app.py", tutorial)
-        self.assertIn("examples/rtdl_outlier_detection_app.py", tutorial)
-        self.assertIn("examples/rtdl_dbscan_clustering_app.py", tutorial)
-        self.assertIn("examples/rtdl_robot_collision_screening_app.py", tutorial)
-        self.assertIn("examples/rtdl_barnes_hut_force_app.py", tutorial)
+        self.assertIn("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", tutorial)
+        self.assertIn("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", tutorial)
+        self.assertIn("examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", tutorial)
+        self.assertIn("examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py", tutorial)
+        self.assertIn("examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", tutorial)
+        self.assertIn("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", tutorial)
         self.assertIn("tree-node inputs", tutorial)
         self.assertIn("opening predicate", tutorial)
         self.assertIn("vector reductions", tutorial)
 
     def test_v0_8_app_clis_emit_json(self) -> None:
         scripts = (
-            ("examples/rtdl_hausdorff_distance_app.py", "hausdorff_distance"),
-            ("examples/rtdl_ann_candidate_app.py", "ann_candidate_search"),
-            ("examples/rtdl_outlier_detection_app.py", "outlier_detection"),
-            ("examples/rtdl_dbscan_clustering_app.py", "dbscan_clustering"),
-            ("examples/rtdl_robot_collision_screening_app.py", "robot_collision_screening"),
-            ("examples/rtdl_barnes_hut_force_app.py", "barnes_hut_force_app"),
+            ("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "hausdorff_distance"),
+            ("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "ann_candidate_search"),
+            ("examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", "outlier_detection"),
+            ("examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py", "dbscan_clustering"),
+            ("examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "robot_collision_screening"),
+            ("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", "barnes_hut_force_app"),
         )
         for script, app_name in scripts:
             with self.subTest(script=script):

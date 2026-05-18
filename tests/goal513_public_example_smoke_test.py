@@ -29,27 +29,27 @@ def run_json_example(*args: str) -> dict[str, object]:
 
 class Goal513PublicExampleSmokeTest(unittest.TestCase):
     def test_front_page_portable_examples_run(self) -> None:
-        self.assertEqual(run_example("examples/rtdl_hello_world.py").strip(), "hello, world")
+        self.assertEqual(run_example("examples/v2_0/getting_started/rtdl_hello_world.py").strip(), "hello, world")
 
         cases = (
-            ("examples/rtdl_segment_polygon_hitcount.py", "--backend", "cpu_python_reference", "--copies", "16"),
-            ("examples/rtdl_ray_triangle_any_hit.py",),
-            ("examples/rtdl_visibility_rows.py",),
-            ("examples/rtdl_reduce_rows.py",),
-            ("examples/rtdl_graph_analytics_app.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_graph_bfs.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_graph_triangle_count.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_db_conjunctive_scan.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_db_grouped_count.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_db_grouped_sum.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_continuous_frechet_distance_app.py", "--backend", "cpu_python_reference", "--iterations", "12"),
-            ("examples/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_barnes_hut_force_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py", "--backend", "cpu_python_reference", "--copies", "16"),
+            ("examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py",),
+            ("examples/v2_0/features/ray_queries/rtdl_visibility_rows.py",),
+            ("examples/v2_0/features/ray_queries/rtdl_reduce_rows.py",),
+            ("examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/features/graph/rtdl_graph_bfs.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/features/graph/rtdl_graph_triangle_count.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/apps/analytics/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/features/database/rtdl_db_conjunctive_scan.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/features/database/rtdl_db_grouped_count.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/features/database/rtdl_db_grouped_sum.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py", "--backend", "cpu_python_reference", "--iterations", "12"),
+            ("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference"),
+            ("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", "--backend", "cpu_python_reference"),
         )
 
         for args in cases:
@@ -58,23 +58,24 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
                 self.assertTrue("app" in payload or "rows" in payload or "workload" in payload)
 
     def test_front_page_v08_examples_report_oracle_or_boundary(self) -> None:
-        hausdorff = run_json_example("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference")
+        hausdorff = run_json_example("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference")
         frechet = run_json_example(
-            "examples/rtdl_continuous_frechet_distance_app.py",
+            "examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py",
             "--backend",
             "cpu_python_reference",
             "--iterations",
             "12",
         )
-        ann = run_json_example("examples/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference")
-        outlier = run_json_example("examples/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference")
-        dbscan = run_json_example("examples/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference")
-        robot = run_json_example("examples/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference")
-        barnes = run_json_example("examples/rtdl_barnes_hut_force_app.py", "--backend", "cpu_python_reference")
+        ann = run_json_example("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference")
+        outlier = run_json_example("examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference")
+        dbscan = run_json_example("examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference")
+        robot = run_json_example("examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference")
+        barnes = run_json_example("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", "--backend", "cpu_python_reference")
 
         self.assertTrue(hausdorff["matches_oracle"])
         self.assertTrue(frechet["matches_oracle"])
-        self.assertIn("Python owns the continuous Frechet", frechet["rtdl_role"])
+        self.assertIn("continuous Frechet", frechet["rtdl_role"])
+        self.assertIn("stay outside", frechet["rtdl_role"])
         self.assertAlmostEqual(float(ann["recall_at_1"]), 2.0 / 3.0)
         self.assertTrue(outlier["matches_oracle"])
         self.assertTrue(dbscan["matches_oracle"])
@@ -83,7 +84,7 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
         self.assertIn("candidate_row_count", barnes)
 
     def test_front_page_feature_cookbook_runs_all_public_recipes(self) -> None:
-        payload = run_json_example("examples/rtdl_feature_quickstart_cookbook.py")
+        payload = run_json_example("examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py")
 
         self.assertEqual(payload["app"], "feature_quickstart_cookbook")
         self.assertGreaterEqual(payload["feature_count"], 19)

@@ -30,7 +30,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "phase_to_compare": "Embree graph_phase_totals_sec.query_visibility_pair_rows_sec versus OptiX prepared visibility count/query phase",
         "scale_choice": {"copies": 30000},
         "optix_command": "python3 scripts/goal889_graph_visibility_optix_gate.py --copies 30000 --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1190_next_rtx_pod_contract_batch/graph_visibility_edges_optix.json",
-        "baseline_command": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 30000 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/graph_visibility_edges_embree.json",
+        "baseline_command": "python3 examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 30000 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/graph_visibility_edges_embree.json",
         "boundary": "no whole-app speedup claim, BFS orchestration, triangle set-intersection, shortest-path, distributed graph, or graph database claim",
     },
     {
@@ -40,7 +40,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "phase_to_compare": "prepared segment/polygon hit-count query phase versus Embree summary traversal phase",
         "scale_choice": {"copies": 20000, "iterations": 5},
         "optix_command": "python3 scripts/goal933_prepared_segment_polygon_optix_profiler.py --scenario road_hazard_prepared_summary --copies 20000 --iterations 5 --mode run --output-json docs/reports/goal1190_next_rtx_pod_contract_batch/road_hazard_native_summary_optix.json",
-        "baseline_command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 20000 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/road_hazard_native_summary_embree.json",
+        "baseline_command": "python3 examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend embree --copies 20000 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/road_hazard_native_summary_embree.json",
         "boundary": "no whole-app speedup claim, full GIS, routing, default app, or broad road-hazard claim",
     },
     {
@@ -50,7 +50,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "phase_to_compare": "run_phases.rt_candidate_discovery_sec; exact area continuation excluded",
         "scale_choice": {"copies": 20000, "chunk_copies": 100},
         "optix_command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies 20000 --output-mode summary --validation-mode analytic_summary --chunk-copies 100 --output-json docs/reports/goal1190_next_rtx_pod_contract_batch/polygon_pair_candidate_discovery_optix.json",
-        "baseline_command": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 20000 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/polygon_pair_candidate_discovery_embree.json",
+        "baseline_command": "python3 examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 20000 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/polygon_pair_candidate_discovery_embree.json",
         "boundary": "no whole-app speedup claim, exact area, overlay matrix, or monolithic polygon-area claim",
     },
     {
@@ -60,7 +60,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "phase_to_compare": "run_phases.rt_candidate_discovery_sec; exact set-area/Jaccard continuation excluded",
         "scale_choice": {"copies": 8192, "chunk_copies": 1024},
         "optix_command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 1024 --output-json docs/reports/goal1190_next_rtx_pod_contract_batch/polygon_jaccard_safe_chunk_optix.json",
-        "baseline_command": "python3 examples/rtdl_polygon_set_jaccard.py --backend embree --copies 8192 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/polygon_jaccard_safe_chunk_embree.json",
+        "baseline_command": "python3 examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend embree --copies 8192 --output-mode summary > docs/reports/goal1190_next_rtx_pod_contract_batch/polygon_jaccard_safe_chunk_embree.json",
         "boundary": "no whole-app speedup claim, exact Jaccard, exact set-area, or whole polygon-set app claim",
     },
     {
@@ -70,7 +70,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "phase_to_compare": "prepared threshold query phase versus Embree directed_summary traversal/reduction",
         "scale_choice": {"copies": 200000, "iterations": 10, "radius": 0.4, "watch_item": "may still be below timing floor; local dry-run must adjust if needed"},
         "optix_command": "python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode optix --copies 200000 --iterations 10 --radius 0.4 --output-json docs/reports/goal1190_next_rtx_pod_contract_batch/hausdorff_threshold_prepared_optix.json",
-        "baseline_command": "python3 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 200000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1190_next_rtx_pod_contract_batch/hausdorff_threshold_prepared_embree.json",
+        "baseline_command": "python3 examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree --copies 200000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1190_next_rtx_pod_contract_batch/hausdorff_threshold_prepared_embree.json",
         "boundary": "no whole-app speedup claim, exact Hausdorff distance, nearest-neighbor ranking, or KNN-row claim",
     },
 )

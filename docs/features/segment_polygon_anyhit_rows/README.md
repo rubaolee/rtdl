@@ -11,7 +11,7 @@ outside RTDL.
 ## Docs
 
 - canonical example:
-  - [rtdl_segment_polygon_anyhit_rows.py](../../../examples/rtdl_segment_polygon_anyhit_rows.py)
+  - [rtdl_segment_polygon_anyhit_rows.py](../../../examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py)
 - shared reference kernel:
   - [rtdl_workload_reference.py](../../../examples/reference/rtdl_workload_reference.py)
 - support contract:
@@ -39,7 +39,7 @@ return rt.emit(hits, fields=["segment_id", "polygon_id"])
 Run:
 
 ```bash
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 Use `python3` instead if that is what your shell exposes.
@@ -47,14 +47,14 @@ Use `python3` instead if that is what your shell exposes.
 Compact app surface:
 
 ```bash
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --output-mode segment_counts --copies 16
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --output-mode segment_counts --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 16
 ```
 
 Rows-mode boundary:
 
 ```bash
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 16 --output-capacity 1000000
+python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 16 --output-capacity 1000000
 ```
 
 That command uses the bounded native OptiX pair-row emitter. The bound matters:
@@ -66,7 +66,7 @@ an explicit native traversal path, not an unbounded row-volume speedup claim.
 Claim-sensitive boundary:
 
 ```bash
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --require-rt-core
+python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --require-rt-core
 ```
 
 That command enforces the explicit native pair-row traversal path. It does not

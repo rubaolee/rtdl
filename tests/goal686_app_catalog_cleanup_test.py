@@ -68,10 +68,10 @@ class Goal686AppCatalogCleanupTest(unittest.TestCase):
 
     def test_spatial_join_app_clis_emit_json(self) -> None:
         cases = (
-            ("examples/rtdl_service_coverage_gaps.py", "service_coverage_gaps"),
-            ("examples/rtdl_event_hotspot_screening.py", "event_hotspot_screening"),
-            ("examples/rtdl_facility_knn_assignment.py", "facility_knn_assignment"),
-            ("examples/rtdl_road_hazard_screening.py", "road_hazard_screening"),
+            ("examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py", "service_coverage_gaps"),
+            ("examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py", "event_hotspot_screening"),
+            ("examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py", "facility_knn_assignment"),
+            ("examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py", "road_hazard_screening"),
         )
         for script, app_name in cases:
             with self.subTest(script=script):
@@ -81,17 +81,17 @@ class Goal686AppCatalogCleanupTest(unittest.TestCase):
     def test_unified_database_graph_and_apple_apps_emit_json(self) -> None:
         cases = (
             (
-                ("examples/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference"),
+                ("examples/v2_0/apps/analytics/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference"),
                 "database_analytics",
                 ("regional_dashboard", "sales_risk"),
             ),
             (
-                ("examples/rtdl_graph_analytics_app.py", "--backend", "cpu_python_reference"),
+                ("examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "cpu_python_reference"),
                 "graph_analytics",
                 ("bfs", "triangle_count"),
             ),
             (
-                ("examples/rtdl_apple_rt_demo_app.py",),
+                ("examples/legacy_or_backend_proofs/rtdl_apple_rt_demo_app.py",),
                 "apple_rt_demo",
                 ("closest_hit", "visibility_count"),
             ),

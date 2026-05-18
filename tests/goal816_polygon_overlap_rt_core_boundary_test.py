@@ -61,7 +61,7 @@ class Goal816PolygonOverlapRtCoreBoundaryTest(unittest.TestCase):
         result = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_polygon_pair_overlap_area_rows.py",
+                "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
                 "--backend",
                 "cpu_python_reference",
                 "--require-rt-core",
@@ -79,7 +79,7 @@ class Goal816PolygonOverlapRtCoreBoundaryTest(unittest.TestCase):
         result = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_polygon_set_jaccard.py",
+                "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",
                 "--backend",
                 "cpu_python_reference",
                 "--require-rt-core",

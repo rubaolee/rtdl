@@ -14,7 +14,7 @@ summary, such as:
 ## Run First
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
+PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_reduce_rows.py
 ```
 
 ## Example

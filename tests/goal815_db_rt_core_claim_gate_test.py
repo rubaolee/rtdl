@@ -56,7 +56,7 @@ class Goal815DbRtCoreClaimGateTest(unittest.TestCase):
         result = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_database_analytics_app.py",
+                "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
                 "--backend",
                 "optix",
                 "--output-mode",

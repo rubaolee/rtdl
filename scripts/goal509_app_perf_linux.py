@@ -20,15 +20,15 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.rtdl_barnes_hut_force_app import SOFTENING
-from examples.rtdl_barnes_hut_force_app import THETA
-from examples.rtdl_barnes_hut_force_app import approximate_forces_from_candidates
-from examples.rtdl_barnes_hut_force_app import barnes_hut_node_candidate_kernel
-from examples.rtdl_barnes_hut_force_app import brute_force_forces
-from examples.rtdl_barnes_hut_force_app import build_one_level_quadtree
-from examples.rtdl_barnes_hut_force_app import Body
-from examples.rtdl_barnes_hut_force_app import QuadNode
-from examples.rtdl_robot_collision_screening_app import robot_edge_any_hit_kernel
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import SOFTENING
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import THETA
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import approximate_forces_from_candidates
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import barnes_hut_node_candidate_kernel
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import brute_force_forces
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import build_one_level_quadtree
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import Body
+from examples.v2_0.apps.simulation.rtdl_barnes_hut_force_app import QuadNode
+from examples.v2_0.apps.robotics.rtdl_robot_collision_screening_app import robot_edge_any_hit_kernel
 
 
 BACKENDS = ("cpu", "embree", "optix", "vulkan")

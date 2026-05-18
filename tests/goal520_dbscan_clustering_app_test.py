@@ -62,9 +62,9 @@ class Goal520DbscanClusteringAppTest(unittest.TestCase):
 
     def test_stage1_proximity_clis_emit_json(self) -> None:
         cases = (
-            ("examples/rtdl_ann_candidate_app.py", "ann_candidate_search"),
-            ("examples/rtdl_outlier_detection_app.py", "outlier_detection"),
-            ("examples/rtdl_dbscan_clustering_app.py", "dbscan_clustering"),
+            ("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "ann_candidate_search"),
+            ("examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", "outlier_detection"),
+            ("examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py", "dbscan_clustering"),
         )
         for script, app_name in cases:
             with self.subTest(script=script):

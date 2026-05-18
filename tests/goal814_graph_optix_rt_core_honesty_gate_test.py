@@ -292,7 +292,7 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         result = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_graph_analytics_app.py",
+                "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
                 "--backend",
                 "optix",
                 "--require-rt-core",

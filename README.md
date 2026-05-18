@@ -23,24 +23,24 @@ tree, so set `PYTHONPATH` before examples and tests.
 Bash or zsh:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world.py
-PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
 
 Windows `cmd.exe`:
 
 ```bat
 set PYTHONPATH=src;.
-python examples\rtdl_hello_world.py
-python examples\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+python examples\v2_0\getting_started\rtdl_hello_world.py
+python examples\v2_0\research_benchmarks\hausdorff_xhd\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
 
 Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_hello_world.py
-python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+python examples/v2_0/getting_started/rtdl_hello_world.py
+python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
 
 ## What You Write
@@ -79,9 +79,9 @@ must not become special private engine products.
 
 The fastest way to learn the design is:
 
-1. Run `examples/rtdl_hello_world.py`.
+1. Run `examples/v2_0/getting_started/rtdl_hello_world.py`.
 2. Read [Quick Tutorial](docs/quick_tutorial.md).
-3. Run `examples/rtdl_feature_quickstart_cookbook.py`.
+3. Run `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py`.
 4. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
 5. Read [Current Architecture](docs/current_architecture.md) only after you can
    explain `input -> traverse -> refine -> emit`.

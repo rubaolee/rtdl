@@ -35,7 +35,7 @@ class Goal722EmbreeHausdorffSummaryTest(unittest.TestCase):
                 "directed_hausdorff_2d_embree",
                 "rtdl_embree_run_max_distance_nearest_candidate_2d",
             ],
-            "examples/rtdl_hausdorff_distance_app.py": [
+            "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py": [
                 "embree_result_mode",
                 "directed_summary",
                 "directed_hausdorff_2d_embree",

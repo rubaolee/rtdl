@@ -26,42 +26,42 @@ partner, hardware, command shape, output contract, and artifact are cited.
 
 | Example | File | What it teaches |
 | --- | --- | --- |
-| Hello world | `examples/rtdl_hello_world.py` | source-tree import and first output |
-| Backend hello world | `examples/rtdl_hello_world_backends.py` | same app idea through selected runtime backends |
-| Feature cookbook | `examples/rtdl_feature_quickstart_cookbook.py` | compact recipe per public feature |
-| Partner any-hit | `examples/rtdl_partner_anyhit.py` | first partner-owned column path |
+| Hello world | `examples/v2_0/getting_started/rtdl_hello_world.py` | source-tree import and first output |
+| Backend hello world | `examples/v2_0/getting_started/rtdl_hello_world_backends.py` | same app idea through selected runtime backends |
+| Feature cookbook | `examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py` | compact recipe per public feature |
+| Partner any-hit | `examples/v2_0/partners/rtdl_partner_anyhit.py` | first partner-owned column path |
 
 ## Spatial And Geometry Apps
 
 | App | File | RTDL role | Boundary |
 | --- | --- | --- | --- |
-| Segment/polygon hit count | `examples/rtdl_segment_polygon_hitcount.py` | candidate traversal and compact counts | not a full GIS engine |
-| Segment/polygon any-hit rows | `examples/rtdl_segment_polygon_anyhit_rows.py` | exact witness pairs or streaming witness columns where supported | full Python row tables are convenience output, not the fast v2 shape |
-| Polygon pair overlap rows | `examples/rtdl_polygon_pair_overlap_area_rows.py` | bounded candidate discovery and summary contracts | not arbitrary polygon overlay |
-| Polygon set Jaccard | `examples/rtdl_polygon_set_jaccard.py` | bounded candidate discovery and summary contracts | not a general GIS/Jaccard engine |
-| Road hazard screening | `examples/rtdl_road_hazard_screening.py` | segment/polygon candidate and priority summaries | no routing or road-network system claim |
-| Continuous Frechet distance | `examples/rtdl_continuous_frechet_distance_app.py` | broadphase free-space candidate discovery | Python owns the Frechet decision/search algorithm |
+| Segment/polygon hit count | `examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py` | candidate traversal and compact counts | not a full GIS engine |
+| Segment/polygon any-hit rows | `examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py` | exact witness pairs or streaming witness columns where supported | full Python row tables are convenience output, not the fast v2 shape |
+| Polygon pair overlap rows | `examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py` | bounded candidate discovery and summary contracts | not arbitrary polygon overlay |
+| Polygon set Jaccard | `examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py` | bounded candidate discovery and summary contracts | not a general GIS/Jaccard engine |
+| Road hazard screening | `examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py` | segment/polygon candidate and priority summaries | no routing or road-network system claim |
+| Continuous Frechet distance | `examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py` | broadphase free-space candidate discovery | Python owns the Frechet decision/search algorithm |
 
 ## Proximity And Search Apps
 
 | App | File | RTDL role | Boundary |
 | --- | --- | --- | --- |
-| Service coverage gaps | `examples/rtdl_service_coverage_gaps.py` | fixed-radius coverage counts/rows | not a service-optimization product |
-| Event hotspot screening | `examples/rtdl_event_hotspot_screening.py` | fixed-radius density counts/rows | not a full analytics pipeline |
-| Facility KNN assignment | `examples/rtdl_facility_knn_assignment.py` | KNN or threshold coverage rows | richer assignment policies remain app code |
-| Hausdorff distance | `examples/rtdl_hausdorff_distance_app.py` | nearest-candidate rows or threshold summaries | exact rich witness extraction is app/partner work unless documented |
-| ANN candidate search | `examples/rtdl_ann_candidate_app.py` | candidate-subset reranking and coverage summaries | not a general ANN index |
-| Outlier detection | `examples/rtdl_outlier_detection_app.py` | radius density rows/counts | final anomaly policy is Python/app code |
-| DBSCAN clustering | `examples/rtdl_dbscan_clustering_app.py` | core-count/core-flag primitives | cluster expansion remains app/partner graph work |
+| Service coverage gaps | `examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py` | fixed-radius coverage counts/rows | not a service-optimization product |
+| Event hotspot screening | `examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py` | fixed-radius density counts/rows | not a full analytics pipeline |
+| Facility KNN assignment | `examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py` | KNN or threshold coverage rows | richer assignment policies remain app code |
+| Hausdorff distance | `examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py` | nearest-candidate rows or threshold summaries | exact rich witness extraction is app/partner work unless documented |
+| ANN candidate search | `examples/v2_0/apps/ml/rtdl_ann_candidate_app.py` | candidate-subset reranking and coverage summaries | not a general ANN index |
+| Outlier detection | `examples/v2_0/apps/ml/rtdl_outlier_detection_app.py` | radius density rows/counts | final anomaly policy is Python/app code |
+| DBSCAN clustering | `examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py` | core-count/core-flag primitives | cluster expansion remains app/partner graph work |
 
 ## Analytical, Graph, And Simulation Apps
 
 | App | File | RTDL role | Boundary |
 | --- | --- | --- | --- |
-| Database analytics | `examples/rtdl_database_analytics_app.py` | bounded columnar scan/group summaries | not SQL or a DBMS |
-| Graph analytics | `examples/rtdl_graph_analytics_app.py` | frontier/edge and triangle-style rows/summaries | not a graph database |
-| Robot collision screening | `examples/rtdl_robot_collision_screening_app.py` | any-hit pose flags/counts | not a planner or physics simulator |
-| Barnes-Hut force approximation | `examples/rtdl_barnes_hut_force_app.py` | node/body candidate discovery and coverage summaries | force-vector reduction remains app/partner work unless documented |
+| Database analytics | `examples/v2_0/apps/analytics/rtdl_database_analytics_app.py` | bounded columnar scan/group summaries | not SQL or a DBMS |
+| Graph analytics | `examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py` | frontier/edge and triangle-style rows/summaries | not a graph database |
+| Robot collision screening | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | any-hit pose flags/counts | not a planner or physics simulator |
+| Barnes-Hut force approximation | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | node/body candidate discovery and coverage summaries | force-vector reduction remains app/partner work unless documented |
 
 ## Visual Demos
 

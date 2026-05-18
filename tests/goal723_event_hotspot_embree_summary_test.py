@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class Goal723EventHotspotEmbreeSummaryTest(unittest.TestCase):
     def test_event_hotspot_app_exposes_embree_count_summary(self):
-        text = (ROOT / "examples/rtdl_event_hotspot_screening.py").read_text(encoding="utf-8")
+        text = (ROOT / "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py").read_text(encoding="utf-8")
         self.assertIn("embree_summary_mode", text)
         self.assertIn("count_summary", text)
         self.assertIn("run_generic_fixed_radius_count_threshold_2d", text)

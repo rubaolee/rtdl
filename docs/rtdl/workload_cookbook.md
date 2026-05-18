@@ -167,7 +167,7 @@ def road_polygon_touch_counts():
 Quick run:
 
 ```bash
-python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 Notes:
@@ -178,12 +178,12 @@ Notes:
   - generic deterministic tiled county-derived cases via `--copies`
 - external GIS validation drivers are kept outside the active learner path
 - an app-style example now exists here:
-  - [rtdl_road_hazard_screening.py](../../examples/rtdl_road_hazard_screening.py)
+  - [rtdl_road_hazard_screening.py](../../examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py)
 
 App-style run:
 
 ```bash
-python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
+python examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend cpu_python_reference
 ```
 
 That example treats the workload as a screening primitive:
@@ -210,7 +210,7 @@ def road_polygon_hits():
 Quick run:
 
 ```bash
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 Notes:
@@ -244,14 +244,14 @@ def polygon_set_similarity():
 Quick run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py
 ```
 
 Windows PowerShell quick-run pattern:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_polygon_set_jaccard.py
+python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py
 ```
 
 Notes:

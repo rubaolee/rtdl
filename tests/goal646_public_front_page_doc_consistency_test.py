@@ -29,7 +29,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
         )
 
         self.assertIn("v2.0", combined)
-        self.assertIn("pre-release candidate", combined)
+        self.assertIn("source-tree Python+partner+RTDL release", combined)
         self.assertIn("ray_triangle_any_hit", combined)
         self.assertIn("visibility_rows", combined)
         self.assertIn("reduce_rows", combined)
@@ -60,7 +60,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
 
         self.assertNotIn("python3 -m pip install -e .", text)
         self.assertIn("RTDL is used directly from the source", text)
-        self.assertIn("PYTHONPATH=src:. python examples/rtdl_hello_world.py", text)
+        self.assertIn("PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py", text)
 
     def test_video_demo_has_what_why_how_intro(self) -> None:
         text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")

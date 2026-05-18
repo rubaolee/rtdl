@@ -28,11 +28,11 @@ def _source_observations() -> dict[str, Any]:
     optix = _read(ROOT / "src/rtdsl/optix_runtime.py")
     embree = _read(ROOT / "src/rtdsl/embree_runtime.py")
     regional = _read(ROOT / "examples/rtdl_v0_7_db_app_demo.py")
-    sales = _read(ROOT / "examples/rtdl_sales_risk_screening.py")
+    sales = _read(ROOT / "examples/v2_0/apps/geospatial/rtdl_sales_risk_screening.py")
 
     return {
         "compact_summary_has_no_public_row_materialization_gate": (
-            "native_continuation_backend == \"optix_db_compact_summary\"" in _read(ROOT / "examples/rtdl_database_analytics_app.py")
+            "native_continuation_backend == \"optix_db_compact_summary\"" in _read(ROOT / "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py")
             and "if any(\"materialize\" in phase for phase in run_phases)" in regional
             and "if any(\"materialize\" in phase for phase in run_phases)" in sales
         ),

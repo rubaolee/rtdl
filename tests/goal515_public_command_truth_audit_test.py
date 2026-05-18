@@ -24,16 +24,16 @@ class Goal515PublicCommandTruthAuditTest(unittest.TestCase):
             commands,
         )
         self.assertIn(
-            "python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
+            "python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
             commands,
         )
         self.assertIn(
-            "python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
+            "python examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
             commands,
         )
         feature_cookbook = [
             record for record in payload["commands"]
-            if record["program"] == "examples/rtdl_feature_quickstart_cookbook.py"
+            if record["program"] == "examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py"
         ]
         self.assertTrue(feature_cookbook)
         self.assertTrue(

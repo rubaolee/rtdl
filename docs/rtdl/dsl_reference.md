@@ -498,7 +498,7 @@ Allowed emit fields:
 Current practical note:
 
 - user-facing example:
-  - `examples/rtdl_segment_polygon_hitcount.py`
+  - `examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py`
 - scalable deterministic county-derived cases are available through:
   - `--copies N`
 - external correctness evidence is kept in the report archive
@@ -519,7 +519,7 @@ Allowed emit fields:
 Current practical note:
 
 - user-facing example:
-  - `examples/rtdl_segment_polygon_anyhit_rows.py`
+  - `examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py`
 - this family shares the same segment/polygon hit semantics as hitcount
 - the emitted surface is a join-style row stream rather than one aggregated row
   per segment

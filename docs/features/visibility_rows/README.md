@@ -32,7 +32,7 @@ the observer to the target. It is `0` when at least one blocker triangle is hit.
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_visibility_rows.py
+PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_visibility_rows.py
 ```
 
 ## What It Uses Internally

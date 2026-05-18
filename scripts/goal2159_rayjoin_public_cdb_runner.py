@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.rtdl_rayjoin_v2_spatial_join_app import rayjoin_point_location_positive_hits_reference
-from examples.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
+from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import rayjoin_point_location_positive_hits_reference
+from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import run_rayjoin_workload
 from examples.reference.rtdl_language_reference import county_soil_overlay_reference
 from examples.reference.rtdl_language_reference import county_zip_join_reference
 from rtdsl.baseline_contracts import compare_baseline_rows

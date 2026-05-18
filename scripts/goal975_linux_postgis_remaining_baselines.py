@@ -17,8 +17,8 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from examples import rtdl_road_hazard_screening as road_app
-from examples.rtdl_polygon_pair_overlap_area_rows import make_authored_polygon_pair_overlap_case
-from examples.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
+from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import make_authored_polygon_pair_overlap_case
+from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
 from rtdsl.baseline_runner import load_representative_case
 from scripts.goal839_baseline_artifact_schema import build_baseline_artifact
 from scripts.goal839_baseline_artifact_schema import load_goal835_row

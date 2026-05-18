@@ -46,11 +46,11 @@ class Goal1765GithubLearnerReadinessDoubleCheckTest(unittest.TestCase):
         self.assertIn("[App And Example Quickstart](../docs/app_example_quickstart.md)", examples_index)
 
     def test_portable_first_commands_run(self) -> None:
-        self.assertEqual(self._run_example("examples/rtdl_hello_world.py").strip(), "hello, world")
+        self.assertEqual(self._run_example("examples/v2_0/getting_started/rtdl_hello_world.py").strip(), "hello, world")
 
         backends = json.loads(
             self._run_example(
-                "examples/rtdl_hello_world_backends.py",
+                "examples/v2_0/getting_started/rtdl_hello_world_backends.py",
                 "--backend",
                 "cpu_python_reference",
             )
@@ -58,7 +58,7 @@ class Goal1765GithubLearnerReadinessDoubleCheckTest(unittest.TestCase):
         self.assertEqual(backends["backend"], "cpu_python_reference")
         self.assertEqual(backends["visible_hit_label"], "hello, world")
 
-        cookbook = json.loads(self._run_example("examples/rtdl_feature_quickstart_cookbook.py"))
+        cookbook = json.loads(self._run_example("examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py"))
         self.assertEqual(cookbook["app"], "feature_quickstart_cookbook")
         self.assertGreaterEqual(cookbook["feature_count"], 19)
 

@@ -11,7 +11,7 @@ the orthogonal integer-grid unit-cell contract.
 ## Docs
 
 - canonical example:
-  - [rtdl_polygon_set_jaccard.py](../../../examples/rtdl_polygon_set_jaccard.py)
+  - [rtdl_polygon_set_jaccard.py](../../../examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py)
 - generated handoff bundle:
   - [generated_polygon_set_jaccard_bundle](../../../examples/generated/rtdl_generated_polygon_set_jaccard_bundle/README.md)
 - support contract:
@@ -37,15 +37,15 @@ return rt.emit(
 - predicate:
   - `rt.polygon_set_jaccard(exact=False)`
 - canonical reference kernel:
-  - [polygon_set_jaccard_reference](../../../examples/rtdl_polygon_set_jaccard.py)
+  - [polygon_set_jaccard_reference](../../../examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py)
 
 ## Example
 
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend optix
 ```
 
 Use `python3` instead if that is what your shell exposes.

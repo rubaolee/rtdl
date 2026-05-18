@@ -31,7 +31,7 @@ class Goal688RetiredAppSurfaceTest(unittest.TestCase):
         retired_commands = (
             "python examples/rtdl_v0_7_db_app_demo.py",
             "python examples/rtdl_v0_7_db_kernel_app_demo.py",
-            "python examples/rtdl_sales_risk_screening.py",
+            "python examples/v2_0/apps/geospatial/rtdl_sales_risk_screening.py",
             "python examples/rtdl_apple_rt_closest_hit.py",
             "python examples/rtdl_apple_rt_visibility_count.py",
         )

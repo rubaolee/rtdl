@@ -5,9 +5,9 @@ import unittest
 from pathlib import Path
 
 import rtdsl as rt
-from examples.rtdl_facility_knn_assignment import K
-from examples.rtdl_facility_knn_assignment import facility_knn_assignment
-from examples.rtdl_facility_knn_assignment import make_facility_knn_case
+from examples.v2_0.apps.geospatial.rtdl_facility_knn_assignment import K
+from examples.v2_0.apps.geospatial.rtdl_facility_knn_assignment import facility_knn_assignment
+from examples.v2_0.apps.geospatial.rtdl_facility_knn_assignment import make_facility_knn_case
 
 
 ROOT = Path(__file__).resolve().parents[1]

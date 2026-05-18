@@ -41,7 +41,7 @@ Command convention used below:
 ### Run it
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend cpu_python_reference
 ```
 
 Windows `cmd.exe`:
@@ -55,7 +55,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_graph_bfs.py --backend cpu_python_reference
+python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend cpu_python_reference
 ```
 
 Expected output excerpt:
@@ -97,7 +97,7 @@ Important boundary:
 ### Run it
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
 Windows `cmd.exe`:
@@ -111,7 +111,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
 Expected output excerpt:
@@ -151,22 +151,22 @@ Important boundary:
 Start with:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
 Then move to the native CPU path:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend cpu
 ```
 
 Then use your machine-specific accelerated backends:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend embree
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend embree
 ```
 
 On Linux hosts with the GPU/runtime stack enabled:
@@ -175,10 +175,10 @@ On Linux hosts with the GPU/runtime stack enabled:
 make build-optix
 make build-vulkan
 
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend vulkan
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend vulkan
 ```
 
 OptiX graph commands are compatibility paths by default, not NVIDIA RT-core
@@ -187,8 +187,8 @@ existing users get the conservative correctness path. An explicit native
 graph-ray mode now exists for BFS and triangle-count candidate generation:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend optix --optix-graph-mode native
-PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix --optix-graph-mode native
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_bfs.py --backend optix --optix-graph-mode native
+PYTHONPATH=src:. python examples/v2_0/features/graph/rtdl_graph_triangle_count.py --backend optix --optix-graph-mode native
 ```
 
 The unified graph app is the public entry point for claim-sensitive graph runs.
@@ -197,7 +197,7 @@ generation. The component BFS and triangle-count example scripts still reject
 `--require-rt-core` intentionally:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core
 ```
 
 The claim remains bounded to graph-edge visibility and candidate generation,

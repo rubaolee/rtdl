@@ -35,7 +35,7 @@ program where the RT-shaped part is a reusable runtime contract.
 Run from the repository root:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree
 ```
 
 That program uses NumPy-owned columns, then calls RTDL through the partner
@@ -48,8 +48,8 @@ On a configured NVIDIA host with CuPy or PyTorch CUDA available, the same
 programming idea can use GPU-owned input columns:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner torch-cuda --backend optix
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner torch-cuda --backend optix
 ```
 
 For larger app-level examples, use the application catalog and the performance

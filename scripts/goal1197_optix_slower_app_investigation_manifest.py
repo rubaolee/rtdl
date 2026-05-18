@@ -58,7 +58,7 @@ SLOWER_APPS: tuple[dict[str, Any], ...] = (
         "commands": [
             {
                 "label": "graph_embree_visibility_sweep",
-                "template": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json",
+                "template": "python3 examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json",
             },
             {
                 "label": "graph_optix_visibility_sweep",
@@ -84,7 +84,7 @@ SLOWER_APPS: tuple[dict[str, Any], ...] = (
         "commands": [
             {
                 "label": "polygon_pair_embree_sweep",
-                "template": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json",
+                "template": "python3 examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json",
             },
             {
                 "label": "polygon_pair_optix_sweep",
@@ -112,7 +112,7 @@ SLOWER_APPS: tuple[dict[str, Any], ...] = (
         "commands": [
             {
                 "label": "polygon_jaccard_embree_reference",
-                "template": "python3 examples/rtdl_polygon_set_jaccard.py --backend embree --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}_{chunk_copies}.json",
+                "template": "python3 examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend embree --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}_{chunk_copies}.json",
                 "run_once_per_copies": True,
             },
             {

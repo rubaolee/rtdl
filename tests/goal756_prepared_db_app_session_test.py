@@ -53,7 +53,7 @@ class Goal756PreparedDbAppSessionTest(unittest.TestCase):
 
     def test_cli_prepared_session_mode_reports_iterations_and_timing(self) -> None:
         payload = run_json(
-            "examples/rtdl_database_analytics_app.py",
+            "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
             "--backend",
             "cpu",
             "--scenario",
@@ -78,7 +78,7 @@ class Goal756PreparedDbAppSessionTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_database_analytics_app.py",
+                "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
                 "--execution-mode",
                 "prepared_session",
                 "--session-iterations",

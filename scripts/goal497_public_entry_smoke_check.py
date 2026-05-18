@@ -35,13 +35,13 @@ PUBLIC_DOCS = [
 SMOKE_COMMANDS = [
     {
         "name": "hello_world",
-        "cmd": [sys.executable, "examples/rtdl_hello_world.py"],
+        "cmd": [sys.executable, "examples/v2_0/getting_started/rtdl_hello_world.py"],
     },
     {
         "name": "geometry_segment_polygon",
         "cmd": [
             sys.executable,
-            "examples/rtdl_segment_polygon_hitcount.py",
+            "examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py",
             "--backend",
             "cpu_python_reference",
             "--copies",
@@ -50,13 +50,13 @@ SMOKE_COMMANDS = [
     },
     {
         "name": "feature_quickstart_cookbook",
-        "cmd": [sys.executable, "examples/rtdl_feature_quickstart_cookbook.py"],
+        "cmd": [sys.executable, "examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py"],
     },
     {
         "name": "graph_bfs",
         "cmd": [
             sys.executable,
-            "examples/rtdl_graph_bfs.py",
+            "examples/v2_0/features/graph/rtdl_graph_bfs.py",
             "--backend",
             "cpu_python_reference",
         ],
@@ -65,7 +65,7 @@ SMOKE_COMMANDS = [
         "name": "db_conjunctive_scan",
         "cmd": [
             sys.executable,
-            "examples/rtdl_db_conjunctive_scan.py",
+            "examples/v2_0/features/database/rtdl_db_conjunctive_scan.py",
             "--backend",
             "cpu_python_reference",
         ],
@@ -106,7 +106,7 @@ REQUIRED_PHRASES = {
     ],
     "docs/tutorials/feature_quickstart_cookbook.md": [
         "one compact recipe per current public feature",
-        "PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py",
+        "PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py",
         "The cookbook teaches feature shape through `cpu_python_reference`",
     ],
     "docs/README.md": [

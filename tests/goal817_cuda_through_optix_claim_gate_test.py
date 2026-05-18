@@ -51,9 +51,9 @@ class Goal817CudaThroughOptixClaimGateTest(unittest.TestCase):
 
     def test_cli_require_rt_core_exits_nonzero_for_optix(self) -> None:
         cases = (
-            ("examples/rtdl_hausdorff_distance_app.py", "directed_threshold_prepared"),
-            ("examples/rtdl_ann_candidate_app.py", "candidate_threshold_prepared"),
-            ("examples/rtdl_barnes_hut_force_app.py", "node_coverage_prepared"),
+            ("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "directed_threshold_prepared"),
+            ("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "candidate_threshold_prepared"),
+            ("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", "node_coverage_prepared"),
         )
         for script, expected in cases:
             with self.subTest(script=script):

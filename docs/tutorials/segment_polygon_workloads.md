@@ -39,7 +39,7 @@ Question:
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4
 ```
 
 Windows `cmd.exe`:
@@ -53,7 +53,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4
+python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4
 ```
 
 Expected output excerpt:
@@ -96,7 +96,7 @@ Question:
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4
 ```
 
 Windows `cmd.exe`:
@@ -110,7 +110,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4
+python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4
 ```
 
 Expected output excerpt:
@@ -186,10 +186,10 @@ surface is still split into three distinct states:
 Examples:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000
 ```
 
 Important boundary:
@@ -224,9 +224,9 @@ Question:
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
-PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree
-PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
 Windows `cmd.exe`:
@@ -246,7 +246,7 @@ exact continuation. It is not a monolithic GPU polygon-area kernel or whole-app
 polygon speedup claim. For claim-sensitive runs:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core
 ```
 
 The segment/polygon road-screening and direct segment/polygon lines have
@@ -277,9 +277,9 @@ Question:
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend optix
 ```
 
 Windows `cmd.exe`:
@@ -302,7 +302,7 @@ slower than Embree. This is not a monolithic GPU Jaccard or whole-app speedup
 claim. For claim-sensitive runs:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core
 ```
 
 ---

@@ -1,0 +1,399 @@
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import time
+from pathlib import Path
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+import rtdsl as rt
+from rtdsl.reference import _polygon_set_unit_cells
+from rtdsl.reference import _polygon_unit_cells
+from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import _bbox_candidate_pairs_partner
+from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_embree
+from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_optix
+from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import _shift_vertices
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_set_jaccard_reference():
+    left = rt.input("left", rt.Polygons, layout=rt.Polygon2DLayout, role="probe")
+    right = rt.input("right", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    rows = rt.refine(candidates, predicate=rt.polygon_set_jaccard(exact=False))
+    return rt.emit(
+        rows,
+        fields=[
+            "intersection_area",
+            "left_area",
+            "right_area",
+            "union_area",
+            "jaccard_similarity",
+        ],
+    )
+
+
+def make_authored_polygon_set_jaccard_case(*, copies: int = 1):
+    if copies < 1:
+        raise ValueError("copies must be >= 1")
+    base_left = (
+        (1, ((0.0, 0.0), (3.0, 0.0), (3.0, 3.0), (0.0, 3.0))),
+        (2, ((4.0, 0.0), (6.0, 0.0), (6.0, 2.0), (4.0, 2.0))),
+    )
+    base_right = (
+        (10, ((1.0, 1.0), (4.0, 1.0), (4.0, 4.0), (1.0, 4.0))),
+        (11, ((5.0, 0.0), (7.0, 0.0), (7.0, 1.0), (5.0, 1.0))),
+    )
+    left: list[rt.Polygon] = []
+    right: list[rt.Polygon] = []
+    for copy_index in range(copies):
+        offset_x = float(copy_index * 16)
+        id_offset = copy_index * 100
+        left.extend(
+            rt.Polygon(id=id_offset + polygon_id, vertices=_shift_vertices(vertices, offset_x))
+            for polygon_id, vertices in base_left
+        )
+        right.extend(
+            rt.Polygon(id=id_offset + polygon_id, vertices=_shift_vertices(vertices, offset_x))
+            for polygon_id, vertices in base_right
+        )
+    return {"left": tuple(left), "right": tuple(right)}
+
+
+def _run_native_assisted(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    *,
+    candidate_backend: str,
+):
+    if candidate_backend == "embree":
+        candidate_pairs = _positive_candidate_pairs_embree(left, right)
+    elif candidate_backend == "optix":
+        candidate_pairs = _positive_candidate_pairs_optix(left, right)
+    else:
+        raise ValueError("candidate_backend must be 'embree' or 'optix'")
+    return _native_jaccard_rows_for_candidates(left, right, candidate_pairs), candidate_pairs
+
+
+def _exact_jaccard_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+):
+    left_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in left}
+    right_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in right}
+    left_cells = _polygon_set_unit_cells(left)
+    right_cells = _polygon_set_unit_cells(right)
+    intersection_cells = set()
+    for left_id, right_id in candidate_pairs:
+        intersection_cells.update(left_cells_by_id[left_id] & right_cells_by_id[right_id])
+    intersection_area = len(intersection_cells)
+    left_area = len(left_cells)
+    right_area = len(right_cells)
+    union_area = left_area + right_area - intersection_area
+    rows = (
+        {
+            "intersection_area": intersection_area,
+            "left_area": left_area,
+            "right_area": right_area,
+            "union_area": union_area,
+            "jaccard_similarity": 0.0 if union_area == 0 else intersection_area / union_area,
+        },
+    )
+    return rows
+
+
+def _native_jaccard_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+):
+    summary = rt.reduce_polygon_pair_exact_area_summary_for_candidates(left, right, candidate_pairs)
+    union_area = int(summary["union_area"])
+    return (
+        {
+            "intersection_area": int(summary["intersection_area"]),
+            "left_area": int(summary["left_area"]),
+            "right_area": int(summary["right_area"]),
+            "union_area": union_area,
+            "jaccard_similarity": 0.0 if union_area == 0 else int(summary["intersection_area"]) / union_area,
+        },
+    )
+
+
+def _collect_candidate_pairs_bounded(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    *,
+    backend: str,
+    collection_capacity: int | None,
+):
+    capacity = len(left) * len(right) if collection_capacity is None else collection_capacity
+    if backend == "embree":
+        try:
+            return rt.collect_polygon_pair_candidates_bounded_embree(
+                left,
+                right,
+                candidate_capacity=capacity,
+            )
+        except ValueError as exc:
+            if (
+                "rtdl_embree_collect_polygon_pair_candidates_bounded" not in str(exc)
+                and "rtdl_embree_collect_shape_pair_candidates_bounded" not in str(exc)
+            ):
+                raise
+            pairs = _positive_candidate_pairs_embree(left, right)
+        except FileNotFoundError:
+            pairs = _positive_candidate_pairs_embree(left, right)
+    elif backend == "optix":
+        try:
+            return rt.collect_polygon_pair_candidates_bounded_optix(
+                left,
+                right,
+                candidate_capacity=capacity,
+            )
+        except ValueError as exc:
+            if (
+                "rtdl_optix_collect_polygon_pair_candidates_bounded" not in str(exc)
+                and "rtdl_optix_collect_shape_pair_candidates_bounded" not in str(exc)
+            ):
+                raise
+            pairs = _positive_candidate_pairs_optix(left, right)
+        except FileNotFoundError:
+            pairs = _positive_candidate_pairs_optix(left, right)
+    else:
+        raise ValueError("backend must be 'embree' or 'optix'")
+    fallback = rt.collect_k_bounded_candidate_pairs(pairs, k=collection_capacity)
+    fallback["backend"] = backend
+    fallback["native_collection"] = False
+    fallback["native_collection_backend"] = "python_lsi_pip_fallback"
+    return fallback
+
+
+def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    return _run_native_assisted(left, right, candidate_backend="embree")
+
+
+def _run_optix_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    return _run_native_assisted(left, right, candidate_backend="optix")
+
+
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+
+
+def run_case(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    output_mode: str = "rows",
+    candidate_mode: str = "rt_positive",
+    require_rt_core: bool = False,
+    collection_capacity: int | None = None,
+) -> dict[str, object]:
+    if output_mode not in {"rows", "summary"}:
+        raise ValueError("output_mode must be 'rows' or 'summary'")
+    if candidate_mode not in {"rt_positive", "partner_bbox"}:
+        raise ValueError("candidate_mode must be 'rt_positive' or 'partner_bbox'")
+    if candidate_mode == "partner_bbox" and backend not in {"embree", "optix"}:
+        raise ValueError("partner_bbox candidate mode requires backend 'embree' or 'optix'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
+    case = make_authored_polygon_set_jaccard_case(copies=copies)
+    run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
+    generic_jaccard_summary = None
+    if backend == "cpu_python_reference":
+        query_start = time.perf_counter()
+        rows = rt.run_cpu_python_reference(polygon_set_jaccard_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
+        candidate_row_count = None
+    elif backend == "cpu":
+        query_start = time.perf_counter()
+        rows = rt.run_cpu(polygon_set_jaccard_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
+        candidate_row_count = None
+    elif backend == "embree":
+        candidate_start = time.perf_counter()
+        if candidate_mode == "partner_bbox":
+            candidate_pairs = _bbox_candidate_pairs_partner(case["left"], case["right"])
+            collection = rt.collect_k_bounded_candidate_pairs(candidate_pairs, k=collection_capacity)
+            collection["backend"] = backend
+            collection["native_collection"] = False
+            collection["native_collection_backend"] = "cpu_partner_bbox_broadphase"
+        else:
+            collection = _collect_candidate_pairs_bounded(
+                case["left"],
+                case["right"],
+                backend=backend,
+                collection_capacity=collection_capacity,
+            )
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
+        generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
+            left=case["left"],
+            right=case["right"],
+            collection=collection,
+            backend=backend,
+            exact_score_fn=_native_jaccard_rows_for_candidates,
+        )
+        rows = generic_jaccard_summary["rows"]
+        run_phases.update(generic_jaccard_summary["run_phases"])
+        run_phases["native_exact_continuation_sec"] = generic_jaccard_summary["run_phases"][
+            "query_polygon_jaccard_reduce_float_sum_sec"
+        ]
+        candidate_row_count = generic_jaccard_summary["candidate_pair_count"]
+    elif backend == "optix":
+        candidate_start = time.perf_counter()
+        if candidate_mode == "partner_bbox":
+            candidate_pairs = _bbox_candidate_pairs_partner(case["left"], case["right"])
+            collection = rt.collect_k_bounded_candidate_pairs(candidate_pairs, k=collection_capacity)
+            collection["backend"] = backend
+            collection["native_collection"] = False
+            collection["native_collection_backend"] = "cpu_partner_bbox_broadphase"
+        else:
+            collection = _collect_candidate_pairs_bounded(
+                case["left"],
+                case["right"],
+                backend=backend,
+                collection_capacity=collection_capacity,
+            )
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
+        generic_jaccard_summary = rt.run_generic_polygon_set_jaccard_summary(
+            left=case["left"],
+            right=case["right"],
+            collection=collection,
+            backend=backend,
+            exact_score_fn=_native_jaccard_rows_for_candidates,
+        )
+        rows = generic_jaccard_summary["rows"]
+        run_phases.update(generic_jaccard_summary["run_phases"])
+        run_phases["native_exact_continuation_sec"] = generic_jaccard_summary["run_phases"][
+            "query_polygon_jaccard_reduce_float_sum_sec"
+        ]
+        candidate_row_count = generic_jaccard_summary["candidate_pair_count"]
+    else:
+        raise ValueError(f"unsupported backend `{backend}`")
+    summary_start = time.perf_counter()
+    summary = (
+        dict(rows[0])
+        if rows
+        else {
+            "intersection_area": 0,
+            "left_area": 0,
+            "right_area": 0,
+            "union_area": 0,
+            "jaccard_similarity": 0.0,
+        }
+    )
+    run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
+    backend_mode = (
+        "embree_native_assisted" if backend == "embree"
+        else "optix_native_assisted" if backend == "optix"
+        else "cpu_exact"
+    )
+    payload: dict[str, object] = {
+        "app": "polygon_set_jaccard",
+        "backend": backend,
+        "backend_mode": backend_mode,
+        "copies": copies,
+        "output_mode": output_mode,
+        "candidate_mode": candidate_mode,
+        "left_polygon_count": len(case["left"]),
+        "right_polygon_count": len(case["right"]),
+        "row_count": len(rows),
+        "candidate_row_count": candidate_row_count,
+        "summary": summary,
+        "generic_jaccard_summary": generic_jaccard_summary,
+        "run_phases": run_phases,
+        "rt_core_accelerated": False,
+        "rt_core_candidate_discovery_active": backend == "optix" and candidate_mode == "rt_positive",
+        "native_continuation_active": backend in {"embree", "optix"},
+        "native_continuation_backend": (
+            "native_polygon_pair_area_summary" if backend in {"embree", "optix"} else None
+        ),
+        "optix_performance": {
+            "class": rt.optix_app_performance_support("polygon_set_jaccard").performance_class,
+            "note": rt.optix_app_performance_support("polygon_set_jaccard").note,
+        },
+        "boundary": (
+            "Partner-bbox mode uses a CPU-partner generic bounding-box broadphase before "
+            "backend-neutral native polygon-pair set-area summary. RT-positive mode uses "
+            "native bounded candidate discovery. Neither mode is a monolithic GPU Jaccard kernel."
+            if candidate_mode == "partner_bbox"
+            else (
+                "Embree mode uses native Embree bounded candidate discovery and a backend-neutral native "
+                "polygon-pair set-area summary. OptiX mode uses native OptiX bounded candidate discovery "
+                "and the same backend-neutral native polygon-pair set-area summary. These modes are "
+                "RT-candidate plus native summary-reduction pipelines, not monolithic GPU Jaccard kernels."
+            )
+        ),
+    }
+    if output_mode == "rows":
+        payload["rows"] = rows
+    payload = rt.attach_polygon_jaccard_diagnostic_contract(payload, backend=backend, output_mode=output_mode)
+    if candidate_mode == "partner_bbox":
+        primitive_contract = dict(payload["primitive_contract"])
+        primitive_contract["candidate_primitive"] = "CPU_PARTNER_BBOX_BROADPHASE"
+        primitive_contract["backend_contract_role"] = "jaccard_summary_after_partner_candidates"
+        primitive_contract["claim_boundary"] = (
+            "polygon_set_jaccard partner_bbox mode remains diagnostic: a CPU partner emits "
+            "generic bbox-overlap candidate pairs, then backend-neutral native polygon-pair "
+            "set-area summary computes the Jaccard ratio. This is not RT candidate discovery, "
+            "not a generic polygon overlay engine, and not public whole-app speedup wording."
+        )
+        payload["primitive_contract"] = primitive_contract
+    return payload
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run bounded polygon-set Jaccard.")
+    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
+    parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
+    parser.add_argument(
+        "--candidate-mode",
+        choices=("rt_positive", "partner_bbox"),
+        default="rt_positive",
+        help="For Embree/OptiX summary paths, choose RT-positive candidate discovery or CPU-partner bbox broadphase.",
+    )
+    parser.add_argument(
+        "--collection-capacity",
+        type=int,
+        default=None,
+        help="Optional COLLECT_K_BOUNDED candidate-pair capacity; overflow fails closed.",
+    )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Require the native-assisted OptiX candidate-discovery path.",
+    )
+    args = parser.parse_args(argv)
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                candidate_mode=args.candidate_mode,
+                require_rt_core=args.require_rt_core,
+                collection_capacity=args.collection_capacity,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

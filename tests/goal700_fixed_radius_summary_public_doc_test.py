@@ -58,8 +58,8 @@ class Goal700FixedRadiusSummaryPublicDocTest(unittest.TestCase):
                     self.assertIn(phrase, text)
 
     def test_apps_still_report_bounded_summary_boundaries(self):
-        outlier_payload = __import__("examples.rtdl_outlier_detection_app", fromlist=["run_app"]).run_app()
-        dbscan_payload = __import__("examples.rtdl_dbscan_clustering_app", fromlist=["run_app"]).run_app()
+        outlier_payload = __import__("examples.v2_0.apps.ml.rtdl_outlier_detection_app", fromlist=["run_app"]).run_app()
+        dbscan_payload = __import__("examples.v2_0.apps.ml.rtdl_dbscan_clustering_app", fromlist=["run_app"]).run_app()
         self.assertIn("fixed-radius count prototype", outlier_payload["boundary"])
         self.assertIn("not a KNN/Hausdorff/Barnes-Hut claim", outlier_payload["boundary"])
         self.assertIn("core predicate prototype", dbscan_payload["boundary"])

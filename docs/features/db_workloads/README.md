@@ -16,18 +16,18 @@ this as a general SQL or DBMS replacement.
 ## Run First
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend cpu_python_reference
 ```
 
 Then try native and RT backends when available:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend embree
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend vulkan
 ```
 
 On Linux GPU hosts, build GPU backend libraries first:

@@ -63,7 +63,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "label": "road_hazard_embree_control_40000",
         "app": "road_hazard_screening",
         "purpose": "Collect same-scale Embree control for the larger road-hazard floor repair.",
-        "command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 40000 --output-mode summary > ${RESULT_DIR}/road_hazard_embree_control_40000.json",
+        "command": "python3 examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend embree --copies 40000 --output-mode summary > ${RESULT_DIR}/road_hazard_embree_control_40000.json",
     },
     {
         "label": "road_hazard_optix_control_40000",

@@ -25,15 +25,15 @@ def run_json(*args: str) -> dict[str, object]:
 
 class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
     def test_db_app_exposes_python_interface_dominated_optix_classification(self) -> None:
-        payload = run_json("examples/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference")
+        payload = run_json("examples/v2_0/apps/analytics/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference")
         self.assertEqual(payload["optix_performance"]["class"], "python_interface_dominated")
         self.assertIn("not SQL", payload["honesty_boundary"])
 
     def test_segment_polygon_apps_expose_current_optix_classification(self) -> None:
         cases = (
-            ("examples/rtdl_road_hazard_screening.py", ("--backend", "cpu_python_reference"), "optix_traversal_prepared_summary"),
-            ("examples/rtdl_segment_polygon_hitcount.py", ("--backend", "cpu_python_reference"), "optix_traversal_prepared_summary"),
-            ("examples/rtdl_segment_polygon_anyhit_rows.py", ("--backend", "cpu_python_reference"), "optix_traversal"),
+            ("examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py", ("--backend", "cpu_python_reference"), "optix_traversal_prepared_summary"),
+            ("examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py", ("--backend", "cpu_python_reference"), "optix_traversal_prepared_summary"),
+            ("examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py", ("--backend", "cpu_python_reference"), "optix_traversal"),
         )
         for script, extra_args, expected_class in cases:
             with self.subTest(script=script):
@@ -46,9 +46,9 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
 
     def test_graph_apps_expose_current_optix_classification(self) -> None:
         cases = (
-            ("examples/rtdl_graph_analytics_app.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "optix_traversal"),
-            ("examples/rtdl_graph_bfs.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "host_indexed_fallback"),
-            ("examples/rtdl_graph_triangle_count.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "host_indexed_fallback"),
+            ("examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "optix_traversal"),
+            ("examples/v2_0/features/graph/rtdl_graph_bfs.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "host_indexed_fallback"),
+            ("examples/v2_0/features/graph/rtdl_graph_triangle_count.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "host_indexed_fallback"),
         )
         for script, extra_args, expected_class in cases:
             with self.subTest(script=script):
@@ -61,9 +61,9 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
 
     def test_spatial_compute_apps_expose_prepared_summary_classification(self) -> None:
         cases = (
-            ("examples/rtdl_hausdorff_distance_app.py", ("--backend", "cpu_python_reference")),
-            ("examples/rtdl_ann_candidate_app.py", ("--backend", "cpu_python_reference", "--output-mode", "rerank_summary")),
-            ("examples/rtdl_barnes_hut_force_app.py", ("--backend", "cpu_python_reference", "--output-mode", "candidate_summary")),
+            ("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", ("--backend", "cpu_python_reference")),
+            ("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", ("--backend", "cpu_python_reference", "--output-mode", "rerank_summary")),
+            ("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", ("--backend", "cpu_python_reference", "--output-mode", "candidate_summary")),
         )
         for script, extra_args in cases:
             with self.subTest(script=script):
@@ -74,21 +74,21 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
 
     def test_segment_polygon_anyhit_summary_modes_preserve_counts(self) -> None:
         rows_payload = run_json(
-            "examples/rtdl_segment_polygon_anyhit_rows.py",
+            "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
             "--backend",
             "cpu_python_reference",
             "--output-mode",
             "rows",
         )
         flags_payload = run_json(
-            "examples/rtdl_segment_polygon_anyhit_rows.py",
+            "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
             "--backend",
             "cpu_python_reference",
             "--output-mode",
             "segment_flags",
         )
         counts_payload = run_json(
-            "examples/rtdl_segment_polygon_anyhit_rows.py",
+            "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
             "--backend",
             "cpu_python_reference",
             "--output-mode",
@@ -110,8 +110,8 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
         self.assertNotIn("rows", counts_payload)
 
     def test_db_cpu_runtime_matches_cpu_python_reference_for_public_app_shape(self) -> None:
-        reference = run_json("examples/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference")
-        native_cpu = run_json("examples/rtdl_database_analytics_app.py", "--backend", "cpu")
+        reference = run_json("examples/v2_0/apps/analytics/rtdl_database_analytics_app.py", "--backend", "cpu_python_reference")
+        native_cpu = run_json("examples/v2_0/apps/analytics/rtdl_database_analytics_app.py", "--backend", "cpu")
         self.assertEqual(
             reference["sections"]["regional_dashboard"]["results"],
             native_cpu["sections"]["regional_dashboard"]["results"],
@@ -129,14 +129,14 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
         for output_mode in ("rows", "segment_flags", "segment_counts"):
             with self.subTest(output_mode=output_mode):
                 reference = run_json(
-                    "examples/rtdl_segment_polygon_anyhit_rows.py",
+                    "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
                     "--backend",
                     "cpu_python_reference",
                     "--output-mode",
                     output_mode,
                 )
                 native_cpu = run_json(
-                    "examples/rtdl_segment_polygon_anyhit_rows.py",
+                    "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
                     "--backend",
                     "cpu",
                     "--output-mode",

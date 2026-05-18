@@ -11,8 +11,8 @@ class Goal508HausdorffPerfDocRefreshTest(unittest.TestCase):
     def test_release_examples_mentions_hausdorff_gpu_path_and_boundary(self) -> None:
         text = (REPO_ROOT / "docs" / "release_facing_examples.md").read_text(encoding="utf-8")
 
-        self.assertIn("examples/rtdl_hausdorff_distance_app.py --backend optix", text)
-        self.assertIn("examples/rtdl_hausdorff_distance_app.py --backend vulkan", text)
+        self.assertIn("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix", text)
+        self.assertIn("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend vulkan", text)
         self.assertIn("Goal507 Hausdorff Linux Performance Report", text)
         self.assertIn("does not show RTDL\nbeating mature exact 2D nearest-neighbor baselines", text)
         self.assertIn("do not generalize the Hausdorff app's GPU CLI support", text)
@@ -20,9 +20,9 @@ class Goal508HausdorffPerfDocRefreshTest(unittest.TestCase):
     def test_nearest_neighbor_tutorial_links_goal507(self) -> None:
         text = (REPO_ROOT / "docs" / "tutorials" / "nearest_neighbor_workloads.md").read_text(encoding="utf-8")
 
-        self.assertIn("examples/rtdl_hausdorff_distance_app.py --backend embree", text)
-        self.assertIn("examples/rtdl_hausdorff_distance_app.py --backend optix", text)
-        self.assertIn("examples/rtdl_hausdorff_distance_app.py --backend vulkan", text)
+        self.assertIn("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree", text)
+        self.assertIn("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix", text)
+        self.assertIn("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend vulkan", text)
         self.assertIn("../reports/goal507_hausdorff_linux_perf_report_2026-04-17.md", text)
         self.assertIn("SciPy `cKDTree` and FAISS `IndexFlatL2` remain faster", text)
 

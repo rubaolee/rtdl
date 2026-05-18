@@ -24,7 +24,7 @@ Command convention used below:
 ## Run it first
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
 ```
 
 Expected output:
@@ -44,7 +44,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_hello_world.py
+python examples/v2_0/getting_started/rtdl_hello_world.py
 ```
 
 ---
@@ -137,16 +137,16 @@ hello, world
 ## Try a different backend
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend embree
 ```
 
 If your machine is configured for GPU backends:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend vulkan
 ```
 
 Expected JSON excerpt:

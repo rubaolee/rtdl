@@ -39,7 +39,7 @@ class Goal504BarnesHutForceAppTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 PYTHON,
-                "examples/rtdl_barnes_hut_force_app.py",
+                "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
                 "--backend",
                 "cpu_python_reference",
             ],

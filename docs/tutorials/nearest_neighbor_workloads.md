@@ -28,7 +28,7 @@ Command convention used below:
 ### Run it
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
 Windows `cmd.exe`:
@@ -42,7 +42,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+python examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
 Expected output excerpt:
@@ -92,7 +92,7 @@ def fixed_radius_neighbors_kernel():
 ### Run it
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
 Windows `cmd.exe`:
@@ -106,7 +106,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_knn_rows.py --backend cpu_python_reference
+python examples/v2_0/features/neighbors/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
 Expected output excerpt:
@@ -180,16 +180,16 @@ app shape is:
 Run the bounded app:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
 
 On Linux with built RTDL backend libraries, the same app can run through
 Embree, OptiX, and Vulkan:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend embree
-PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend vulkan
 ```
 
 Windows `cmd.exe`:
@@ -203,7 +203,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
 
 RTDL owns the nearest-neighbor row production. Python owns loading point sets,
@@ -228,8 +228,8 @@ boundary explicit.
 The public examples are easiest to learn on:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
 Windows `cmd.exe`:
@@ -244,10 +244,10 @@ Then move to the native CPU and accelerated backends that your machine
 supports:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend embree
-PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_knn_rows.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_knn_rows.py --backend embree
 ```
 
 Windows `cmd.exe`:

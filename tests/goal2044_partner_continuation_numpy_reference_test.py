@@ -73,7 +73,7 @@ class Goal2044PartnerContinuationNumpyReferenceTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_hausdorff_distance_app.py",
+                "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                 "--backend",
                 "partner_numpy_exact",
                 "--copies",

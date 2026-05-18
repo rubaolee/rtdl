@@ -8,10 +8,10 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_polygon_pair_overlap_area_rows import make_authored_polygon_pair_overlap_case
-from examples.rtdl_polygon_pair_overlap_area_rows import polygon_pair_overlap_area_rows_reference
-from examples.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
-from examples.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
+from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import make_authored_polygon_pair_overlap_case
+from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import polygon_pair_overlap_area_rows_reference
+from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
+from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
 
 
 ROOT = Path(__file__).resolve().parents[1]

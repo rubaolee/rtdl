@@ -58,7 +58,7 @@ python -m pip install -r requirements.txt
 Run this from the repository root:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
 ```
 
 Expected output:
@@ -71,14 +71,14 @@ Windows `cmd.exe`:
 
 ```bat
 set PYTHONPATH=src;.
-python examples\rtdl_hello_world.py
+python examples\v2_0\getting_started\rtdl_hello_world.py
 ```
 
 Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/rtdl_hello_world.py
+python examples/v2_0/getting_started/rtdl_hello_world.py
 ```
 
 ## Step 2: Kernel Shape
@@ -146,7 +146,7 @@ only after checking backend support and local dependencies.
 Start with the portable reference backend:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend cpu_python_reference
 ```
 
 Expected output:
@@ -163,15 +163,15 @@ Expected output:
 Then try optional native backends if your machine has them configured:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend embree
 ```
 
 If your Linux GPU host is configured for GPU backends:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend vulkan
 ```
 
 What stays the same:
@@ -187,7 +187,7 @@ What changes:
 ## Step 4: Try A Spatial Query
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
 Expected output excerpt:
@@ -220,7 +220,7 @@ def fixed_radius_neighbors_kernel():
 For one compact recipe per feature:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py
 ```
 
 Then read [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md).
@@ -232,8 +232,8 @@ and [App Engine Support Matrix](app_engine_support_matrix.md).
 
 Repository paths: `docs/application_catalog.md` and
 `docs/app_engine_support_matrix.md`. Current app entry points include
-`examples/rtdl_database_analytics_app.py` and
-`examples/rtdl_apple_rt_demo_app.py`; older scenario-specific DB and Apple RT
+`examples/v2_0/apps/analytics/rtdl_database_analytics_app.py` and
+`examples/legacy_or_backend_proofs/rtdl_apple_rt_demo_app.py`; older scenario-specific DB and Apple RT
 files are compatibility helpers rather than the recommended public start.
 
 ## Backend And Claim Boundaries

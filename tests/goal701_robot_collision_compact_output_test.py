@@ -47,7 +47,7 @@ class Goal701RobotCollisionCompactOutputTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_robot_collision_screening_app.py",
+                "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
                 "--backend",
                 "cpu_python_reference",
                 "--output-mode",
@@ -68,7 +68,7 @@ class Goal701RobotCollisionCompactOutputTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
-                "examples/rtdl_robot_collision_screening_app.py",
+                "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
                 "--help",
             ],
             cwd=ROOT,

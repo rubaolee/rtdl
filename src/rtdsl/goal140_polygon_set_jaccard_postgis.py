@@ -13,13 +13,13 @@ from .goal114_segment_polygon_postgis import connect_postgis
 
 
 def _kernel():
-    from examples.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
+    from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
 
     return polygon_set_jaccard_reference
 
 
 def _case():
-    from examples.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
+    from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
 
     return make_authored_polygon_set_jaccard_case()
 

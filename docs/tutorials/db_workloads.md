@@ -48,16 +48,16 @@ refinement inside the release contract.
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_conjunctive_scan.py --backend vulkan
 ```
 
 What happens:
@@ -71,16 +71,16 @@ What happens:
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_count.py --backend vulkan
 ```
 
 What happens:
@@ -94,16 +94,16 @@ What happens:
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/features/database/rtdl_db_grouped_sum.py --backend vulkan
 ```
 
 What happens:
@@ -117,22 +117,22 @@ What happens:
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend embree
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend vulkan
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend optix
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend vulkan
 ```
 
 For a claim-sensitive NVIDIA RT-core run, use the compact OptiX summary mode:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core
 ```
 
 `--require-rt-core` rejects the unified DB app's full and default summary modes
@@ -154,7 +154,7 @@ you are doing release archaeology, use the history and report archives rather
 than treating those older goal-named tests as the learner path.
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
 ```
 
 For current v2.0 learning, the unified example above is the public entry point.

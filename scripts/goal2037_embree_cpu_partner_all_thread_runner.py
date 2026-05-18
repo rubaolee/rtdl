@@ -29,22 +29,22 @@ def _cmd(app: str, continuation: str, *args: str, timeout_sec: int = 900, smoke_
 
 
 ROWS: tuple[dict[str, Any], ...] = (
-    _cmd("database_analytics", "numpy-columnar-predicate-reduction-target", "examples/rtdl_database_analytics_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "compact_summary"),
-    _cmd("graph_analytics", "numpy-or-numba-graph-continuation-target", "examples/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "visibility_edges", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("service_coverage_gaps", "numpy-threshold-count-target", "examples/rtdl_service_coverage_gaps.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "gap_summary"),
-    _cmd("event_hotspot_screening", "numpy-threshold-count-target", "examples/rtdl_event_hotspot_screening.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "count_summary"),
-    _cmd("facility_knn_assignment", "generic-prepared-fixed-radius-threshold-count-target", "examples/rtdl_facility_knn_assignment.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary", "--optix-summary-mode", "coverage_threshold_prepared"),
-    _cmd("road_hazard_screening", "numpy-grouped-count-flags-target", "examples/rtdl_road_hazard_screening.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("segment_polygon_hitcount", "numpy-grouped-count-target", "examples/rtdl_segment_polygon_hitcount.py", "--backend", "embree", "--copies", "512"),
-    _cmd("segment_polygon_anyhit_rows", "numpy-compact-row-materialization-target", "examples/rtdl_segment_polygon_anyhit_rows.py", "--backend", "embree", "--copies", "512", "--output-mode", "rows", "--output-capacity", "8192"),
-    _cmd("polygon_pair_overlap_area_rows", "cpu-partner-bbox-candidate-plus-native-exact-summary-target", "examples/rtdl_polygon_pair_overlap_area_rows.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary", "--candidate-mode", "partner_bbox"),
-    _cmd("polygon_set_jaccard", "cpu-partner-bbox-candidate-plus-native-jaccard-summary-target", "examples/rtdl_polygon_set_jaccard.py", "--backend", "embree", "--copies", "2000", "--output-mode", "summary", "--candidate-mode", "partner_bbox"),
-    _cmd("hausdorff_distance", "generic-prepared-fixed-radius-threshold-count-target", "examples/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--optix-summary-mode", "directed_threshold_prepared"),
-    _cmd("ann_candidate_search", "generic-prepared-fixed-radius-threshold-count-target", "examples/rtdl_ann_candidate_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "rerank_summary", "--optix-summary-mode", "candidate_threshold_prepared"),
-    _cmd("outlier_detection", "numpy-threshold-count-target", "examples/rtdl_outlier_detection_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "density_count"),
-    _cmd("dbscan_clustering", "numpy-threshold-count-target", "examples/rtdl_dbscan_clustering_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "core_count"),
-    _cmd("robot_collision_screening", "numpy-compact-flag-target", "examples/rtdl_robot_collision_screening_app.py", "--backend", "embree", "--pose-count", "20000", "--obstacle-count", "1024", "--output-mode", "hit_count"),
-    _cmd("barnes_hut_force_app", "numpy-or-numba-node-coverage-target", "examples/rtdl_barnes_hut_force_app.py", "--backend", "embree", "--body-count", "200000", "--output-mode", "candidate_summary"),
+    _cmd("database_analytics", "numpy-columnar-predicate-reduction-target", "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "compact_summary"),
+    _cmd("graph_analytics", "numpy-or-numba-graph-continuation-target", "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "visibility_edges", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("service_coverage_gaps", "numpy-threshold-count-target", "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "gap_summary"),
+    _cmd("event_hotspot_screening", "numpy-threshold-count-target", "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "count_summary"),
+    _cmd("facility_knn_assignment", "generic-prepared-fixed-radius-threshold-count-target", "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary", "--optix-summary-mode", "coverage_threshold_prepared"),
+    _cmd("road_hazard_screening", "numpy-grouped-count-flags-target", "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("segment_polygon_hitcount", "numpy-grouped-count-target", "examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py", "--backend", "embree", "--copies", "512"),
+    _cmd("segment_polygon_anyhit_rows", "numpy-compact-row-materialization-target", "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py", "--backend", "embree", "--copies", "512", "--output-mode", "rows", "--output-capacity", "8192"),
+    _cmd("polygon_pair_overlap_area_rows", "cpu-partner-bbox-candidate-plus-native-exact-summary-target", "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary", "--candidate-mode", "partner_bbox"),
+    _cmd("polygon_set_jaccard", "cpu-partner-bbox-candidate-plus-native-jaccard-summary-target", "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py", "--backend", "embree", "--copies", "2000", "--output-mode", "summary", "--candidate-mode", "partner_bbox"),
+    _cmd("hausdorff_distance", "generic-prepared-fixed-radius-threshold-count-target", "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--optix-summary-mode", "directed_threshold_prepared"),
+    _cmd("ann_candidate_search", "generic-prepared-fixed-radius-threshold-count-target", "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "rerank_summary", "--optix-summary-mode", "candidate_threshold_prepared"),
+    _cmd("outlier_detection", "numpy-threshold-count-target", "examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "density_count"),
+    _cmd("dbscan_clustering", "numpy-threshold-count-target", "examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "core_count"),
+    _cmd("robot_collision_screening", "numpy-compact-flag-target", "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "--backend", "embree", "--pose-count", "20000", "--obstacle-count", "1024", "--output-mode", "hit_count"),
+    _cmd("barnes_hut_force_app", "numpy-or-numba-node-coverage-target", "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", "--backend", "embree", "--body-count", "200000", "--output-mode", "candidate_summary"),
 )
 
 

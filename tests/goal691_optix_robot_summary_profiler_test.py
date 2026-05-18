@@ -25,7 +25,7 @@ def run_json(*args: str) -> dict[str, object]:
 
 class Goal691OptixRobotSummaryProfilerTest(unittest.TestCase):
     def test_robot_default_rows_mode_still_matches_oracle(self) -> None:
-        payload = run_json("examples/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference")
+        payload = run_json("examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference")
         self.assertEqual(payload["optix_summary_mode"], "rows")
         self.assertTrue(payload["matches_oracle"])
         self.assertIn("edge_any_hit_rows", payload)

@@ -96,7 +96,7 @@ class Goal839LocalBaselineCollectorsTest(unittest.TestCase):
             fromlist=["_summary_from_rows"],
         )
         robot_app = __import__(
-            "examples.rtdl_robot_collision_screening_app",
+            "examples.v2_0.apps.robotics.rtdl_robot_collision_screening_app",
             fromlist=["make_scaled_case"],
         )
         case = robot_app.make_scaled_case(

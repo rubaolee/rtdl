@@ -41,7 +41,7 @@ class Goal208NearestNeighborExamplesTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 PYTHON,
-                "examples/rtdl_fixed_radius_neighbors.py",
+                "examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py",
                 "--backend",
                 "cpu_python_reference",
             ],
@@ -58,7 +58,7 @@ class Goal208NearestNeighborExamplesTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 PYTHON,
-                "examples/rtdl_knn_rows.py",
+                "examples/v2_0/features/neighbors/rtdl_knn_rows.py",
                 "--backend",
                 "cpu_python_reference",
             ],
@@ -75,7 +75,7 @@ class Goal208NearestNeighborExamplesTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 PYTHON,
-                "examples/rtdl_hausdorff_distance_app.py",
+                "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                 "--backend",
                 "cpu_python_reference",
             ],

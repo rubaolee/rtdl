@@ -69,7 +69,7 @@ def build_packet() -> dict[str, Any]:
                 f"--copies {PRIMITIVE_COPIES} --query-repeats {PRIMITIVE_QUERY_REPEATS} --output {primitive_output}"
             ),
             "graph_wrapper": (
-                "PYTHONPATH=src:. python3 examples/rtdl_graph_analytics_app.py "
+                "PYTHONPATH=src:. python3 examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py "
                 "--backend optix --scenario visibility_edges --output-mode summary "
                 f"--copies {GRAPH_COPIES} --visibility-query-repeats {GRAPH_QUERY_REPEATS} > {graph_output}"
             ),

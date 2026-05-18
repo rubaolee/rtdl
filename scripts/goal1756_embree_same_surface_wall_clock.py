@@ -26,22 +26,22 @@ def _cmd(app: str, *args: str, timeout_sec: int = 1800) -> dict[str, Any]:
 
 
 COMMANDS: list[dict[str, Any]] = [
-    _cmd("service_coverage_gaps", "examples/rtdl_service_coverage_gaps.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "gap_summary"),
-    _cmd("event_hotspot_screening", "examples/rtdl_event_hotspot_screening.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "count_summary"),
-    _cmd("facility_knn_assignment", "examples/rtdl_facility_knn_assignment.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("road_hazard_screening", "examples/rtdl_road_hazard_screening.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("segment_polygon_hitcount", "examples/rtdl_segment_polygon_hitcount.py", "--backend", "embree", "--copies", "256"),
-    _cmd("segment_polygon_anyhit_rows", "examples/rtdl_segment_polygon_anyhit_rows.py", "--backend", "embree", "--copies", "256", "--output-mode", "rows", "--output-capacity", "4096"),
-    _cmd("graph_visibility_edges", "examples/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "visibility_edges", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("graph_bfs", "examples/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "bfs", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("graph_triangle_count", "examples/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "triangle_count", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("hausdorff_distance", "examples/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--embree-result-mode", "directed_summary"),
-    _cmd("ann_candidate_search", "examples/rtdl_ann_candidate_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "rerank_summary"),
-    _cmd("barnes_hut_force_app", "examples/rtdl_barnes_hut_force_app.py", "--backend", "embree", "--body-count", "200000", "--output-mode", "candidate_summary"),
-    _cmd("polygon_pair_overlap_area_rows", "examples/rtdl_polygon_pair_overlap_area_rows.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("polygon_set_jaccard", "examples/rtdl_polygon_set_jaccard.py", "--backend", "embree", "--copies", "2000", timeout_sec=900),
-    _cmd("outlier_detection", "examples/rtdl_outlier_detection_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "density_count"),
-    _cmd("robot_collision_screening", "examples/rtdl_robot_collision_screening_app.py", "--backend", "embree", "--pose-count", "20000", "--obstacle-count", "1024", "--output-mode", "hit_count", timeout_sec=900),
+    _cmd("service_coverage_gaps", "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "gap_summary"),
+    _cmd("event_hotspot_screening", "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "count_summary"),
+    _cmd("facility_knn_assignment", "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("road_hazard_screening", "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("segment_polygon_hitcount", "examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py", "--backend", "embree", "--copies", "256"),
+    _cmd("segment_polygon_anyhit_rows", "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py", "--backend", "embree", "--copies", "256", "--output-mode", "rows", "--output-capacity", "4096"),
+    _cmd("graph_visibility_edges", "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "visibility_edges", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("graph_bfs", "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "bfs", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("graph_triangle_count", "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "triangle_count", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("hausdorff_distance", "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--embree-result-mode", "directed_summary"),
+    _cmd("ann_candidate_search", "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "rerank_summary"),
+    _cmd("barnes_hut_force_app", "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py", "--backend", "embree", "--body-count", "200000", "--output-mode", "candidate_summary"),
+    _cmd("polygon_pair_overlap_area_rows", "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),
+    _cmd("polygon_set_jaccard", "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py", "--backend", "embree", "--copies", "2000", timeout_sec=900),
+    _cmd("outlier_detection", "examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "density_count"),
+    _cmd("robot_collision_screening", "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "--backend", "embree", "--pose-count", "20000", "--obstacle-count", "1024", "--output-mode", "hit_count", timeout_sec=900),
 ]
 
 

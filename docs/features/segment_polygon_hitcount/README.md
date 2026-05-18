@@ -10,9 +10,9 @@ segment/polygon pair.
 ## Docs
 
 - canonical example:
-  - [rtdl_segment_polygon_hitcount.py](../../../examples/rtdl_segment_polygon_hitcount.py)
+  - [rtdl_segment_polygon_hitcount.py](../../../examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py)
 - app-style example:
-  - [rtdl_road_hazard_screening.py](../../../examples/rtdl_road_hazard_screening.py)
+  - [rtdl_road_hazard_screening.py](../../../examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py)
 - support contract:
   - [Engine Feature Support Contract](../engine_support_matrix.md)
 
@@ -38,7 +38,7 @@ return rt.emit(hits, fields=["segment_id", "hit_count"])
 Run:
 
 ```bash
-python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 Use `python3` instead if that is what your shell exposes.
@@ -46,14 +46,14 @@ Use `python3` instead if that is what your shell exposes.
 OptiX compatibility surface:
 
 ```bash
-python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 16
-python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 16
+python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 16
 ```
 
 Claim-sensitive boundary:
 
 ```bash
-python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --require-rt-core
+python examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --require-rt-core
 ```
 
 The app-level native OptiX path is a compatibility surface. The bounded
@@ -64,7 +64,7 @@ That does not authorize a broad segment/polygon speedup claim.
 App-style run:
 
 ```bash
-python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
+python examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend cpu_python_reference
 ```
 
 ## Best Practices

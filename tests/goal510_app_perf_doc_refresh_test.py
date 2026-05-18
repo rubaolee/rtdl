@@ -22,9 +22,9 @@ class Goal510AppPerfDocRefreshTest(unittest.TestCase):
         self.assertIn("Goal509 Robot/Barnes-Hut Linux Performance Report", text)
         self.assertIn("rejects robot Vulkan because it fails per-edge hit-count parity", text.replace("\n", " "))
         self.assertIn("superseded by Goal748", text)
-        self.assertIn("examples/rtdl_robot_collision_screening_app.py --backend optix", text)
+        self.assertIn("examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py --backend optix", text)
         self.assertIn("Vulkan is not a supported public backend for this app yet", text)
-        self.assertIn("examples/rtdl_barnes_hut_force_app.py --backend vulkan", text)
+        self.assertIn("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py --backend vulkan", text)
         self.assertIn("candidate-generation timing separately from\n  Python force-reduction timing", text)
 
     def test_tutorials_and_examples_index_carry_goal509_boundaries(self) -> None:

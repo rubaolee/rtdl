@@ -43,7 +43,7 @@ PROBES: tuple[dict[str, Any], ...] = (
         "app": "graph_analytics",
         "command": [
             sys.executable,
-            "examples/rtdl_graph_analytics_app.py",
+            "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
             "--backend",
             "embree",
             "--scenario",
@@ -64,7 +64,7 @@ PROBES: tuple[dict[str, Any], ...] = (
         "app": "road_hazard_screening",
         "command": [
             sys.executable,
-            "examples/rtdl_road_hazard_screening.py",
+            "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",
             "--backend",
             "embree",
             "--copies",
@@ -83,7 +83,7 @@ PROBES: tuple[dict[str, Any], ...] = (
         "app": "polygon_pair_overlap_area_rows",
         "command": [
             sys.executable,
-            "examples/rtdl_polygon_pair_overlap_area_rows.py",
+            "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
             "--backend",
             "embree",
             "--copies",
@@ -103,7 +103,7 @@ PROBES: tuple[dict[str, Any], ...] = (
         "app": "polygon_set_jaccard",
         "command": [
             sys.executable,
-            "examples/rtdl_polygon_set_jaccard.py",
+            "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",
             "--backend",
             "embree",
             "--copies",
@@ -123,7 +123,7 @@ PROBES: tuple[dict[str, Any], ...] = (
         "app": "hausdorff_distance",
         "command": [
             sys.executable,
-            "examples/rtdl_hausdorff_distance_app.py",
+            "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
             "--backend",
             "embree",
             "--copies",

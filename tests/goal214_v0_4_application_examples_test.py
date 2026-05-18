@@ -35,7 +35,7 @@ class Goal214V04ApplicationExamplesTest(unittest.TestCase):
 
     def test_service_coverage_cli(self) -> None:
         completed = subprocess.run(
-            [PYTHON, "examples/rtdl_service_coverage_gaps.py", "--backend", "cpu_python_reference", "--copies", "2"],
+            [PYTHON, "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py", "--backend", "cpu_python_reference", "--copies", "2"],
             check=True,
             cwd=REPO_ROOT,
             capture_output=True,
@@ -46,7 +46,7 @@ class Goal214V04ApplicationExamplesTest(unittest.TestCase):
 
     def test_event_hotspot_cli(self) -> None:
         completed = subprocess.run(
-            [PYTHON, "examples/rtdl_event_hotspot_screening.py", "--backend", "cpu_python_reference", "--copies", "2"],
+            [PYTHON, "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py", "--backend", "cpu_python_reference", "--copies", "2"],
             check=True,
             cwd=REPO_ROOT,
             capture_output=True,
@@ -57,7 +57,7 @@ class Goal214V04ApplicationExamplesTest(unittest.TestCase):
 
     def test_facility_assignment_cli(self) -> None:
         completed = subprocess.run(
-            [PYTHON, "examples/rtdl_facility_knn_assignment.py", "--backend", "cpu_python_reference", "--copies", "2"],
+            [PYTHON, "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py", "--backend", "cpu_python_reference", "--copies", "2"],
             check=True,
             cwd=REPO_ROOT,
             capture_output=True,

@@ -5,8 +5,8 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
-from examples.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
+from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import make_authored_polygon_set_jaccard_case
+from examples.v2_0.features.spatial.rtdl_polygon_set_jaccard import polygon_set_jaccard_reference
 
 
 class Goal140PolygonSetJaccardTest(unittest.TestCase):

@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class Goal724ServiceCoverageEmbreeSummaryTest(unittest.TestCase):
     def test_service_coverage_app_exposes_embree_gap_summary(self):
-        text = (ROOT / "examples/rtdl_service_coverage_gaps.py").read_text(encoding="utf-8")
+        text = (ROOT / "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py").read_text(encoding="utf-8")
         self.assertIn("embree_summary_mode", text)
         self.assertIn("gap_summary", text)
         self.assertIn("run_generic_fixed_radius_count_threshold_2d", text)

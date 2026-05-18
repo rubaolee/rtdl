@@ -1,115 +1,82 @@
 # RTDL Examples
 
-This directory is the runnable v2.0-facing example inventory. It is organized
-for a new reader first: start with the short path, then pick an app by workload.
+This directory is organized for RTDL v2.0 users first.  Start in
+`v2_0/`, then choose by purpose: first run, feature, full app, partner
+continuation, or research benchmark.
 
-Run source-tree examples from the repository root with `PYTHONPATH=src:.`.
+Run examples from the repository root with source-tree usage:
 
-## Short Path
+```bash
+PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
+```
 
-| Step | Run or read | Purpose |
+## Start Here
+
+| Purpose | Directory | First command |
 | --- | --- | --- |
-| 1 | `PYTHONPATH=src:. python examples/rtdl_hello_world.py` | prove the checkout imports and runs |
-| 2 | `PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference` | see backend selection without performance claims |
-| 3 | `PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree` | see Python+partner column handoff on the CPU RT fallback |
-| 4 | `PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py` | see one compact recipe per public feature |
-| 5 | [App And Example Quickstart](../docs/app_example_quickstart.md) | choose one app by job instead of scanning filenames |
-| 6 | [Performance Model](../docs/performance_model.md) | interpret timing and speedup wording safely |
-
-Quick rule: examples show runnable RTDL shapes. Public speedup wording comes
-only from the support matrix and reviewed evidence for an exact bounded path.
+| First runnable RTDL programs | `v2_0/getting_started/` | `PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py` |
+| Individual feature examples | `v2_0/features/` | `PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py` |
+| Complete v2.0 applications | `v2_0/apps/` | `PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference` |
+| Partner continuation examples | `v2_0/partners/` | `PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` |
+| Paper-facing performance studies | `v2_0/research_benchmarks/` | read the benchmark README before running |
 
 ## Directory Map
 
-| Location | Reader meaning |
+| Directory | Audience | Contents |
+| --- | --- | --- |
+| `v2_0/getting_started/` | New learner | Hello world, backend selection, feature cookbook |
+| `v2_0/features/` | User learning one RTDL primitive family | Ray queries, neighbors, database reductions, graph traversal, spatial rows |
+| `v2_0/apps/` | User building an application | Analytics, geospatial, ML, robotics, simulation, trajectory examples |
+| `v2_0/partners/` | Advanced user | NumPy/CuPy/user-owned continuation examples around RTDL outputs |
+| `v2_0/research_benchmarks/hausdorff_xhd/` | Research/performance reader | Hausdorff/X-HD-inspired RTDL study and benchmark harnesses |
+| `v2_0/research_benchmarks/spatial_rayjoin/` | Research/performance reader | RayJoin-inspired spatial join study |
+| `legacy_or_backend_proofs/` | Backend maintainer | Backend proof demos that are not the first learner path |
+| `visual_demo/` | Visual demo reader | Rendering/visual query demos |
+| `reference/` | Test/doc maintainer | Canonical reference kernels used by docs and tests |
+| `generated/` | Auditor | Preserved generated bundles |
+| `internal/` | Maintainer | Historical/internal development artifacts |
+
+## v2.0 Feature Families
+
+| Feature family | Directory |
 | --- | --- |
-| root `rtdl_*.py` files | current public examples and app wrappers |
-| `visual_demo/` | visual Python apps that use RTDL for geometric query work |
-| `reference/` | canonical kernels and helper generators used by tests and docs |
-| `generated/` | preserved generated bundles for inspection and audit |
-| `internal/` | internal experiments, compatibility helpers, and archived app helpers |
+| Ray queries and row reductions | `v2_0/features/ray_queries/` |
+| Fixed-radius and KNN rows | `v2_0/features/neighbors/` |
+| Columnar database scans and grouped reductions | `v2_0/features/database/` |
+| Graph traversal and triangle counting | `v2_0/features/graph/` |
+| Segment/polygon and polygon-set spatial rows | `v2_0/features/spatial/` |
 
-If a file is under `internal/`, it is not a first-run learner entry point.
+## Important Performance Applications
 
-## Public Examples By Job
+| Study | Directory | Boundary |
+| --- | --- | --- |
+| Hausdorff vs X-HD-style baselines | `v2_0/research_benchmarks/hausdorff_xhd/` | Serious RTDL language/runtime study, not a claim that every Hausdorff input beats every CUDA implementation |
+| Spatial joins vs RayJoin-style baselines | `v2_0/research_benchmarks/spatial_rayjoin/` | Serious RTDL spatial-query study, not a claim that RTDL reproduces every RayJoin paper result |
 
-### First Runs
+## Compatibility
 
-| Job | Start with |
-| --- | --- |
-| smallest runnable program | `rtdl_hello_world.py` |
-| one idea across runtime backends | `rtdl_hello_world_backends.py` |
-| one recipe per feature | `rtdl_feature_quickstart_cookbook.py` |
-| Python+partner column handoff | `rtdl_partner_anyhit.py` |
+Older imports such as `from examples import rtdl_hello_world` are kept through a
+lazy compatibility map in `examples/__init__.py`.  New documentation should use
+the explicit `examples/v2_0/...` paths.
 
-### Core Primitive Shapes
+## Claim Boundaries
 
-| Job | Start with |
-| --- | --- |
-| ray/triangle any-hit | `rtdl_ray_triangle_any_hit.py` |
-| visibility rows | `rtdl_visibility_rows.py` |
-| row reductions | `rtdl_reduce_rows.py` |
-| fixed-radius neighbors | `rtdl_fixed_radius_neighbors.py` |
-| KNN rows | `rtdl_knn_rows.py` |
-| HIPRT hit-count proof path | `rtdl_hiprt_ray_triangle_hitcount.py` |
-
-### Application Examples
-
-| Job | Start with |
-| --- | --- |
-| Hausdorff-style nearest-neighbor composition | `rtdl_hausdorff_distance_app.py` |
-| user-owned native continuation example | `rtdl_hausdorff_user_cpp_continuation.py` |
-| continuous Frechet learner app | `rtdl_continuous_frechet_distance_app.py` |
-| approximate nearest-neighbor candidate search | `rtdl_ann_candidate_app.py` |
-| outlier screening | `rtdl_outlier_detection_app.py` |
-| DBSCAN-style density clustering | `rtdl_dbscan_clustering_app.py` |
-| robot collision screening | `rtdl_robot_collision_screening_app.py` |
-| Barnes-Hut force candidate discovery | `rtdl_barnes_hut_force_app.py` |
-| graph analytics wrapper | `rtdl_graph_analytics_app.py` |
-| database analytics wrapper | `rtdl_database_analytics_app.py` |
-| Apple RT wrapper | `rtdl_apple_rt_demo_app.py` |
-
-### Spatial And Polygon Workloads
-
-| Job | Start with |
-| --- | --- |
-| service coverage gaps | `rtdl_service_coverage_gaps.py` |
-| event hotspot screening | `rtdl_event_hotspot_screening.py` |
-| facility assignment | `rtdl_facility_knn_assignment.py` |
-| road hazard screening | `rtdl_road_hazard_screening.py` |
-| segment/polygon hit counts | `rtdl_segment_polygon_hitcount.py` |
-| segment/polygon witness rows | `rtdl_segment_polygon_anyhit_rows.py` |
-| polygon-pair overlap summaries | `rtdl_polygon_pair_overlap_area_rows.py` |
-| polygon-set Jaccard summaries | `rtdl_polygon_set_jaccard.py` |
-
-### Partner Continuation Examples
-
-| Job | Start with |
-| --- | --- |
-| CuPy RawKernel continuation examples | `rtdl_control_apps_cupy_rawkernel.py` |
-
-This file is intentionally a current example, but it is an advanced one. It
-shows user-owned partner continuation around RTDL; it is not a claim that RTDL
-accelerates arbitrary CuPy programs.
-
-## Backend And Claim Boundaries
-
-- Start with `cpu_python_reference`; it is the portable learning backend.
-- Use `cpu` when you intentionally want the native/oracle validation path.
-- Use Embree, OptiX, HIPRT, Vulkan, or Apple RT only when the host has the
-  needed dependencies and the selected feature supports that backend.
-- `--backend optix` is not by itself a public NVIDIA RT-core speedup claim.
-- Visual demos are Python applications that use RTDL for geometric queries;
-  RTDL is not a renderer or graphics engine.
+- `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim.
+- Partner examples show user-owned continuation around RTDL outputs; RTDL does
+  not claim to accelerate arbitrary NumPy, PyTorch, or CuPy programs.
+- `legacy_or_backend_proofs/`, `generated/`, `reference/`, and `internal/` are
+  not first-run learner directories.
 
 For guided learning and support boundaries, prefer:
 
 - [Project Front Page](../README.md)
 - [Docs Index](../docs/README.md)
-- [Quick Tutorial](../docs/quick_tutorial.md)
 - [Tutorial Ladder](../docs/tutorials/README.md)
 - [App And Example Quickstart](../docs/app_example_quickstart.md)
 - [Application Catalog](../docs/application_catalog.md)
 - [App Engine Support Matrix](../docs/app_engine_support_matrix.md)
-- [Current Support Matrix](../docs/current_main_support_matrix.md)
 - [Performance Model](../docs/performance_model.md)
+
+Selecting `--backend optix` does not automatically make a public RT-core
+speedup claim; use the support matrix and reviewed evidence before publishing
+performance wording.

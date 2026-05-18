@@ -11,7 +11,7 @@ under the current orthogonal integer-grid unit-cell contract.
 ## Docs
 
 - canonical example:
-  - [rtdl_polygon_pair_overlap_area_rows.py](../../../examples/rtdl_polygon_pair_overlap_area_rows.py)
+  - [rtdl_polygon_pair_overlap_area_rows.py](../../../examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py)
 - support contract:
   - [Engine Feature Support Contract](../engine_support_matrix.md)
 - app support:
@@ -42,15 +42,15 @@ return rt.emit(
 - predicate:
   - `rt.polygon_pair_overlap_area_rows(exact=False)`
 - canonical reference kernel:
-  - [polygon_pair_overlap_area_rows_reference](../../../examples/rtdl_polygon_pair_overlap_area_rows.py)
+  - [polygon_pair_overlap_area_rows_reference](../../../examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py)
 
 ## Example
 
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
-PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
 Use `python3` instead if that is what your shell exposes.

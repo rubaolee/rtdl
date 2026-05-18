@@ -320,7 +320,7 @@ def build_manifest() -> dict[str, Any]:
         "entries": [
             _entry(
                 app="database_analytics",
-                app_path="examples/rtdl_database_analytics_app.py",
+                app_path="examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
                 path_name="prepared_db_session_sales_risk",
                 command=[
                     python,
@@ -346,7 +346,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _entry(
                 app="database_analytics",
-                app_path="examples/rtdl_database_analytics_app.py",
+                app_path="examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
                 path_name="prepared_db_session_regional_dashboard",
                 command=[
                     python,
@@ -372,7 +372,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _entry(
                 app="outlier_detection",
-                app_path="examples/rtdl_outlier_detection_app.py",
+                app_path="examples/v2_0/apps/ml/rtdl_outlier_detection_app.py",
                 path_name="prepared_fixed_radius_density_summary",
                 command=[
                     python,
@@ -399,7 +399,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _entry(
                 app="dbscan_clustering",
-                app_path="examples/rtdl_dbscan_clustering_app.py",
+                app_path="examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py",
                 path_name="prepared_fixed_radius_core_flags",
                 command=[
                     python,
@@ -427,7 +427,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _entry(
                 app="robot_collision_screening",
-                app_path="examples/rtdl_robot_collision_screening_app.py",
+                app_path="examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
                 path_name="prepared_pose_flags",
                 command=[
                     python,
@@ -461,7 +461,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _entry(
                 app="service_coverage_gaps",
-                app_path="examples/rtdl_service_coverage_gaps.py",
+                app_path="examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py",
                 path_name="prepared_gap_summary",
                 command=[
                     python,
@@ -486,7 +486,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _entry(
                 app="event_hotspot_screening",
-                app_path="examples/rtdl_event_hotspot_screening.py",
+                app_path="examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py",
                 path_name="prepared_count_summary",
                 command=[
                     python,
@@ -511,7 +511,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _entry(
                 app="facility_knn_assignment",
-                app_path="examples/rtdl_facility_knn_assignment.py",
+                app_path="examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py",
                 path_name="coverage_threshold_prepared",
                 command=[
                     python,
@@ -553,7 +553,7 @@ def build_manifest() -> dict[str, Any]:
         "deferred_entries": [
             _deferred_entry(
                 app="graph_analytics",
-                app_path="examples/rtdl_graph_analytics_app.py",
+                app_path="examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
                 path_name="graph_visibility_edges_gate",
                 command=[
                     python,
@@ -597,7 +597,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="road_hazard_screening",
-                app_path="examples/rtdl_road_hazard_screening.py",
+                app_path="examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",
                 path_name="road_hazard_native_summary_gate",
                 command=[
                     python,
@@ -628,7 +628,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="segment_polygon_hitcount",
-                app_path="examples/rtdl_segment_polygon_hitcount.py",
+                app_path="examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py",
                 path_name="segment_polygon_hitcount_native_experimental",
                 command=[
                     python,
@@ -661,7 +661,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="hausdorff_distance",
-                app_path="examples/rtdl_hausdorff_distance_app.py",
+                app_path="examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                 path_name="directed_threshold_prepared",
                 command=[
                     python,
@@ -693,7 +693,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="ann_candidate_search",
-                app_path="examples/rtdl_ann_candidate_app.py",
+                app_path="examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
                 path_name="candidate_threshold_prepared",
                 command=[
                     python,
@@ -725,7 +725,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="barnes_hut_force_app",
-                app_path="examples/rtdl_barnes_hut_force_app.py",
+                app_path="examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
                 path_name="node_coverage_prepared",
                 command=[
                     python,
@@ -757,7 +757,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="segment_polygon_anyhit_rows",
-                app_path="examples/rtdl_segment_polygon_anyhit_rows.py",
+                app_path="examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
                 path_name="segment_polygon_anyhit_rows_prepared_bounded_gate",
                 command=[
                     python,
@@ -789,7 +789,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="polygon_pair_overlap_area_rows",
-                app_path="examples/rtdl_polygon_pair_overlap_area_rows.py",
+                app_path="examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
                 path_name="polygon_pair_overlap_optix_native_assisted_phase_gate",
                 command=[
                     python,
@@ -824,7 +824,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="polygon_set_jaccard",
-                app_path="examples/rtdl_polygon_set_jaccard.py",
+                app_path="examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",
                 path_name="polygon_set_jaccard_optix_native_assisted_phase_gate",
                 command=[
                     python,

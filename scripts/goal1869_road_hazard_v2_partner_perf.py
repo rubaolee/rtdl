@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 import rtdsl as rt
-from examples.rtdl_road_hazard_screening import road_hazard_hitcount
+from examples.v2_0.apps.geospatial.rtdl_road_hazard_screening import road_hazard_hitcount
 
 
 def _build_records(count: int):

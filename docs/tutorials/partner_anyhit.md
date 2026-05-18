@@ -20,7 +20,7 @@ development host without a pod or hardware RT cores.
 From the repository root:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend embree
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree
 ```
 
 Expected shape:
@@ -45,8 +45,8 @@ If PyTorch CUDA or CuPy CUDA is installed, the same example can use partner-owne
 CUDA columns:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner torch-cuda --backend embree
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner cupy-cuda --backend embree
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner torch-cuda --backend embree
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend embree
 ```
 
 Those runs still report `transfer_mode = "host_stage"` because Embree is a CPU
@@ -106,7 +106,7 @@ platform for the partner protocol and descriptor contract.
 OptiX is selectable:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backend optix
+PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend optix
 ```
 
 But selecting `backend="optix"` is not a public speedup claim. RT-core claims
