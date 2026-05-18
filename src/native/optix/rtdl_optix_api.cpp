@@ -188,6 +188,48 @@ extern "C" int rtdl_optix_count_prepared_segment_pair_intersection(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_prepared_segment_first_hit(
+        void* prepared,
+        const RtdlSegment* probes, size_t probe_count,
+        RtdlSegmentFirstHitRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment first-hit handle must not be null");
+        if (!probes && probe_count != 0)
+            throw std::runtime_error("probe pointer must not be null when probe_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        run_prepared_segment_first_hit_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            probes, probe_count,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_segment_first_hit(
+        void* prepared,
+        const RtdlSegment* probes, size_t probe_count,
+        size_t* count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment first-hit handle must not be null");
+        if (!probes && probe_count != 0)
+            throw std::runtime_error("probe pointer must not be null when probe_count is nonzero");
+        if (!count_out)
+            throw std::runtime_error("count_out must not be null");
+        *count_out = 0;
+        count_prepared_segment_first_hit_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            probes, probe_count,
+            count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared)
 {
     delete reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared);

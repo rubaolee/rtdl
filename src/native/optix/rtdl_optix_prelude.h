@@ -141,6 +141,11 @@ struct RtdlSegmentPairIntersectionRow {
     double intersection_point_x, intersection_point_y;
 };
 
+struct RtdlSegmentFirstHitRow {
+    uint32_t probe_id, primitive_id;
+    double hit_x, hit_y, hit_t;
+};
+
 struct RtdlPipRow {
     uint32_t point_id, polygon_id, contains;
 };
@@ -313,6 +318,16 @@ int  rtdl_optix_run_prepared_segment_pair_intersection(
 int  rtdl_optix_count_prepared_segment_pair_intersection(
          void* prepared,
          const RtdlSegment* left, size_t left_count,
+         size_t* count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_first_hit(
+         void* prepared,
+         const RtdlSegment* probes, size_t probe_count,
+         RtdlSegmentFirstHitRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_segment_first_hit(
+         void* prepared,
+         const RtdlSegment* probes, size_t probe_count,
          size_t* count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared);

@@ -885,6 +885,106 @@ extern "C" __global__ void __anyhit__segment_pair_intersection_anyhit() {
 }
 )CUDA";
 
+// ---------- segment first-hit kernel --------------------------------------------------------------
+
+static const char* kSegmentFirstHitKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    unsigned int id;
+};
+
+struct SegmentFirstHitParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* probes;
+    const GpuSegment* primitives;
+    unsigned long long* best_pair;
+    unsigned int probe_count;
+};
+
+extern "C" {
+__constant__ SegmentFirstHitParams params;
+}
+
+static __forceinline__ __device__ float dabsf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool seg_intersect_t(
+        float ax0, float ay0, float ax1, float ay1,
+        float bx0, float by0, float bx1, float by1,
+        float* t_out)
+{
+    float rx = ax1 - ax0, ry = ay1 - ay0;
+    float sx = bx1 - bx0, sy = by1 - by0;
+    float denom = rx * sy - ry * sx;
+    if (dabsf(denom) < 1.0e-7f) return false;
+    float qpx = bx0 - ax0, qpy = by0 - ay0;
+    float t = (qpx * sy - qpy * sx) / denom;
+    float u = (qpx * ry - qpy * rx) / denom;
+    const float slack = 1.0e-6f;
+    if (t < -slack || t > 1.0f + slack || u < -slack || u > 1.0f + slack) {
+        return false;
+    }
+    *t_out = fminf(fmaxf(t, 0.0f), 1.0f);
+    return true;
+}
+
+extern "C" __global__ void __raygen__segment_first_hit_probe() {
+    const unsigned int idx = optixGetLaunchIndex().x;
+    if (idx >= params.probe_count) return;
+    const GpuSegment p = params.probes[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(p.x0, p.y0, 0.0f),
+               make_float3(p.x1 - p.x0, p.y1 - p.y0, 0.0f),
+               0.0f, 1.0f + 1.0e-4f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__segment_first_hit_miss() {}
+
+extern "C" __global__ void __intersection__segment_first_hit_isect() {
+    optixSetPayload_1(optixGetPrimitiveIndex());
+    optixReportIntersection(0.5f, 0u);
+}
+
+extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
+    const unsigned int pidx = optixGetPayload_0();
+    const unsigned int bidx = optixGetPayload_1();
+    const GpuSegment probe = params.probes[pidx];
+    const GpuSegment primitive = params.primitives[bidx];
+    float t = 0.0f;
+    if (!seg_intersect_t(
+            probe.x0, probe.y0, probe.x1, probe.y1,
+            primitive.x0, primitive.y0, primitive.x1, primitive.y1,
+            &t)) {
+        optixIgnoreIntersection();
+        return;
+    }
+    const unsigned int t_key =
+        ((unsigned int)(fminf(fmaxf(t, 0.0f), 1.0f) * 4294967294.0f)) + 1u;
+    const unsigned long long candidate =
+        (((unsigned long long)t_key) << 32) | ((unsigned long long)bidx);
+    unsigned long long* slot = params.best_pair + pidx;
+    unsigned long long old = *slot;
+    while (candidate < old) {
+        const unsigned long long observed = atomicCAS(slot, old, candidate);
+        if (observed == old) {
+            break;
+        }
+        old = observed;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 // ---------- PIP kernel -------------------------------------------------------
 
 static const char* kPipKernelSrc = R"CUDA(
@@ -4450,6 +4550,11 @@ struct SegmentPairIntersectionPipeline {
     std::once_flag   init;
 };
 
+struct SegmentFirstHitPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
 struct PipPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag   init;
@@ -4509,6 +4614,7 @@ struct KnnCuFunction {
 };
 
 static SegmentPairIntersectionPipeline         g_segment_pair_intersection;
+static SegmentFirstHitPipeline                 g_segment_first_hit;
 static PipPipeline         g_pip;
 static ShapePairRelationPipeline     g_shape_pair_relation;
 static RayHitCountPipeline  g_rayhit;

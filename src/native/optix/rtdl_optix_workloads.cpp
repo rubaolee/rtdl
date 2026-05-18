@@ -2281,6 +2281,14 @@ struct SegmentPairIntersectionLaunchParams {
     uint32_t          left_offset;
 };
 
+struct SegmentFirstHitLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* probes;
+    const GpuSegment* primitives;
+    uint64_t* best_pair;
+    uint32_t probe_count;
+};
+
 struct PreparedSegmentPairIntersectionBuild {
     std::vector<GpuSegment> right_segments;
     std::vector<RtdlSegment> host_right_segments;
@@ -2335,6 +2343,20 @@ static void ensure_segment_pair_intersection_pipeline() {
             "__intersection__segment_pair_intersection_isect",
             "__anyhit__segment_pair_intersection_anyhit",
             nullptr,   // no closesthit
+            4).release();
+    });
+}
+
+static void ensure_segment_first_hit_pipeline() {
+    std::call_once(g_segment_first_hit.init, [&]() {
+        std::string ptx = compile_to_ptx(kSegmentFirstHitKernelSrc, "segment_first_hit_kernel.cu");
+        g_segment_first_hit.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__segment_first_hit_probe",
+            "__miss__segment_first_hit_miss",
+            "__intersection__segment_first_hit_isect",
+            "__anyhit__segment_first_hit_anyhit",
+            nullptr,
             4).release();
     });
 }
@@ -2468,6 +2490,96 @@ static size_t count_segment_pair_intersection_rows(
         ++exact_count;
     }
     return exact_count;
+}
+
+static std::vector<uint64_t> collect_segment_first_hits_optix(
+        const RtdlSegment* probes,
+        size_t probe_count,
+        CUdeviceptr d_probe_ptr,
+        CUdeviceptr d_primitive_ptr,
+        size_t primitive_count,
+        OptixTraversableHandle traversable)
+{
+    if (probe_count == 0 || primitive_count == 0) {
+        return {};
+    }
+    if (probe_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment first-hit probe count exceeds uint32_t launch capacity");
+    }
+    (void)probes;
+    DevPtr d_best(sizeof(uint64_t) * probe_count);
+    CU_CHECK(cuMemsetD8(d_best.ptr, 0xFF, sizeof(uint64_t) * probe_count));
+
+    SegmentFirstHitLaunchParams lp;
+    lp.traversable = traversable;
+    lp.probes = reinterpret_cast<const GpuSegment*>(d_probe_ptr);
+    lp.primitives = reinterpret_cast<const GpuSegment*>(d_primitive_ptr);
+    lp.best_pair = reinterpret_cast<uint64_t*>(d_best.ptr);
+    lp.probe_count = static_cast<uint32_t>(probe_count);
+
+    DevPtr d_params(sizeof(SegmentFirstHitLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    const auto t_launch_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_segment_first_hit.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(SegmentFirstHitLaunchParams),
+                             &g_segment_first_hit.pipe->sbt,
+                             static_cast<unsigned>(probe_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto t_launch_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_candidate_count_s +=
+        std::chrono::duration<double>(t_launch_end - t_launch_start).count();
+    g_optix_last_segment_pair_raw_candidate_count += probe_count;
+
+    std::vector<uint64_t> best(probe_count, std::numeric_limits<uint64_t>::max());
+    const auto t_download_start = std::chrono::steady_clock::now();
+    download(best.data(), d_best.ptr, probe_count);
+    const auto t_download_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_candidate_download_s +=
+        std::chrono::duration<double>(t_download_end - t_download_start).count();
+    return best;
+}
+
+static std::vector<RtdlSegmentFirstHitRow> materialize_segment_first_hit_rows(
+        const RtdlSegment* probes,
+        size_t probe_count,
+        const PreparedSegmentPairIntersectionBuild& prepared,
+        const std::vector<uint64_t>& best_pairs)
+{
+    std::vector<RtdlSegmentFirstHitRow> refined;
+    refined.reserve(best_pairs.size());
+    const std::vector<RtdlSegment>& primitives = prepared.host_right_segments;
+    const uint64_t no_hit = std::numeric_limits<uint64_t>::max();
+    for (size_t probe_index = 0; probe_index < probe_count && probe_index < best_pairs.size(); ++probe_index) {
+        const RtdlSegment& probe = probes[probe_index];
+        uint64_t pair = best_pairs[probe_index];
+        if (pair == no_hit) {
+            continue;
+        }
+        size_t primitive_index = static_cast<size_t>(pair & 0xffffffffull);
+        if (primitive_index >= primitives.size()) {
+            continue;
+        }
+        const uint32_t t_key = static_cast<uint32_t>(pair >> 32);
+        if (t_key == 0u) {
+            continue;
+        }
+        const double hit_t = std::clamp(
+            (static_cast<double>(t_key) - 1.0) / 4294967294.0,
+            0.0,
+            1.0);
+        const double ix = probe.x0 + hit_t * (probe.x1 - probe.x0);
+        const double iy = probe.y0 + hit_t * (probe.y1 - probe.y0);
+        refined.push_back(RtdlSegmentFirstHitRow{
+            probe.id,
+            primitives[primitive_index].id,
+            ix,
+            iy,
+            hit_t,
+        });
+    }
+    return refined;
 }
 
 static std::vector<GpuSegmentPairIntersectionRecord> collect_segment_pair_intersection_candidates_optix(
@@ -2757,6 +2869,127 @@ static void count_prepared_segment_pair_intersection_optix(
     g_optix_last_segment_pair_exact_refine_s =
         std::chrono::duration<double>(t_refine_end - t_refine_start).count();
     g_optix_last_segment_pair_emitted_count = *count_out;
+}
+
+static void run_prepared_segment_first_hit_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        const RtdlSegment* probes, size_t probe_count,
+        RtdlSegmentFirstHitRow** rows_out, size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment first-hit handle must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("segment first-hit output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_segment_pair_phase_timings(3u);
+    if (probe_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    ensure_segment_first_hit_pipeline();
+    std::vector<GpuSegment> gpu_probes(probe_count);
+    for (size_t i = 0; i < probe_count; ++i) {
+        gpu_probes[i] = {
+            static_cast<float>(probes[i].x0),
+            static_cast<float>(probes[i].y0),
+            static_cast<float>(probes[i].x1),
+            static_cast<float>(probes[i].y1),
+            probes[i].id,
+        };
+    }
+    DevPtr d_probes(sizeof(GpuSegment) * probe_count);
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    upload(d_probes.ptr, gpu_probes.data(), gpu_probes.size());
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_left_upload_s =
+        std::chrono::duration<double>(t_upload_end - t_upload_start).count();
+
+    const std::vector<uint64_t> best_pairs =
+        collect_segment_first_hits_optix(
+            probes,
+            probe_count,
+            d_probes.ptr,
+            prepared->d_right.ptr,
+            prepared->right_count,
+            prepared->accel.handle);
+    const auto t_refine_start = std::chrono::steady_clock::now();
+    const std::vector<RtdlSegmentFirstHitRow> refined =
+        materialize_segment_first_hit_rows(
+            probes,
+            probe_count,
+            *prepared,
+            best_pairs);
+    const auto t_refine_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_exact_refine_s =
+        std::chrono::duration<double>(t_refine_end - t_refine_start).count();
+    g_optix_last_segment_pair_emitted_count = refined.size();
+
+    auto* out = static_cast<RtdlSegmentFirstHitRow*>(
+        std::malloc(sizeof(RtdlSegmentFirstHitRow) * refined.size()));
+    if (!out && !refined.empty()) throw std::bad_alloc();
+    if (!refined.empty()) {
+        std::memcpy(out, refined.data(), sizeof(RtdlSegmentFirstHitRow) * refined.size());
+    }
+    *rows_out = out;
+    *row_count_out = refined.size();
+}
+
+static void count_prepared_segment_first_hit_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        const RtdlSegment* probes, size_t probe_count,
+        size_t* count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment first-hit handle must not be null");
+    }
+    if (!count_out) {
+        throw std::runtime_error("segment first-hit count output pointer must not be null");
+    }
+    *count_out = 0;
+    reset_segment_pair_phase_timings(4u);
+    if (probe_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    ensure_segment_first_hit_pipeline();
+    std::vector<GpuSegment> gpu_probes(probe_count);
+    for (size_t i = 0; i < probe_count; ++i) {
+        gpu_probes[i] = {
+            static_cast<float>(probes[i].x0),
+            static_cast<float>(probes[i].y0),
+            static_cast<float>(probes[i].x1),
+            static_cast<float>(probes[i].y1),
+            probes[i].id,
+        };
+    }
+    DevPtr d_probes(sizeof(GpuSegment) * probe_count);
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    upload(d_probes.ptr, gpu_probes.data(), gpu_probes.size());
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_left_upload_s =
+        std::chrono::duration<double>(t_upload_end - t_upload_start).count();
+
+    const std::vector<uint64_t> best_pairs =
+        collect_segment_first_hits_optix(
+            probes,
+            probe_count,
+            d_probes.ptr,
+            prepared->d_right.ptr,
+            prepared->right_count,
+            prepared->accel.handle);
+    const auto t_refine_start = std::chrono::steady_clock::now();
+    const std::vector<RtdlSegmentFirstHitRow> refined =
+        materialize_segment_first_hit_rows(
+            probes,
+            probe_count,
+            *prepared,
+            best_pairs);
+    const auto t_refine_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_exact_refine_s =
+        std::chrono::duration<double>(t_refine_end - t_refine_start).count();
+    g_optix_last_segment_pair_emitted_count = refined.size();
+    *count_out = refined.size();
 }
 
 static void run_ray_segment_group_count_2d_optix(

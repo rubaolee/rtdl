@@ -191,6 +191,16 @@ class _RtdlLsiRow(ctypes.Structure):
     ]
 
 
+class _RtdlSegmentFirstHitRow(ctypes.Structure):
+    _fields_ = [
+        ("probe_id",     ctypes.c_uint32),
+        ("primitive_id", ctypes.c_uint32),
+        ("hit_x",        ctypes.c_double),
+        ("hit_y",        ctypes.c_double),
+        ("hit_t",        ctypes.c_double),
+    ]
+
+
 class _RtdlPipRow(ctypes.Structure):
     _fields_ = [
         ("point_id",   ctypes.c_uint32),
@@ -602,6 +612,73 @@ class PreparedOptixSegmentPairIntersection:
             self.prepared_handle,
             left.records,
             left.count,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
+    def first_hit_raw(self, probe_segments) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment first-hit handle is closed")
+        probes = _pack_for_geometry("segments", probe_segments)
+        run_symbol = _find_optional_backend_symbol(
+            self.library,
+            "rtdl_optix_run_prepared_segment_first_hit",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_segment_first_hit; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlSegmentFirstHitRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            probes.records,
+            probes.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlSegmentFirstHitRow,
+            field_names=("probe_id", "primitive_id", "hit_x", "hit_y", "hit_t"),
+        )
+
+    def first_hit(self, probe_segments) -> tuple:
+        rows = self.first_hit_raw(probe_segments)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def first_hit_count(self, probe_segments) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment first-hit handle is closed")
+        probes = _pack_for_geometry("segments", probe_segments)
+        count_symbol = _find_optional_backend_symbol(
+            self.library,
+            "rtdl_optix_count_prepared_segment_first_hit",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_segment_first_hit; rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            probes.records,
+            probes.count,
             ctypes.byref(count),
             error,
             len(error),
@@ -2055,8 +2132,14 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
     if status != 0:
         return None
     mode_value = int(mode.value)
-    return {
-        "mode": "rows" if mode_value == 1 else "count" if mode_value == 2 else "none",
+    mode_name = {
+        1: "rows",
+        2: "count",
+        3: "first_hit_rows",
+        4: "first_hit_count",
+    }.get(mode_value, "none")
+    result = {
+        "mode": mode_name,
         "left_upload": float(left_upload.value),
         "candidate_count_pass": float(candidate_count.value),
         "candidate_write_pass": float(candidate_write.value),
@@ -2065,6 +2148,9 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
         "raw_candidate_count": int(raw_candidates.value),
         "emitted_count": int(emitted.value),
     }
+    if mode_name.startswith("first_hit"):
+        result["device_witness_materialize"] = float(exact_refine.value)
+    return result
 
 
 def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[str, float | int | str] | None:
@@ -5908,6 +5994,35 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_segment_pair.restype = ctypes.c_int
+    optional_run_prepared_segment_first_hit = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_segment_first_hit",
+    )
+    if optional_run_prepared_segment_first_hit is not None:
+        optional_run_prepared_segment_first_hit.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlSegmentFirstHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_run_prepared_segment_first_hit.restype = ctypes.c_int
+    optional_count_prepared_segment_first_hit = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_segment_first_hit",
+    )
+    if optional_count_prepared_segment_first_hit is not None:
+        optional_count_prepared_segment_first_hit.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_segment_first_hit.restype = ctypes.c_int
     optional_destroy_prepared_segment_pair = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_destroy_prepared_segment_pair_intersection",
