@@ -1,0 +1,39 @@
+diff --git a/src/run_query.cu b/src/run_query.cu
+index 8f2c5a1..6e6f0dd 100644
+--- a/src/run_query.cu
++++ b/src/run_query.cu
+@@ -1,3 +1,4 @@
+ #include <algorithm>
++#include <cstdlib>
+ #include <fstream>
+ #include <iomanip>
+@@ -401,2 +402,29 @@ void RunLSIQuery(const QueryConfig& config) {
+   LOG(INFO) << "Intersections: " << d_xsects.size()
+             << " Queue Load Factor: " << (double) d_xsects.size() / queue_cap;
++  const char* lsi_xsect_export_path = std::getenv("RAYJOIN_EXPORT_LSI_XSECTS");
++  if (lsi_xsect_export_path != nullptr && lsi_xsect_export_path[0] != '\0') {
++    thrust::host_vector<typename LSI<context_t>::xsect_t> h_xsects;
++    lsi->CopyTo(h_xsects);
++    std::ofstream export_stream(lsi_xsect_export_path);
++    export_stream << "{\n"
++                  << "  \"schema\": \"rtdl.rayjoin.lsi_xsects.v1\",\n"
++                  << "  \"producer\": \"rayjoin_lsi_result_export_debug_patch\",\n"
++                  << "  \"count\": " << h_xsects.size() << ",\n"
++                  << "  \"xsects\": [\n";
++    for (size_t i = 0; i < h_xsects.size(); ++i) {
++      const auto& xsect = h_xsects[i];
++      if (i != 0) {
++        export_stream << ",\n";
++      }
++      const auto base_eid0 =
++          static_cast<unsigned long long>(xsect.eid[base_map_id]);
++      const auto query_eid0 =
++          static_cast<unsigned long long>(xsect.eid[query_map_id]);
++      export_stream << "    {\"ordinal\": " << i
++                    << ", \"base_eid0\": " << base_eid0
++                    << ", \"base_eid1\": " << (base_eid0 + 1)
++                    << ", \"query_eid0\": " << query_eid0
++                    << ", \"query_eid1\": " << (query_eid0 + 1) << "}";
++    }
++    export_stream << "\n  ]\n}\n";
++  }

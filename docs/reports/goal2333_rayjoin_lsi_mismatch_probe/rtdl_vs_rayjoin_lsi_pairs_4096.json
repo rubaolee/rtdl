@@ -1,0 +1,71 @@
+{
+  "alignment": "one_based",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": false,
+    "v2_0_release_authorized": false
+  },
+  "extra_in_rtdl": [],
+  "extra_in_rtdl_count": 0,
+  "generated_at_utc": "2026-05-18T16:20:14Z",
+  "goal": 2333,
+  "metadata": {
+    "left_pack_sec": 0.009442748501896858,
+    "phase": {
+      "candidate_count_pass": 0.000107557,
+      "candidate_download": 8.943e-06,
+      "candidate_write_pass": 5.6171e-05,
+      "emitted_count": 341,
+      "exact_refine": 0.00024424,
+      "left_upload": 1.6378e-05,
+      "mode": "rows",
+      "raw_candidate_count": 342
+    },
+    "prepare_sec": 0.9215155448764563,
+    "query_count": 4096,
+    "query_sec": 0.0005922708660364151,
+    "query_stream_producer": "rayjoin_query_exec_export_patch",
+    "right_segments": 326193,
+    "rtdl_row_count": 341
+  },
+  "missing_details": [
+    {
+      "base_id": 226827,
+      "base_segment": {
+        "id": 226827,
+        "x0": -54.067374093,
+        "x1": -54.077454213,
+        "y0": -27.284064974,
+        "y1": -27.296853895
+      },
+      "float_orientation": {
+        "base_against_query_p0": 1.0024434043406439e-08,
+        "base_against_query_p1": -4.7411231355264614e-08,
+        "query_against_base_p0": -4.5413067951455264e-08,
+        "query_against_base_p1": 1.2022597447223624e-08
+      },
+      "lookup_status": "ok",
+      "query_id": 2148,
+      "query_segment": {
+        "id": 2148,
+        "x0": -54.075385747258274,
+        "x1": -54.075147776841305,
+        "y0": -27.294230571018925,
+        "y1": -27.293922953596876
+      }
+    }
+  ],
+  "missing_from_rtdl": [
+    {
+      "base_id": 226827,
+      "query_id": 2148
+    }
+  ],
+  "missing_from_rtdl_count": 1,
+  "rayjoin_count": 342,
+  "rayjoin_xsects": "docs/reports/goal2333_rayjoin_lsi_mismatch_probe/rayjoin_lsi_xsects_4096.json",
+  "rtdl_count": 341,
+  "schema": "rtdl.rayjoin.lsi_mismatch_probe.v1",
+  "stream": "docs/reports/goal2333_rayjoin_lsi_mismatch_probe/rayjoin_lsi_stream_4096.json"
+}

@@ -1,0 +1,42 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "requires_pod_for_optix_perf": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+  "dataset_note": "County subset probe points against deterministic chain-derived polygons.",
+  "device_resident_continuation_status": "not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work",
+  "execution_route": "prepared_optix",
+  "native_engine_boundary": "The engine sees generic prepared point/closed-shape or segment-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.",
+  "native_phase_timings": {
+    "candidate_count_pass": 0.0,
+    "candidate_download": 7.109e-06,
+    "candidate_write_pass": 6.0129e-05,
+    "emitted_count": 6,
+    "exact_refine": 3.291e-05,
+    "mode": "rows",
+    "point_pack": 3.85e-07,
+    "point_upload": 2.566e-05,
+    "raw_candidate_count": 6
+  },
+  "phases_sec": {
+    "prepare_static_scene_sec": 0.7030294686555862,
+    "prepared_query_sec": 0.0003282316029071808,
+    "query_pack_sec": 1.2828037142753601e-05,
+    "static_shape_pack_sec": 6.220117211341858e-05
+  },
+  "result_mode": "rows",
+  "row_count": 6,
+  "summary": {
+    "output_contract": "point_to_shape_positive_hit_rows",
+    "positive_assignment_count": 6,
+    "positive_hit_row_count": 6
+  },
+  "workload": "pip"
+}

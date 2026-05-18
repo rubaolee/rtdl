@@ -13,6 +13,18 @@ struct Bounds2D {
     double min_x, min_y, max_x, max_y;
 };
 
+static bool segment_intersection_denominator_is_degenerate(
+        double denom,
+        double rx,
+        double ry,
+        double sx,
+        double sy)
+{
+    const double scale = std::hypot(rx, ry) * std::hypot(sx, sy);
+    const double threshold = 64.0 * std::numeric_limits<double>::epsilon() * std::max(1.0, scale);
+    return std::abs(denom) <= threshold;
+}
+
 #define VK_CHECK(call)                                                         \
     do {                                                                       \
         VkResult _r = (call);                                                  \
@@ -832,7 +844,7 @@ static bool exact_segment_intersection(
     const double sy = right.y1 - right.y0;
 
     const double denom = rx * sy - ry * sx;
-    if (std::abs(denom) < 1.0e-7) {
+    if (segment_intersection_denominator_is_degenerate(denom, rx, ry, sx, sy)) {
         return false;
     }
 

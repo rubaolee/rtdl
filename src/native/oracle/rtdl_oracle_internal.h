@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <new>
 #include <stdexcept>
 #include <string>
@@ -25,7 +26,7 @@
 
 namespace rtdl::oracle {
 
-constexpr double kSegmentIntersectionEps = 1.0e-7;
+constexpr double kSegmentIntersectionRelativeDenomEps = 64.0 * std::numeric_limits<double>::epsilon();
 constexpr double kPointEps = 1.0e-12;
 constexpr double kDegenerateDistanceEps = 1.0e-12;
 constexpr double kRayCrossingDenomEps = 1.0e-20;

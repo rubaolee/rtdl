@@ -1,5 +1,6 @@
 ﻿constexpr double kEps = 1.0e-6;
 constexpr double kSegmentIntersectionEps = 1.0e-7;
+constexpr double kSegmentIntersectionRelativeDenomEps = 64.0 * std::numeric_limits<double>::epsilon();
 
 template <typename T>
 void set_error(const std::string& message, T* error_out, size_t error_size) {
@@ -297,6 +298,12 @@ Vec2 sub(const Vec2& a, const Vec2& b) {
   return {a.x - b.x, a.y - b.y};
 }
 
+bool segment_intersection_denominator_is_degenerate(double denom, const Vec2& r, const Vec2& s) {
+  double scale = std::hypot(r.x, r.y) * std::hypot(s.x, s.y);
+  double threshold = kSegmentIntersectionRelativeDenomEps * std::max(1.0, scale);
+  return std::fabs(denom) <= threshold;
+}
+
 bool segment_intersection(
     const Segment2D& left,
     const Segment2D& right,
@@ -306,7 +313,7 @@ bool segment_intersection(
   Vec2 q = right.a;
   Vec2 s = sub(right.b, right.a);
   double denom = cross(r, s);
-  if (std::fabs(denom) < kSegmentIntersectionEps) {
+  if (segment_intersection_denominator_is_degenerate(denom, r, s)) {
     return false;
   }
   Vec2 qmp = sub(q, p);

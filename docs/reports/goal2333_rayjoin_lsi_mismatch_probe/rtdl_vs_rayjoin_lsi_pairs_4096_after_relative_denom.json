@@ -1,0 +1,40 @@
+{
+  "alignment": "one_based",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false
+  },
+  "extra_in_rtdl": [],
+  "extra_in_rtdl_count": 0,
+  "generated_at_utc": "2026-05-18T16:26:28Z",
+  "goal": 2333,
+  "metadata": {
+    "left_pack_sec": 0.007938932627439499,
+    "phase": {
+      "candidate_count_pass": 0.000112944,
+      "candidate_download": 8.22e-06,
+      "candidate_write_pass": 5.5152e-05,
+      "emitted_count": 342,
+      "exact_refine": 0.000267989,
+      "left_upload": 2.1746e-05,
+      "mode": "rows",
+      "raw_candidate_count": 342
+    },
+    "prepare_sec": 0.9384193010628223,
+    "query_count": 4096,
+    "query_sec": 0.0006318334490060806,
+    "query_stream_producer": "rayjoin_query_exec_export_patch",
+    "right_segments": 326193,
+    "rtdl_row_count": 342
+  },
+  "missing_details": [],
+  "missing_from_rtdl": [],
+  "missing_from_rtdl_count": 0,
+  "rayjoin_count": 342,
+  "rayjoin_xsects": "docs/reports/goal2333_rayjoin_lsi_mismatch_probe/rayjoin_lsi_xsects_4096.json",
+  "rtdl_count": 342,
+  "schema": "rtdl.rayjoin.lsi_mismatch_probe.v1",
+  "stream": "docs/reports/goal2333_rayjoin_lsi_mismatch_probe/rayjoin_lsi_stream_4096.json"
+}

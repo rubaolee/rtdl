@@ -125,6 +125,12 @@ double cross(const Vec2& a, const Vec2& b) {
   return a.x * b.y - a.y * b.x;
 }
 
+bool segment_intersection_denominator_is_degenerate(double denom, const Vec2& r, const Vec2& s) {
+  double scale = std::hypot(r.x, r.y) * std::hypot(s.x, s.y);
+  double threshold = kSegmentIntersectionRelativeDenomEps * std::max(1.0, scale);
+  return std::fabs(denom) <= threshold;
+}
+
 std::vector<Segment2D> decode_segments(const RtdlSegment* records, size_t count) {
   std::vector<Segment2D> values;
   values.reserve(count);
@@ -205,7 +211,7 @@ bool segment_intersection(const Segment2D& left, const Segment2D& right, Vec2* p
   Vec2 s = sub(right.b, right.a);
 
   double denom = cross(r, s);
-  if (std::fabs(denom) < kSegmentIntersectionEps) {
+  if (segment_intersection_denominator_is_degenerate(denom, r, s)) {
     return false;
   }
 

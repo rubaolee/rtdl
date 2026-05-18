@@ -1,0 +1,8 @@
+{
+  "full_rayjoin_reproduction": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "paper_scale_perf_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "v2_0_release_authorized": false,
+  "requires_external_review_before_public_claim": true
+}
