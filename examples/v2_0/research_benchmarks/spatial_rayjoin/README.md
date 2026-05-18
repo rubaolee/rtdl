@@ -87,6 +87,22 @@ export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --backend optix --no-rows
 ```
 
+For the serious RayJoin-style performance lane, use the prepared OptiX route.
+It separates query packing, static-scene preparation, prepared query time, and
+native phase telemetry. This route currently covers PIP and LSI; overlay remains
+on the generic dependency-row route until RTDL has a generic device-resident
+continuation primitive.
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload lsi --execution-route prepared_optix --result-mode count --no-rows
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload pip --execution-route prepared_optix --result-mode rows --no-rows
+```
+
+Use `--result-mode count` when the application only needs a scalar count. Use
+`--result-mode rows` when it needs witness rows or positive membership rows.
+Rows are still omitted from JSON when `--no-rows` is supplied.
+
 For a single external two-input dataset:
 
 ```bash

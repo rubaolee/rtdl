@@ -82,6 +82,17 @@ Origin: Goals2192-2314 RayJoin same-query stream adapter, prepared OptiX
 segment-pair and closed-shape membership work, bounded point probe, raw row
 view, pod timing, and 2-AI reviews.
 
+Current status update, 2026-05-18:
+
+- The user explicitly reopened RayJoin as the top benchmark-app performance
+  priority before the final v2.0 decision.
+- The reopened work must still preserve app-agnostic native engines.
+- The active push is generic: device-resident row streams, generic
+  count/parity continuation, stronger closed-shape membership validation,
+  many-query batching, phase-separated timing, and disciplined RayJoin
+  paper-protocol comparison.
+- Do not solve the gap by reintroducing RayJoin-specific native kernels.
+
 v2.0 closure state:
 
 - Treat the RayJoin-style v2.0 project as closed for this release lane.
