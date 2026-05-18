@@ -77,6 +77,11 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
             self.assertFalse(payload["claim_boundary"]["paper_dataset"])
             self.assertTrue(payload["claim_boundary"]["synthetic_input_only"])
 
+    def test_rtdl_smoke_loader_uses_public_record_shape(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('{"id": idx, "x": x, "y": y}', text)
+        self.assertNotIn("rt.Point2D", text)
+
     def test_report_names_runner_as_next_harness(self) -> None:
         campaign = (
             ROOT

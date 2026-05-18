@@ -159,7 +159,7 @@ def run_rtdl_current_2d_smoke(args: argparse.Namespace) -> dict[str, object]:
         with path.open("r", encoding="utf-8") as handle:
             for idx, line in enumerate(handle):
                 x, y, _z = (float(part) for part in line.strip().split(","))
-                rows.append(rt.Point2D(idx, x, y))
+                rows.append({"id": idx, "x": x, "y": y})
         return tuple(rows)
 
     query_file = args.query_file or args.point_file
