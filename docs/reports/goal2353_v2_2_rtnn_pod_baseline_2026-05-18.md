@@ -74,7 +74,7 @@ RTNN baseline rows:
 | `rtnn_knn_3d_262144_r005_k5_exact_partitioned.json` | 0 | 1.930505 | 855.025 | 796.663 | 0.315 | exact KNN row |
 | `rtnn_knn_3d_262144_r005_k5_approx2_partitioned.json` | 0 | 1.953061 | 851.582 | 795.735 | 0.173 | approximate policy row |
 
-Current RTDL smoke row:
+Current RTDL smoke rows:
 
 | Row | OK | Wall sec | Scope |
 | --- | --- | ---: | --- |
@@ -89,7 +89,7 @@ RTNN is now a runnable same-hardware external baseline for the v2.2 campaign. On
 - the primitive must expose radius, `k_max`, exact/approx policy, partitioning/batching policy, overflow handling, and output shape;
 - the runtime must surface telemetry that separates setup, sort/partition, traversal, copy, and total time.
 
-Current RTDL does not yet expose RTNN's exact 3D radius+K contract. The successful RTDL row is intentionally only a current 2D smoke row. It proves pod OptiX health, not RTNN parity.
+Current RTDL does expose a 3D fixed-radius neighbor DSL path, but the current OptiX-runtime implementation is a CUDA fixed-radius neighbor kernel rather than an RTNN-style prepared RT-core traversal with partitioning/batching telemetry. The successful 2D RTDL row above therefore proves pod OptiX health, not RTNN parity. A separate current-3D RTDL row should be collected as a CUDA-core baseline before claiming any v2.2 improvement.
 
 ## Claim Boundary
 
@@ -98,6 +98,7 @@ This goal does not authorize:
 - an RTDL speedup claim over RTNN;
 - a broad RT-core speedup claim;
 - a claim that RTDL already reproduces RTNN;
+- a claim that the current 3D fixed-radius RTDL path is RT-core accelerated;
 - a v2.2 release claim.
 
 It does authorize the narrower engineering conclusion that the external RTNN baseline and RTDL OptiX runtime are both runnable on the same RTX A5000 pod, and that the next RTDL v2.2 work should target a generic 3D bounded-neighbor primitive rather than app-specific nearest-neighbor code.

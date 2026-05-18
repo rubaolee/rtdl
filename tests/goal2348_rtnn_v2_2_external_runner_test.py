@@ -82,6 +82,13 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
         self.assertIn('{"id": idx, "x": x, "y": y}', text)
         self.assertNotIn("rt.Point2D", text)
 
+    def test_current_3d_neighbors_smoke_is_claim_bounded(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("run-rtdl-current-3d-neighbors-smoke", text)
+        self.assertIn("current_3d_fixed_radius_neighbors_optix_smoke", text)
+        self.assertIn("rt_core_neighbor_search_claim_authorized", text)
+        self.assertIn("CUDA fixed-radius neighbor kernel behind OptiX runtime wrapper", text)
+
     def test_cuda12_patch_command_is_idempotent_and_external_only(self) -> None:
         runner = _load_runner()
         with tempfile.TemporaryDirectory() as tmp:

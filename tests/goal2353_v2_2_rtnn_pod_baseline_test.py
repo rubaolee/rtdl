@@ -58,7 +58,9 @@ class Goal2353RtnnPodBaselineTest(unittest.TestCase):
 
     def test_report_identifies_next_generic_primitive(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
-        self.assertIn("Current RTDL does not yet expose RTNN's exact 3D radius+K contract", text)
+        self.assertIn("Current RTDL does expose a 3D fixed-radius neighbor DSL path", text)
+        self.assertIn("CUDA fixed-radius neighbor kernel", text)
+        self.assertIn("rather than an RTNN-style prepared RT-core traversal", text)
         self.assertIn("prepared_bounded_neighbor_search_3d", text)
         self.assertIn("keeps RTDL app-agnostic", text)
 

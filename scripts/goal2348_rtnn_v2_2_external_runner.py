@@ -317,6 +317,81 @@ def run_rtdl_current_2d_smoke(args: argparse.Namespace) -> dict[str, object]:
     }
 
 
+def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, object]:
+    """Run RTDL's current 3-D fixed-radius neighbor path.
+
+    This is a useful current-implementation baseline, but it is not RTNN-parity
+    evidence: the native 3-D path currently lowers to a CUDA neighbor kernel,
+    not the prepared RT-core partitioned traversal design that RTNN studies.
+    """
+    sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, str(ROOT))
+    import rtdsl as rt  # noqa: PLC0415
+
+    radius = float(args.radius)
+    k_max = int(args.k_max)
+
+    @rt.kernel(backend="rtdl", precision="float_approx")
+    def _goal2348_current_fixed_radius_neighbors_3d():
+        query_points = rt.input("query_points", rt.Points3D, role="probe")
+        search_points = rt.input("search_points", rt.Points3D, role="build")
+        candidates = rt.traverse(query_points, search_points, accel="bvh")
+        hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=radius, k_max=k_max))
+        return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+
+    def _load_points(path: Path):
+        rows = []
+        with path.open("r", encoding="utf-8") as handle:
+            for idx, line in enumerate(handle):
+                x, y, z = (float(part) for part in line.strip().split(","))
+                rows.append({"id": idx, "x": x, "y": y, "z": z})
+        return tuple(rows)
+
+    query_file = args.query_file or args.point_file
+    points = _load_points(args.point_file)
+    queries = points if query_file == args.point_file else _load_points(query_file)
+    print(
+        f"[goal2348] RTDL current 3D neighbors smoke start queries={len(queries)} points={len(points)}",
+        flush=True,
+    )
+    started = time.perf_counter()
+    try:
+        rows = rt.run_optix(
+            _goal2348_current_fixed_radius_neighbors_3d,
+            query_points=queries,
+            search_points=points,
+        )
+        ok = True
+        error = ""
+    except Exception as exc:  # pragma: no cover - hardware/library path
+        rows = ()
+        ok = False
+        error = repr(exc)
+    elapsed_sec = time.perf_counter() - started
+    print(f"[goal2348] RTDL current 3D neighbors smoke done ok={ok} sec={elapsed_sec:.6f}", flush=True)
+    return {
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "row": args.row_label,
+        "external": "RTDL current",
+        "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+        "ok": ok,
+        "elapsed_sec": elapsed_sec,
+        "query_count": len(queries),
+        "search_count": len(points),
+        "radius": radius,
+        "k_max": k_max,
+        "row_count": len(rows),
+        "error": error,
+        "claim_boundary": {
+            "paper_equivalent_rtnn_row": False,
+            "rtdl_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "rt_core_neighbor_search_claim_authorized": False,
+            "current_native_path": "CUDA fixed-radius neighbor kernel behind OptiX runtime wrapper",
+        },
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal2348 RTNN v2.2 external benchmark harness.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -365,6 +440,17 @@ def main(argv: list[str] | None = None) -> int:
     smoke.add_argument("--row-label", default="rtdl_current_2d_smoke")
     smoke.add_argument("--json-out", type=Path, required=True)
 
+    smoke3d = subparsers.add_parser(
+        "run-rtdl-current-3d-neighbors-smoke",
+        help="Run current RTDL 3-D fixed-radius neighbors OptiX-runtime smoke row.",
+    )
+    smoke3d.add_argument("--point-file", type=Path, required=True)
+    smoke3d.add_argument("--query-file", type=Path)
+    smoke3d.add_argument("--radius", type=float, default=0.02)
+    smoke3d.add_argument("--k-max", type=int, default=50)
+    smoke3d.add_argument("--row-label", default="rtdl_current_3d_neighbors_smoke")
+    smoke3d.add_argument("--json-out", type=Path, required=True)
+
     args = parser.parse_args(argv)
 
     if args.command == "generate":
@@ -394,6 +480,8 @@ def main(argv: list[str] | None = None) -> int:
         payload = run_rtnn(args)
     elif args.command == "run-rtdl-current-2d-smoke":
         payload = run_rtdl_current_2d_smoke(args)
+    elif args.command == "run-rtdl-current-3d-neighbors-smoke":
+        payload = run_rtdl_current_3d_neighbors_smoke(args)
     else:  # pragma: no cover - argparse guards this
         raise AssertionError(args.command)
 
