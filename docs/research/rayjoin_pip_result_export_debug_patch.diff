@@ -1,0 +1,57 @@
+diff --git a/src/run_query.cu b/src/run_query.cu
+index 6e6f0dd..0000000 100644
+--- a/src/run_query.cu
++++ b/src/run_query.cu
+@@
+   for (int i = 0; i < config.repeat; i++) {
+     pip->Query(stream, query_map_id, query_points);
+ 
+     if (i == config.repeat - 1) {
+       stream.Sync();
+       if (config.check && config.mode != "grid") {
+         timer_next("Check");
+         CheckPIPResult(*ctx, config, query_points, pip->get_closest_eids());
+       }
+     }
+   }
+ 
++  const char* pip_result_export_path = std::getenv("RAYJOIN_EXPORT_PIP_RESULTS");
++  if (pip_result_export_path != nullptr && pip_result_export_path[0] != '\0') {
++    thrust::host_vector<index_t> h_closest_eids = pip->get_closest_eids();
++    size_t positive_count = 0;
++    for (const auto& closest_eid : h_closest_eids) {
++      if (closest_eid != static_cast<index_t>(DONTKNOW)) {
++        ++positive_count;
++      }
++    }
++    std::ofstream export_stream(pip_result_export_path);
++    export_stream << "{\n"
++                  << "  \"schema\": \"rtdl.rayjoin.pip_results.v1\",\n"
++                  << "  \"producer\": \"rayjoin_pip_result_export_debug_patch\",\n"
++                  << "  \"count\": " << positive_count << ",\n"
++                  << "  \"positive_points\": [\n";
++    bool first = true;
++    for (size_t point_idx = 0; point_idx < h_closest_eids.size(); ++point_idx) {
++      const auto closest_eid = h_closest_eids[point_idx];
++      if (closest_eid == static_cast<index_t>(DONTKNOW)) {
++        continue;
++      }
++      if (!first) {
++        export_stream << ",\n";
++      }
++      first = false;
++      const auto closest_eid0 = static_cast<unsigned long long>(closest_eid);
++      export_stream << "    {\"ordinal\": " << point_idx
++                    << ", \"point_id0\": " << point_idx
++                    << ", \"point_id1\": " << (point_idx + 1)
++                    << ", \"closest_eid0\": " << closest_eid0
++                    << ", \"closest_eid1\": " << (closest_eid0 + 1) << "}";
++    }
++    export_stream << "\n  ]\n}\n";
++  }
++
+   timer_next("Cleanup");
+ 
+   delete pip;
+   timer_end();
+ }

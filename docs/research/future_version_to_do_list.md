@@ -189,6 +189,37 @@ Boundary:
 - Do not reopen the historical collect-k optimization lane before v2.5 unless
   explicitly promoted.
 
+### RayJoin-Style First-Hit / Nearest-Boundary Probe
+
+Origin: Goal2335 RayJoin current-v2.0 basis completion.
+
+Observation:
+
+- RayJoin `query=pip` exposes a vertical-ray nearest-boundary support contract,
+  not the same contract as RTDL's faster closed-shape membership predicate.
+- Current RTDL v2.0 can express that contract by turning each query point into a
+  vertical probe segment, running generic prepared segment-pair intersection,
+  and reducing by probe id.
+- This is correct on the tested RayJoin streams, but slow: the 65,536-point
+  pod run emitted 2.32 million generic intersection rows before reduction.
+
+Future work:
+
+- Add a generic first-hit / nearest-boundary prepared primitive for ray or
+  segment probes against segment-like primitives.
+- Keep the contract generic: probe id, primitive id, hit parameter or distance,
+  and optional first-hit/nearest policy.
+- Support grouped reduction directly on device so app code can ask for
+  positive probe ids, parity, or nearest hit without downloading every
+  intermediate crossing.
+- Do not introduce a RayJoin-specific native continuation.
+
+Boundary:
+
+- This belongs in the v2.x primitive/runtime lane. It does not require v3.0
+  custom shader injection unless we decide users should author their own
+  traversal shaders.
+
 ## v3.0+ Architecture Ideas
 
 ### User-Defined Predicate Extension Surface

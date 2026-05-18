@@ -1,0 +1,43 @@
+I20260518 17:25:25.653062  7804 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 17:25:25.653301  7804 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260518 17:25:25.653309  7804 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 17:25:25.802897  7804 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.471 ms
+I20260518 17:25:25.803771  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.803994  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.804155  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.804316  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.804476  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.804637  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.804797  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.804956  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.805116  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.805274  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.805434  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.805594  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.805753  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.805913  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.806073  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.806233  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.806392  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 17:25:25.806552  7804 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+Timing results:
+ - Read map 0: 3433.84 ms
+
+ - Generate Workloads: 4.65298 ms
+
+ - Load Data: 0.792027 ms
+
+ - Create App: 143.678 ms
+
+ - Init: 0.26083 ms
+
+ - Adaptive Grouping: 0.527143 ms
+
+ - Build Index: 0.741959 ms
+
+ - Warmup: 0.609875 ms
+
+ - Query: 0.236209 ms
+
+ - Cleanup: 1.73783 ms
+
