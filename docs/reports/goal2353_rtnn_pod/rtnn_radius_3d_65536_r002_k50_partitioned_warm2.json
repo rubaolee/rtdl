@@ -1,0 +1,247 @@
+{
+  "approx_mode": 0,
+  "auto_batch": true,
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rtnn_reproduction": false,
+    "requires_same_hardware_rtdl_row": true,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "command": [
+    "/root/work/rtdl_v2_2_rtnn_pod/scratch/rtnn_goal2351/src/build_goal2351/bin/optixNSearch",
+    "-f",
+    "/root/work/rtdl_v2_2_rtnn_pod/scratch/goal2353/ppp_3d_65536.txt",
+    "-sm",
+    "radius",
+    "-d",
+    "0",
+    "-r",
+    "0.02",
+    "-p",
+    "1",
+    "-ab",
+    "1",
+    "-a",
+    "0",
+    "-k",
+    "50"
+  ],
+  "elapsed_sec": 1.3574910685420036,
+  "external": "RTNN",
+  "k_max": 50,
+  "partition": true,
+  "radius": 0.02,
+  "returncode": 0,
+  "row": "rtx_a5000_rtnn_radius_3d_65536_r002_k50_partitioned_warm2",
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_mode": "radius",
+  "stderr_tail": [
+    "\tTotal GPUs visible: 1",
+    "\tUsing [0]: NVIDIA RTX A5000",
+    "\tMemory: 23.5568 GB"
+  ],
+  "stdout_tail": [
+    "\tGrid dimension (with meta grids): 1280, 1280, 1280",
+    "\tNumber of cells: 2097152000",
+    "\tCell size: 0.000927",
+    "15.135723+24000.000000=24015.134766, 23849.937500",
+    "\tGrid dimension (without meta grids): 1068, 1068, 1068",
+    "\tGrid dimension (with meta grids): 1280, 1280, 1280",
+    "\tNumber of cells: 2097152000",
+    "\tCell size: 0.000936",
+    "14.997004+24000.000000=24014.996094, 23849.937500",
+    "\tGrid dimension (without meta grids): 1058, 1058, 1058",
+    "\tGrid dimension (with meta grids): 1280, 1280, 1280",
+    "\tNumber of cells: 2097152000",
+    "\tCell size: 0.000946",
+    "14.859655+24000.000000=24014.859375, 23849.937500",
+    "\tGrid dimension (without meta grids): 1047, 1047, 1047",
+    "\tGrid dimension (with meta grids): 1280, 1280, 1280",
+    "\tNumber of cells: 2097152000",
+    "\tCell size: 0.000955",
+    "14.723670+24000.000000=24014.724609, 23849.937500",
+    "\tGrid dimension (without meta grids): 1037, 1037, 1037",
+    "\tGrid dimension (with meta grids): 1280, 1280, 1280",
+    "\tNumber of cells: 2097152000",
+    "\tCell size: 0.000965",
+    "14.589029+24000.000000=24014.589844, 23849.937500",
+    "\tGrid dimension (without meta grids): 1027, 1027, 1027",
+    "\tGrid dimension (with meta grids): 1280, 1280, 1280",
+    "\tNumber of cells: 2097152000",
+    "\tCell size: 0.000974",
+    "14.455722+24000.000000=24014.455078, 23849.937500",
+    "\tGrid dimension (without meta grids): 1017, 1017, 1017",
+    "\tGrid dimension (with meta grids): 1024, 1024, 1024",
+    "\tNumber of cells: 1073741824",
+    "\tCell size: 0.000984",
+    "14.323734+12288.000000=12302.324219, 23849.937500",
+    "\tCalculated cellRadiusRatio: 20.320782 (14.323734, 12288.000000)",
+    "\tCalculated maxBatches: 12.732",
+    "\tMemory utilization: 51.615%",
+    "time create data structures: 0.246611 ms",
+    "",
+    "time create context: 137.664 ms",
+    "",
+    "time create pipeline: 261.307 ms",
+    "",
+    "time create SBT: 0.048878 ms",
+    "",
+    "\tGrid dimension (without meta grids): 1017, 1017, 1017",
+    "\tGrid dimension (with meta grids): 1024, 1024, 1024",
+    "\tNumber of cells: 1073741824",
+    "\tCell size: 0.000984",
+    "\tNum of Rep queries: 65534",
+    "\tnumAvailBatches: 12",
+    "\tNumber of batches: 1",
+    "time sort and/or partition queries: 206.409 ms",
+    "",
+    "\tFinal GAS size: 1.358276 MB",
+    "time create and upload geometry: 1.6779 ms",
+    "",
+    "\tLaunch 65536 (100.0000%) queries",
+    "\tSearch radius: 0.020000",
+    "\tSearch K: 1",
+    "\tSearch mode: 2",
+    "time initial traversal: 0.05924 ms",
+    "",
+    "time gas-sort queries init: 0.023988 ms",
+    "",
+    "\tUnique FH AABBs: 29618",
+    "time gas-sort queries: 0.159768 ms",
+    "",
+    "\tLaunch 65536 (100.0000%) queries",
+    "\tSearch radius: 0.020000",
+    "\tSearch K: 50",
+    "\tSearch mode: 0",
+    "time search compute: 0.175339 ms",
+    "",
+    "time result copy D2H: 7.05964 ms",
+    "",
+    "time batch search time: 7.25439 ms",
+    "",
+    "time total search time: 216.144 ms",
+    ""
+  ],
+  "timings": {
+    "batch search time": {
+      "count": 1,
+      "last_ms": 7.25439,
+      "total_ms": 7.25439,
+      "values_ms": [
+        7.25439
+      ]
+    },
+    "create SBT": {
+      "count": 1,
+      "last_ms": 0.048878,
+      "total_ms": 0.048878,
+      "values_ms": [
+        0.048878
+      ]
+    },
+    "create and upload geometry": {
+      "count": 1,
+      "last_ms": 1.6779,
+      "total_ms": 1.6779,
+      "values_ms": [
+        1.6779
+      ]
+    },
+    "create context": {
+      "count": 1,
+      "last_ms": 137.664,
+      "total_ms": 137.664,
+      "values_ms": [
+        137.664
+      ]
+    },
+    "create data structures": {
+      "count": 1,
+      "last_ms": 0.246611,
+      "total_ms": 0.246611,
+      "values_ms": [
+        0.246611
+      ]
+    },
+    "create pipeline": {
+      "count": 1,
+      "last_ms": 261.307,
+      "total_ms": 261.307,
+      "values_ms": [
+        261.307
+      ]
+    },
+    "filter queries": {
+      "count": 1,
+      "last_ms": 0.002574,
+      "total_ms": 0.002574,
+      "values_ms": [
+        0.002574
+      ]
+    },
+    "gas-sort queries": {
+      "count": 1,
+      "last_ms": 0.159768,
+      "total_ms": 0.159768,
+      "values_ms": [
+        0.159768
+      ]
+    },
+    "gas-sort queries init": {
+      "count": 1,
+      "last_ms": 0.023988,
+      "total_ms": 0.023988,
+      "values_ms": [
+        0.023988
+      ]
+    },
+    "initial traversal": {
+      "count": 1,
+      "last_ms": 0.05924,
+      "total_ms": 0.05924,
+      "values_ms": [
+        0.05924
+      ]
+    },
+    "result copy D2H": {
+      "count": 1,
+      "last_ms": 7.05964,
+      "total_ms": 7.05964,
+      "values_ms": [
+        7.05964
+      ]
+    },
+    "search compute": {
+      "count": 1,
+      "last_ms": 0.175339,
+      "total_ms": 0.175339,
+      "values_ms": [
+        0.175339
+      ]
+    },
+    "sort and/or partition queries": {
+      "count": 1,
+      "last_ms": 206.409,
+      "total_ms": 206.409,
+      "values_ms": [
+        206.409
+      ]
+    },
+    "total search time": {
+      "count": 1,
+      "last_ms": 216.144,
+      "total_ms": 216.144,
+      "values_ms": [
+        216.144
+      ]
+    },
+    "upload points and/or queries": {
+      "count": 1,
+      "last_ms": 1.56793,
+      "total_ms": 1.56793,
+      "values_ms": [
+        1.56793
+      ]
+    }
+  }
+}

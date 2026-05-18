@@ -1,0 +1,14 @@
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 2,
+    "format": "rtnn_csv_xyz",
+    "path": "scratch/goal2353/ppp_2d_8192.txt",
+    "point_count": 8192,
+    "seed": 2355
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}
