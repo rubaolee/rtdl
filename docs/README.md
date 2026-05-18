@@ -12,6 +12,11 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
+Current status: RTDL v2.0 is a pre-release candidate. The current evidence
+includes streaming exact witness-column contracts for large outputs. Final
+release still waits for 3-AI consensus; fresh Claude-family review is unavailable
+in the current final packet.
+
 ## Fast Learner Path
 
 Read these in order:

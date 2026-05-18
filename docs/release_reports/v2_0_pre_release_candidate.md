@@ -12,6 +12,9 @@ Current learner-facing facts:
 - Current OptiX/RT evidence is strong under documented contracts.
 - Large witness outputs should prefer streaming witness columns over full
   Python row-table materialization.
+- The RayJoin-style LSI/PIP research lane is closed for v2.0 with bounded
+  same-query evidence; it is not a claim that RTDL beats the RayJoin paper
+  implementation.
 
 Still not allowed:
 
@@ -23,4 +26,4 @@ Still not allowed:
 - claims that every user program is faster.
 
 For audit detail, use the release-report archive entry for the streaming
-witness-column update.
+witness-column update and the RayJoin closure and final-decision packets.

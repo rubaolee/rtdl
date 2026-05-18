@@ -76,6 +76,42 @@ Boundary:
 
 ## v2.5+ Optimization Lane
 
+### RayJoin-Style Work After v2.0 Closure
+
+Origin: Goals2192-2314 RayJoin same-query stream adapter, prepared OptiX
+segment-pair and closed-shape membership work, bounded point probe, raw row
+view, pod timing, and 2-AI reviews.
+
+v2.0 closure state:
+
+- Treat the RayJoin-style v2.0 project as closed for this release lane.
+- Users can implement the scoped RayJoin-style LSI and PIP workloads through
+  Python+RTDL prepared generic primitives with exact parity on the
+  RayJoin-exported 100,000-query streams.
+- The current prepared OptiX route is in the low-millisecond range after
+  preparation: about 10.1 ms for LSI witness rows and about 8.7 ms for PIP
+  positive row views on the RTX A5000 pod.
+- The project does not claim RTDL beats the RayJoin paper implementation, does
+  not claim full RayJoin paper reproduction, and does not claim whole-app
+  speedup.
+
+Future work:
+
+- Reproduce a broader RayJoin paper matrix only if the project explicitly
+  reopens that research lane after v2.0.
+- Compare against RayJoin with phase-boundary discipline: paper query phase,
+  RTDL prepared query phase, full Python runtime call, and whole-app command
+  must be reported as distinct rows.
+- Promote device-resident row streams / continuations only as a generic RTDL
+  contract, not as a RayJoin-specific native path.
+- Keep RayJoin-specific datasets, patches, and query-export infrastructure in
+  audit/research reports rather than the learner path.
+
+Boundary:
+
+- Do not block the v2.0 release lane on beating RayJoin RT.
+- Do not use the bounded RayJoin closure as a broad RT-core speedup claim.
+
 ### Device-Resident Prepared Scene Output Streams
 
 Origin: Goal2249 RayJoin same-query PIP prepared closed-shape pod evidence;
