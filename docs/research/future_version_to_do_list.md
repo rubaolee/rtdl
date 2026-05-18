@@ -191,7 +191,8 @@ Boundary:
 
 ### RayJoin-Style First-Hit / Nearest-Boundary Probe
 
-Origin: Goal2335 RayJoin current-v2.0 basis completion.
+Origin: Goal2335 RayJoin current-v2.0 basis completion; promoted by
+Goal2337 into a measured v2.1 generic primitive.
 
 Observation:
 
@@ -203,16 +204,26 @@ Observation:
 - This is correct on the tested RayJoin streams, but slow: the 65,536-point
   pod run emitted 2.32 million generic intersection rows before reduction.
 
+v2.1 status:
+
+- Goal2337 added `rtdl_optix_run_prepared_segment_first_hit` and
+  `rtdl_optix_count_prepared_segment_first_hit` as generic prepared segment
+  first-hit primitives.
+- The contract stays generic: probe id, primitive id, hit point, and hit
+  parameter.
+- The 65,536-query RayJoin PIP same-query evidence matched the RayJoin positive
+  set exactly and reduced the v2.0 vertical-probe route from 734.597 ms to
+  10.073 ms including validation, with the native query at 2.654 ms.
+- Do not introduce a RayJoin-specific native continuation.
+
 Future work:
 
-- Add a generic first-hit / nearest-boundary prepared primitive for ray or
-  segment probes against segment-like primitives.
-- Keep the contract generic: probe id, primitive id, hit parameter or distance,
-  and optional first-hit/nearest policy.
-- Support grouped reduction directly on device so app code can ask for
-  positive probe ids, parity, or nearest hit without downloading every
-  intermediate crossing.
-- Do not introduce a RayJoin-specific native continuation.
+- Generalize the same device-resident grouped-continuation pattern to parity,
+  grouped counts, and compact positive id streams when a future benchmark needs
+  more than one bounded witness per probe.
+- Keep full RayJoin paper reproduction, broader spatial-join matrices, and
+  user-authored shader injection outside this v2.1 closure unless explicitly
+  reopened.
 
 Boundary:
 
