@@ -1,0 +1,29 @@
+I20260518 15:55:03.366000  2908 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:55:03.366231  2908 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260518 15:55:03.366240  2908 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:55:03.509475  2908 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.469 ms
+I20260518 15:55:03.510300  2908 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 15:55:03.510521  2908 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 15:55:03.510682  2908 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 15:55:03.510841  2908 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+Timing results:
+ - Read map 0: 3081.51 ms
+
+ - Generate Workloads: 4.65512 ms
+
+ - Load Data: 0.7689 ms
+
+ - Create App: 137.366 ms
+
+ - Init: 0.234127 ms
+
+ - Adaptive Grouping: 0.521898 ms
+
+ - Build Index: 0.693083 ms
+
+ - Warmup: 0.28801 ms
+
+ - Query: 0.160615 ms
+
+ - Cleanup: 1.72305 ms
+

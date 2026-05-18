@@ -1,0 +1,39 @@
+I20260518 15:55:00.020853  2901 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:55:00.021085  2901 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260518 15:55:00.021093  2901 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:55:00.158311  2901 run_query.cu:324] Queue capacity: 66057
+I20260518 15:55:00.158344  2901 lsi.h:22] Queue size: 3 MB
+I20260518 15:55:00.159128  2901 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.381 ms
+I20260518 15:55:00.159838  2901 lsi_rt.h:50] queries: 4096
+I20260518 15:55:00.159912  2901 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 15:55:00.160243  2901 run_query.cu:396] Iter: 0
+I20260518 15:55:00.160249  2901 lsi_rt.h:50] queries: 4096
+I20260518 15:55:00.160270  2901 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 15:55:00.160487  2901 run_query.cu:396] Iter: 1
+I20260518 15:55:00.160493  2901 lsi_rt.h:50] queries: 4096
+I20260518 15:55:00.160512  2901 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 15:55:00.160730  2901 run_query.cu:396] Iter: 2
+I20260518 15:55:00.160737  2901 lsi_rt.h:50] queries: 4096
+I20260518 15:55:00.160753  2901 rt_engine.cu:554] optixLaunch, [w,h,d] = 4096,1,1
+I20260518 15:55:00.160987  2901 run_query.cu:401] Intersections: 342 Queue Load Factor: 0.00517735
+Timing results:
+ - Read map 0: 3366.13 ms
+
+ - Generate Workloads: 10.4001 ms
+
+ - Create App: 126.263 ms
+
+ - Load Data: 0.818968 ms
+
+ - Init: 0.432968 ms
+
+ - Adaptive Grouping: 0.41604 ms
+
+ - Build Index: 0.679016 ms
+
+ - Warmup: 0.405073 ms
+
+ - Query: 0.251293 ms
+
+ - Cleanup: 6.96111 ms
+

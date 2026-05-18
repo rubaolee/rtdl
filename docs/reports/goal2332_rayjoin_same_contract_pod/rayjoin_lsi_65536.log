@@ -1,0 +1,79 @@
+I20260518 15:54:22.494309  2541 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:54:22.494604  2541 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260518 15:54:22.494614  2541 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:54:22.823005  2541 run_query.cu:324] Queue capacity: 78345
+I20260518 15:54:22.823040  2541 lsi.h:22] Queue size: 3 MB
+I20260518 15:54:22.829991  2541 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.42 ms
+I20260518 15:54:22.832079  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.832190  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.832711  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.832736  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.833164  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.833187  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.833623  2541 run_query.cu:396] Iter: 0
+I20260518 15:54:22.833629  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.833649  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.834079  2541 run_query.cu:396] Iter: 1
+I20260518 15:54:22.834086  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.834105  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.834542  2541 run_query.cu:396] Iter: 2
+I20260518 15:54:22.834549  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.834568  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.834996  2541 run_query.cu:396] Iter: 3
+I20260518 15:54:22.835002  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.835021  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.835457  2541 run_query.cu:396] Iter: 4
+I20260518 15:54:22.835464  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.835482  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.835898  2541 run_query.cu:396] Iter: 5
+I20260518 15:54:22.835904  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.835924  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.836362  2541 run_query.cu:396] Iter: 6
+I20260518 15:54:22.836367  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.836387  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.836817  2541 run_query.cu:396] Iter: 7
+I20260518 15:54:22.836822  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.836843  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.837270  2541 run_query.cu:396] Iter: 8
+I20260518 15:54:22.837275  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.837296  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.837733  2541 run_query.cu:396] Iter: 9
+I20260518 15:54:22.837738  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.837757  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.838186  2541 run_query.cu:396] Iter: 10
+I20260518 15:54:22.838191  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.838212  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.838637  2541 run_query.cu:396] Iter: 11
+I20260518 15:54:22.838644  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.838663  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.839102  2541 run_query.cu:396] Iter: 12
+I20260518 15:54:22.839107  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.839126  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.839562  2541 run_query.cu:396] Iter: 13
+I20260518 15:54:22.839568  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.839587  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.840019  2541 run_query.cu:396] Iter: 14
+I20260518 15:54:22.840025  2541 lsi_rt.h:50] queries: 65536
+I20260518 15:54:22.840044  2541 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:22.840499  2541 run_query.cu:401] Intersections: 5809 Queue Load Factor: 0.0741464
+Timing results:
+ - Read map 0: 3578.17 ms
+
+ - Generate Workloads: 156.594 ms
+
+ - Create App: 167.041 ms
+
+ - Load Data: 5.08809 ms
+
+ - Init: 6.56295 ms
+
+ - Adaptive Grouping: 0.46587 ms
+
+ - Build Index: 2.04611 ms
+
+ - Warmup: 1.54591 ms
+
+ - Query: 0.460211 ms
+
+ - Cleanup: 21.1029 ms
+

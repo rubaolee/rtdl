@@ -1,0 +1,92 @@
+[goal2327][2026-05-18T15:54:27Z] repo=/root/rtdl
+[goal2327][2026-05-18T15:54:27Z] commit=617b43aef389b91f8a9daa52e645c7a964fb9a1d
+[goal2327][2026-05-18T15:54:27Z] python=Python 3.12.3
+NVIDIA RTX A5000, 570.211.01
+[goal2327][2026-05-18T15:54:27Z] START fixture prepared_optix lsi count
+[goal2327][2026-05-18T15:54:28Z] DONE fixture prepared_optix lsi count
+[goal2327][2026-05-18T15:54:28Z] START fixture prepared_optix pip rows-no-materialization
+[goal2327][2026-05-18T15:54:29Z] DONE fixture prepared_optix pip rows-no-materialization
+[goal2327][2026-05-18T15:54:29Z] START same-query prepared comparison streams
+[goal2292] lsi one_time_left_pack_sec=0.068792
+[goal2292] lsi prepare_sec=1.022088
+[goal2292] warmup lsi/raw_rows 1/3 value=5808 elapsed=0.005593s
+[goal2292] warmup lsi/raw_rows 2/3 value=5808 elapsed=0.004986s
+[goal2292] warmup lsi/raw_rows 3/3 value=5808 elapsed=0.004996s
+[goal2292] repeat lsi/raw_rows 1/15 value=5808 elapsed=0.004843s
+[goal2292] repeat lsi/raw_rows 2/15 value=5808 elapsed=0.004808s
+[goal2292] repeat lsi/raw_rows 3/15 value=5808 elapsed=0.004796s
+[goal2292] repeat lsi/raw_rows 4/15 value=5808 elapsed=0.004828s
+[goal2292] repeat lsi/raw_rows 5/15 value=5808 elapsed=0.004835s
+[goal2292] repeat lsi/raw_rows 6/15 value=5808 elapsed=0.004801s
+[goal2292] repeat lsi/raw_rows 7/15 value=5808 elapsed=0.004975s
+[goal2292] repeat lsi/raw_rows 8/15 value=5808 elapsed=0.004954s
+[goal2292] repeat lsi/raw_rows 9/15 value=5808 elapsed=0.004794s
+[goal2292] repeat lsi/raw_rows 10/15 value=5808 elapsed=0.004894s
+[goal2292] repeat lsi/raw_rows 11/15 value=5808 elapsed=0.004749s
+[goal2292] repeat lsi/raw_rows 12/15 value=5808 elapsed=0.004738s
+[goal2292] repeat lsi/raw_rows 13/15 value=5808 elapsed=0.004755s
+[goal2292] repeat lsi/raw_rows 14/15 value=5808 elapsed=0.004761s
+[goal2292] repeat lsi/raw_rows 15/15 value=5808 elapsed=0.004912s
+[goal2292] warmup lsi/scalar_count 1/3 value=5808 elapsed=0.004755s
+[goal2292] warmup lsi/scalar_count 2/3 value=5808 elapsed=0.004792s
+[goal2292] warmup lsi/scalar_count 3/3 value=5808 elapsed=0.004773s
+[goal2292] repeat lsi/scalar_count 1/15 value=5808 elapsed=0.004762s
+[goal2292] repeat lsi/scalar_count 2/15 value=5808 elapsed=0.004749s
+[goal2292] repeat lsi/scalar_count 3/15 value=5808 elapsed=0.004776s
+[goal2292] repeat lsi/scalar_count 4/15 value=5808 elapsed=0.004894s
+[goal2292] repeat lsi/scalar_count 5/15 value=5808 elapsed=0.004760s
+[goal2292] repeat lsi/scalar_count 6/15 value=5808 elapsed=0.004772s
+[goal2292] repeat lsi/scalar_count 7/15 value=5808 elapsed=0.004904s
+[goal2292] repeat lsi/scalar_count 8/15 value=5808 elapsed=0.004864s
+[goal2292] repeat lsi/scalar_count 9/15 value=5808 elapsed=0.004858s
+[goal2292] repeat lsi/scalar_count 10/15 value=5808 elapsed=0.004807s
+[goal2292] repeat lsi/scalar_count 11/15 value=5808 elapsed=0.004890s
+[goal2292] repeat lsi/scalar_count 12/15 value=5808 elapsed=0.004760s
+[goal2292] repeat lsi/scalar_count 13/15 value=5808 elapsed=0.004899s
+[goal2292] repeat lsi/scalar_count 14/15 value=5808 elapsed=0.004897s
+[goal2292] repeat lsi/scalar_count 15/15 value=5808 elapsed=0.004730s
+[goal2292] pip one_time_point_pack_sec=0.066821
+[goal2292] pip one_time_shape_pack_sec=0.181549
+[goal2292] pip prepare_sec=0.368436
+[goal2292] warmup pip/positive_rows 1/3 value=5783 elapsed=0.011925s
+[goal2292] warmup pip/positive_rows 2/3 value=5783 elapsed=0.009948s
+[goal2292] warmup pip/positive_rows 3/3 value=5783 elapsed=0.006052s
+[goal2292] repeat pip/positive_rows 1/15 value=5783 elapsed=0.005849s
+[goal2292] repeat pip/positive_rows 2/15 value=5783 elapsed=0.005777s
+[goal2292] repeat pip/positive_rows 3/15 value=5783 elapsed=0.005770s
+[goal2292] repeat pip/positive_rows 4/15 value=5783 elapsed=0.005812s
+[goal2292] repeat pip/positive_rows 5/15 value=5783 elapsed=0.005776s
+[goal2292] repeat pip/positive_rows 6/15 value=5783 elapsed=0.005856s
+[goal2292] repeat pip/positive_rows 7/15 value=5783 elapsed=0.005791s
+[goal2292] repeat pip/positive_rows 8/15 value=5783 elapsed=0.005794s
+[goal2292] repeat pip/positive_rows 9/15 value=5783 elapsed=0.005820s
+[goal2292] repeat pip/positive_rows 10/15 value=5783 elapsed=0.005775s
+[goal2292] repeat pip/positive_rows 11/15 value=5783 elapsed=0.005815s
+[goal2292] repeat pip/positive_rows 12/15 value=5783 elapsed=0.005811s
+[goal2292] repeat pip/positive_rows 13/15 value=5783 elapsed=0.005802s
+[goal2292] repeat pip/positive_rows 14/15 value=5783 elapsed=0.005780s
+[goal2292] repeat pip/positive_rows 15/15 value=5783 elapsed=0.005798s
+[goal2292] warmup pip/scalar_count 1/3 value=5783 elapsed=0.005753s
+[goal2292] warmup pip/scalar_count 2/3 value=5783 elapsed=0.005754s
+[goal2292] warmup pip/scalar_count 3/3 value=5783 elapsed=0.005765s
+[goal2292] repeat pip/scalar_count 1/15 value=5783 elapsed=0.005773s
+[goal2292] repeat pip/scalar_count 2/15 value=5783 elapsed=0.005732s
+[goal2292] repeat pip/scalar_count 3/15 value=5783 elapsed=0.005750s
+[goal2292] repeat pip/scalar_count 4/15 value=5783 elapsed=0.005729s
+[goal2292] repeat pip/scalar_count 5/15 value=5783 elapsed=0.005748s
+[goal2292] repeat pip/scalar_count 6/15 value=5783 elapsed=0.005726s
+[goal2292] repeat pip/scalar_count 7/15 value=5783 elapsed=0.005737s
+[goal2292] repeat pip/scalar_count 8/15 value=5783 elapsed=0.005698s
+[goal2292] repeat pip/scalar_count 9/15 value=5783 elapsed=0.005753s
+[goal2292] repeat pip/scalar_count 10/15 value=5783 elapsed=0.005740s
+[goal2292] repeat pip/scalar_count 11/15 value=5783 elapsed=0.005756s
+[goal2292] repeat pip/scalar_count 12/15 value=5783 elapsed=0.005720s
+[goal2292] repeat pip/scalar_count 13/15 value=5783 elapsed=0.005753s
+[goal2292] repeat pip/scalar_count 14/15 value=5783 elapsed=0.005714s
+[goal2292] repeat pip/scalar_count 15/15 value=5783 elapsed=0.005703s
+[goal2292] wrote docs/reports/goal2332_rayjoin_same_contract_pod/rtdl_replay/same_query_prepared_comparison.json
+[goal2327][2026-05-18T15:54:35Z] DONE same-query prepared comparison streams
+[goal2327][2026-05-18T15:54:35Z] START summarize artifacts
+wrote docs/reports/goal2332_rayjoin_same_contract_pod/rtdl_replay/summary.md
+[goal2327][2026-05-18T15:54:35Z] DONE summarize artifacts
+[goal2327][2026-05-18T15:54:35Z] wrote docs/reports/goal2332_rayjoin_same_contract_pod/rtdl_replay

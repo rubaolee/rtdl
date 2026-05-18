@@ -1,0 +1,43 @@
+I20260518 15:54:26.291985  2548 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:54:26.292212  2548 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260518 15:54:26.292220  2548 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260518 15:54:26.502044  2548 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.487 ms
+I20260518 15:54:26.506006  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.506428  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.506820  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.507211  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.507602  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.507992  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.508381  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.508772  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.509160  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.509550  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.509939  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.510329  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.510725  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.511114  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.511504  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.511893  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.512282  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+I20260518 15:54:26.512670  2548 rt_engine.cu:554] optixLaunch, [w,h,d] = 65536,1,1
+Timing results:
+ - Read map 0: 3271.37 ms
+
+ - Generate Workloads: 63.781 ms
+
+ - Load Data: 0.779867 ms
+
+ - Create App: 142.498 ms
+
+ - Init: 2.53701 ms
+
+ - Adaptive Grouping: 0.538111 ms
+
+ - Build Index: 3.82996 ms
+
+ - Warmup: 1.27387 ms
+
+ - Query: 0.389942 ms
+
+ - Cleanup: 5.33009 ms
+
