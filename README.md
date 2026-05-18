@@ -134,6 +134,11 @@ claim, or proof that every user program is faster. For the exact positive and
 negative rule, read [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md)
 and [v2.0 Release Package](docs/release_reports/v2_0/README.md).
 
+Internal v2.1 work exists as an unreleased checkpoint for RayJoin-style
+first-hit support, Hausdorff benchmark tuning, and app/example readiness
+cleanup. It is not a public release or package promise; the public learner
+surface remains v2.0 until a separately reviewed release decision is made.
+
 ## Performance Boundary
 
 `--backend optix` means the OptiX backend is selected. It is not by itself a
@@ -154,6 +159,7 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Tutorial Ladder](docs/tutorials/README.md)
 - [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Application Catalog](docs/application_catalog.md)
+- [Internal v2.1 Closure Report](docs/reports/goal2344_v2_1_internal_closure_2026-05-18.md)
 - [Feature Guide](docs/rtdl_feature_guide.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
 - [App Engine Support Matrix](docs/app_engine_support_matrix.md)

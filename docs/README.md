@@ -17,6 +17,12 @@ surface. The current released version is `v2.0`. The release evidence includes
 streaming exact witness-column contracts for large outputs and 3-AI consensus
 from Codex, Claude, and Gemini.
 
+Internal status: v2.1 is an unreleased checkpoint for RayJoin-style first-hit,
+Hausdorff benchmark tuning, and app/example readiness cleanup. It is documented
+for researchers and auditors in
+[Goal2344 Internal v2.1 Closure](reports/goal2344_v2_1_internal_closure_2026-05-18.md),
+but it does not replace the v2.0 learner/release surface.
+
 Short model:
 
 ```text

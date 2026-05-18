@@ -13,6 +13,7 @@ lineage, or future directions.
 
 ## Backend And Research Areas
 
+- [Internal v2.1 Closure](../reports/goal2344_v2_1_internal_closure_2026-05-18.md)
 - [RayJoin And Embree Research Notes](rayjoin/README.md)
 - [Technical App Notes](app_notes/README.md)
 - [Design Proposals](proposals/)

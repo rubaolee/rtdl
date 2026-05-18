@@ -4,6 +4,10 @@ This directory is organized for RTDL v2.0 users first.  Start in
 `v2_0/`, then choose by purpose: first run, feature, full app, partner
 continuation, or research benchmark.
 
+Internal v2.1 work does not create a new learner tree. The same examples remain
+the current source-tree examples; v2.1-specific RayJoin and Hausdorff evidence
+lives in the research benchmark reports and the internal closure report.
+
 Run examples from the repository root with source-tree usage:
 
 ```bash
@@ -74,6 +78,7 @@ For guided learning and support boundaries, prefer:
 - [Tutorial Ladder](../docs/tutorials/README.md)
 - [App And Example Quickstart](../docs/app_example_quickstart.md)
 - [Application Catalog](../docs/application_catalog.md)
+- [Internal v2.1 Closure Report](../docs/reports/goal2344_v2_1_internal_closure_2026-05-18.md)
 - [App Engine Support Matrix](../docs/app_engine_support_matrix.md)
 - [Performance Model](../docs/performance_model.md)
 

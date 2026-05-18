@@ -3,6 +3,10 @@
 This is the current learner-facing example tree for the RTDL v2.0
 Python+partner+RTDL release.
 
+Internal v2.1 keeps using this tree. It adds reviewed RayJoin/Hausdorff
+benchmark evidence and readiness checks, but it is not a separate public
+example version.
+
 | Directory | Purpose |
 | --- | --- |
 | `getting_started/` | smallest programs and the feature cookbook |

@@ -11,6 +11,7 @@ project history.
 
 ## Evidence Stores
 
+- [Internal v2.1 Closure Report](../reports/goal2344_v2_1_internal_closure_2026-05-18.md)
 - [Release Reports](../release_reports/)
 - [Benchmark And Audit Reports](../reports/)
 - [External Reviews](../reviews/)

@@ -1,0 +1,873 @@
+{
+  "summary": {
+    "total": 51,
+    "pass": 51,
+    "failed_count": 0
+  },
+  "results": [
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/getting_started/rtdl_hello_world_backends.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4242955185472965,
+      "stdout_tail": "{\n  \"backend\": \"embree\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/database/rtdl_db_conjunctive_scan.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.39452824369072914,
+      "stdout_tail": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"embree\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/database/rtdl_db_grouped_count.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.40262408182024956,
+      "stdout_tail": "{\n  \"app\": \"db_grouped_count\",\n  \"backend\": \"embree\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/database/rtdl_db_grouped_sum.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3971280809491873,
+      "stdout_tail": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"embree\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/graph/rtdl_graph_bfs.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 5.970821151509881,
+      "stdout_tail": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"embree\",\n  \"copies\": 1,\n  \"frontier_size\": 2,\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_graph_bfs_raw_summary\",\n  \"optix_graph_mode\": \"not_applicable\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"OptiX BFS currently uses a host-indexed CSR expansion correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n  },\n  \"output_mode\": \"summary\",\n  \"ray_tracing_accelerated\": true,\n  \"ray_tracing_note\": \"Embree uses ray traversal over graph-edge primitives for frontier candidate generation; CPU-side visited/frontier bookkeeping remains outside the RT traversal.\",\n  \"row_count\": 2,\n  \"rows\": [],\n  \"rt_core_accelerated\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 2.642907202243805e-05,\n    \"native_summary_postprocess_sec\": 2.551823854446411e-07,\n    \"query_and_materialize_sec\": 5.574558986350894,\n    \"query_raw_view_sec\": 5.574558986350894,\n    \"row_materialization_sec\": 0.0\n  },\n  \"summary\": {\n    \"discovered_edge_count\": 2,\n    \"discovered_vertex_count\": 2,\n    \"max_level\": 1\n  },\n  \"visited_size\": 2\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/graph/rtdl_graph_triangle_count.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.44537572748959064,
+      "stdout_tail": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"embree\",\n  \"copies\": 1,\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_graph_triangle_raw_summary\",\n  \"optix_graph_mode\": \"not_applicable\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n  },\n  \"output_mode\": \"summary\",\n  \"ray_tracing_accelerated\": true,\n  \"ray_tracing_note\": \"Embree uses ray traversal over graph-edge primitives to collect candidate neighbor sets; CPU-side set intersection and uniqueness bookkeeping remain outside the RT traversal.\",\n  \"row_count\": 1,\n  \"rows\": [],\n  \"rt_core_accelerated\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 2.4868175387382507e-05,\n    \"native_summary_postprocess_sec\": 3.762543201446533e-07,\n    \"query_and_materialize_sec\": 0.014036351814866066,\n    \"query_raw_view_sec\": 0.014036351814866066,\n    \"row_materialization_sec\": 0.0\n  },\n  \"seed_count\": 3,\n  \"summary\": {\n    \"touched_vertex_count\": 3,\n    \"triangle_count\": 1\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.39178409054875374,
+      "stdout_tail": "{\n  \"app\": \"fixed_radius_neighbors\",\n  \"backend\": \"embree\",\n  \"k_max\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"radius\": 0.5,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/neighbors/rtdl_knn_rows.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3746341187506914,
+      "stdout_tail": "{\n  \"app\": \"knn_rows\",\n  \"backend\": \"embree\",\n  \"k\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 1.0,\n        \"neighbor_id\": 5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 2.7,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 3\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"neighbor_rank\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"neighbor_rank\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.0,\n      \"neighbor_id\": 5,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 2.7,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4008279014378786,
+      "stdout_tail": "{\n  \"app\": \"segment_polygon_hitcount\",\n  \"backend\": \"embree\",\n  \"boundary\": \"RT-core performance remains classified separately: OptiX mode 'native' explicitly requests the experimental native custom-AABB path, but current public performance class stays host_indexed_fallback until a focused correctness/performance gate passes.\",\n  \"dataset\": \"derived/br_county_subset_segment_polygon_tiled_x1\",\n  \"native_continuation_active\": false,\n  \"native_continuation_backend\": \"none\",\n  \"optix_mode\": \"not_applicable\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default segment/polygon OptiX path remains conservative, but the prepared hit-count profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal for compact hit-count summaries.\"\n  },\n  \"row_count\": 10,\n  \"rows\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 4\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 5\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 6\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 7\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 8\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 9\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 10\n    }\n  ],\n  \"rt_core_accelerated\": false\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "segment_counts"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.416811715811491,
+      "stdout_tail": "{\n  \"app\": \"segment_polygon_anyhit_rows\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Rows mode emits segment/polygon pair rows. Compact segment_flags and segment_counts use the RTDL segment_polygon_hitcount primitive to avoid materializing full segment/polygon pair rows. Explicit --backend optix --output-mode rows --optix-mode native uses the bounded native OptiX pair-row emitter; overflow fails rather than truncating. This exposes a true traversal path, but speedup claims still require strict RTX artifact review.\",\n  \"dataset\": \"derived/br_county_subset_segment_polygon_tiled_x1\",\n  \"native_continuation_active\": false,\n  \"native_continuation_backend\": \"none\",\n  \"native_output_capacity\": null,\n  \"optix_mode\": \"not_applicable\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal\",\n    \"note\": \"Default segment/polygon OptiX pair-row path remains conservative, but the prepared bounded pair-row profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal with bounded output and overflow metadata.\"\n  },\n  \"output_mode\": \"segment_counts\",\n  \"row_count\": 10,\n  \"rt_core_accelerated\": false,\n  \"segment_counts\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 4\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 5\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 6\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 7\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 8\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 9\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 10\n    }\n  ],\n  \"summary_source\": \"segment_polygon_hitcount\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.40564767085015774,
+      "stdout_tail": "ithic GPU polygon-area kernel.\"\n  },\n  \"output_mode\": \"summary\",\n  \"primitive_contract\": {\n    \"active_v1_4_backend\": true,\n    \"app_row\": \"polygon_pair_overlap_area_rows\",\n    \"backend\": \"embree\",\n    \"backend_contract_role\": \"cpu_rt_baseline_and_fallback\",\n    \"backend_scope\": [\n      \"embree\",\n      \"optix\"\n    ],\n    \"build_layout\": \"polygon2d_build_buffer\",\n    \"candidate_primitive\": \"ANY_HIT\",\n    \"candidate_row_count\": 3,\n    \"claim_boundary\": \"polygon_pair_overlap_area_rows candidate discovery only: native RT traversal identifies positive polygon-pair candidates before an backend-neutral exact grid-cell area summary in summary mode. This is not a generic polygon overlay engine and not public whole-app speedup wording.\",\n    \"exact_area_continuation\": \"backend_neutral_native_polygon_pair_area_summary\",\n    \"future_area_primitive\": \"REDUCE_FLOAT(SUM)\",\n    \"future_area_primitive_status\": \"pod_verified_generic_non_public\",\n    \"goal1270_diagnostic_split_preserved\": true,\n    \"migration_status\": \"compatibility_wrapper_metadata_only\",\n    \"mode\": \"native_candidate_plus_app_specific_exact_area\",\n    \"output_mode\": \"summary\",\n    \"phase_counters\": [\n      \"rt_candidate_discovery_sec\",\n      \"native_exact_continuation_sec\",\n      \"query_and_materialize_sec\",\n      \"summary_postprocess_sec\"\n    ],\n    \"primitive\": \"ANY_HIT\",\n    \"probe_layout\": \"polygon2d_probe_buffer\",\n    \"result_layout\": \"positive_pair_rows_or_summary\",\n    \"same_contract_baseline_required\": true\n  },\n  \"right_polygon_count\": 3,\n  \"row_count\": 2,\n  \"rt_core_accelerated\": false,\n  \"rt_core_candidate_discovery_active\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 2.588331699371338e-05,\n    \"native_exact_continuation_sec\": 0.00021954812109470367,\n    \"query_polygon_exact_area_reduce_float_sum_sec\": 0.00021954812109470367,\n    \"rt_candidate_discovery_sec\": 0.010609356686472893\n  },\n  \"summary\": {\n    \"overlap_pair_count\": 2,\n    \"total_intersection_area\": 5,\n    \"total_union_area\": 19\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4105688352137804,
+      "stdout_tail": "didate_primitive\": \"ANY_HIT\",\n    \"candidate_row_count\": 3,\n    \"chunk_policy_required_for_public_evidence\": true,\n    \"claim_boundary\": \"polygon_set_jaccard remains diagnostic: native RT traversal can identify candidate polygon pairs and native bounded collection is routed for Embree/OptiX summary mode, but exact set-area scoring uses a backend-neutral native polygon-pair area summary before computing the ratio. Public wording remains blocked while OptiX is slower than Embree.\",\n    \"exact_score_continuation\": \"backend_neutral_native_polygon_pair_area_summary\",\n    \"experimental_collection_primitive\": \"COLLECT_K_BOUNDED\",\n    \"future_score_primitive\": \"REDUCE_FLOAT(SUM)\",\n    \"future_score_primitive_status\": \"pod_verified_generic_non_public\",\n    \"migration_status\": \"diagnostic_metadata_only\",\n    \"mode\": \"diagnostic_native_candidate_plus_generic_area_summary\",\n    \"output_mode\": \"summary\",\n    \"phase_counters\": [\n      \"rt_candidate_discovery_sec\",\n      \"native_exact_continuation_sec\",\n      \"query_and_materialize_sec\",\n      \"summary_postprocess_sec\"\n    ],\n    \"primitive\": \"ANY_HIT\",\n    \"probe_layout\": \"polygon2d_probe_buffer\",\n    \"public_wording_allowed\": false,\n    \"result_layout\": \"single_jaccard_summary_row\",\n    \"same_contract_baseline_required\": true,\n    \"status\": \"optix_still_slower_with_reason\"\n  },\n  \"right_polygon_count\": 2,\n  \"row_count\": 1,\n  \"rt_core_accelerated\": false,\n  \"rt_core_candidate_discovery_active\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 2.6050955057144165e-05,\n    \"native_exact_continuation_sec\": 0.00436527281999588,\n    \"query_polygon_collect_k_bounded_sec\": 2.24187970161438e-05,\n    \"query_polygon_jaccard_reduce_float_sum_sec\": 0.00436527281999588,\n    \"rt_candidate_discovery_sec\": 0.00700768455862999,\n    \"summary_postprocess_sec\": 5.718320608139038e-07\n  },\n  \"summary\": {\n    \"intersection_area\": 5,\n    \"jaccard_similarity\": 0.2631578947368421,\n    \"left_area\": 13,\n    \"right_area\": 11,\n    \"union_area\": 19\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/partners/rtdl_partner_anyhit.py",
+        "--partner",
+        "numpy",
+        "--backend",
+        "embree"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.37359638325870037,
+      "stdout_tail": "{\n  \"backend\": \"embree\",\n  \"example\": \"rtdl_partner_anyhit\",\n  \"hit_count\": 1,\n  \"partner_input\": \"numpy\",\n  \"partner_phase_timing_keys\": [\n    \"descriptor_validation\",\n    \"embree_anyhit_count\",\n    \"framework_to_host_staging\",\n    \"packet_packing\"\n  ],\n  \"ray_count\": 2,\n  \"rt_core_speedup_claim_authorized\": false,\n  \"source_devices\": [\n    \"cpu:0\"\n  ],\n  \"source_protocols\": [\n    \"numpy\"\n  ],\n  \"transfer_mode\": \"host_stage\",\n  \"triangle_count\": 1,\n  \"true_zero_copy_authorized\": false\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "all",
+        "--copies",
+        "1",
+        "--output-mode",
+        "compact_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.41466980800032616,
+      "stdout_tail": "predicate count, grouped integer count, and grouped integer sum over an application-owned denormalized table. This excludes SQL engines, DBMS behavior, query planning, joins, transactions, indexes as a database feature, and row-materializing output.\",\n        \"materialization_free\": true,\n        \"migration_status\": \"compatibility_wrapper_metadata_only\",\n        \"mode\": \"prepared_compact_summary\",\n        \"phase_counters\": [\n          \"query_compact_summary_batch_sec\",\n          \"query_conjunctive_scan_count_sec\",\n          \"query_grouped_count_summary_sec\",\n          \"query_grouped_sum_summary_sec\",\n          \"query_conjunctive_scan_and_materialize_sec\",\n          \"query_grouped_count_and_materialize_sec\",\n          \"query_grouped_sum_and_materialize_sec\",\n          \"python_summary_postprocess_sec\"\n        ],\n        \"prepared_state\": \"prepared_columnar_dataset_reusable\",\n        \"primitive\": \"COUNT_HITS\",\n        \"probe_layout\": \"predicate_bundle_and_grouped_query\",\n        \"result_layout\": \"aggregate_scan_count_and_grouped_integer_maps\",\n        \"same_contract_baseline_required\": true,\n        \"secondary_primitive\": \"REDUCE_INT(SUM)\"\n      },\n      \"row_counts\": {\n        \"grouped_count\": 3,\n        \"grouped_sum\": 3,\n        \"scan\": 4\n      },\n      \"rows\": {},\n      \"run_phases\": {\n        \"python_summary_postprocess_sec\": 8.637085556983948e-06,\n        \"query_compact_summary_batch_sec\": 0.0001330804079771042,\n        \"query_generic_db_compact_summary_batch_sec\": 0.0001330804079771042\n      },\n      \"session\": {\n        \"input_construction_sec\": 1.1274591088294983e-05,\n        \"prepare_sec\": 0.00024086982011795044\n      },\n      \"summary\": {\n        \"highest_risk_region\": \"west\",\n        \"risky_order_count\": 4,\n        \"risky_order_count_by_region\": {\n          \"central\": 1,\n          \"east\": 1,\n          \"west\": 2\n        },\n        \"risky_revenue_by_region\": {\n          \"central\": 260,\n          \"east\": 310,\n          \"west\": 430\n        }\n      }\n    }\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "all",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.40969360806047916,
+      "stdout_tail": "analytics.visibility_edges\",\n        \"backend\": \"embree\",\n        \"backend_contract_role\": \"cpu_rt_baseline_and_fallback\",\n        \"backend_scope\": [\n          \"embree\",\n          \"optix\"\n        ],\n        \"build_layout\": \"triangle2d_blocker_buffer\",\n        \"claim_boundary\": \"graph_analytics.visibility_edges only: candidate graph edges lowered to ray/triangle any-hit and optional aggregate count. This excludes BFS, triangle counting, shortest path, graph databases, frontier bookkeeping, and graph reductions.\",\n        \"migration_status\": \"compatibility_wrapper_metadata_only\",\n        \"mode\": \"one_shot\",\n        \"phase_counters\": [\n          \"input_construction_sec\",\n          \"blocker_pack_sec\",\n          \"ray_pack_sec\",\n          \"scene_prepare_sec\",\n          \"ray_prepare_sec\",\n          \"query_anyhit_count_sec\",\n          \"query_visibility_pair_rows_sec\",\n          \"summary_postprocess_sec\"\n        ],\n        \"prepared_state\": \"none_required_for_row_materialization\",\n        \"primitive\": \"ANY_HIT\",\n        \"probe_layout\": \"visibility_ray2d_probe_buffer\",\n        \"result_layout\": \"aggregate_visible_blocked_counts\",\n        \"same_contract_baseline_required\": true,\n        \"summary_primitive\": \"COUNT_HITS\"\n      },\n      \"ray_batch_summaries\": [],\n      \"ray_pack_mode\": \"not_applicable\",\n      \"row_count\": 4,\n      \"rows\": [],\n      \"rt_core_accelerated\": false,\n      \"run_phases\": {\n        \"input_construction_sec\": 2.4273991584777832e-05,\n        \"query_visibility_pair_rows_sec\": 0.001297706738114357,\n        \"summary_postprocess_sec\": 4.189088940620422e-06\n      },\n      \"summary\": {\n        \"blocked_edge_count\": 3,\n        \"visible_edge_count\": 1\n      },\n      \"target_count\": 2,\n      \"visibility_query_repeats\": 1,\n      \"visibility_ray_batches\": 1\n    }\n  },\n  \"unifies\": [\n    \"examples/v2_0/features/graph/rtdl_graph_bfs.py\",\n    \"examples/v2_0/features/graph/rtdl_graph_triangle_count.py\"\n  ],\n  \"visibility_query_repeats\": 1,\n  \"visibility_ray_batches\": 1\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--embree-summary-mode",
+        "count_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.40351717732846737,
+      "stdout_tail": "{\n  \"app\": \"event_hotspot_screening\",\n  \"backend\": \"embree\",\n  \"copies\": 1,\n  \"embree_summary_mode\": \"count_summary\",\n  \"event_count\": 6,\n  \"hotspot_count\": 4,\n  \"hotspot_threshold\": 3,\n  \"hotspots\": [\n    {\n      \"event_id\": 1,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 2,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 3,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 4,\n      \"neighbor_count\": 3\n    }\n  ],\n  \"k_max\": 12,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"embree_threshold_count\",\n  \"neighbor_count_by_event\": {\n    \"1\": 3,\n    \"2\": 3,\n    \"3\": 3,\n    \"4\": 3,\n    \"5\": 0,\n    \"6\": 0\n  },\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Explicit count_summary_prepared mode uses prepared OptiX fixed-radius count traversal and compact hotspot summaries; rows mode is not the RT-core claim path.\"\n  },\n  \"optix_summary_mode\": null,\n  \"radius\": 0.75,\n  \"rows\": [],\n  \"rt_core_accelerated\": false,\n  \"summary_boundary\": null,\n  \"summary_rows\": [\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 1\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 2\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 3\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 4\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 5\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 6\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.39529290422797203,
+      "stdout_tail": "{\n  \"app\": \"facility_knn_assignment\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Rows mode emits K=3 nearest-depot fallback choices. The partner_exact backend computes exact ranked nearest-depot rows with generic partner point-column algebra, not native engine app customization or RT-core acceleration.\",\n  \"copies\": 1,\n  \"customer_count\": 4,\n  \"depot_count\": 4,\n  \"k\": 1,\n  \"native_continuation_active\": false,\n  \"native_continuation_backend\": \"none\",\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"summary\",\n  \"partner\": null,\n  \"partner_reference_contract\": null,\n  \"primary_depot_load\": {\n    \"10\": 1,\n    \"11\": 2,\n    \"12\": 1\n  },\n  \"row_count\": 4,\n  \"rt_core_accelerated\": false,\n  \"service_radius\": null\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.387131841853261,
+      "stdout_tail": "{\n  \"app\": \"road_hazard_screening\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Rows mode emits per-road hit-count rows. Compact priority_segments and summary modes omit rows from the app payload when only priority road ids or counts are needed. Native OptiX summary mode returns a count-only threshold summary and does not materialize segment ids. OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.\",\n  \"copies\": 1,\n  \"native_continuation_active\": false,\n  \"native_continuation_backend\": \"none\",\n  \"optix_mode\": \"not_applicable\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default segment/polygon OptiX app path remains conservative, but the prepared road-hazard summary profiler reuses a polygon BVH and runs native OptiX custom-AABB segment/polygon traversal for compact hazard summaries.\"\n  },\n  \"output_mode\": \"summary\",\n  \"priority_segment_count\": 1,\n  \"priority_segments\": [\n    1\n  ],\n  \"row_count\": 3,\n  \"rt_core_accelerated\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 4.164688289165497e-05,\n    \"query_and_materialize_sec\": 0.0060989391058683395,\n    \"summary_postprocess_sec\": 1.823529601097107e-06\n  },\n  \"summary_materializes_rows\": true\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_sales_risk_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "compact_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.39909032732248306,
+      "stdout_tail": "\": [\n      \"embree\",\n      \"optix\"\n    ],\n    \"build_layout\": \"columnar_denorm_table\",\n    \"chunked_compact_summary\": false,\n    \"claim_boundary\": \"database_analytics.sales_risk compact-summary only: bounded predicate count, grouped integer count, and grouped integer sum over an application-owned denormalized table. This excludes SQL engines, DBMS behavior, query planning, joins, transactions, indexes as a database feature, and row-materializing output.\",\n    \"materialization_free\": true,\n    \"migration_status\": \"compatibility_wrapper_metadata_only\",\n    \"mode\": \"prepared_compact_summary\",\n    \"phase_counters\": [\n      \"query_compact_summary_batch_sec\",\n      \"query_conjunctive_scan_count_sec\",\n      \"query_grouped_count_summary_sec\",\n      \"query_grouped_sum_summary_sec\",\n      \"query_conjunctive_scan_and_materialize_sec\",\n      \"query_grouped_count_and_materialize_sec\",\n      \"query_grouped_sum_and_materialize_sec\",\n      \"python_summary_postprocess_sec\"\n    ],\n    \"prepared_state\": \"prepared_columnar_dataset_reusable\",\n    \"primitive\": \"COUNT_HITS\",\n    \"probe_layout\": \"predicate_bundle_and_grouped_query\",\n    \"result_layout\": \"aggregate_scan_count_and_grouped_integer_maps\",\n    \"same_contract_baseline_required\": true,\n    \"secondary_primitive\": \"REDUCE_INT(SUM)\"\n  },\n  \"row_counts\": {\n    \"grouped_count\": 3,\n    \"grouped_sum\": 3,\n    \"scan\": 4\n  },\n  \"rows\": {},\n  \"run_phases\": {\n    \"python_summary_postprocess_sec\": 9.564682841300964e-06,\n    \"query_compact_summary_batch_sec\": 0.0002628043293952942,\n    \"query_generic_db_compact_summary_batch_sec\": 0.0002628043293952942\n  },\n  \"session\": {\n    \"input_construction_sec\": 1.3783574104309082e-05,\n    \"prepare_sec\": 0.007369911298155785\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count\": 4,\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--embree-summary-mode",
+        "gap_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4096636399626732,
+      "stdout_tail": "{\n  \"app\": \"service_coverage_gaps\",\n  \"backend\": \"embree\",\n  \"clinic_count\": 3,\n  \"clinic_loads\": {},\n  \"copies\": 1,\n  \"coverage_summary_rows\": [\n    {\n      \"neighbor_count\": 1,\n      \"query_id\": 1,\n      \"threshold_reached\": 1\n    },\n    {\n      \"neighbor_count\": 1,\n      \"query_id\": 2,\n      \"threshold_reached\": 1\n    },\n    {\n      \"neighbor_count\": 1,\n      \"query_id\": 3,\n      \"threshold_reached\": 1\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 4,\n      \"threshold_reached\": 0\n    }\n  ],\n  \"covered_household_count\": 3,\n  \"embree_summary_mode\": \"gap_summary\",\n  \"household_count\": 4,\n  \"k_max\": 4,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"embree_threshold_count\",\n  \"nearby_clinics_by_household\": {},\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Explicit gap_summary_prepared mode uses prepared OptiX fixed-radius threshold traversal and compact summary output; rows mode is not the RT-core claim path.\"\n  },\n  \"optix_summary_mode\": null,\n  \"radius\": 0.85,\n  \"rows\": [],\n  \"rt_core_accelerated\": false,\n  \"summary_boundary\": \"gap_summary reports covered/uncovered households only; use rows mode when clinic ids, distances, or clinic_loads are required.\",\n  \"uncovered_household_ids\": [\n    4\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "quality_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.40537120029330254,
+      "stdout_tail": "{\n  \"app\": \"ann_candidate_search\",\n  \"approximate_row_count\": 3,\n  \"backend\": \"embree\",\n  \"boundary\": \"Bounded ANN candidate-search demo only; RTDL does not yet provide an ANN index, training phase, or recall/latency optimizer. rerank_summary measures only the RTDL candidate-subset KNN reranking slice; full quality evaluation still uses Python exact full-set comparison.\",\n  \"candidate_count\": 3,\n  \"candidate_radius\": null,\n  \"copies\": 1,\n  \"exact_match_count\": 2,\n  \"k\": 1,\n  \"max_neighbor_rank\": 1,\n  \"mean_distance_ratio\": 3.666666666666593,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_knn_rerank_summary\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only.\"\n  },\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"quality_summary\",\n  \"query_count\": 3,\n  \"query_count_with_candidate\": 3,\n  \"recall_at_1\": 0.6666666666666666,\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.\",\n  \"search_count\": 6\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "core_count",
+        "--embree-summary-mode",
+        "rt_core_flags_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.38111836463212967,
+      "stdout_tail": "er paths are exact radius-graph component references, not a native engine DBSCAN continuation and not an RT-core claim. The spatial-bucket path uses a host-built sparse bucket index as an explicit transitional debt, not a true zero-copy claim.\",\n  \"cluster_rows\": [],\n  \"cluster_sizes\": {},\n  \"copies\": 1,\n  \"core_count\": 7,\n  \"core_flag_rows\": [],\n  \"embree_summary_mode\": \"rt_core_flags_prepared\",\n  \"epsilon\": 0.35,\n  \"generic_primitive\": null,\n  \"k_max\": 16,\n  \"matches_oracle\": true,\n  \"min_points\": 3,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"embree_threshold_count\",\n  \"neighbor_row_count\": 0,\n  \"noise_point_ids\": [],\n  \"optix_summary_mode\": \"not_applicable\",\n  \"oracle_cluster_rows\": [],\n  \"oracle_core_count\": 7,\n  \"oracle_core_flag_rows\": [\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 1\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 2\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 3\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 5\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 6\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 7\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 8\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"partner\": null,\n  \"partner_metadata\": null,\n  \"partner_reference_contract\": null,\n  \"point_count\": 8,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The partner exact-cluster paths compute generic radius-graph component labels over point columns outside the native engine.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"summary_primitive\": null,\n  \"threshold_reached_count\": 7,\n  \"validation_skipped\": false\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/ml/rtdl_outlier_detection_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--output-mode",
+        "density_count",
+        "--embree-summary-mode",
+        "rt_count_threshold_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3945660647004843,
+      "stdout_tail": "old outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.\",\n  \"copies\": 1,\n  \"density_rows\": [],\n  \"embree_summary_mode\": \"rt_count_threshold_prepared\",\n  \"generic_primitive\": null,\n  \"k_max\": 16,\n  \"matches_oracle\": true,\n  \"min_neighbors_including_self\": 3,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"embree_threshold_count\",\n  \"native_summary_row_count\": 0,\n  \"neighbor_row_count\": 0,\n  \"optix_summary_mode\": \"not_applicable\",\n  \"oracle_density_rows\": [\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 1\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 2\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 3\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 5\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 6\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 7\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 8\n    }\n  ],\n  \"oracle_outlier_count\": 2,\n  \"outlier_count\": 2,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 8,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"summary_primitive\": null,\n  \"threshold_reached_count\": 6\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "embree",
+        "--pose-count",
+        "8",
+        "--obstacle-count",
+        "16",
+        "--output-mode",
+        "hit_count"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4388102497905493,
+      "stdout_tail": "{\n  \"app\": \"robot_collision_screening\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine. Compact output modes reduce app-interface row volume but do not replace a native OptiX pose-level summary ABI.\",\n  \"edge_ray_count\": 32,\n  \"hit_edge_count\": 18,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": false,\n  \"native_continuation_backend\": \"none\",\n  \"obstacle_triangle_count\": 32,\n  \"optix_summary_mode\": \"rows\",\n  \"oracle_hit_edge_count\": 18,\n  \"output_mode\": \"hit_count\",\n  \"pose_count\": 8,\n  \"rtdl_role\": \"RTDL emits per-edge ray/triangle any-hit rows; rt.reduce_rows(any) converts edge rows into pose collision flags, and Python maps witnesses back to pose/link summaries.\",\n  \"validation_mode\": \"cpu_oracle\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "embree",
+        "--body-count",
+        "64",
+        "--output-mode",
+        "candidate_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.48295542784035206,
+      "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"backend\": \"embree\",\n  \"body_count\": 64,\n  \"body_count_with_candidates\": 64,\n  \"boundary\": \"Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.\",\n  \"candidate_row_count\": 256,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_fixed_radius_candidate_summary\",\n  \"node_count\": 4,\n  \"node_count_seen\": 4,\n  \"node_radius\": null,\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"candidate_summary\",\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--iterations",
+        "8"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.38420288264751434,
+      "stdout_tail": "{\n  \"app\": \"continuous_frechet_distance\",\n  \"backend\": \"embree\",\n  \"broadphase_stats\": {\n    \"candidate_expansion\": 1,\n    \"fallback_reason\": null,\n    \"last_broadphase_row_count\": null,\n    \"last_candidate_cell_count\": null,\n    \"last_prune_ratio\": null,\n    \"last_raw_candidate_cell_count\": null,\n    \"used_as_filter\": false\n  },\n  \"candidate_mode\": \"all_cells\",\n  \"claim_boundary\": \"This is a v1.8 Python+RTDL learner app. It demonstrates how a new continuous Frechet application can route RT-shaped broadphase work through RTDL/OptiX, but it is not a universal speedup claim and the exact free-space dynamic program remains outside the app-agnostic native engine.\",\n  \"continuation\": \"python\",\n  \"copies\": 1,\n  \"curve_p_point_count\": 4,\n  \"curve_q_point_count\": 4,\n  \"decision\": null,\n  \"distance_estimate\": 0.20614200080478015,\n  \"free_space_cell_count\": 9,\n  \"matches_oracle\": true,\n  \"nvidia_rt_core_path\": \"--backend optix --candidate-mode rtdl_broadphase --require-rt-core uses the bounded native OptiX segment/shape pair-row emitter for the cell broadphase when librtdl_optix is available.\",\n  \"oracle_distance_estimate\": 0.20614200080478015,\n  \"oracle_verified\": true,\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL is used as a generic segment-vs-expanded-shape broadphase over free-space cells. The continuous Frechet free-space reachability algorithm and distance search stay outside the app-agnostic RTDL engine, in either Python or the optional learner-owned C++ continuation.\",\n  \"run_phases\": {\n    \"distance_search_sec\": 0.0004331246018409729,\n    \"oracle_search_sec\": 0.00038888119161129\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "1",
+        "--embree-result-mode",
+        "directed_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.40991430170834064,
+      "stdout_tail": "00004\n      }\n    ],\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"embree_result_mode\": \"directed_summary\",\n  \"hausdorff_distance\": 0.30000000000000004,\n  \"hausdorff_threshold\": null,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"embree_directed_hausdorff\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.\"\n  },\n  \"optix_summary_mode\": null,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"partner\": null,\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/Embree runs k=1 nearest-neighbor traversal and directed max reduction inside the native Embree summary path; Python keeps only undirected comparison and oracle validation.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 2.9692426323890686e-05,\n    \"native_directed_summary_sec\": 0.008458239957690239,\n    \"validation_sec\": 0.0006816443055868149\n  },\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py",
+        "--points-a",
+        "64",
+        "--points-b",
+        "64",
+        "--method",
+        "openmp_cpu"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.3133917916566133,
+      "stdout_tail": "{\n  \"primary\": {\n    \"direction\": \"b_to_a\",\n    \"distance\": 0.3192591107842698,\n    \"elapsed_sec\": 0.25290535762906075,\n    \"method\": \"openmp_cpu\",\n    \"source_index\": 32,\n    \"target_index\": 15\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_user_benchmark.py",
+        "--points-a",
+        "64",
+        "--points-b",
+        "64",
+        "--skip-cuda-ctypes",
+        "--skip-cupy",
+        "--skip-builtin-partner"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.3098755441606045,
+      "stdout_tail": "[hausdorff] generating deterministic point clouds A=64 B=64\n[hausdorff] running multithreaded OpenMP CPU baseline\n[hausdorff] OpenMP CPU distance=0.319259110784 sec=0.271281\n{\n  \"app\": \"hausdorff_distance\",\n  \"methods\": {\n    \"openmp_cpu\": {\n      \"directed_a_to_b\": {\n        \"distance\": 0.24485320783703524,\n        \"elapsed_sec\": 0.1866123154759407,\n        \"source_index\": 42,\n        \"target_index\": 21\n      },\n      \"directed_b_to_a\": {\n        \"distance\": 0.3192591107842698,\n        \"elapsed_sec\": 0.08466876111924648,\n        \"source_index\": 32,\n        \"target_index\": 15\n      },\n      \"direction\": \"b_to_a\",\n      \"distance\": 0.3192591107842698,\n      \"elapsed_sec\": 0.2712810765951872\n    }\n  },\n  \"oracle_distance\": 0.3192591107842698,\n  \"points_a\": 64,\n  \"points_b\": 64,\n  \"role\": \"user_level_v2_0_benchmark_no_rtdl_runtime_mutation\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "embree",
+      "command": [
+        "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+        "--workload",
+        "all",
+        "--backend",
+        "embree",
+        "--no-rows"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.45861547626554966,
+      "stdout_tail": "positive filtering, and overlay continuation stay in Python/partner code.\",\n      \"parity_vs_cpu_python_reference\": true,\n      \"row_count\": 0,\n      \"rt_core_accelerated\": false,\n      \"summary\": {\n        \"active_seed_count\": 0,\n        \"active_seed_pairs\": [],\n        \"output_contract\": \"overlay_pair_dependency_rows_with_lsi_pip_flags\",\n        \"pair_dependency_row_count\": 0\n      },\n      \"workload\": \"overlay_seed\"\n    },\n    \"pip\": {\n      \"app\": \"rayjoin_v2_spatial_join\",\n      \"backend\": \"embree\",\n      \"claim_boundary\": {\n        \"full_rayjoin_reproduction\": false,\n        \"paper_scale_perf_claim_authorized\": false,\n        \"requires_pod_for_optix_perf\": true,\n        \"v2_0_release_authorized\": false\n      },\n      \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb\",\n      \"dataset_note\": \"County subset probe points against deterministic chain-derived polygons.\",\n      \"elapsed_sec\": 0.008115340024232864,\n      \"native_engine_boundary\": \"The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.\",\n      \"parity_vs_cpu_python_reference\": true,\n      \"row_count\": 6,\n      \"rt_core_accelerated\": false,\n      \"summary\": {\n        \"output_contract\": \"point_to_polygon_positive_hit_rows\",\n        \"positive_assignment_count\": 6,\n        \"positive_assignments\": [\n          {\n            \"point_id\": 1,\n            \"polygon_id\": 1\n          },\n          {\n            \"point_id\": 1,\n            \"polygon_id\": 2\n          },\n          {\n            \"point_id\": 2,\n            \"polygon_id\": 1\n          },\n          {\n            \"point_id\": 2,\n            \"polygon_id\": 2\n          },\n          {\n            \"point_id\": 3,\n            \"polygon_id\": 1\n          },\n          {\n            \"point_id\": 3,\n            \"polygon_id\": 2\n          }\n        ],\n        \"positive_hit_row_count\": 6\n      },\n      \"workload\": \"pip\"\n    }\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/getting_started/rtdl_hello_world_backends.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.467946644872427,
+      "stdout_tail": "{\n  \"backend\": \"optix\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/features/neighbors/rtdl_fixed_radius_neighbors.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.4383064936846495,
+      "stdout_tail": "{\n  \"app\": \"fixed_radius_neighbors\",\n  \"backend\": \"optix\",\n  \"k_max\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"radius\": 0.5,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/features/neighbors/rtdl_knn_rows.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.3482897132635117,
+      "stdout_tail": "{\n  \"app\": \"knn_rows\",\n  \"backend\": \"optix\",\n  \"k\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 0.30000001192092896,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 0.30000001192092896,\n        \"neighbor_id\": 3,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000004768371582,\n        \"neighbor_id\": 4,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 1.0,\n        \"neighbor_id\": 5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 2.700000047683716,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 3\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"neighbor_rank\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.30000001192092896,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.30000001192092896,\n      \"neighbor_id\": 3,\n      \"neighbor_rank\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000004768371582,\n      \"neighbor_id\": 4,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.0,\n      \"neighbor_id\": 5,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 2.700000047683716,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--optix-mode",
+        "native"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.5869555845856667,
+      "stdout_tail": "{\n  \"app\": \"segment_polygon_hitcount\",\n  \"backend\": \"optix\",\n  \"boundary\": \"RT-core performance remains classified separately: OptiX mode 'native' explicitly requests the experimental native custom-AABB path, but current public performance class stays host_indexed_fallback until a focused correctness/performance gate passes.\",\n  \"dataset\": \"derived/br_county_subset_segment_polygon_tiled_x1\",\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_native_hitcount_gated\",\n  \"optix_mode\": \"native\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default segment/polygon OptiX path remains conservative, but the prepared hit-count profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal for compact hit-count summaries.\"\n  },\n  \"row_count\": 10,\n  \"rows\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 4\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 5\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 6\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 7\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 8\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 9\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 10\n    }\n  ],\n  \"rt_core_accelerated\": false\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--output-mode",
+        "segment_counts",
+        "--optix-mode",
+        "native"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.2811817023903131,
+      "stdout_tail": "{\n  \"app\": \"segment_polygon_anyhit_rows\",\n  \"backend\": \"optix\",\n  \"boundary\": \"Rows mode emits segment/polygon pair rows. Compact segment_flags and segment_counts use the RTDL segment_polygon_hitcount primitive to avoid materializing full segment/polygon pair rows. Explicit --backend optix --output-mode rows --optix-mode native uses the bounded native OptiX pair-row emitter; overflow fails rather than truncating. This exposes a true traversal path, but speedup claims still require strict RTX artifact review.\",\n  \"dataset\": \"derived/br_county_subset_segment_polygon_tiled_x1\",\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_native_hitcount_gated\",\n  \"native_output_capacity\": 1000000,\n  \"optix_mode\": \"native\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal\",\n    \"note\": \"Default segment/polygon OptiX pair-row path remains conservative, but the prepared bounded pair-row profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal with bounded output and overflow metadata.\"\n  },\n  \"output_mode\": \"segment_counts\",\n  \"row_count\": 10,\n  \"rt_core_accelerated\": false,\n  \"segment_counts\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 4\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 5\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 6\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 7\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 8\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 9\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 10\n    }\n  ],\n  \"summary_source\": \"segment_polygon_hitcount\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary",
+        "--candidate-mode",
+        "partner_bbox"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.3850323762744665,
+      "stdout_tail": " kernel.\"\n  },\n  \"output_mode\": \"summary\",\n  \"primitive_contract\": {\n    \"active_v1_4_backend\": true,\n    \"app_row\": \"polygon_pair_overlap_area_rows\",\n    \"backend\": \"optix\",\n    \"backend_contract_role\": \"exact_area_summary_after_partner_candidates\",\n    \"backend_scope\": [\n      \"embree\",\n      \"optix\"\n    ],\n    \"build_layout\": \"polygon2d_build_buffer\",\n    \"candidate_primitive\": \"CPU_PARTNER_BBOX_BROADPHASE\",\n    \"candidate_row_count\": 3,\n    \"claim_boundary\": \"partner_bbox candidate discovery only: a CPU partner emits generic bbox-overlap candidate pairs before backend-neutral exact grid-cell area summary. This is not RT candidate discovery, a generic polygon overlay engine, or public whole-app speedup wording.\",\n    \"exact_area_continuation\": \"backend_neutral_native_polygon_pair_area_summary\",\n    \"future_area_primitive\": \"REDUCE_FLOAT(SUM)\",\n    \"future_area_primitive_status\": \"pod_verified_generic_non_public\",\n    \"goal1270_diagnostic_split_preserved\": true,\n    \"migration_status\": \"compatibility_wrapper_metadata_only\",\n    \"mode\": \"native_candidate_plus_app_specific_exact_area\",\n    \"output_mode\": \"summary\",\n    \"phase_counters\": [\n      \"rt_candidate_discovery_sec\",\n      \"native_exact_continuation_sec\",\n      \"query_and_materialize_sec\",\n      \"summary_postprocess_sec\"\n    ],\n    \"primitive\": \"ANY_HIT\",\n    \"probe_layout\": \"polygon2d_probe_buffer\",\n    \"result_layout\": \"positive_pair_rows_or_summary\",\n    \"same_contract_baseline_required\": true\n  },\n  \"right_polygon_count\": 3,\n  \"row_count\": 2,\n  \"rt_core_accelerated\": false,\n  \"rt_core_candidate_discovery_active\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 2.7740374207496643e-05,\n    \"native_exact_continuation_sec\": 0.00021089054644107819,\n    \"partner_bbox_candidate_discovery_sec\": 5.122460424900055e-05,\n    \"query_polygon_exact_area_reduce_float_sum_sec\": 0.00021089054644107819\n  },\n  \"summary\": {\n    \"overlap_pair_count\": 2,\n    \"total_intersection_area\": 5,\n    \"total_union_area\": 19\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary",
+        "--candidate-mode",
+        "partner_bbox"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 0.4023530390113592,
+      "stdout_tail": "rimitive\": \"CPU_PARTNER_BBOX_BROADPHASE\",\n    \"candidate_row_count\": 3,\n    \"chunk_policy_required_for_public_evidence\": true,\n    \"claim_boundary\": \"polygon_set_jaccard partner_bbox mode remains diagnostic: a CPU partner emits generic bbox-overlap candidate pairs, then backend-neutral native polygon-pair set-area summary computes the Jaccard ratio. This is not RT candidate discovery, not a generic polygon overlay engine, and not public whole-app speedup wording.\",\n    \"exact_score_continuation\": \"backend_neutral_native_polygon_pair_area_summary\",\n    \"experimental_collection_primitive\": \"COLLECT_K_BOUNDED\",\n    \"future_score_primitive\": \"REDUCE_FLOAT(SUM)\",\n    \"future_score_primitive_status\": \"pod_verified_generic_non_public\",\n    \"migration_status\": \"diagnostic_metadata_only\",\n    \"mode\": \"diagnostic_native_candidate_plus_generic_area_summary\",\n    \"output_mode\": \"summary\",\n    \"phase_counters\": [\n      \"rt_candidate_discovery_sec\",\n      \"native_exact_continuation_sec\",\n      \"query_and_materialize_sec\",\n      \"summary_postprocess_sec\"\n    ],\n    \"primitive\": \"ANY_HIT\",\n    \"probe_layout\": \"polygon2d_probe_buffer\",\n    \"public_wording_allowed\": false,\n    \"result_layout\": \"single_jaccard_summary_row\",\n    \"same_contract_baseline_required\": true,\n    \"status\": \"optix_still_slower_with_reason\"\n  },\n  \"right_polygon_count\": 2,\n  \"row_count\": 1,\n  \"rt_core_accelerated\": false,\n  \"rt_core_candidate_discovery_active\": false,\n  \"run_phases\": {\n    \"input_construction_sec\": 2.4322420358657837e-05,\n    \"native_exact_continuation_sec\": 0.005127230659127235,\n    \"partner_bbox_candidate_discovery_sec\": 8.497387170791626e-05,\n    \"query_polygon_collect_k_bounded_sec\": 2.858974039554596e-05,\n    \"query_polygon_jaccard_reduce_float_sum_sec\": 0.005127230659127235,\n    \"summary_postprocess_sec\": 5.997717380523682e-07\n  },\n  \"summary\": {\n    \"intersection_area\": 5,\n    \"jaccard_similarity\": 0.2631578947368421,\n    \"left_area\": 13,\n    \"right_area\": 11,\n    \"union_area\": 19\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/partners/rtdl_partner_anyhit.py",
+        "--partner",
+        "cupy-cuda",
+        "--backend",
+        "optix"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.64952065423131,
+      "stdout_tail": "{\n  \"backend\": \"optix\",\n  \"example\": \"rtdl_partner_anyhit\",\n  \"hit_count\": 1,\n  \"partner_input\": \"cupy-cuda\",\n  \"partner_phase_timing_keys\": [\n    \"descriptor_validation\",\n    \"framework_to_host_staging\",\n    \"optix_count_and_scalar_copyback\",\n    \"optix_prepare\",\n    \"packet_packing\"\n  ],\n  \"ray_count\": 2,\n  \"rt_core_speedup_claim_authorized\": false,\n  \"source_devices\": [\n    \"cuda:0\"\n  ],\n  \"source_protocols\": [\n    \"cupy\"\n  ],\n  \"transfer_mode\": \"host_stage\",\n  \"triangle_count\": 1,\n  \"true_zero_copy_authorized\": false\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/partners/rtdl_control_apps_cupy_rawkernel.py",
+        "--app",
+        "all",
+        "--copies",
+        "1",
+        "--partner",
+        "cupy",
+        "--candidate-backend",
+        "cupy_extent"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 2.270444529131055,
+      "stdout_tail": "ngle_count\": {\n          \"touched_vertex_count\": 3,\n          \"triangle_count\": 1\n        },\n        \"visibility_edges\": {\n          \"blocked_edge_count\": 3,\n          \"visible_edge_count\": 1\n        }\n      },\n      \"v2_control_app_path\": \"partner_metric_table_reduce_repeated_pattern\"\n    },\n    {\n      \"app\": \"polygon_pair_overlap_area_rows\",\n      \"candidate_backend\": \"cupy_extent\",\n      \"candidate_pair_count\": 2,\n      \"copies\": 1,\n      \"fairness_note\": \"Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.\",\n      \"matches_v1_8_python_rtdl_oracle\": true,\n      \"pair_payload_row_count\": 2,\n      \"partner\": \"cupy\",\n      \"run_phases\": {\n        \"candidate_and_payload_construction_sec\": 1.0919037219136953,\n        \"partner_rawkernel_continuation_sec\": 0.036642683669924736\n      },\n      \"summary\": {\n        \"overlap_pair_count\": 2,\n        \"total_intersection_area\": 5,\n        \"total_union_area\": 19\n      },\n      \"v2_control_app_path\": \"aabb_pair_overlap_summary_2d_partner_columns\"\n    },\n    {\n      \"app\": \"polygon_set_jaccard\",\n      \"candidate_backend\": \"cupy_extent\",\n      \"candidate_pair_count\": 2,\n      \"copies\": 1,\n      \"fairness_note\": \"Compared against v1.8 Python+RTDL without user C/C++ extension; v2 uses Python+partner continuations+RTDL under the explicit user decision.\",\n      \"matches_v1_8_python_rtdl_oracle\": true,\n      \"pair_payload_row_count\": 2,\n      \"partner\": \"cupy\",\n      \"run_phases\": {\n        \"candidate_and_payload_construction_sec\": 0.0013793278485536575,\n        \"partner_rawkernel_continuation_sec\": 0.00017177127301692963\n      },\n      \"summary\": {\n        \"intersection_area\": 5,\n        \"jaccard_similarity\": 0.2631578947368421,\n        \"left_area\": 13,\n        \"right_area\": 11,\n        \"union_area\": 19\n      },\n      \"v2_control_app_path\": \"aabb_pair_overlap_summary_2d_partner_columns\"\n    }\n  ],\n  \"status\": \"rawkernel-control-app-v2-contract\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
+        "--backend",
+        "optix",
+        "--scenario",
+        "all",
+        "--copies",
+        "1",
+        "--output-mode",
+        "compact_summary"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.3526041936129332,
+      "stdout_tail": "predicate count, grouped integer count, and grouped integer sum over an application-owned denormalized table. This excludes SQL engines, DBMS behavior, query planning, joins, transactions, indexes as a database feature, and row-materializing output.\",\n        \"materialization_free\": true,\n        \"migration_status\": \"compatibility_wrapper_metadata_only\",\n        \"mode\": \"prepared_compact_summary\",\n        \"phase_counters\": [\n          \"query_compact_summary_batch_sec\",\n          \"query_conjunctive_scan_count_sec\",\n          \"query_grouped_count_summary_sec\",\n          \"query_grouped_sum_summary_sec\",\n          \"query_conjunctive_scan_and_materialize_sec\",\n          \"query_grouped_count_and_materialize_sec\",\n          \"query_grouped_sum_and_materialize_sec\",\n          \"python_summary_postprocess_sec\"\n        ],\n        \"prepared_state\": \"prepared_columnar_dataset_reusable\",\n        \"primitive\": \"COUNT_HITS\",\n        \"probe_layout\": \"predicate_bundle_and_grouped_query\",\n        \"result_layout\": \"aggregate_scan_count_and_grouped_integer_maps\",\n        \"same_contract_baseline_required\": true,\n        \"secondary_primitive\": \"REDUCE_INT(SUM)\"\n      },\n      \"row_counts\": {\n        \"grouped_count\": 3,\n        \"grouped_sum\": 3,\n        \"scan\": 4\n      },\n      \"rows\": {},\n      \"run_phases\": {\n        \"python_summary_postprocess_sec\": 1.2531876564025879e-05,\n        \"query_compact_summary_batch_sec\": 0.0003685448318719864,\n        \"query_generic_db_compact_summary_batch_sec\": 0.0003685448318719864\n      },\n      \"session\": {\n        \"input_construction_sec\": 1.931004226207733e-05,\n        \"prepare_sec\": 0.00042381882667541504\n      },\n      \"summary\": {\n        \"highest_risk_region\": \"west\",\n        \"risky_order_count\": 4,\n        \"risky_order_count_by_region\": {\n          \"central\": 1,\n          \"east\": 1,\n          \"west\": 2\n        },\n        \"risky_revenue_by_region\": {\n          \"central\": 260,\n          \"east\": 310,\n          \"west\": 430\n        }\n      }\n    }\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--optix-summary-mode",
+        "count_summary_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.2817498855292797,
+      "stdout_tail": "{\n  \"app\": \"event_hotspot_screening\",\n  \"backend\": \"optix\",\n  \"copies\": 1,\n  \"embree_summary_mode\": null,\n  \"event_count\": 6,\n  \"hotspot_count\": 4,\n  \"hotspot_threshold\": 3,\n  \"hotspots\": null,\n  \"k_max\": 12,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"neighbor_count_by_event\": {},\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Explicit count_summary_prepared mode uses prepared OptiX fixed-radius count traversal and compact hotspot summaries; rows mode is not the RT-core claim path.\"\n  },\n  \"optix_summary_mode\": \"count_summary_prepared\",\n  \"radius\": 0.75,\n  \"rows\": [],\n  \"rt_core_accelerated\": true,\n  \"summary_boundary\": \"count_summary_prepared reports only scalar hotspot count; use rows or Embree count_summary mode when hotspot event ids or per-event counts are required.\",\n  \"summary_rows\": []\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--output-mode",
+        "summary",
+        "--optix-summary-mode",
+        "coverage_threshold_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.2517651338130236,
+      "stdout_tail": "{\n  \"app\": \"facility_knn_assignment\",\n  \"backend\": \"optix\",\n  \"boundary\": \"Coverage-threshold decision only; this is not nearest-depot ranking, not K=3 fallback assignment, and not a facility-location optimizer.\",\n  \"copies\": 1,\n  \"coverage_threshold\": {\n    \"all_customers_covered\": true,\n    \"covered_customer_count\": 4,\n    \"customer_count\": 4,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"radius\": 1.0,\n    \"row_count\": null,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"uncovered_customer_ids\": []\n  },\n  \"customer_count\": 4,\n  \"depot_count\": 4,\n  \"k\": null,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"optix_summary_mode\": \"coverage_threshold_prepared\",\n  \"oracle_coverage_threshold\": {\n    \"all_customers_covered\": true,\n    \"covered_customer_count\": 4,\n    \"customer_count\": 4,\n    \"radius\": 1.0,\n    \"uncovered_customer_ids\": []\n  },\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"output_mode\": \"summary\",\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the bounded facility-coverage decision: every customer has at least one depot within the service radius.\",\n  \"service_radius\": 1.0\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--optix-summary-mode",
+        "gap_summary_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.1748936120420694,
+      "stdout_tail": "{\n  \"app\": \"service_coverage_gaps\",\n  \"backend\": \"optix\",\n  \"clinic_count\": 3,\n  \"clinic_loads\": {},\n  \"copies\": 1,\n  \"coverage_summary_rows\": [],\n  \"covered_household_count\": 3,\n  \"embree_summary_mode\": null,\n  \"household_count\": 4,\n  \"k_max\": 4,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"nearby_clinics_by_household\": {},\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Explicit gap_summary_prepared mode uses prepared OptiX fixed-radius threshold traversal and compact summary output; rows mode is not the RT-core claim path.\"\n  },\n  \"optix_summary_mode\": \"gap_summary_prepared\",\n  \"radius\": 0.85,\n  \"rows\": [],\n  \"rt_core_accelerated\": true,\n  \"summary_boundary\": \"gap_summary_prepared reports only scalar covered/uncovered counts; use rows mode when household ids, clinic ids, distances, or clinic loads are required.\",\n  \"uncovered_household_ids\": null\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--output-mode",
+        "quality_summary",
+        "--optix-summary-mode",
+        "candidate_threshold_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.117540480569005,
+      "stdout_tail": "{\n  \"app\": \"ann_candidate_search\",\n  \"backend\": \"optix\",\n  \"boundary\": \"Candidate-threshold decision only; this is not a full ANN index, not nearest-neighbor ranking, and not a recall/latency optimizer. Python still owns candidate-set construction and any quality policy.\",\n  \"candidate_count\": 3,\n  \"candidate_radius\": 0.2,\n  \"candidate_threshold\": {\n    \"covered_query_count\": 3,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"query_count\": 3,\n    \"radius\": 0.2,\n    \"row_count\": null,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"uncovered_query_ids\": [],\n    \"within_candidate_radius\": true\n  },\n  \"copies\": 1,\n  \"k\": 1,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only.\"\n  },\n  \"optix_summary_mode\": \"candidate_threshold_prepared\",\n  \"oracle_candidate_threshold\": {\n    \"covered_query_count\": 3,\n    \"query_count\": 3,\n    \"radius\": 0.2,\n    \"uncovered_query_ids\": [],\n    \"within_candidate_radius\": true\n  },\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"output_mode\": \"quality_summary\",\n  \"query_count\": 3,\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the bounded ANN candidate-coverage decision: every query has at least one Python-selected candidate within the acceptance radius.\",\n  \"search_count\": 6\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--output-mode",
+        "core_count",
+        "--optix-summary-mode",
+        "rt_core_flags_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.195915224030614,
+      "stdout_tail": "onent references, not a native engine DBSCAN continuation and not an RT-core claim. The spatial-bucket path uses a host-built sparse bucket index as an explicit transitional debt, not a true zero-copy claim.\",\n  \"cluster_rows\": [],\n  \"cluster_sizes\": {},\n  \"copies\": 1,\n  \"core_count\": 7,\n  \"core_flag_rows\": [],\n  \"embree_summary_mode\": \"not_applicable\",\n  \"epsilon\": 0.35,\n  \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n  \"k_max\": 16,\n  \"matches_oracle\": true,\n  \"min_points\": 3,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"neighbor_row_count\": 0,\n  \"noise_point_ids\": [],\n  \"optix_summary_mode\": \"rt_core_flags_prepared\",\n  \"oracle_cluster_rows\": [],\n  \"oracle_core_count\": 7,\n  \"oracle_core_flag_rows\": [\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 1\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 2\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 3\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 5\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 6\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 7\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 8\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"partner\": null,\n  \"partner_metadata\": null,\n  \"partner_reference_contract\": null,\n  \"point_count\": 8,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The partner exact-cluster paths compute generic radius-graph component labels over point columns outside the native engine.\",\n  \"summary_mode\": \"scalar_threshold_count\",\n  \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n  \"threshold_reached_count\": 7,\n  \"validation_skipped\": false\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/ml/rtdl_outlier_detection_app.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--output-mode",
+        "density_count",
+        "--optix-summary-mode",
+        "rt_count_threshold_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.2973292637616396,
+      "stdout_tail": "rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.\",\n  \"copies\": 1,\n  \"density_rows\": [],\n  \"embree_summary_mode\": \"not_applicable\",\n  \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n  \"k_max\": 16,\n  \"matches_oracle\": true,\n  \"min_neighbors_including_self\": 3,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"native_summary_row_count\": 0,\n  \"neighbor_row_count\": 0,\n  \"optix_summary_mode\": \"rt_count_threshold_prepared\",\n  \"oracle_density_rows\": [\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 1\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 2\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 3\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 5\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 6\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 7\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 8\n    }\n  ],\n  \"oracle_outlier_count\": 2,\n  \"outlier_count\": 2,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 8,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count\",\n  \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n  \"threshold_reached_count\": 6\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "optix",
+        "--pose-count",
+        "8",
+        "--obstacle-count",
+        "16",
+        "--output-mode",
+        "pose_flags",
+        "--optix-summary-mode",
+        "prepared_pose_flags"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.4435821007937193,
+      "stdout_tail": "\": 32,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_prepared_pose_flags\",\n  \"obstacle_triangle_count\": 32,\n  \"optix_summary_mode\": \"prepared_pose_flags\",\n  \"oracle_colliding_pose_ids\": [\n    2,\n    3,\n    4,\n    6,\n    7,\n    8\n  ],\n  \"output_mode\": \"pose_flags\",\n  \"pose_count\": 8,\n  \"prepared_summary\": {\n    \"colliding_pose_count\": 6,\n    \"colliding_pose_ids\": [\n      2,\n      3,\n      4,\n      6,\n      7,\n      8\n    ],\n    \"edge_ray_count\": 32,\n    \"generic_primitive\": \"ANY_HIT\",\n    \"mode\": \"optix_prepared_pose_flags\",\n    \"obstacle_triangle_count\": 32,\n    \"pose_collision_flags\": [\n      {\n        \"collides\": false,\n        \"pose_id\": 1\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 2\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 3\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 4\n      },\n      {\n        \"collides\": false,\n        \"pose_id\": 5\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 6\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 7\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 8\n      }\n    ],\n    \"result_layout\": \"grouped_threshold_bool\",\n    \"run_phases\": {\n      \"group_index_prepare_sec\": 6.599165499210358e-05,\n      \"query_grouped_count_threshold_bool_first_sec\": 0.4267514552921057,\n      \"query_grouped_count_threshold_bool_mean_sec\": 0.4267514552921057,\n      \"query_grouped_count_threshold_bool_min_sec\": 0.4267514552921057,\n      \"query_grouped_count_threshold_bool_sec\": 0.4267514552921057,\n      \"ray_prepare_sec\": 0.00018886104226112366,\n      \"scene_prepare_sec\": 0.3721903860569,\n      \"scene_prepare_sec_this_batch\": 0.0\n    },\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\"\n  },\n  \"rtdl_role\": \"RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path.\",\n  \"validation_mode\": \"cpu_oracle\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "optix",
+        "--body-count",
+        "64",
+        "--output-mode",
+        "candidate_summary",
+        "--optix-summary-mode",
+        "node_coverage_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.3688643537461758,
+      "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"backend\": \"optix\",\n  \"body_count\": 64,\n  \"boundary\": \"Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.\",\n  \"matches_oracle\": true,\n  \"node_count\": 4,\n  \"node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"body_count\": 64,\n    \"covered_body_count\": 64,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"radius\": 10.0,\n    \"row_count\": null,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"uncovered_body_ids\": []\n  },\n  \"node_radius\": 10.0,\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": \"node_coverage_prepared\",\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"body_count\": 64,\n    \"covered_body_count\": 64,\n    \"max_candidate_count\": 4,\n    \"min_candidate_count\": 4,\n    \"radius\": 10.0,\n    \"threshold\": 1,\n    \"uncovered_body_ids\": []\n  },\n  \"output_mode\": \"candidate_summary\",\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.\",\n  \"theta\": 0.75\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--copies",
+        "1",
+        "--optix-summary-mode",
+        "directed_threshold_prepared"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.1884384639561176,
+      "stdout_tail": "rce_ids\": [],\n    \"within_threshold\": true\n  },\n  \"embree_result_mode\": null,\n  \"hausdorff_distance\": null,\n  \"hausdorff_threshold\": 0.4,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.\"\n  },\n  \"optix_summary_mode\": \"directed_threshold_prepared\",\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 2.839416265487671e-05,\n    \"python_postprocess_sec\": 9.10833477973938e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.00037076883018016815,\n    \"scene_prepare_sec\": 0.6468181442469358,\n    \"validation_sec\": 0.0002009160816669464\n  },\n  \"within_threshold\": true\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py",
+        "--points-a",
+        "64",
+        "--points-b",
+        "64",
+        "--method",
+        "rtdl_rt_grouped_reduced_nearest_witness",
+        "--rt-backend",
+        "optix"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 2.000237999483943,
+      "stdout_tail": "{\n  \"primary\": {\n    \"backend\": \"optix\",\n    \"direction\": \"b_to_a\",\n    \"distance\": 0.3192591107842697,\n    \"elapsed_sec\": 1.408969335258007,\n    \"exact_value\": true,\n    \"method\": \"rtdl_rt_grouped_reduced_nearest_witness\",\n    \"radius_strategy\": \"rt_grouped_threshold_upper_bound\",\n    \"rt_core_accelerated\": true,\n    \"source_index\": 32,\n    \"target_index\": 15,\n    \"threshold_iterations\": 38,\n    \"witness_radius\": 0.3192610184082296\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "group": "optix",
+      "command": [
+        "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+        "--workload",
+        "pip",
+        "--backend",
+        "optix",
+        "--execution-route",
+        "prepared_optix",
+        "--result-mode",
+        "count",
+        "--no-rows"
+      ],
+      "status": "pass",
+      "returncode": 0,
+      "elapsed_sec": 1.4510115217417479,
+      "stdout_tail": "{\n  \"app\": \"rayjoin_v2_spatial_join\",\n  \"backend\": \"optix\",\n  \"claim_boundary\": {\n    \"full_rayjoin_reproduction\": false,\n    \"paper_scale_perf_claim_authorized\": false,\n    \"requires_pod_for_optix_perf\": false,\n    \"rtdl_beats_rayjoin_claim_authorized\": false,\n    \"v2_0_release_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb\",\n  \"dataset_note\": \"County subset probe points against deterministic chain-derived polygons.\",\n  \"device_resident_continuation_status\": \"not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work\",\n  \"execution_route\": \"prepared_optix\",\n  \"native_engine_boundary\": \"The engine sees generic prepared point/closed-shape or segment-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.\",\n  \"native_phase_timings\": {\n    \"candidate_count_pass\": 0.0,\n    \"candidate_download\": 6.996e-06,\n    \"candidate_write_pass\": 5.9344e-05,\n    \"emitted_count\": 6,\n    \"exact_refine\": 2.7372e-05,\n    \"mode\": \"count\",\n    \"point_pack\": 3.96e-07,\n    \"point_upload\": 2.5414e-05,\n    \"raw_candidate_count\": 6\n  },\n  \"phases_sec\": {\n    \"prepare_static_scene_sec\": 0.8243437949568033,\n    \"prepared_query_sec\": 0.00030715204775333405,\n    \"query_pack_sec\": 1.2872740626335144e-05,\n    \"static_shape_pack_sec\": 5.8496370911598206e-05\n  },\n  \"result_mode\": \"count\",\n  \"row_count\": 6,\n  \"summary\": {\n    \"output_contract\": \"point_to_shape_positive_hit_count\",\n    \"positive_assignment_count\": 6,\n    \"positive_hit_row_count\": 6\n  },\n  \"workload\": \"pip\"\n}\n",
+      "stderr_tail": ""
+    }
+  ]
+}
