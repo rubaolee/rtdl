@@ -82,6 +82,74 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
         self.assertIn('{"id": idx, "x": x, "y": y}', text)
         self.assertNotIn("rt.Point2D", text)
 
+    def test_cuda12_patch_command_is_idempotent_and_external_only(self) -> None:
+        runner = _load_runner()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            source = root / "src" / "optixNSearch"
+            source.mkdir(parents=True)
+            (source / "thrust_helper.cu").write_text(
+                "#include <thrust/execution_policy.h>\nvoid f() {}\n",
+                encoding="utf-8",
+            )
+            (source / "sort.cpp").write_text(
+                "#include <thrust/gather.h>\nvoid g() { thrust::host_vector<int> v; }\n",
+                encoding="utf-8",
+            )
+            (source / "geometry.cu").write_text(
+                "float a = uint_as_float(1); unsigned b = float_as_uint(1.0f);\n",
+                encoding="utf-8",
+            )
+
+            first = runner.patch_rtnn_cuda12_checkout(root)
+            self.assertEqual(first["operation"], "patch-rtnn-cuda12")
+            self.assertEqual(first["changed_count"], 3)
+            self.assertFalse(first["claim_boundary"]["rtdl_source_changed"])
+            self.assertFalse(first["claim_boundary"]["algorithm_changed"])
+            self.assertIn("thrust/count.h", (source / "thrust_helper.cu").read_text(encoding="utf-8"))
+            self.assertIn("thrust/host_vector.h", (source / "sort.cpp").read_text(encoding="utf-8"))
+            geometry = (source / "geometry.cu").read_text(encoding="utf-8")
+            self.assertIn("__uint_as_float", geometry)
+            self.assertIn("__float_as_uint", geometry)
+
+            second = runner.patch_rtnn_cuda12_checkout(root)
+            self.assertEqual(second["changed_count"], 0)
+
+    def test_cli_cuda12_patch_writes_boundary_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / "rtnn"
+            source = root / "src" / "optixNSearch"
+            source.mkdir(parents=True)
+            (source / "thrust_helper.cu").write_text(
+                "#include <thrust/execution_policy.h>\n",
+                encoding="utf-8",
+            )
+            (source / "sort.cpp").write_text("#include <thrust/gather.h>\n", encoding="utf-8")
+            (source / "geometry.cu").write_text(
+                "uint_as_float(1); float_as_uint(1.0f);\n",
+                encoding="utf-8",
+            )
+            json_out = pathlib.Path(tmp) / "patch.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "patch-rtnn-cuda12",
+                    "--rtnn-root",
+                    str(root),
+                    "--json-out",
+                    str(json_out),
+                ],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            payload = json.loads(json_out.read_text(encoding="utf-8"))
+            self.assertTrue(payload["claim_boundary"]["external_rtnn_source_patch_only"])
+            self.assertEqual(payload["changed_count"], 3)
+
     def test_report_names_runner_as_next_harness(self) -> None:
         campaign = (
             ROOT

@@ -23,6 +23,7 @@ The script can:
 
 - generate deterministic RTNN-format point-cloud text files (`x,y,z` per line);
 - parse RTNN timing output lines such as `time search compute: ... ms`;
+- patch a disposable external RTNN checkout for CUDA 12 compatibility;
 - run an external RTNN `optixNSearch` binary with explicit radius/K/search
   policy metadata;
 - run the current RTDL 2-D OptiX fixed-radius count-threshold smoke path when
@@ -72,6 +73,10 @@ claim_boundary.synthetic_input_only = true
 After cloning and building RTNN on an RTX pod:
 
 ```text
+python3 scripts/goal2348_rtnn_v2_2_external_runner.py patch-rtnn-cuda12 \
+  --rtnn-root scratch/rtnn_goal2346 \
+  --json-out docs/reports/goal2348_rtnn_cuda12_patch.json
+
 python3 scripts/goal2348_rtnn_v2_2_external_runner.py generate \
   --point-file scratch/goal2348_ppp_3d_262144.txt \
   --point-count 262144 \
@@ -98,6 +103,10 @@ The first accepted comparison run must pair each RTNN row with a same-hardware
 RTDL row and record whether the RTDL row is current-v2.1 2-D smoke evidence or
 new v2.2 3-D bounded-neighbor evidence.
 
+The CUDA 12 patch subcommand only edits an external RTNN checkout. It adds
+missing Thrust includes and updates legacy NVRTC intrinsic names; it does not
+change RTDL source or RTNN algorithms.
+
 ## Validation
 
 Validated locally:
@@ -105,13 +114,14 @@ Validated locally:
 ```text
 PYTHONPATH=src;. py -3 -m unittest \
   tests.goal2348_rtnn_v2_2_external_runner_test \
-  tests.goal2346_v2_2_rtnn_campaign_test
+  tests.goal2346_v2_2_rtnn_campaign_test \
+  tests.goal2349_v2_2_rtnn_local_linux_optix_dev_test
 ```
 
 Result:
 
 ```text
-Ran 8 tests
+Ran 16 tests
 OK
 ```
 

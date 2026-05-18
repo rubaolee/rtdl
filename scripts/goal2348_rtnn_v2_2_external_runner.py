@@ -67,6 +67,75 @@ def _timing_summary(timings: dict[str, list[float]]) -> dict[str, object]:
     }
 
 
+def _insert_after(text: str, anchor: str, addition: str) -> tuple[str, bool]:
+    if addition in text:
+        return text, False
+    if anchor not in text:
+        raise ValueError(f"anchor not found: {anchor!r}")
+    return text.replace(anchor, anchor + addition, 1), True
+
+
+def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
+    """Apply compatibility-only patches to a disposable external RTNN checkout.
+
+    RTNN's upstream code targets an older CUDA/Thrust/NVRTC stack. The patches
+    here do not change RTNN algorithms; they only add missing Thrust headers and
+    use CUDA's modern device intrinsic spellings so the reference executable can
+    build/run on CUDA 12 pods used for RTDL comparison work.
+    """
+    patches: list[dict[str, object]] = []
+
+    edits = [
+        (
+            rtnn_root / "src" / "optixNSearch" / "thrust_helper.cu",
+            [
+                ("#include <thrust/execution_policy.h>\n", "#include <thrust/count.h>\n"),
+                ("#include <thrust/execution_policy.h>\n", "#include <thrust/unique.h>\n"),
+                ("#include <thrust/execution_policy.h>\n", "#include <thrust/tuple.h>\n"),
+            ],
+        ),
+        (
+            rtnn_root / "src" / "optixNSearch" / "sort.cpp",
+            [("#include <thrust/gather.h>\n", "#include <thrust/host_vector.h>\n")],
+        ),
+    ]
+    for path, insertions in edits:
+        text = path.read_text(encoding="utf-8")
+        changed = False
+        for anchor, addition in insertions:
+            text, did_change = _insert_after(text, anchor, addition)
+            changed = changed or did_change
+        if changed:
+            path.write_text(text, encoding="utf-8", newline="\n")
+        patches.append({"path": str(path), "changed": changed, "kind": "missing_thrust_include"})
+
+    geometry = rtnn_root / "src" / "optixNSearch" / "geometry.cu"
+    text = geometry.read_text(encoding="utf-8")
+    patched = re.sub(r"(?<!_)uint_as_float\(", "__uint_as_float(", text)
+    patched = re.sub(
+        r"(?<!_)float_as_uint\(",
+        "__float_as_uint(",
+        patched,
+    )
+    changed = patched != text
+    if changed:
+        geometry.write_text(patched, encoding="utf-8", newline="\n")
+    patches.append({"path": str(geometry), "changed": changed, "kind": "nvrtc_intrinsic_spelling"})
+
+    return {
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "operation": "patch-rtnn-cuda12",
+        "rtnn_root": str(rtnn_root),
+        "patches": patches,
+        "changed_count": sum(1 for patch in patches if patch["changed"]),
+        "claim_boundary": {
+            "external_rtnn_source_patch_only": True,
+            "rtdl_source_changed": False,
+            "algorithm_changed": False,
+        },
+    }
+
+
 def build_rtnn_command(args: argparse.Namespace) -> list[str]:
     command = [
         str(args.rtnn_binary),
@@ -221,6 +290,13 @@ def main(argv: list[str] | None = None) -> int:
     parse.add_argument("--log", type=Path, required=True)
     parse.add_argument("--json-out", type=Path, required=True)
 
+    patch = subparsers.add_parser(
+        "patch-rtnn-cuda12",
+        help="Patch a disposable external RTNN checkout for CUDA 12 build/runtime compatibility.",
+    )
+    patch.add_argument("--rtnn-root", type=Path, required=True)
+    patch.add_argument("--json-out", type=Path, required=True)
+
     rtnn = subparsers.add_parser("run-rtnn", help="Run an external RTNN optixNSearch binary.")
     rtnn.add_argument("--rtnn-binary", type=Path, required=True)
     rtnn.add_argument("--rtnn-cwd", type=Path)
@@ -270,6 +346,8 @@ def main(argv: list[str] | None = None) -> int:
             "log": str(args.log),
             "timings": _timing_summary(parse_rtnn_timings(text)),
         }
+    elif args.command == "patch-rtnn-cuda12":
+        payload = patch_rtnn_cuda12_checkout(args.rtnn_root)
     elif args.command == "run-rtnn":
         payload = run_rtnn(args)
     elif args.command == "run-rtdl-current-2d-smoke":

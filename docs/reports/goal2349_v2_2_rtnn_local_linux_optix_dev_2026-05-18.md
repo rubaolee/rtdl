@@ -141,7 +141,7 @@ This smoke confirms that the RTNN external baseline can be made runnable with th
 
 1. Reuse the Goal2348 runner on an RTX pod against the same RTDL commit.
 2. Build RTDL OptiX with the pod's OptiX SDK and record `librtdl_optix.so` provenance.
-3. Build external RTNN with GCC/CUDA-compatible settings; apply the same CUDA 12 source compatibility patches if needed.
+3. Build external RTNN with GCC/CUDA-compatible settings; apply the same CUDA 12 source compatibility patches with `python3 scripts/goal2348_rtnn_v2_2_external_runner.py patch-rtnn-cuda12 --rtnn-root ...` if needed.
 4. Run matched synthetic and paper-style RTNN rows for radius and KNN, with RTDL current behavior recorded separately from any new v2.2 primitive work.
 5. Only after same-hardware rows exist, decide which RTNN ideas should become app-agnostic RTDL v2.2 primitives.
 
