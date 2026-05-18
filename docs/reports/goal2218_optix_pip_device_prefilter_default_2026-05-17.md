@@ -19,10 +19,10 @@ Default positive-only PIP now:
 
 The conservative all-AABB mode remains available with:
 
-`RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER=1`
+`RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER=1`
 
 This opt-out exists for diagnosis and for any future precision investigation. It is not the default public path.
 
 ## Claim Boundary
 
-This source change does not by itself authorize a public performance claim. The required next step is a pod rerun without `RTDL_OPTIX_PIP_DEVICE_PREFILTER`, proving the default path preserves parity and reproduces the faster timing.
+This source change does not by itself authorize a public performance claim. The required next step is a pod rerun without `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER`, proving the default path preserves parity and reproduces the faster timing.

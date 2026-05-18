@@ -36,6 +36,6 @@ The generated JSON goes to:
 
 ## Boundary
 
-Goal1906 is a wording hygiene gate. Passing it does not authorize v2.0 release,
-package-install support, whole-app speedup claims, broad RT-core speedup claims,
-or arbitrary partner-program acceleration claims.
+Goal1906 is a wording hygiene gate. After the v2.0 release action, passing it
+does not authorize package-install support, whole-app speedup claims, broad
+RT-core speedup claims, or arbitrary partner-program acceleration claims.

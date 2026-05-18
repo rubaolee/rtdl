@@ -10,7 +10,7 @@ REPORT = ROOT / "docs" / "reports" / "goal2222_optix_pip_one_pass_compact_experi
 class Goal2222OptixPipOnePassCompactExperimentTest(unittest.TestCase):
     def test_one_pass_compact_has_opt_out_and_overflow_fallback(self) -> None:
         text = WORKLOADS.read_text(encoding="utf-8")
-        self.assertIn("RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT", text)
+        self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT", text)
         self.assertIn("pip_one_pass_compact", text)
         self.assertIn("allow_overflow", text)
         self.assertIn("pip_fallback_chunks", text)
@@ -26,7 +26,7 @@ class Goal2222OptixPipOnePassCompactExperimentTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Goal2222", text)
         self.assertIn("one-pass optimistic compact writer", text)
-        self.assertIn("RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT=1", text)
+        self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT=1", text)
         self.assertIn("overflow fallback", text)
         self.assertIn("does not authorize a performance claim", text)
 

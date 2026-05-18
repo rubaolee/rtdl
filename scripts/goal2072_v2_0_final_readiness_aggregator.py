@@ -12,9 +12,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 FINAL_MATRIX = "docs/reports/goal2068_final_v2_0_release_matrix.json"
 PRE_RELEASE_GATE = "docs/reports/goal2069_v2_0_pre_release_gate.json"
-GEMINI_REVIEW = "docs/reviews/goal2070_gemini_review_goal2068_2069_final_v2_gate_2026-05-15.md"
-CLAUDE_REVIEW = "docs/reviews/goal2071_claude_review_goal2068_2069_final_v2_gate_2026-05-15.md"
-FINAL_CONSENSUS = "docs/reports/goal2073_final_v2_0_release_consensus_2026-05-15.md"
+GEMINI_REVIEW = "docs/reviews/goal2321_gemini_final_v2_0_release_cleanup_review_2026-05-18.md"
+CLAUDE_REVIEW = "docs/reviews/goal2320_claude_final_v2_0_release_cleanup_review_2026-05-18.md"
+FINAL_CONSENSUS = "docs/reports/goal2322_final_v2_0_release_cleanup_3ai_consensus_2026-05-18.md"
+RELEASE_ACTION = "docs/reports/goal2323_v2_0_release_action_2026-05-18.md"
 
 
 def _exists(path_text: str) -> bool:
@@ -65,6 +66,8 @@ def build_payload() -> dict[str, object]:
     gemini = _review_status(GEMINI_REVIEW, "Gemini")
     claude = _review_status(CLAUDE_REVIEW, "Claude")
     consensus_present = _exists(FINAL_CONSENSUS)
+    release_action_present = _exists(RELEASE_ACTION)
+    version_is_v2 = (ROOT / "VERSION").read_text(encoding="utf-8").strip() == "v2.0"
 
     blockers: list[str] = []
     if matrix.get("status") != "final-v2-0-release-matrix-candidate":
@@ -79,12 +82,19 @@ def build_payload() -> dict[str, object]:
         blockers.append("final Claude v2.0 release-gate review missing")
     if not consensus_present:
         blockers.append("final v2.0 3-AI release consensus missing")
-    blockers.append("explicit user-requested release action missing")
+    if not release_action_present or not version_is_v2:
+        blockers.append("explicit user-requested release action missing")
 
-    status = "blocked" if blockers else "ready-for-explicit-release-action"
+    status = (
+        "released"
+        if release_action_present and version_is_v2 and consensus_present and not blockers
+        else "blocked"
+        if blockers
+        else "ready-for-explicit-release-action"
+    )
     return {
         "goal": "Goal2072",
-        "date": "2026-05-15",
+        "date": "2026-05-18",
         "status": status,
         "git_commit": _git_commit(),
         "final_matrix": FINAL_MATRIX,
@@ -103,20 +113,27 @@ def build_payload() -> dict[str, object]:
         "final_consensus_file": FINAL_CONSENSUS if consensus_present else None,
         "blockers": blockers,
         "release_claim_boundary": {
-            "v2_0_release_authorized": False,
+            "v2_0_release_authorized": release_action_present and version_is_v2 and consensus_present,
             "all_apps_have_current_pod_evidence": True,
-            "all_apps_have_measured_v2_speedup": False,
+            "all_apps_have_measured_v2_speedup": bool(
+                matrix.get("release_claim_boundary", {}).get("all_apps_have_measured_v2_speedup", False)
+            ),
+            "all_current_optix_rt_rows_have_measured_v2_speedup": bool(
+                matrix.get("release_claim_boundary", {}).get("all_current_optix_rt_rows_have_measured_v2_speedup", False)
+            ),
             "whole_app_speedup_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,
             "arbitrary_partner_program_acceleration_authorized": False,
             "package_install_claim_authorized": False,
         },
         "next_action": (
-            "Wait for Claude review, then write final 3-AI consensus if Claude accepts with appropriate boundaries."
-            if not claude["present"]
+            "Wait for current-head external reviews, then write final 3-AI consensus if both accept with appropriate boundaries."
+            if not claude["present"] or not gemini["present"]
+            else "Release action is complete; tag and push the committed tree if not already done."
+            if consensus_present and release_action_present and version_is_v2
             else "Wait for explicit user release action."
             if consensus_present
-            else "Write final 3-AI consensus if Claude review accepts with appropriate boundaries."
+            else "Write final 3-AI consensus if both current-head reviews accept with appropriate boundaries."
         ),
     }
 
@@ -125,11 +142,11 @@ def to_markdown(payload: dict[str, object]) -> str:
     lines = [
         "# Goal2072 v2.0 Final Readiness Aggregator",
         "",
-        "Date: 2026-05-15",
+        "Date: 2026-05-18",
         "",
         f"Status: `{payload['status']}`",
         "",
-        "Goal2072 is the current final readiness object after Goal2068/2069/2073. It deliberately remains blocked until explicit release action exists.",
+        "Goal2072 is the current final readiness object after Goal2068/2069/2073 and the Goal2323 release action.",
         "",
         "## Current Packet",
         "",

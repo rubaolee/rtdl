@@ -84,4 +84,4 @@ That list is a teaching catalog, not the fixed capacity of the language.
 - [Application Catalog](application_catalog.md)
 - [RTDL Language Docs](rtdl/README.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
-- [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
+- [v2.0 Release Package](release_reports/v2_0/README.md)

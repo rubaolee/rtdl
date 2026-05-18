@@ -13,7 +13,7 @@ Status: Codex + Gemini consensus recorded for the Goal2219 default-path pod evid
 
 Codex and Gemini agree that Goal2219 supports the narrow engineering conclusion:
 
-The default RTDL OptiX PIP path, without setting `RTDL_OPTIX_PIP_DEVICE_PREFILTER`, preserves same-stream parity and improves the RayJoin-exported PIP replay from the previous RTDL OptiX baselines to `0.121710 s` median on the tested pod.
+The default RTDL OptiX PIP path, without setting `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER`, preserves same-stream parity and improves the RayJoin-exported PIP replay from the previous RTDL OptiX baselines to `0.121710 s` median on the tested pod.
 
 Gemini's independent verdict is `accept`. Codex records the result as accepted with strict claim boundaries.
 

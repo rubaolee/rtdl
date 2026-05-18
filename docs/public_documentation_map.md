@@ -24,6 +24,7 @@ research notes to write their first RTDL program.
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [DSL Reference](rtdl/dsl_reference.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
 | Performance | [Performance Model](performance_model.md) | [App Engine Support Matrix](app_engine_support_matrix.md), [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
+| Partner release gate | [Partner Roadmap Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) | [Audit](audit/README.md) |
 | Release evidence | [Audit](audit/README.md) | [Release Reports](release_reports/), [Benchmark And Audit Reports](reports/) |
 | Archive context | [Version Archive Notes](history/version_archive_notes.md) | [Root Archive](history/root_archive/), [API/Internal Archive](history/api_internal_archive/) |
 
@@ -46,13 +47,14 @@ supported kernel through the appropriate backend. Python remains the app and
 control layer. RTDL owns the kernel contract, traversal/refinement shape, and
 backend bridge for supported primitive paths.
 
-The current learner surface is v2.0-facing:
+The current learner surface is the v2.0 release. The current released version is
+`v2.0`.
 
-- Python+partner+RTDL is the active candidate surface;
+- Python+partner+RTDL is the released source-tree Python+partner+RTDL surface;
 - PyTorch is the reference partner and CuPy is the lightweight conformance
   partner;
 - native engines remain app-agnostic;
-- final release waits for the strict 3-AI consensus redline.
+- release claims stay inside the completed 3-AI consensus boundary.
 
 If a page does not help a learner answer "how do I write and run a current RTDL
 program?", it belongs in Research or Audit rather than the beginner path.

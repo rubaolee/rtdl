@@ -1,6 +1,6 @@
 # RTDL Current Support Matrix
 
-Status: live support matrix for the v2.0 pre-release candidate source tree.
+Status: live support matrix for the v2.0 release source tree.
 
 This page is the current learner-facing matrix. Older release matrices remain
 under `docs/release_reports/` for audit work, but normal users should read this
@@ -14,13 +14,14 @@ cells and silent CPU fallback are not allowed.
 
 ## Boundary
 
-- Current public docs target: v2.0 pre-release candidate.
+- Current public docs target: v2.0 release.
+- Current released version is `v2.0`.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
 - Active partner direction: PyTorch reference first, CuPy conformance alongside
   it.
 - Engine ABI rule: native backends stay app-agnostic.
 - Performance rule: a backend flag is not a speedup claim.
-- Release rule: final v2.0 publication still requires the full external
+- Release rule: public claims must stay inside the completed external
   consensus gate.
 
 ## Engine Support Shape

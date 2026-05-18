@@ -1,10 +1,10 @@
-# v2.0 Pre-Release Candidate
+# v2.0 Pre-Release Candidate Archive
 
-RTDL v2.0 is a Python+partner+RTDL pre-release candidate. It is not the final
-release until the strict 3-AI consensus redline has a fresh Claude-family
-review.
+This page is archived. RTDL v2.0 has since released as the source-tree
+Python+partner+RTDL milestone. Current users should read the
+[v2.0 Release Package](v2_0/README.md).
 
-Current learner-facing facts:
+The former learner-facing facts were:
 
 - Python remains the application layer.
 - RTDL owns app-agnostic RT-shaped primitive execution.
@@ -16,14 +16,13 @@ Current learner-facing facts:
   same-query evidence; it is not a claim that RTDL beats the RayJoin paper
   implementation.
 
-Still not allowed:
+Still not allowed in the v2.0 release:
 
-- final v2.0 release wording;
 - package-install promises;
 - arbitrary PyTorch/CuPy acceleration;
 - broad RT-core acceleration;
 - arbitrary polygon overlay;
 - claims that every user program is faster.
 
-For audit detail, use the release-report archive entry for the streaming
-witness-column update and the RayJoin closure and final-decision packets.
+For audit detail, use the streaming witness-column update, the RayJoin closure,
+Goal2322 final consensus, and the v2.0 release package.

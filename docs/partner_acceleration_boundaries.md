@@ -100,14 +100,13 @@ For the current four all-app control rows, the intended interpretation is:
 
 ## Current Release Boundary
 
-v2.0 is a pre-release candidate, not a final release. The current evidence
+v2.0 is the current source-tree Python+partner+RTDL release. The evidence
 supports documented Python+partner+RTDL contracts, including a streaming exact
 witness-column contract that avoids full Python row-table materialization for
-the segment/polygon any-hit row. Final release still waits for the
-strict 3-AI consensus redline, including a fresh Claude-family review.
+the segment/polygon any-hit row. The release passed the strict 3-AI consensus
+redline with Codex, Claude, and Gemini.
 
-Before final v2.0 release, every public performance statement must stay inside
-the reviewed evidence:
+Every public performance statement must stay inside the reviewed evidence:
 
 - exact primitive;
 - exact app row when app-level wording is used;
@@ -117,8 +116,8 @@ the reviewed evidence:
 - exact transfer or zero-copy boundary;
 - reviewed artifact path.
 
-When those details are missing, use preview wording instead of performance
-wording.
+When those details are missing, use compatibility or preview wording instead
+of performance wording.
 
-Do not use Copilot supplemental review as a replacement for the missing
-Claude-family release review unless the release rule is explicitly changed.
+Copilot supplemental review may be useful engineering signal, but it does not
+replace Claude or Gemini under the strict 3-AI consensus rule.

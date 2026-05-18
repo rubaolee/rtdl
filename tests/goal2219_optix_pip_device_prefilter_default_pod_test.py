@@ -64,7 +64,7 @@ class Goal2219OptixPipDevicePrefilterDefaultPodTest(unittest.TestCase):
             self.assertTrue((ARTIFACT_DIR / name).exists(), name)
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Goal2219", text)
-        self.assertIn("No `RTDL_OPTIX_PIP_DEVICE_PREFILTER` environment variable was set", text)
+        self.assertIn("No `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER` environment variable was set", text)
         self.assertIn("33.75x", text)
         self.assertIn("RTDL beats RayJoin", text)
         self.assertIn("does not authorize", text)

@@ -361,5 +361,5 @@ for learning and row-shape inspection, not performance claims.
 For backend status, use:
 
 - [Current Architecture](../current_architecture.md)
-- [v2.0 Pre-Release Candidate](../release_reports/v2_0_pre_release_candidate.md)
+- [v2.0 Release Package](../release_reports/v2_0/README.md)
 - [Release-Facing Examples](../release_facing_examples.md)

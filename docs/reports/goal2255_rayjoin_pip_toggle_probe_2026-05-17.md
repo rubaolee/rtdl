@@ -27,8 +27,8 @@ This is diagnostic evidence only. It does not add a new public claim.
 | Mode | Environment change | Median seconds | Rows | Parity |
 | --- | --- | ---: | ---: | --- |
 | Default | none | 0.06666836328804493 | 8,686 | true |
-| No device prefilter | `RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER=1` | 0.5072881113737822 | 8,686 | true |
-| No one-pass compact | `RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT=1` | 0.09405476413667202 | 8,686 | true |
+| No device prefilter | `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER=1` | 0.5072881113737822 | 8,686 | true |
+| No one-pass compact | `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT=1` | 0.09405476413667202 | 8,686 | true |
 
 Artifacts:
 

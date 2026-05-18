@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -44,9 +45,14 @@ def _git_commit() -> str:
 
 def _run_gate_tests() -> dict[str, object]:
     command = [sys.executable, "-m", "unittest", *GATE_TESTS]
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH")
+    prefix = f"{ROOT / 'src'}{os.pathsep}{ROOT}"
+    env["PYTHONPATH"] = f"{prefix}{os.pathsep}{existing}" if existing else prefix
     completed = subprocess.run(
         command,
         cwd=ROOT,
+        env=env,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -84,7 +90,12 @@ def build_payload(*, run_tests: bool) -> dict[str, object]:
         "release_claim_boundary": {
             "v2_0_release_authorized": False,
             "all_apps_have_current_pod_evidence": True,
-            "all_apps_have_measured_v2_speedup": False,
+            "all_apps_have_measured_v2_speedup": bool(
+                matrix.get("release_claim_boundary", {}).get("all_apps_have_measured_v2_speedup", False)
+            ),
+            "all_current_optix_rt_rows_have_measured_v2_speedup": bool(
+                matrix.get("release_claim_boundary", {}).get("all_current_optix_rt_rows_have_measured_v2_speedup", False)
+            ),
             "whole_app_speedup_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,
             "arbitrary_partner_program_acceleration_authorized": False,
@@ -93,7 +104,7 @@ def build_payload(*, run_tests: bool) -> dict[str, object]:
         },
         "remaining_blockers": [
             "final Claude v2.0 release review missing",
-            "final Gemini v2.0 release review over post-Goal2066/Goal2068/Goal2069 packet missing",
+            "final Gemini v2.0 release review over current post-streaming packet missing",
             "final v2.0 3-AI release consensus missing",
             "explicit user-requested release action missing",
         ],

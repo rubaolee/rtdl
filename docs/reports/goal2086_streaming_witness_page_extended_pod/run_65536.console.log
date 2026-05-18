@@ -1,0 +1,113 @@
+[goal2081] setup count=65536 output_capacity=524288 page_limit=65536 partner=cupy
+[goal2081] timing v1_8_native_optix_rows iterations=5
+[goal2081] v1_8_native_optix_rows iter=1 elapsed_s=1.302870
+[goal2081] v1_8_native_optix_rows iter=2 elapsed_s=0.376806
+[goal2081] v1_8_native_optix_rows iter=3 elapsed_s=0.328073
+[goal2081] v1_8_native_optix_rows iter=4 elapsed_s=0.346873
+[goal2081] v1_8_native_optix_rows iter=5 elapsed_s=0.321091
+[goal2081] timing v2_0_partner_columns_full_python_rows iterations=5
+[goal2081] v2_0_partner_columns_full_python_rows iter=1 elapsed_s=2.101105
+[goal2081] v2_0_partner_columns_full_python_rows iter=2 elapsed_s=2.055555
+[goal2081] v2_0_partner_columns_full_python_rows iter=3 elapsed_s=2.041382
+[goal2081] v2_0_partner_columns_full_python_rows iter=4 elapsed_s=2.036828
+[goal2081] v2_0_partner_columns_full_python_rows iter=5 elapsed_s=2.076621
+[goal2081] timing v2_0_streaming_exact_witness_page_columns iterations=5
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=1 elapsed_s=0.181559
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=2 elapsed_s=0.001813
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=3 elapsed_s=0.001355
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=4 elapsed_s=0.001313
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=5 elapsed_s=0.001333
+{
+  "claim_boundary": {
+    "requires_pod_review_before_table_update": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "column_build_s": 0.16192147973924875,
+  "count": 65536,
+  "git_commit": "2efd4b84e8ac8e0f15c6dc32884e49e0dec6d669",
+  "goal": "Goal2081",
+  "gpu": "NVIDIA GeForce RTX 3090, 580.126.20",
+  "iterations": 5,
+  "output_capacity": 524288,
+  "page_limit": 65536,
+  "partner": "cupy",
+  "status": "pass",
+  "v1_8_native_optix_rows": {
+    "query_summary": {
+      "max_s": 1.3028699029237032,
+      "median_s": 0.346873102709651,
+      "min_s": 0.3210910954512656
+    },
+    "row_count": 65536
+  },
+  "v2_0_partner_columns_full_python_rows": {
+    "query_summary": {
+      "max_s": 2.101104985922575,
+      "median_s": 2.0555547177791595,
+      "min_s": 2.0368279577232897
+    },
+    "ratio_vs_v1_8": 5.9259559237135635,
+    "row_count": 65536
+  },
+  "v2_0_streaming_exact_witness_page_columns": {
+    "metadata": {
+      "adapter": "segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns",
+      "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+      "app_exact_filter_device_materialization": true,
+      "app_exact_filter_host_materialization": false,
+      "app_exact_row_semantics_authorized": true,
+      "app_row_host_materialization": false,
+      "app_row_materialization": "not_performed_exact_witness_columns_only",
+      "backend": "optix",
+      "direct_device_handoff_authorized": true,
+      "direct_device_pointer_observed": true,
+      "emitted_count": 202188,
+      "exact_row_semantics_authorized": true,
+      "exact_witness_count": 65536,
+      "full_python_row_table_materialization_avoided": true,
+      "input_contract": "caller_supplied_partner_device_columns",
+      "limit": 65536,
+      "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+      "native_exact_row_semantics_authorized": false,
+      "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+      "offset": 0,
+      "overflowed": false,
+      "page_limit": 65536,
+      "page_offset": 0,
+      "page_row_count": 65536,
+      "partner": "cupy",
+      "partner_tensor_handoff_authorized": true,
+      "prepared_scene_reused": true,
+      "ray_columns_true_zero_copy_authorized": true,
+      "ray_count": 65536,
+      "row_count": 65536,
+      "rt_core_speedup_claim_authorized": false,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cupy"
+      ],
+      "source_row_count": 65536,
+      "streaming_witness_page_authorized": true,
+      "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+      "triangle_scene_true_zero_copy_authorized": true,
+      "true_zero_copy_authorized": true,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false,
+      "whole_app_true_zero_copy_authorized": true,
+      "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+      "witness_output_columns_reused": true,
+      "witness_outputs_true_zero_copy_authorized": true,
+      "witness_row_capacity": 524288
+    },
+    "query_summary": {
+      "max_s": 0.1815593303181231,
+      "median_s": 0.001354617066681385,
+      "min_s": 0.0013127271085977554
+    },
+    "ratio_vs_old_v2_full_rows": 0.0006590031658923319,
+    "ratio_vs_v1_8": 0.0039052237146656563
+  }
+}

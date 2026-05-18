@@ -71,9 +71,9 @@ PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner numpy --backen
 PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner cupy --backend optix
 ```
 
-Partner commands are part of the v2.0 pre-release candidate surface. They do
-not imply arbitrary PyTorch/CuPy acceleration, package-install support, or a
-final release.
+Partner commands are part of the v2.0 release surface. They do not imply
+arbitrary PyTorch/CuPy acceleration, package-install support, or whole-program
+speedup.
 
 ## Claim Boundary
 

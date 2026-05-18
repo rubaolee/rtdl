@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for the v2.0 pre-release candidate source
+Status: public app-level support map for the v2.0 release source
 tree.
 
 This matrix answers which engines each public app entry point exposes today.

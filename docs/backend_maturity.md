@@ -1,6 +1,6 @@
 # RTDL Backend Maturity
 
-Status: current v2.0 pre-release candidate backend maturity guide.
+Status: current v2.0 release backend maturity guide.
 
 This page separates three claims that are easy to mix up:
 
@@ -68,4 +68,4 @@ returns candidates or witnesses.
 - [Current Support Matrix](current_main_support_matrix.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Performance Model](performance_model.md)
-- [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
+- [v2.0 Release Package](release_reports/v2_0/README.md)

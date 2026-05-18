@@ -21,7 +21,7 @@ class Goal1906PublicV2ClaimBoundaryScanTest(unittest.TestCase):
         self.assertGreater(len(payload["accepted_negative_occurrences"]), 0)
         self.assertIn("README.md", payload["public_files_scanned"])
         self.assertIn("docs/partner_acceleration_boundaries.md", payload["public_files_scanned"])
-        self.assertFalse(payload["claim_boundary"]["v2_0_release_authorized"])
+        self.assertTrue(payload["claim_boundary"]["v2_0_release_authorized"])
         self.assertFalse(payload["claim_boundary"]["package_install_claim_authorized"])
 
     def test_positive_forbidden_wording_fails_fixture(self) -> None:
@@ -51,7 +51,7 @@ class Goal1906PublicV2ClaimBoundaryScanTest(unittest.TestCase):
         self.assertIn("docs/tutorials/*.md", text)
         self.assertIn("package install", text)
         self.assertIn("arbitrary PyTorch/CuPy acceleration", text)
-        self.assertIn("does not authorize v2.0 release", text)
+        self.assertIn("does not authorize package-install support", text)
 
 
 if __name__ == "__main__":

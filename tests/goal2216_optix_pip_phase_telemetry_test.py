@@ -10,8 +10,8 @@ REPORT = ROOT / "docs" / "reports" / "goal2216_optix_pip_phase_telemetry_2026-05
 class Goal2216OptixPipPhaseTelemetryTest(unittest.TestCase):
     def test_pip_profile_is_opt_in_and_names_all_phases(self) -> None:
         text = WORKLOADS.read_text(encoding="utf-8")
-        self.assertIn('std::getenv("RTDL_OPTIX_PIP_PROFILE")', text)
-        self.assertIn("[rtdl_optix_pip_profile]", text)
+        self.assertIn('std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_PROFILE")', text)
+        self.assertIn("[rtdl_optix_point_primitive_anyhit_profile]", text)
         for field in (
             "host_pack_s",
             "upload_s",
@@ -36,7 +36,7 @@ class Goal2216OptixPipPhaseTelemetryTest(unittest.TestCase):
     def test_report_preserves_diagnostic_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Goal2216", text)
-        self.assertIn("RTDL_OPTIX_PIP_PROFILE", text)
+        self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_PROFILE", text)
         self.assertIn("Default behavior is unchanged", text)
         self.assertIn("diagnostic infrastructure only", text)
         self.assertIn("does not authorize a performance claim", text)

@@ -24,7 +24,7 @@ Default positive-only PIP now attempts one compact write pass per chunk:
 
 The old two-pass behavior can be forced for diagnosis with:
 
-`RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT=1`
+`RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT=1`
 
 This remains app-agnostic. The rule is based on generic compact-output capacity and overflow fallback, not RayJoin-specific knowledge.
 

@@ -1,0 +1,94 @@
+{
+  "claim_boundary": {
+    "requires_pod_review_before_table_update": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "column_build_s": 0.01655940292403102,
+  "count": 8192,
+  "git_commit": "2efd4b84e8ac8e0f15c6dc32884e49e0dec6d669",
+  "goal": "Goal2081",
+  "gpu": "NVIDIA GeForce RTX 3090, 580.126.20",
+  "iterations": 5,
+  "output_capacity": 67108864,
+  "page_limit": 8192,
+  "partner": "cupy",
+  "status": "pass",
+  "v1_8_native_optix_rows": {
+    "query_summary": {
+      "max_s": 1.3143888381309807,
+      "median_s": 0.43337710574269295,
+      "min_s": 0.41250178311020136
+    },
+    "row_count": 8192
+  },
+  "v2_0_partner_columns_full_python_rows": {
+    "query_summary": {
+      "max_s": 0.42673973133787513,
+      "median_s": 0.08608426805585623,
+      "min_s": 0.08369727386161685
+    },
+    "ratio_vs_v1_8": 0.19863593834365273,
+    "row_count": 8192
+  },
+  "v2_0_streaming_exact_witness_page_columns": {
+    "metadata": {
+      "adapter": "segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns",
+      "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+      "app_exact_filter_device_materialization": true,
+      "app_exact_filter_host_materialization": false,
+      "app_exact_row_semantics_authorized": true,
+      "app_row_host_materialization": false,
+      "app_row_materialization": "not_performed_exact_witness_columns_only",
+      "backend": "optix",
+      "direct_device_handoff_authorized": true,
+      "direct_device_pointer_observed": true,
+      "emitted_count": 8192,
+      "exact_row_semantics_authorized": true,
+      "exact_witness_count": 8192,
+      "full_python_row_table_materialization_avoided": true,
+      "input_contract": "caller_supplied_partner_device_columns",
+      "limit": 8192,
+      "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+      "native_exact_row_semantics_authorized": false,
+      "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+      "offset": 0,
+      "overflowed": false,
+      "page_limit": 8192,
+      "page_offset": 0,
+      "page_row_count": 8192,
+      "partner": "cupy",
+      "partner_tensor_handoff_authorized": true,
+      "prepared_scene_reused": true,
+      "ray_columns_true_zero_copy_authorized": true,
+      "ray_count": 8192,
+      "row_count": 8192,
+      "rt_core_speedup_claim_authorized": false,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cupy"
+      ],
+      "source_row_count": 8192,
+      "streaming_witness_page_authorized": true,
+      "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+      "triangle_scene_true_zero_copy_authorized": true,
+      "true_zero_copy_authorized": true,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false,
+      "whole_app_true_zero_copy_authorized": true,
+      "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+      "witness_output_columns_reused": true,
+      "witness_outputs_true_zero_copy_authorized": true,
+      "witness_row_capacity": 67108864
+    },
+    "query_summary": {
+      "max_s": 0.09268556395545602,
+      "median_s": 0.0013011679984629154,
+      "min_s": 0.0012610279954969883
+    },
+    "ratio_vs_old_v2_full_rows": 0.015115049797701082,
+    "ratio_vs_v1_8": 0.003002392099677393
+  }
+}

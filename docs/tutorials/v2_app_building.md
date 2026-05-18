@@ -53,7 +53,7 @@ PYTHONPATH=src:. python examples/rtdl_partner_anyhit.py --partner torch-cuda --b
 ```
 
 For larger app-level examples, use the application catalog and the performance
-reports linked from the v2.0 pre-release candidate. Treat each measured row as
+reports linked from the v2.0 release package. Treat each measured row as
 a specific contract: backend, partner, problem size, output shape, and hardware
 all matter.
 

@@ -34,19 +34,16 @@ class Goal2072V20FinalReadinessAggregatorTest(unittest.TestCase):
         self.assertEqual(payload["final_matrix_status"], "final-v2-0-release-matrix-candidate")
         self.assertEqual(payload["pre_release_gate_status"], "pass")
 
-    def test_current_payload_is_blocked_until_claude_and_consensus(self):
+    def test_current_payload_is_released_after_consensus_and_action(self):
         payload = json.loads(PAYLOAD.read_text(encoding="utf-8"))
-        self.assertEqual(payload["status"], "blocked")
-        self.assertTrue(payload["external_reviews"]["gemini"]["present"])
-        self.assertIn(
-            "explicit user-requested release action missing",
-            payload["blockers"],
+        self.assertEqual(payload["status"], "released")
+        self.assertEqual(payload["blockers"], [])
+        self.assertTrue(payload["release_claim_boundary"]["v2_0_release_authorized"])
+        self.assertTrue(payload["release_claim_boundary"]["all_apps_have_measured_v2_speedup"])
+        self.assertEqual(
+            payload["next_action"],
+            "Release action is complete; tag and push the committed tree if not already done.",
         )
-        self.assertFalse(payload["release_claim_boundary"]["v2_0_release_authorized"])
-        self.assertFalse(payload["release_claim_boundary"]["all_apps_have_measured_v2_speedup"])
-        if payload["final_consensus_file"] is not None:
-            self.assertEqual(payload["blockers"], ["explicit user-requested release action missing"])
-            self.assertEqual(payload["next_action"], "Wait for explicit user release action.")
 
     def test_markdown_names_packet_and_boundaries(self):
         text = REPORT.read_text(encoding="utf-8")

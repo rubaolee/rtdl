@@ -10,6 +10,7 @@ from typing import Iterable
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 BASE_MATRIX = ROOT / "docs" / "reports" / "goal2064_all_app_v2_matrix_after_goal2062.json"
+POST_STREAMING_TABLE = ROOT / "docs" / "reports" / "goal2085_v2_perf_table_after_streaming_witness_update_2026-05-15.json"
 
 
 def _git_commit() -> str:
@@ -29,6 +30,26 @@ def _json(path: str) -> dict[str, object]:
 
 
 def _ratio_summary() -> dict[str, object]:
+    if POST_STREAMING_TABLE.exists():
+        table = json.loads(POST_STREAMING_TABLE.read_text(encoding="utf-8"))
+        optix_rows = {str(row["app"]): row for row in table["optix_rt_rows"]}
+        return {
+            "source": str(POST_STREAMING_TABLE.relative_to(ROOT)).replace("\\", "/"),
+            "optix_rt_rows": {
+                app: {
+                    "scale": row["scale"],
+                    "v2_over_v1_8_ratio": float(row["v2_over_v1_8_ratio"]),
+                }
+                for app, row in sorted(optix_rows.items())
+            },
+            "slowest_current_optix_rt_ratio": max(
+                float(row["v2_over_v1_8_ratio"]) for row in optix_rows.values()
+            ),
+            "all_current_optix_rt_ratios_below_1": all(
+                float(row["v2_over_v1_8_ratio"]) < 1.0 for row in optix_rows.values()
+            ),
+        }
+
     robot_32768 = _json("docs/reports/goal2066_robot_collision_cupy_l4_32768x8192.json")["results"][0]
     robot_65536 = _json("docs/reports/goal2066_robot_collision_cupy_l4_65536x8192.json")["results"][0]
     hitcount = _json("docs/reports/goal2066_segment_polygon_hitcount_cupy_l4_131072_capacity67108864.json")
@@ -93,6 +114,42 @@ def _ratio_summary() -> dict[str, object]:
 
 def _overlay_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     by_app = {str(row["app"]): dict(row) for row in rows}
+    if POST_STREAMING_TABLE.exists():
+        table = json.loads(POST_STREAMING_TABLE.read_text(encoding="utf-8"))
+        bounded_apps = {
+            "database_analytics",
+            "graph_analytics",
+            "polygon_pair_overlap_area_rows",
+            "polygon_set_jaccard",
+        }
+        for row in table["optix_rt_rows"]:
+            app = str(row["app"])
+            if app not in by_app:
+                continue
+            comparison_status = (
+                "pod-evidence-collected-bounded"
+                if app in bounded_apps
+                else "pod-evidence-collected"
+            )
+            by_app[app].update(
+                {
+                    "comparison_status": comparison_status,
+                    "claim_class": "bounded-implemented" if app in bounded_apps else "implemented",
+                    "v2_state": "implemented-and-pod-timed",
+                    "v2_evidence": row["source"],
+                    "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+                    "analysis_hint": row["evidence_note"],
+                    "v2_over_v1_8_ratio": float(row["v2_over_v1_8_ratio"]),
+                    "v2_contract": str(row["evidence_note"]),
+                    "v18_reference": str(row["source"]),
+                }
+            )
+        by_app["segment_polygon_anyhit_rows"]["analysis_hint"] = (
+            "Streaming exact witness columns supersede the old slower full Python row-table contract; "
+            "the old full-row path remains documented separately and is not the v2.0 release contract."
+        )
+        return list(by_app.values())
+
     fixed_apps = {
         "facility_knn_assignment",
         "hausdorff_distance",
@@ -175,7 +232,9 @@ def build_matrix() -> dict[str, object]:
         "date": "2026-05-15",
         "git_commit": _git_commit(),
         "base_matrix": str(BASE_MATRIX.relative_to(ROOT)).replace("\\", "/"),
+        "post_streaming_table": str(POST_STREAMING_TABLE.relative_to(ROOT)).replace("\\", "/"),
         "post_goal2066_evidence": True,
+        "post_goal2085_streaming_evidence": POST_STREAMING_TABLE.exists(),
         "row_count": len(rows),
         "counts_by_comparison_status": counts,
         "mixed_apps": mixed_apps,
@@ -186,7 +245,8 @@ def build_matrix() -> dict[str, object]:
             "v2_0_release_authorized": False,
             "all_apps_have_a_row_decision": True,
             "all_apps_have_current_pod_evidence": True,
-            "all_apps_have_measured_v2_speedup": False,
+            "all_apps_have_measured_v2_speedup": not mixed_apps,
+            "all_current_optix_rt_rows_have_measured_v2_speedup": not mixed_apps,
             "whole_app_speedup_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,
             "arbitrary_partner_program_acceleration_authorized": False,
@@ -197,7 +257,7 @@ def build_matrix() -> dict[str, object]:
         },
         "final_release_blockers": [
             "final Claude v2.0 release review missing",
-            "final Gemini v2.0 release review over post-Goal2066 packet missing",
+            "final Gemini v2.0 release review over current post-streaming packet missing",
             "final v2.0 release consensus missing",
             "explicit user-requested release action missing",
         ],
@@ -218,6 +278,8 @@ def to_markdown(payload: dict[str, object]) -> str:
         "",
         "Goal2068 gives the v2.0 release lane a final-named matrix candidate after Goal2066's larger NVIDIA L4 pod evidence. It is a release-hardening artifact, not release authorization.",
         "",
+        "This current matrix also incorporates the post-streaming witness-column update from Goal2085/Goal2088, which supersedes the older full Python witness-row materialization result.",
+        "",
         "## Summary",
         "",
         f"- row count: `{payload['row_count']}`",
@@ -225,16 +287,17 @@ def to_markdown(payload: dict[str, object]) -> str:
         f"- mixed apps: `{json.dumps(payload['mixed_apps'])}`",
         f"- bounded apps: `{json.dumps(payload['bounded_apps'])}`",
         "- v2.0 release authorized: `False`",
-        "- all-app speedup claim authorized: `False`",
+        f"- all current OptiX/RT rows have measured v2 ratios below 1.0: `{payload['release_claim_boundary']['all_current_optix_rt_rows_have_measured_v2_speedup']}`",
+        "- whole-app speedup claim authorized: `False`",
         "",
-        "## Post-Goal2066 Changes",
+        "## Post-Goal2066 / Post-Goal2085 Changes",
         "",
         "- `robot_collision_screening` moves from mixed to positive at larger scale: `0.164x` at 32768x8192 and `0.084x` at 65536x8192.",
         "- `road_hazard_screening` uses the larger prepared-only Goal2066 evidence: `0.085x` v2/v1.8 prepared.",
         "- `segment_polygon_hitcount` uses the larger Goal2066 compact count-column evidence: `0.006x` prepared-reuse ratio.",
         "- fixed-radius proxy rows use Goal2066's 16384x16384 evidence, all under `0.02x`.",
-        "- `segment_polygon_anyhit_rows` stays mixed: full witness-row materialization is `1.562x`, slower than v1.8 native rows.",
-        "- polygon overlap/Jaccard stay bounded: 2048/3072 evidence exists, but 4096 OptiX candidate discovery OOMs.",
+        "- `segment_polygon_anyhit_rows` now uses streaming exact witness columns instead of the old full Python row-table contract.",
+        "- polygon overlap/Jaccard use the current generic tiled AABB candidate-summary path, while arbitrary polygon overlay remains outside the claim.",
         "",
         "## App Rows",
         "",

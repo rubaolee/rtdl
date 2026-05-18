@@ -1,0 +1,79 @@
+{
+  "accepted_negative_occurrences": [
+    {
+      "line": 41,
+      "path": "docs/partner_acceleration_boundaries.md",
+      "phrase": "broad RT-core acceleration",
+      "snippet": "arbitrary PyTorch code. - RTDL accelerates arbitrary CuPy code. - RTDL optimizes partner programs automatically. - RTDL makes whole applications faster by default. - RTDL provides broad RT-core acceleration for all partner workloads.  ## Partner-Owned Columns Are Not Whole-Program Acceleration  Partner-owned columns mean the input or output arrays are owned by a partner runtime such"
+    },
+    {
+      "line": 220,
+      "path": "docs/tutorials/nearest_neighbor_workloads.md",
+      "phrase": "whole-app speedup",
+      "snippet": "dorff and ANN ranking paths are not broad NVIDIA RT-core claims. Prepared decision modes can use bounded fixed-radius traversal; they do not automatically authorize exact ranking, whole-app speedup, or arbitrary ANN index claims. Claim-sensitive scripts using `--require-rt-core` keep that boundary explicit.  ---  ## Backend progression  The public examples are easiest to lea"
+    },
+    {
+      "line": 46,
+      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "phrase": "broad RT-core acceleration",
+      "snippet": "or the supported path; - continuation with normal PyTorch or CuPy code after RTDL returns.  Not allowed:  - final v2.0 release wording; - arbitrary PyTorch or CuPy acceleration; - broad RT-core acceleration; - package-install support; - claims that every app phase is faster.  For the current release status, read [v2.0 Release Package](../release_reports/v2_0/README.md).  ## Practical"
+    },
+    {
+      "line": 47,
+      "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+      "phrase": "package-install support",
+      "snippet": "nuation with normal PyTorch or CuPy code after RTDL returns.  Not allowed:  - final v2.0 release wording; - arbitrary PyTorch or CuPy acceleration; - broad RT-core acceleration; - package-install support; - claims that every app phase is faster.  For the current release status, read [v2.0 Release Package](../release_reports/v2_0/README.md).  ## Practical Starting Point  Start with"
+    },
+    {
+      "line": 68,
+      "path": "docs/tutorials/README.md",
+      "phrase": "broad RT-core speedup",
+      "snippet": "OptiX evidence exists for specific measured contracts. - Python or partner frameworks own app continuation outside the RTDL primitive.  Not allowed:  - package-install promises; - broad RT-core speedup claims; - arbitrary PyTorch/CuPy acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal speedup wording beyond reviewed ev"
+    },
+    {
+      "line": 69,
+      "path": "docs/tutorials/README.md",
+      "phrase": "arbitrary PyTorch/CuPy acceleration",
+      "snippet": "ic measured contracts. - Python or partner frameworks own app continuation outside the RTDL primitive.  Not allowed:  - package-install promises; - broad RT-core speedup claims; - arbitrary PyTorch/CuPy acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal speedup wording beyond reviewed evidence.  For the exact boundary, read [Partner"
+    },
+    {
+      "line": 301,
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "phrase": "whole-app speedup",
+      "snippet": "at chunk `1024`, but no positive public Jaccard speedup wording is authorized because current evidence still has OptiX slower than Embree. This is not a monolithic GPU Jaccard or whole-app speedup claim. For claim-sensitive runs:  ```bash PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core ```  ---  ## Recommended learning order  1"
+    },
+    {
+      "line": 133,
+      "path": "README.md",
+      "phrase": "arbitrary PyTorch/CuPy acceleration",
+      "snippet": "elease passed the project 3-AI consensus redline: Codex plus independent Claude and Gemini reviews. Do not read the v2.0 release as a package-install promise, broad RT-core claim, arbitrary PyTorch/CuPy acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Partner Acceleration Boundaries](docs/partner_a"
+    }
+  ],
+  "claim_boundary": {
+    "arbitrary_partner_program_acceleration_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "package_install_claim_authorized": false,
+    "v2_0_release_authorized": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "findings": [],
+  "goal": "Goal1906",
+  "public_files_scanned": [
+    "docs/partner_acceleration_boundaries.md",
+    "docs/README.md",
+    "docs/tutorials/db_workloads.md",
+    "docs/tutorials/feature_quickstart_cookbook.md",
+    "docs/tutorials/graph_workloads.md",
+    "docs/tutorials/hello_world.md",
+    "docs/tutorials/nearest_neighbor_workloads.md",
+    "docs/tutorials/partner_anyhit.md",
+    "docs/tutorials/partner_optix_zero_copy_anyhit.md",
+    "docs/tutorials/README.md",
+    "docs/tutorials/rendering_and_visual_demos.md",
+    "docs/tutorials/segment_polygon_workloads.md",
+    "docs/tutorials/sorting_demo.md",
+    "docs/tutorials/v2_app_building.md",
+    "README.md"
+  ],
+  "status": "pass"
+}

@@ -84,6 +84,12 @@ def scan(root: pathlib.Path) -> dict[str, object]:
                 accepted.append(record)
             else:
                 findings.append(record)
+    release_authorized = (
+        (root / "VERSION").exists()
+        and (root / "VERSION").read_text(encoding="utf-8").strip() == "v2.0"
+        and (root / "docs/reports/goal2322_final_v2_0_release_cleanup_3ai_consensus_2026-05-18.md").exists()
+        and (root / "docs/reports/goal2323_v2_0_release_action_2026-05-18.md").exists()
+    )
     return {
         "goal": "Goal1906",
         "status": "pass" if not findings else "fail",
@@ -91,7 +97,7 @@ def scan(root: pathlib.Path) -> dict[str, object]:
         "accepted_negative_occurrences": accepted,
         "findings": findings,
         "claim_boundary": {
-            "v2_0_release_authorized": False,
+            "v2_0_release_authorized": release_authorized,
             "package_install_claim_authorized": False,
             "whole_app_speedup_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,

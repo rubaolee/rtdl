@@ -10,8 +10,8 @@ Goal2069 is the explicitly named v2.0 pre-release gate requested by the post-Goa
 
 - final matrix: `docs/reports/goal2068_final_v2_0_release_matrix.json`
 - final matrix status: `final-v2-0-release-matrix-candidate`
-- final matrix counts: `{"pod-evidence-collected": 11, "pod-evidence-collected-bounded": 4, "pod-evidence-collected-mixed": 1}`
-- mixed apps: `["segment_polygon_anyhit_rows"]`
+- final matrix counts: `{"pod-evidence-collected": 12, "pod-evidence-collected-bounded": 4}`
+- mixed apps: `[]`
 - bounded apps: `["database_analytics", "graph_analytics", "polygon_pair_overlap_area_rows", "polygon_set_jaccard"]`
 
 ## Gate Results
@@ -27,7 +27,8 @@ The focused gate covers the final matrix, Goal2066 large-scale pod evidence, cur
 
 - `v2_0_release_authorized`: `False`
 - `all_apps_have_current_pod_evidence`: `True`
-- `all_apps_have_measured_v2_speedup`: `False`
+- `all_apps_have_measured_v2_speedup`: `True`
+- `all_current_optix_rt_rows_have_measured_v2_speedup`: `True`
 - `whole_app_speedup_claim_authorized`: `False`
 - `broad_rt_core_speedup_claim_authorized`: `False`
 - `arbitrary_partner_program_acceleration_authorized`: `False`
@@ -37,7 +38,7 @@ The focused gate covers the final matrix, Goal2066 large-scale pod evidence, cur
 ## Remaining Blockers
 
 - final Claude v2.0 release review missing
-- final Gemini v2.0 release review over post-Goal2066/Goal2068/Goal2069 packet missing
+- final Gemini v2.0 release review over current post-streaming packet missing
 - final v2.0 3-AI release consensus missing
 - explicit user-requested release action missing
 

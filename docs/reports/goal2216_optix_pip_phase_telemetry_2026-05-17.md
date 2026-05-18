@@ -10,13 +10,13 @@ Goal2213 proved that compact positive-hit output materially improved RTDL OptiX 
 - RTDL Embree PIP: about `0.110 s`
 - RayJoin specialized RT query phase: about `0.575 ms`
 
-The next optimization needs phase attribution before changing algorithmic behavior again. Goal2216 adds an opt-in native telemetry line guarded by `RTDL_OPTIX_PIP_PROFILE`.
+The next optimization needs phase attribution before changing algorithmic behavior again. Goal2216 adds an opt-in native telemetry line guarded by `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_PROFILE`.
 
 ## Behavior
 
-Default behavior is unchanged. When `RTDL_OPTIX_PIP_PROFILE` is set, `run_pip_optix` writes one stderr line per call:
+Default behavior is unchanged. When `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_PROFILE` is set, `run_pip_optix` writes one stderr line per call:
 
-`[rtdl_optix_pip_profile] positive_only=... points=... polygons=... chunks=... candidates=... emitted=... host_pack_s=... upload_s=... accel_build_s=... count_pass_s=... write_pass_s=... compact_download_s=... exact_refine_s=... total_s=...`
+`[rtdl_optix_point_primitive_anyhit_profile] positive_only=... points=... polygons=... chunks=... candidates=... emitted=... host_pack_s=... upload_s=... accel_build_s=... count_pass_s=... write_pass_s=... compact_download_s=... exact_refine_s=... total_s=...`
 
 The fields are intentionally generic:
 

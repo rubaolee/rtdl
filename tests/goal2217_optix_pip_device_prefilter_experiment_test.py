@@ -13,8 +13,8 @@ class Goal2217OptixPipDevicePrefilterExperimentTest(unittest.TestCase):
         workloads = WORKLOADS.read_text(encoding="utf-8")
         self.assertIn("device_prefilter", workloads)
         self.assertTrue(
-            'std::getenv("RTDL_OPTIX_PIP_DEVICE_PREFILTER")' in workloads
-            or 'std::getenv("RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER")' in workloads
+            'std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER")' in workloads
+            or 'std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER")' in workloads
         )
 
     def test_positive_only_path_prefilters_before_reporting_candidate(self) -> None:
@@ -28,7 +28,7 @@ class Goal2217OptixPipDevicePrefilterExperimentTest(unittest.TestCase):
     def test_report_keeps_experimental_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Goal2217", text)
-        self.assertIn("RTDL_OPTIX_PIP_DEVICE_PREFILTER", text)
+        self.assertIn("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER", text)
         self.assertIn("Default behavior remains conservative", text)
         self.assertIn("app-agnostic", text)
         self.assertIn("does not authorize", text)

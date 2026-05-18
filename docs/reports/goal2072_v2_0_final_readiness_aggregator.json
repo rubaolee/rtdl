@@ -1,7 +1,5 @@
 {
-  "blockers": [
-    "explicit user-requested release action missing"
-  ],
+  "blockers": [],
   "bounded_apps": [
     "database_analytics",
     "graph_analytics",
@@ -9,48 +7,46 @@
     "polygon_set_jaccard"
   ],
   "claim_scan_status": "pass",
-  "date": "2026-05-15",
+  "date": "2026-05-18",
   "external_reviews": {
     "claude": {
       "expected_reviewer": "Claude",
       "mentions_reviewer": true,
-      "path": "docs/reviews/goal2071_claude_review_goal2068_2069_final_v2_gate_2026-05-15.md",
+      "path": "docs/reviews/goal2320_claude_final_v2_0_release_cleanup_review_2026-05-18.md",
       "present": true,
       "verdict": "accept-with-boundary"
     },
     "gemini": {
       "expected_reviewer": "Gemini",
       "mentions_reviewer": true,
-      "path": "docs/reviews/goal2070_gemini_review_goal2068_2069_final_v2_gate_2026-05-15.md",
+      "path": "docs/reviews/goal2321_gemini_final_v2_0_release_cleanup_review_2026-05-18.md",
       "present": true,
       "verdict": "accept-with-boundary"
     }
   },
-  "final_consensus_file": "docs/reports/goal2073_final_v2_0_release_consensus_2026-05-15.md",
+  "final_consensus_file": "docs/reports/goal2322_final_v2_0_release_cleanup_3ai_consensus_2026-05-18.md",
   "final_matrix": "docs/reports/goal2068_final_v2_0_release_matrix.json",
   "final_matrix_counts": {
-    "pod-evidence-collected": 11,
-    "pod-evidence-collected-bounded": 4,
-    "pod-evidence-collected-mixed": 1
+    "pod-evidence-collected": 12,
+    "pod-evidence-collected-bounded": 4
   },
   "final_matrix_status": "final-v2-0-release-matrix-candidate",
-  "git_commit": "9b2b3198239bf6e81775b48c79ed36ff9c79b4b4",
+  "git_commit": "fc6b0e36fecb014dfacedc97b38b2515e4538575",
   "goal": "Goal2072",
-  "mixed_apps": [
-    "segment_polygon_anyhit_rows"
-  ],
-  "next_action": "Wait for explicit user release action.",
+  "mixed_apps": [],
+  "next_action": "Release action is complete; tag and push the committed tree if not already done.",
   "pre_release_gate": "docs/reports/goal2069_v2_0_pre_release_gate.json",
   "pre_release_gate_status": "pass",
   "pre_release_gate_tests": "40 tests, 1 skipped",
   "release_claim_boundary": {
     "all_apps_have_current_pod_evidence": true,
-    "all_apps_have_measured_v2_speedup": false,
+    "all_apps_have_measured_v2_speedup": true,
+    "all_current_optix_rt_rows_have_measured_v2_speedup": true,
     "arbitrary_partner_program_acceleration_authorized": false,
     "broad_rt_core_speedup_claim_authorized": false,
     "package_install_claim_authorized": false,
-    "v2_0_release_authorized": false,
+    "v2_0_release_authorized": true,
     "whole_app_speedup_claim_authorized": false
   },
-  "status": "blocked"
+  "status": "released"
 }

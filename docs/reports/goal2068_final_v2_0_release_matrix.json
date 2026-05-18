@@ -7,73 +7,98 @@
     "polygon_set_jaccard"
   ],
   "counts_by_comparison_status": {
-    "pod-evidence-collected": 11,
-    "pod-evidence-collected-bounded": 4,
-    "pod-evidence-collected-mixed": 1
+    "pod-evidence-collected": 12,
+    "pod-evidence-collected-bounded": 4
   },
   "date": "2026-05-15",
   "final_release_blockers": [
     "final Claude v2.0 release review missing",
-    "final Gemini v2.0 release review over post-Goal2066 packet missing",
+    "final Gemini v2.0 release review over current post-streaming packet missing",
     "final v2.0 release consensus missing",
     "explicit user-requested release action missing"
   ],
-  "git_commit": "cc488ad7cec53ccb1fc4ebb5a294514976eafce1",
+  "git_commit": "fc6b0e36fecb014dfacedc97b38b2515e4538575",
   "goal": "Goal2068",
   "measured_ratio_summary": {
-    "fixed_radius_family_16384": {
+    "all_current_optix_rt_ratios_below_1": true,
+    "optix_rt_rows": {
       "ann_candidate_search": {
-        "forward": 0.006748324902496935
+        "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+        "v2_over_v1_8_ratio": 0.007031600313920238
       },
       "barnes_hut_force_app": {
-        "forward": 0.009124553577296935
+        "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+        "v2_over_v1_8_ratio": 0.0071462103096754295
+      },
+      "database_analytics": {
+        "scale": "copies=100000 partner=cupy candidate_backend=cupy_extent current RTX A5000",
+        "v2_over_v1_8_ratio": 0.23130423211818052
       },
       "dbscan_clustering": {
-        "forward": 0.007901523860757818
+        "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+        "v2_over_v1_8_ratio": 0.006761873100001576
+      },
+      "event_hotspot_screening": {
+        "scale": "size=16384 partner=cupy",
+        "v2_over_v1_8_ratio": 0.0019976559338596308
       },
       "facility_knn_assignment": {
-        "forward": 0.008157117392836298
+        "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+        "v2_over_v1_8_ratio": 0.006453651088603628
+      },
+      "graph_analytics": {
+        "scale": "copies=512",
+        "v2_over_v1_8_ratio": 2.3185993763960085e-05
       },
       "hausdorff_distance": {
-        "forward": 0.00720676673348653,
-        "reverse": 0.009436688845062935
+        "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+        "v2_over_v1_8_ratio": 0.007223151270424738
       },
       "outlier_detection": {
-        "forward": 0.007886202507664681
+        "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+        "v2_over_v1_8_ratio": 0.0075201289041686385
+      },
+      "polygon_pair_overlap_area_rows": {
+        "scale": "copies=4096 partner=cupy candidate_backend=cupy_extent current RTX A5000",
+        "v2_over_v1_8_ratio": 0.23562489753144591
+      },
+      "polygon_set_jaccard": {
+        "scale": "copies=4096 partner=cupy candidate_backend=cupy_extent current RTX A5000",
+        "v2_over_v1_8_ratio": 0.21832728833834
+      },
+      "road_hazard_screening": {
+        "scale": "roads=12288 hazards=18432 partner=cupy",
+        "v2_over_v1_8_ratio": 0.08547802242447566
+      },
+      "robot_collision_screening": {
+        "scale": "poses=16384 obstacles=1024 partner=cupy current RTX A5000",
+        "v2_over_v1_8_ratio": 0.36729177018373466
+      },
+      "segment_polygon_anyhit_rows": {
+        "scale": "count=16384 partner=cupy streaming_exact_witness_page current RTX 3090",
+        "v2_over_v1_8_ratio": 0.0007458600583811104
+      },
+      "segment_polygon_hitcount": {
+        "scale": "rows=131072 capacity=67108864 partner=cupy",
+        "v2_over_v1_8_ratio": 0.006120606640089472
+      },
+      "service_coverage_gaps": {
+        "scale": "size=16384 partner=cupy",
+        "v2_over_v1_8_ratio": 0.005983384052132145
       }
     },
-    "polygon_pair_overlap_area_rows": {
-      "scale_2048_ratio": 1.260861165143868,
-      "scale_3072_ratio": 1.3012773891029303,
-      "scale_4096_status": "optix-candidate-discovery-oom"
-    },
-    "polygon_set_jaccard": {
-      "scale_2048_ratio": 0.9103571110808764,
-      "scale_3072_ratio": 0.9563976411799011,
-      "scale_4096_status": "optix-candidate-discovery-oom"
-    },
-    "road_hazard_screening": {
-      "scale_12288_prepared_reuse_ratio": 0.08547802242447566
-    },
-    "robot_collision_screening": {
-      "scale_32768x8192_ratio": 0.16357220276356718,
-      "scale_65536x8192_ratio": 0.08400217979777637
-    },
-    "segment_polygon_anyhit_rows": {
-      "scale_4096_row_materialization_ratio": 1.5619715913106278
-    },
-    "segment_polygon_hitcount": {
-      "scale_131072_prepared_reuse_ratio": 0.006120606640089472
-    }
+    "slowest_current_optix_rt_ratio": 0.36729177018373466,
+    "source": "docs/reports/goal2085_v2_perf_table_after_streaming_witness_update_2026-05-15.json"
   },
-  "mixed_apps": [
-    "segment_polygon_anyhit_rows"
-  ],
+  "mixed_apps": [],
   "post_goal2066_evidence": true,
+  "post_goal2085_streaming_evidence": true,
+  "post_streaming_table": "docs/reports/goal2085_v2_perf_table_after_streaming_witness_update_2026-05-15.json",
   "release_claim_boundary": {
     "all_apps_have_a_row_decision": true,
     "all_apps_have_current_pod_evidence": true,
-    "all_apps_have_measured_v2_speedup": false,
+    "all_apps_have_measured_v2_speedup": true,
+    "all_current_optix_rt_rows_have_measured_v2_speedup": true,
     "arbitrary_partner_program_acceleration_authorized": false,
     "broad_rt_core_speedup_claim_authorized": false,
     "final_3ai_release_consensus_present": false,
@@ -86,195 +111,211 @@
   "row_count": 16,
   "rows": [
     {
-      "analysis_hint": "The RawKernel v2 row is fast and correct, but the next generalization is a reusable partner grouped-reduction adapter rather than app-local DB code.",
+      "analysis_hint": "current-commit pod refresh; user-approved Python+CuPy+RTDL vs Python+RTDL app-wall comparison, not absolutely fair",
       "app": "database_analytics",
       "claim_class": "bounded-implemented",
       "comparison_status": "pod-evidence-collected-bounded",
       "family": "E-columnar-database-analytics",
-      "next_command": "bounded evidence collected by Goal2056; next work is reusable grouped-reduction adapter design",
-      "v18_reference": "scripts/goal756_db_prepared_session_perf.py",
-      "v2_contract": "CuPy RawKernel predicate scan plus grouped count/sum continuation over Python-owned column payloads",
-      "v2_evidence": "docs/reports/goal2056_database_rawkernel_cupy_optix_l4_4096.json",
-      "v2_state": "bounded-partner-row"
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_database_cupy_default.json",
+      "v2_contract": "current-commit pod refresh; user-approved Python+CuPy+RTDL vs Python+RTDL app-wall comparison, not absolutely fair",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_database_cupy_default.json",
+      "v2_over_v1_8_ratio": 0.23130423211818052,
+      "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "The authored app is fast, but this remains the largest semantic debt: no reusable partner graph primitive for frontier traversal, triangle counting, or visibility-edge aggregation.",
+      "analysis_hint": "app-wall Python+RTDL vs Python+CuPy+RTDL; not absolutely fair, but user-approved v2 app comparison",
       "app": "graph_analytics",
-      "claim_class": "bounded-closed-form",
+      "claim_class": "bounded-implemented",
       "comparison_status": "pod-evidence-collected-bounded",
       "family": "F-graph-split-rows",
-      "next_command": "bounded authored-app evidence collected by Goal2058; next work is reusable graph primitive design",
-      "v18_reference": "scripts/goal982_graph_same_scale_timing_repair.py",
-      "v2_contract": "CuPy RawKernel summary for the authored replicated graph case; not a generic graph traversal/triangle engine",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2058_graph_rawkernel_cupy_optix_l4_512.json",
+      "v2_contract": "app-wall Python+RTDL vs Python+CuPy+RTDL; not absolutely fair, but user-approved v2 app comparison",
       "v2_evidence": "docs/reports/goal2058_graph_rawkernel_cupy_optix_l4_512.json",
-      "v2_state": "bounded-closed-form-row"
+      "v2_over_v1_8_ratio": 2.3185993763960085e-05,
+      "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Positive rows are expected when prepared reuse and partner-owned threshold outputs amortize dispatch and transfer cost.",
+      "analysis_hint": "prepared fixed-radius count/threshold output; compact partner-owned columns",
       "app": "service_coverage_gaps",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "covered by scripts/goal1903_v2_partner_pod_batch_runner.sh",
-      "v18_reference": "goal1903 fixed-radius v1.8 baseline",
-      "v2_contract": "prepared OptiX fixed-radius counts plus partner threshold flags",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal1903_fixed_radius_batch_pod.json",
+      "v2_contract": "prepared fixed-radius count/threshold output; compact partner-owned columns",
       "v2_evidence": "docs/reports/goal1903_fixed_radius_batch_pod.json",
+      "v2_over_v1_8_ratio": 0.005983384052132145,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "This row should track the fixed-radius primitive shape; small cases can still be setup-bound.",
+      "analysis_hint": "prepared fixed-radius count/threshold output; compact partner-owned columns",
       "app": "event_hotspot_screening",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "covered by scripts/goal1903_v2_partner_pod_batch_runner.sh",
-      "v18_reference": "goal1903 fixed-radius v1.8 baseline",
-      "v2_contract": "prepared OptiX fixed-radius counts plus partner hotspot flags",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal1903_fixed_radius_batch_pod.json",
+      "v2_contract": "prepared fixed-radius count/threshold output; compact partner-owned columns",
       "v2_evidence": "docs/reports/goal1903_fixed_radius_batch_pod.json",
+      "v2_over_v1_8_ratio": 0.0019976559338596308,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "The honest row is coverage/threshold. Ranked KNN ordering is outside this adapter. Goal2066 strengthens this row at 16384x16384, still bounded to the documented threshold/proxy semantics.",
+      "analysis_hint": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
       "app": "facility_knn_assignment",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "large 16384x16384 fixed-radius pod timing collected by Goal2066",
-      "v18_reference": "scripts/goal1925_fixed_radius_family_v2_partner_perf.py",
-      "v2_contract": "coverage-threshold decision using prepared OptiX fixed-radius counts and partner columns; not ranked KNN assignment",
-      "v2_evidence": "docs/reports/goal2066_fixed_radius_family_cupy_l4_16384.json",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_contract": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_over_v1_8_ratio": 0.006453651088603628,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Goal2066 shows the prepared reusable witness-output path is a clear speedup at 12288 roads; small rows remain setup-sensitive.",
+      "analysis_hint": "prepared reusable witness output plus partner priority flags",
       "app": "road_hazard_screening",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "C-segment-polygon-count-derived-flags",
-      "next_command": "large prepared-only pod timing collected by Goal2066",
-      "v18_reference": "goal1889 prepared reuse baseline",
-      "v2_contract": "prepared generic ray/primitive witness counts plus partner priority flags",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2066_road_hazard_cupy_l4_12288_prepared_only.json",
+      "v2_contract": "prepared reusable witness output plus partner priority flags",
       "v2_evidence": "docs/reports/goal2066_road_hazard_cupy_l4_12288_prepared_only.json",
+      "v2_over_v1_8_ratio": 0.08547802242447566,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Goal2066 shows compact partner-owned count columns are the strongest segment/polygon v2 shape at 131072 rows.",
+      "analysis_hint": "compact partner-owned count columns; strongest segment/polygon v2 shape",
       "app": "segment_polygon_hitcount",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "C-segment-polygon-count-derived-flags",
-      "next_command": "large prepared count-column scaling collected by Goal2066",
-      "v18_reference": "goal1903 segment/polygon v1.8 baseline",
-      "v2_contract": "generic witness rows counted into partner-owned hit-count columns",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2066_segment_polygon_hitcount_cupy_l4_131072_capacity67108864.json",
+      "v2_contract": "compact partner-owned count columns; strongest segment/polygon v2 shape",
       "v2_evidence": "docs/reports/goal2066_segment_polygon_hitcount_cupy_l4_131072_capacity67108864.json",
+      "v2_over_v1_8_ratio": 0.006120606640089472,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Goal2066 confirms full witness-row materialization remains slower than v1.8 native rows at 4096; this row is correct but the wrong performance shape for large outputs.",
+      "analysis_hint": "Streaming exact witness columns supersede the old slower full Python row-table contract; the old full-row path remains documented separately and is not the v2.0 release contract.",
       "app": "segment_polygon_anyhit_rows",
-      "claim_class": "implemented-needs-optimization",
-      "comparison_status": "pod-evidence-collected-mixed",
+      "claim_class": "implemented",
+      "comparison_status": "pod-evidence-collected",
       "family": "B-ray-triangle-anyhit-rows",
-      "next_command": "do not promote full witness-row materialization; prefer compact counts/flags or future paged witness output",
-      "v18_reference": "scripts/goal1856_segment_polygon_v2_partner_perf.py",
-      "v2_contract": "generic ray/primitive witness rows through partner-owned input columns",
-      "v2_evidence": "docs/reports/goal2066_segment_polygon_anyhit_cupy_l4_4096_capacity16777216.json",
-      "v2_state": "implemented-and-pod-timed-mixed"
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2081_streaming_witness_page_pod/goal2081_streaming_witness_page_perf_pod_16384_cupy_capacity.json",
+      "v2_contract": "Goal2083 reviewed streaming exact witness-column contract; avoids full Python row-table materialization. Old full-row v2 contract remains separately documented as slower/less favorable.",
+      "v2_evidence": "docs/reports/goal2081_streaming_witness_page_pod/goal2081_streaming_witness_page_perf_pod_16384_cupy_capacity.json",
+      "v2_over_v1_8_ratio": 0.0007458600583811104,
+      "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Still bounded: v2 preserves semantics at 2048/3072 but remains slower, and 4096 OOMs in current OptiX candidate discovery.",
+      "analysis_hint": "current-commit pod refresh using Goal2075 generic tiled AABB candidate-summary source; legacy OptiX candidate path at copies=3072 measured ratio=1.990x and remains slower",
       "app": "polygon_pair_overlap_area_rows",
       "claim_class": "bounded-implemented",
       "comparison_status": "pod-evidence-collected-bounded",
       "family": "D-polygon-exact-metric-continuation",
-      "next_command": "requires a real bounded candidate-summary primitive; naive streaming around the current OptiX helper was tested and rejected because it failed parity",
-      "v18_reference": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
-      "v2_contract": "OptiX candidate discovery plus CuPy identity-payload extent continuation for authored axis-aligned bounded shapes",
-      "v2_evidence": "docs/reports/goal2066_polygon_rawkernel_cupy_optix_l4_2048.json; docs/reports/goal2066_polygon_rawkernel_cupy_optix_l4_3072.json; docs/reports/goal2066_polygon_rawkernel_cupy_optix_l4_4096_oom.log",
-      "v2_state": "bounded-partner-row"
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_polygon_pair_cupy_extent_4096.json",
+      "v2_contract": "current-commit pod refresh using Goal2075 generic tiled AABB candidate-summary source; legacy OptiX candidate path at copies=3072 measured ratio=1.990x and remains slower",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_polygon_pair_cupy_extent_4096.json",
+      "v2_over_v1_8_ratio": 0.23562489753144591,
+      "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Still bounded: v2 is near parity/slightly faster at 2048/3072, but 4096 shares the same current OptiX candidate-discovery OOM boundary.",
+      "analysis_hint": "current-commit pod refresh using Goal2075 generic tiled AABB candidate-summary source; legacy OptiX candidate path at copies=3072 measured ratio=1.263x and remains slower",
       "app": "polygon_set_jaccard",
       "claim_class": "bounded-implemented",
       "comparison_status": "pod-evidence-collected-bounded",
       "family": "D-polygon-exact-metric-continuation",
-      "next_command": "requires a real bounded candidate-summary primitive; naive streaming around the current OptiX helper was tested and rejected because it failed parity",
-      "v18_reference": "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
-      "v2_contract": "OptiX candidate discovery plus CuPy identity-payload extent continuation for authored axis-aligned bounded-shape set Jaccard",
-      "v2_evidence": "docs/reports/goal2066_polygon_rawkernel_cupy_optix_l4_2048.json; docs/reports/goal2066_polygon_rawkernel_cupy_optix_l4_3072.json; docs/reports/goal2066_polygon_rawkernel_cupy_optix_l4_4096_oom.log",
-      "v2_state": "bounded-partner-row"
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_polygon_jaccard_cupy_extent_4096.json",
+      "v2_contract": "current-commit pod refresh using Goal2075 generic tiled AABB candidate-summary source; legacy OptiX candidate path at copies=3072 measured ratio=1.263x and remains slower",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_polygon_jaccard_cupy_extent_4096.json",
+      "v2_over_v1_8_ratio": 0.21832728833834,
+      "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "This is a thresholded nearest-candidate workload. Exact directed Hausdorff max-distance remains a different app continuation. Goal2066 strengthens this row at 16384x16384, still bounded to the documented threshold/proxy semantics.",
+      "analysis_hint": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
       "app": "hausdorff_distance",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "large 16384x16384 fixed-radius pod timing collected by Goal2066",
-      "v18_reference": "scripts/goal1925_fixed_radius_family_v2_partner_perf.py",
-      "v2_contract": "non-degenerate fixed-radius nearest-candidate threshold decision, not exact Hausdorff ranking",
-      "v2_evidence": "docs/reports/goal2066_fixed_radius_family_cupy_l4_16384.json",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_contract": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_over_v1_8_ratio": 0.007223151270424738,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "The row tests candidate coverage, not arbitrary nearest-neighbor indexing. Goal2066 strengthens this row at 16384x16384, still bounded to the documented threshold/proxy semantics.",
+      "analysis_hint": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
       "app": "ann_candidate_search",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "large 16384x16384 fixed-radius pod timing collected by Goal2066",
-      "v18_reference": "scripts/goal1925_fixed_radius_family_v2_partner_perf.py",
-      "v2_contract": "fixed-radius candidate coverage decision; not an ANN index such as HNSW or FAISS",
-      "v2_evidence": "docs/reports/goal2066_fixed_radius_family_cupy_l4_16384.json",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_contract": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_over_v1_8_ratio": 0.007031600313920238,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "The v2 output should be compact flags/counts; host materialized row lists would erase much of the point. Goal2066 strengthens this row at 16384x16384, still bounded to the documented threshold/proxy semantics.",
+      "analysis_hint": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
       "app": "outlier_detection",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "large 16384x16384 fixed-radius pod timing collected by Goal2066",
-      "v18_reference": "scripts/goal1925_fixed_radius_family_v2_partner_perf.py",
-      "v2_contract": "fixed-radius neighbor count threshold flags in partner columns",
-      "v2_evidence": "docs/reports/goal2066_fixed_radius_family_cupy_l4_16384.json",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_contract": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_over_v1_8_ratio": 0.0075201289041686385,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Only the RTDL neighbor/core test is accelerated; transitive cluster labeling is not yet a partner graph algorithm. Goal2066 strengthens this row at 16384x16384, still bounded to the documented threshold/proxy semantics.",
+      "analysis_hint": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
       "app": "dbscan_clustering",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "large 16384x16384 fixed-radius pod timing collected by Goal2066",
-      "v18_reference": "scripts/goal1925_fixed_radius_family_v2_partner_perf.py",
-      "v2_contract": "core-point count/threshold flags; full cluster expansion remains app logic",
-      "v2_evidence": "docs/reports/goal2066_fixed_radius_family_cupy_l4_16384.json",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_contract": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_over_v1_8_ratio": 0.006761873100001576,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "Goal2066 turns the earlier small-row negative into a large-scale speedup; the row remains an any-hit flag output, not arbitrary whole-app planning acceleration.",
+      "analysis_hint": "current-commit pod refresh; prepared generic any-hit flags to partner-owned pose flags",
       "app": "robot_collision_screening",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "B-ray-triangle-anyhit-flags",
-      "next_command": "large-scale positive pod timing collected by Goal2066",
-      "v18_reference": "scripts/goal1928_robot_collision_v2_partner_perf.py",
-      "v2_contract": "prepared generic any-hit ray flags reduced to partner-owned pose collision flags",
-      "v2_evidence": "docs/reports/goal2066_robot_collision_cupy_l4_32768x8192.json; docs/reports/goal2066_robot_collision_cupy_l4_65536x8192.json",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1928_robot_collision_cupy_16384x1024.json",
+      "v2_contract": "current-commit pod refresh; prepared generic any-hit flags to partner-owned pose flags",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1928_robot_collision_cupy_16384x1024.json",
+      "v2_over_v1_8_ratio": 0.36729177018373466,
       "v2_state": "implemented-and-pod-timed"
     },
     {
-      "analysis_hint": "This covers spatial node coverage, not a full Barnes-Hut force-vector GPU solver. Goal2066 strengthens this row at 16384x16384, still bounded to the documented threshold/proxy semantics.",
+      "analysis_hint": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
       "app": "barnes_hut_force_app",
       "claim_class": "implemented",
       "comparison_status": "pod-evidence-collected",
       "family": "A-fixed-radius-threshold",
-      "next_command": "large 16384x16384 fixed-radius pod timing collected by Goal2066",
-      "v18_reference": "scripts/goal1925_fixed_radius_family_v2_partner_perf.py",
-      "v2_contract": "fixed-radius node coverage decision; force-vector accumulation remains app logic",
-      "v2_evidence": "docs/reports/goal2066_fixed_radius_family_cupy_l4_16384.json",
+      "next_command": "post-streaming v2.0 release evidence collected by Goal2085/Goal2088",
+      "v18_reference": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_contract": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "v2_evidence": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v2_over_v1_8_ratio": 0.0071462103096754295,
       "v2_state": "implemented-and-pod-timed"
     }
   ],

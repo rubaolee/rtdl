@@ -1,0 +1,107 @@
+[goal2081] setup count=16384 output_capacity=268435456 page_limit=16384 partner=cupy
+[goal2081] timing v1_8_native_optix_rows iterations=3
+[goal2081] v1_8_native_optix_rows iter=1 elapsed_s=2.834032
+[goal2081] v1_8_native_optix_rows iter=2 elapsed_s=1.905528
+[goal2081] v1_8_native_optix_rows iter=3 elapsed_s=1.766179
+[goal2081] timing v2_0_partner_columns_full_python_rows iterations=3
+[goal2081] v2_0_partner_columns_full_python_rows iter=1 elapsed_s=0.614009
+[goal2081] v2_0_partner_columns_full_python_rows iter=2 elapsed_s=0.340985
+[goal2081] v2_0_partner_columns_full_python_rows iter=3 elapsed_s=0.313637
+[goal2081] timing v2_0_streaming_exact_witness_page_columns iterations=3
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=1 elapsed_s=0.098251
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=2 elapsed_s=0.001421
+[goal2081] v2_0_streaming_exact_witness_page_columns iter=3 elapsed_s=0.001344
+{
+  "claim_boundary": {
+    "requires_pod_review_before_table_update": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "column_build_s": 0.029343815054744482,
+  "count": 16384,
+  "git_commit": "2efd4b84e8ac8e0f15c6dc32884e49e0dec6d669",
+  "goal": "Goal2081",
+  "gpu": "NVIDIA GeForce RTX 3090, 580.126.20",
+  "iterations": 3,
+  "output_capacity": 268435456,
+  "page_limit": 16384,
+  "partner": "cupy",
+  "status": "pass",
+  "v1_8_native_optix_rows": {
+    "query_summary": {
+      "max_s": 2.8340320801362395,
+      "median_s": 1.9055275935679674,
+      "min_s": 1.7661790130659938
+    },
+    "row_count": 16384
+  },
+  "v2_0_partner_columns_full_python_rows": {
+    "query_summary": {
+      "max_s": 0.6140088550746441,
+      "median_s": 0.3409848022274673,
+      "min_s": 0.3136369730345905
+    },
+    "ratio_vs_v1_8": 0.1789450876379056,
+    "row_count": 16384
+  },
+  "v2_0_streaming_exact_witness_page_columns": {
+    "metadata": {
+      "adapter": "segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns",
+      "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+      "app_exact_filter_device_materialization": true,
+      "app_exact_filter_host_materialization": false,
+      "app_exact_row_semantics_authorized": true,
+      "app_row_host_materialization": false,
+      "app_row_materialization": "not_performed_exact_witness_columns_only",
+      "backend": "optix",
+      "direct_device_handoff_authorized": true,
+      "direct_device_pointer_observed": true,
+      "emitted_count": 30960,
+      "exact_row_semantics_authorized": true,
+      "exact_witness_count": 16384,
+      "full_python_row_table_materialization_avoided": true,
+      "input_contract": "caller_supplied_partner_device_columns",
+      "limit": 16384,
+      "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+      "native_exact_row_semantics_authorized": false,
+      "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses",
+      "offset": 0,
+      "overflowed": false,
+      "page_limit": 16384,
+      "page_offset": 0,
+      "page_row_count": 16384,
+      "partner": "cupy",
+      "partner_tensor_handoff_authorized": true,
+      "prepared_scene_reused": true,
+      "ray_columns_true_zero_copy_authorized": true,
+      "ray_count": 16384,
+      "row_count": 16384,
+      "rt_core_speedup_claim_authorized": false,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cupy"
+      ],
+      "source_row_count": 16384,
+      "streaming_witness_page_authorized": true,
+      "transfer_mode": "device_ray_triangle_columns_bounded_all_witness_rows_zero_copy",
+      "triangle_scene_true_zero_copy_authorized": true,
+      "true_zero_copy_authorized": true,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false,
+      "whole_app_true_zero_copy_authorized": true,
+      "witness_contract": "bounded all-hit witness rows; overflow must be false for exact row semantics",
+      "witness_output_columns_reused": true,
+      "witness_outputs_true_zero_copy_authorized": true,
+      "witness_row_capacity": 268435456
+    },
+    "query_summary": {
+      "max_s": 0.09825050178915262,
+      "median_s": 0.001421256922185421,
+      "min_s": 0.0013439166359603405
+    },
+    "ratio_vs_old_v2_full_rows": 0.004168094627388454,
+    "ratio_vs_v1_8": 0.0007458600583811104
+  }
+}

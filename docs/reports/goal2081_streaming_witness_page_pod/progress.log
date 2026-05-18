@@ -1,0 +1,9 @@
+[goal2081] 2026-05-15T16:21:31+00:00 pod=c7767abcb51d commit=2efd4b84e8ac8e0f15c6dc32884e49e0dec6d669
+[goal2081] 2026-05-15T16:21:31+00:00 start primary_4096_cupy
+[goal2081] 2026-05-15T16:22:39+00:00 start primary_4096_cupy_capacity
+[goal2081] 2026-05-15T16:22:43+00:00 done primary_4096_cupy_capacity
+[goal2081] 2026-05-15T16:22:43+00:00 start larger_8192_cupy_capacity
+[goal2081] 2026-05-15T16:22:48+00:00 done larger_8192_cupy_capacity
+[goal2081] 2026-05-15T16:22:48+00:00 all done capacity
+[goal2081] 2026-05-15T16:25:35+00:00 start larger_16384_cupy_capacity
+[goal2081] 2026-05-15T16:25:44+00:00 done larger_16384_cupy_capacity

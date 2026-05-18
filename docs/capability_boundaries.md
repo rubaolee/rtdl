@@ -6,9 +6,8 @@ users. Older release history is kept separately in
 
 ## Current Status
 
-RTDL v2.0 is a pre-release candidate, not a final release. The engineering
-packet is strong, but final release waits for the strict 3-AI consensus redline
-and a fresh Claude-family review.
+RTDL v2.0 is the current source-tree Python+partner+RTDL release. The release
+packet passed the strict 3-AI consensus redline with Codex, Claude, and Gemini.
 
 ## Short Version
 
@@ -71,20 +70,20 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.0 Candidate Boundaries
+## v2.0 Release Boundaries
 
 Allowed:
 
-- Python+partner+RTDL pre-release candidate;
+- Python+partner+RTDL source-tree release;
 - documented partner-owned input/output columns;
 - current OptiX/RT evidence under documented contracts;
 - streaming exact witness-column output where reviewed.
 
 Not allowed:
 
-- final v2.0 release before 3-AI consensus;
 - arbitrary PyTorch/CuPy acceleration;
 - broad RT-core acceleration;
 - arbitrary polygon overlay;
 - package-install support;
 - every user program is faster.
+- true zero-copy unless the exact measured path proves device-resident handoff.

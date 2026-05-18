@@ -12,10 +12,22 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.0 is a pre-release candidate. The current evidence
-includes streaming exact witness-column contracts for large outputs. Final
-release still waits for 3-AI consensus; fresh Claude-family review is unavailable
-in the current final packet.
+Current status: RTDL v2.0 is the released source-tree Python+partner+RTDL
+surface. The current released version is `v2.0`. The release evidence includes
+streaming exact witness-column contracts for large outputs and 3-AI consensus
+from Codex, Claude, and Gemini.
+
+Short model:
+
+```text
+Python writes the application.
+RTDL expresses the RT-shaped kernel.
+Native backends execute generic engine contracts.
+```
+
+This is the same idea as "Python App, Generic Engine": the Python layer handles
+app policy and runtime engine selection, while native runtime symbols stay
+generic.
 
 ## Fast Learner Path
 
@@ -40,6 +52,7 @@ Read these in order:
 | Backend maturity | [Backend Maturity](backend_maturity.md) |
 | Feature support | [Engine Feature Support Contract](features/engine_support_matrix.md) |
 | Partner acceleration | [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
+| Partner roadmap gate | [Partner Roadmap Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 | Current support matrix | [Current Support Matrix](current_main_support_matrix.md) |
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
@@ -62,6 +75,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one surface: the v2.0 pre-release candidate.
+Current learner docs should explain one surface: the v2.0 release.
 Older context is preserved for review, but it should not interrupt the normal
 learning path.

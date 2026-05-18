@@ -1,6 +1,7 @@
-# v2.0 Release-Hold Checkpoint
+# v2.0 Release-Hold Checkpoint Archive
 
-Status: release preparation may continue; final release action is on hold.
+Status: archived. The release hold was cleared by the Goal2322 3-AI consensus
+and the v2.0 release action.
 
 This page records the current release-edge rule:
 
@@ -35,24 +36,24 @@ The current public surface has been cleaned for release review:
 | v2.0 pre-release candidate | `docs/release_reports/v2_0_pre_release_candidate.md` |
 | Streaming witness v2 perf table | `docs/reports/goal2085_v2_perf_table_after_streaming_witness_update_2026-05-15.md` |
 
-## Not Yet Allowed
+## Historical Not-Yet-Allowed Actions
 
-Do not perform these actions without explicit user release authorization:
+At the time of this checkpoint, these actions required explicit user release
+authorization:
 
 - create or move a `v2.0` tag;
 - create a GitHub release;
 - publish final v2.0 release notes as released;
-- change wording from pre-release/hold to final release;
+- change wording from hold to final release;
 - claim package-install support unless packaging metadata is present and tested;
 - claim broad RT-core, arbitrary partner, or universal whole-app acceleration.
 
-## Next Safe Work
+## Superseded Next Safe Work
 
-Safe work before the release button:
+Before the release button, safe work was:
 
 - keep docs, reports, reviews, and tests synced to `origin/main`;
 - gather remaining external reviews;
 - run additional local or pod validation;
 - update pre-release evidence docs with exact artifact paths;
 - fix discovered documentation, link, or example issues.
-

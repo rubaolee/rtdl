@@ -5,12 +5,10 @@ Python+RTDL architecture milestone.
 
 ## Current Status Note
 
-As of 2026-05-15, v1.8 is the current public release and v2.0 is a
-pre-release candidate after the Goal2086 streaming witness-column update. The
-post-Goal2086 packet has strong OptiX/RT evidence under documented contracts,
-but final v2.0 release is still blocked by the strict 3-AI consensus redline
-until a fresh Claude-family review lands. See
-[v2.0 Pre-Release Candidate After Goal2086](v2_0_pre_release_candidate_after_goal2086.md).
+As of 2026-05-18, v2.0 is the current source-tree Python+partner+RTDL release.
+The final cleanup packet passed the strict 3-AI consensus redline with Codex,
+Claude, and Gemini. See [v2.0 Release Package](v2_0/README.md) and
+[Goal2322 final consensus](../reports/goal2322_final_v2_0_release_cleanup_3ai_consensus_2026-05-18.md).
 
 ## Roadmap Rule
 
@@ -134,16 +132,16 @@ The app-agnostic gate is paired with:
 - [Goal1827 Gemini Review of Goal1826](../reviews/goal1827_gemini_review_goal1826_optix_device_triangle_scene_2026-05-13.md)
 - [Goal1828 OptiX Device-Column Pod Validation Packet](../reports/goal1828_optix_device_column_pod_validation_packet_2026-05-13.md)
 
-## Claim Boundary
+## Historical Claim Boundary
 
-Allowed near-term wording before v2.0:
+Historical allowed near-term wording before the v2.0 release:
 
 ```text
 RTDL is building a protocol-first Python+partner+RTDL track with PyTorch as the
 primary reference partner and CuPy as the lightweight conformance partner.
 ```
 
-Allowed preview wording:
+Historical preview wording:
 
 ```text
 RTDL includes an experimental Python+partner preview path: partner-owned NumPy,
@@ -158,14 +156,13 @@ Blocked wording until separately proven:
 - "RTDL optimizes partner code."
 - "RTDL native internals are fully app-agnostic."
 - "All partners are interchangeable with no performance differences."
-- "RTDL v2.0 is released."
 - "RTDL supports package installation."
 
 True zero-copy is a measured claim boundary. Device-resident handoff,
 reduced-copy, fallback copy, and host staging must be reported separately in
 benchmark artifacts and release text.
 
-## v2.0 Birth Gate
+## v2.0 Birth Gate History
 
 Goal1814 and Goal1818 supersede the earlier `release-ready-with-boundary`
 conclusion for Goal1810/Goal1813. The current partner path is accepted as

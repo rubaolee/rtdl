@@ -15,14 +15,13 @@
   ],
   "final_matrix": "docs/reports/goal2068_final_v2_0_release_matrix.json",
   "final_matrix_counts": {
-    "pod-evidence-collected": 11,
-    "pod-evidence-collected-bounded": 4,
-    "pod-evidence-collected-mixed": 1
+    "pod-evidence-collected": 12,
+    "pod-evidence-collected-bounded": 4
   },
   "final_matrix_status": "final-v2-0-release-matrix-candidate",
   "gate_tests": {
     "command": "C:\\Python311\\python.exe -m unittest tests.goal2068_final_v2_0_release_matrix_test tests.goal2066_v2_pod_large_scale_followup_test tests.goal2064_all_app_v2_current_pod_evidence_audit_test tests.goal1906_public_v2_claim_boundary_scan_test tests.goal1671_v1_8_v2_0_partner_gate_test tests.goal1675_partner_protocol_substrate_test tests.goal1603_v1_6_stable_native_path_app_leakage_audit_test tests.goal1668_native_engine_app_agnostic_directive_test tests.goal1680_current_native_app_leakage_gap_test",
-    "output_tail": "Could not find platform independent libraries <prefix>\n..................................s.....\n----------------------------------------------------------------------\nRan 40 tests in 0.568s\n\nOK (skipped=1)\n",
+    "output_tail": "Could not find platform independent libraries <prefix>\n..................................s.....\n----------------------------------------------------------------------\nRan 40 tests in 0.603s\n\nOK (skipped=1)\n",
     "returncode": 0,
     "status": "pass",
     "summary": "40 tests, 1 skipped",
@@ -38,14 +37,13 @@
       "tests.goal1680_current_native_app_leakage_gap_test"
     ]
   },
-  "git_commit": "cc488ad7cec53ccb1fc4ebb5a294514976eafce1",
+  "git_commit": "fc6b0e36fecb014dfacedc97b38b2515e4538575",
   "goal": "Goal2069",
-  "mixed_apps": [
-    "segment_polygon_anyhit_rows"
-  ],
+  "mixed_apps": [],
   "release_claim_boundary": {
     "all_apps_have_current_pod_evidence": true,
-    "all_apps_have_measured_v2_speedup": false,
+    "all_apps_have_measured_v2_speedup": true,
+    "all_current_optix_rt_rows_have_measured_v2_speedup": true,
     "arbitrary_partner_program_acceleration_authorized": false,
     "broad_rt_core_speedup_claim_authorized": false,
     "final_release_consensus_present": false,
@@ -55,7 +53,7 @@
   },
   "remaining_blockers": [
     "final Claude v2.0 release review missing",
-    "final Gemini v2.0 release review over post-Goal2066/Goal2068/Goal2069 packet missing",
+    "final Gemini v2.0 release review over current post-streaming packet missing",
     "final v2.0 3-AI release consensus missing",
     "explicit user-requested release action missing"
   ],

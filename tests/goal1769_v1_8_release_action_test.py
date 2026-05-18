@@ -8,8 +8,9 @@ RELEASE_README = ROOT / "docs" / "release_reports" / "v1_8" / "README.md"
 
 
 class Goal1769V18ReleaseActionTest(unittest.TestCase):
-    def test_version_marker_is_v1_8(self) -> None:
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "v1.8")
+    def test_v1_8_release_package_keeps_marker(self) -> None:
+        text = RELEASE_README.read_text(encoding="utf-8")
+        self.assertIn("Version marker: `v1.8`", text)
 
     def test_release_action_records_authorized_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -19,15 +20,16 @@ class Goal1769V18ReleaseActionTest(unittest.TestCase):
         self.assertIn("does not claim package-install support", text)
         self.assertIn("Python+partner+RTDL readiness", text)
 
-    def test_front_door_docs_now_name_v1_8_as_current_release(self) -> None:
+    def test_front_door_docs_no_longer_name_v1_8_as_current_release(self) -> None:
         root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
         docs_readme = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         public_map = (ROOT / "docs" / "public_documentation_map.md").read_text(
             encoding="utf-8"
         )
         for text in (root_readme, docs_readme, public_map):
-            self.assertIn("current released version is `v1.8`", text)
-            self.assertIn("source-tree Python+RTDL", text)
+            self.assertIn("v2.0", text)
+            self.assertIn("source-tree Python+partner+RTDL", text)
+            self.assertNotIn("current released version is `v1.8`", text)
         self.assertNotIn("v1.8 is not tagged or released yet", root_readme)
         self.assertNotIn("v1.8 is not a released tag yet", docs_readme)
         self.assertNotIn("v1.8 still requires explicit user authorization", public_map)

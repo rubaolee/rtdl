@@ -1,0 +1,306 @@
+{
+  "all_cells_filled": true,
+  "base_report": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_2026-05-15.json",
+  "claim_boundary": {
+    "old_full_python_row_contract_not_claimed_fast": true,
+    "segment_polygon_anyhit_rows_contract_changed_to_streaming_witness_columns": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized_without_final_consensus": false
+  },
+  "embree_rows": [
+    {
+      "app": "database_analytics",
+      "note": "filled by re-implementing/running the v1.8 Python+RTDL Embree path in the current tree; no distinct v2 CPU partner DB adapter claim",
+      "scale": "copies=4000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/database_analytics.json",
+      "v1_8_sec": 0.6243284464580938,
+      "v2_0_sec": 0.6232525590457954,
+      "v2_over_v1_8_ratio": 0.9982767285098058
+    },
+    {
+      "app": "graph_analytics",
+      "note": "filled by measuring the complete graph app instead of leaving split graph rows or blank cells; reusable v2 graph partner primitive remains future work",
+      "scale": "scenario=all copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/graph_analytics.json",
+      "v1_8_sec": 0.44803122099256143,
+      "v2_0_sec": 0.4482618555193767,
+      "v2_over_v1_8_ratio": 1.0005147733372337
+    },
+    {
+      "app": "service_coverage_gaps",
+      "note": "threshold/proxy semantics only; not exact ranked KNN, full DBSCAN, or force-vector accumulation",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/service_coverage_gaps.json",
+      "v1_8_sec": 0.3838103610323742,
+      "v2_0_sec": 0.3858645724831149,
+      "v2_over_v1_8_ratio": 1.005352152154557
+    },
+    {
+      "app": "event_hotspot_screening",
+      "note": "threshold/proxy semantics only; not exact ranked KNN, full DBSCAN, or force-vector accumulation",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/event_hotspot_screening.json",
+      "v1_8_sec": 0.4620369889889844,
+      "v2_0_sec": 0.4604915474774316,
+      "v2_over_v1_8_ratio": 0.9966551563005064
+    },
+    {
+      "app": "facility_knn_assignment",
+      "note": "threshold/proxy semantics only; not exact ranked KNN, full DBSCAN, or force-vector accumulation",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/facility_knn_assignment.json",
+      "v1_8_sec": 1.0385746880201623,
+      "v2_0_sec": 1.0395333145279437,
+      "v2_over_v1_8_ratio": 1.0009230212509885
+    },
+    {
+      "app": "road_hazard_screening",
+      "note": "same Embree evidence cell; v2 GPU partner speedup is an OptiX/CuPy result, not an Embree CPU claim",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/road_hazard_screening.json",
+      "v1_8_sec": 0.35819436301244423,
+      "v2_0_sec": 0.3582668404560536,
+      "v2_over_v1_8_ratio": 1.0002023411060963
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "note": "same Embree evidence cell; compact count is the desired v2 shape but this local row is CPU Embree",
+      "scale": "copies=1024",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/segment_polygon_hitcount.json",
+      "v1_8_sec": 0.39374724501976743,
+      "v2_0_sec": 0.3949203855008818,
+      "v2_over_v1_8_ratio": 1.0029794252428497
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "note": "full row materialization remains the weak output shape; no compact-count substitution in this row",
+      "scale": "copies=1024 capacity=16384",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/segment_polygon_anyhit_rows.json",
+      "v1_8_sec": 0.41782622452592477,
+      "v2_0_sec": 0.4192026079981588,
+      "v2_over_v1_8_ratio": 1.0032941529072181
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "note": "filled as evidence for the bounded/streaming candidate-summary direction; not arbitrary polygon overlay",
+      "scale": "copies=5000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/polygon_pair_overlap_area_rows.json",
+      "v1_8_sec": 2.4227509264601395,
+      "v2_0_sec": 1.0299646974890493,
+      "v2_over_v1_8_ratio": 0.42512199097326187
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "note": "filled as evidence for the bounded/streaming candidate-summary direction; not arbitrary polygon overlay",
+      "scale": "copies=1000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/polygon_set_jaccard.json",
+      "v1_8_sec": 1.8441881170147099,
+      "v2_0_sec": 0.3835338554927148,
+      "v2_over_v1_8_ratio": 0.2079689441408843
+    },
+    {
+      "app": "hausdorff_distance",
+      "note": "exact directed summary, not a GPU partner threshold proxy in this Embree table",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/hausdorff_distance.json",
+      "v1_8_sec": 1.2718097420292906,
+      "v2_0_sec": 1.30628911399981,
+      "v2_over_v1_8_ratio": 1.0271104795246373
+    },
+    {
+      "app": "ann_candidate_search",
+      "note": "candidate coverage/rerank summary only; not a general ANN index claim",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/ann_candidate_search.json",
+      "v1_8_sec": 0.7529865764663555,
+      "v2_0_sec": 0.7469971849932335,
+      "v2_over_v1_8_ratio": 0.992045819061969
+    },
+    {
+      "app": "outlier_detection",
+      "note": "threshold/proxy semantics only; not exact ranked KNN, full DBSCAN, or force-vector accumulation",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/outlier_detection.json",
+      "v1_8_sec": 0.37755429855315015,
+      "v2_0_sec": 0.37391230749199167,
+      "v2_over_v1_8_ratio": 0.9903537290527079
+    },
+    {
+      "app": "dbscan_clustering",
+      "note": "core-count only; full cluster expansion remains app/partner graph work",
+      "scale": "copies=2000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/dbscan_clustering.json",
+      "v1_8_sec": 0.37829293456161395,
+      "v2_0_sec": 0.3778316795360297,
+      "v2_over_v1_8_ratio": 0.9987806935222864
+    },
+    {
+      "app": "robot_collision_screening",
+      "note": "pose flags/count only; no whole-planner acceleration claim",
+      "scale": "poses=2000 obstacles=512",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/robot_collision_screening.json",
+      "v1_8_sec": 35.72305391449481,
+      "v2_0_sec": 35.67652913299389,
+      "v2_over_v1_8_ratio": 0.9986976258633352
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "note": "node coverage only; force-vector reduction remains outside this row",
+      "scale": "body-count=50000",
+      "source": "docs/reports/goal2077_embree_v18_v2_complete_table_local_linux/rows/barnes_hut_force_app.json",
+      "v1_8_sec": 1.022867533029057,
+      "v2_0_sec": 1.0209872755222023,
+      "v2_over_v1_8_ratio": 0.9981617780933111
+    }
+  ],
+  "goal": "Goal2085",
+  "optix_rt_rows": [
+    {
+      "app": "database_analytics",
+      "evidence_note": "current-commit pod refresh; user-approved Python+CuPy+RTDL vs Python+RTDL app-wall comparison, not absolutely fair",
+      "scale": "copies=100000 partner=cupy candidate_backend=cupy_extent current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_database_cupy_default.json",
+      "v1_8_optix_sec": 8.914665231481194,
+      "v2_optix_rt_partner_sec": 2.0619997959583998,
+      "v2_over_v1_8_ratio": 0.23130423211818052
+    },
+    {
+      "app": "graph_analytics",
+      "evidence_note": "app-wall Python+RTDL vs Python+CuPy+RTDL; not absolutely fair, but user-approved v2 app comparison",
+      "scale": "copies=512",
+      "source": "docs/reports/goal2058_graph_rawkernel_cupy_optix_l4_512.json",
+      "v1_8_optix_sec": 5.206506710499525,
+      "v2_optix_rt_partner_sec": 0.00012071803212165833,
+      "v2_over_v1_8_ratio": 2.3185993763960085e-05
+    },
+    {
+      "app": "service_coverage_gaps",
+      "evidence_note": "prepared fixed-radius count/threshold output; compact partner-owned columns",
+      "scale": "size=16384 partner=cupy",
+      "source": "docs/reports/goal1903_fixed_radius_batch_pod.json",
+      "v1_8_optix_sec": 0.03809601068496704,
+      "v2_optix_rt_partner_sec": 0.0002279430627822876,
+      "v2_over_v1_8_ratio": 0.005983384052132145
+    },
+    {
+      "app": "event_hotspot_screening",
+      "evidence_note": "prepared fixed-radius count/threshold output; compact partner-owned columns",
+      "scale": "size=16384 partner=cupy",
+      "source": "docs/reports/goal1903_fixed_radius_batch_pod.json",
+      "v1_8_optix_sec": 0.09414038807153702,
+      "v2_optix_rt_partner_sec": 0.00018806010484695435,
+      "v2_over_v1_8_ratio": 0.0019976559338596308
+    },
+    {
+      "app": "facility_knn_assignment",
+      "evidence_note": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v1_8_optix_sec": 0.047627588734030724,
+      "v2_optix_rt_partner_sec": 0.0003073718398809433,
+      "v2_over_v1_8_ratio": 0.006453651088603628
+    },
+    {
+      "app": "road_hazard_screening",
+      "evidence_note": "prepared reusable witness output plus partner priority flags",
+      "scale": "roads=12288 hazards=18432 partner=cupy",
+      "source": "docs/reports/goal2066_road_hazard_cupy_l4_12288_prepared_only.json",
+      "v1_8_optix_sec": 0.029204633086919785,
+      "v2_optix_rt_partner_sec": 0.0024963542819023132,
+      "v2_over_v1_8_ratio": 0.08547802242447566
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "evidence_note": "compact partner-owned count columns; strongest segment/polygon v2 shape",
+      "scale": "rows=131072 capacity=67108864 partner=cupy",
+      "source": "docs/reports/goal2066_segment_polygon_hitcount_cupy_l4_131072_capacity67108864.json",
+      "v1_8_optix_sec": 0.4528840593993664,
+      "v2_optix_rt_partner_sec": 0.0027719251811504364,
+      "v2_over_v1_8_ratio": 0.006120606640089472
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "evidence_note": "Goal2083 reviewed streaming exact witness-column contract; avoids full Python row-table materialization. Old full-row v2 contract remains separately documented as slower/less favorable.",
+      "scale": "count=16384 partner=cupy streaming_exact_witness_page current RTX 3090",
+      "source": "docs/reports/goal2081_streaming_witness_page_pod/goal2081_streaming_witness_page_perf_pod_16384_cupy_capacity.json",
+      "v1_8_optix_sec": 1.9055275935679674,
+      "v2_optix_rt_partner_sec": 0.001421256922185421,
+      "v2_over_v1_8_ratio": 0.0007458600583811104
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "evidence_note": "current-commit pod refresh using Goal2075 generic tiled AABB candidate-summary source; legacy OptiX candidate path at copies=3072 measured ratio=1.990x and remains slower",
+      "scale": "copies=4096 partner=cupy candidate_backend=cupy_extent current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_polygon_pair_cupy_extent_4096.json",
+      "v1_8_optix_sec": 0.7055570166558027,
+      "v2_optix_rt_partner_sec": 0.1662467997521162,
+      "v2_over_v1_8_ratio": 0.23562489753144591
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "evidence_note": "current-commit pod refresh using Goal2075 generic tiled AABB candidate-summary source; legacy OptiX candidate path at copies=3072 measured ratio=1.263x and remains slower",
+      "scale": "copies=4096 partner=cupy candidate_backend=cupy_extent current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1955_polygon_jaccard_cupy_extent_4096.json",
+      "v1_8_optix_sec": 0.6922739297151566,
+      "v2_optix_rt_partner_sec": 0.1511422898620367,
+      "v2_over_v1_8_ratio": 0.21832728833834
+    },
+    {
+      "app": "hausdorff_distance",
+      "evidence_note": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v1_8_optix_sec": 0.04235565848648548,
+      "v2_optix_rt_partner_sec": 0.0003059413284063339,
+      "v2_over_v1_8_ratio": 0.007223151270424738
+    },
+    {
+      "app": "ann_candidate_search",
+      "evidence_note": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v1_8_optix_sec": 0.04302260838449001,
+      "v2_optix_rt_partner_sec": 0.0003025177866220474,
+      "v2_over_v1_8_ratio": 0.007031600313920238
+    },
+    {
+      "app": "outlier_detection",
+      "evidence_note": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v1_8_optix_sec": 0.04403618909418583,
+      "v2_optix_rt_partner_sec": 0.0003311578184366226,
+      "v2_over_v1_8_ratio": 0.0075201289041686385
+    },
+    {
+      "app": "dbscan_clustering",
+      "evidence_note": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v1_8_optix_sec": 0.04739394225180149,
+      "v2_optix_rt_partner_sec": 0.0003204718232154846,
+      "v2_over_v1_8_ratio": 0.006761873100001576
+    },
+    {
+      "app": "robot_collision_screening",
+      "evidence_note": "current-commit pod refresh; prepared generic any-hit flags to partner-owned pose flags",
+      "scale": "poses=16384 obstacles=1024 partner=cupy current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1928_robot_collision_cupy_16384x1024.json",
+      "v1_8_optix_sec": 0.0016681570559740067,
+      "v2_optix_rt_partner_sec": 0.0006127003580331802,
+      "v2_over_v1_8_ratio": 0.36729177018373466
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "evidence_note": "current-commit pod refresh; prepared fixed-radius count/threshold output; richer semantics remain bounded where documented",
+      "scale": "query=16384 search=8192 partner=cupy current RTX A5000",
+      "source": "docs/reports/goal2079_current_commit_optix_rt_perf_refresh_pod/goal1925_fixed_radius_cupy_16384x8192.json",
+      "v1_8_optix_sec": 0.04325270466506481,
+      "v2_optix_rt_partner_sec": 0.0003090929239988327,
+      "v2_over_v1_8_ratio": 0.0071462103096754295
+    }
+  ],
+  "status": "post-goal2083-filled-table-refresh",
+  "streaming_evidence_report": "docs/reports/goal2083_streaming_witness_page_pod_evidence_2026-05-15.md",
+  "streaming_review": "docs/reviews/goal2084_gemini_review_goal2083_streaming_witness_page_pod_evidence_2026-05-15.md"
+}

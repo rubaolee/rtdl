@@ -88,4 +88,4 @@ throughput.
 - [App And Example Quickstart](app_example_quickstart.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
-- [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
+- [v2.0 Release Package](release_reports/v2_0/README.md)

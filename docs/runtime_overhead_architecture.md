@@ -1,6 +1,6 @@
 # RTDL Runtime Overhead Architecture
 
-Status: current v2.0 pre-release candidate architecture note.
+Status: current v2.0 release architecture note.
 
 RTDL uses Python as the authoring and orchestration layer. That is the right
 shape for a learner-facing eDSL, but it also means performance depends on which

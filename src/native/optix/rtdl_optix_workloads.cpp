@@ -3143,7 +3143,7 @@ static void run_pip_optix(
 {
     ensure_pip_pipeline();
 
-    const bool profile_pip = std::getenv("RTDL_OPTIX_PIP_PROFILE") != nullptr;
+    const bool profile_pip = std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_PROFILE") != nullptr;
     const auto t_total_start = std::chrono::steady_clock::now();
     auto seconds_between = [](std::chrono::steady_clock::time_point start,
                               std::chrono::steady_clock::time_point end) -> double {
@@ -3229,7 +3229,7 @@ static void run_pip_optix(
     lp.probe_count    = static_cast<uint32_t>(point_count);
     lp.point_index_offset = 0u;
     lp.device_prefilter =
-        (positive_only != 0u && std::getenv("RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER") == nullptr) ? 1u : 0u;
+        (positive_only != 0u && std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr) ? 1u : 0u;
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -3243,7 +3243,7 @@ static void run_pip_optix(
     size_t pip_chunks = 0;
     size_t pip_fallback_chunks = 0;
     const bool pip_one_pass_compact =
-        std::getenv("RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT") == nullptr;
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT") == nullptr;
     if (positive_only == 0u) {
         const auto t_launch_start = std::chrono::steady_clock::now();
         OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
@@ -3399,7 +3399,7 @@ static void run_pip_optix(
         if (profile_pip) {
             const auto t_total_end = std::chrono::steady_clock::now();
             std::fprintf(stderr,
-                "[rtdl_optix_pip_profile] positive_only=%u one_pass=%u fallback_chunks=%zu points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
+                "[rtdl_optix_point_primitive_anyhit_profile] positive_only=%u one_pass=%u fallback_chunks=%zu points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
                 positive_only,
                 pip_one_pass_compact ? 1u : 0u,
                 pip_fallback_chunks,
@@ -3473,7 +3473,7 @@ static void run_pip_optix(
     if (profile_pip) {
         const auto t_total_end = std::chrono::steady_clock::now();
         std::fprintf(stderr,
-            "[rtdl_optix_pip_profile] positive_only=%u one_pass=%u fallback_chunks=%zu points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
+            "[rtdl_optix_point_primitive_anyhit_profile] positive_only=%u one_pass=%u fallback_chunks=%zu points=%zu polygons=%zu chunks=%zu candidates=%zu emitted=%zu host_pack_s=%.9f upload_s=%.9f accel_build_s=%.9f count_pass_s=%.9f write_pass_s=%.9f compact_download_s=%.9f exact_refine_s=%.9f total_s=%.9f\n",
             positive_only,
             pip_one_pass_compact ? 1u : 0u,
             pip_fallback_chunks,
@@ -3929,7 +3929,7 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
     lp.probe_count    = static_cast<uint32_t>(point_count);
     lp.point_index_offset = 0u;
     lp.device_prefilter =
-        std::getenv("RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -3946,7 +3946,7 @@ static void run_prepared_point_closed_shape_membership_2d_optix(
 
     std::vector<GpuPipRecord> gpu_rows;
     const bool pip_one_pass_compact =
-        std::getenv("RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT") == nullptr;
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT") == nullptr;
 
     auto launch_positive_candidate_pass = [&](
             size_t point_offset,
@@ -4143,7 +4143,7 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     lp.probe_count    = static_cast<uint32_t>(point_count);
     lp.point_index_offset = 0u;
     lp.device_prefilter =
-        std::getenv("RTDL_OPTIX_PIP_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
 
     DevPtr d_params(sizeof(PipLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -4202,7 +4202,7 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     };
 
     const bool pip_one_pass_compact =
-        std::getenv("RTDL_OPTIX_PIP_DISABLE_ONE_PASS_COMPACT") == nullptr;
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT") == nullptr;
     size_t exact_count = 0;
     auto count_exact_hits = [&](const std::vector<GpuPipRecord>& gpu_rows) {
         const auto t_refine_start = std::chrono::steady_clock::now();

@@ -29,7 +29,8 @@ model should be read from this current page.
 
 ## Timing Boundaries
 
-RTDL performance evidence must name the boundary being timed.
+RTDL performance evidence must name the boundary being timed and the artifact
+that records it.
 
 | Boundary | What it means | How to read it |
 | --- | --- | --- |
@@ -55,7 +56,7 @@ Current public wording is governed by:
 
 - [Current Support Matrix](current_main_support_matrix.md)
 - [Backend Maturity](backend_maturity.md)
-- [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
+- [v2.0 Release Package](release_reports/v2_0/README.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - `rtdsl.rtx_public_wording_matrix()`
@@ -125,4 +126,3 @@ RTDL accelerates every whole app.
 OptiX means RT cores made the app faster.
 All graph/DB/polygon workloads are faster with RT.
 ```
-

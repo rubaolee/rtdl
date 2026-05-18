@@ -8,9 +8,8 @@ the traversal-heavy kernel in RTDL, and choose a backend such as the portable
 CPU reference path, Embree, or OptiX. In the v2.0 track, partner frameworks such
 as NumPy, PyTorch, and CuPy can own columns around supported RTDL primitives.
 
-This page is intentionally single-version. It teaches the current pre-release
-candidate surface and links old tutorial history only from the final archive
-section.
+This page is intentionally single-version. It teaches the current v2.0 release
+surface and links old tutorial history only from the final archive section.
 
 ## Start Here
 
@@ -53,13 +52,13 @@ section.
 
 ## Current Claim Boundary
 
-The v2.0 tutorial path teaches a pre-release candidate, not a final release.
+The v2.0 tutorial path teaches the released source-tree Python+partner+RTDL surface.
 Use it from the source tree with `PYTHONPATH=src:.`.
 
 Allowed tutorial wording:
 
 - RTDL can run the documented Python+RTDL examples from source.
-- The v2.0 candidate has partner-column paths for documented primitives.
+- The v2.0 release has partner-column paths for documented primitives.
 - OptiX evidence exists for specific measured contracts.
 - Python or partner frameworks own app continuation outside the RTDL primitive.
 
@@ -69,11 +68,11 @@ Not allowed:
 - broad RT-core speedup claims;
 - arbitrary PyTorch/CuPy acceleration claims;
 - arbitrary polygon overlay, graph analytics, or database acceleration claims;
-- final v2.0 release wording before the 3-AI consensus gate is complete.
+- universal speedup wording beyond reviewed evidence.
 
 For the exact boundary, read
 [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md) and
-[v2.0 Pre-Release Candidate](../release_reports/v2_0_pre_release_candidate.md).
+[v2.0 Release Package](../release_reports/v2_0/README.md).
 
 ## More Navigation
 

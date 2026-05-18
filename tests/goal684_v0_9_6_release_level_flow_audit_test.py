@@ -23,7 +23,7 @@ class Goal684V096ReleaseLevelFlowAuditTest(unittest.TestCase):
         )
         combined = "\n".join((REPO_ROOT / path).read_text(encoding="utf-8") for path in public_paths)
 
-        self.assertIn("current released version is `v1.8`", combined)
+        self.assertIn("current released version is `v2.0`", combined)
         self.assertIn("Status: released as `v0.9.6`.", combined)
         self.assertNotIn("Release-Candidate", combined)
         self.assertNotIn("release candidate / hold", combined.lower())

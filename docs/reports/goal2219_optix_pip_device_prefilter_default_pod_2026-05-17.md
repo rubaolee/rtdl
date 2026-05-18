@@ -14,7 +14,7 @@ Goal2218 made the device-side PIP prefilter the default positive-only OptiX path
 - reference backend: `cpu`
 - reference row count: `8686`
 
-No `RTDL_OPTIX_PIP_DEVICE_PREFILTER` environment variable was set. This is the new default path. `RTDL_OPTIX_PIP_PROFILE=1` was set only to capture phase telemetry.
+No `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER` environment variable was set. This is the new default path. `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_PROFILE=1` was set only to capture phase telemetry.
 
 ## Result
 

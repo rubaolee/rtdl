@@ -6,7 +6,7 @@ Status: local opt-in implementation ready for pod validation.
 
 Goal2216 telemetry showed that RTDL OptiX PIP traversal is no longer the bottleneck on the RayJoin same-query stream. The expensive phase is host exact refinement over about `2.8M` conservative AABB candidates, which then emits only `8686` final rows.
 
-Goal2217 adds an opt-in device-side prefilter controlled by `RTDL_OPTIX_PIP_DEVICE_PREFILTER`.
+Goal2217 adds an opt-in device-side prefilter controlled by `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER`.
 
 ## Design
 
@@ -15,7 +15,7 @@ Default behavior remains conservative:
 - OptiX reports every point/polygon AABB candidate;
 - host exact refinement decides final inclusive truth.
 
-When `RTDL_OPTIX_PIP_DEVICE_PREFILTER` is set:
+When `RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DEVICE_PREFILTER` is set:
 
 - the OptiX intersection program runs the existing inclusive point-in-polygon helper before reporting a positive-only candidate;
 - obvious non-hits are removed on device;

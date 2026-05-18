@@ -7,9 +7,10 @@ and the release-report archive.
 
 ## Current Status
 
-RTDL v2.0 is a pre-release candidate. The engineering packet has reviewed
-OptiX/RT evidence under documented contracts, but final release is still held
-by the 3-AI consensus redline until a fresh Claude-family review lands.
+RTDL v2.0 is the current source-tree Python+partner+RTDL release. The release
+packet has reviewed OptiX/RT evidence under documented contracts and passed the
+3-AI consensus redline with Codex, Claude, and Gemini.
+The current released version is `v2.0`.
 
 ## The User Contract
 
@@ -89,4 +90,5 @@ is user application code unless RTDL ships and reviews that exact contract.
 - [RTDL Language Docs](rtdl/README.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [Capability Boundaries](capability_boundaries.md)
-- [v2.0 Pre-Release Candidate](release_reports/v2_0_pre_release_candidate.md)
+- [v2.0 Release Package](release_reports/v2_0/README.md)
+- [Partner Roadmap Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md)

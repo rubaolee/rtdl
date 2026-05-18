@@ -2730,6 +2730,207 @@ def ray_primitive_witness_pair_page_optix_prepared_partner_columns(
     return page
 
 
+def _host_exact_segment_triangle_witness_pair_columns(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+):
+    rows = _exact_segment_triangle_rows_from_witness_columns(
+        runtime,
+        segment_ray_columns,
+        polygon_triangle_columns,
+        witness_ray_ids,
+        witness_primitive_ids,
+        emitted_count,
+    )
+    segment_ids = [int(row["segment_id"]) for row in rows]
+    polygon_ids = [int(row["polygon_id"]) for row in rows]
+    return (
+        runtime["tensor"](segment_ids, runtime["uint32"], runtime["device"]),
+        runtime["tensor"](polygon_ids, runtime["uint32"], runtime["device"]),
+        {
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "app_exact_filter_device_materialization": False,
+        },
+    )
+
+
+def _page_columns_with_runtime(runtime, columns: dict[str, object], *, offset: int, limit: int | None):
+    if runtime["name"] in ("torch", "cupy"):
+        return partner_page_columns(columns, offset=offset, limit=limit, partner=runtime["name"])
+    offset = int(offset)
+    if offset < 0:
+        raise ValueError("offset must be non-negative")
+    if limit is not None and int(limit) < 0:
+        raise ValueError("limit must be non-negative")
+    row_count = _column_length(columns, "witness_ray_ids")
+    end = row_count if limit is None else min(row_count, offset + int(limit))
+    sliced = {
+        name: column[offset:end]
+        for name, column in columns.items()
+        if not str(name).startswith("_")
+    }
+    sliced["_metadata"] = {
+        "adapter": "partner_page_columns",
+        "partner": runtime["name"],
+        "offset": offset,
+        "limit": None if limit is None else int(limit),
+        "row_count": max(0, end - offset),
+        "source_row_count": row_count,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return sliced
+
+
+def segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns(
+    prepared_scene,
+    segment_ray_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    page_offset: int = 0,
+    page_limit: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return a bounded page of exact segment/shape witness pairs in partner columns.
+
+    The native engine remains app-agnostic: it writes generic ray/primitive
+    candidate witness pairs. This adapter exact-filters those candidates in the
+    partner layer and returns a bounded page of witness ID columns, avoiding
+    Python row-dictionary materialization for consumers that can continue on
+    Torch/CuPy tensors.
+    """
+    polygon_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
+    if polygon_triangle_columns is None:
+        raise ValueError("prepared_scene must expose polygon_triangle_columns for exact witness filtering")
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        None,
+        None,
+        partner=partner,
+        output_capacity=output_capacity,
+        prepared_scene=prepared_scene,
+        witness_output_columns=witness_output_columns,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    if runtime["name"] == "cupy":
+        triangle_lookup_cache = getattr(
+            prepared_scene,
+            "_partner_exact_filter_triangle_lookup_cache",
+            getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None),
+        )
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
+        )
+        exact_filter_host_materialization = False
+    elif runtime["name"] == "torch":
+        triangle_lookup_cache = getattr(prepared_scene, "_partner_exact_filter_triangle_lookup_cache", None)
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _torch_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
+        )
+        exact_filter_host_materialization = False
+    else:
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _host_exact_segment_triangle_witness_pair_columns(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        exact_filter_host_materialization = True
+    exact_columns = {
+        "witness_ray_ids": exact_ray_ids,
+        "witness_primitive_ids": exact_primitive_ids,
+    }
+    page = _page_columns_with_runtime(
+        runtime,
+        exact_columns,
+        offset=page_offset,
+        limit=page_limit,
+    )
+    page_metadata = dict(page["_metadata"])
+    page_metadata.update(metadata)
+    page_metadata.update(exact_filter_metadata)
+    page_metadata.update(
+        {
+            "adapter": "segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns",
+            "partner": runtime["name"],
+            "exact_witness_count": _column_length(exact_columns, "witness_ray_ids"),
+            "page_offset": int(page_offset),
+            "page_limit": None if page_limit is None else int(page_limit),
+            "page_row_count": _column_length(page, "witness_ray_ids"),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter_host_materialization": exact_filter_host_materialization,
+            "app_row_materialization": "not_performed_exact_witness_columns_only",
+            "app_row_host_materialization": False,
+            "streaming_witness_page_authorized": True,
+            "full_python_row_table_materialization_avoided": True,
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": not exact_filter_host_materialization,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    page["_metadata"] = page_metadata
+    if return_metadata:
+        return {"columns": page, "metadata": page_metadata}
+    return page
+
+
+def segment_polygon_exact_witness_pair_page_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    page_offset: int = 0,
+    page_limit: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return exact segment/shape witness pages without reusing a prepared scene."""
+    prepared_scene = prepare_segment_polygon_anyhit_optix_partner_device_scene(
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+    )
+    try:
+        return segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns(
+            prepared_scene,
+            segment_ray_columns,
+            partner=partner,
+            output_capacity=output_capacity,
+            witness_output_columns=witness_output_columns,
+            page_offset=page_offset,
+            page_limit=page_limit,
+            return_metadata=return_metadata,
+        )
+    finally:
+        prepared_scene.close()
+
+
 def allocate_robot_collision_pose_partner_device_output_columns(
     pose_count: int,
     ray_count: int,

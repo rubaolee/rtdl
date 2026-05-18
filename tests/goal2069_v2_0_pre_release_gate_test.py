@@ -39,9 +39,10 @@ class Goal2069V20PreReleaseGateTest(unittest.TestCase):
         payload = json.loads(PAYLOAD.read_text(encoding="utf-8"))
         self.assertEqual(payload["status"], "pass")
         self.assertEqual(payload["final_matrix_status"], "final-v2-0-release-matrix-candidate")
-        self.assertEqual(payload["mixed_apps"], ["segment_polygon_anyhit_rows"])
+        self.assertEqual(payload["mixed_apps"], [])
         self.assertFalse(payload["release_claim_boundary"]["v2_0_release_authorized"])
-        self.assertFalse(payload["release_claim_boundary"]["all_apps_have_measured_v2_speedup"])
+        self.assertTrue(payload["release_claim_boundary"]["all_apps_have_measured_v2_speedup"])
+        self.assertTrue(payload["release_claim_boundary"]["all_current_optix_rt_rows_have_measured_v2_speedup"])
         self.assertIn("final v2.0 3-AI release consensus missing", payload["remaining_blockers"])
 
     def test_markdown_names_deferred_lanes(self):
