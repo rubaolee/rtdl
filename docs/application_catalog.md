@@ -1,6 +1,6 @@
 # RTDL Application Catalog
 
-This is the v2.0-facing catalog of runnable RTDL application examples. It keeps
+This is the v2.x-facing catalog of runnable RTDL application examples. It keeps
 normal users focused on the current architecture: Python application code around
 RTDL kernels, with optional partner-owned columns for supported paths.
 
@@ -21,6 +21,25 @@ Each app below has two boundaries:
 
 Do not turn an app row into a broad speedup claim unless the exact backend,
 partner, hardware, command shape, output contract, and artifact are cited.
+
+## v2.1 App Rethink Rule
+
+Goal2342 rechecked the whole v2.0 app set against the v2.1 feature surface. The
+rule is deliberately simple: use a v2.1 path only when it preserves the app's
+public output contract. Do not rewrite a count, ranking, clustering, dynamic
+programming, or force-accumulation app into a first-hit app merely because
+first-hit is faster.
+
+The current v2.1 feature wins are:
+
+- RayJoin-style vertical-probe first-hit support, documented in the spatial
+  research benchmark reports.
+- Hausdorff grouped point traversal usability/tuning, documented in the
+  Hausdorff research benchmark reports.
+
+For the ordinary apps below, the existing v2.0 implementations remain the
+current learner-facing versions unless a future generic primitive preserves the
+same app contract.
 
 ## Beginner Examples
 
@@ -70,9 +89,9 @@ partner, hardware, command shape, output contract, and artifact are cited.
 | Hidden star visual demo | `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py` | ray/triangle query core | RTDL is not a renderer |
 | Lit ball demo | `examples/visual_demo/rtdl_lit_ball_demo.py` | query core inside Python presentation | Python owns rendering/presentation |
 
-## v2.0 Output Guidance
+## v2.x Output Guidance
 
-For performance-oriented v2.0 apps, prefer compact or partner-owned outputs:
+For performance-oriented v2.x apps, prefer compact or partner-owned outputs:
 
 - flags instead of full witness rows when only yes/no is needed;
 - counts instead of pair tables when only totals are needed;
@@ -88,4 +107,5 @@ throughput.
 - [App And Example Quickstart](app_example_quickstart.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
+- [Goal2342 v2.1 All-App Rethink](reports/goal2342_v2_1_all_app_rethink_and_comparison_2026-05-18.md)
 - [v2.0 Release Package](release_reports/v2_0/README.md)
