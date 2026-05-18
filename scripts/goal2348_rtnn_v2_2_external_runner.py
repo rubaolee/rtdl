@@ -75,6 +75,20 @@ def _insert_after(text: str, anchor: str, addition: str) -> tuple[str, bool]:
     return text.replace(anchor, anchor + addition, 1), True
 
 
+def _insert_after_last_prefixed_line(text: str, prefix: str, addition: str) -> tuple[str, bool]:
+    if addition in text:
+        return text, False
+    lines = text.splitlines(keepends=True)
+    insert_at = None
+    for index, line in enumerate(lines):
+        if line.startswith(prefix):
+            insert_at = index + 1
+    if insert_at is None:
+        raise ValueError(f"prefix anchor not found: {prefix!r}")
+    lines.insert(insert_at, addition)
+    return "".join(lines), True
+
+
 def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
     """Apply compatibility-only patches to a disposable external RTNN checkout.
 
@@ -89,21 +103,21 @@ def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
         (
             rtnn_root / "src" / "optixNSearch" / "thrust_helper.cu",
             [
-                ("#include <thrust/execution_policy.h>\n", "#include <thrust/count.h>\n"),
-                ("#include <thrust/execution_policy.h>\n", "#include <thrust/unique.h>\n"),
-                ("#include <thrust/execution_policy.h>\n", "#include <thrust/tuple.h>\n"),
+                "#include <thrust/count.h>\n",
+                "#include <thrust/unique.h>\n",
+                "#include <thrust/tuple.h>\n",
             ],
         ),
         (
             rtnn_root / "src" / "optixNSearch" / "sort.cpp",
-            [("#include <thrust/gather.h>\n", "#include <thrust/host_vector.h>\n")],
+            ["#include <thrust/host_vector.h>\n"],
         ),
     ]
-    for path, insertions in edits:
+    for path, additions in edits:
         text = path.read_text(encoding="utf-8")
         changed = False
-        for anchor, addition in insertions:
-            text, did_change = _insert_after(text, anchor, addition)
+        for addition in additions:
+            text, did_change = _insert_after_last_prefixed_line(text, "#include <thrust/", addition)
             changed = changed or did_change
         if changed:
             path.write_text(text, encoding="utf-8", newline="\n")
