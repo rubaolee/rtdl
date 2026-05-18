@@ -56,6 +56,24 @@ class Goal2353RtnnPodBaselineTest(unittest.TestCase):
         self.assertFalse(payload["claim_boundary"]["paper_equivalent_rtnn_row"])
         self.assertFalse(payload["claim_boundary"]["rtdl_speedup_claim_authorized"])
 
+    def test_current_rtdl_3d_rows_are_cuda_kernel_baselines(self) -> None:
+        rows = [
+            "rtdl_current_3d_neighbors_8192_r002_k50_cuda_kernel.json",
+            "rtdl_current_3d_neighbors_32768_r002_k50_cuda_kernel.json",
+            "rtdl_current_3d_neighbors_65536_r002_k50_cuda_kernel.json",
+            "rtdl_current_3d_neighbors_262144_r002_k50_cuda_kernel.json",
+        ]
+        for row in rows:
+            payload = _load(row)
+            self.assertTrue(payload["ok"], row)
+            self.assertEqual(payload["mode"], "current_3d_fixed_radius_neighbors_optix_smoke")
+            self.assertFalse(payload["claim_boundary"]["rt_core_neighbor_search_claim_authorized"])
+            self.assertIn("CUDA fixed-radius neighbor kernel", payload["claim_boundary"]["current_native_path"])
+
+        rtdl_262k = _load("rtdl_current_3d_neighbors_262144_r002_k50_cuda_kernel.json")
+        rtnn_262k = _load("rtnn_radius_3d_262144_r002_k50_partitioned_warm2.json")
+        self.assertGreater(rtdl_262k["elapsed_sec"], rtnn_262k["elapsed_sec"])
+
     def test_report_identifies_next_generic_primitive(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("Current RTDL does expose a 3D fixed-radius neighbor DSL path", text)

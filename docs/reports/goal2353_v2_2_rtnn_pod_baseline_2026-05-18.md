@@ -58,6 +58,8 @@ Generated inputs:
 
 | Artifact | Points | Dimension | Seed |
 | --- | ---: | ---: | ---: |
+| `ppp_3d_8192_generate.json` | 8,192 | 3 | 2356 |
+| `ppp_3d_32768_generate.json` | 32,768 | 3 | 2357 |
 | `ppp_3d_65536_generate.json` | 65,536 | 3 | 2353 |
 | `ppp_3d_262144_generate.json` | 262,144 | 3 | 2354 |
 | `ppp_2d_8192_generate.json` | 8,192 | 2 | 2355 |
@@ -79,6 +81,17 @@ Current RTDL smoke rows:
 | Row | OK | Wall sec | Scope |
 | --- | --- | ---: | --- |
 | `rtdl_current_2d_fixed_radius_smoke_8192.json` | true | 1.119771 | current 2D fixed-radius count-threshold smoke only |
+| `rtdl_current_3d_neighbors_8192_r002_k50_cuda_kernel.json` | true | 1.068915 | current 3D fixed-radius neighbor CUDA-kernel path |
+| `rtdl_current_3d_neighbors_32768_r002_k50_cuda_kernel.json` | true | 1.676469 | current 3D fixed-radius neighbor CUDA-kernel path |
+| `rtdl_current_3d_neighbors_65536_r002_k50_cuda_kernel.json` | true | 2.543139 | current 3D fixed-radius neighbor CUDA-kernel path |
+| `rtdl_current_3d_neighbors_262144_r002_k50_cuda_kernel.json` | true | 9.583041 | current 3D fixed-radius neighbor CUDA-kernel path |
+
+Same-input comparison points:
+
+| Input | RTNN wall sec | RTNN total search ms | Current RTDL 3D wall sec | Interpretation |
+| --- | ---: | ---: | ---: | --- |
+| 65,536 points, radius 0.02, K=50 | 1.357491 | 216.144 | 2.543139 | RTNN is already faster end-to-end; internal traversal/search is much faster |
+| 262,144 points, radius 0.02, K=50 | 1.527938 | 514.120 | 9.583041 | Current all-pairs CUDA path scales poorly relative to RTNN partitioned traversal |
 
 ## What This Shows
 
@@ -89,7 +102,7 @@ RTNN is now a runnable same-hardware external baseline for the v2.2 campaign. On
 - the primitive must expose radius, `k_max`, exact/approx policy, partitioning/batching policy, overflow handling, and output shape;
 - the runtime must surface telemetry that separates setup, sort/partition, traversal, copy, and total time.
 
-Current RTDL does expose a 3D fixed-radius neighbor DSL path, but the current OptiX-runtime implementation is a CUDA fixed-radius neighbor kernel rather than an RTNN-style prepared RT-core traversal with partitioning/batching telemetry. The successful 2D RTDL row above therefore proves pod OptiX health, not RTNN parity. A separate current-3D RTDL row should be collected as a CUDA-core baseline before claiming any v2.2 improvement.
+Current RTDL does expose a 3D fixed-radius neighbor DSL path, but the current OptiX-runtime implementation is a CUDA fixed-radius neighbor kernel rather than an RTNN-style prepared RT-core traversal with partitioning/batching telemetry. The successful 3D RTDL rows above therefore prove functional current-RTDL behavior and give a CUDA-core baseline, but they do not prove RTNN parity.
 
 ## Claim Boundary
 
