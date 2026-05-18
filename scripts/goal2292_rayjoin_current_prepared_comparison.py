@@ -166,9 +166,16 @@ def run_pip(stream_path: Path, *, warmups: int, repeats: int) -> dict[str, objec
     print(f"[goal2292] pip prepare_sec={prepare_sec:.6f}", flush=True)
 
     try:
+        def run_positive_raw_count() -> int:
+            rows = prepared.run_raw(packed_points, result_mode="positive_hits")
+            try:
+                return int(rows.row_count)
+            finally:
+                rows.close()
+
         row_return = _run_repeats(
             "pip/positive_rows",
-            lambda: len(prepared.run(packed_points, result_mode="positive_hits")),
+            run_positive_raw_count,
             warmups=warmups,
             repeats=repeats,
         )

@@ -4157,16 +4157,25 @@ class PreparedOptixPointClosedShapeMembership2D:
     def closed(self) -> bool:
         return self._closed
 
-    def run(self, points, *, result_mode: str = "positive_hits") -> tuple[dict[str, int], ...]:
+    def run_raw(self, points, *, result_mode: str = "positive_hits") -> OptixRowView:
         if self._closed:
             raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
         if result_mode != "positive_hits":
             raise ValueError("prepared closed-shape membership currently supports result_mode='positive_hits'")
         packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
         if packed_points.dimension != 2:
-            raise ValueError("PreparedOptixPointClosedShapeMembership2D.run requires 2-D points")
+            raise ValueError("PreparedOptixPointClosedShapeMembership2D.run_raw requires 2-D points")
         if packed_points.count == 0 or self._packed_shapes.polygon_count == 0:
-            return ()
+            empty = (_RtdlPointClosedShapeMembershipRow * 0)()
+            return OptixRowView(
+                library=self._lib,
+                rows_ptr=ctypes.cast(empty, ctypes.POINTER(_RtdlPointClosedShapeMembershipRow)),
+                row_count=0,
+                row_type=_RtdlPointClosedShapeMembershipRow,
+                field_names=("point_id", "shape_id", "membership"),
+                _free_on_close=False,
+                _owner=empty,
+            )
         run_symbol = _find_optional_backend_symbol(
             self._lib,
             "rtdl_optix_run_prepared_point_closed_shape_membership_2d",
@@ -4190,13 +4199,16 @@ class PreparedOptixPointClosedShapeMembership2D:
             len(error),
         )
         _check_status(status, error)
-        view = OptixRowView(
+        return OptixRowView(
             library=self._lib,
             rows_ptr=rows_ptr,
             row_count=row_count.value,
             row_type=_RtdlPointClosedShapeMembershipRow,
             field_names=("point_id", "shape_id", "membership"),
         )
+
+    def run(self, points, *, result_mode: str = "positive_hits") -> tuple[dict[str, int], ...]:
+        view = self.run_raw(points, result_mode=result_mode)
         try:
             return tuple(
                 {
