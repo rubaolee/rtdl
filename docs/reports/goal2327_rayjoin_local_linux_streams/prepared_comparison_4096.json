@@ -1,0 +1,233 @@
+{
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "commit": "a83f0ff4ed381abad01d75bda4cb9cda644874e1",
+  "generated_at_utc": "2026-05-18T15:30:18Z",
+  "goal": 2292,
+  "gpu": "NVIDIA GeForce GTX 1070, 580.126.09",
+  "lsi": {
+    "expected_rows_from_prior_cpu_verified_artifacts": 8921,
+    "left_segments": 4096,
+    "matches_prior_expected_count": false,
+    "one_time_left_pack_sec": 0.004982942948117852,
+    "prepare_sec": 0.3070892230607569,
+    "query_count": 4096,
+    "query_stream": "docs/reports/goal2327_rayjoin_local_linux_streams/lsi_demo_stream_4096.json",
+    "query_stream_producer": "rtdl_demo_generator_not_rayjoin_cpp",
+    "raw_rows": {
+      "median_sec": 0.0005197080317884684,
+      "phase_samples": [
+        {
+          "candidate_count_pass": 8.4189e-05,
+          "candidate_download": 5.886e-06,
+          "candidate_write_pass": 5.2143e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000293153,
+          "left_upload": 1.1875e-05,
+          "mode": "rows",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 6.2205e-05,
+          "candidate_download": 5.885e-06,
+          "candidate_write_pass": 5.1338e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000290922,
+          "left_upload": 9.925e-06,
+          "mode": "rows",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 6.286e-05,
+          "candidate_download": 5.554e-06,
+          "candidate_write_pass": 5.2449e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000284943,
+          "left_upload": 9.775e-06,
+          "mode": "rows",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 6.0272e-05,
+          "candidate_download": 5.609e-06,
+          "candidate_write_pass": 5.2115e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000259282,
+          "left_upload": 8.932e-06,
+          "mode": "rows",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 6.1178e-05,
+          "candidate_download": 5.905e-06,
+          "candidate_write_pass": 5.1096e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000252568,
+          "left_upload": 9.259e-06,
+          "mode": "rows",
+          "raw_candidate_count": 230
+        }
+      ],
+      "seconds": [
+        0.0005668579833582044,
+        0.0005320319905877113,
+        0.0005197080317884684,
+        0.000490717007778585,
+        0.00048125803004950285
+      ],
+      "value_consistent": true,
+      "values": [
+        230,
+        230,
+        230,
+        230,
+        230
+      ]
+    },
+    "right_segments": 29,
+    "route": "prepared_segment_pair_intersection_optix_with_prepacked_left",
+    "row_count_parity": true,
+    "scalar_count": {
+      "median_sec": 0.0005536350654438138,
+      "phase_samples": [
+        {
+          "candidate_count_pass": 8.3403e-05,
+          "candidate_download": 5.621e-06,
+          "candidate_write_pass": 5.8676e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000302999,
+          "left_upload": 9.242e-06,
+          "mode": "count",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 9.8632e-05,
+          "candidate_download": 5.827e-06,
+          "candidate_write_pass": 6.547e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000305533,
+          "left_upload": 9.107e-06,
+          "mode": "count",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 7.8848e-05,
+          "candidate_download": 5.924e-06,
+          "candidate_write_pass": 6.4289e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000284561,
+          "left_upload": 9.242e-06,
+          "mode": "count",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 7.5921e-05,
+          "candidate_download": 5.468e-06,
+          "candidate_write_pass": 5.4487e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000266488,
+          "left_upload": 8.906e-06,
+          "mode": "count",
+          "raw_candidate_count": 230
+        },
+        {
+          "candidate_count_pass": 8.602e-05,
+          "candidate_download": 5.613e-06,
+          "candidate_write_pass": 5.6312e-05,
+          "emitted_count": 230,
+          "exact_refine": 0.000296559,
+          "left_upload": 9.093e-06,
+          "mode": "count",
+          "raw_candidate_count": 230
+        }
+      ],
+      "seconds": [
+        0.0005627870559692383,
+        0.0005841620732098818,
+        0.0005415229825302958,
+        0.0005104800220578909,
+        0.0005536350654438138
+      ],
+      "value_consistent": true,
+      "values": [
+        230,
+        230,
+        230,
+        230,
+        230
+      ]
+    }
+  },
+  "pip": {
+    "expected_rows_from_prior_cpu_verified_artifacts": 8686,
+    "matches_prior_expected_count": false,
+    "one_time_point_pack_sec": 0.0043061350006610155,
+    "one_time_shape_pack_sec": 5.075405351817608e-05,
+    "points": 4096,
+    "positive_rows": {
+      "median_sec": 0.00023421994410455227,
+      "phase_samples": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "seconds": [
+        0.00023421994410455227,
+        0.0002540219575166702,
+        0.0002188199432566762,
+        0.00025208096485584974,
+        0.0002336910692974925
+      ],
+      "value_consistent": true,
+      "values": [
+        113,
+        113,
+        113,
+        113,
+        113
+      ]
+    },
+    "prepare_sec": 0.4281647860771045,
+    "query_count": 4096,
+    "query_stream": "docs/reports/goal2327_rayjoin_local_linux_streams/pip_demo_stream_4096.json",
+    "query_stream_producer": "rtdl_demo_generator_not_rayjoin_cpp",
+    "route": "prepared_point_closed_shape_membership_2d_optix_with_prepacked_points",
+    "row_count_parity": true,
+    "scalar_count": {
+      "median_sec": 0.00020863290410488844,
+      "phase_samples": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "seconds": [
+        0.0002130360808223486,
+        0.00020863290410488844,
+        0.00020217907149344683,
+        0.00018356204964220524,
+        0.00023497396614402533
+      ],
+      "value_consistent": true,
+      "values": [
+        113,
+        113,
+        113,
+        113,
+        113
+      ]
+    },
+    "shapes": 3
+  },
+  "repeats": 5,
+  "schema": "rtdl.rayjoin.current_prepared_comparison.v1",
+  "warmups": 1
+}

@@ -1,0 +1,111 @@
+{
+  "backends": {
+    "cpu": {
+      "all_parity_vs_cpu_python_reference": true,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.005626788013614714,
+      "elapsed_sec_values": [
+        0.005671598948538303,
+        0.005626788013614714,
+        0.0055388129549100995
+      ],
+      "implementation_path": "compiled_rtdl_kernel",
+      "input_preparation_path": "backend_default",
+      "parity_reference_backend": "cpu_python_reference",
+      "row_count_consistent": true,
+      "row_counts": [
+        230,
+        230,
+        230
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok",
+      "uses_generic_closed_shape_membership": false
+    },
+    "cpu_python_reference": {
+      "all_parity_vs_cpu_python_reference": true,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.040921919979155064,
+      "elapsed_sec_values": [
+        0.04126857407391071,
+        0.040921919979155064,
+        0.04067530599422753
+      ],
+      "implementation_path": "compiled_rtdl_kernel",
+      "input_preparation_path": "backend_default",
+      "parity_reference_backend": "cpu_python_reference",
+      "row_count_consistent": true,
+      "row_counts": [
+        230,
+        230,
+        230
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok",
+      "uses_generic_closed_shape_membership": false
+    },
+    "embree": {
+      "all_parity_vs_cpu_python_reference": true,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.001481996034272015,
+      "elapsed_sec_values": [
+        0.0016685419250279665,
+        0.001481996034272015,
+        0.0013872550334781408
+      ],
+      "implementation_path": "compiled_rtdl_kernel",
+      "input_preparation_path": "backend_default",
+      "parity_reference_backend": "cpu_python_reference",
+      "row_count_consistent": true,
+      "row_counts": [
+        230,
+        230,
+        230
+      ],
+      "rt_core_accelerated": false,
+      "status": "ok",
+      "uses_generic_closed_shape_membership": false
+    },
+    "optix": {
+      "all_parity_vs_cpu_python_reference": true,
+      "all_parity_vs_reference": true,
+      "elapsed_sec_median": 0.0012476419797167182,
+      "elapsed_sec_values": [
+        0.0013004119973629713,
+        0.0012476419797167182,
+        0.0011662960750982165
+      ],
+      "implementation_path": "compiled_rtdl_kernel",
+      "input_preparation_path": "backend_default",
+      "parity_reference_backend": "cpu_python_reference",
+      "row_count_consistent": true,
+      "row_counts": [
+        230,
+        230,
+        230
+      ],
+      "rt_core_accelerated": true,
+      "status": "ok",
+      "uses_generic_closed_shape_membership": false
+    }
+  },
+  "base_cdb": "/home/lestat/work/rtdl_goal2327_linux_check/tests/fixtures/rayjoin/br_county_subset.cdb",
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": false,
+    "v2_0_release_authorized": false
+  },
+  "commit": "a83f0ff4ed381abad01d75bda4cb9cda644874e1",
+  "goal": "2192",
+  "query_count": 4096,
+  "query_stream": "/home/lestat/work/rtdl_goal2327_linux_check/docs/reports/goal2327_rayjoin_local_linux_streams/lsi_demo_stream_4096.json",
+  "query_stream_producer": "rtdl_demo_generator_not_rayjoin_cpp",
+  "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+  "reference_backend": "cpu_python_reference",
+  "reference_row_count": 230,
+  "repeats": 3,
+  "schema": "rtdl.rayjoin.same_query_result.v1",
+  "warmups": 1,
+  "workload": "lsi"
+}
