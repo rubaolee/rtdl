@@ -1,0 +1,413 @@
+{
+  "claim_boundary": {
+    "paper_scale_perf_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_with_rayjoin_query_exec": true,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "commit": "cee5a5fed3cba7505370e34b52ddb7478de7b9af",
+  "generated_at_utc": "2026-05-18T00:19:46Z",
+  "goal": 2292,
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "lsi": {
+    "expected_rows_from_prior_cpu_verified_artifacts": 8921,
+    "left_segments": 100000,
+    "matches_prior_expected_count": true,
+    "one_time_left_pack_sec": 0.2911534924060106,
+    "prepare_sec": 1.7632458060979843,
+    "query_count": 100000,
+    "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_lsi_gen100000_stream.json",
+    "query_stream_producer": "rayjoin_query_exec_export_patch",
+    "raw_rows": {
+      "median_sec": 0.010122792795300484,
+      "phase_samples": [
+        {
+          "candidate_count_pass": 0.000574706,
+          "candidate_download": 0.00012805899999999997,
+          "candidate_write_pass": 0.000479,
+          "emitted_count": 8921,
+          "exact_refine": 0.012168294,
+          "left_upload": 0.000267183,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000592054,
+          "candidate_download": 0.00013398099999999998,
+          "candidate_write_pass": 0.000492087,
+          "emitted_count": 8921,
+          "exact_refine": 0.007946526,
+          "left_upload": 0.000277919,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0005742490000000001,
+          "candidate_download": 0.000138584,
+          "candidate_write_pass": 0.0004913140000000001,
+          "emitted_count": 8921,
+          "exact_refine": 0.007905486,
+          "left_upload": 0.000275346,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000565761,
+          "candidate_download": 0.00013724999999999998,
+          "candidate_write_pass": 0.00048631499999999997,
+          "emitted_count": 8921,
+          "exact_refine": 0.00782818,
+          "left_upload": 0.000266846,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000578555,
+          "candidate_download": 0.00012730600000000002,
+          "candidate_write_pass": 0.000489865,
+          "emitted_count": 8921,
+          "exact_refine": 0.00791979,
+          "left_upload": 0.000264621,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0005869179999999999,
+          "candidate_download": 0.000132401,
+          "candidate_write_pass": 0.000507112,
+          "emitted_count": 8921,
+          "exact_refine": 0.007881625,
+          "left_upload": 0.000280846,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000587871,
+          "candidate_download": 0.000130764,
+          "candidate_write_pass": 0.00048822199999999996,
+          "emitted_count": 8921,
+          "exact_refine": 0.007878882,
+          "left_upload": 0.000268029,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000588606,
+          "candidate_download": 0.00013557499999999998,
+          "candidate_write_pass": 0.000512657,
+          "emitted_count": 8921,
+          "exact_refine": 0.007830326,
+          "left_upload": 0.000271015,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000567037,
+          "candidate_download": 0.00012967099999999999,
+          "candidate_write_pass": 0.00048345399999999997,
+          "emitted_count": 8921,
+          "exact_refine": 0.007866413,
+          "left_upload": 0.000282275,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0005668429999999999,
+          "candidate_download": 0.000127639,
+          "candidate_write_pass": 0.000492598,
+          "emitted_count": 8921,
+          "exact_refine": 0.007818211,
+          "left_upload": 0.000272645,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0005633849999999999,
+          "candidate_download": 0.000127595,
+          "candidate_write_pass": 0.000487694,
+          "emitted_count": 8921,
+          "exact_refine": 0.008057486,
+          "left_upload": 0.000276905,
+          "mode": "rows",
+          "raw_candidate_count": 8926
+        }
+      ],
+      "seconds": [
+        0.014417100697755814,
+        0.010331567376852036,
+        0.01016143150627613,
+        0.010027984157204628,
+        0.010122792795300484,
+        0.01024281233549118,
+        0.010097052901983261,
+        0.01010163314640522,
+        0.01008501648902893,
+        0.01003367081284523,
+        0.010251391679048538
+      ],
+      "value_consistent": true,
+      "values": [
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921
+      ]
+    },
+    "right_segments": 326193,
+    "route": "prepared_segment_pair_intersection_optix_with_prepacked_left",
+    "row_count_parity": true,
+    "scalar_count": {
+      "median_sec": 0.009985707700252533,
+      "phase_samples": [
+        {
+          "candidate_count_pass": 0.0005690749999999999,
+          "candidate_download": 0.000137373,
+          "candidate_write_pass": 0.0004855199999999999,
+          "emitted_count": 8921,
+          "exact_refine": 0.007771937,
+          "left_upload": 0.000265565,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0005796769999999999,
+          "candidate_download": 0.00013526800000000002,
+          "candidate_write_pass": 0.000488438,
+          "emitted_count": 8921,
+          "exact_refine": 0.00782987,
+          "left_upload": 0.000265733,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000576738,
+          "candidate_download": 0.000135268,
+          "candidate_write_pass": 0.000491369,
+          "emitted_count": 8921,
+          "exact_refine": 0.007885129,
+          "left_upload": 0.000265933,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000564738,
+          "candidate_download": 0.00014579800000000002,
+          "candidate_write_pass": 0.000489948,
+          "emitted_count": 8921,
+          "exact_refine": 0.0077813,
+          "left_upload": 0.000266181,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000567186,
+          "candidate_download": 0.00014076100000000002,
+          "candidate_write_pass": 0.000492991,
+          "emitted_count": 8921,
+          "exact_refine": 0.00779425,
+          "left_upload": 0.000269203,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0005788279999999999,
+          "candidate_download": 0.000141102,
+          "candidate_write_pass": 0.0004887989999999999,
+          "emitted_count": 8921,
+          "exact_refine": 0.007781208,
+          "left_upload": 0.000266333,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000559405,
+          "candidate_download": 0.00013479600000000002,
+          "candidate_write_pass": 0.00048706500000000007,
+          "emitted_count": 8921,
+          "exact_refine": 0.007806097,
+          "left_upload": 0.000264012,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.0005765420000000001,
+          "candidate_download": 0.00013760099999999997,
+          "candidate_write_pass": 0.000489917,
+          "emitted_count": 8921,
+          "exact_refine": 0.007849708,
+          "left_upload": 0.000266218,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000566835,
+          "candidate_download": 0.00014222399999999999,
+          "candidate_write_pass": 0.00048828,
+          "emitted_count": 8921,
+          "exact_refine": 0.007769484,
+          "left_upload": 0.000265076,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000575944,
+          "candidate_download": 0.000133409,
+          "candidate_write_pass": 0.00048754900000000004,
+          "emitted_count": 8921,
+          "exact_refine": 0.00775577,
+          "left_upload": 0.000264238,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        },
+        {
+          "candidate_count_pass": 0.000560451,
+          "candidate_download": 0.000140242,
+          "candidate_write_pass": 0.000485276,
+          "emitted_count": 8921,
+          "exact_refine": 0.007740747,
+          "left_upload": 0.000263873,
+          "mode": "count",
+          "raw_candidate_count": 8926
+        }
+      ],
+      "seconds": [
+        0.009956350550055504,
+        0.010026354342699051,
+        0.010107617825269699,
+        0.009983032941818237,
+        0.009993031620979309,
+        0.009985707700252533,
+        0.009996520355343819,
+        0.01013319194316864,
+        0.009957272559404373,
+        0.009937182068824768,
+        0.009904686361551285
+      ],
+      "value_consistent": true,
+      "values": [
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921,
+        8921
+      ]
+    }
+  },
+  "pip": {
+    "expected_rows_from_prior_cpu_verified_artifacts": 8686,
+    "matches_prior_expected_count": true,
+    "one_time_point_pack_sec": 0.21161586605012417,
+    "one_time_shape_pack_sec": 0.23999117873609066,
+    "points": 100000,
+    "positive_rows": {
+      "median_sec": 0.008656695485115051,
+      "phase_samples": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "seconds": [
+        0.01252746395766735,
+        0.01205720379948616,
+        0.009245863184332848,
+        0.008980831131339073,
+        0.008742371574044228,
+        0.008656695485115051,
+        0.008583052083849907,
+        0.008523747324943542,
+        0.008459450677037239,
+        0.008484181016683578,
+        0.008500315248966217
+      ],
+      "value_consistent": true,
+      "values": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ]
+    },
+    "prepare_sec": 0.3843012433499098,
+    "query_count": 100000,
+    "query_stream": "/root/goal2198_rayjoin_same_query_pod_r6/artifacts/rayjoin_pip_gen100000_stream.json",
+    "query_stream_producer": "rayjoin_query_exec_export_patch",
+    "route": "prepared_point_closed_shape_membership_2d_optix_with_prepacked_points",
+    "row_count_parity": true,
+    "scalar_count": {
+      "median_sec": 0.008476313203573227,
+      "phase_samples": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "seconds": [
+        0.00849568285048008,
+        0.008476313203573227,
+        0.008455460891127586,
+        0.008456917479634285,
+        0.00874645821750164,
+        0.008527861908078194,
+        0.008465379476547241,
+        0.008445346727967262,
+        0.008471865206956863,
+        0.008545944467186928,
+        0.00876854918897152
+      ],
+      "value_consistent": true,
+      "values": [
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686,
+        8686
+      ]
+    },
+    "shapes": 15700
+  },
+  "repeats": 11,
+  "schema": "rtdl.rayjoin.current_prepared_comparison.v1",
+  "warmups": 3
+}

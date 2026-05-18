@@ -41,6 +41,10 @@ Observation:
   median from 37.9 ms to 9.4 ms while preserving the exact expected count.
 - Goal2308/Goal2310 added a synthetic single-shape coordinate-magnitude smoke
   pass, but did not prove broad coordinate-system or performance generality.
+- Goal2312 added a generic prepared closed-shape `run_raw()` row-view surface,
+  reducing the current RayJoin-exported positive-row median from 23.2 ms to
+  about 8.9 ms by avoiding Python dictionary materialization when callers only
+  need a row view or row count.
 
 Future work:
 
@@ -57,7 +61,7 @@ Future work:
 - Study whether the bounded point-probe half-extent should become configurable
   or derived from prepared-scene metadata before claiming broad
   coordinate-scale generality.
-- After the bounded-probe traversal win, the next likely work is
+- After the bounded-probe traversal and row-view wins, the next likely work is
   device-resident continuation or partner-side reduction over the closed-shape
   stream, plus broader data-shape validation.
 - Do not prioritize Python packing, upload reuse, or replacing GEOS exact
@@ -93,6 +97,10 @@ Observation:
 - Goal2280 showed that direct primitive indices in host exact refinement are
   not enough: same-pod A/B on the RayJoin-exported 100k LSI stream regressed
   raw witness rows and left scalar count effectively neutral.
+- Goal2312 removed Python dictionary materialization from the prepared
+  closed-shape positive-row timing by exposing a generic raw row view, bringing
+  row-output timing near the scalar-count path for the current RayJoin-exported
+  PIP stream.
 - The remaining gap to RayJoin's paper benchmark is not the predicate itself:
   RTDL still returns host-visible rows through the Python boundary, while the
   RayJoin paper reports a tighter pure GPU query-execution metric.
