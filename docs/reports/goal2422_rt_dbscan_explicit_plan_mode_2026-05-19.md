@@ -2,7 +2,7 @@
 
 Date: 2026-05-19
 
-Status: local benchmark-app implementation complete; pod smoke still required
+Status: implementation complete; pod smoke complete
 
 ## Purpose
 
@@ -53,3 +53,22 @@ not:
 ```text
 silently dispatch based on hardware and hope the user can reproduce it
 ```
+
+## Pod Smoke
+
+Smoke artifacts:
+
+```text
+docs/reports/goal2422_rt_dbscan_explicit_plan_mode_pod_smoke/
+```
+
+Validated on the RTX A5000 pod used by Goals 2418 and 2420:
+
+| Dataset / points | Selected mode | Expected |
+| --- | --- | --- |
+| `clustered3d` / 32768 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | yes |
+| `road3d` / 131072 | `partner_cupy_grid_components_3d` | yes |
+| `road3d` / 262144 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | yes |
+| `ngsim_dense` / 65536 | `partner_cupy_grid_components_3d` | yes |
+
+Each artifact records `metadata.execution_plan.not_hidden_dispatcher = true`.

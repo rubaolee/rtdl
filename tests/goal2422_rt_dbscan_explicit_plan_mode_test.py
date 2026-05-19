@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pathlib
 import unittest
+import json
 
 from examples.v2_0.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     plan_rt_dbscan_execution,
@@ -13,6 +14,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "rtdl_rt_dbscan_benchmark_app.py"
 README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "README.md"
 REPORT = ROOT / "docs" / "reports" / "goal2422_rt_dbscan_explicit_plan_mode_2026-05-19.md"
+POD_SMOKE = ROOT / "docs" / "reports" / "goal2422_rt_dbscan_explicit_plan_mode_pod_smoke"
 
 
 class Goal2422RtDbscanExplicitPlanModeTest(unittest.TestCase):
@@ -67,6 +69,22 @@ class Goal2422RtDbscanExplicitPlanModeTest(unittest.TestCase):
         self.assertIn("not a hidden runtime dispatcher", readme)
         self.assertIn("plan -> explain -> execute -> preserve claim boundary", report)
         self.assertIn("does not add native DBSCAN ABI", report)
+
+    def test_pod_smoke_artifacts_record_expected_plan_choices(self) -> None:
+        expected = {
+            "goal2422_clustered3d_32768.json": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+            "goal2422_road3d_131072.json": "partner_cupy_grid_components_3d",
+            "goal2422_road3d_262144.json": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+            "goal2422_ngsim_dense_65536.json": "partner_cupy_grid_components_3d",
+        }
+        for name, selected_mode in expected.items():
+            with self.subTest(name=name):
+                payload = json.loads((POD_SMOKE / name).read_text(encoding="utf-8"))
+                self.assertEqual(payload["mode"], "planned_rt_dbscan")
+                self.assertEqual(payload["selected_mode"], selected_mode)
+                self.assertEqual(payload["metadata"]["execution_plan"]["selected_mode"], selected_mode)
+                self.assertTrue(payload["metadata"]["execution_plan"]["not_hidden_dispatcher"])
+                self.assertFalse(payload["claim_boundary"]["automatic_hidden_dispatcher"])
 
 
 if __name__ == "__main__":
