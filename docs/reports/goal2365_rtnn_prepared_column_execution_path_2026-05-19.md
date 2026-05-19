@@ -82,6 +82,25 @@ py -3 -m unittest \
   tests.goal2348_rtnn_v2_2_external_runner_test
 ```
 
+Local Linux smoke validation was also run on `192.168.1.20` using a separate
+clean checkout at `/home/lestat/work/rtdl_codex_goal2365`, commit `a88c33a8`.
+The host built `build/librtdl_optix.so` with
+`OPTIX_PREFIX=/home/lestat/vendor/optix-dev`, generated 4096 synthetic 3D
+points, and ran:
+
+```text
+run-rtdl-current-3d-neighbors-smoke \
+  --input-mode packed-columns \
+  --execution-mode prepared-optix \
+  --result-mode raw \
+  --repeat 2
+```
+
+The artifact is
+`docs/reports/goal2365_local_linux_prepared_smoke_4096.json`. It records
+`ok: true`, `execution_mode: prepared-optix`, `input_mode: packed-columns`, and
+`claim_boundary.prepared_execution_reuses_python_packed_inputs: true`.
+
 Pod timing is intentionally deferred until a GPU pod is available. The next pod
 run should compare:
 

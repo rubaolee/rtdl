@@ -1,0 +1,46 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_python_packed_inputs": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    0.494934227084741,
+    0.000642470084130764
+  ],
+  "elapsed_sec": 0.000642470084130764,
+  "error": "",
+  "execution_mode": "prepared-optix",
+  "execution_prepare_sec": 0.08324028691276908,
+  "external": "RTDL current",
+  "input_mode": "packed-columns",
+  "input_pack_sec": 0.004383794032037258,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 6.7774e-05,
+    "candidate_write_pass": 2.625e-05,
+    "count_download_and_prefix": 1.492e-05,
+    "emitted_count": 4634,
+    "exact_refine": 4.9029e-05,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.000173413,
+    "raw_candidate_count": 4650,
+    "row_download": 2.0843e-05,
+    "row_offset_upload": 3.604e-06,
+    "upload": 0.000134789
+  },
+  "query_count": 4096,
+  "radius": 0.02,
+  "repeat": 2,
+  "result_mode": "raw",
+  "row": "rtdl_current_3d_neighbors_smoke",
+  "row_count": 4634,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 4096
+}
