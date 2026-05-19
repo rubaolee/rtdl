@@ -433,6 +433,12 @@ Future work:
   counts are known; the pod smoke enforced an 8,000,000 directed-edge cap on the
   32,768-point clustered row with a maximum chunk of 7,999,889 edges. This is a
   memory-control improvement, not a speedup claim.
+- Goal2444/2445 prepared each chunk's prefix offset column once and reused it
+  across repeated chunked runs. The 32,768-point clustered pod smoke showed the
+  second prepared run using `prepared_chunk_edge_offsets_reused=true`, with
+  matching component signatures. The implementation intentionally still
+  allocates `neighbor_indices` per chunk until OptiX/CuPy stream ordering is
+  proven enough to reuse one workspace safely.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.
@@ -442,6 +448,10 @@ Future work:
   stream continuation that can consume RT traversal hits or bounded edge chunks
   with fewer launches and less intermediate storage. Do not solve it with a
   DBSCAN-specific kernel.
+- A smaller pre-leap investigation is stream-safe bounded neighbor-index
+  workspace reuse. Treat this as a separate proof: if OptiX writes and CuPy
+  kernels are not ordered on the same stream, explicit synchronization may erase
+  the benefit.
 
 Boundary:
 
