@@ -455,7 +455,10 @@ from .partner_continuations import point_rows_to_numpy_columns
 from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_spatial_bucket_partner_columns
 from .partner_adapters import radius_graph_components_3d_spatial_bucket_partner_columns
+from .partner_adapters import PreparedCupyRadiusGraphComponents3DGrid
+from .partner_adapters import prepare_radius_graph_components_3d_cupy_grid_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_grid_partner_columns
+from .partner_adapters import radius_graph_components_3d_cupy_prepared_grid_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_microcell_graph_partner_columns
 from .partner_adapters import columnar_rows_to_partner_columns
 from .partner_adapters import columnar_payload_to_partner_columns
@@ -1413,7 +1416,10 @@ __all__ = [
     "radius_graph_components_2d_partner_columns",
     "radius_graph_components_2d_spatial_bucket_partner_columns",
     "radius_graph_components_3d_spatial_bucket_partner_columns",
+    "PreparedCupyRadiusGraphComponents3DGrid",
+    "prepare_radius_graph_components_3d_cupy_grid_partner_columns",
     "radius_graph_components_3d_cupy_grid_partner_columns",
+    "radius_graph_components_3d_cupy_prepared_grid_partner_columns",
     "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
     "columnar_rows_to_partner_columns",
     "columnar_payload_to_partner_columns",

@@ -2568,6 +2568,207 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
     return columns
 
 
+class PreparedCupyRadiusGraphComponents3DGrid:
+    """Prepared CuPy grid state for repeated generic radius-graph labeling."""
+
+    def __init__(self, point_columns: dict[str, object], *, radius: float, partner: str = "cupy"):
+        import math
+
+        if partner != "cupy":
+            raise ValueError("PreparedCupyRadiusGraphComponents3DGrid currently requires partner='cupy'")
+        radius = float(radius)
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if "z" not in point_columns:
+            raise ValueError("PreparedCupyRadiusGraphComponents3DGrid requires z point columns")
+        runtime = _partner_module(partner)
+        cupy = runtime["module"]
+        point_count = _column_length(point_columns, "ids")
+        if point_count <= 0:
+            raise ValueError("radius graph components requires non-empty point columns")
+
+        self.runtime = runtime
+        self.cupy = cupy
+        self.partner = runtime["name"]
+        self.point_columns = point_columns
+        self.point_count = point_count
+        self.radius = radius
+        self.radius_sq = radius * radius
+        self.x = point_columns["x"].astype(cupy.float64, copy=False)
+        self.y = point_columns["y"].astype(cupy.float64, copy=False)
+        self.z = point_columns["z"].astype(cupy.float64, copy=False)
+        self.cell_size = radius if radius > 0.0 else 1.0
+        self.min_x = float(cupy.min(self.x).item())
+        self.min_y = float(cupy.min(self.y).item())
+        self.min_z = float(cupy.min(self.z).item())
+        gx = cupy.floor((self.x - self.min_x) / self.cell_size).astype(cupy.int64, copy=False)
+        gy = cupy.floor((self.y - self.min_y) / self.cell_size).astype(cupy.int64, copy=False)
+        gz = cupy.floor((self.z - self.min_z) / self.cell_size).astype(cupy.int64, copy=False)
+        self.dim_x = int(cupy.max(gx).item()) + 1
+        self.dim_y = int(cupy.max(gy).item()) + 1
+        self.dim_z = int(cupy.max(gz).item()) + 1
+        cell_ids = gx + gy * self.dim_x + gz * self.dim_x * self.dim_y
+        self.order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+        sorted_cell_ids = cell_ids[self.order].astype(cupy.int64, copy=False)
+        unique_cells, starts, counts = cupy.unique(
+            sorted_cell_ids,
+            return_index=True,
+            return_counts=True,
+        )
+        self.unique_cells = unique_cells.astype(cupy.int64, copy=False)
+        self.starts = starts.astype(cupy.int32, copy=False)
+        self.counts = counts.astype(cupy.int32, copy=False)
+        self.unique_cell_count = int(self.unique_cells.size)
+        self.parent_initial = cupy.arange(point_count, dtype=cupy.int32)
+        self.parent_workspace = cupy.empty((point_count,), dtype=cupy.int32)
+        self.labels_workspace = cupy.empty((point_count,), dtype=cupy.int64)
+        self.neighbor_counts_workspace = cupy.empty((point_count,), dtype=cupy.uint32)
+        self.core_flags_workspace = cupy.empty((point_count,), dtype=cupy.uint32)
+        self.count_kernel, self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_grid_kernels(cupy)
+        self.threads = 256
+        self.blocks = (max(1, math.ceil(point_count / self.threads)),)
+        self.run_count = 0
+        runtime["sync"]()
+
+    def _common_args(self):
+        return (
+            self.x,
+            self.y,
+            self.z,
+            self.point_count,
+            self.unique_cells,
+            self.starts,
+            self.counts,
+            self.unique_cell_count,
+            self.order,
+            self.min_x,
+            self.min_y,
+            self.min_z,
+            self.cell_size,
+            self.dim_x,
+            self.dim_y,
+            self.dim_z,
+            self.radius_sq,
+        )
+
+    def run(
+        self,
+        *,
+        min_neighbors: int,
+        core_flags=None,
+        neighbor_counts=None,
+        core_flag_source: str = "device_grid_count_kernel",
+        return_metadata: bool = False,
+    ):
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        cupy = self.cupy
+        if (core_flags is None) != (neighbor_counts is None):
+            raise ValueError("core_flags and neighbor_counts must be supplied together")
+        caller_supplied_core_flags = core_flags is not None
+        if caller_supplied_core_flags:
+            neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+            core_flags = cupy.asarray(core_flags, dtype=cupy.uint32)
+            if int(neighbor_counts.size) != self.point_count or int(core_flags.size) != self.point_count:
+                raise ValueError("core_flags and neighbor_counts must match point_count")
+        else:
+            neighbor_counts = self.neighbor_counts_workspace
+            core_flags = self.core_flags_workspace
+
+        self.parent_workspace[...] = self.parent_initial
+        common = self._common_args()
+        if not caller_supplied_core_flags:
+            self.count_kernel(
+                self.blocks,
+                (self.threads,),
+                common + (min_neighbors, neighbor_counts, core_flags),
+            )
+        self.union_kernel(
+            self.blocks,
+            (self.threads,),
+            common + (core_flags, self.parent_workspace),
+        )
+        self.label_kernel(
+            self.blocks,
+            (self.threads,),
+            common + (core_flags, self.parent_workspace, self.labels_workspace),
+        )
+        self.runtime["sync"]()
+
+        if caller_supplied_core_flags:
+            edge_count = None
+            edge_count_policy = "not_reported_for_caller_supplied_threshold_capped_counts"
+        else:
+            edge_count = int((int(cupy.sum(neighbor_counts).item()) - self.point_count) // 2)
+            edge_count_policy = "exact_from_device_grid_neighbor_counts"
+        prepared_grid_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": neighbor_counts,
+        }
+        metadata = {
+            "adapter": "PreparedCupyRadiusGraphComponents3DGrid.run",
+            "partner": self.partner,
+            "input_contract": "prepared_partner_device_point_columns_3d",
+            "partner_reference_contract": "generic_prepared_cupy_grid_radius_graph_component_labels_3d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "cell_count": self.unique_cell_count,
+            "candidate_edge_count": edge_count,
+            "candidate_edge_count_policy": edge_count_policy,
+            "grid_dimensions": (self.dim_x, self.dim_y, self.dim_z),
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_core_edge_union",
+            "core_flag_source": str(core_flag_source),
+            "caller_supplied_core_flags": caller_supplied_core_flags,
+            "prepared_grid_reused": prepared_grid_reused,
+            "prepared_run_count": self.run_count,
+            "output_workspace_reused": True,
+            "host_bucket_index_used": False,
+            "device_grid_index_used": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+
+def prepare_radius_graph_components_3d_cupy_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "cupy",
+) -> PreparedCupyRadiusGraphComponents3DGrid:
+    return PreparedCupyRadiusGraphComponents3DGrid(point_columns, radius=radius, partner=partner)
+
+
+def radius_graph_components_3d_cupy_prepared_grid_partner_columns(
+    prepared: PreparedCupyRadiusGraphComponents3DGrid,
+    *,
+    min_neighbors: int,
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "device_grid_count_kernel",
+    return_metadata: bool = False,
+):
+    return prepared.run(
+        min_neighbors=min_neighbors,
+        core_flags=core_flags,
+        neighbor_counts=neighbor_counts,
+        core_flag_source=core_flag_source,
+        return_metadata=return_metadata,
+    )
+
+
 def _fixed_radius_clique_safe_microcell_size(radius: float) -> float:
     """Return a 3-D cell size whose cube diagonal is at most the radius."""
     import math

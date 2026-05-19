@@ -455,6 +455,58 @@ def run_rt_dbscan_benchmark(
                 "threshold_metadata": threshold_result["metadata"],
             }
         )
+    elif mode == "optix_rt_core_flags_cupy_prepared_grid_components_3d":
+        point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
+        prepared_grid = rt.prepare_radius_graph_components_3d_cupy_grid_partner_columns(
+            point_columns,
+            radius=resolved_radius,
+            partner="cupy",
+        )
+        output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            len(points),
+            partner="cupy",
+        )
+        optix_start = time.perf_counter()
+        with rt.prepare_optix_fixed_radius_count_threshold_3d(points, max_radius=resolved_radius) as prepared:
+            threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                prepared,
+                points,
+                radius=resolved_radius,
+                threshold=resolved_min_neighbors,
+                partner="cupy",
+                output_columns=output_columns,
+                return_metadata=True,
+            )
+        optix_elapsed = time.perf_counter() - optix_start
+        continuation_start = time.perf_counter()
+        result = rt.radius_graph_components_3d_cupy_prepared_grid_partner_columns(
+            prepared_grid,
+            min_neighbors=resolved_min_neighbors,
+            core_flags=threshold_result["columns"]["threshold_flags"],
+            neighbor_counts=threshold_result["columns"]["neighbor_counts"],
+            core_flag_source="optix_rt_fixed_radius_count_threshold_3d_device_outputs",
+            return_metadata=True,
+        )
+        continuation_elapsed = time.perf_counter() - continuation_start
+        rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "optix_rt_count_threshold_cupy_prepared_grid_radius_graph_components_3d",
+                "optix_rt_count_threshold_sec": optix_elapsed,
+                "cupy_component_continuation_sec": continuation_elapsed,
+                "native_engine_summary_contract": "generic_prepared_fixed_radius_count_threshold_3d_device_columns",
+                "native_execution_path": "prepared_rt_core_count_threshold_3d",
+                "optix_backend_used": True,
+                "rt_core_accelerated": True,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+                "threshold_metadata": threshold_result["metadata"],
+                "prepared_grid_reused": metadata.get("prepared_grid_reused"),
+                "prepared_run_count": metadata.get("prepared_run_count"),
+            }
+        )
     elif mode == "optix_rt_core_flags_cupy_microcell_graph_components_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
         output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
@@ -607,6 +659,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_cupy_grid_components_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
+            "optix_rt_core_flags_cupy_prepared_grid_components_3d",
             "optix_rt_core_flags_cupy_microcell_graph_components_3d",
             "partner_core_flags_3d",
             "optix_prepared_rows",
