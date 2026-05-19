@@ -13,6 +13,7 @@ _CUPY_PAIRWISE_FORCE_2D_KERNEL = None
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
 _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
 _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -75,6 +76,13 @@ def _partner_module(partner: str):
                 radius,
                 threshold,
             ),
+            "fixed_radius_count_threshold_3d": lambda query, search, radius, threshold: _torch_fixed_radius_count_threshold_3d(
+                torch,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
         }
     if partner == "cupy":
         import cupy
@@ -107,6 +115,13 @@ def _partner_module(partner: str):
             "greater_equal_uint32": lambda value, threshold: (value >= int(threshold)).astype(cupy.uint32, copy=False),
             "invert_binary_uint32": lambda value: (1 - value).astype(cupy.uint32, copy=False),
             "fixed_radius_count_threshold_2d": lambda query, search, radius, threshold: _cupy_fixed_radius_count_threshold_2d(
+                cupy,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
+            "fixed_radius_count_threshold_3d": lambda query, search, radius, threshold: _cupy_fixed_radius_count_threshold_3d(
                 cupy,
                 query,
                 search,
@@ -1337,6 +1352,46 @@ def _cupy_fixed_radius_count_threshold_2d(cupy, query_columns, search_columns, r
     return counts.astype(cupy.uint32, copy=False)
 
 
+def _torch_fixed_radius_count_threshold_3d(torch, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].to(torch.float64)
+    qy = query_columns["y"].to(torch.float64)
+    qz = query_columns["z"].to(torch.float64)
+    sx = search_columns["x"].to(torch.float64)
+    sy = search_columns["y"].to(torch.float64)
+    sz = search_columns["z"].to(torch.float64)
+    if int(qx.numel()) == 0:
+        return torch.zeros((0,), dtype=torch.uint32, device=qx.device)
+    if int(sx.numel()) == 0:
+        return torch.zeros_like(query_columns["ids"], dtype=torch.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    dz = qz.reshape(-1, 1) - sz.reshape(1, -1)
+    within = (dx * dx + dy * dy + dz * dz).le(radius_sq)
+    counts = torch.sum(within.to(torch.int64), dim=1)
+    return counts.to(torch.uint32)
+
+
+def _cupy_fixed_radius_count_threshold_3d(cupy, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].astype(cupy.float64, copy=False)
+    qy = query_columns["y"].astype(cupy.float64, copy=False)
+    qz = query_columns["z"].astype(cupy.float64, copy=False)
+    sx = search_columns["x"].astype(cupy.float64, copy=False)
+    sy = search_columns["y"].astype(cupy.float64, copy=False)
+    sz = search_columns["z"].astype(cupy.float64, copy=False)
+    if int(qx.size) == 0:
+        return cupy.zeros((0,), dtype=cupy.uint32)
+    if int(sx.size) == 0:
+        return cupy.zeros_like(query_columns["ids"], dtype=cupy.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    dz = qz.reshape(-1, 1) - sz.reshape(1, -1)
+    within = (dx * dx + dy * dy + dz * dz) <= radius_sq
+    counts = cupy.sum(within.astype(cupy.int64, copy=False), axis=1)
+    return counts.astype(cupy.uint32, copy=False)
+
+
 def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict) -> dict[str, object]:
     device = partner["device"]
     return {
@@ -1355,15 +1410,19 @@ def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict)
 
 def _point_columns(points, partner: dict) -> dict[str, object]:
     device = partner["device"]
-    return {
+    rows = tuple(points)
+    columns = {
         "ids": partner["tensor"](
-            [_require_uint32_id(point.id, "point") for point in points],
+            [_require_uint32_id(point.id, "point") for point in rows],
             partner["uint32"],
             device,
         ),
-        "x": partner["tensor"]([point.x for point in points], partner["float64"], device),
-        "y": partner["tensor"]([point.y for point in points], partner["float64"], device),
+        "x": partner["tensor"]([point.x for point in rows], partner["float64"], device),
+        "y": partner["tensor"]([point.y for point in rows], partner["float64"], device),
     }
+    if rows and all(hasattr(point, "z") for point in rows):
+        columns["z"] = partner["tensor"]([point.z for point in rows], partner["float64"], device)
+    return columns
 
 
 def point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
@@ -1973,6 +2032,517 @@ def radius_graph_components_2d_spatial_bucket_partner_columns(
         "whole_app_speedup_claim_authorized": False,
     }
     runtime["sync"]()
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def radius_graph_components_3d_spatial_bucket_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Label 3-D radius-graph components with a generic sparse spatial-bucket index."""
+    import math
+
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    if "z" not in point_columns:
+        raise ValueError("radius_graph_components_3d_spatial_bucket_partner_columns requires z point columns")
+    runtime = _partner_module(partner)
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    xs = _partner_float_column_to_host(point_columns["x"], partner=runtime["name"])
+    ys = _partner_float_column_to_host(point_columns["y"], partner=runtime["name"])
+    zs = _partner_float_column_to_host(point_columns["z"], partner=runtime["name"])
+    cell_size = radius if radius > 0.0 else 1.0
+    radius_sq = radius * radius
+
+    cells: dict[tuple[int, int, int], list[int]] = {}
+    for index, (x, y, z) in enumerate(zip(xs, ys, zs)):
+        key = (math.floor(x / cell_size), math.floor(y / cell_size), math.floor(z / cell_size))
+        cells.setdefault(key, []).append(index)
+
+    neighbor_counts = [1 for _ in range(point_count)]
+    within_pairs: list[tuple[int, int]] = []
+    neighbor_offsets = tuple((dx, dy, dz) for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1))
+    for cell_key, left_indices in cells.items():
+        cx, cy, cz = cell_key
+        for ox, oy, oz in neighbor_offsets:
+            other_key = (cx + ox, cy + oy, cz + oz)
+            if other_key not in cells or other_key < cell_key:
+                continue
+            right_indices = cells[other_key]
+            for left_offset, left in enumerate(left_indices):
+                start = left_offset + 1 if other_key == cell_key else 0
+                for right in right_indices[start:]:
+                    dx = xs[left] - xs[right]
+                    dy = ys[left] - ys[right]
+                    dz = zs[left] - zs[right]
+                    if dx * dx + dy * dy + dz * dz <= radius_sq:
+                        neighbor_counts[left] += 1
+                        neighbor_counts[right] += 1
+                        within_pairs.append((left, right))
+
+    is_core_host = [count >= min_neighbors for count in neighbor_counts]
+    parent = list(range(point_count))
+
+    def find(item: int) -> int:
+        while parent[item] != item:
+            parent[item] = parent[parent[item]]
+            item = parent[item]
+        return item
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return
+        if left_root < right_root:
+            parent[right_root] = left_root
+        else:
+            parent[left_root] = right_root
+
+    for left, right in within_pairs:
+        if is_core_host[left] and is_core_host[right]:
+            union(left, right)
+
+    component_roots: list[int] = [-1 for _ in range(point_count)]
+    for index, is_core in enumerate(is_core_host):
+        if is_core:
+            component_roots[index] = find(index)
+    for left, right in within_pairs:
+        if component_roots[left] == -1 and is_core_host[right]:
+            component_roots[left] = find(right)
+        if component_roots[right] == -1 and is_core_host[left]:
+            component_roots[right] = find(left)
+
+    dense_by_root: dict[int, int] = {}
+    next_label = 1
+    dense_labels: list[int] = []
+    for root in component_roots:
+        if root < 0:
+            dense_labels.append(-1)
+            continue
+        if root not in dense_by_root:
+            dense_by_root[root] = next_label
+            next_label += 1
+        dense_labels.append(dense_by_root[root])
+
+    device = runtime["device"]
+    label_dtype = runtime["module"].int64
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": runtime["tensor"](dense_labels, label_dtype, device),
+        "is_core": runtime["tensor"]([1 if item else 0 for item in is_core_host], runtime["uint32"], device),
+        "neighbor_counts": runtime["tensor"](neighbor_counts, runtime["uint32"], device),
+    }
+    metadata = {
+        "adapter": "radius_graph_components_3d_spatial_bucket_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": len(cells),
+        "candidate_edge_count": len(within_pairs),
+        "component_label_policy": "dense_positive_labels_by_lowest_component_seed_noise_minus_one",
+        "host_bucket_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    runtime["sync"]()
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _cupy_radius_graph_components_3d_grid_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int lower_bound_cell(const long long* values, const int count, const long long key) {
+            int left = 0;
+            int right = count;
+            while (left < right) {
+                const int mid = left + ((right - left) >> 1);
+                if (values[mid] < key) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+
+        extern "C" __device__
+        int find_root(int* parent, int item) {
+            int root = item;
+            while (parent[root] != root) {
+                root = parent[root];
+            }
+            while (parent[item] != item) {
+                const int next = parent[item];
+                parent[item] = root;
+                item = next;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_root(parent, left);
+                int right_root = find_root(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicCAS(parent + high, high, low);
+                if (old == high || old == low) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __device__
+        long long make_cell_id(const int gx, const int gy, const int gz, const int dim_x, const int dim_y) {
+            return (long long)gx + (long long)gy * (long long)dim_x + (long long)gz * (long long)dim_x * (long long)dim_y;
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_count_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const int min_neighbors,
+            unsigned int* neighbor_counts,
+            unsigned int* core_flags
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            unsigned int count = 0;
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int cursor = start; cursor < end; ++cursor) {
+                            const int other = sorted_point_indices[cursor];
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                ++count;
+                            }
+                        }
+                    }
+                }
+            }
+            neighbor_counts[point] = count;
+            core_flags[point] = count >= (unsigned int)min_neighbors ? 1u : 0u;
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_union_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const unsigned int* core_flags,
+            int* parent
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count || core_flags[point] == 0u) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int cursor = start; cursor < end; ++cursor) {
+                            const int other = sorted_point_indices[cursor];
+                            if (other == point || core_flags[other] == 0u) continue;
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                union_min_root(parent, point, other);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_label_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const unsigned int* core_flags,
+            int* parent,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_root(parent, point) + 1ll;
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            int best_root = -1;
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int cursor = start; cursor < end; ++cursor) {
+                            const int other = sorted_point_indices[cursor];
+                            if (core_flags[other] == 0u) continue;
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                const int root = find_root(parent, other);
+                                if (best_root < 0 || root < best_root) {
+                                    best_root = root;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            labels[point] = best_root < 0 ? -1ll : (long long)best_root + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = (
+            cupy.RawKernel(source, "radius_graph_3d_count_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_union_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+
+
+def radius_graph_components_3d_cupy_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "cupy",
+    return_metadata: bool = False,
+):
+    """Label 3-D radius-graph components with a device-resident CuPy grid."""
+    import math
+
+    if partner != "cupy":
+        raise ValueError("radius_graph_components_3d_cupy_grid_partner_columns currently requires partner='cupy'")
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    if "z" not in point_columns:
+        raise ValueError("radius_graph_components_3d_cupy_grid_partner_columns requires z point columns")
+    runtime = _partner_module(partner)
+    cupy = runtime["module"]
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    x = point_columns["x"].astype(cupy.float64, copy=False)
+    y = point_columns["y"].astype(cupy.float64, copy=False)
+    z = point_columns["z"].astype(cupy.float64, copy=False)
+    cell_size = radius if radius > 0.0 else 1.0
+    min_x = float(cupy.min(x).item())
+    min_y = float(cupy.min(y).item())
+    min_z = float(cupy.min(z).item())
+    gx = cupy.floor((x - min_x) / cell_size).astype(cupy.int64, copy=False)
+    gy = cupy.floor((y - min_y) / cell_size).astype(cupy.int64, copy=False)
+    gz = cupy.floor((z - min_z) / cell_size).astype(cupy.int64, copy=False)
+    dim_x = int(cupy.max(gx).item()) + 1
+    dim_y = int(cupy.max(gy).item()) + 1
+    dim_z = int(cupy.max(gz).item()) + 1
+    cell_ids = gx + gy * dim_x + gz * dim_x * dim_y
+    order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+    sorted_cell_ids = cell_ids[order].astype(cupy.int64, copy=False)
+    unique_cells, starts, counts = cupy.unique(
+        sorted_cell_ids,
+        return_index=True,
+        return_counts=True,
+    )
+    starts = starts.astype(cupy.int32, copy=False)
+    counts = counts.astype(cupy.int32, copy=False)
+    unique_cells = unique_cells.astype(cupy.int64, copy=False)
+    unique_cell_count = int(unique_cells.size)
+
+    neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
+    core_flags = cupy.zeros((point_count,), dtype=cupy.uint32)
+    parent = cupy.arange(point_count, dtype=cupy.int32)
+    labels = cupy.full((point_count,), -1, dtype=cupy.int64)
+    count_kernel, union_kernel, label_kernel = _cupy_radius_graph_components_3d_grid_kernels(cupy)
+    threads = 256
+    blocks = (max(1, math.ceil(point_count / threads)),)
+    common = (
+        x,
+        y,
+        z,
+        point_count,
+        unique_cells,
+        starts,
+        counts,
+        unique_cell_count,
+        order,
+        min_x,
+        min_y,
+        min_z,
+        cell_size,
+        dim_x,
+        dim_y,
+        dim_z,
+        radius * radius,
+    )
+    count_kernel(
+        blocks,
+        (threads,),
+        common + (min_neighbors, neighbor_counts, core_flags),
+    )
+    union_kernel(
+        blocks,
+        (threads,),
+        common + (core_flags, parent),
+    )
+    label_kernel(
+        blocks,
+        (threads,),
+        common + (core_flags, parent, labels),
+    )
+    runtime["sync"]()
+
+    edge_count = int((int(cupy.sum(neighbor_counts).item()) - point_count) // 2)
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": labels,
+        "is_core": core_flags,
+        "neighbor_counts": neighbor_counts,
+    }
+    metadata = {
+        "adapter": "radius_graph_components_3d_cupy_grid_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_cupy_grid_radius_graph_component_labels_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": unique_cell_count,
+        "candidate_edge_count": edge_count,
+        "grid_dimensions": (dim_x, dim_y, dim_z),
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "host_bucket_index_used": False,
+        "device_grid_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
     if return_metadata:
         return {"columns": columns, "metadata": metadata}
     return columns
@@ -3591,6 +4161,58 @@ def fixed_radius_count_threshold_2d_partner_columns(
         "radius": radius,
         "threshold": threshold,
         "app_count_materialization": "partner_gpu_fixed_radius_count_threshold",
+        "app_count_host_materialization": False,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def fixed_radius_count_threshold_3d_partner_columns(
+    query_point_columns: dict[str, object],
+    search_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned 3-D fixed-radius count and threshold columns."""
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    if "z" not in query_point_columns or "z" not in search_point_columns:
+        raise ValueError("fixed_radius_count_threshold_3d_partner_columns requires z point columns")
+    runtime = _partner_module(partner)
+    neighbor_counts = runtime["fixed_radius_count_threshold_3d"](
+        query_point_columns,
+        search_point_columns,
+        radius,
+        threshold,
+    )
+    threshold_flags = runtime["greater_equal_uint32"](neighbor_counts, threshold)
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_point_columns["ids"],
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_3d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_fixed_radius_count_threshold_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "radius": radius,
+        "threshold": threshold,
+        "app_count_materialization": "partner_gpu_fixed_radius_count_threshold_3d",
         "app_count_host_materialization": False,
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,

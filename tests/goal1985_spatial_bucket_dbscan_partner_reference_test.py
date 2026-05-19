@@ -10,7 +10,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
-EXAMPLE = ROOT / "examples" / "rtdl_dbscan_clustering_app.py"
+EXAMPLE = ROOT / "examples" / "v2_0" / "apps" / "ml" / "rtdl_dbscan_clustering_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal1985_spatial_bucket_dbscan_partner_reference_2026-05-14.md"
 POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1985_pod_spatial_bucket_dbscan_cupy_perf.json"
 PREFLIGHT = ROOT / "scripts" / "goal1908_v2_local_preflight.py"

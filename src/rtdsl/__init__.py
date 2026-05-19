@@ -409,6 +409,7 @@ from .partner_adapters import segment_polygon_hitcount_optix_prepared_partner_de
 from .partner_adapters import road_hazard_priority_flags_optix_partner_device_columns
 from .partner_adapters import road_hazard_priority_flags_optix_prepared_partner_device_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_partner_columns
+from .partner_adapters import fixed_radius_count_threshold_3d_partner_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_device_columns
 from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
@@ -449,6 +450,8 @@ from .partner_continuations import numpy_segmented_sum
 from .partner_continuations import point_rows_to_numpy_columns
 from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_spatial_bucket_partner_columns
+from .partner_adapters import radius_graph_components_3d_spatial_bucket_partner_columns
+from .partner_adapters import radius_graph_components_3d_cupy_grid_partner_columns
 from .partner_adapters import columnar_rows_to_partner_columns
 from .partner_adapters import columnar_payload_to_partner_columns
 from .partner_adapters import partner_columnar_predicate_mask
@@ -1359,6 +1362,7 @@ __all__ = [
     "road_hazard_priority_flags_optix_partner_device_columns",
     "road_hazard_priority_flags_optix_prepared_partner_device_columns",
     "fixed_radius_count_threshold_2d_partner_columns",
+    "fixed_radius_count_threshold_3d_partner_columns",
     "fixed_radius_count_threshold_2d_optix_partner_device_columns",
     "allocate_fixed_radius_count_threshold_2d_partner_device_output_columns",
     "prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene",
@@ -1399,6 +1403,8 @@ __all__ = [
     "point_rows_to_numpy_columns",
     "radius_graph_components_2d_partner_columns",
     "radius_graph_components_2d_spatial_bucket_partner_columns",
+    "radius_graph_components_3d_spatial_bucket_partner_columns",
+    "radius_graph_components_3d_cupy_grid_partner_columns",
     "columnar_rows_to_partner_columns",
     "columnar_payload_to_partner_columns",
     "partner_columnar_predicate_mask",

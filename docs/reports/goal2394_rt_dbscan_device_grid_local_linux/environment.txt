@@ -1,0 +1,4 @@
+lx1
+NVIDIA GeForce GTX 1070, 580.126.09
+Python 3.12.3
+cupy 14.0.1 devices 1

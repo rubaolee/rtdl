@@ -22,6 +22,7 @@ $env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\<study>\<script
 | --- | --- | --- |
 | `hausdorff_xhd/` | Exact and RT-assisted Hausdorff distance study informed by X-HD techniques; includes v2.1 scale-aware grouped traversal defaults | `hausdorff_xhd/README.md` |
 | `spatial_rayjoin/` | RayJoin-style spatial join workloads; includes v2.1 first-hit/nearest-boundary evidence | `spatial_rayjoin/README.md` |
+| `rt_dbscan/` | RT-DBSCAN-style 3-D density clustering study over generic fixed-radius/component contracts | `rt_dbscan/README.md` |
 
 ## How To Read Results
 
