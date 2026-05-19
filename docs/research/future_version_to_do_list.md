@@ -369,6 +369,14 @@ Future work:
   Pivot to prepared CuPy grid continuation hardening first: cache/reuse point
   columns, cell ids, sorted order, unique cells, starts/counts, and output
   buffers under the same generic fixed-radius component-label contract.
+- Goal2418 completed that prepared-grid hardening and validated it on an RTX
+  A5000 pod. Prepared RT-count plus prepared CuPy-grid continuation beat the
+  older fresh-grid RT bridge on every measured row and beat pure CuPy on larger
+  clustered rows. Road-shaped sparse data remained the boundary: near parity at
+  131k, still slower at smaller sizes. The next leap should therefore be a
+  generic device-resident radius-graph edge stream or grouped union
+  continuation that avoids redoing radius traversal after RT thresholding,
+  rather than another DBSCAN-specific native shortcut.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.
