@@ -1,0 +1,66 @@
+{
+  "claim_boundary": {
+    "hidden_dispatcher": false,
+    "paper_reproduction_claim_authorized": false,
+    "planner_is_explicit": true,
+    "release_speedup_claim_authorized": false
+  },
+  "commit": "5af2ce11a41302c569f76fcf787f2d5c4f520dba",
+  "goal": "goal2427_rt_dbscan_goal2425_plan_smoke_pod",
+  "rows": [
+    {
+      "artifact": "tiny_9.json",
+      "dataset": "tiny",
+      "elapsed_sec": 0.00012452714145183563,
+      "outer_elapsed_sec": 0.4241054728627205,
+      "point_count": 9,
+      "rt_core_accelerated": false,
+      "selected_mode": "cpu_reference"
+    },
+    {
+      "artifact": "clustered3d_32768.json",
+      "dataset": "clustered3d",
+      "elapsed_sec": 0.7292258534580469,
+      "outer_elapsed_sec": 1.3915341198444366,
+      "point_count": 32768,
+      "rt_core_accelerated": false,
+      "selected_mode": "partner_cupy_prepared_grid_components_3d"
+    },
+    {
+      "artifact": "clustered3d_65536.json",
+      "dataset": "clustered3d",
+      "elapsed_sec": 1.4849477522075176,
+      "outer_elapsed_sec": 2.4434335697442293,
+      "point_count": 65536,
+      "rt_core_accelerated": true,
+      "selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+    },
+    {
+      "artifact": "road3d_262144.json",
+      "dataset": "road3d",
+      "elapsed_sec": 2.6475233994424343,
+      "outer_elapsed_sec": 4.542476238682866,
+      "point_count": 262144,
+      "rt_core_accelerated": false,
+      "selected_mode": "partner_cupy_prepared_grid_components_3d"
+    },
+    {
+      "artifact": "road3d_524288.json",
+      "dataset": "road3d",
+      "elapsed_sec": 8.101063378155231,
+      "outer_elapsed_sec": 11.1816326379776,
+      "point_count": 524288,
+      "rt_core_accelerated": true,
+      "selected_mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+    },
+    {
+      "artifact": "ngsim_dense_131072.json",
+      "dataset": "ngsim_dense",
+      "elapsed_sec": 0.9874180592596531,
+      "outer_elapsed_sec": 2.3797047082334757,
+      "point_count": 131072,
+      "rt_core_accelerated": false,
+      "selected_mode": "partner_cupy_prepared_grid_components_3d"
+    }
+  ]
+}

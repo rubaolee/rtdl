@@ -388,6 +388,12 @@ Future work:
   `prepare_optix_cupy_radius_graph_components_3d`. This is now the baseline
   user-facing contract for current RT-DBSCAN-style experiments while deeper
   device-resident edge-stream or grouped-union continuations are designed.
+- Goal2425 added the missing fair prepared-CuPy baseline and corrected the
+  planner thresholds: prepared RT wins clustered rows at 65k and above, road
+  rows only at the measured 524k crossover, and compact dense rows still favor
+  prepared pure CuPy through 262k. Goal2427 then smoked the updated explicit
+  plan on the pod. The planning/correctness issue is closed for this stage; the
+  remaining performance issue is the generic continuation itself.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.
