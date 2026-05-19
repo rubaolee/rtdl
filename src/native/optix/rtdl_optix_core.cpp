@@ -3672,6 +3672,7 @@ struct ExactPoint3D { uint32_t id; double x, y, z; };
 struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
 struct FrnSummary { unsigned long long count; double min_distance; double max_distance; double sum_distance; };
 struct FrnExactRecord { uint32_t query_id, neighbor_id; double distance; };
+struct FrnRankedRecord { uint32_t query_id, neighbor_id; double distance; uint32_t neighbor_rank; };
 
 static __device__ __forceinline__ float abs_float(float value)
 {
@@ -4040,6 +4041,163 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_rows(
                 }
             }
         }
+    }
+}
+
+static __device__ __forceinline__ void frn_ranked_insert(
+        double distance_sq,
+        uint32_t neighbor_id,
+        uint32_t k_max,
+        double* best_distance_sq,
+        uint32_t* best_neighbor_id,
+        uint32_t* best_count)
+{
+    uint32_t insert_at = *best_count;
+    for (uint32_t i = 0u; i < *best_count; ++i) {
+        const double current = best_distance_sq[i];
+        const uint32_t current_id = best_neighbor_id[i];
+        if (distance_sq < current || (distance_sq == current && neighbor_id < current_id)) {
+            insert_at = i;
+            break;
+        }
+    }
+    if (insert_at >= k_max) return;
+
+    const uint32_t limit = (*best_count < k_max) ? *best_count : (k_max - 1u);
+    for (uint32_t i = limit; i > insert_at; --i) {
+        best_distance_sq[i] = best_distance_sq[i - 1u];
+        best_neighbor_id[i] = best_neighbor_id[i - 1u];
+    }
+    best_distance_sq[insert_at] = distance_sq;
+    best_neighbor_id[insert_at] = neighbor_id;
+    if (*best_count < k_max) {
+        *best_count += 1u;
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_count(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double radius,
+        uint32_t k_max,
+        uint32_t* counts_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    double best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    frn_ranked_insert(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                }
+            }
+        }
+    }
+    counts_out[qidx] = best_count;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_rows(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        const uint32_t* row_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double radius,
+        uint32_t k_max,
+        FrnRankedRecord* rows_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    double best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    frn_ranked_insert(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                }
+            }
+        }
+    }
+
+    const uint32_t row_begin = row_offsets[qidx];
+    for (uint32_t rank = 0u; rank < best_count; ++rank) {
+        FrnRankedRecord row;
+        row.query_id = q.id;
+        row.neighbor_id = best_neighbor_id[rank];
+        row.distance = sqrt(best_distance_sq[rank]);
+        row.neighbor_rank = rank + 1u;
+        rows_out[row_begin + rank] = row;
     }
 }
 
@@ -5194,6 +5352,8 @@ static FrnCuFunction      g_frn3d_grid_count;
 static FrnCuFunction      g_frn3d_grid_exact_count;
 static FrnCuFunction      g_frn3d_grid_exact_summary;
 static FrnCuFunction      g_frn3d_grid_exact_rows;
+static FrnCuFunction      g_frn3d_grid_ranked_count;
+static FrnCuFunction      g_frn3d_grid_ranked_rows;
 static FrnCuFunction      g_frn3d_grid_compact;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;

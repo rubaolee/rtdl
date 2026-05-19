@@ -1,0 +1,68 @@
+{
+  "expected": [
+    {
+      "distance": 0.0,
+      "neighbor_id": 10,
+      "neighbor_rank": 1,
+      "query_id": 20
+    },
+    {
+      "distance": 0.1,
+      "neighbor_id": 12,
+      "neighbor_rank": 2,
+      "query_id": 20
+    },
+    {
+      "distance": 0.010000000000000009,
+      "neighbor_id": 11,
+      "neighbor_rank": 1,
+      "query_id": 21
+    },
+    {
+      "distance": 0.09,
+      "neighbor_id": 12,
+      "neighbor_rank": 2,
+      "query_id": 21
+    }
+  ],
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 2.5215e-05,
+    "candidate_write_pass": 1.2895e-05,
+    "count_download_and_prefix": 4.0949e-05,
+    "emitted_count": 4,
+    "exact_refine": 0.0,
+    "mode": "prepared_uniform_cell_ranked_rows",
+    "prepare": 0.0,
+    "raw_candidate_count": 4,
+    "row_download": 6.907e-06,
+    "row_offset_upload": 2.728e-06,
+    "upload": 1.4928e-05
+  },
+  "rows": [
+    {
+      "distance": 0.0,
+      "neighbor_id": 10,
+      "neighbor_rank": 1,
+      "query_id": 20
+    },
+    {
+      "distance": 0.1,
+      "neighbor_id": 12,
+      "neighbor_rank": 2,
+      "query_id": 20
+    },
+    {
+      "distance": 0.010000000000000009,
+      "neighbor_id": 11,
+      "neighbor_rank": 1,
+      "query_id": 21
+    },
+    {
+      "distance": 0.09,
+      "neighbor_id": 12,
+      "neighbor_rank": 2,
+      "query_id": 21
+    }
+  ]
+}

@@ -1569,6 +1569,67 @@ class PreparedOptixFixedRadiusNeighbors3D:
         finally:
             rows.close()
 
+    def run_ranked_raw(self, query_points, *, radius: float, k_max: int) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        if k_max > 64:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D.run_ranked_raw currently supports k_max <= 64")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D.run_ranked_raw requires 3-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return OptixRowView(
+                library=_load_optix_library(),
+                rows_ptr=ctypes.POINTER(_RtdlKnnNeighborRow)(),
+                row_count=0,
+                row_type=_RtdlKnnNeighborRow,
+                field_names=("query_id", "neighbor_id", "distance", "neighbor_rank"),
+                _free_on_close=False,
+            )
+
+        lib = _load_optix_library()
+        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d")
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(k_max)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlKnnNeighborRow,
+            field_names=("query_id", "neighbor_id", "distance", "neighbor_rank"),
+        )
+
+    def run_ranked(self, query_points, *, radius: float, k_max: int) -> tuple[dict[str, object], ...]:
+        rows = self.run_ranked_raw(query_points, radius=radius, k_max=k_max)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
     def count(self, query_points, *, radius: float, k_max: int) -> int:
         if self._closed:
             raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
@@ -2549,6 +2610,7 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             5: "prepared_uniform_cell_exact_count_summary",
             6: "prepared_uniform_cell_exact_distance_summary",
             7: "prepared_uniform_cell_exact_rows",
+            8: "prepared_uniform_cell_ranked_rows",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),
@@ -7069,6 +7131,19 @@ def _register_argtypes(lib) -> None:
             ctypes.c_double,
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p, ctypes.c_size_t,
         ]

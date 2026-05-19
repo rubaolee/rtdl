@@ -8431,11 +8431,15 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         g_frn3d_grid_exact_count.module = g_frn3d_grid.module;
         g_frn3d_grid_exact_summary.module = g_frn3d_grid.module;
         g_frn3d_grid_exact_rows.module = g_frn3d_grid.module;
+        g_frn3d_grid_ranked_count.module = g_frn3d_grid.module;
+        g_frn3d_grid_ranked_rows.module = g_frn3d_grid.module;
         g_frn3d_grid_compact.module = g_frn3d_grid.module;
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_count"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_summary.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_summary"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_rows.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_rows"));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_count"));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_rows.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_rows"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
     });
 }
@@ -8883,6 +8887,144 @@ static void run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
     auto t_start_row_download = std::chrono::steady_clock::now();
     auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
         std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * compact_capacity));
+    if (!out) throw std::bad_alloc();
+    download(out, d_output.ptr, compact_capacity);
+    auto t_end_row_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_row_download, t_end_row_download);
+    g_optix_last_fixed_radius_3d_exact_refine_s = 0.0;
+    g_optix_last_fixed_radius_3d_emitted_count = compact_capacity;
+    *rows_out = out;
+    *row_count_out = compact_capacity;
+}
+
+static void run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
+        PreparedFixedRadiusNeighborsGrid3D* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        size_t k_max,
+        RtdlKnnNeighborRow** rows_out, size_t* row_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
+    if (!rows_out || !row_count_out) throw std::runtime_error("output pointers must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_neighbors_3d radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_neighbors_3d radius exceeds prepared max_radius");
+    }
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_neighbors_3d query_count exceeds uint32 limit");
+    if (k_max == 0)
+        throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
+    if (k_max > 64)
+        throw std::runtime_error("prepared ranked fixed_radius_neighbors_3d currently supports k_max <= 64");
+
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_fixed_radius_3d_phase_timings(8u);
+    g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+    if (query_count == 0 || prepared->search_points.empty()) return;
+
+    auto t_start_upload = std::chrono::steady_clock::now();
+    DevPtr d_queries(sizeof(RtdlPoint3D) * query_count);
+    DevPtr d_counts(sizeof(uint32_t) * query_count);
+    upload(d_queries.ptr, query_points, query_count);
+    auto t_end_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_upload_s = seconds_between(t_start_upload, t_end_upload);
+
+    uint32_t qc = static_cast<uint32_t>(query_count);
+    uint32_t grid_x = prepared->grid_x;
+    uint32_t grid_y = prepared->grid_y;
+    uint32_t grid_z = prepared->grid_z;
+    double min_x = prepared->min_x_exact;
+    double min_y = prepared->min_y_exact;
+    double min_z = prepared->min_z_exact;
+    double inv_cell_size = prepared->inv_cell_size_exact;
+    double radius_exact = radius;
+    uint32_t k_max_u32 = static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+
+    void* count_args[] = {
+        &d_queries.ptr,
+        &qc,
+        &prepared->d_search_exact->ptr,
+        &prepared->d_offsets->ptr,
+        &grid_x,
+        &grid_y,
+        &grid_z,
+        &min_x,
+        &min_y,
+        &min_z,
+        &inv_cell_size,
+        &radius_exact,
+        &k_max_u32,
+        &d_counts.ptr,
+    };
+
+    unsigned block = 256;
+    unsigned grid = (qc + block - 1u) / block;
+    auto t_start_count = std::chrono::steady_clock::now();
+    CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_count.fn, grid, 1, 1, block, 1, 1, 0, nullptr, count_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_count = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_count, t_end_count);
+
+    auto t_start_count_download = std::chrono::steady_clock::now();
+    std::vector<uint32_t> ranked_counts(query_count);
+    download(ranked_counts.data(), d_counts.ptr, query_count);
+    std::vector<uint32_t> row_offsets(query_count + 1u, 0u);
+    uint64_t row_offset_cursor = 0u;
+    for (size_t i = 0; i < query_count; ++i) {
+        row_offset_cursor += ranked_counts[i];
+        if (row_offset_cursor > static_cast<uint64_t>(UINT32_MAX)) {
+            throw std::runtime_error("fixed_radius_neighbors_3d prepared ranked output exceeds uint32 limit");
+        }
+        row_offsets[i + 1u] = static_cast<uint32_t>(row_offset_cursor);
+    }
+    const size_t compact_capacity = static_cast<size_t>(row_offsets.back());
+    auto t_end_count_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_download_s = seconds_between(t_start_count_download, t_end_count_download);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = compact_capacity;
+    if (compact_capacity > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("fixed_radius_neighbors_3d prepared ranked output exceeds uint32 limit");
+    }
+    if (compact_capacity == 0) {
+        g_optix_last_fixed_radius_3d_emitted_count = 0;
+        return;
+    }
+
+    DevPtr d_row_offsets(sizeof(uint32_t) * row_offsets.size());
+    DevPtr d_output(sizeof(RtdlKnnNeighborRow) * compact_capacity);
+    auto t_start_row_offset_upload = std::chrono::steady_clock::now();
+    upload(d_row_offsets.ptr, row_offsets.data(), row_offsets.size());
+    auto t_end_row_offset_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_offset_upload_s = seconds_between(t_start_row_offset_upload, t_end_row_offset_upload);
+
+    void* row_args[] = {
+        &d_queries.ptr,
+        &qc,
+        &prepared->d_search_exact->ptr,
+        &prepared->d_offsets->ptr,
+        &d_row_offsets.ptr,
+        &grid_x,
+        &grid_y,
+        &grid_z,
+        &min_x,
+        &min_y,
+        &min_z,
+        &inv_cell_size,
+        &radius_exact,
+        &k_max_u32,
+        &d_output.ptr,
+    };
+
+    auto t_start_rows = std::chrono::steady_clock::now();
+    CU_CHECK(cuLaunchKernel(g_frn3d_grid_ranked_rows.fn, grid, 1, 1, block, 1, 1, 0, nullptr, row_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_rows = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_compact_s = seconds_between(t_start_rows, t_end_rows);
+
+    auto t_start_row_download = std::chrono::steady_clock::now();
+    auto* out = static_cast<RtdlKnnNeighborRow*>(
+        std::malloc(sizeof(RtdlKnnNeighborRow) * compact_capacity));
     if (!out) throw std::bad_alloc();
     download(out, d_output.ptr, compact_capacity);
     auto t_end_row_download = std::chrono::steady_clock::now();

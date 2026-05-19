@@ -220,6 +220,11 @@ struct RtdlKnnNeighborRow {
     double distance;
     uint32_t neighbor_rank;
 };
+static_assert(offsetof(RtdlKnnNeighborRow, query_id) == 0, "RtdlKnnNeighborRow query offset mismatch");
+static_assert(offsetof(RtdlKnnNeighborRow, neighbor_id) == 4, "RtdlKnnNeighborRow neighbor offset mismatch");
+static_assert(offsetof(RtdlKnnNeighborRow, distance) == 8, "RtdlKnnNeighborRow distance offset mismatch");
+static_assert(offsetof(RtdlKnnNeighborRow, neighbor_rank) == 16, "RtdlKnnNeighborRow rank offset mismatch");
+static_assert(sizeof(RtdlKnnNeighborRow) == 24, "RtdlKnnNeighborRow size mismatch");
 
 struct RtdlPointNearestSegmentRow {
     uint32_t point_id, segment_id;
@@ -696,6 +701,13 @@ int  rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d(
          double radius,
          size_t k_max,
          RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double radius,
+         size_t k_max,
+         RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
          void* prepared,

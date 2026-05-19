@@ -433,6 +433,12 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
                     elif result_mode == "exact-dict":
                         rows = prepared_execution.run_exact(queries, radius=radius, k_max=k_max)
                         distance_summary = None
+                    elif result_mode == "ranked-raw":
+                        rows = prepared_execution.run_ranked_raw(queries, radius=radius, k_max=k_max)
+                        distance_summary = None
+                    elif result_mode == "ranked-dict":
+                        rows = prepared_execution.run_ranked(queries, radius=radius, k_max=k_max)
+                        distance_summary = None
                     else:
                         rows = (
                             prepared_execution.run_raw(queries, radius=radius, k_max=k_max)
@@ -441,13 +447,13 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
                         )
                         distance_summary = None
                 else:
-                    if result_mode in ("count", "summary", "exact-raw", "exact-dict"):
-                        raise ValueError("result_mode='count', 'summary', 'exact-raw', or 'exact-dict' requires execution_mode='native-prepared-optix'")
+                    if result_mode in ("count", "summary", "exact-raw", "exact-dict", "ranked-raw", "ranked-dict"):
+                        raise ValueError("result_mode='count', 'summary', 'exact-raw', 'exact-dict', 'ranked-raw', or 'ranked-dict' requires execution_mode='native-prepared-optix'")
                     rows = prepared_execution.run_raw() if result_mode == "raw" else prepared_execution.run()
                     distance_summary = None
             else:
-                if result_mode in ("count", "summary", "exact-raw", "exact-dict"):
-                    raise ValueError("result_mode='count', 'summary', 'exact-raw', or 'exact-dict' requires execution_mode='native-prepared-optix'")
+                if result_mode in ("count", "summary", "exact-raw", "exact-dict", "ranked-raw", "ranked-dict"):
+                    raise ValueError("result_mode='count', 'summary', 'exact-raw', 'exact-dict', 'ranked-raw', or 'ranked-dict' requires execution_mode='native-prepared-optix'")
                 rows = rt.run_optix(
                     _goal2348_current_fixed_radius_neighbors_3d,
                     result_mode=result_mode,
@@ -458,7 +464,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
             if result_mode not in ("count", "summary"):
                 row_count = len(rows)
             phase_timings = rt.get_last_fixed_radius_neighbors_3d_phase_timings()
-            if result_mode in ("raw", "exact-raw") and rows is not None:
+            if result_mode in ("raw", "exact-raw", "ranked-raw") and rows is not None:
                 rows.close()
         except Exception as exc:  # pragma: no cover - hardware/library path
             row_count = 0
@@ -489,6 +495,8 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         current_native_path = "prepared generic uniform-cell exact distance summary"
     elif execution_mode == "native-prepared-optix" and result_mode in ("exact-raw", "exact-dict"):
         current_native_path = "prepared generic uniform-cell exact witness rows"
+    elif execution_mode == "native-prepared-optix" and result_mode in ("ranked-raw", "ranked-dict"):
+        current_native_path = "prepared generic uniform-cell ranked witness rows"
     elif execution_mode == "native-prepared-optix":
         current_native_path = "prepared generic uniform-cell bounded-neighbor traversal"
     else:
@@ -526,6 +534,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
             "prepared_execution_reuses_native_search_grid": execution_mode == "native-prepared-optix",
             "device_resident_summary": execution_mode == "native-prepared-optix" and result_mode in ("count", "summary"),
             "device_exact_witness_rows": execution_mode == "native-prepared-optix" and result_mode in ("exact-raw", "exact-dict"),
+            "device_ranked_witness_rows": execution_mode == "native-prepared-optix" and result_mode in ("ranked-raw", "ranked-dict"),
         },
     }
 
@@ -586,7 +595,7 @@ def main(argv: list[str] | None = None) -> int:
     smoke3d.add_argument("--query-file", type=Path)
     smoke3d.add_argument("--radius", type=float, default=0.02)
     smoke3d.add_argument("--k-max", type=int, default=50)
-    smoke3d.add_argument("--result-mode", choices=("dict", "raw", "count", "summary", "exact-raw", "exact-dict"), default="dict")
+    smoke3d.add_argument("--result-mode", choices=("dict", "raw", "count", "summary", "exact-raw", "exact-dict", "ranked-raw", "ranked-dict"), default="dict")
     smoke3d.add_argument("--input-mode", choices=("records", "packed-columns"), default="records")
     smoke3d.add_argument("--execution-mode", choices=("run-optix", "prepared-optix", "native-prepared-optix"), default="run-optix")
     smoke3d.add_argument("--repeat", type=int, default=1)
