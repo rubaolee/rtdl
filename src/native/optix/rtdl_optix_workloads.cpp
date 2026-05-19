@@ -8421,6 +8421,410 @@ static void run_fixed_radius_neighbors_cuda_3d(
     *row_count_out = rows.size();
 }
 
+static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
+{
+    std::call_once(g_frn3d_grid.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DGridKernelSrc, "frn3d_grid_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_frn3d_grid.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid"));
+        g_frn3d_grid_count.module = g_frn3d_grid.module;
+        g_frn3d_grid_compact.module = g_frn3d_grid.module;
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
+    });
+}
+
+struct PreparedFixedRadiusNeighborsGrid3D {
+    std::vector<RtdlPoint3D> search_points;
+    std::vector<uint32_t> cell_offsets;
+    std::unique_ptr<DevPtr> d_search;
+    std::unique_ptr<DevPtr> d_offsets;
+    uint32_t grid_x = 0;
+    uint32_t grid_y = 0;
+    uint32_t grid_z = 0;
+    float min_x = 0.0f;
+    float min_y = 0.0f;
+    float min_z = 0.0f;
+    float inv_cell_size = 0.0f;
+    double max_radius = 0.0;
+
+    PreparedFixedRadiusNeighborsGrid3D(
+            const RtdlPoint3D* source,
+            size_t source_count,
+            double radius_bound)
+        : search_points(source_count),
+          max_radius(radius_bound)
+    {
+        if (radius_bound <= 0.0) {
+            throw std::runtime_error("fixed_radius_neighbors_3d prepared max_radius must be positive");
+        }
+        if (source_count == 0) {
+            return;
+        }
+        std::copy(source, source + source_count, search_points.begin());
+        ensure_fixed_radius_neighbors_grid_cuda_3d_kernel();
+
+        double min_x_d = source[0].x;
+        double min_y_d = source[0].y;
+        double min_z_d = source[0].z;
+        double max_x_d = source[0].x;
+        double max_y_d = source[0].y;
+        double max_z_d = source[0].z;
+        for (size_t i = 1; i < source_count; ++i) {
+            min_x_d = std::min(min_x_d, source[i].x);
+            min_y_d = std::min(min_y_d, source[i].y);
+            min_z_d = std::min(min_z_d, source[i].z);
+            max_x_d = std::max(max_x_d, source[i].x);
+            max_y_d = std::max(max_y_d, source[i].y);
+            max_z_d = std::max(max_z_d, source[i].z);
+        }
+
+        const double cell_size = radius_bound;
+        const auto grid_dim_for = [&](double lo, double hi) -> size_t {
+            const double span = std::max(0.0, hi - lo);
+            return static_cast<size_t>(std::floor(span / cell_size)) + 1u;
+        };
+        const size_t grid_x_size = grid_dim_for(min_x_d, max_x_d);
+        const size_t grid_y_size = grid_dim_for(min_y_d, max_y_d);
+        const size_t grid_z_size = grid_dim_for(min_z_d, max_z_d);
+        constexpr size_t kMaxDenseGridCells = 16u * 1024u * 1024u;
+        if (grid_x_size == 0 || grid_y_size == 0 || grid_z_size == 0 ||
+                grid_x_size > static_cast<size_t>(UINT32_MAX) ||
+                grid_y_size > static_cast<size_t>(UINT32_MAX) ||
+                grid_z_size > static_cast<size_t>(UINT32_MAX) ||
+                grid_x_size > ((std::numeric_limits<size_t>::max)() / grid_y_size) ||
+                grid_x_size * grid_y_size > ((std::numeric_limits<size_t>::max)() / grid_z_size)) {
+            throw std::runtime_error("fixed_radius_neighbors_3d prepared grid dimensions exceed supported bounds");
+        }
+        const size_t cell_count = grid_x_size * grid_y_size * grid_z_size;
+        if (cell_count == 0 || cell_count > kMaxDenseGridCells) {
+            throw std::runtime_error("fixed_radius_neighbors_3d prepared dense grid exceeds supported cell budget");
+        }
+
+        grid_x = static_cast<uint32_t>(grid_x_size);
+        grid_y = static_cast<uint32_t>(grid_y_size);
+        grid_z = static_cast<uint32_t>(grid_z_size);
+        min_x = static_cast<float>(min_x_d);
+        min_y = static_cast<float>(min_y_d);
+        min_z = static_cast<float>(min_z_d);
+        const double inv_cell_size_d = 1.0 / cell_size;
+        inv_cell_size = static_cast<float>(inv_cell_size_d);
+
+        const auto cell_for = [&](const RtdlPoint3D& point) -> uint32_t {
+            const auto coord = [&](double value, double lo, uint32_t dim) -> uint32_t {
+                long long raw = static_cast<long long>(std::floor((value - lo) * inv_cell_size_d));
+                if (raw < 0) raw = 0;
+                const long long max_raw = static_cast<long long>(dim) - 1;
+                if (raw > max_raw) raw = max_raw;
+                return static_cast<uint32_t>(raw);
+            };
+            const uint32_t ix = coord(point.x, min_x_d, grid_x);
+            const uint32_t iy = coord(point.y, min_y_d, grid_y);
+            const uint32_t iz = coord(point.z, min_z_d, grid_z);
+            return (iz * grid_y + iy) * grid_x + ix;
+        };
+
+        std::vector<uint32_t> counts(cell_count, 0u);
+        std::vector<uint32_t> search_cell(source_count);
+        for (size_t i = 0; i < source_count; ++i) {
+            const uint32_t cell = cell_for(source[i]);
+            search_cell[i] = cell;
+            counts[cell] += 1u;
+        }
+
+        cell_offsets.assign(cell_count + 1u, 0u);
+        for (size_t cell = 0; cell < cell_count; ++cell) {
+            cell_offsets[cell + 1u] = cell_offsets[cell] + counts[cell];
+        }
+
+        std::vector<uint32_t> cursor = cell_offsets;
+        std::vector<GpuPoint3DHost> sorted_search(source_count);
+        for (size_t i = 0; i < source_count; ++i) {
+            const uint32_t cell = search_cell[i];
+            const uint32_t dest = cursor[cell]++;
+            sorted_search[dest] = {
+                static_cast<float>(source[i].x),
+                static_cast<float>(source[i].y),
+                static_cast<float>(source[i].z),
+                source[i].id,
+            };
+        }
+
+        d_search = std::make_unique<DevPtr>(sizeof(GpuPoint3DHost) * sorted_search.size());
+        d_offsets = std::make_unique<DevPtr>(sizeof(uint32_t) * cell_offsets.size());
+        upload(d_search->ptr, sorted_search.data(), sorted_search.size());
+        upload(d_offsets->ptr, cell_offsets.data(), cell_offsets.size());
+    }
+};
+
+static PreparedFixedRadiusNeighborsGrid3D* prepare_fixed_radius_neighbors_grid_3d_optix(
+        const RtdlPoint3D* search_points,
+        size_t search_count,
+        double max_radius)
+{
+    return new PreparedFixedRadiusNeighborsGrid3D(search_points, search_count, max_radius);
+}
+
+static void run_prepared_fixed_radius_neighbors_grid_3d_optix(
+        PreparedFixedRadiusNeighborsGrid3D* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        size_t k_max,
+        RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
+    if (!rows_out || !row_count_out) throw std::runtime_error("output pointers must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_neighbors_3d radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_neighbors_3d radius exceeds prepared max_radius");
+    }
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_neighbors_3d query_count exceeds uint32 limit");
+    if (k_max == 0)
+        throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
+    if (k_max > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_neighbors_3d k_max exceeds uint32 limit");
+
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (query_count == 0 || prepared->search_points.empty()) return;
+
+    reset_fixed_radius_3d_phase_timings(4u);
+    g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+
+    auto t_start_upload = std::chrono::steady_clock::now();
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            static_cast<float>(query_points[i].z),
+            query_points[i].id,
+        };
+    }
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    DevPtr d_counts(sizeof(uint32_t) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+    auto t_end_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_upload_s = seconds_between(t_start_upload, t_end_upload);
+
+    uint32_t qc = static_cast<uint32_t>(query_count);
+    uint32_t grid_x = prepared->grid_x;
+    uint32_t grid_y = prepared->grid_y;
+    uint32_t grid_z = prepared->grid_z;
+    float min_x = prepared->min_x;
+    float min_y = prepared->min_y;
+    float min_z = prepared->min_z;
+    float inv_cell_size = prepared->inv_cell_size;
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    float radius_f = static_cast<float>(radius + kFixedRadiusCandidateEps);
+    uint32_t k_max_u32 = static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+
+    void* count_args[] = {
+        &d_queries.ptr,
+        &qc,
+        &prepared->d_search->ptr,
+        &prepared->d_offsets->ptr,
+        &grid_x,
+        &grid_y,
+        &grid_z,
+        &min_x,
+        &min_y,
+        &min_z,
+        &inv_cell_size,
+        &radius_f,
+        &k_max_u32,
+        &d_counts.ptr,
+    };
+
+    unsigned block = 256;
+    unsigned grid = (qc + block - 1u) / block;
+    auto t_start_count = std::chrono::steady_clock::now();
+    CU_CHECK(cuLaunchKernel(g_frn3d_grid_count.fn, grid, 1, 1, block, 1, 1, 0, nullptr, count_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_count = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_count, t_end_count);
+
+    auto t_start_count_download = std::chrono::steady_clock::now();
+    std::vector<uint32_t> gpu_counts(query_count);
+    download(gpu_counts.data(), d_counts.ptr, query_count);
+    std::vector<uint32_t> row_offsets(query_count + 1u, 0u);
+    for (size_t i = 0; i < query_count; ++i) {
+        row_offsets[i + 1u] = row_offsets[i] + std::min(gpu_counts[i], k_max_u32);
+    }
+    const size_t compact_capacity = static_cast<size_t>(row_offsets.back());
+    auto t_end_count_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_download_s = seconds_between(t_start_count_download, t_end_count_download);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = compact_capacity;
+    if (compact_capacity > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("fixed_radius_neighbors_3d prepared compact output exceeds uint32 limit");
+    }
+
+    DevPtr d_row_offsets(sizeof(uint32_t) * row_offsets.size());
+    DevPtr d_output(sizeof(GpuFrnRecord) * compact_capacity);
+    auto t_start_row_offset_upload = std::chrono::steady_clock::now();
+    upload(d_row_offsets.ptr, row_offsets.data(), row_offsets.size());
+    auto t_end_row_offset_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_offset_upload_s = seconds_between(t_start_row_offset_upload, t_end_row_offset_upload);
+
+    void* compact_args[] = {
+        &d_queries.ptr,
+        &qc,
+        &prepared->d_search->ptr,
+        &prepared->d_offsets->ptr,
+        &d_row_offsets.ptr,
+        &grid_x,
+        &grid_y,
+        &grid_z,
+        &min_x,
+        &min_y,
+        &min_z,
+        &inv_cell_size,
+        &radius_f,
+        &k_max_u32,
+        &d_output.ptr,
+    };
+    auto t_start_compact = std::chrono::steady_clock::now();
+    CU_CHECK(cuLaunchKernel(g_frn3d_grid_compact.fn, grid, 1, 1, block, 1, 1, 0, nullptr, compact_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_compact = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_compact_s = seconds_between(t_start_compact, t_end_compact);
+
+    auto t_start_row_download = std::chrono::steady_clock::now();
+    std::vector<GpuFrnRecord> gpu_rows(compact_capacity);
+    download(gpu_rows.data(), d_output.ptr, compact_capacity);
+    auto t_end_row_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_row_download, t_end_row_download);
+
+    auto t_start_refine = std::chrono::steady_clock::now();
+    bool direct_query_ids = true;
+    bool direct_search_ids = true;
+    for (size_t i = 0; i < query_count; ++i) {
+        if (query_points[i].id != static_cast<uint32_t>(i)) {
+            direct_query_ids = false;
+            break;
+        }
+    }
+    for (size_t i = 0; i < prepared->search_points.size(); ++i) {
+        if (prepared->search_points[i].id != static_cast<uint32_t>(i)) {
+            direct_search_ids = false;
+            break;
+        }
+    }
+
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    rows.reserve(compact_capacity);
+    if (direct_query_ids && direct_search_ids) {
+        for (size_t qidx = 0; qidx < query_count; ++qidx) {
+            size_t current_count = 0;
+            const RtdlPoint3D& q = query_points[qidx];
+            const size_t base = row_offsets[qidx];
+            const size_t populated = row_offsets[qidx + 1u] - row_offsets[qidx];
+            for (size_t slot = 0; slot < populated; ++slot) {
+                const GpuFrnRecord& gpu_row = gpu_rows[base + slot];
+                const size_t neighbor_index = static_cast<size_t>(gpu_row.neighbor_id);
+                if (neighbor_index >= prepared->search_points.size()) {
+                    continue;
+                }
+                const RtdlPoint3D& t = prepared->search_points[neighbor_index];
+                double dx = t.x - q.x;
+                double dy = t.y - q.y;
+                double dz = t.z - q.z;
+                double exact_distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+                if (exact_distance <= radius) {
+                    rows.push_back({
+                        static_cast<uint32_t>(qidx),
+                        gpu_row.neighbor_id,
+                        exact_distance,
+                    });
+                    current_count += 1;
+                    if (current_count >= k_max) {
+                        break;
+                    }
+                }
+            }
+        }
+    } else {
+        std::unordered_map<uint32_t, const RtdlPoint3D*> query_by_id;
+        std::unordered_map<uint32_t, const RtdlPoint3D*> search_by_id;
+        query_by_id.reserve(query_count);
+        search_by_id.reserve(prepared->search_points.size());
+        for (size_t i = 0; i < query_count; ++i) {
+            query_by_id.emplace(query_points[i].id, query_points + i);
+        }
+        for (size_t i = 0; i < prepared->search_points.size(); ++i) {
+            search_by_id.emplace(prepared->search_points[i].id, prepared->search_points.data() + i);
+        }
+
+        std::vector<RtdlFixedRadiusNeighborRow> exact_rows;
+        exact_rows.reserve(compact_capacity);
+        for (size_t qidx = 0; qidx < query_count; ++qidx) {
+            const size_t base = row_offsets[qidx];
+            const size_t populated = row_offsets[qidx + 1u] - row_offsets[qidx];
+            for (size_t slot = 0; slot < populated; ++slot) {
+                const GpuFrnRecord& gpu_row = gpu_rows[base + slot];
+                auto query_it = query_by_id.find(gpu_row.query_id);
+                auto search_it = search_by_id.find(gpu_row.neighbor_id);
+                if (query_it == query_by_id.end() || search_it == search_by_id.end()) {
+                    continue;
+                }
+                double dx = search_it->second->x - query_it->second->x;
+                double dy = search_it->second->y - query_it->second->y;
+                double dz = search_it->second->z - query_it->second->z;
+                double exact_distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+                if (exact_distance <= radius) {
+                    exact_rows.push_back({
+                        gpu_row.query_id,
+                        gpu_row.neighbor_id,
+                        exact_distance,
+                    });
+                }
+            }
+        }
+        std::stable_sort(exact_rows.begin(), exact_rows.end(), [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+            if (left.query_id != right.query_id) {
+                return left.query_id < right.query_id;
+            }
+            if (left.distance < right.distance - 1.0e-12) {
+                return true;
+            }
+            if (right.distance < left.distance - 1.0e-12) {
+                return false;
+            }
+            return left.neighbor_id < right.neighbor_id;
+        });
+        rows.reserve(exact_rows.size());
+        uint32_t current_query_id = 0;
+        size_t current_count = 0;
+        bool have_query = false;
+        for (const auto& row : exact_rows) {
+            if (!have_query || row.query_id != current_query_id) {
+                current_query_id = row.query_id;
+                current_count = 0;
+                have_query = true;
+            }
+            if (current_count >= k_max) {
+                continue;
+            }
+            rows.push_back(row);
+            current_count += 1;
+        }
+    }
+
+    auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
+        std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
+    }
+    auto t_end_refine = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_refine, t_end_refine);
+    g_optix_last_fixed_radius_3d_emitted_count = rows.size();
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
 static void run_fixed_radius_neighbors_grid_cuda_3d(
         const RtdlPoint3D* query_points, size_t query_count,
         const RtdlPoint3D* search_points, size_t search_count,
@@ -8437,15 +8841,7 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         return;
     }
 
-    std::call_once(g_frn3d_grid.init, [&]() {
-        std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DGridKernelSrc, "frn3d_grid_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_frn3d_grid.module, ptx.c_str()));
-        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid"));
-        g_frn3d_grid_count.module = g_frn3d_grid.module;
-        g_frn3d_grid_compact.module = g_frn3d_grid.module;
-        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
-        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
-    });
+    ensure_fixed_radius_neighbors_grid_cuda_3d_kernel();
 
     reset_fixed_radius_3d_phase_timings(2u);
     auto t_start_prepare = std::chrono::steady_clock::now();

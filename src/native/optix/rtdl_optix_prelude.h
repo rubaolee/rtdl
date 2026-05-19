@@ -660,6 +660,19 @@ int  rtdl_optix_run_fixed_radius_neighbors_3d(
          size_t k_max,
          RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_fixed_radius_neighbors_3d(
+         const RtdlPoint3D* search_points, size_t search_count,
+         double max_radius,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_fixed_radius_neighbors_3d(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d(void* prepared);
 int  rtdl_optix_run_fixed_radius_count_threshold(
          const RtdlPoint* query_points, size_t query_count,
          const RtdlPoint* search_points, size_t search_count,

@@ -393,6 +393,16 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         except Exception as exc:  # pragma: no cover - hardware/library path
             prepare_error = repr(exc)
         execution_prepare_sec = time.perf_counter() - prepare_started
+    elif execution_mode == "native-prepared-optix":
+        prepare_started = time.perf_counter()
+        try:
+            prepared_execution = rt.prepare_optix_fixed_radius_neighbors_3d(
+                points,
+                max_radius=radius,
+            )
+        except Exception as exc:  # pragma: no cover - hardware/library path
+            prepare_error = repr(exc)
+        execution_prepare_sec = time.perf_counter() - prepare_started
     print(
         f"[goal2348] RTDL current 3D neighbors smoke start queries={query_count} "
         f"points={point_count} input_mode={input_mode} execution_mode={execution_mode}",
@@ -407,7 +417,14 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         started = time.perf_counter()
         try:
             if prepared_execution is not None:
-                rows = prepared_execution.run_raw() if result_mode == "raw" else prepared_execution.run()
+                if execution_mode == "native-prepared-optix":
+                    rows = (
+                        prepared_execution.run_raw(queries, radius=radius, k_max=k_max)
+                        if result_mode == "raw"
+                        else prepared_execution.run(queries, radius=radius, k_max=k_max)
+                    )
+                else:
+                    rows = prepared_execution.run_raw() if result_mode == "raw" else prepared_execution.run()
             else:
                 rows = rt.run_optix(
                     _goal2348_current_fixed_radius_neighbors_3d,
@@ -432,6 +449,9 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
             flush=True,
         )
     elapsed_sec = elapsed_runs[-1] if elapsed_runs else 0.0
+    close_prepared = getattr(prepared_execution, "close", None)
+    if callable(close_prepared):
+        close_prepared()
     print(f"[goal2348] RTDL current 3D neighbors smoke done ok={ok} sec={elapsed_sec:.6f}", flush=True)
     forced_cuda = os.environ.get("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_CUDA") is not None
     forced_rt = os.environ.get("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_RT") is not None
@@ -439,6 +459,8 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         current_native_path = "CUDA fixed-radius neighbor kernel behind OptiX runtime wrapper"
     elif forced_rt:
         current_native_path = "generic OptiX custom-primitive bounded-neighbor traversal"
+    elif execution_mode == "native-prepared-optix":
+        current_native_path = "prepared generic uniform-cell bounded-neighbor traversal"
     else:
         current_native_path = "generic uniform-cell bounded-neighbor traversal"
     return {
@@ -470,6 +492,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
             "current_native_path": current_native_path,
             "partitioned_or_batched_like_rtnn": False,
             "prepared_execution_reuses_python_packed_inputs": execution_mode == "prepared-optix",
+            "prepared_execution_reuses_native_search_grid": execution_mode == "native-prepared-optix",
         },
     }
 
@@ -532,7 +555,7 @@ def main(argv: list[str] | None = None) -> int:
     smoke3d.add_argument("--k-max", type=int, default=50)
     smoke3d.add_argument("--result-mode", choices=("dict", "raw"), default="dict")
     smoke3d.add_argument("--input-mode", choices=("records", "packed-columns"), default="records")
-    smoke3d.add_argument("--execution-mode", choices=("run-optix", "prepared-optix"), default="run-optix")
+    smoke3d.add_argument("--execution-mode", choices=("run-optix", "prepared-optix", "native-prepared-optix"), default="run-optix")
     smoke3d.add_argument("--repeat", type=int, default=1)
     smoke3d.add_argument("--row-label", default="rtdl_current_3d_neighbors_smoke")
     smoke3d.add_argument("--json-out", type=Path, required=True)

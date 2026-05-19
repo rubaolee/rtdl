@@ -366,6 +366,7 @@ from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d
 from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d_device_descriptors
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
+from .optix_runtime import prepare_optix_fixed_radius_neighbors_3d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
 from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
@@ -381,6 +382,7 @@ from .optix_runtime import PreparedOptixRaySegmentGroupCount2D
 from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
+from .optix_runtime import PreparedOptixFixedRadiusNeighbors3D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
@@ -1314,6 +1316,7 @@ __all__ = [
     "run_optix_partner_ray_triangle_any_hit_2d_device_descriptors",
     "prepare_optix",
     "prepare_optix_db_dataset",
+    "prepare_optix_fixed_radius_neighbors_3d",
     "prepare_optix_fixed_radius_count_threshold_2d",
     "prepare_optix_fixed_radius_count_threshold_2d_device_search_columns",
     "prepare_optix_segment_polygon_anyhit_rows_2d",
@@ -1329,6 +1332,7 @@ __all__ = [
     "PreparedOptixDbDataset",
     "PreparedOptixExecution",
     "PreparedOptixFixedRadiusCountThreshold2D",
+    "PreparedOptixFixedRadiusNeighbors3D",
     "PreparedOptixKernel",
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixSegmentPolygonAnyHitRows2D",

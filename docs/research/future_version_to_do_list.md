@@ -295,9 +295,13 @@ Future work:
   as a stable API rather than leaving it only as benchmark runner policy.
 - Goal2369 pod results showed that current prepared execution reuses Python
   packed inputs but not a native/device-resident 3D neighbor search structure:
-  packed `run-optix` and packed `prepared-optix` have similar warm times. The
-  next real prepared step must retain the native search structure/device
-  buffers across query runs.
+  packed `run-optix` and packed `prepared-optix` have similar warm times.
+- Goal2371 added the native prepared uniform-cell 3D bounded-neighbor handle,
+  so the search-side grid/device buffers are now retained across query runs.
+  The remaining 262k bottleneck is row download plus host exact refinement, so
+  the next serious RTNN-informed primitive should be a device-resident exact
+  filter, row-summary continuation, or bounded output path that avoids sending
+  millions of candidate rows back to the CPU for final reduction.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
