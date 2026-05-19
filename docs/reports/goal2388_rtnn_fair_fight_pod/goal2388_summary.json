@@ -1,0 +1,175 @@
+{
+  "boundary": {
+    "official_rtnn_optional": true,
+    "paper_equivalent_rtnn_reproduction": false,
+    "same_contract_rtdl_vs_cupy_ranked_summary": true
+  },
+  "rows": [
+    {
+      "elapsed_sec": 22.45087695121765,
+      "external": "CuPy",
+      "file": "cupy_exact_ranked_summary_clustered_65536_r002_k50.json",
+      "mode": "cupy_cuda_core_exact_ranked_summary_3d",
+      "ok": true,
+      "query_count": 65536,
+      "result_mode": null,
+      "row": "cupy_exact_ranked_summary_clustered_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 15.335753731429577,
+      "external": "CuPy",
+      "file": "cupy_exact_ranked_summary_shell_65536_r002_k50.json",
+      "mode": "cupy_cuda_core_exact_ranked_summary_3d",
+      "ok": true,
+      "query_count": 65536,
+      "result_mode": null,
+      "row": "cupy_exact_ranked_summary_shell_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 26.004427775740623,
+      "external": "CuPy",
+      "file": "cupy_exact_ranked_summary_uniform_65536_r002_k50.json",
+      "mode": "cupy_cuda_core_exact_ranked_summary_3d",
+      "ok": true,
+      "query_count": 65536,
+      "result_mode": null,
+      "row": "cupy_exact_ranked_summary_uniform_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 2.705785533413291,
+      "external": "RTDL current",
+      "file": "rtdl_batched_ranked_summary_clustered_262144_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+      "ok": true,
+      "query_count": 262144,
+      "result_mode": "ranked-summary-raw",
+      "row": "rtdl_batched_ranked_summary_clustered_262144_r002_k50",
+      "search_count": 262144
+    },
+    {
+      "elapsed_sec": 0.20477448217570782,
+      "external": "RTDL current",
+      "file": "rtdl_batched_ranked_summary_clustered_65536_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+      "ok": true,
+      "query_count": 65536,
+      "result_mode": "ranked-summary-raw",
+      "row": "rtdl_batched_ranked_summary_clustered_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 0.19303174875676632,
+      "external": "RTDL current",
+      "file": "rtdl_batched_ranked_summary_shell_262144_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+      "ok": true,
+      "query_count": 262144,
+      "result_mode": "ranked-summary-raw",
+      "row": "rtdl_batched_ranked_summary_shell_262144_r002_k50",
+      "search_count": 262144
+    },
+    {
+      "elapsed_sec": 0.006512816995382309,
+      "external": "RTDL current",
+      "file": "rtdl_batched_ranked_summary_shell_65536_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+      "ok": true,
+      "query_count": 65536,
+      "result_mode": "ranked-summary-raw",
+      "row": "rtdl_batched_ranked_summary_shell_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 0.041201841086149216,
+      "external": "RTDL current",
+      "file": "rtdl_batched_ranked_summary_uniform_262144_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+      "ok": true,
+      "query_count": 262144,
+      "result_mode": "ranked-summary-raw",
+      "row": "rtdl_batched_ranked_summary_uniform_262144_r002_k50",
+      "search_count": 262144
+    },
+    {
+      "elapsed_sec": 0.012051267549395561,
+      "external": "RTDL current",
+      "file": "rtdl_batched_ranked_summary_uniform_65536_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+      "ok": true,
+      "query_count": 65536,
+      "result_mode": "ranked-summary-raw",
+      "row": "rtdl_batched_ranked_summary_uniform_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 1.3165091127157211,
+      "external": "RTNN",
+      "file": "rtnn_official_radius_clustered_262144_r002_k50.json",
+      "mode": null,
+      "ok": false,
+      "query_count": null,
+      "result_mode": null,
+      "row": "rtnn_official_radius_clustered_262144_r002_k50",
+      "search_count": null
+    },
+    {
+      "elapsed_sec": 1.3435590900480747,
+      "external": "RTNN",
+      "file": "rtnn_official_radius_clustered_65536_r002_k50.json",
+      "mode": null,
+      "ok": true,
+      "query_count": null,
+      "result_mode": null,
+      "row": "rtnn_official_radius_clustered_65536_r002_k50",
+      "search_count": null
+    },
+    {
+      "elapsed_sec": 1.43616733700037,
+      "external": "RTNN",
+      "file": "rtnn_official_radius_shell_262144_r002_k50.json",
+      "mode": null,
+      "ok": true,
+      "query_count": null,
+      "result_mode": null,
+      "row": "rtnn_official_radius_shell_262144_r002_k50",
+      "search_count": null
+    },
+    {
+      "elapsed_sec": 1.311399046331644,
+      "external": "RTNN",
+      "file": "rtnn_official_radius_shell_65536_r002_k50.json",
+      "mode": null,
+      "ok": true,
+      "query_count": null,
+      "result_mode": null,
+      "row": "rtnn_official_radius_shell_65536_r002_k50",
+      "search_count": null
+    },
+    {
+      "elapsed_sec": 2.0251654032617807,
+      "external": "RTNN",
+      "file": "rtnn_official_radius_uniform_262144_r002_k50.json",
+      "mode": null,
+      "ok": true,
+      "query_count": null,
+      "result_mode": null,
+      "row": "rtnn_official_radius_uniform_262144_r002_k50",
+      "search_count": null
+    },
+    {
+      "elapsed_sec": 1.428007772192359,
+      "external": "RTNN",
+      "file": "rtnn_official_radius_uniform_65536_r002_k50.json",
+      "mode": null,
+      "ok": true,
+      "query_count": null,
+      "result_mode": null,
+      "row": "rtnn_official_radius_uniform_65536_r002_k50",
+      "search_count": null
+    }
+  ],
+  "runner": "goal2388_rtnn_fair_fight_pod_runner"
+}

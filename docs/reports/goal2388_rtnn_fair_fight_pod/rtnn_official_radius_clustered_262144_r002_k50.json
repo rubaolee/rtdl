@@ -1,0 +1,177 @@
+{
+  "approx_mode": 0,
+  "auto_batch": true,
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rtnn_reproduction": false,
+    "requires_same_hardware_rtdl_row": true,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "command": [
+    "/root/work/rtdl_goal2368/scratch/rtnn_goal2388/src/build/bin/optixNSearch",
+    "-f",
+    "/root/work/rtdl_goal2368/docs/reports/goal2388_rtnn_fair_fight_pod/data/clustered_3d_262144.csv",
+    "-sm",
+    "radius",
+    "-d",
+    "0",
+    "-r",
+    "0.02",
+    "-p",
+    "1",
+    "-ab",
+    "1",
+    "-a",
+    "0",
+    "-k",
+    "50"
+  ],
+  "elapsed_sec": 1.3165091127157211,
+  "external": "RTNN",
+  "k_max": 50,
+  "partition": true,
+  "radius": 0.02,
+  "returncode": 1,
+  "row": "rtnn_official_radius_clustered_262144_r002_k50",
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_mode": "radius",
+  "stderr_tail": [
+    "\tTotal GPUs visible: 1",
+    "\tUsing [0]: NVIDIA RTX A5000",
+    "\tMemory: 23.5568 GB",
+    "Caught exception: CUDA call (cudaMalloc(reinterpret_cast<void**>(&d_memory_raw), N * sizeof(T) ) ) failed with error: 'out of memory' (/root/work/rtdl_goal2368/scratch/rtnn_goal2388/src/optixNSearch/func.h:58)",
+    ""
+  ],
+  "stdout_tail": [
+    "Interleave? true",
+    "qGasSortMode: 2",
+    "pointSortMode: 1",
+    "querySortMode: 1",
+    "gsrRatio: 1",
+    "Gather after gas sort? false",
+    "========================================",
+    "",
+    "\tscene boundary: (0.000000, 0.000000, 0.000000), (2.000000, 1.000000, 1.000000)",
+    "\tGiven radius: 0.020000",
+    "\tActual radius: 0.020000",
+    "time filter queries: 0.003077 ms",
+    "",
+    "time upload points and/or queries: 6.83243 ms",
+    "",
+    "pNArrayCount: 0",
+    "qNArrayCount: 8",
+    "cellArrayCount: 3",
+    "\tspaceAval: 23801.188",
+    "\tparticleArray: 8.000",
+    "\tparticleData: 6.000",
+    "\treturnData: 51.000",
+    "\tgpuMemused: 0.000",
+    "\tgasSize: 4.500",
+    "\tinstGasSize: 42.000",
+    "spaceAvail for GAS: 23801.187500",
+    "max numofBatches: 5289.152832",
+    "GAS limited cellSize: 0.000002",
+    "Sorting limited cellSize: 0.000987",
+    "\tGrid dimension (without meta grids): 2027, 1014, 1014",
+    "\tGrid dimension (with meta grids): 2048, 1024, 1024",
+    "\tNumber of cells: 2147483648",
+    "\tCell size: 0.000987",
+    "57.143448+24576.000000=24633.142578, 23801.187500",
+    "\tGrid dimension (without meta grids): 2007, 1004, 1004",
+    "\tGrid dimension (with meta grids): 2048, 1024, 1024",
+    "\tNumber of cells: 2147483648",
+    "\tCell size: 0.000997",
+    "56.622223+24576.000000=24632.623047, 23801.187500",
+    "\tGrid dimension (without meta grids): 1987, 994, 994",
+    "\tGrid dimension (with meta grids): 2048, 1024, 1024",
+    "\tNumber of cells: 2147483648",
+    "\tCell size: 0.001007",
+    "56.106159+24576.000000=24632.105469, 23801.187500",
+    "\tGrid dimension (without meta grids): 1967, 984, 984",
+    "\tGrid dimension (with meta grids): 2048, 1024, 1024",
+    "\tNumber of cells: 2147483648",
+    "\tCell size: 0.001017",
+    "55.595211+24576.000000=24631.595703, 23801.187500",
+    "\tGrid dimension (without meta grids): 1948, 974, 974",
+    "\tGrid dimension (with meta grids): 2048, 1024, 1024",
+    "\tNumber of cells: 2147483648",
+    "\tCell size: 0.001027",
+    "55.089317+24576.000000=24631.089844, 23801.187500",
+    "\tGrid dimension (without meta grids): 1928, 964, 964",
+    "\tGrid dimension (with meta grids): 2048, 1024, 1024",
+    "\tNumber of cells: 2147483648",
+    "\tCell size: 0.001037",
+    "54.588432+24576.000000=24630.587891, 23801.187500",
+    "\tGrid dimension (without meta grids): 1909, 955, 955",
+    "\tGrid dimension (with meta grids): 1920, 1024, 1024",
+    "\tNumber of cells: 2013265920",
+    "\tCell size: 0.001048",
+    "54.092503+23040.000000=23094.091797, 23801.187500",
+    "\tCalculated cellRadiusRatio: 19.088163 (54.092503, 23040.000000)",
+    "\tCalculated maxBatches: 12.021",
+    "\tMemory utilization: 97.037%",
+    "time create data structures: 0.201226 ms",
+    "",
+    "time create context: 191.1 ms",
+    "",
+    "time create pipeline: 328.177 ms",
+    "",
+    "time create SBT: 4.53345 ms",
+    "",
+    "\tGrid dimension (without meta grids): 1909, 955, 955",
+    "\tGrid dimension (with meta grids): 1920, 1024, 1024",
+    "\tNumber of cells: 2013265920",
+    "\tCell size: 0.001048",
+    "\tNum of Rep queries: 259597"
+  ],
+  "timings": {
+    "create SBT": {
+      "count": 1,
+      "last_ms": 4.53345,
+      "total_ms": 4.53345,
+      "values_ms": [
+        4.53345
+      ]
+    },
+    "create context": {
+      "count": 1,
+      "last_ms": 191.1,
+      "total_ms": 191.1,
+      "values_ms": [
+        191.1
+      ]
+    },
+    "create data structures": {
+      "count": 1,
+      "last_ms": 0.201226,
+      "total_ms": 0.201226,
+      "values_ms": [
+        0.201226
+      ]
+    },
+    "create pipeline": {
+      "count": 1,
+      "last_ms": 328.177,
+      "total_ms": 328.177,
+      "values_ms": [
+        328.177
+      ]
+    },
+    "filter queries": {
+      "count": 1,
+      "last_ms": 0.003077,
+      "total_ms": 0.003077,
+      "values_ms": [
+        0.003077
+      ]
+    },
+    "upload points and/or queries": {
+      "count": 1,
+      "last_ms": 6.83243,
+      "total_ms": 6.83243,
+      "values_ms": [
+        6.83243
+      ]
+    }
+  }
+}

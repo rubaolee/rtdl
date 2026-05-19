@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import random
 import re
@@ -41,6 +42,72 @@ def generate_uniform_point_file(
         "dimension": dimension,
         "seed": seed,
         "format": "rtnn_csv_xyz",
+    }
+
+
+def generate_point_file(
+    path: Path,
+    *,
+    point_count: int,
+    dimension: int,
+    seed: int,
+    distribution: str,
+    z_value: float = 0.0,
+    cluster_count: int = 8,
+    cluster_stddev: float = 0.035,
+) -> dict[str, object]:
+    if point_count < 0:
+        raise ValueError("point_count must be non-negative")
+    if dimension not in (2, 3):
+        raise ValueError("dimension must be 2 or 3")
+    if distribution == "uniform":
+        return generate_uniform_point_file(path, point_count=point_count, dimension=dimension, seed=seed, z_value=z_value)
+    if distribution not in ("clustered", "shell"):
+        raise ValueError("distribution must be uniform, clustered, or shell")
+
+    rng = random.Random(seed)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    centers = [
+        tuple(rng.uniform(0.12, 0.88) for _ in range(dimension))
+        for _ in range(max(1, cluster_count))
+    ]
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        for idx in range(point_count):
+            if distribution == "clustered":
+                center = centers[idx % len(centers)]
+                coords = [
+                    min(1.0, max(0.0, rng.gauss(center[axis], cluster_stddev)))
+                    for axis in range(dimension)
+                ]
+            else:
+                # A thin spherical/circular shell stresses non-uniform surface-like
+                # neighborhoods without introducing paper-dataset provenance claims.
+                if dimension == 2:
+                    angle = rng.random() * 6.283185307179586
+                    radius = min(0.49, max(0.0, rng.gauss(0.34, 0.025)))
+                    coords = [0.5 + radius * math.cos(angle), 0.5 + radius * math.sin(angle)]
+                else:
+                    theta = rng.random() * 6.283185307179586
+                    z = rng.uniform(-1.0, 1.0)
+                    radial = math.sqrt(max(0.0, 1.0 - z * z))
+                    radius = min(0.49, max(0.0, rng.gauss(0.34, 0.025)))
+                    coords = [
+                        0.5 + radius * radial * math.cos(theta),
+                        0.5 + radius * radial * math.sin(theta),
+                        0.5 + radius * z,
+                    ]
+            if dimension == 2:
+                coords.append(float(z_value))
+            handle.write(f"{coords[0]:.9f},{coords[1]:.9f},{coords[2]:.9f}\n")
+    return {
+        "path": str(path),
+        "point_count": point_count,
+        "dimension": dimension,
+        "seed": seed,
+        "distribution": distribution,
+        "format": "rtnn_csv_xyz",
+        "cluster_count": cluster_count if distribution == "clustered" else None,
+        "cluster_stddev": cluster_stddev if distribution == "clustered" else None,
     }
 
 
@@ -203,6 +270,32 @@ def build_rtnn_command(args: argparse.Namespace) -> list[str]:
     if args.extra_rtnn_arg:
         command.extend(args.extra_rtnn_arg)
     return command
+
+
+def _read_xyz_columns(path: Path) -> tuple[list[int], list[float], list[float], list[float]]:
+    ids: list[int] = []
+    xs: list[float] = []
+    ys: list[float] = []
+    zs: list[float] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for idx, line in enumerate(handle):
+            if not line.strip():
+                continue
+            x, y, z = (float(part) for part in line.strip().split(","))
+            ids.append(idx)
+            xs.append(x)
+            ys.append(y)
+            zs.append(z)
+    return ids, xs, ys, zs
+
+
+def _slice_columns(
+    columns: tuple[list[int], list[float], list[float], list[float]],
+    begin: int,
+    end: int,
+) -> tuple[list[int], list[float], list[float], list[float]]:
+    ids, xs, ys, zs = columns
+    return ids[begin:end], xs[begin:end], ys[begin:end], zs[begin:end]
 
 
 def run_rtnn(args: argparse.Namespace) -> dict[str, object]:
@@ -548,6 +641,285 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
     }
 
 
+def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]:
+    """Run a prepared native 3D neighbor handle over query batches.
+
+    This is the first paper-facing large-scale policy row. It is intentionally
+    generic: one prepared search-side structure, explicit query batches, and a
+    selected fixed-radius result contract.
+    """
+    sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, str(ROOT))
+    import rtdsl as rt  # noqa: PLC0415
+
+    radius = float(args.radius)
+    k_max = int(args.k_max)
+    result_mode = str(args.result_mode)
+    batch_size = int(args.query_batch_size)
+    repeat = int(args.repeat)
+    if batch_size <= 0:
+        raise ValueError("query_batch_size must be positive")
+    if result_mode not in ("count", "summary", "ranked-summary-raw"):
+        raise ValueError("batched RTDL path currently supports count, summary, and ranked-summary-raw")
+
+    load_started = time.perf_counter()
+    search_columns = _read_xyz_columns(args.point_file)
+    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    load_sec = time.perf_counter() - load_started
+    search_count = len(search_columns[0])
+    query_count = len(query_columns[0])
+
+    pack_started = time.perf_counter()
+    search = rt.pack_points(
+        ids=search_columns[0],
+        x=search_columns[1],
+        y=search_columns[2],
+        z=search_columns[3],
+        dimension=3,
+    )
+    query_batches = []
+    for begin in range(0, query_count, batch_size):
+        batch_columns = _slice_columns(query_columns, begin, min(query_count, begin + batch_size))
+        query_batches.append(
+            rt.pack_points(
+                ids=batch_columns[0],
+                x=batch_columns[1],
+                y=batch_columns[2],
+                z=batch_columns[3],
+                dimension=3,
+            )
+        )
+    pack_sec = time.perf_counter() - pack_started
+
+    prepare_started = time.perf_counter()
+    prepared = rt.prepare_optix_fixed_radius_neighbors_3d(search, max_radius=radius)
+    prepare_sec = time.perf_counter() - prepare_started
+
+    print(
+        f"[goal2348] RTDL batched 3D start queries={query_count} search={search_count} "
+        f"batch_size={batch_size} batches={len(query_batches)} result_mode={result_mode}",
+        flush=True,
+    )
+    elapsed_runs = []
+    row_count = 0
+    batch_phase_timings = []
+    error = ""
+    ok = True
+    try:
+        for run_index in range(repeat):
+            started = time.perf_counter()
+            run_row_count = 0
+            run_distance_summary = {"count": 0, "min_distance": 0.0, "max_distance": 0.0, "sum_distance": 0.0}
+            run_phase_timings = []
+            for batch in query_batches:
+                if result_mode == "count":
+                    run_row_count += int(prepared.count(batch, radius=radius, k_max=k_max))
+                elif result_mode == "summary":
+                    summary = prepared.summary(batch, radius=radius, k_max=k_max)
+                    if summary["count"]:
+                        if run_distance_summary["count"] == 0 or summary["min_distance"] < run_distance_summary["min_distance"]:
+                            run_distance_summary["min_distance"] = summary["min_distance"]
+                        if run_distance_summary["count"] == 0 or summary["max_distance"] > run_distance_summary["max_distance"]:
+                            run_distance_summary["max_distance"] = summary["max_distance"]
+                        run_distance_summary["count"] += summary["count"]
+                        run_distance_summary["sum_distance"] += summary["sum_distance"]
+                    run_row_count = int(run_distance_summary["count"])
+                else:
+                    rows = prepared.run_ranked_summary_raw(batch, radius=radius, k_max=k_max)
+                    try:
+                        run_row_count += len(rows)
+                    finally:
+                        rows.close()
+                run_phase_timings.append(rt.get_last_fixed_radius_neighbors_3d_phase_timings())
+            row_count = run_row_count
+            batch_phase_timings = run_phase_timings
+            elapsed_runs.append(time.perf_counter() - started)
+            print(
+                f"[goal2348] RTDL batched 3D repeat {run_index + 1}/{repeat} "
+                f"ok=True sec={elapsed_runs[-1]:.6f}",
+                flush=True,
+            )
+    except Exception as exc:  # pragma: no cover - hardware/library path
+        ok = False
+        error = repr(exc)
+    finally:
+        prepared.close()
+
+    elapsed_sec = elapsed_runs[-1] if elapsed_runs else 0.0
+    return {
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "row": args.row_label,
+        "external": "RTDL current",
+        "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+        "ok": ok,
+        "elapsed_sec": elapsed_sec,
+        "elapsed_runs_sec": elapsed_runs,
+        "query_count": query_count,
+        "search_count": search_count,
+        "query_batch_size": batch_size,
+        "batch_count": len(query_batches),
+        "radius": radius,
+        "k_max": k_max,
+        "result_mode": result_mode,
+        "input_load_sec": load_sec,
+        "input_pack_sec": pack_sec,
+        "execution_prepare_sec": prepare_sec,
+        "repeat": repeat,
+        "row_count": row_count,
+        "batch_phase_timings": batch_phase_timings,
+        "error": error,
+        "contract": {
+            "family": "fixed_radius_neighbors_3d",
+            "mode": result_mode,
+            "exact": True,
+            "approximate": False,
+            "bounded_k": k_max,
+            "prepared_search_structure": True,
+            "batched_queries": True,
+        },
+        "claim_boundary": {
+            "paper_equivalent_rtnn_row": False,
+            "rtdl_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "rt_core_neighbor_search_claim_authorized": False,
+            "partitioned_or_batched_like_rtnn": True,
+            "device_ranked_summary_rows": result_mode == "ranked-summary-raw",
+        },
+    }
+
+
+def run_cupy_3d_ranked_summary(args: argparse.Namespace) -> dict[str, object]:
+    """Run an exact CUDA-core CuPy top-K summary baseline.
+
+    This baseline deliberately does not use RT cores. It uses vectorized/block
+    CUDA-core distance evaluation through CuPy and returns the same per-query
+    ranked-summary contract as Goal2384.
+    """
+    radius = float(args.radius)
+    k_max = int(args.k_max)
+    batch_size = int(args.query_batch_size)
+    repeat = int(args.repeat)
+    dtype_name = str(args.dtype)
+    if batch_size <= 0:
+        raise ValueError("query_batch_size must be positive")
+    if k_max <= 0:
+        raise ValueError("k_max must be positive")
+
+    import cupy as cp  # noqa: PLC0415
+    import numpy as np  # noqa: PLC0415
+
+    load_started = time.perf_counter()
+    search_columns = _read_xyz_columns(args.point_file)
+    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    load_sec = time.perf_counter() - load_started
+    search_np = np.asarray(list(zip(search_columns[1], search_columns[2], search_columns[3])), dtype=np.float32 if dtype_name == "float32" else np.float64)
+    query_np = np.asarray(list(zip(query_columns[1], query_columns[2], query_columns[3])), dtype=search_np.dtype)
+    search_ids_np = np.asarray(search_columns[0], dtype=np.uint32)
+    query_ids_np = np.asarray(query_columns[0], dtype=np.uint32)
+
+    upload_started = time.perf_counter()
+    search = cp.asarray(search_np)
+    query = cp.asarray(query_np)
+    search_ids = cp.asarray(search_ids_np)
+    query_ids = cp.asarray(query_ids_np)
+    cp.cuda.Stream.null.synchronize()
+    upload_sec = time.perf_counter() - upload_started
+
+    print(
+        f"[goal2348] CuPy 3D ranked summary start queries={len(query_np)} search={len(search_np)} "
+        f"batch_size={batch_size} k={k_max} dtype={dtype_name}",
+        flush=True,
+    )
+    elapsed_runs = []
+    last_summary = None
+    radius_sq = radius * radius
+    k_eff = min(k_max, len(search_np))
+    for run_index in range(repeat):
+        started = time.perf_counter()
+        total_rows = 0
+        total_neighbors = 0
+        nearest_checksum = 0
+        kth_checksum = 0
+        distance_sum = 0.0
+        for begin in range(0, len(query_np), batch_size):
+            q = query[begin:begin + batch_size]
+            qids = query_ids[begin:begin + batch_size]
+            diff = q[:, None, :] - search[None, :, :]
+            d2 = cp.sum(diff * diff, axis=2)
+            masked = cp.where(d2 <= radius_sq, d2, cp.inf)
+            part = cp.argpartition(masked, kth=k_eff - 1, axis=1)[:, :k_eff]
+            top_d2 = cp.take_along_axis(masked, part, axis=1)
+            order = cp.argsort(top_d2, axis=1)
+            sorted_d2 = cp.take_along_axis(top_d2, order, axis=1)
+            sorted_indices = cp.take_along_axis(part, order, axis=1)
+            valid = cp.isfinite(sorted_d2)
+            counts = cp.sum(valid, axis=1).astype(cp.uint32)
+            last_pos = cp.maximum(counts.astype(cp.int64) - 1, 0)
+            batch_index = cp.arange(q.shape[0])
+            nearest_indices = cp.where(counts > 0, sorted_indices[:, 0], 0)
+            kth_indices = cp.where(counts > 0, sorted_indices[batch_index, last_pos], 0)
+            nearest_ids = cp.where(counts > 0, search_ids[nearest_indices], cp.uint32(0xffffffff))
+            kth_ids = cp.where(counts > 0, search_ids[kth_indices], cp.uint32(0xffffffff))
+            distances = cp.sqrt(cp.where(valid, sorted_d2, 0.0))
+            sums = cp.sum(distances, axis=1)
+            total_rows += int(q.shape[0])
+            total_neighbors += int(cp.sum(counts).get())
+            nearest_checksum += int(cp.sum(nearest_ids).get())
+            kth_checksum += int(cp.sum(kth_ids).get())
+            distance_sum += float(cp.sum(sums).get())
+            # Touch query ids so the baseline records the same per-query contract.
+            nearest_checksum += int(cp.sum(qids * 0).get())
+        cp.cuda.Stream.null.synchronize()
+        elapsed_runs.append(time.perf_counter() - started)
+        last_summary = {
+            "row_count": total_rows,
+            "bounded_neighbor_count": total_neighbors,
+            "nearest_id_checksum": nearest_checksum,
+            "kth_id_checksum": kth_checksum,
+            "sum_distance": distance_sum,
+        }
+        print(
+            f"[goal2348] CuPy 3D ranked summary repeat {run_index + 1}/{repeat} "
+            f"ok=True sec={elapsed_runs[-1]:.6f}",
+            flush=True,
+        )
+
+    return {
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "row": args.row_label,
+        "external": "CuPy",
+        "mode": "cupy_cuda_core_exact_ranked_summary_3d",
+        "ok": True,
+        "elapsed_sec": elapsed_runs[-1] if elapsed_runs else 0.0,
+        "elapsed_runs_sec": elapsed_runs,
+        "query_count": len(query_np),
+        "search_count": len(search_np),
+        "query_batch_size": batch_size,
+        "batch_count": (len(query_np) + batch_size - 1) // batch_size,
+        "radius": radius,
+        "k_max": k_max,
+        "dtype": dtype_name,
+        "input_load_sec": load_sec,
+        "device_upload_sec": upload_sec,
+        "summary": last_summary,
+        "contract": {
+            "family": "fixed_radius_neighbors_3d",
+            "mode": "ranked-summary",
+            "exact": True,
+            "approximate": False,
+            "bounded_k": k_max,
+            "prepared_search_structure": False,
+            "batched_queries": True,
+        },
+        "claim_boundary": {
+            "uses_rt_cores": False,
+            "cuda_core_baseline": True,
+            "paper_equivalent_rtnn_row": False,
+            "rtdl_speedup_claim_authorized": False,
+        },
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal2348 RTNN v2.2 external benchmark harness.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -557,6 +929,9 @@ def main(argv: list[str] | None = None) -> int:
     gen.add_argument("--point-count", type=int, required=True)
     gen.add_argument("--dimension", type=int, choices=(2, 3), required=True)
     gen.add_argument("--seed", type=int, default=2346)
+    gen.add_argument("--distribution", choices=("uniform", "clustered", "shell"), default="uniform")
+    gen.add_argument("--cluster-count", type=int, default=8)
+    gen.add_argument("--cluster-stddev", type=float, default=0.035)
     gen.add_argument("--json-out", type=Path, required=True)
 
     parse = subparsers.add_parser("parse-timings", help="Parse an RTNN output log into JSON timing rows.")
@@ -611,16 +986,47 @@ def main(argv: list[str] | None = None) -> int:
     smoke3d.add_argument("--row-label", default="rtdl_current_3d_neighbors_smoke")
     smoke3d.add_argument("--json-out", type=Path, required=True)
 
+    batched3d = subparsers.add_parser(
+        "run-rtdl-batched-3d-neighbors",
+        help="Run prepared native RTDL 3-D fixed-radius neighbors over explicit query batches.",
+    )
+    batched3d.add_argument("--point-file", type=Path, required=True)
+    batched3d.add_argument("--query-file", type=Path)
+    batched3d.add_argument("--radius", type=float, default=0.02)
+    batched3d.add_argument("--k-max", type=int, default=50)
+    batched3d.add_argument("--query-batch-size", type=int, default=65536)
+    batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw"), default="ranked-summary-raw")
+    batched3d.add_argument("--repeat", type=int, default=1)
+    batched3d.add_argument("--row-label", default="rtdl_batched_3d_neighbors")
+    batched3d.add_argument("--json-out", type=Path, required=True)
+
+    cupy3d = subparsers.add_parser(
+        "run-cupy-3d-ranked-summary",
+        help="Run an exact CUDA-core CuPy 3-D ranked-summary baseline.",
+    )
+    cupy3d.add_argument("--point-file", type=Path, required=True)
+    cupy3d.add_argument("--query-file", type=Path)
+    cupy3d.add_argument("--radius", type=float, default=0.02)
+    cupy3d.add_argument("--k-max", type=int, default=50)
+    cupy3d.add_argument("--query-batch-size", type=int, default=1024)
+    cupy3d.add_argument("--dtype", choices=("float32", "float64"), default="float32")
+    cupy3d.add_argument("--repeat", type=int, default=1)
+    cupy3d.add_argument("--row-label", default="cupy_3d_ranked_summary")
+    cupy3d.add_argument("--json-out", type=Path, required=True)
+
     args = parser.parse_args(argv)
 
     if args.command == "generate":
         payload = {
             "runner": "goal2348_rtnn_v2_2_external_runner",
-            "generated": generate_uniform_point_file(
+            "generated": generate_point_file(
                 args.point_file,
                 point_count=args.point_count,
                 dimension=args.dimension,
                 seed=args.seed,
+                distribution=args.distribution,
+                cluster_count=args.cluster_count,
+                cluster_stddev=args.cluster_stddev,
             ),
             "claim_boundary": {
                 "paper_dataset": False,
@@ -642,6 +1048,10 @@ def main(argv: list[str] | None = None) -> int:
         payload = run_rtdl_current_2d_smoke(args)
     elif args.command == "run-rtdl-current-3d-neighbors-smoke":
         payload = run_rtdl_current_3d_neighbors_smoke(args)
+    elif args.command == "run-rtdl-batched-3d-neighbors":
+        payload = run_rtdl_batched_3d_neighbors(args)
+    elif args.command == "run-cupy-3d-ranked-summary":
+        payload = run_cupy_3d_ranked_summary(args)
     else:  # pragma: no cover - argparse guards this
         raise AssertionError(args.command)
 

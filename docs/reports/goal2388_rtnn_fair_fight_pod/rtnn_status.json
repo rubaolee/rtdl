@@ -1,0 +1,9 @@
+{
+  "available": true,
+  "boundary": {
+    "optional_external_baseline": true,
+    "rtdl_goal_not_blocked_by_rtnn_build": true
+  },
+  "rtnn_binary": "/root/work/rtdl_goal2368/scratch/rtnn_goal2388/src/build/bin/optixNSearch",
+  "rtnn_root": "scratch/rtnn_goal2388"
+}

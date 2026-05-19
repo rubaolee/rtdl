@@ -1,0 +1,44 @@
+{
+  "batch_count": 256,
+  "claim_boundary": {
+    "cuda_core_baseline": true,
+    "paper_equivalent_rtnn_row": false,
+    "rtdl_speedup_claim_authorized": false,
+    "uses_rt_cores": false
+  },
+  "contract": {
+    "approximate": false,
+    "batched_queries": true,
+    "bounded_k": 50,
+    "exact": true,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary",
+    "prepared_search_structure": false
+  },
+  "device_upload_sec": 0.24408559687435627,
+  "dtype": "float32",
+  "elapsed_runs_sec": [
+    32.572308499366045,
+    32.356494445353746,
+    22.45087695121765
+  ],
+  "elapsed_sec": 22.45087695121765,
+  "external": "CuPy",
+  "input_load_sec": 0.0858483798801899,
+  "k_max": 50,
+  "mode": "cupy_cuda_core_exact_ranked_summary_3d",
+  "ok": true,
+  "query_batch_size": 256,
+  "query_count": 65536,
+  "radius": 0.02,
+  "row": "cupy_exact_ranked_summary_clustered_65536_r002_k50",
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536,
+  "summary": {
+    "bounded_neighbor_count": 2891523,
+    "kth_id_checksum": 2148967885,
+    "nearest_id_checksum": 2147450880,
+    "row_count": 65536,
+    "sum_distance": 31116.064125061035
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "batch_count": 4,
+  "batch_phase_timings": [
+    {
+      "candidate_count_pass": 0.001816144,
+      "candidate_write_pass": 0.0,
+      "count_download_and_prefix": 0.0,
+      "emitted_count": 65536,
+      "exact_refine": 0.0,
+      "mode": "prepared_uniform_cell_ranked_summary_rows",
+      "prepare": 0.0,
+      "raw_candidate_count": 628688,
+      "row_download": 0.000443022,
+      "row_offset_upload": 0.0,
+      "upload": 0.003904981
+    },
+    {
+      "candidate_count_pass": 0.001314304,
+      "candidate_write_pass": 0.0,
+      "count_download_and_prefix": 0.0,
+      "emitted_count": 65536,
+      "exact_refine": 0.0,
+      "mode": "prepared_uniform_cell_ranked_summary_rows",
+      "prepare": 0.0,
+      "raw_candidate_count": 629748,
+      "row_download": 0.000442103,
+      "row_offset_upload": 0.0,
+      "upload": 0.004181937
+    },
+    {
+      "candidate_count_pass": 0.001326382,
+      "candidate_write_pass": 0.0,
+      "count_download_and_prefix": 0.0,
+      "emitted_count": 65536,
+      "exact_refine": 0.0,
+      "mode": "prepared_uniform_cell_ranked_summary_rows",
+      "prepare": 0.0,
+      "raw_candidate_count": 630063,
+      "row_download": 0.000441748,
+      "row_offset_upload": 0.0,
+      "upload": 0.004850953
+    },
+    {
+      "candidate_count_pass": 0.00272194,
+      "candidate_write_pass": 0.0,
+      "count_download_and_prefix": 0.0,
+      "emitted_count": 65536,
+      "exact_refine": 0.0,
+      "mode": "prepared_uniform_cell_ranked_summary_rows",
+      "prepare": 0.0,
+      "raw_candidate_count": 629441,
+      "row_download": 0.000434005,
+      "row_offset_upload": 0.0,
+      "upload": 0.002660236
+    }
+  ],
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_ranked_summary_rows": true,
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "contract": {
+    "approximate": false,
+    "batched_queries": true,
+    "bounded_k": 50,
+    "exact": true,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary-raw",
+    "prepared_search_structure": true
+  },
+  "elapsed_runs_sec": [
+    0.017072483897209167,
+    0.01499003916978836,
+    0.041201841086149216
+  ],
+  "elapsed_sec": 0.041201841086149216,
+  "error": "",
+  "execution_prepare_sec": 1.1011501140892506,
+  "external": "RTDL current",
+  "input_load_sec": 0.33724875189363956,
+  "input_pack_sec": 0.11310364305973053,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+  "ok": true,
+  "query_batch_size": 65536,
+  "query_count": 262144,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "ranked-summary-raw",
+  "row": "rtdl_batched_ranked_summary_uniform_262144_r002_k50",
+  "row_count": 262144,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 262144
+}

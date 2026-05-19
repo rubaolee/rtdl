@@ -48,6 +48,30 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
             self.assertTrue(all(len(row.split(",")) == 3 for row in rows))
             self.assertTrue(all(row.endswith(",0.000000000") for row in rows))
 
+    def test_generate_non_uniform_point_families_are_deterministic(self) -> None:
+        runner = _load_runner()
+        with tempfile.TemporaryDirectory() as tmp:
+            for distribution in ("clustered", "shell"):
+                first = pathlib.Path(tmp) / f"{distribution}_a.txt"
+                second = pathlib.Path(tmp) / f"{distribution}_b.txt"
+                meta = runner.generate_point_file(
+                    first,
+                    point_count=8,
+                    dimension=3,
+                    seed=19,
+                    distribution=distribution,
+                )
+                runner.generate_point_file(
+                    second,
+                    point_count=8,
+                    dimension=3,
+                    seed=19,
+                    distribution=distribution,
+                )
+                self.assertEqual(first.read_text(encoding="utf-8"), second.read_text(encoding="utf-8"))
+                self.assertEqual(meta["distribution"], distribution)
+                self.assertEqual(meta["format"], "rtnn_csv_xyz")
+
     def test_cli_generate_writes_boundary_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             point_file = pathlib.Path(tmp) / "points.txt"
@@ -98,6 +122,13 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
         self.assertIn("prepared-optix", text)
         self.assertIn("rt.prepare_optix", text)
         self.assertIn('"execution_prepare_sec": execution_prepare_sec', text)
+        self.assertIn("run-rtdl-batched-3d-neighbors", text)
+        self.assertIn("partitioned_or_batched_like_rtnn", text)
+        self.assertIn("batched_queries", text)
+        self.assertIn("run-cupy-3d-ranked-summary", text)
+        self.assertIn("cupy_cuda_core_exact_ranked_summary_3d", text)
+        self.assertIn("cuda_core_baseline", text)
+        self.assertIn("ranked-summary-raw", text)
 
     def test_cuda12_patch_command_is_idempotent_and_external_only(self) -> None:
         runner = _load_runner()
