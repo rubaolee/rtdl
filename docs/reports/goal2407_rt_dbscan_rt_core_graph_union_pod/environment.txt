@@ -1,0 +1,10 @@
+pod_ssh=root@69.30.85.177 -p 22055 -i C:\Users\Lestat\.ssh\id_ed25519_rtdl_codex_current_pod
+repo=/root/rtdl_goal2405_pod
+base_head=ab8e6af77d9be15afe085c2c363907c54e4165ad
+prototype_patch=goal2407_rt_core_graph_union_not_landed
+gpu
+NVIDIA RTX A5000, 570.211.01
+optix_sdk
+v8.1.0
+ldd_nvrtc
+	libnvrtc.so.12 => /usr/local/cuda/targets/x86_64-linux/lib/libnvrtc.so.12 (0x00007fa78d208000)

@@ -354,6 +354,12 @@ Future work:
 - Design a generic device-resident radius-graph component continuation contract
   that can consume RT traversal hits or compact edge streams without returning
   to host row materialization.
+- Goal2407 tried the most direct version of this idea: an OptiX any-hit
+  core-graph union over a device parent array. It compiled and matched
+  signatures, but it was slower than the Goal2405 RT-count plus CuPy-grid
+  continuation on the measured A5000 rows. Do not promote raw any-hit atomic
+  union as the continuation primitive without a better scheduling/aggregation
+  design.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.
