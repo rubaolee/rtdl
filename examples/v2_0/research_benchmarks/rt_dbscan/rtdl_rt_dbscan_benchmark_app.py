@@ -423,6 +423,7 @@ def run_rt_dbscan_benchmark(
     include_rows: bool,
     validate: bool,
     adjacency_edge_budget: int | None = None,
+    chunk_adjacency_edge_budget: int | None = None,
 ) -> dict[str, object]:
     config = DEFAULT_DATASET_CONFIG[dataset]
     resolved_point_count = int(point_count if point_count is not None else config["point_count"])
@@ -442,6 +443,7 @@ def run_rt_dbscan_benchmark(
             include_rows=include_rows,
             validate=validate,
             adjacency_edge_budget=adjacency_edge_budget,
+            chunk_adjacency_edge_budget=chunk_adjacency_edge_budget,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -472,6 +474,7 @@ def run_rt_dbscan_benchmark(
             include_rows=include_rows,
             validate=validate,
             adjacency_edge_budget=adjacency_edge_budget,
+            chunk_adjacency_edge_budget=chunk_adjacency_edge_budget,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -718,6 +721,7 @@ def run_rt_dbscan_benchmark(
             points,
             radius=resolved_radius,
             partner="cupy",
+            max_directed_edges_per_chunk=chunk_adjacency_edge_budget,
         ) as prepared:
             result = rt.radius_graph_components_3d_optix_cupy_prepared_chunked_adjacency_partner_columns(
                 prepared,
@@ -914,6 +918,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--include-rows", action="store_true")
     parser.add_argument("--no-validation", action="store_true")
     parser.add_argument("--adjacency-edge-budget", type=int, default=None)
+    parser.add_argument("--chunk-adjacency-edge-budget", type=int, default=None)
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -928,6 +933,7 @@ def main(argv: list[str] | None = None) -> int:
                 include_rows=args.include_rows,
                 validate=not args.no_validation,
                 adjacency_edge_budget=args.adjacency_edge_budget,
+                chunk_adjacency_edge_budget=args.chunk_adjacency_edge_budget,
             ),
             indent=2,
             sort_keys=True,

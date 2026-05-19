@@ -3566,6 +3566,53 @@ class PreparedOptixCupyRadiusGraphAdjacency3D:
             pass
 
 
+def _radius_graph_degree_budget_chunk_ranges(
+    neighbor_counts: list[int] | tuple[int, ...],
+    *,
+    max_chunk_points: int,
+    max_directed_edges_per_chunk: int | None,
+) -> list[tuple[int, int]]:
+    point_count = len(neighbor_counts)
+    if point_count < 1:
+        raise ValueError("neighbor_counts must be non-empty")
+    max_chunk_points = int(max_chunk_points)
+    if max_chunk_points <= 0:
+        raise ValueError("max_chunk_points must be positive")
+    edge_budget = None if max_directed_edges_per_chunk is None else int(max_directed_edges_per_chunk)
+    if edge_budget is not None and edge_budget <= 0:
+        raise ValueError("max_directed_edges_per_chunk must be positive when provided")
+
+    ranges: list[tuple[int, int]] = []
+    start = 0
+    chunk_points = 0
+    chunk_edges = 0
+    for index, raw_count in enumerate(neighbor_counts):
+        degree = int(raw_count)
+        if degree < 0:
+            raise ValueError("neighbor_counts must be non-negative")
+        if edge_budget is not None and degree > edge_budget:
+            raise ValueError(
+                "single query exceeds max_directed_edges_per_chunk "
+                f"({degree} > {edge_budget})"
+            )
+        point_limit_hit = chunk_points >= max_chunk_points
+        edge_limit_hit = (
+            edge_budget is not None
+            and chunk_points > 0
+            and chunk_edges + degree > edge_budget
+        )
+        if point_limit_hit or edge_limit_hit:
+            ranges.append((start, index))
+            start = index
+            chunk_points = 0
+            chunk_edges = 0
+        chunk_points += 1
+        chunk_edges += degree
+    if start < point_count:
+        ranges.append((start, point_count))
+    return ranges
+
+
 class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
     """Memory-bounded OptiX RT adjacency chunks plus CuPy grouped continuation."""
 
@@ -3607,13 +3654,13 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             self.point_rows,
             max_radius=radius,
         )
-        self.chunk_ranges = [
+        self.count_chunk_ranges = [
             (start, min(start + max_chunk_points, self.point_count))
             for start in range(0, self.point_count, max_chunk_points)
         ]
         self.neighbor_counts = self.cupy.empty((self.point_count,), dtype=self.cupy.uint32)
         self.count_metadata: list[dict[str, object]] = []
-        for start, end in self.chunk_ranges:
+        for start, end in self.count_chunk_ranges:
             chunk_rows = self.point_rows[start:end]
             output_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
                 end - start,
@@ -3631,7 +3678,18 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             self.neighbor_counts[start:end] = result["columns"]["neighbor_counts"]
             self.count_metadata.append(dict(result["metadata"]))
         self.runtime["sync"]()
-        self.total_directed_edge_count = int(self.neighbor_counts.astype(self.cupy.int64, copy=False).sum().item())
+        neighbor_counts_host = self.cupy.asnumpy(self.neighbor_counts).astype("int64", copy=False).tolist()
+        self.total_directed_edge_count = int(sum(int(count) for count in neighbor_counts_host))
+        self.chunk_ranges = _radius_graph_degree_budget_chunk_ranges(
+            neighbor_counts_host,
+            max_chunk_points=max_chunk_points,
+            max_directed_edges_per_chunk=self.max_directed_edges_per_chunk,
+        )
+        self.chunk_planning_policy = (
+            "adaptive_degree_budget_and_max_point_count"
+            if self.max_directed_edges_per_chunk is not None
+            else "fixed_max_point_count"
+        )
         (
             self.union_kernel,
             self.label_kernel,
@@ -3734,7 +3792,10 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             "radius": self.radius,
             "min_neighbors": min_neighbors,
             "chunk_count": len(self.chunk_ranges),
+            "count_chunk_count": len(self.count_chunk_ranges),
             "max_chunk_points": self.max_chunk_points,
+            "max_directed_edges_per_chunk": self.max_directed_edges_per_chunk,
+            "chunk_planning_policy": self.chunk_planning_policy,
             "total_directed_edge_count": self.total_directed_edge_count,
             "max_chunk_directed_edge_count": max(chunk_edge_counts) if chunk_edge_counts else 0,
             "chunk_directed_edge_counts": tuple(chunk_edge_counts),

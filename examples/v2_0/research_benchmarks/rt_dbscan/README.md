@@ -187,6 +187,17 @@ the wrong memory contract. It captures one core-neighbor candidate per border
 point during the chunked union pass, so final labels can be assigned without a
 second RT adjacency fill.
 
+Advanced users can also bound each adjacency chunk by directed-edge count:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_chunked_adjacency_cupy_components_3d --dataset clustered3d --point-count 32768 --chunk-adjacency-edge-budget 8000000 --no-validation
+```
+
+The chunk planner first counts exact fixed-radius degrees, then chooses chunk
+ranges that obey both `max_chunk_points` and the requested directed-edge budget.
+This is a memory-control knob, not a speedup claim.
+
 For the experimental all-core microcell continuation, use:
 
 ```bash
