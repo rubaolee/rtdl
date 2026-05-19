@@ -112,8 +112,10 @@ bash scripts/goal2392_rt_dbscan_pod_runner.sh
 ```
 
 The runner records the commit, CUDA/driver probe, CPU correctness smoke, CuPy
-partner rows when CuPy is available, and OptiX prepared-row rows when
-`RTDL_OPTIX_LIBRARY` or `OPTIX_PREFIX` is configured. That will not be enough
+partner rows, and OptiX prepared-row rows. By default it attempts to install
+`cupy-cuda12x` when CuPy is missing and to clone OptiX SDK `v8.0.0` into
+`${HOME}/vendor/optix-sdk` when headers are missing; these setup actions are
+pod-runner behavior, not source package-install claims. That will not be enough
 for a paper-level claim. It is the first same-dataset sanity check before
 implementing the stronger 3-D device-column and device-resident continuation
 primitives.
