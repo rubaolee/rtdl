@@ -377,6 +377,12 @@ Future work:
   generic device-resident radius-graph edge stream or grouped union
   continuation that avoids redoing radius traversal after RT thresholding,
   rather than another DBSCAN-specific native shortcut.
+- Goal2420 extended the pod profile. At 262k points, the prepared RT bridge also
+  beat pure CuPy on `road3d`, so sparse-road data has a scale crossover. Compact
+  `ngsim_dense` still favored pure CuPy through 131k. This argues for an
+  explicit plan/explain path that reports the selected backend, partner,
+  preparation/reuse state, RT phase timing, continuation timing, and claim
+  boundary. Do not hide this behind an invisible dispatcher.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.

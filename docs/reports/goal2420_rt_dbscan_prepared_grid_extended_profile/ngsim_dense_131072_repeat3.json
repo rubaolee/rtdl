@@ -1,0 +1,245 @@
+{
+  "app": "rt_dbscan_repeat_probe",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "steady_state_probe_only": true
+  },
+  "dataset": "ngsim_dense",
+  "modes": [
+    "partner_cupy_grid_components_3d",
+    "optix_rt_core_flags_cupy_grid_components_3d",
+    "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+  ],
+  "point_count": 131072,
+  "repeat_count": 3,
+  "rows": [
+    {
+      "app_elapsed_sec": 1.022212104871869,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": null,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 1.817354118451476,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 1,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.4350343905389309,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": null,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 1.24339590780437,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 2,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.48737179301679134,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": null,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 1.2728006150573492,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 3,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 1.5115674119442701,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": 0.16110891848802567,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 1.0663552582263947,
+      "outer_elapsed_sec": 2.2958721201866865,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 1,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.8854077532887459,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": 0.13727599754929543,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.5005928482860327,
+      "outer_elapsed_sec": 1.6754941642284393,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 2,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.8585799168795347,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": 0.1365784890949726,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.5057846698909998,
+      "outer_elapsed_sec": 1.6281568426638842,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 3,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5129458401352167,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_radius_grid",
+      "cupy_component_continuation_sec": 0.13599874638020992,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.20654507353901863,
+      "outer_elapsed_sec": 0.5129458401352167,
+      "prepared_grid_build_sec": 0.06919855065643787,
+      "prepared_grid_reused": false,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": 1,
+      "repeat_index": 1,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5652086492627859,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_radius_grid",
+      "cupy_component_continuation_sec": 0.1387140303850174,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.2477771509438753,
+      "outer_elapsed_sec": 0.5652086492627859,
+      "prepared_grid_build_sec": 0.06919855065643787,
+      "prepared_grid_reused": true,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": 2,
+      "repeat_index": 2,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5361697915941477,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_radius_grid",
+      "cupy_component_continuation_sec": 0.1368874441832304,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.21155886724591255,
+      "outer_elapsed_sec": 0.5361697915941477,
+      "prepared_grid_build_sec": 0.06919855065643787,
+      "prepared_grid_reused": true,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": 3,
+      "repeat_index": 3,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true
+}
