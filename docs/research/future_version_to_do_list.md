@@ -423,11 +423,25 @@ Future work:
   the full stream fits. The next step is a lower-overhead grouped stream
   continuation or a planner policy that selects full adjacency, chunked
   adjacency, or prepared grid according to memory and data-shape evidence.
+- Goal2437 added the explicit app-level continuation planner for the adjacency
+  family. It records the selected mode, reason, edge estimate, edge budget, and
+  claim boundaries, and it intentionally stays outside the native engine.
+  Goal2439 pod-smoked both planner branches: full OptiX adjacency when the
+  stream fits the budget, and chunked OptiX adjacency when it does not.
+- Goal2441/2442 made the chunked path degree-budget-aware. A requested
+  `max_directed_edges_per_chunk` now splits adjacency chunks after exact degree
+  counts are known; the pod smoke enforced an 8,000,000 directed-edge cap on the
+  32,768-point clustered row with a maximum chunk of 7,999,889 edges. This is a
+  memory-control improvement, not a speedup claim.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.
 - Preserve explicit claim metadata for RT-core phase, partner continuation
   phase, row materialization policy, and zero-copy/direct-device handoff policy.
+- The remaining RT-DBSCAN performance leap is a lower-overhead generic grouped
+  stream continuation that can consume RT traversal hits or bounded edge chunks
+  with fewer launches and less intermediate storage. Do not solve it with a
+  DBSCAN-specific kernel.
 
 Boundary:
 
