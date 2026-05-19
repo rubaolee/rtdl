@@ -1,0 +1,24 @@
+{
+  "rows": [
+    {
+      "artifact": "road3d_524288_repeat3.json",
+      "dataset": "road3d",
+      "elapsed_sec": 70.03648304566741,
+      "fresh_cupy_tail_median_sec": 6.6148804714903235,
+      "point_count": 524288,
+      "prepared_cupy_tail_median_sec": 6.458785947412252,
+      "prepared_rt_tail_median_sec": 5.494305113330483,
+      "signatures_match": true
+    },
+    {
+      "artifact": "ngsim_dense_262144_repeat3.json",
+      "dataset": "ngsim_dense",
+      "elapsed_sec": 20.729678286239505,
+      "fresh_cupy_tail_median_sec": 1.193230064585805,
+      "point_count": 262144,
+      "prepared_cupy_tail_median_sec": 1.0575080746784806,
+      "prepared_rt_tail_median_sec": 1.4355800589546561,
+      "signatures_match": true
+    }
+  ]
+}

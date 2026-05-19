@@ -207,6 +207,16 @@ evidence-bounded:
 - clustered rows and larger road-shaped rows use the prepared RT-count plus
   prepared CuPy-grid bridge.
 
+After the Goal2425 prepared-baseline fairness pass, the policy is:
+
+- compact `ngsim_dense` rows use the prepared pure-CuPy continuation;
+- `road3d` rows below the measured 524k crossover use the prepared pure-CuPy
+  continuation;
+- `clustered3d` rows below the measured 65k crossover use the prepared
+  pure-CuPy continuation;
+- larger clustered rows and larger road-shaped rows use the prepared RT-count
+  plus prepared CuPy-grid bridge.
+
 The plan mode is a learner-visible pattern for choosing between generic RTDL
 contracts and partner continuations. It is not a release claim and not a
 paper-reproduction claim.

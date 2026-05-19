@@ -1,0 +1,123 @@
+{
+  "commit": "94039b7db50c07466e57665a8a6b4c1ad90afa5e",
+  "goal": "goal2425_rt_dbscan_prepared_cupy_fairness_pod_evidence",
+  "modes": [
+    "partner_cupy_grid_components_3d",
+    "partner_cupy_prepared_grid_components_3d",
+    "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+  ],
+  "rows": [
+    {
+      "artifact": "clustered3d_32768_repeat3.json",
+      "dataset": "clustered3d",
+      "elapsed_sec": 4.273460851982236,
+      "fresh_cupy_tail_median_sec": 0.17755893990397453,
+      "point_count": 32768,
+      "prepared_cupy_tail_median_sec": 0.16243534535169601,
+      "prepared_rt_tail_median_sec": 0.17419169750064611,
+      "signatures_match": true
+    },
+    {
+      "artifact": "clustered3d_65536_repeat3.json",
+      "dataset": "clustered3d",
+      "elapsed_sec": 7.504830472171307,
+      "fresh_cupy_tail_median_sec": 0.5317410472780466,
+      "point_count": 65536,
+      "prepared_cupy_tail_median_sec": 0.4741905899718404,
+      "prepared_rt_tail_median_sec": 0.377922217361629,
+      "signatures_match": true
+    },
+    {
+      "artifact": "clustered3d_131072_repeat3.json",
+      "dataset": "clustered3d",
+      "elapsed_sec": 17.70991826802492,
+      "fresh_cupy_tail_median_sec": 1.6154937017709017,
+      "point_count": 131072,
+      "prepared_cupy_tail_median_sec": 1.5891334358602762,
+      "prepared_rt_tail_median_sec": 1.0361708030104637,
+      "signatures_match": true
+    },
+    {
+      "artifact": "clustered3d_262144_repeat3.json",
+      "dataset": "clustered3d",
+      "elapsed_sec": 52.933339077979326,
+      "fresh_cupy_tail_median_sec": 5.804778153076768,
+      "point_count": 262144,
+      "prepared_cupy_tail_median_sec": 5.749830882064998,
+      "prepared_rt_tail_median_sec": 3.2335078082978725,
+      "signatures_match": true
+    },
+    {
+      "artifact": "road3d_32768_repeat3.json",
+      "dataset": "road3d",
+      "elapsed_sec": 3.565601859241724,
+      "fresh_cupy_tail_median_sec": 0.10758815705776215,
+      "point_count": 32768,
+      "prepared_cupy_tail_median_sec": 0.08733290806412697,
+      "prepared_rt_tail_median_sec": 0.1351870782673359,
+      "signatures_match": true
+    },
+    {
+      "artifact": "road3d_65536_repeat3.json",
+      "dataset": "road3d",
+      "elapsed_sec": 6.088048774749041,
+      "fresh_cupy_tail_median_sec": 0.29024901520460844,
+      "point_count": 65536,
+      "prepared_cupy_tail_median_sec": 0.2311988053843379,
+      "prepared_rt_tail_median_sec": 0.354012755677104,
+      "signatures_match": true
+    },
+    {
+      "artifact": "road3d_131072_repeat3.json",
+      "dataset": "road3d",
+      "elapsed_sec": 11.626414727419615,
+      "fresh_cupy_tail_median_sec": 0.7241121800616384,
+      "point_count": 131072,
+      "prepared_cupy_tail_median_sec": 0.6647366555407643,
+      "prepared_rt_tail_median_sec": 0.7685706010088325,
+      "signatures_match": true
+    },
+    {
+      "artifact": "road3d_262144_repeat3.json",
+      "dataset": "road3d",
+      "elapsed_sec": 25.344023348763585,
+      "fresh_cupy_tail_median_sec": 2.0029513919726014,
+      "point_count": 262144,
+      "prepared_cupy_tail_median_sec": 1.8796230545267463,
+      "prepared_rt_tail_median_sec": 1.9189302865415812,
+      "signatures_match": true
+    },
+    {
+      "artifact": "ngsim_dense_32768_repeat3.json",
+      "dataset": "ngsim_dense",
+      "elapsed_sec": 3.4283970035612583,
+      "fresh_cupy_tail_median_sec": 0.08548483811318874,
+      "point_count": 32768,
+      "prepared_cupy_tail_median_sec": 0.06402994599193335,
+      "prepared_rt_tail_median_sec": 0.11946970596909523,
+      "signatures_match": true
+    },
+    {
+      "artifact": "ngsim_dense_65536_repeat3.json",
+      "dataset": "ngsim_dense",
+      "elapsed_sec": 6.083704462274909,
+      "fresh_cupy_tail_median_sec": 0.2177248876541853,
+      "point_count": 65536,
+      "prepared_cupy_tail_median_sec": 0.17098471149802208,
+      "prepared_rt_tail_median_sec": 0.29160252772271633,
+      "signatures_match": true
+    },
+    {
+      "artifact": "ngsim_dense_131072_repeat3.json",
+      "dataset": "ngsim_dense",
+      "elapsed_sec": 11.959205862134695,
+      "fresh_cupy_tail_median_sec": 0.4604978282004595,
+      "point_count": 131072,
+      "prepared_cupy_tail_median_sec": 0.39110578410327435,
+      "prepared_rt_tail_median_sec": 0.5547497319057584,
+      "signatures_match": true
+    }
+  ],
+  "step_timeout_seconds": 900,
+  "total_elapsed_sec": 150.5294330548495
+}

@@ -2,7 +2,7 @@
 
 Date: 2026-05-19
 
-Status: implementation complete; pod timing pending
+Status: implementation complete; pod timing continued in Goal2425
 
 ## Purpose
 
@@ -74,3 +74,5 @@ ngsim_dense: 32768, 65536, 131072
 
 All rows must preserve signature parity. The report from that pod pass should
 supersede any broad reading of the Goal2418/Goal2420 pure-CuPy comparisons.
+
+Goal2425 provides that pod pass and updates the explicit benchmark-app plan.

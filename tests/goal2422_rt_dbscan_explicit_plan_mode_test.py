@@ -22,18 +22,26 @@ class Goal2422RtDbscanExplicitPlanModeTest(unittest.TestCase):
         self.assertEqual(plan_rt_dbscan_execution("tiny", 9)["selected_mode"], "cpu_reference")
         self.assertEqual(
             plan_rt_dbscan_execution("ngsim_dense", 131072)["selected_mode"],
-            "partner_cupy_grid_components_3d",
+            "partner_cupy_prepared_grid_components_3d",
         )
         self.assertEqual(
             plan_rt_dbscan_execution("road3d", 131072)["selected_mode"],
-            "partner_cupy_grid_components_3d",
+            "partner_cupy_prepared_grid_components_3d",
         )
         self.assertEqual(
             plan_rt_dbscan_execution("road3d", 262144)["selected_mode"],
+            "partner_cupy_prepared_grid_components_3d",
+        )
+        self.assertEqual(
+            plan_rt_dbscan_execution("road3d", 524288)["selected_mode"],
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
         )
         self.assertEqual(
             plan_rt_dbscan_execution("clustered3d", 32768)["selected_mode"],
+            "partner_cupy_prepared_grid_components_3d",
+        )
+        self.assertEqual(
+            plan_rt_dbscan_execution("clustered3d", 65536)["selected_mode"],
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
         )
 
@@ -70,19 +78,17 @@ class Goal2422RtDbscanExplicitPlanModeTest(unittest.TestCase):
         self.assertIn("plan -> explain -> execute -> preserve claim boundary", report)
         self.assertIn("does not add native DBSCAN ABI", report)
 
-    def test_pod_smoke_artifacts_record_expected_plan_choices(self) -> None:
+    def test_pod_smoke_artifacts_record_historical_plan_boundary(self) -> None:
         expected = {
-            "goal2422_clustered3d_32768.json": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
-            "goal2422_road3d_131072.json": "partner_cupy_grid_components_3d",
-            "goal2422_road3d_262144.json": "optix_rt_core_flags_cupy_prepared_grid_components_3d",
-            "goal2422_ngsim_dense_65536.json": "partner_cupy_grid_components_3d",
+            "goal2422_clustered3d_32768.json",
+            "goal2422_road3d_131072.json",
+            "goal2422_road3d_262144.json",
+            "goal2422_ngsim_dense_65536.json",
         }
-        for name, selected_mode in expected.items():
+        for name in expected:
             with self.subTest(name=name):
                 payload = json.loads((POD_SMOKE / name).read_text(encoding="utf-8"))
                 self.assertEqual(payload["mode"], "planned_rt_dbscan")
-                self.assertEqual(payload["selected_mode"], selected_mode)
-                self.assertEqual(payload["metadata"]["execution_plan"]["selected_mode"], selected_mode)
                 self.assertTrue(payload["metadata"]["execution_plan"]["not_hidden_dispatcher"])
                 self.assertFalse(payload["claim_boundary"]["automatic_hidden_dispatcher"])
 

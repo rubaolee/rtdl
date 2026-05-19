@@ -32,19 +32,22 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         selected_mode = "cpu_reference"
         reason = "tiny correctness fixture; no GPU performance claim"
     elif dataset == "ngsim_dense":
-        selected_mode = "partner_cupy_grid_components_3d"
-        reason = "Goal2420 showed compact ngsim_dense rows still favor pure CuPy through 131k"
-    elif dataset == "road3d" and point_count < 262144:
-        selected_mode = "partner_cupy_grid_components_3d"
-        reason = "Goal2418 showed road3d below the 262k crossover still favors or nearly ties pure CuPy"
+        selected_mode = "partner_cupy_prepared_grid_components_3d"
+        reason = "Goal2425 showed compact ngsim_dense rows favor the prepared pure-CuPy continuation through 262k"
+    elif dataset == "road3d" and point_count < 524288:
+        selected_mode = "partner_cupy_prepared_grid_components_3d"
+        reason = "Goal2425 showed road3d favors the prepared pure-CuPy continuation below the 524k crossover"
+    elif dataset == "clustered3d" and point_count < 65536:
+        selected_mode = "partner_cupy_prepared_grid_components_3d"
+        reason = "Goal2425 showed clustered3d needs at least the 65k scale before prepared RT wins over prepared pure CuPy"
     else:
         selected_mode = "optix_rt_core_flags_cupy_prepared_grid_components_3d"
-        reason = "Goal2418/Goal2420 showed prepared RT-count plus prepared CuPy grid is the current best bridge for this scale/shape"
+        reason = "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape"
     return {
         "adapter": "plan_rt_dbscan_execution",
         "selected_mode": selected_mode,
         "reason": reason,
-        "policy": "explicit_benchmark_plan_from_goal2418_goal2420_evidence",
+        "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
         "not_hidden_dispatcher": True,
         "release_claim_authorized": False,
         "paper_reproduction_claim_authorized": False,
