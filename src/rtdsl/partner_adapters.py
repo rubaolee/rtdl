@@ -2660,6 +2660,65 @@ def _cupy_radius_graph_components_3d_chunked_adjacency_kernels(cupy):
         }
 
         extern "C" __global__
+        void radius_graph_3d_chunk_adjacency_union_border_candidate_kernel(
+            const int chunk_count,
+            const int source_start,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            int* parent,
+            int* border_core_candidate
+        ) {
+            const int local = blockDim.x * blockIdx.x + threadIdx.x;
+            if (local >= chunk_count) {
+                return;
+            }
+            const int point = source_start + local;
+            const long long start = edge_offsets[local];
+            const long long end = edge_offsets[local + 1];
+            if (core_flags[point] != 0u) {
+                for (long long cursor = start; cursor < end; ++cursor) {
+                    const int other = neighbor_indices[cursor];
+                    if (other <= point || core_flags[other] == 0u) {
+                        continue;
+                    }
+                    union_chunk_adj_min_root(parent, point, other);
+                }
+                return;
+            }
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (core_flags[other] != 0u) {
+                    atomicMin(border_core_candidate + point, other);
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_border_candidate_label_kernel(
+            const int point_count,
+            const unsigned int* core_flags,
+            const int* parent,
+            const int* border_core_candidate,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_chunk_adj_root_readonly(parent, point) + 1ll;
+                return;
+            }
+            const int candidate = border_core_candidate[point];
+            if (candidate < 0 || candidate >= point_count || core_flags[candidate] == 0u) {
+                labels[point] = -1ll;
+                return;
+            }
+            labels[point] = (long long)find_chunk_adj_root_readonly(parent, candidate) + 1ll;
+        }
+
+        extern "C" __global__
         void radius_graph_3d_chunk_adjacency_label_kernel(
             const int chunk_count,
             const int source_start,
@@ -2697,6 +2756,8 @@ def _cupy_radius_graph_components_3d_chunked_adjacency_kernels(cupy):
         _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS = (
             cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_union_kernel"),
             cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_label_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_union_border_candidate_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_border_candidate_label_kernel"),
         )
     return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS
 
@@ -3571,9 +3632,15 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             self.count_metadata.append(dict(result["metadata"]))
         self.runtime["sync"]()
         self.total_directed_edge_count = int(self.neighbor_counts.astype(self.cupy.int64, copy=False).sum().item())
-        self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_chunked_adjacency_kernels(self.cupy)
+        (
+            self.union_kernel,
+            self.label_kernel,
+            self.union_border_candidate_kernel,
+            self.border_candidate_label_kernel,
+        ) = _cupy_radius_graph_components_3d_chunked_adjacency_kernels(self.cupy)
         self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
         self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.border_core_candidate_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
         self.labels_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int64)
         self.run_count = 0
         self.closed = False
@@ -3610,13 +3677,14 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             raise ValueError("min_neighbors must be at least 1")
         core_flags = (self.neighbor_counts >= min_neighbors).astype(self.cupy.uint32, copy=False)
         self.parent_workspace[...] = self.parent_initial
+        self.border_core_candidate_workspace.fill(self.point_count)
         threads = 256
         chunk_edge_counts: list[int] = []
         native_union_metadata: list[dict[str, object]] = []
         for start, end in self.chunk_ranges:
             edge_offsets, neighbor_indices, directed_edge_count, native_metadata = self._chunk_adjacency(start, end)
             blocks = (max(1, ((end - start) + threads - 1) // threads),)
-            self.union_kernel(
+            self.union_border_candidate_kernel(
                 blocks,
                 (threads,),
                 (
@@ -3626,30 +3694,25 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
                     neighbor_indices,
                     core_flags,
                     self.parent_workspace,
+                    self.border_core_candidate_workspace,
                 ),
             )
             chunk_edge_counts.append(directed_edge_count)
             native_union_metadata.append(native_metadata)
         self.runtime["sync"]()
 
-        native_label_metadata: list[dict[str, object]] = []
-        for start, end in self.chunk_ranges:
-            edge_offsets, neighbor_indices, _, native_metadata = self._chunk_adjacency(start, end)
-            blocks = (max(1, ((end - start) + threads - 1) // threads),)
-            self.label_kernel(
-                blocks,
-                (threads,),
-                (
-                    end - start,
-                    start,
-                    edge_offsets,
-                    neighbor_indices,
-                    core_flags,
-                    self.parent_workspace,
-                    self.labels_workspace,
-                ),
-            )
-            native_label_metadata.append(native_metadata)
+        label_blocks = (max(1, (self.point_count + threads - 1) // threads),)
+        self.border_candidate_label_kernel(
+            label_blocks,
+            (threads,),
+            (
+                self.point_count,
+                core_flags,
+                self.parent_workspace,
+                self.border_core_candidate_workspace,
+                self.labels_workspace,
+            ),
+        )
         self.runtime["sync"]()
 
         chunked_reused = self.run_count > 0
@@ -3688,11 +3751,12 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             "materializes_neighbor_rows": False,
             "materializes_directed_adjacency_stream": False,
             "materializes_bounded_directed_adjacency_chunks": True,
-            "adjacency_write_pass_count": 2,
+            "adjacency_write_pass_count": 1,
+            "border_label_policy": "one_core_neighbor_candidate_per_border_point_captured_during_union_pass",
             "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
             "count_metadata": tuple(self.count_metadata),
             "native_union_adjacency_metadata": tuple(native_union_metadata),
-            "native_label_adjacency_metadata": tuple(native_label_metadata),
+            "native_label_adjacency_metadata": (),
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,
             "output_columns_true_zero_copy_authorized": True,

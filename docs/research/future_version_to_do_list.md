@@ -417,6 +417,12 @@ Future work:
   performance step is to fuse or cache enough per-chunk continuation state to
   avoid the second RT fill, or to add a generic grouped stream-reduction
   primitive.
+- Goal2435 removed that second RT fill by capturing one core-neighbor candidate
+  per border point during the chunked union pass. This improved the chunked path
+  while preserving exact labels, but it remains slower than full adjacency when
+  the full stream fits. The next step is a lower-overhead grouped stream
+  continuation or a planner policy that selects full adjacency, chunked
+  adjacency, or prepared grid according to memory and data-shape evidence.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.

@@ -183,8 +183,9 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbsc
 
 This path counts all degrees once, then fills and consumes adjacency chunks.
 It is designed for dense rows where a single giant `neighbor_indices` array is
-the wrong memory contract. It pays two chunked adjacency passes because labels
-need the final union state before border points can be assigned.
+the wrong memory contract. It captures one core-neighbor candidate per border
+point during the chunked union pass, so final labels can be assigned without a
+second RT adjacency fill.
 
 For the experimental all-core microcell continuation, use:
 
