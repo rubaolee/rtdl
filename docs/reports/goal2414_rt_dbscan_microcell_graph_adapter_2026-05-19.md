@@ -109,10 +109,71 @@ The non-GPU tests verify:
 - no `rtdl_optix_dbscan` native ABI appears;
 - the clique-safe microcell size rejects the radius-cell assumption.
 
+Local Linux CUDA validation used a disposable checkout:
+
+```text
+/home/lestat/work/rtdl_goal2414_check
+commit 7e2b94be77d65fc454f0d2f83d40ec61e5657031
+```
+
+CuPy probe:
+
+```text
+cupy 14.0.1 devices 1
+```
+
+Focused test:
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.goal2414_rt_dbscan_microcell_graph_adapter_test
+```
+
+Result:
+
+```text
+5 tests OK
+```
+
+This ran the GPU checks that were skipped on Windows:
+
+- same radius-cell disconnected points remained separate under the microcell
+  fast path;
+- mixed-core input triggered fallback and preserved the component-column schema.
+
+Local Linux OptiX smoke:
+
+```text
+make build-optix OPTIX_PREFIX=/home/lestat/vendor/optix-dev
+RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so PYTHONPATH=src:. python3 \
+  examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py \
+  --mode optix_rt_core_flags_cupy_microcell_graph_components_3d \
+  --dataset clustered3d --point-count 1024 --no-validation
+```
+
+Result summary:
+
+```text
+fast_path_active = false
+fallback_reason = not_all_points_core
+signature core_count = 1021
+signature noise_count = 1
+```
+
+Additional activation smoke at 4096 and 32768 also fell back because at least
+one point was not core on this local GTX smoke host:
+
+```text
+4096:  fast_path_active=false, core_count=4094, noise_count=0
+32768: fast_path_active=false, core_count=32767, noise_count=0
+```
+
+This is correct behavior, not a failure. The microcell fast path is intentionally
+all-core only.
+
 ## Pod Evidence Still Needed
 
-The GPU-optional tests must run on a CUDA pod. Required before any performance
-claim:
+The GPU tests now pass on local Linux, but pod-scale timing is still required
+before any performance claim:
 
 ```text
 tests.goal2414_rt_dbscan_microcell_graph_adapter_test
