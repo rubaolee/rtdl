@@ -360,6 +360,15 @@ Future work:
   continuation on the measured A5000 rows. Do not promote raw any-hit atomic
   union as the continuation primitive without a better scheduling/aggregation
   design.
+- Goal2415 tested the corrected clique-safe microcell continuation after the
+  Goal2411/Goal2412 safety correction. It preserved correctness and activated
+  on several pod rows, but it was slower than the existing RT-count plus CuPy
+  grid continuation because `radius / sqrt(3)` microcells require more cells,
+  a `5 x 5 x 5` neighbor stencil, and exact cross-microcell pair checks. Do not
+  treat microcell graph compression as the next performance path for RT-DBSCAN.
+  Pivot to prepared CuPy grid continuation hardening first: cache/reuse point
+  columns, cell ids, sorted order, unique cells, starts/counts, and output
+  buffers under the same generic fixed-radius component-label contract.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.

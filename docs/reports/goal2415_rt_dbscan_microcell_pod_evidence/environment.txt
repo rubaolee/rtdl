@@ -1,0 +1,7 @@
+commit=0d95c04564e9d5f5db8fc1adb7cb306276030028
+python=Python 3.12.3
+NVIDIA RTX A5000, 570.211.01
+Build cuda_12.8.r12.8/compiler.35583870_0
+RTDL_OPTIX_LIBRARY=/root/rtdl_goal2415/build/librtdl_optix.so
+	libcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x00007f5e1e23a000)
+	libnvrtc.so.12 => /usr/local/cuda-12/targets/x86_64-linux/lib/libnvrtc.so.12 (0x00007f5e17af6000)

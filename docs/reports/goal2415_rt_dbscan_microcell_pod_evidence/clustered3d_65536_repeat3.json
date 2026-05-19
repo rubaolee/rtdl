@@ -1,0 +1,236 @@
+{
+  "app": "rt_dbscan_repeat_probe",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "steady_state_probe_only": true
+  },
+  "dataset": "clustered3d",
+  "modes": [
+    "partner_cupy_grid_components_3d",
+    "optix_rt_core_flags_cupy_grid_components_3d",
+    "optix_rt_core_flags_cupy_microcell_graph_components_3d"
+  ],
+  "point_count": 65536,
+  "repeat_count": 3,
+  "rows": [
+    {
+      "app_elapsed_sec": 0.9936815965920687,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": null,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 1.335236981511116,
+      "repeat_index": 1,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5279496628791094,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": null,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.8768913522362709,
+      "repeat_index": 2,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5252978578209877,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": null,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.86065867356956,
+      "repeat_index": 3,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 1.0222897045314312,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": 0.1829198505729437,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.683381536975503,
+      "outer_elapsed_sec": 1.3607790395617485,
+      "repeat_index": 1,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5601183790713549,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": 0.18215549923479557,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.23186997883021832,
+      "outer_elapsed_sec": 0.8950858395546675,
+      "repeat_index": 2,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5269281733781099,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": null,
+      "cupy_component_continuation_sec": 0.18113059736788273,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.20872698910534382,
+      "outer_elapsed_sec": 0.8626692667603493,
+      "repeat_index": 3,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.6118737049400806,
+      "cell_graph_fast_path_active": true,
+      "cell_graph_granularity": "clique_safe_microcell",
+      "cupy_component_continuation_sec": 0.24345791339874268,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_microcell_graph_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.2192445881664753,
+      "outer_elapsed_sec": 0.9526960719376802,
+      "repeat_index": 1,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.594441145658493,
+      "cell_graph_fast_path_active": true,
+      "cell_graph_granularity": "clique_safe_microcell",
+      "cupy_component_continuation_sec": 0.2414617668837309,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_microcell_graph_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.21438906714320183,
+      "outer_elapsed_sec": 0.9453782457858324,
+      "repeat_index": 2,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.5514596328139305,
+      "cell_graph_fast_path_active": true,
+      "cell_graph_granularity": "clique_safe_microcell",
+      "cupy_component_continuation_sec": 0.2412423975765705,
+      "fallback_reason": null,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_microcell_graph_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.18787654116749763,
+      "outer_elapsed_sec": 0.834663150832057,
+      "repeat_index": 3,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true
+}
