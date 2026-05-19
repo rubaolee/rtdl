@@ -1,0 +1,242 @@
+{
+  "app": "rt_dbscan_benchmark",
+  "claim_boundary": {
+    "full_dbscan": true,
+    "host_bucket_index_used": false,
+    "native_dbscan_abi_added": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "rt_core_accelerated": true
+  },
+  "dataset": "tiny",
+  "elapsed_sec": 1.3623885475099087,
+  "matches_reference": true,
+  "metadata": {
+    "adapter": "PreparedOptixCupyRadiusGraphChunkedAdjacency3D.run",
+    "adjacency_write_pass_count": 2,
+    "automatic_hidden_dispatcher": false,
+    "chunk_count": 1,
+    "chunk_directed_edge_counts": [
+      33
+    ],
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "component_union_policy": "monotonic_atomic_min_from_chunked_directed_edge_stream",
+    "count_metadata": [
+      {
+        "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+        "app_count_host_materialization": false,
+        "app_count_materialization": "native_optix_rt_device_columns",
+        "direct_device_handoff_authorized": true,
+        "input_contract": "host_query_points_prepared_native_search_scene",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "native_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.00013127177953720093,
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_execution_path": "prepared_rt_core_count_threshold_3d",
+          "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 9,
+          "radius": 0.2,
+          "rt_core_accelerated": true,
+          "search_count": 9,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "threshold": 9,
+          "transfer_mode": "host_query_points_to_device_threshold_columns",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "output_columns_reused": true,
+        "paper_speedup_claim_authorized": false,
+        "partner": "cupy",
+        "query_count": 9,
+        "radius": 0.2,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "threshold": 9,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      }
+    ],
+    "direct_device_handoff_authorized": true,
+    "edge_stream_policy": "memory_bounded_optix_written_directed_radius_graph_neighbor_index_stream_chunks",
+    "edge_stream_reused": false,
+    "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+    "materializes_bounded_directed_adjacency_chunks": true,
+    "materializes_directed_adjacency_stream": false,
+    "materializes_neighbor_rows": false,
+    "materializes_neighbor_summaries": false,
+    "max_chunk_directed_edge_count": 33,
+    "max_chunk_points": 4096,
+    "min_neighbors": 3,
+    "native_engine_row_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+    "native_engine_summary_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+    "native_execution_path": "prepared_rt_core_chunked_adjacency_3d",
+    "native_label_adjacency_metadata": [
+      {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.00014624744653701782,
+        "native_engine_row_contract": "generic_fixed_radius_adjacency_3d_device_columns",
+        "native_execution_path": "prepared_rt_core_adjacency_3d",
+        "native_symbol": "rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs",
+        "neighbor_index_capacity": 33,
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "query_count": 9,
+        "radius": 0.2,
+        "rt_core_accelerated": true,
+        "search_count": 9,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "host_query_points_to_device_adjacency_columns",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      }
+    ],
+    "native_union_adjacency_metadata": [
+      {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.29258895106613636,
+        "native_engine_row_contract": "generic_fixed_radius_adjacency_3d_device_columns",
+        "native_execution_path": "prepared_rt_core_adjacency_3d",
+        "native_symbol": "rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs",
+        "neighbor_index_capacity": 33,
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "query_count": 9,
+        "radius": 0.2,
+        "rt_core_accelerated": true,
+        "search_count": 9,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "host_query_points_to_device_adjacency_columns",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      }
+    ],
+    "neighbor_count_policy": "exact_full_degree_from_prepared_rt_chunked_adjacency_stream",
+    "optix_backend_used": true,
+    "output_columns_reused": true,
+    "output_columns_true_zero_copy_authorized": true,
+    "partner": "cupy",
+    "partner_reference_contract": "generic_prepared_optix_cupy_chunked_radius_graph_adjacency_component_labels_3d",
+    "path": "optix_rt_chunked_adjacency_cupy_radius_graph_components_3d",
+    "point_count": 9,
+    "prepared_chunked_adjacency_run_count": 1,
+    "prepared_optix_scene_reused": true,
+    "radius": 0.2,
+    "rt_core_accelerated": true,
+    "rt_core_speedup_claim_authorized": false,
+    "total_directed_edge_count": 33,
+    "true_zero_copy_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 3,
+  "mode": "optix_rt_core_chunked_adjacency_cupy_components_3d",
+  "paper": {
+    "authors": [
+      "Vani Nagarajan",
+      "Milind Kulkarni"
+    ],
+    "doi": "10.1109/IPDPS54959.2023.00100",
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023"
+  },
+  "point_count": 9,
+  "radius": 0.2,
+  "reference_signature": {
+    "cluster_sizes": {
+      "1": 4,
+      "2": 4
+    },
+    "core_count": 8,
+    "noise_count": 1
+  },
+  "rows": [
+    {
+      "cluster_id": 1,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 1
+    },
+    {
+      "cluster_id": 1,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 2
+    },
+    {
+      "cluster_id": 1,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 3
+    },
+    {
+      "cluster_id": 1,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 4
+    },
+    {
+      "cluster_id": 2,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 5
+    },
+    {
+      "cluster_id": 2,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 6
+    },
+    {
+      "cluster_id": 2,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 7
+    },
+    {
+      "cluster_id": 2,
+      "is_core": true,
+      "neighbor_count": 4,
+      "point_id": 8
+    },
+    {
+      "cluster_id": -1,
+      "is_core": false,
+      "neighbor_count": 1,
+      "point_id": 9
+    }
+  ],
+  "seed": 20260519,
+  "signature": {
+    "cluster_sizes": {
+      "1": 4,
+      "2": 4
+    },
+    "core_count": 8,
+    "noise_count": 1
+  }
+}

@@ -410,6 +410,13 @@ Future work:
   adjacency stream, while stream preparation is heavier. The next performance
   step is still bounded/chunked or grouped continuation, not DBSCAN-native
   engine code.
+- Goal2433 added the bounded/chunked OptiX adjacency continuation. It preserves
+  exact labels and cuts peak adjacency storage from one full dense stream to a
+  per-chunk stream, but is slower when the full stream fits because it currently
+  fills chunks twice: once for union and once for border/core labeling. The next
+  performance step is to fuse or cache enough per-chunk continuation state to
+  avoid the second RT fill, or to add a generic grouped stream-reduction
+  primitive.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.

@@ -36,6 +36,7 @@ No DBSCAN-specific native ABI is added.
 | `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | OptiX RT count-threshold device columns feed a prepared CuPy device-grid component continuation | Same generic contract with reusable grid/order/workspace state for steady-state probes |
 | `optix_rt_core_adjacency_cupy_components_3d` | OptiX RT writes a generic directed fixed-radius adjacency stream, then CuPy labels components | First generic RT-produced continuation stream; no DBSCAN-native engine code |
+| `optix_rt_core_chunked_adjacency_cupy_components_3d` | OptiX RT writes bounded generic directed fixed-radius adjacency chunks, then CuPy labels components | Memory-bounded stream variant; does not hold the whole edge table at once |
 | `optix_rt_core_flags_cupy_microcell_graph_components_3d` | OptiX RT count-threshold device columns feed a clique-safe CuPy microcell component continuation | Experimental all-core fast path; falls back to the CuPy device grid when any point is non-core |
 | `partner_core_flags_3d` | Generic partner 3-D fixed-radius core flags only | Core-point phase, not full DBSCAN |
 | `optix_prepared_rows` | Prepared OptiX-backend 3-D fixed-radius neighbor rows, then Python component labels | Prepared uniform-cell CUDA path; materializes rows |
@@ -172,6 +173,18 @@ labels. The contract is generic radius-graph adjacency, not DBSCAN-specific
 native code. It is also memory bounded: dense inputs can create very large
 directed edge streams, so use the prepared-grid mode when a dataset does not
 need materialized edges.
+
+For a memory-bounded variant of the same contract, use:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_chunked_adjacency_cupy_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+This path counts all degrees once, then fills and consumes adjacency chunks.
+It is designed for dense rows where a single giant `neighbor_indices` array is
+the wrong memory contract. It pays two chunked adjacency passes because labels
+need the final union state before border points can be assigned.
 
 For the experimental all-core microcell continuation, use:
 

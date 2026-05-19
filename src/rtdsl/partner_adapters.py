@@ -2596,6 +2596,111 @@ def _cupy_radius_graph_components_3d_adjacency_kernels(cupy):
     return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS
 
 
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS = None
+
+
+def _cupy_radius_graph_components_3d_chunked_adjacency_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int find_chunk_adj_root_readonly(const int* parent, int item) {
+            int root = item;
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
+                root = parent[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_chunk_adj_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_chunk_adj_root_readonly(parent, left);
+                int right_root = find_chunk_adj_root_readonly(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_chunk_adjacency_union_kernel(
+            const int chunk_count,
+            const int source_start,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            int* parent
+        ) {
+            const int local = blockDim.x * blockIdx.x + threadIdx.x;
+            if (local >= chunk_count) {
+                return;
+            }
+            const int point = source_start + local;
+            if (core_flags[point] == 0u) {
+                return;
+            }
+            const long long start = edge_offsets[local];
+            const long long end = edge_offsets[local + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (other <= point || core_flags[other] == 0u) {
+                    continue;
+                }
+                union_chunk_adj_min_root(parent, point, other);
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_chunk_adjacency_label_kernel(
+            const int chunk_count,
+            const int source_start,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            const int* parent,
+            long long* labels
+        ) {
+            const int local = blockDim.x * blockIdx.x + threadIdx.x;
+            if (local >= chunk_count) {
+                return;
+            }
+            const int point = source_start + local;
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_chunk_adj_root_readonly(parent, point) + 1ll;
+                return;
+            }
+            int best_root = -1;
+            const long long start = edge_offsets[local];
+            const long long end = edge_offsets[local + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (core_flags[other] == 0u) {
+                    continue;
+                }
+                const int root = find_chunk_adj_root_readonly(parent, other);
+                if (best_root < 0 || root < best_root) {
+                    best_root = root;
+                }
+            }
+            labels[point] = best_root < 0 ? -1ll : (long long)best_root + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS = (
+            cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_union_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS
+
+
 def radius_graph_components_3d_cupy_grid_partner_columns(
     point_columns: dict[str, object],
     *,
@@ -3400,6 +3505,227 @@ class PreparedOptixCupyRadiusGraphAdjacency3D:
             pass
 
 
+class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
+    """Memory-bounded OptiX RT adjacency chunks plus CuPy grouped continuation."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "cupy",
+        max_chunk_points: int = 4096,
+        max_directed_edges_per_chunk: int | None = None,
+    ):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphChunkedAdjacency3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        max_chunk_points = int(max_chunk_points)
+        if max_chunk_points <= 0:
+            raise ValueError("max_chunk_points must be positive")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy chunked adjacency radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.point_count = len(self.point_rows)
+        self.max_chunk_points = max_chunk_points
+        self.max_directed_edges_per_chunk = (
+            None if max_directed_edges_per_chunk is None else int(max_directed_edges_per_chunk)
+        )
+        if self.max_directed_edges_per_chunk is not None and self.max_directed_edges_per_chunk <= 0:
+            raise ValueError("max_directed_edges_per_chunk must be positive when provided")
+        self.runtime = _partner_module(partner)
+        self.cupy = self.runtime["module"]
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixCupyRadiusGraphChunkedAdjacency3D requires 3-D point rows")
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.chunk_ranges = [
+            (start, min(start + max_chunk_points, self.point_count))
+            for start in range(0, self.point_count, max_chunk_points)
+        ]
+        self.neighbor_counts = self.cupy.empty((self.point_count,), dtype=self.cupy.uint32)
+        self.count_metadata: list[dict[str, object]] = []
+        for start, end in self.chunk_ranges:
+            chunk_rows = self.point_rows[start:end]
+            output_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+                end - start,
+                partner=partner,
+            )
+            result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                self.prepared_native,
+                chunk_rows,
+                radius=radius,
+                threshold=self.point_count,
+                partner=partner,
+                output_columns=output_columns,
+                return_metadata=True,
+            )
+            self.neighbor_counts[start:end] = result["columns"]["neighbor_counts"]
+            self.count_metadata.append(dict(result["metadata"]))
+        self.runtime["sync"]()
+        self.total_directed_edge_count = int(self.neighbor_counts.astype(self.cupy.int64, copy=False).sum().item())
+        self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_chunked_adjacency_kernels(self.cupy)
+        self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
+        self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.labels_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int64)
+        self.run_count = 0
+        self.closed = False
+
+    def _chunk_adjacency(self, start: int, end: int):
+        counts = self.neighbor_counts[start:end]
+        edge_offsets = self.cupy.empty((end - start + 1,), dtype=self.cupy.int64)
+        edge_offsets[0] = 0
+        edge_offsets[1:] = self.cupy.cumsum(counts.astype(self.cupy.int64, copy=False))
+        self.runtime["sync"]()
+        directed_edge_count = int(edge_offsets[-1].item())
+        if (
+            self.max_directed_edges_per_chunk is not None
+            and directed_edge_count > self.max_directed_edges_per_chunk
+        ):
+            raise ValueError(
+                "chunked OptiX radius-graph adjacency stream exceeds max_directed_edges_per_chunk "
+                f"({directed_edge_count} > {self.max_directed_edges_per_chunk})"
+            )
+        neighbor_indices = self.cupy.empty((directed_edge_count,), dtype=self.cupy.int32)
+        native_result = self.prepared_native.write_device_adjacency_columns(
+            self.point_rows[start:end],
+            radius=self.radius,
+            edge_offsets=edge_offsets,
+            neighbor_indices_out=neighbor_indices,
+        )
+        return edge_offsets, neighbor_indices, directed_edge_count, dict(native_result["metadata"])
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy chunked adjacency radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flags = (self.neighbor_counts >= min_neighbors).astype(self.cupy.uint32, copy=False)
+        self.parent_workspace[...] = self.parent_initial
+        threads = 256
+        chunk_edge_counts: list[int] = []
+        native_union_metadata: list[dict[str, object]] = []
+        for start, end in self.chunk_ranges:
+            edge_offsets, neighbor_indices, directed_edge_count, native_metadata = self._chunk_adjacency(start, end)
+            blocks = (max(1, ((end - start) + threads - 1) // threads),)
+            self.union_kernel(
+                blocks,
+                (threads,),
+                (
+                    end - start,
+                    start,
+                    edge_offsets,
+                    neighbor_indices,
+                    core_flags,
+                    self.parent_workspace,
+                ),
+            )
+            chunk_edge_counts.append(directed_edge_count)
+            native_union_metadata.append(native_metadata)
+        self.runtime["sync"]()
+
+        native_label_metadata: list[dict[str, object]] = []
+        for start, end in self.chunk_ranges:
+            edge_offsets, neighbor_indices, _, native_metadata = self._chunk_adjacency(start, end)
+            blocks = (max(1, ((end - start) + threads - 1) // threads),)
+            self.label_kernel(
+                blocks,
+                (threads,),
+                (
+                    end - start,
+                    start,
+                    edge_offsets,
+                    neighbor_indices,
+                    core_flags,
+                    self.parent_workspace,
+                    self.labels_workspace,
+                ),
+            )
+            native_label_metadata.append(native_metadata)
+        self.runtime["sync"]()
+
+        chunked_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": self.neighbor_counts,
+        }
+        metadata = {
+            "adapter": "PreparedOptixCupyRadiusGraphChunkedAdjacency3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_cupy_chunked_radius_graph_adjacency_component_labels_3d",
+            "native_engine_row_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+            "native_execution_path": "prepared_rt_core_chunked_adjacency_3d",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "chunk_count": len(self.chunk_ranges),
+            "max_chunk_points": self.max_chunk_points,
+            "total_directed_edge_count": self.total_directed_edge_count,
+            "max_chunk_directed_edge_count": max(chunk_edge_counts) if chunk_edge_counts else 0,
+            "chunk_directed_edge_counts": tuple(chunk_edge_counts),
+            "edge_stream_policy": "memory_bounded_optix_written_directed_radius_graph_neighbor_index_stream_chunks",
+            "edge_stream_reused": chunked_reused,
+            "prepared_chunked_adjacency_run_count": self.run_count,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_chunked_directed_edge_stream",
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": True,
+            "adjacency_write_pass_count": 2,
+            "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+            "count_metadata": tuple(self.count_metadata),
+            "native_union_adjacency_metadata": tuple(native_union_metadata),
+            "native_label_adjacency_metadata": tuple(native_label_metadata),
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphChunkedAdjacency3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 def prepare_optix_cupy_radius_graph_components_3d(
     point_rows,
     *,
@@ -3435,6 +3761,32 @@ def prepare_optix_cupy_radius_graph_adjacency_3d(
 
 def radius_graph_components_3d_optix_cupy_prepared_adjacency_partner_columns(
     prepared: PreparedOptixCupyRadiusGraphAdjacency3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_cupy_radius_graph_chunked_adjacency_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+    max_chunk_points: int = 4096,
+    max_directed_edges_per_chunk: int | None = None,
+) -> PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
+    return PreparedOptixCupyRadiusGraphChunkedAdjacency3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+        max_chunk_points=max_chunk_points,
+        max_directed_edges_per_chunk=max_directed_edges_per_chunk,
+    )
+
+
+def radius_graph_components_3d_optix_cupy_prepared_chunked_adjacency_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphChunkedAdjacency3D,
     *,
     min_neighbors: int,
     return_metadata: bool = False,
