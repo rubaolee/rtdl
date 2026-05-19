@@ -65,7 +65,7 @@ class Goal2403RtDbscanRepeatProbePodEvidenceTest(unittest.TestCase):
                 self.assertLess(statistics.median(cupy_seconds[1:]), statistics.median(bridge_seconds[1:]))
 
                 for row in bridge_rows:
-                    self.assertTrue(row["rt_core_accelerated"])
+                    self.assertFalse(row["rt_core_accelerated"])
                     self.assertFalse(row["materializes_neighbor_rows"])
                     self.assertIsNotNone(row["optix_core_flag_sec"])
                     self.assertIsNotNone(row["cupy_component_continuation_sec"])
@@ -76,6 +76,7 @@ class Goal2403RtDbscanRepeatProbePodEvidenceTest(unittest.TestCase):
         self.assertIn("accept-with-boundary", report)
         self.assertIn("warm steady-state behavior", report)
         self.assertIn("not a paper-speedup claim", report)
+        self.assertIn("rather than RT cores", report)
         self.assertIn("not yet faster than the optimized pure CuPy device-grid", report)
         self.assertIn("device-resident output handoff", report)
 

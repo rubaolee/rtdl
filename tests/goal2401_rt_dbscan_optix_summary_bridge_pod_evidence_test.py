@@ -31,8 +31,11 @@ class Goal2401RtDbscanOptixSummaryBridgePodEvidenceTest(unittest.TestCase):
 
                 self.assertEqual(bridge["signature"], host["signature"])
                 self.assertEqual(bridge["signature"], grid["signature"])
-                self.assertTrue(bridge["claim_boundary"]["rt_core_accelerated"])
+                self.assertFalse(bridge["claim_boundary"]["rt_core_accelerated"])
+                self.assertTrue(bridge["claim_boundary"]["optix_backend_used"])
                 self.assertTrue(bridge["metadata"]["caller_supplied_core_flags"])
+                self.assertTrue(bridge["metadata"]["optix_backend_used"])
+                self.assertEqual(bridge["metadata"]["native_execution_path"], "prepared_uniform_cell_cuda_grid_3d")
                 self.assertFalse(bridge["metadata"]["materializes_neighbor_rows"])
                 self.assertEqual(bridge["metadata"]["optix_core_flag_summary_rows"], 4096)
                 self.assertIsNone(bridge["metadata"]["candidate_edge_count"])
@@ -50,6 +53,7 @@ class Goal2401RtDbscanOptixSummaryBridgePodEvidenceTest(unittest.TestCase):
         self.assertIn("avoids O(edges) neighbor-row", report)
         self.assertIn("materialization", report)
         self.assertIn("not a paper-speedup claim", report)
+        self.assertIn("not the RT-core paper path", report)
 
 
 if __name__ == "__main__":

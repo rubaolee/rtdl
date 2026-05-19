@@ -1,155 +1,155 @@
 {
-  "app": "rt_dbscan_repeat_probe",
-  "claim_boundary": {
-    "broad_rt_core_speedup_claim_authorized": false,
-    "paper_dataset_reproduction": false,
-    "paper_speedup_claim_authorized": false,
-    "steady_state_probe_only": true
-  },
-  "dataset": "road3d",
-  "modes": [
-    "partner_cupy_grid_components_3d",
-    "optix_core_flags_cupy_grid_components_3d"
-  ],
-  "point_count": 4096,
-  "repeat_count": 4,
-  "rows": [
-    {
-      "app_elapsed_sec": 0.4889868274331093,
-      "cupy_component_continuation_sec": null,
-      "materializes_neighbor_rows": null,
-      "mode": "partner_cupy_grid_components_3d",
-      "optix_core_flag_sec": null,
-      "outer_elapsed_sec": 0.5069010835140944,
-      "repeat_index": 1,
-      "rt_core_accelerated": false,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    },
-    {
-      "app_elapsed_sec": 0.011193303391337395,
-      "cupy_component_continuation_sec": null,
-      "materializes_neighbor_rows": null,
-      "mode": "partner_cupy_grid_components_3d",
-      "optix_core_flag_sec": null,
-      "outer_elapsed_sec": 0.027760015800595284,
-      "repeat_index": 2,
-      "rt_core_accelerated": false,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    },
-    {
-      "app_elapsed_sec": 0.013758065178990364,
-      "cupy_component_continuation_sec": null,
-      "materializes_neighbor_rows": null,
-      "mode": "partner_cupy_grid_components_3d",
-      "optix_core_flag_sec": null,
-      "outer_elapsed_sec": 0.031393786892294884,
-      "repeat_index": 3,
-      "rt_core_accelerated": false,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    },
-    {
-      "app_elapsed_sec": 0.014321921393275261,
-      "cupy_component_continuation_sec": null,
-      "materializes_neighbor_rows": null,
-      "mode": "partner_cupy_grid_components_3d",
-      "optix_core_flag_sec": null,
-      "outer_elapsed_sec": 0.03644128143787384,
-      "repeat_index": 4,
-      "rt_core_accelerated": false,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    },
-    {
-      "app_elapsed_sec": 0.8669265899807215,
-      "cupy_component_continuation_sec": 0.0033423639833927155,
-      "materializes_neighbor_rows": false,
-      "mode": "optix_core_flags_cupy_grid_components_3d",
-      "optix_core_flag_sec": 0.8538301605731249,
-      "outer_elapsed_sec": 0.8840975966304541,
-      "repeat_index": 1,
-      "rt_core_accelerated": true,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    },
-    {
-      "app_elapsed_sec": 0.03144126757979393,
-      "cupy_component_continuation_sec": 0.002973254770040512,
-      "materializes_neighbor_rows": false,
-      "mode": "optix_core_flags_cupy_grid_components_3d",
-      "optix_core_flag_sec": 0.019537216052412987,
-      "outer_elapsed_sec": 0.048865437507629395,
-      "repeat_index": 2,
-      "rt_core_accelerated": true,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    },
-    {
-      "app_elapsed_sec": 0.048657506704330444,
-      "cupy_component_continuation_sec": 0.003203991800546646,
-      "materializes_neighbor_rows": false,
-      "mode": "optix_core_flags_cupy_grid_components_3d",
-      "optix_core_flag_sec": 0.03649633564054966,
-      "outer_elapsed_sec": 0.06819525174796581,
-      "repeat_index": 3,
-      "rt_core_accelerated": true,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    },
-    {
-      "app_elapsed_sec": 0.0315623190253973,
-      "cupy_component_continuation_sec": 0.002939429134130478,
-      "materializes_neighbor_rows": false,
-      "mode": "optix_core_flags_cupy_grid_components_3d",
-      "optix_core_flag_sec": 0.019698522984981537,
-      "outer_elapsed_sec": 0.04860037937760353,
-      "repeat_index": 4,
-      "rt_core_accelerated": true,
-      "signature": {
-        "cluster_sizes": {
-          "1": 4096
-        },
-        "core_count": 4096,
-        "noise_count": 0
-      }
-    }
-  ],
-  "signatures_match": true
+    "app":  "rt_dbscan_repeat_probe",
+    "claim_boundary":  {
+                           "broad_rt_core_speedup_claim_authorized":  false,
+                           "paper_dataset_reproduction":  false,
+                           "paper_speedup_claim_authorized":  false,
+                           "steady_state_probe_only":  true
+                       },
+    "dataset":  "road3d",
+    "modes":  [
+                  "partner_cupy_grid_components_3d",
+                  "optix_core_flags_cupy_grid_components_3d"
+              ],
+    "point_count":  4096,
+    "repeat_count":  4,
+    "rows":  [
+                 {
+                     "app_elapsed_sec":  0.4889868274331093,
+                     "cupy_component_continuation_sec":  null,
+                     "materializes_neighbor_rows":  null,
+                     "mode":  "partner_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  null,
+                     "outer_elapsed_sec":  0.5069010835140944,
+                     "repeat_index":  1,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 },
+                 {
+                     "app_elapsed_sec":  0.011193303391337395,
+                     "cupy_component_continuation_sec":  null,
+                     "materializes_neighbor_rows":  null,
+                     "mode":  "partner_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  null,
+                     "outer_elapsed_sec":  0.027760015800595284,
+                     "repeat_index":  2,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 },
+                 {
+                     "app_elapsed_sec":  0.013758065178990364,
+                     "cupy_component_continuation_sec":  null,
+                     "materializes_neighbor_rows":  null,
+                     "mode":  "partner_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  null,
+                     "outer_elapsed_sec":  0.031393786892294884,
+                     "repeat_index":  3,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 },
+                 {
+                     "app_elapsed_sec":  0.014321921393275261,
+                     "cupy_component_continuation_sec":  null,
+                     "materializes_neighbor_rows":  null,
+                     "mode":  "partner_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  null,
+                     "outer_elapsed_sec":  0.03644128143787384,
+                     "repeat_index":  4,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 },
+                 {
+                     "app_elapsed_sec":  0.8669265899807215,
+                     "cupy_component_continuation_sec":  0.0033423639833927155,
+                     "materializes_neighbor_rows":  false,
+                     "mode":  "optix_core_flags_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  0.8538301605731249,
+                     "outer_elapsed_sec":  0.8840975966304541,
+                     "repeat_index":  1,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 },
+                 {
+                     "app_elapsed_sec":  0.03144126757979393,
+                     "cupy_component_continuation_sec":  0.002973254770040512,
+                     "materializes_neighbor_rows":  false,
+                     "mode":  "optix_core_flags_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  0.019537216052412987,
+                     "outer_elapsed_sec":  0.048865437507629395,
+                     "repeat_index":  2,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 },
+                 {
+                     "app_elapsed_sec":  0.048657506704330444,
+                     "cupy_component_continuation_sec":  0.003203991800546646,
+                     "materializes_neighbor_rows":  false,
+                     "mode":  "optix_core_flags_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  0.03649633564054966,
+                     "outer_elapsed_sec":  0.06819525174796581,
+                     "repeat_index":  3,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 },
+                 {
+                     "app_elapsed_sec":  0.0315623190253973,
+                     "cupy_component_continuation_sec":  0.002939429134130478,
+                     "materializes_neighbor_rows":  false,
+                     "mode":  "optix_core_flags_cupy_grid_components_3d",
+                     "optix_core_flag_sec":  0.019698522984981537,
+                     "outer_elapsed_sec":  0.04860037937760353,
+                     "repeat_index":  4,
+                     "rt_core_accelerated":  false,
+                     "signature":  {
+                                       "cluster_sizes":  {
+                                                             "1":  4096
+                                                         },
+                                       "core_count":  4096,
+                                       "noise_count":  0
+                                   }
+                 }
+             ],
+    "signatures_match":  true
 }

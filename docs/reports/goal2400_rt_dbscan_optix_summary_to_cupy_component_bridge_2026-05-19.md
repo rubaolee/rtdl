@@ -7,13 +7,14 @@ Status: implementation slice; pod timing pending
 ## Purpose
 
 Goal2398 closed the immediate CuPy component-continuation pathology but left the
-main RT-DBSCAN architecture gap: OptiX fixed-radius traversal still materialized
-every neighbor row before the DBSCAN-style component continuation.
+main RT-DBSCAN architecture gap: the OptiX-backend prepared 3-D fixed-radius
+path still materialized every neighbor row before the DBSCAN-style component
+continuation.
 
 Goal2400 adds a smaller generic bridge:
 
 ```text
-OptiX prepared fixed-radius summaries -> CuPy device-grid component continuation
+OptiX-backend prepared uniform-cell fixed-radius summaries -> CuPy device-grid component continuation
 ```
 
 This avoids O(edges) neighbor-row materialization. It still materializes
@@ -32,26 +33,28 @@ into CuPy, so it is not the final paper-style device-output continuation.
 
 This remains generic:
 
-- OptiX emits fixed-radius ranked neighbor summaries.
+- The OptiX backend emits fixed-radius ranked neighbor summaries through its
+  prepared uniform-cell CUDA path.
 - The partner continuation consumes generic core flags/counts and point columns.
 - No DBSCAN-specific native ABI is added.
 
 The bridge is exact for DBSCAN core classification when `min_neighbors <= 64`,
-because the OptiX summary is requested with `k_max=min_neighbors`: counts are
+because the backend summary is requested with `k_max=min_neighbors`: counts are
 threshold-capped, but the core flag is sufficient for component labeling.
 
 ## Claim Boundary
 
 This is a bridge step, not final RT-DBSCAN parity with the IPDPS paper. It can
-support a narrower claim if pod timing confirms it:
+support the following narrow claim:
 
 ```text
-RTDL can combine RT-core fixed-radius threshold summaries with a device-resident
+RTDL can combine backend fixed-radius threshold summaries with a device-resident
 partner component continuation without emitting all neighbor rows.
 ```
 
 It cannot yet claim:
 
+- RT-core acceleration for this prepared 3-D summary mode;
 - full device-resident OptiX output handoff;
 - paper reproduction;
 - paper-level speedup;

@@ -400,7 +400,9 @@ def run_rt_dbscan_benchmark(
                 "optix_core_flag_sec": optix_elapsed,
                 "cupy_component_continuation_sec": continuation_elapsed,
                 "native_engine_summary_contract": "generic_prepared_ranked_fixed_radius_neighbor_summaries_3d",
-                "rt_core_accelerated": True,
+                "native_execution_path": "prepared_uniform_cell_cuda_grid_3d",
+                "optix_backend_used": True,
+                "rt_core_accelerated": False,
                 "materializes_neighbor_summaries": True,
                 "materializes_neighbor_rows": False,
                 "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
@@ -446,7 +448,9 @@ def run_rt_dbscan_benchmark(
             "path": "optix_prepared_fixed_radius_neighbor_rows_3d",
             "neighbor_row_count": len(neighbor_rows),
             "native_engine_row_contract": "generic_prepared_fixed_radius_neighbors_3d_rows",
-            "rt_core_accelerated": True,
+            "native_execution_path": "prepared_uniform_cell_cuda_grid_3d",
+            "optix_backend_used": True,
+            "rt_core_accelerated": False,
             "materializes_neighbor_rows": True,
         }
     else:

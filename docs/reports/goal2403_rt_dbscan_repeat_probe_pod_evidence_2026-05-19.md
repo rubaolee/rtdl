@@ -34,7 +34,7 @@ This separates cold setup behavior from warm steady-state behavior.
 
 ### Clustered3d
 
-| Repeat | Pure CuPy device-grid seconds | OptiX summaries + CuPy continuation seconds | OptiX summary seconds | CuPy continuation seconds |
+| Repeat | Pure CuPy device-grid seconds | OptiX-backend summaries + CuPy continuation seconds | Backend summary seconds | CuPy continuation seconds |
 | ---: | ---: | ---: | ---: | ---: |
 | 1 | 0.611150 | 0.880737 | 0.862292 | 0.008425 |
 | 2 | 0.019493 | 0.049820 | 0.031403 | 0.008290 |
@@ -43,15 +43,16 @@ This separates cold setup behavior from warm steady-state behavior.
 
 ### Road3d
 
-| Repeat | Pure CuPy device-grid seconds | OptiX summaries + CuPy continuation seconds | OptiX summary seconds | CuPy continuation seconds |
+| Repeat | Pure CuPy device-grid seconds | OptiX-backend summaries + CuPy continuation seconds | Backend summary seconds | CuPy continuation seconds |
 | ---: | ---: | ---: | ---: | ---: |
 | 1 | 0.488987 | 0.866927 | 0.853830 | 0.003342 |
 | 2 | 0.011193 | 0.031441 | 0.019537 | 0.002973 |
 | 3 | 0.013758 | 0.048658 | 0.036496 | 0.003204 |
 | 4 | 0.014322 | 0.031562 | 0.019699 | 0.002939 |
 
-Both JSON artifacts report `signatures_match=true`. The OptiX bridge rows also
-report `rt_core_accelerated=true` and `materializes_neighbor_rows=false`.
+Both JSON artifacts report `signatures_match=true`. The OptiX-backend bridge
+rows also report `rt_core_accelerated=false` and
+`materializes_neighbor_rows=false`.
 
 ## Interpretation
 
@@ -62,13 +63,14 @@ Goal2403 gives the useful missing timing view from Goal2401:
 - Repeats 2-4 show the bridge much closer to the pure CuPy device-grid path.
 - The pure CuPy device-grid path remains faster on these two synthetic 4096
   point rows.
-- The OptiX bridge still proves an important composition shape: generic RT-core
+- The OptiX-backend bridge still proves an important composition shape: generic
   fixed-radius summaries can feed a generic partner component continuation
   without O(edges) neighbor-row materialization.
 
 The remaining performance gap is now precise. The bridge needs cheaper repeated
-OptiX summary execution or a stronger device-resident output handoff. This is a
-generic runtime problem, not a reason to add DBSCAN-specific native ABI.
+backend summary execution, or a true RT traversal summary path with
+device-resident output handoff. This is a generic runtime problem, not a reason
+to add DBSCAN-specific native ABI.
 
 ## Claim Boundary
 
@@ -79,7 +81,8 @@ Goal2403 is `accept-with-boundary`.
   bridge.
 - Boundary: this is not paper reproduction, not a paper-speedup claim, and not
   a broad RT-core DBSCAN acceleration claim. The current evidence says the
-  bridge is architecturally useful but not yet faster than the optimized pure
-  CuPy device-grid continuation on the measured synthetic rows.
+  bridge is architecturally useful, uses the OptiX backend's prepared
+  uniform-cell CUDA path rather than RT cores, and is not yet faster than the
+  optimized pure CuPy device-grid continuation on the measured synthetic rows.
 
 Short form: the bridge is not yet faster than the optimized pure CuPy device-grid baseline.

@@ -51,6 +51,8 @@ class Goal2400RtDbscanOptixSummaryBridgeTest(unittest.TestCase):
         self.assertEqual(native_hits, [])
         self.assertIn("No DBSCAN-specific native ABI is added", report)
         self.assertIn("not the final paper-style device-output continuation", report)
+        self.assertIn("It cannot yet claim:", report)
+        self.assertIn("RT-core acceleration for this prepared 3-D summary mode", report)
         self.assertIn("min_neighbors <= 64", report)
 
 
