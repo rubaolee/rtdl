@@ -2742,6 +2742,144 @@ class PreparedCupyRadiusGraphComponents3DGrid:
         return columns
 
 
+class PreparedOptixCupyRadiusGraphComponents3D:
+    """Prepared generic OptiX RT + CuPy continuation for 3-D radius graph labels."""
+
+    def __init__(self, point_rows, *, radius: float, partner: str = "cupy"):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphComponents3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy radius graph components requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.point_count = len(self.point_rows)
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        self.prepared_grid = PreparedCupyRadiusGraphComponents3DGrid(
+            self.point_columns,
+            radius=radius,
+            partner=partner,
+        )
+        self.output_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.run_count = 0
+        self.closed = False
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        import time
+
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy radius graph components handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        optix_start = time.perf_counter()
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            self.prepared_native,
+            self.point_rows,
+            radius=self.radius,
+            threshold=min_neighbors,
+            partner=self.partner,
+            output_columns=self.output_columns,
+            return_metadata=True,
+        )
+        optix_elapsed = time.perf_counter() - optix_start
+        continuation_start = time.perf_counter()
+        result = radius_graph_components_3d_cupy_prepared_grid_partner_columns(
+            self.prepared_grid,
+            min_neighbors=min_neighbors,
+            core_flags=threshold_result["columns"]["threshold_flags"],
+            neighbor_counts=threshold_result["columns"]["neighbor_counts"],
+            core_flag_source="optix_rt_fixed_radius_count_threshold_3d_device_outputs",
+            return_metadata=True,
+        )
+        continuation_elapsed = time.perf_counter() - continuation_start
+        self.run_count += 1
+        columns = result["columns"]
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "adapter": "PreparedOptixCupyRadiusGraphComponents3D.run",
+                "partner": self.partner,
+                "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+                "partner_reference_contract": "generic_prepared_optix_cupy_radius_graph_component_labels_3d",
+                "native_engine_summary_contract": "generic_prepared_fixed_radius_count_threshold_3d_device_columns",
+                "native_execution_path": "prepared_rt_core_count_threshold_3d",
+                "point_count": self.point_count,
+                "radius": self.radius,
+                "min_neighbors": min_neighbors,
+                "prepared_composite_reused": self.run_count > 1,
+                "prepared_composite_run_count": self.run_count,
+                "prepared_optix_scene_reused": True,
+                "prepared_cupy_grid_reused": bool(metadata.get("prepared_grid_reused")),
+                "output_columns_reused": True,
+                "optix_rt_count_threshold_sec": optix_elapsed,
+                "cupy_component_continuation_sec": continuation_elapsed,
+                "optix_backend_used": True,
+                "rt_core_accelerated": True,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+                "threshold_metadata": threshold_result["metadata"],
+                "automatic_hidden_dispatcher": False,
+                "direct_device_handoff_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "v2_0_release_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphComponents3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_cupy_radius_graph_components_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+) -> PreparedOptixCupyRadiusGraphComponents3D:
+    return PreparedOptixCupyRadiusGraphComponents3D(point_rows, radius=radius, partner=partner)
+
+
+def radius_graph_components_3d_optix_cupy_prepared_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphComponents3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
 def prepare_radius_graph_components_3d_cupy_grid_partner_columns(
     point_columns: dict[str, object],
     *,

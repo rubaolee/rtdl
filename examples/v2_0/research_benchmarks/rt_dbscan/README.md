@@ -120,6 +120,21 @@ it prepares the OptiX scene, CuPy point columns, cell ids, sorted order,
 unique-cell ranges, and output workspaces once, then repeats only the generic
 RT count-threshold pass and component-label continuation.
 
+Programmatic users can prepare the same generic composite directly:
+
+```python
+with rt.prepare_optix_cupy_radius_graph_components_3d(points, radius=radius) as prepared:
+    result = rt.radius_graph_components_3d_optix_cupy_prepared_partner_columns(
+        prepared,
+        min_neighbors=min_neighbors,
+        return_metadata=True,
+    )
+```
+
+This is still not a DBSCAN-specific primitive. It is a prepared fixed-radius
+graph-component contract over a 3-D point set: OptiX writes threshold-capped
+core/count columns, then CuPy labels generic radius-graph components.
+
 For the experimental all-core microcell continuation, use:
 
 ```bash

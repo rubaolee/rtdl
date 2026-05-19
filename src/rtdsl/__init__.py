@@ -459,6 +459,9 @@ from .partner_adapters import PreparedCupyRadiusGraphComponents3DGrid
 from .partner_adapters import prepare_radius_graph_components_3d_cupy_grid_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_grid_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_prepared_grid_partner_columns
+from .partner_adapters import PreparedOptixCupyRadiusGraphComponents3D
+from .partner_adapters import prepare_optix_cupy_radius_graph_components_3d
+from .partner_adapters import radius_graph_components_3d_optix_cupy_prepared_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_microcell_graph_partner_columns
 from .partner_adapters import columnar_rows_to_partner_columns
 from .partner_adapters import columnar_payload_to_partner_columns
@@ -1420,6 +1423,9 @@ __all__ = [
     "prepare_radius_graph_components_3d_cupy_grid_partner_columns",
     "radius_graph_components_3d_cupy_grid_partner_columns",
     "radius_graph_components_3d_cupy_prepared_grid_partner_columns",
+    "PreparedOptixCupyRadiusGraphComponents3D",
+    "prepare_optix_cupy_radius_graph_components_3d",
+    "radius_graph_components_3d_optix_cupy_prepared_partner_columns",
     "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
     "columnar_rows_to_partner_columns",
     "columnar_payload_to_partner_columns",

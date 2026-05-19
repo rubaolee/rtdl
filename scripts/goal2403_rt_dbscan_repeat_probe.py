@@ -45,44 +45,23 @@ def _run_prepared_grid_repeat_rows(
     points = make_rt_dbscan_points(dataset, point_count=point_count, seed=20260519)
 
     prepare_start = time.perf_counter()
-    point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
-    prepared_grid = rt.prepare_radius_graph_components_3d_cupy_grid_partner_columns(
-        point_columns,
+    prepared_graph = rt.prepare_optix_cupy_radius_graph_components_3d(
+        points,
         radius=resolved_radius,
         partner="cupy",
     )
-    output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
-        len(points),
-        partner="cupy",
-    )
-    prepared_grid_build_sec = time.perf_counter() - prepare_start
+    prepared_composite_build_sec = time.perf_counter() - prepare_start
 
     rows: list[dict[str, object]] = []
     signature = None
-    with rt.prepare_optix_fixed_radius_count_threshold_3d(points, max_radius=resolved_radius) as prepared_rt:
+    with prepared_graph:
         for repeat_index in range(repeat_count):
             outer_start = time.perf_counter()
-            optix_start = time.perf_counter()
-            threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
-                prepared_rt,
-                points,
-                radius=resolved_radius,
-                threshold=resolved_min_neighbors,
-                partner="cupy",
-                output_columns=output_columns,
-                return_metadata=True,
-            )
-            optix_elapsed = time.perf_counter() - optix_start
-            continuation_start = time.perf_counter()
-            result = rt.radius_graph_components_3d_cupy_prepared_grid_partner_columns(
-                prepared_grid,
+            result = rt.radius_graph_components_3d_optix_cupy_prepared_partner_columns(
+                prepared_graph,
                 min_neighbors=resolved_min_neighbors,
-                core_flags=threshold_result["columns"]["threshold_flags"],
-                neighbor_counts=threshold_result["columns"]["neighbor_counts"],
-                core_flag_source="optix_rt_fixed_radius_count_threshold_3d_device_outputs",
                 return_metadata=True,
             )
-            continuation_elapsed = time.perf_counter() - continuation_start
             component_rows = _densify_cluster_labels(
                 _rows_from_partner_columns(result["columns"], partner="cupy")
             )
@@ -98,11 +77,14 @@ def _run_prepared_grid_repeat_rows(
                     "outer_elapsed_sec": outer_elapsed,
                     "app_elapsed_sec": outer_elapsed,
                     "optix_core_flag_sec": None,
-                    "optix_rt_count_threshold_sec": optix_elapsed,
-                    "cupy_component_continuation_sec": continuation_elapsed,
-                    "prepared_grid_build_sec": prepared_grid_build_sec,
+                    "optix_rt_count_threshold_sec": metadata.get("optix_rt_count_threshold_sec"),
+                    "cupy_component_continuation_sec": metadata.get("cupy_component_continuation_sec"),
+                    "prepared_grid_build_sec": prepared_composite_build_sec,
+                    "prepared_composite_build_sec": prepared_composite_build_sec,
                     "prepared_grid_reused": metadata.get("prepared_grid_reused"),
                     "prepared_run_count": metadata.get("prepared_run_count"),
+                    "prepared_composite_reused": metadata.get("prepared_composite_reused"),
+                    "prepared_composite_run_count": metadata.get("prepared_composite_run_count"),
                     "prepared_optix_scene_reused": True,
                     "cell_graph_fast_path_active": None,
                     "cell_graph_granularity": "prepared_radius_grid",
