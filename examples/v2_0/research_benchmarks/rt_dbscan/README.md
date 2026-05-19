@@ -30,6 +30,7 @@ No DBSCAN-specific native ABI is added.
 | `rtdl_cpu_rows` | Generic RTDL 3-D fixed-radius neighbor rows, then Python component labels | Same row contract without GPU |
 | `partner_spatial_bucket_3d` | Generic partner 3-D spatial-bucket radius-graph components | Current best full DBSCAN continuation |
 | `partner_cupy_grid_components_3d` | Generic CuPy device-grid radius-graph components | Strong CUDA-core baseline; no RT cores |
+| `partner_cupy_prepared_grid_components_3d` | Prepared generic CuPy device-grid radius-graph components | Fair prepared CUDA-core baseline for repeat probes |
 | `optix_core_flags_cupy_grid_components_3d` | OptiX-backend per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid uniform-cell CUDA summaries plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | OptiX RT count-threshold device columns feed a prepared CuPy device-grid component continuation | Same generic contract with reusable grid/order/workspace state for steady-state probes |
@@ -78,6 +79,16 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbsc
 This path builds and probes the grid on the CUDA device with CuPy raw kernels.
 It is intentionally not an RT-core claim; it is the baseline RTDL must compare
 against before saying the RT path is useful.
+
+For repeated-run fairness, also measure the prepared CuPy baseline:
+
+```bash
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode partner_cupy_prepared_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+The one-shot CLI still includes preparation time. The repeat probe prepares the
+CuPy grid once and is the fair baseline for steady-state comparisons against
+the prepared RT bridge.
 
 ## Hybrid OptiX + Partner Run
 
