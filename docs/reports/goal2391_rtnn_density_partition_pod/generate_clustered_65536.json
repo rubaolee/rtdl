@@ -1,0 +1,17 @@
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "cluster_count": 8,
+    "cluster_stddev": 0.035,
+    "dimension": 3,
+    "distribution": "clustered",
+    "format": "rtnn_csv_xyz",
+    "path": "docs/reports/goal2391_rtnn_density_partition_pod/data/clustered_3d_65536.csv",
+    "point_count": 65536,
+    "seed": 65536
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}

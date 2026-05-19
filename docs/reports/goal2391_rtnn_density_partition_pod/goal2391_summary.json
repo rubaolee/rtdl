@@ -1,0 +1,71 @@
+{
+  "boundary": {
+    "adaptive_python_policy_measured": true,
+    "native_abi_changed_for_rtnn": false,
+    "release_claim_authorized": false,
+    "stronger_cuda_core_grid_baseline_measured": true
+  },
+  "rows": [
+    {
+      "elapsed_sec": 0.4348770510405302,
+      "external": "CuPy",
+      "file": "cupy_grid_clustered_262144_r002_k50.json",
+      "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+      "ok": true,
+      "query_count": 262144,
+      "row": "cupy_grid_clustered_262144_r002_k50",
+      "search_count": 262144
+    },
+    {
+      "elapsed_sec": 0.04712235927581787,
+      "external": "CuPy",
+      "file": "cupy_grid_clustered_65536_r002_k50.json",
+      "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+      "ok": true,
+      "query_count": 65536,
+      "row": "cupy_grid_clustered_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 0.002740355208516121,
+      "external": "CuPy",
+      "file": "cupy_grid_shell_65536_r002_k50.json",
+      "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+      "ok": true,
+      "query_count": 65536,
+      "row": "cupy_grid_shell_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 0.00013842061161994934,
+      "external": "CuPy",
+      "file": "cupy_grid_uniform_65536_r002_k50.json",
+      "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+      "ok": true,
+      "query_count": 65536,
+      "row": "cupy_grid_uniform_65536_r002_k50",
+      "search_count": 65536
+    },
+    {
+      "elapsed_sec": 3.1919417921453714,
+      "external": "RTDL current",
+      "file": "rtdl_adaptive_clustered_262144_div8_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_adaptive_partitioned",
+      "ok": true,
+      "query_count": 262144,
+      "row": "rtdl_adaptive_clustered_262144_div8_r002_k50",
+      "search_count": 262144
+    },
+    {
+      "elapsed_sec": 1.3155114278197289,
+      "external": "RTDL current",
+      "file": "rtdl_batched_clustered_262144_r002_k50.json",
+      "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+      "ok": true,
+      "query_count": 262144,
+      "row": "rtdl_batched_clustered_262144_r002_k50",
+      "search_count": 262144
+    }
+  ],
+  "runner": "goal2391_rtnn_density_partition_pod_runner"
+}

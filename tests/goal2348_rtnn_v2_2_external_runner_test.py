@@ -129,6 +129,12 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
         self.assertIn("cupy_cuda_core_exact_ranked_summary_3d", text)
         self.assertIn("cuda_core_baseline", text)
         self.assertIn("ranked-summary-raw", text)
+        self.assertIn("run-rtdl-adaptive-3d-neighbors", text)
+        self.assertIn("density_aware_spatial_partitioning", text)
+        self.assertIn("native_abi_changed_for_rtnn", text)
+        self.assertIn("run-cupy-grid-3d-ranked-summary", text)
+        self.assertIn("cupy_cuda_core_grid_exact_ranked_summary_3d", text)
+        self.assertIn("stronger_than_all_pairs_baseline", text)
 
     def test_cuda12_patch_command_is_idempotent_and_external_only(self) -> None:
         runner = _load_runner()

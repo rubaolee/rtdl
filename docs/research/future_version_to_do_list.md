@@ -313,6 +313,15 @@ Future work:
   exact-refine. Future work should generalize the same pattern to device-side
   min/max/sum reductions while preserving a clear distinction between summary
   contracts and witness-row contracts.
+- Goal2391 showed that Python-level density-aware partitioning over many
+  prepared RTDL handles is not the right clustered-data optimization: it
+  preserves exactness but adds halo duplication, handle preparation, and launch
+  overhead. The next RTDL-side fix should be a lower-level generic runtime
+  primitive: adaptive/density-aware fixed-radius scheduling or a generic CUDA-grid partner backend that keeps the same `fixed_radius_neighbors_3d` contract without adding RTNN-specific ABI.
+- Goal2391 also added a CuPy RawKernel uniform-grid baseline. That stronger
+  CUDA-core opponent beats current RTDL on dense clustered rows, which is a
+  useful benchmark pressure signal rather than a failure of the app-agnostic
+  design.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.

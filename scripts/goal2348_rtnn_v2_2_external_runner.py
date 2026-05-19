@@ -298,6 +298,95 @@ def _slice_columns(
     return ids[begin:end], xs[begin:end], ys[begin:end], zs[begin:end]
 
 
+def _take_columns(
+    columns: tuple[list[int], list[float], list[float], list[float]],
+    indices: list[int],
+) -> tuple[list[int], list[float], list[float], list[float]]:
+    ids, xs, ys, zs = columns
+    return (
+        [ids[index] for index in indices],
+        [xs[index] for index in indices],
+        [ys[index] for index in indices],
+        [zs[index] for index in indices],
+    )
+
+
+def _xyz_bounds(
+    *column_sets: tuple[list[int], list[float], list[float], list[float]],
+) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    xs: list[float] = []
+    ys: list[float] = []
+    zs: list[float] = []
+    for columns in column_sets:
+        xs.extend(columns[1])
+        ys.extend(columns[2])
+        zs.extend(columns[3])
+    if not xs:
+        return (0.0, 0.0, 0.0), (1.0, 1.0, 1.0)
+    return (min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs))
+
+
+def _grid_cell_key(
+    x: float,
+    y: float,
+    z: float,
+    *,
+    mins: tuple[float, float, float],
+    cell_sizes: tuple[float, float, float],
+    divisions: int,
+) -> tuple[int, int, int]:
+    def index(value: float, axis: int) -> int:
+        size = cell_sizes[axis]
+        if size <= 0:
+            return 0
+        return max(0, min(divisions - 1, int((value - mins[axis]) / size)))
+
+    return index(x, 0), index(y, 1), index(z, 2)
+
+
+def _grid_groups(
+    columns: tuple[list[int], list[float], list[float], list[float]],
+    *,
+    mins: tuple[float, float, float],
+    maxs: tuple[float, float, float],
+    divisions: int,
+) -> tuple[dict[tuple[int, int, int], list[int]], tuple[float, float, float]]:
+    if divisions <= 0:
+        raise ValueError("partition divisions must be positive")
+    spans = tuple(max(1e-12, maxs[axis] - mins[axis]) for axis in range(3))
+    cell_sizes = tuple(spans[axis] / divisions for axis in range(3))
+    groups: dict[tuple[int, int, int], list[int]] = {}
+    _, xs, ys, zs = columns
+    for index, (x, y, z) in enumerate(zip(xs, ys, zs)):
+        key = _grid_cell_key(x, y, z, mins=mins, cell_sizes=cell_sizes, divisions=divisions)
+        groups.setdefault(key, []).append(index)
+    return groups, cell_sizes
+
+
+def _neighbor_search_indices(
+    key: tuple[int, int, int],
+    *,
+    search_groups: dict[tuple[int, int, int], list[int]],
+    mins: tuple[float, float, float],
+    cell_sizes: tuple[float, float, float],
+    divisions: int,
+    radius: float,
+) -> list[int]:
+    ranges = []
+    for axis, cell in enumerate(key):
+        cell_min = mins[axis] + cell * cell_sizes[axis]
+        cell_max = mins[axis] + (cell + 1) * cell_sizes[axis]
+        lo = max(0, int(math.floor((cell_min - radius - mins[axis]) / cell_sizes[axis])))
+        hi = min(divisions - 1, int(math.floor((cell_max + radius - mins[axis]) / cell_sizes[axis])))
+        ranges.append(range(lo, hi + 1))
+    indices: list[int] = []
+    for ix in ranges[0]:
+        for iy in ranges[1]:
+            for iz in ranges[2]:
+                indices.extend(search_groups.get((ix, iy, iz), ()))
+    return indices
+
+
 def run_rtnn(args: argparse.Namespace) -> dict[str, object]:
     command = build_rtnn_command(args)
     env = os.environ.copy()
@@ -788,6 +877,232 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     }
 
 
+def run_rtdl_adaptive_partitioned_3d_neighbors(args: argparse.Namespace) -> dict[str, object]:
+    """Run exact fixed-radius ranked summaries through spatially sharded RTDL handles.
+
+    Query cells are processed once. Each cell prepares a search-side halo that
+    contains every search point that can be within ``radius`` of any query in
+    the cell. The native ABI remains the same generic prepared 3-D neighbor
+    summary path; the density-aware policy lives in Python orchestration.
+    """
+    sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, str(ROOT))
+    import rtdsl as rt  # noqa: PLC0415
+
+    radius = float(args.radius)
+    k_max = int(args.k_max)
+    repeat = int(args.repeat)
+    divisions = int(args.partition_divisions)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if k_max <= 0:
+        raise ValueError("k_max must be positive")
+    if divisions <= 0:
+        raise ValueError("partition_divisions must be positive")
+
+    load_started = time.perf_counter()
+    search_columns = _read_xyz_columns(args.point_file)
+    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    load_sec = time.perf_counter() - load_started
+    search_count = len(search_columns[0])
+    query_count = len(query_columns[0])
+    mins, maxs = _xyz_bounds(search_columns, query_columns)
+
+    partition_started = time.perf_counter()
+    search_groups, cell_sizes = _grid_groups(search_columns, mins=mins, maxs=maxs, divisions=divisions)
+    query_groups, _ = _grid_groups(query_columns, mins=mins, maxs=maxs, divisions=divisions)
+    partition_sec = time.perf_counter() - partition_started
+
+    pack_prepare_started = time.perf_counter()
+    partitions = []
+    partition_metadata = []
+    try:
+        for partition_index, key in enumerate(sorted(query_groups)):
+            query_indices = query_groups[key]
+            search_indices = _neighbor_search_indices(
+                key,
+                search_groups=search_groups,
+                mins=mins,
+                cell_sizes=cell_sizes,
+                divisions=divisions,
+                radius=radius,
+            )
+            query_subset = _take_columns(query_columns, query_indices)
+            search_subset = _take_columns(search_columns, search_indices)
+            if not search_subset[0]:
+                # The same-point benchmark never hits this path, but keep the
+                # metadata explicit for future asymmetric query/search datasets.
+                partition_metadata.append(
+                    {
+                        "partition_index": partition_index,
+                        "cell": key,
+                        "query_count": len(query_indices),
+                        "search_halo_count": 0,
+                        "skipped_empty_search_halo": True,
+                    }
+                )
+                continue
+            packed_search = rt.pack_points(
+                ids=search_subset[0],
+                x=search_subset[1],
+                y=search_subset[2],
+                z=search_subset[3],
+                dimension=3,
+            )
+            packed_queries = rt.pack_points(
+                ids=query_subset[0],
+                x=query_subset[1],
+                y=query_subset[2],
+                z=query_subset[3],
+                dimension=3,
+            )
+            prepared = rt.prepare_optix_fixed_radius_neighbors_3d(packed_search, max_radius=radius)
+            partitions.append((prepared, packed_queries, key, len(query_indices), len(search_indices)))
+            partition_metadata.append(
+                {
+                    "partition_index": partition_index,
+                    "cell": key,
+                    "query_count": len(query_indices),
+                    "search_halo_count": len(search_indices),
+                    "skipped_empty_search_halo": False,
+                }
+            )
+    except Exception:
+        for prepared, *_ in partitions:
+            prepared.close()
+        raise
+    pack_prepare_sec = time.perf_counter() - pack_prepare_started
+
+    print(
+        f"[goal2348] RTDL adaptive 3D start queries={query_count} search={search_count} "
+        f"divisions={divisions} partitions={len(partitions)} radius={radius}",
+        flush=True,
+    )
+    elapsed_runs = []
+    row_count = 0
+    phase_timings = []
+    error = ""
+    ok = True
+    try:
+        for run_index in range(repeat):
+            started = time.perf_counter()
+            run_row_count = 0
+            run_timings = []
+            for partition_index, (prepared, packed_queries, key, query_len, search_len) in enumerate(partitions):
+                rows = prepared.run_ranked_summary_raw(packed_queries, radius=radius, k_max=k_max)
+                try:
+                    run_row_count += len(rows)
+                finally:
+                    rows.close()
+                timing = dict(rt.get_last_fixed_radius_neighbors_3d_phase_timings())
+                timing.update(
+                    {
+                        "partition_index": partition_index,
+                        "cell": key,
+                        "query_count": query_len,
+                        "search_halo_count": search_len,
+                    }
+                )
+                run_timings.append(timing)
+            row_count = run_row_count
+            phase_timings = run_timings
+            elapsed_runs.append(time.perf_counter() - started)
+            print(
+                f"[goal2348] RTDL adaptive 3D repeat {run_index + 1}/{repeat} "
+                f"ok=True sec={elapsed_runs[-1]:.6f}",
+                flush=True,
+            )
+    except Exception as exc:  # pragma: no cover - hardware/library path
+        ok = False
+        error = repr(exc)
+    finally:
+        for prepared, *_ in partitions:
+            prepared.close()
+
+    total_raw_candidates = sum(int(item.get("raw_candidate_count", 0)) for item in phase_timings)
+    total_candidate_time = sum(float(item.get("candidate_count_pass", 0.0)) for item in phase_timings)
+    total_row_download_time = sum(float(item.get("row_download", 0.0)) for item in phase_timings)
+    largest_partitions = sorted(
+        partition_metadata,
+        key=lambda item: (int(item["query_count"]), int(item["search_halo_count"])),
+        reverse=True,
+    )[:12]
+    heaviest_phase_partitions = sorted(
+        (
+            {
+                "partition_index": item.get("partition_index"),
+                "cell": item.get("cell"),
+                "query_count": item.get("query_count"),
+                "search_halo_count": item.get("search_halo_count"),
+                "raw_candidate_count": item.get("raw_candidate_count"),
+                "candidate_count_pass": item.get("candidate_count_pass"),
+            }
+            for item in phase_timings
+        ),
+        key=lambda item: float(item.get("candidate_count_pass") or 0.0),
+        reverse=True,
+    )[:12]
+    return {
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "row": args.row_label,
+        "external": "RTDL current",
+        "mode": "current_3d_fixed_radius_neighbors_optix_adaptive_partitioned",
+        "ok": ok,
+        "elapsed_sec": elapsed_runs[-1] if elapsed_runs else 0.0,
+        "elapsed_runs_sec": elapsed_runs,
+        "query_count": query_count,
+        "search_count": search_count,
+        "radius": radius,
+        "k_max": k_max,
+        "result_mode": "ranked-summary-raw",
+        "repeat": repeat,
+        "row_count": row_count,
+        "input_load_sec": load_sec,
+        "partition_build_sec": partition_sec,
+        "pack_and_prepare_partitions_sec": pack_prepare_sec,
+        "partition_divisions": divisions,
+        "partition_count": len(partitions),
+        "skipped_empty_partition_count": sum(1 for item in partition_metadata if item["skipped_empty_search_halo"]),
+        "total_raw_candidate_count": total_raw_candidates,
+        "partition_summary": {
+            "total_query_count": sum(int(item["query_count"]) for item in partition_metadata),
+            "total_search_halo_references": sum(int(item["search_halo_count"]) for item in partition_metadata),
+            "max_query_count": max((int(item["query_count"]) for item in partition_metadata), default=0),
+            "max_search_halo_count": max((int(item["search_halo_count"]) for item in partition_metadata), default=0),
+            "largest_partitions": largest_partitions,
+        },
+        "phase_summary": {
+            "total_raw_candidate_count": total_raw_candidates,
+            "total_candidate_count_pass": total_candidate_time,
+            "total_row_download": total_row_download_time,
+            "max_raw_candidate_count": max((int(item.get("raw_candidate_count", 0)) for item in phase_timings), default=0),
+            "max_candidate_count_pass": max((float(item.get("candidate_count_pass", 0.0)) for item in phase_timings), default=0.0),
+            "heaviest_partitions": heaviest_phase_partitions,
+        },
+        "error": error,
+        "contract": {
+            "family": "fixed_radius_neighbors_3d",
+            "mode": "ranked-summary-raw",
+            "exact": True,
+            "approximate": False,
+            "bounded_k": k_max,
+            "prepared_search_structure": True,
+            "batched_queries": True,
+            "density_aware_spatial_partitioning": True,
+        },
+        "claim_boundary": {
+            "paper_equivalent_rtnn_row": False,
+            "rtdl_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "rt_core_neighbor_search_claim_authorized": False,
+            "partitioned_or_batched_like_rtnn": True,
+            "density_aware_partition_policy": True,
+            "native_abi_changed_for_rtnn": False,
+            "device_ranked_summary_rows": True,
+        },
+    }
+
+
 def run_cupy_3d_ranked_summary(args: argparse.Namespace) -> dict[str, object]:
     """Run an exact CUDA-core CuPy top-K summary baseline.
 
@@ -920,6 +1235,290 @@ def run_cupy_3d_ranked_summary(args: argparse.Namespace) -> dict[str, object]:
     }
 
 
+def run_cupy_grid_3d_ranked_summary(args: argparse.Namespace) -> dict[str, object]:
+    """Run an exact CUDA-core uniform-grid top-K summary baseline.
+
+    This is a stronger CUDA-only opponent than the all-pairs CuPy row. It uses
+    a generic fixed-radius grid index, a CuPy RawKernel, and 27-cell neighbor
+    traversal with per-query bounded top-K insertion. It still does not use RT
+    cores and does not change RTDL native code.
+    """
+    radius = float(args.radius)
+    k_max = int(args.k_max)
+    repeat = int(args.repeat)
+    dtype_name = str(args.dtype)
+    max_grid_cells = int(args.max_grid_cells)
+    if radius <= 0:
+        raise ValueError("radius must be positive")
+    if k_max <= 0 or k_max > 64:
+        raise ValueError("cupy grid ranked summary requires 1 <= k_max <= 64")
+
+    import cupy as cp  # noqa: PLC0415
+    import numpy as np  # noqa: PLC0415
+
+    load_started = time.perf_counter()
+    search_columns = _read_xyz_columns(args.point_file)
+    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    load_sec = time.perf_counter() - load_started
+    dtype = np.float32 if dtype_name == "float32" else np.float64
+    if dtype is not np.float32:
+        raise ValueError("cupy grid RawKernel baseline currently supports float32")
+    search_np = np.asarray(list(zip(search_columns[1], search_columns[2], search_columns[3])), dtype=np.float32)
+    query_np = np.asarray(list(zip(query_columns[1], query_columns[2], query_columns[3])), dtype=np.float32)
+    search_ids_np = np.asarray(search_columns[0], dtype=np.uint32)
+    query_ids_np = np.asarray(query_columns[0], dtype=np.uint32)
+
+    prepare_started = time.perf_counter()
+    if len(search_np) == 0 or len(query_np) == 0:
+        raise ValueError("cupy grid baseline requires non-empty search and query points")
+    mins_np = np.minimum(search_np.min(axis=0), query_np.min(axis=0)) - np.float32(radius * 1e-3)
+    maxs_np = np.maximum(search_np.max(axis=0), query_np.max(axis=0)) + np.float32(radius * 1e-3)
+    dims_np = np.maximum(1, np.ceil((maxs_np - mins_np) / np.float32(radius)).astype(np.int64) + 1)
+    nx, ny, nz = (int(dims_np[0]), int(dims_np[1]), int(dims_np[2]))
+    num_cells = nx * ny * nz
+    if num_cells > max_grid_cells:
+        raise ValueError(f"grid has {num_cells} cells, above max_grid_cells={max_grid_cells}")
+
+    search_cell_xyz = np.floor((search_np - mins_np) / np.float32(radius)).astype(np.int64)
+    search_cell_xyz[:, 0] = np.clip(search_cell_xyz[:, 0], 0, nx - 1)
+    search_cell_xyz[:, 1] = np.clip(search_cell_xyz[:, 1], 0, ny - 1)
+    search_cell_xyz[:, 2] = np.clip(search_cell_xyz[:, 2], 0, nz - 1)
+    search_cell_ids = (
+        search_cell_xyz[:, 0]
+        + nx * (search_cell_xyz[:, 1] + ny * search_cell_xyz[:, 2])
+    ).astype(np.int64)
+    order = np.argsort(search_cell_ids, kind="stable")
+    sorted_cell_ids = search_cell_ids[order]
+    sorted_search_np = np.ascontiguousarray(search_np[order])
+    sorted_search_ids_np = np.ascontiguousarray(search_ids_np[order])
+    cell_start_np = np.full(num_cells, -1, dtype=np.int32)
+    cell_end_np = np.full(num_cells, -1, dtype=np.int32)
+    unique_cells, starts, counts = np.unique(sorted_cell_ids, return_index=True, return_counts=True)
+    cell_start_np[unique_cells] = starts.astype(np.int32)
+    cell_end_np[unique_cells] = (starts + counts).astype(np.int32)
+
+    search_gpu = cp.asarray(sorted_search_np)
+    search_ids_gpu = cp.asarray(sorted_search_ids_np)
+    query_gpu = cp.asarray(query_np)
+    query_ids_gpu = cp.asarray(query_ids_np)
+    cell_start_gpu = cp.asarray(cell_start_np)
+    cell_end_gpu = cp.asarray(cell_end_np)
+    out_count = cp.empty(len(query_np), dtype=cp.uint32)
+    out_nearest = cp.empty(len(query_np), dtype=cp.uint32)
+    out_kth = cp.empty(len(query_np), dtype=cp.uint32)
+    out_nearest_dist = cp.empty(len(query_np), dtype=cp.float32)
+    out_kth_dist = cp.empty(len(query_np), dtype=cp.float32)
+    out_sum = cp.empty(len(query_np), dtype=cp.float32)
+
+    kernel_source = r'''
+extern "C" __global__
+void rtdl_grid_ranked_summary_3d(
+    const float* query_points,
+    const unsigned int* query_ids,
+    const float* search_points,
+    const unsigned int* search_ids,
+    const int* cell_start,
+    const int* cell_end,
+    const int query_count,
+    const int nx,
+    const int ny,
+    const int nz,
+    const float min_x,
+    const float min_y,
+    const float min_z,
+    const float inv_cell_size,
+    const float radius_sq,
+    const int k_max,
+    unsigned int* out_count,
+    unsigned int* out_nearest,
+    unsigned int* out_kth,
+    float* out_nearest_dist,
+    float* out_kth_dist,
+    float* out_sum) {
+    int q = blockDim.x * blockIdx.x + threadIdx.x;
+    if (q >= query_count) {
+        return;
+    }
+    float qx = query_points[q * 3 + 0];
+    float qy = query_points[q * 3 + 1];
+    float qz = query_points[q * 3 + 2];
+    int cx = (int)floorf((qx - min_x) * inv_cell_size);
+    int cy = (int)floorf((qy - min_y) * inv_cell_size);
+    int cz = (int)floorf((qz - min_z) * inv_cell_size);
+    cx = max(0, min(nx - 1, cx));
+    cy = max(0, min(ny - 1, cy));
+    cz = max(0, min(nz - 1, cz));
+
+    float best_d2[64];
+    unsigned int best_id[64];
+    int top_count = 0;
+    for (int dz = -1; dz <= 1; ++dz) {
+        int zz = cz + dz;
+        if (zz < 0 || zz >= nz) continue;
+        for (int dy = -1; dy <= 1; ++dy) {
+            int yy = cy + dy;
+            if (yy < 0 || yy >= ny) continue;
+            for (int dx = -1; dx <= 1; ++dx) {
+                int xx = cx + dx;
+                if (xx < 0 || xx >= nx) continue;
+                int cell = xx + nx * (yy + ny * zz);
+                int begin = cell_start[cell];
+                if (begin < 0) continue;
+                int end = cell_end[cell];
+                for (int s = begin; s < end; ++s) {
+                    float sx = search_points[s * 3 + 0];
+                    float sy = search_points[s * 3 + 1];
+                    float sz = search_points[s * 3 + 2];
+                    float ddx = qx - sx;
+                    float ddy = qy - sy;
+                    float ddz = qz - sz;
+                    float d2 = ddx * ddx + ddy * ddy + ddz * ddz;
+                    if (d2 > radius_sq) continue;
+                    unsigned int sid = search_ids[s];
+                    int pos;
+                    if (top_count < k_max) {
+                        pos = top_count;
+                        best_d2[pos] = d2;
+                        best_id[pos] = sid;
+                        top_count++;
+                    } else if (d2 < best_d2[k_max - 1] || (d2 == best_d2[k_max - 1] && sid < best_id[k_max - 1])) {
+                        pos = k_max - 1;
+                        best_d2[pos] = d2;
+                        best_id[pos] = sid;
+                    } else {
+                        continue;
+                    }
+                    while (pos > 0 && (best_d2[pos] < best_d2[pos - 1] || (best_d2[pos] == best_d2[pos - 1] && best_id[pos] < best_id[pos - 1]))) {
+                        float td = best_d2[pos - 1];
+                        unsigned int ti = best_id[pos - 1];
+                        best_d2[pos - 1] = best_d2[pos];
+                        best_id[pos - 1] = best_id[pos];
+                        best_d2[pos] = td;
+                        best_id[pos] = ti;
+                        pos--;
+                    }
+                }
+            }
+        }
+    }
+    out_count[q] = (unsigned int)top_count;
+    if (top_count == 0) {
+        out_nearest[q] = 0xffffffffu;
+        out_kth[q] = 0xffffffffu;
+        out_nearest_dist[q] = 3.402823466e+38F;
+        out_kth_dist[q] = 3.402823466e+38F;
+        out_sum[q] = 0.0f;
+        return;
+    }
+    float sum = 0.0f;
+    for (int i = 0; i < top_count; ++i) {
+        sum += sqrtf(best_d2[i]);
+    }
+    out_nearest[q] = best_id[0];
+    out_kth[q] = best_id[top_count - 1];
+    out_nearest_dist[q] = sqrtf(best_d2[0]);
+    out_kth_dist[q] = sqrtf(best_d2[top_count - 1]);
+    out_sum[q] = sum + ((float)query_ids[q] * 0.0f);
+}
+'''
+    kernel = cp.RawKernel(kernel_source, "rtdl_grid_ranked_summary_3d")
+    kernel.compile()
+    cp.cuda.Stream.null.synchronize()
+    prepare_sec = time.perf_counter() - prepare_started
+
+    print(
+        f"[goal2348] CuPy grid 3D ranked summary start queries={len(query_np)} search={len(search_np)} "
+        f"grid={nx}x{ny}x{nz} occupied_cells={len(unique_cells)} k={k_max}",
+        flush=True,
+    )
+    elapsed_runs = []
+    last_summary = None
+    threads = 256
+    blocks = (len(query_np) + threads - 1) // threads
+    for run_index in range(repeat):
+        started = time.perf_counter()
+        kernel(
+            (blocks,),
+            (threads,),
+            (
+                query_gpu,
+                query_ids_gpu,
+                search_gpu,
+                search_ids_gpu,
+                cell_start_gpu,
+                cell_end_gpu,
+                np.int32(len(query_np)),
+                np.int32(nx),
+                np.int32(ny),
+                np.int32(nz),
+                np.float32(mins_np[0]),
+                np.float32(mins_np[1]),
+                np.float32(mins_np[2]),
+                np.float32(1.0 / radius),
+                np.float32(radius * radius),
+                np.int32(k_max),
+                out_count,
+                out_nearest,
+                out_kth,
+                out_nearest_dist,
+                out_kth_dist,
+                out_sum,
+            ),
+        )
+        cp.cuda.Stream.null.synchronize()
+        elapsed_runs.append(time.perf_counter() - started)
+        last_summary = {
+            "row_count": int(len(query_np)),
+            "bounded_neighbor_count": int(cp.sum(out_count.astype(cp.uint64)).get()),
+            "nearest_id_checksum": int(cp.sum(out_nearest.astype(cp.uint64)).get()),
+            "kth_id_checksum": int(cp.sum(out_kth.astype(cp.uint64)).get()),
+            "sum_distance": float(cp.sum(out_sum.astype(cp.float64)).get()),
+        }
+        print(
+            f"[goal2348] CuPy grid 3D ranked summary repeat {run_index + 1}/{repeat} "
+            f"ok=True sec={elapsed_runs[-1]:.6f}",
+            flush=True,
+        )
+
+    return {
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "row": args.row_label,
+        "external": "CuPy",
+        "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+        "ok": True,
+        "elapsed_sec": elapsed_runs[-1] if elapsed_runs else 0.0,
+        "elapsed_runs_sec": elapsed_runs,
+        "query_count": len(query_np),
+        "search_count": len(search_np),
+        "radius": radius,
+        "k_max": k_max,
+        "dtype": dtype_name,
+        "input_load_sec": load_sec,
+        "grid_prepare_sec": prepare_sec,
+        "grid_dimensions": [nx, ny, nz],
+        "grid_cell_count": num_cells,
+        "occupied_cell_count": int(len(unique_cells)),
+        "summary": last_summary,
+        "contract": {
+            "family": "fixed_radius_neighbors_3d",
+            "mode": "ranked-summary",
+            "exact": True,
+            "approximate": False,
+            "bounded_k": k_max,
+            "prepared_search_structure": True,
+            "uniform_grid_cuda_core": True,
+        },
+        "claim_boundary": {
+            "uses_rt_cores": False,
+            "cuda_core_baseline": True,
+            "stronger_than_all_pairs_baseline": True,
+            "paper_equivalent_rtnn_row": False,
+            "rtdl_speedup_claim_authorized": False,
+            "native_abi_changed_for_rtnn": False,
+        },
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Goal2348 RTNN v2.2 external benchmark harness.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1000,6 +1599,19 @@ def main(argv: list[str] | None = None) -> int:
     batched3d.add_argument("--row-label", default="rtdl_batched_3d_neighbors")
     batched3d.add_argument("--json-out", type=Path, required=True)
 
+    adaptive3d = subparsers.add_parser(
+        "run-rtdl-adaptive-3d-neighbors",
+        help="Run exact prepared RTDL 3-D fixed-radius neighbors with density-aware spatial partitions.",
+    )
+    adaptive3d.add_argument("--point-file", type=Path, required=True)
+    adaptive3d.add_argument("--query-file", type=Path)
+    adaptive3d.add_argument("--radius", type=float, default=0.02)
+    adaptive3d.add_argument("--k-max", type=int, default=50)
+    adaptive3d.add_argument("--partition-divisions", type=int, default=8)
+    adaptive3d.add_argument("--repeat", type=int, default=1)
+    adaptive3d.add_argument("--row-label", default="rtdl_adaptive_3d_neighbors")
+    adaptive3d.add_argument("--json-out", type=Path, required=True)
+
     cupy3d = subparsers.add_parser(
         "run-cupy-3d-ranked-summary",
         help="Run an exact CUDA-core CuPy 3-D ranked-summary baseline.",
@@ -1013,6 +1625,20 @@ def main(argv: list[str] | None = None) -> int:
     cupy3d.add_argument("--repeat", type=int, default=1)
     cupy3d.add_argument("--row-label", default="cupy_3d_ranked_summary")
     cupy3d.add_argument("--json-out", type=Path, required=True)
+
+    cupy_grid3d = subparsers.add_parser(
+        "run-cupy-grid-3d-ranked-summary",
+        help="Run an exact CUDA-core uniform-grid CuPy RawKernel 3-D ranked-summary baseline.",
+    )
+    cupy_grid3d.add_argument("--point-file", type=Path, required=True)
+    cupy_grid3d.add_argument("--query-file", type=Path)
+    cupy_grid3d.add_argument("--radius", type=float, default=0.02)
+    cupy_grid3d.add_argument("--k-max", type=int, default=50)
+    cupy_grid3d.add_argument("--dtype", choices=("float32",), default="float32")
+    cupy_grid3d.add_argument("--max-grid-cells", type=int, default=2_000_000)
+    cupy_grid3d.add_argument("--repeat", type=int, default=1)
+    cupy_grid3d.add_argument("--row-label", default="cupy_grid_3d_ranked_summary")
+    cupy_grid3d.add_argument("--json-out", type=Path, required=True)
 
     args = parser.parse_args(argv)
 
@@ -1050,8 +1676,12 @@ def main(argv: list[str] | None = None) -> int:
         payload = run_rtdl_current_3d_neighbors_smoke(args)
     elif args.command == "run-rtdl-batched-3d-neighbors":
         payload = run_rtdl_batched_3d_neighbors(args)
+    elif args.command == "run-rtdl-adaptive-3d-neighbors":
+        payload = run_rtdl_adaptive_partitioned_3d_neighbors(args)
     elif args.command == "run-cupy-3d-ranked-summary":
         payload = run_cupy_3d_ranked_summary(args)
+    elif args.command == "run-cupy-grid-3d-ranked-summary":
+        payload = run_cupy_grid_3d_ranked_summary(args)
     else:  # pragma: no cover - argparse guards this
         raise AssertionError(args.command)
 
