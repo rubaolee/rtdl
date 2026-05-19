@@ -1501,6 +1501,43 @@ class PreparedOptixFixedRadiusNeighbors3D:
         finally:
             rows.close()
 
+    def count(self, query_points, *, radius: float, k_max: int) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D.count requires 3-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_fixed_radius_neighbors_3d")
+        if count_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_fixed_radius_neighbors_3d; rebuild the OptiX backend from current main"
+            )
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(k_max)),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(row_count.value)
+
     def close(self) -> None:
         if self._closed:
             return
@@ -2399,6 +2436,7 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             2: "uniform_cell_compact",
             3: "simple_rt_traversal",
             4: "prepared_uniform_cell_compact",
+            5: "prepared_uniform_cell_exact_count_summary",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),
@@ -6894,6 +6932,18 @@ def _register_argtypes(lib) -> None:
             ctypes.c_double,
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_fixed_radius_neighbors_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p, ctypes.c_size_t,
         ]

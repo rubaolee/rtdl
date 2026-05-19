@@ -302,6 +302,17 @@ Future work:
   the next serious RTNN-informed primitive should be a device-resident exact
   filter, row-summary continuation, or bounded output path that avoids sending
   millions of candidate rows back to the CPU for final reduction.
+- Goal2373 tested naive `std::thread` parallelization of the host exact-refine
+  materialization loop and rejected it as a noisy optimization: one large run
+  improved, but smaller rows regressed and worker-count/NUMA sensitivity made
+  the result unsuitable for a runtime primitive. Prefer a device-resident
+  continuation/summary contract over more host-thread tuning.
+- Goal2375 added the first prepared exact-count summary for the 3D
+  fixed-radius neighbor primitive. This validated the continuation idea: when
+  users need only a count, RTDL can skip row materialization and host
+  exact-refine. Future work should generalize the same pattern to device-side
+  min/max/sum reductions while preserving a clear distinction between summary
+  contracts and witness-row contracts.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.

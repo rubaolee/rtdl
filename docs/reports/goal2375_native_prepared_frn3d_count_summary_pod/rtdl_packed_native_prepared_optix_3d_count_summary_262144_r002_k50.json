@@ -1,0 +1,51 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "prepared generic uniform-cell exact count summary",
+    "device_resident_summary": true,
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_native_search_grid": true,
+    "prepared_execution_reuses_python_packed_inputs": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    0.005570683628320694,
+    0.0040923841297626495,
+    0.00392693467438221,
+    0.00389801524579525,
+    0.0038678329437971115
+  ],
+  "elapsed_sec": 0.0038678329437971115,
+  "error": "",
+  "execution_mode": "native-prepared-optix",
+  "execution_prepare_sec": 0.6557717341929674,
+  "external": "RTDL current",
+  "input_mode": "packed-columns",
+  "input_pack_sec": 0.42413700371980667,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 0.001581985,
+    "candidate_write_pass": 0.0,
+    "count_download_and_prefix": 0.000748477,
+    "emitted_count": 2517940,
+    "exact_refine": 0.0,
+    "mode": "prepared_uniform_cell_exact_count_summary",
+    "prepare": 0.0,
+    "raw_candidate_count": 2517940,
+    "row_download": 0.0,
+    "row_offset_upload": 0.0,
+    "upload": 0.001274255
+  },
+  "query_count": 262144,
+  "radius": 0.02,
+  "repeat": 5,
+  "result_mode": "count",
+  "row": "rtdl_packed_native_prepared_optix_3d_count_summary_262144_r002_k50",
+  "row_count": 2517940,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 262144
+}

@@ -3664,13 +3664,35 @@ extern "C" __global__ void __anyhit__frn3d_anyhit() {
 
 static const char* kFixedRadiusNeighbors3DGridKernelSrc = R"CUDA(
 #include <stdint.h>
-#include <math.h>
-#include <float.h>
 
 typedef unsigned int uint32_t;
 
 struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct ExactPoint3D { uint32_t id; double x, y, z; };
 struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+
+static __device__ __forceinline__ float abs_float(float value)
+{
+    return value < 0.0f ? -value : value;
+}
+
+static __device__ __forceinline__ int floor_to_int_float(float value)
+{
+    int raw = static_cast<int>(value);
+    if (static_cast<float>(raw) > value) {
+        raw -= 1;
+    }
+    return raw;
+}
+
+static __device__ __forceinline__ int floor_to_int_exact(double value)
+{
+    long long raw = static_cast<long long>(value);
+    if (static_cast<double>(raw) > value) {
+        raw -= 1ll;
+    }
+    return static_cast<int>(raw);
+}
 
 static __device__ __forceinline__ void insert_neighbor(
         FrnRecord* query_out,
@@ -3684,7 +3706,7 @@ static __device__ __forceinline__ void insert_neighbor(
     const uint32_t used = *count < k_max ? *count : k_max;
     for (uint32_t slot = 0; slot < used; ++slot) {
         const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
-        const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+        const bool same_distance = abs_float(distance - query_out[slot].distance) <= 1.0e-7f;
         const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
         if (better_distance || better_id) {
             insert_at = slot;
@@ -3733,9 +3755,9 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid(
     FrnRecord* query_out = output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(k_max);
     uint32_t count = 0u;
 
-    const int cx = static_cast<int>(floorf((q.x - min_x) * inv_cell_size));
-    const int cy = static_cast<int>(floorf((q.y - min_y) * inv_cell_size));
-    const int cz = static_cast<int>(floorf((q.z - min_z) * inv_cell_size));
+    const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
     const float radius_sq = radius * radius;
 
     for (int dz = -1; dz <= 1; ++dz) {
@@ -3788,9 +3810,9 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_count(
     if (qidx >= query_count) return;
 
     const GpuPoint3D q = query_points[qidx];
-    const int cx = static_cast<int>(floorf((q.x - min_x) * inv_cell_size));
-    const int cy = static_cast<int>(floorf((q.y - min_y) * inv_cell_size));
-    const int cz = static_cast<int>(floorf((q.z - min_z) * inv_cell_size));
+    const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
     const float radius_sq = radius * radius;
     uint32_t count = 0u;
 
@@ -3815,6 +3837,63 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_count(
                     const float sy = t.y - q.y;
                     const float sz = t.z - q.z;
                     const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 <= radius_sq) {
+                        count += 1u;
+                    }
+                }
+            }
+        }
+    }
+    counts_out[qidx] = count;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_count(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double radius,
+        uint32_t k_max,
+        uint32_t* counts_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double radius_sq = radius * radius;
+    uint32_t count = 0u;
+
+    for (int dz = -1; dz <= 1 && count < k_max; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1 && count < k_max; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1 && count < k_max; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end && count < k_max; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
                     if (d2 <= radius_sq) {
                         count += 1u;
                     }
@@ -3853,9 +3932,9 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_compact(
     const GpuPoint3D q = query_points[qidx];
     FrnRecord* query_out = output + row_begin;
     uint32_t count = 0u;
-    const int cx = static_cast<int>(floorf((q.x - min_x) * inv_cell_size));
-    const int cy = static_cast<int>(floorf((q.y - min_y) * inv_cell_size));
-    const int cz = static_cast<int>(floorf((q.z - min_z) * inv_cell_size));
+    const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
     const float radius_sq = radius * radius;
 
     for (int dz = -1; dz <= 1; ++dz) {
@@ -4973,6 +5052,7 @@ static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
 static FrnCuFunction      g_frn3d_grid;
 static FrnCuFunction      g_frn3d_grid_count;
+static FrnCuFunction      g_frn3d_grid_exact_count;
 static FrnCuFunction      g_frn3d_grid_compact;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;

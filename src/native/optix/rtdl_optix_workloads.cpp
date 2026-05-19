@@ -8428,8 +8428,10 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         CU_CHECK(cuModuleLoadData(&g_frn3d_grid.module, ptx.c_str()));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid"));
         g_frn3d_grid_count.module = g_frn3d_grid.module;
+        g_frn3d_grid_exact_count.module = g_frn3d_grid.module;
         g_frn3d_grid_compact.module = g_frn3d_grid.module;
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_count"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
     });
 }
@@ -8438,6 +8440,7 @@ struct PreparedFixedRadiusNeighborsGrid3D {
     std::vector<RtdlPoint3D> search_points;
     std::vector<uint32_t> cell_offsets;
     std::unique_ptr<DevPtr> d_search;
+    std::unique_ptr<DevPtr> d_search_exact;
     std::unique_ptr<DevPtr> d_offsets;
     uint32_t grid_x = 0;
     uint32_t grid_y = 0;
@@ -8446,6 +8449,10 @@ struct PreparedFixedRadiusNeighborsGrid3D {
     float min_y = 0.0f;
     float min_z = 0.0f;
     float inv_cell_size = 0.0f;
+    double min_x_exact = 0.0;
+    double min_y_exact = 0.0;
+    double min_z_exact = 0.0;
+    double inv_cell_size_exact = 0.0;
     double max_radius = 0.0;
 
     PreparedFixedRadiusNeighborsGrid3D(
@@ -8509,6 +8516,10 @@ struct PreparedFixedRadiusNeighborsGrid3D {
         min_z = static_cast<float>(min_z_d);
         const double inv_cell_size_d = 1.0 / cell_size;
         inv_cell_size = static_cast<float>(inv_cell_size_d);
+        min_x_exact = min_x_d;
+        min_y_exact = min_y_d;
+        min_z_exact = min_z_d;
+        inv_cell_size_exact = inv_cell_size_d;
 
         const auto cell_for = [&](const RtdlPoint3D& point) -> uint32_t {
             const auto coord = [&](double value, double lo, uint32_t dim) -> uint32_t {
@@ -8539,6 +8550,7 @@ struct PreparedFixedRadiusNeighborsGrid3D {
 
         std::vector<uint32_t> cursor = cell_offsets;
         std::vector<GpuPoint3DHost> sorted_search(source_count);
+        std::vector<RtdlPoint3D> sorted_search_exact(source_count);
         for (size_t i = 0; i < source_count; ++i) {
             const uint32_t cell = search_cell[i];
             const uint32_t dest = cursor[cell]++;
@@ -8548,11 +8560,14 @@ struct PreparedFixedRadiusNeighborsGrid3D {
                 static_cast<float>(source[i].z),
                 source[i].id,
             };
+            sorted_search_exact[dest] = source[i];
         }
 
         d_search = std::make_unique<DevPtr>(sizeof(GpuPoint3DHost) * sorted_search.size());
+        d_search_exact = std::make_unique<DevPtr>(sizeof(RtdlPoint3D) * sorted_search_exact.size());
         d_offsets = std::make_unique<DevPtr>(sizeof(uint32_t) * cell_offsets.size());
         upload(d_search->ptr, sorted_search.data(), sorted_search.size());
+        upload(d_search_exact->ptr, sorted_search_exact.data(), sorted_search_exact.size());
         upload(d_offsets->ptr, cell_offsets.data(), cell_offsets.size());
     }
 };
@@ -8563,6 +8578,89 @@ static PreparedFixedRadiusNeighborsGrid3D* prepare_fixed_radius_neighbors_grid_3
         double max_radius)
 {
     return new PreparedFixedRadiusNeighborsGrid3D(search_points, search_count, max_radius);
+}
+
+static size_t count_prepared_fixed_radius_neighbors_grid_3d_optix(
+        PreparedFixedRadiusNeighborsGrid3D* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        size_t k_max)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_neighbors_3d radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_neighbors_3d radius exceeds prepared max_radius");
+    }
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_neighbors_3d query_count exceeds uint32 limit");
+    if (k_max == 0)
+        throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
+    if (k_max > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_neighbors_3d k_max exceeds uint32 limit");
+
+    reset_fixed_radius_3d_phase_timings(5u);
+    g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+    if (query_count == 0 || prepared->search_points.empty()) return 0;
+
+    auto t_start_upload = std::chrono::steady_clock::now();
+    DevPtr d_queries(sizeof(RtdlPoint3D) * query_count);
+    DevPtr d_counts(sizeof(uint32_t) * query_count);
+    upload(d_queries.ptr, query_points, query_count);
+    auto t_end_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_upload_s = seconds_between(t_start_upload, t_end_upload);
+
+    uint32_t qc = static_cast<uint32_t>(query_count);
+    uint32_t grid_x = prepared->grid_x;
+    uint32_t grid_y = prepared->grid_y;
+    uint32_t grid_z = prepared->grid_z;
+    double min_x = prepared->min_x_exact;
+    double min_y = prepared->min_y_exact;
+    double min_z = prepared->min_z_exact;
+    double inv_cell_size = prepared->inv_cell_size_exact;
+    double radius_exact = radius;
+    uint32_t k_max_u32 = static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+
+    void* count_args[] = {
+        &d_queries.ptr,
+        &qc,
+        &prepared->d_search_exact->ptr,
+        &prepared->d_offsets->ptr,
+        &grid_x,
+        &grid_y,
+        &grid_z,
+        &min_x,
+        &min_y,
+        &min_z,
+        &inv_cell_size,
+        &radius_exact,
+        &k_max_u32,
+        &d_counts.ptr,
+    };
+
+    unsigned block = 256;
+    unsigned grid = (qc + block - 1u) / block;
+    auto t_start_count = std::chrono::steady_clock::now();
+    CU_CHECK(cuLaunchKernel(g_frn3d_grid_exact_count.fn, grid, 1, 1, block, 1, 1, 0, nullptr, count_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_count = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_count, t_end_count);
+
+    auto t_start_count_download = std::chrono::steady_clock::now();
+    std::vector<uint32_t> gpu_counts(query_count);
+    download(gpu_counts.data(), d_counts.ptr, query_count);
+    size_t total_count = 0;
+    for (uint32_t count : gpu_counts) {
+        if (total_count > (std::numeric_limits<size_t>::max)() - static_cast<size_t>(count)) {
+            throw std::runtime_error("fixed_radius_neighbors_3d count summary overflowed size_t");
+        }
+        total_count += static_cast<size_t>(count);
+    }
+    auto t_end_count_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_download_s = seconds_between(t_start_count_download, t_end_count_download);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = total_count;
+    g_optix_last_fixed_radius_3d_emitted_count = total_count;
+    return total_count;
 }
 
 static void run_prepared_fixed_radius_neighbors_grid_3d_optix(
