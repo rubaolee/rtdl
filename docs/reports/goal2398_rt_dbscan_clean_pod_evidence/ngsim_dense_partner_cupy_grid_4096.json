@@ -1,0 +1,61 @@
+{
+  "app": "rt_dbscan_benchmark",
+  "claim_boundary": {
+    "full_dbscan": true,
+    "host_bucket_index_used": false,
+    "native_dbscan_abi_added": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "rt_core_accelerated": false
+  },
+  "dataset": "ngsim_dense",
+  "elapsed_sec": 0.5451756007969379,
+  "matches_reference": null,
+  "metadata": {
+    "adapter": "radius_graph_components_3d_cupy_grid_partner_columns",
+    "candidate_edge_count": 41873,
+    "cell_count": 733,
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "component_union_policy": "monotonic_atomic_min_core_edge_union",
+    "device_grid_index_used": true,
+    "direct_device_handoff_authorized": false,
+    "grid_dimensions": [
+      9,
+      10,
+      10
+    ],
+    "host_bucket_index_used": false,
+    "input_contract": "caller_supplied_partner_device_point_columns_3d",
+    "min_neighbors": 20,
+    "native_engine_row_contract": "not_called_partner_reference_only",
+    "partner": "cupy",
+    "partner_reference_contract": "generic_cupy_grid_radius_graph_component_labels_3d",
+    "point_count": 4096,
+    "radius": 0.012,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 20,
+  "mode": "partner_cupy_grid_components_3d",
+  "paper": {
+    "authors": [
+      "Vani Nagarajan",
+      "Milind Kulkarni"
+    ],
+    "doi": "10.1109/IPDPS54959.2023.00100",
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023"
+  },
+  "point_count": 4096,
+  "radius": 0.012,
+  "reference_signature": null,
+  "seed": 20260519,
+  "signature": {
+    "cluster_sizes": {
+      "1": 4089
+    },
+    "core_count": 2864,
+    "noise_count": 7
+  }
+}

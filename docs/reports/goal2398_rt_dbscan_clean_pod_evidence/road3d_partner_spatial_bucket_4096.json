@@ -1,0 +1,54 @@
+{
+  "app": "rt_dbscan_benchmark",
+  "claim_boundary": {
+    "full_dbscan": true,
+    "host_bucket_index_used": true,
+    "native_dbscan_abi_added": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "rt_core_accelerated": false
+  },
+  "dataset": "road3d",
+  "elapsed_sec": 0.9495236761868,
+  "matches_reference": null,
+  "metadata": {
+    "adapter": "radius_graph_components_3d_spatial_bucket_partner_columns",
+    "candidate_edge_count": 331652,
+    "cell_count": 160,
+    "component_label_policy": "dense_positive_labels_by_lowest_component_seed_noise_minus_one",
+    "direct_device_handoff_authorized": false,
+    "host_bucket_index_used": true,
+    "input_contract": "caller_supplied_partner_device_point_columns_3d",
+    "min_neighbors": 8,
+    "native_engine_row_contract": "not_called_partner_reference_only",
+    "partner": "cupy",
+    "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_3d",
+    "point_count": 4096,
+    "radius": 0.03,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 8,
+  "mode": "partner_spatial_bucket_3d",
+  "paper": {
+    "authors": [
+      "Vani Nagarajan",
+      "Milind Kulkarni"
+    ],
+    "doi": "10.1109/IPDPS54959.2023.00100",
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023"
+  },
+  "point_count": 4096,
+  "radius": 0.03,
+  "reference_signature": null,
+  "seed": 20260519,
+  "signature": {
+    "cluster_sizes": {
+      "1": 4096
+    },
+    "core_count": 4096,
+    "noise_count": 0
+  }
+}

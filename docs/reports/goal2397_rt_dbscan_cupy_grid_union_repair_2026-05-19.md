@@ -44,8 +44,9 @@ CuPy baseline and makes the pod evidence runner practical again. RT-core claims
 remain limited to the OptiX prepared-row artifacts until a generic device-output
 to device-resident grouped/component continuation exists.
 
-## Next Evidence
+## Follow-Up Evidence
 
-After this repair is committed and pushed, the pod runner should be rerun from a
-clean checkout so `environment.txt` records the exact source commit used for the
-evidence artifacts.
+Goal2398 reran the pod evidence from a clean checkout after this repair was
+committed and pushed. The artifacts in
+`docs/reports/goal2398_rt_dbscan_clean_pod_evidence/` record commit
+`7b9cd29afd02c9790b8982b9d99423b34661d278`.
