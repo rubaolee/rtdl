@@ -3083,6 +3083,23 @@ extern "C" int rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        size_t k_max,
+        RtdlFixedRadiusNeighborSummary* summary_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!summary_out)
+            throw std::runtime_error("summary_out must not be null");
+        *summary_out = summarize_prepared_fixed_radius_neighbors_grid_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            query_points, query_count, radius, k_max);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d(void* prepared)
 {
     delete reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared);

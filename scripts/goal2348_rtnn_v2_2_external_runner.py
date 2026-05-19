@@ -410,6 +410,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
     )
     elapsed_runs = []
     row_count = 0
+    distance_summary = None
     ok = not prepare_error
     error = prepare_error
     phase_timings = None
@@ -421,26 +422,34 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
                     if result_mode == "count":
                         row_count = prepared_execution.count(queries, radius=radius, k_max=k_max)
                         rows = None
+                        distance_summary = None
+                    elif result_mode == "summary":
+                        distance_summary = prepared_execution.summary(queries, radius=radius, k_max=k_max)
+                        row_count = int(distance_summary["count"])
+                        rows = None
                     else:
                         rows = (
                             prepared_execution.run_raw(queries, radius=radius, k_max=k_max)
                             if result_mode == "raw"
                             else prepared_execution.run(queries, radius=radius, k_max=k_max)
                         )
+                        distance_summary = None
                 else:
-                    if result_mode == "count":
-                        raise ValueError("result_mode='count' requires execution_mode='native-prepared-optix'")
+                    if result_mode in ("count", "summary"):
+                        raise ValueError("result_mode='count' or 'summary' requires execution_mode='native-prepared-optix'")
                     rows = prepared_execution.run_raw() if result_mode == "raw" else prepared_execution.run()
+                    distance_summary = None
             else:
-                if result_mode == "count":
-                    raise ValueError("result_mode='count' requires execution_mode='native-prepared-optix'")
+                if result_mode in ("count", "summary"):
+                    raise ValueError("result_mode='count' or 'summary' requires execution_mode='native-prepared-optix'")
                 rows = rt.run_optix(
                     _goal2348_current_fixed_radius_neighbors_3d,
                     result_mode=result_mode,
                     query_points=queries,
                     search_points=points,
                 )
-            if result_mode != "count":
+                distance_summary = None
+            if result_mode not in ("count", "summary"):
                 row_count = len(rows)
             phase_timings = rt.get_last_fixed_radius_neighbors_3d_phase_timings()
             if result_mode == "raw" and rows is not None:
@@ -470,6 +479,8 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         current_native_path = "generic OptiX custom-primitive bounded-neighbor traversal"
     elif execution_mode == "native-prepared-optix" and result_mode == "count":
         current_native_path = "prepared generic uniform-cell exact count summary"
+    elif execution_mode == "native-prepared-optix" and result_mode == "summary":
+        current_native_path = "prepared generic uniform-cell exact distance summary"
     elif execution_mode == "native-prepared-optix":
         current_native_path = "prepared generic uniform-cell bounded-neighbor traversal"
     else:
@@ -493,6 +504,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         "execution_prepare_sec": execution_prepare_sec,
         "repeat": repeat,
         "row_count": row_count,
+        "distance_summary": distance_summary,
         "phase_timings": phase_timings,
         "error": error,
         "claim_boundary": {
@@ -504,7 +516,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
             "partitioned_or_batched_like_rtnn": False,
             "prepared_execution_reuses_python_packed_inputs": execution_mode == "prepared-optix",
             "prepared_execution_reuses_native_search_grid": execution_mode == "native-prepared-optix",
-            "device_resident_summary": execution_mode == "native-prepared-optix" and result_mode == "count",
+            "device_resident_summary": execution_mode == "native-prepared-optix" and result_mode in ("count", "summary"),
         },
     }
 
@@ -565,7 +577,7 @@ def main(argv: list[str] | None = None) -> int:
     smoke3d.add_argument("--query-file", type=Path)
     smoke3d.add_argument("--radius", type=float, default=0.02)
     smoke3d.add_argument("--k-max", type=int, default=50)
-    smoke3d.add_argument("--result-mode", choices=("dict", "raw", "count"), default="dict")
+    smoke3d.add_argument("--result-mode", choices=("dict", "raw", "count", "summary"), default="dict")
     smoke3d.add_argument("--input-mode", choices=("records", "packed-columns"), default="records")
     smoke3d.add_argument("--execution-mode", choices=("run-optix", "prepared-optix", "native-prepared-optix"), default="run-optix")
     smoke3d.add_argument("--repeat", type=int, default=1)

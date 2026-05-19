@@ -286,6 +286,15 @@ class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlFixedRadiusNeighborSummary(ctypes.Structure):
+    _fields_ = [
+        ("count", ctypes.c_size_t),
+        ("min_distance", ctypes.c_double),
+        ("max_distance", ctypes.c_double),
+        ("sum_distance", ctypes.c_double),
+    ]
+
+
 class _RtdlFixedRadiusCountRow(ctypes.Structure):
     _fields_ = [
         ("query_id", ctypes.c_uint32),
@@ -1538,6 +1547,48 @@ class PreparedOptixFixedRadiusNeighbors3D:
         _check_status(status, error)
         return int(row_count.value)
 
+    def summary(self, query_points, *, radius: float, k_max: int) -> dict[str, float | int]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("PreparedOptixFixedRadiusNeighbors3D.summary requires 3-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return {"count": 0, "min_distance": 0.0, "max_distance": 0.0, "sum_distance": 0.0}
+
+        lib = _load_optix_library()
+        summary_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d")
+        if summary_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d; rebuild the OptiX backend from current main"
+            )
+        summary = _RtdlFixedRadiusNeighborSummary()
+        error = ctypes.create_string_buffer(4096)
+        status = summary_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(k_max)),
+            ctypes.byref(summary),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "count": int(summary.count),
+            "min_distance": float(summary.min_distance),
+            "max_distance": float(summary.max_distance),
+            "sum_distance": float(summary.sum_distance),
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -2437,6 +2488,7 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             3: "simple_rt_traversal",
             4: "prepared_uniform_cell_compact",
             5: "prepared_uniform_cell_exact_count_summary",
+            6: "prepared_uniform_cell_exact_distance_summary",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),
@@ -6945,6 +6997,18 @@ def _register_argtypes(lib) -> None:
             ctypes.c_double,
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFixedRadiusNeighborSummary),
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int

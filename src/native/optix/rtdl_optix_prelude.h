@@ -44,6 +44,7 @@
 #include <array>
 #include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <chrono>
@@ -183,6 +184,19 @@ struct RtdlFixedRadiusNeighborRow {
     uint32_t query_id, neighbor_id;
     double distance;
 };
+
+struct RtdlFixedRadiusNeighborSummary {
+    size_t count;
+    double min_distance;
+    double max_distance;
+    double sum_distance;
+};
+static_assert(sizeof(size_t) == 8, "RtdlFixedRadiusNeighborSummary requires the 64-bit native OptiX ABI");
+static_assert(offsetof(RtdlFixedRadiusNeighborSummary, count) == 0, "RtdlFixedRadiusNeighborSummary count offset mismatch");
+static_assert(offsetof(RtdlFixedRadiusNeighborSummary, min_distance) == 8, "RtdlFixedRadiusNeighborSummary min offset mismatch");
+static_assert(offsetof(RtdlFixedRadiusNeighborSummary, max_distance) == 16, "RtdlFixedRadiusNeighborSummary max offset mismatch");
+static_assert(offsetof(RtdlFixedRadiusNeighborSummary, sum_distance) == 24, "RtdlFixedRadiusNeighborSummary sum offset mismatch");
+static_assert(sizeof(RtdlFixedRadiusNeighborSummary) == 32, "RtdlFixedRadiusNeighborSummary size mismatch");
 
 struct RtdlFixedRadiusCountRow {
     uint32_t query_id;
@@ -678,6 +692,13 @@ int  rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
          double radius,
          size_t k_max,
          size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusNeighborSummary* summary_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d(void* prepared);
 int  rtdl_optix_run_fixed_radius_count_threshold(
