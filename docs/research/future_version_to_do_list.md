@@ -272,9 +272,9 @@ Observation:
 - RTNN shows that nearest-neighbor performance comes from spatial organization,
   batching/partitioning, and bounded output policy, not from merely calling
   OptiX once.
-- Goal2357 added a generic uniform-cell 3D bounded-neighbor path for the OptiX
-  backend and kept the old all-pairs CUDA path plus a simple RT traversal probe
-  as explicit diagnostics.
+- Goal2357 added a generic uniform-cell 3D bounded-neighbor path with a compact
+  populated-row stream for the OptiX backend and kept the old all-pairs CUDA
+  path plus a simple RT traversal probe as explicit diagnostics.
 - The uniform-cell path improved same-protocol warm/raw RTDL rows over the old
   CUDA path, and beat the collected RTNN 65k warm row, but still trailed RTNN at
   262k.

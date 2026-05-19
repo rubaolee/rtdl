@@ -20,7 +20,7 @@ The OptiX backend now has three 3D fixed-radius neighbor execution paths:
 | Simple custom-primitive OptiX traversal | `RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_RT=1` | diagnostic RT-core probe, not default |
 | Older all-pairs CUDA kernel | `RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_CUDA=1` | compatibility/performance comparison fallback |
 
-The default path builds a dense uniform cell index over the search points using `cell_size = radius`, scans the 27 neighboring cells per query, keeps a bounded per-query top-K set, writes per-query populated counts, and normalizes exact distances on the host. Dense `id == index` inputs use a direct-index normalization fast path; arbitrary IDs keep the conservative map/sort fallback.
+The default path builds a dense uniform cell index over the search points using `cell_size = radius`, scans the 27 neighboring cells per query, performs a capped count pass, writes only compact populated bounded rows, and normalizes exact distances on the host. Dense `id == index` inputs use a direct-index normalization fast path; arbitrary IDs keep the conservative map/sort fallback.
 
 This is a generic neighbor primitive, not an app-specific nearest-neighbor implementation.
 
@@ -48,8 +48,8 @@ The most useful rows use `result_mode=raw` and `repeat=3`, because RTNN's best c
 
 | Input | Old CUDA warm/raw sec | New uniform-cell warm/raw sec | RTDL delta | RTNN warm sec | RTDL vs RTNN |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 65,536 points, radius 0.02, K=50 | 0.877464 | 0.683743 | 1.283x faster | 1.357491 | 1.986x faster |
-| 262,144 points, radius 0.02, K=50 | 3.444224 | 2.922729 | 1.178x faster | 1.527938 | 0.523x |
+| 65,536 points, radius 0.02, K=50 | 0.877464 | 0.691422 | 1.269x faster | 1.357491 | 1.964x faster |
+| 262,144 points, radius 0.02, K=50 | 3.444224 | 2.743392 | 1.255x faster | 1.527938 | 0.557x |
 
 The 262,144-point row is improved but still trails RTNN. That is the key design signal: RTDL has moved beyond all-pairs CUDA, but it still lacks RTNN's stronger partitioning/batching and prepared-neighbor runtime contract.
 
@@ -69,7 +69,7 @@ This proves that "use OptiX" is not enough. The useful RTNN lesson is spatial or
 This goal authorizes:
 
 - a narrow claim that the RTDL OptiX backend now has a generic uniform-cell 3D bounded-neighbor path;
-- a narrow claim that this path improves the current RTDL warm/raw rows by 1.28x at 65k and 1.18x at 262k on the tested RTX A5000 synthetic rows;
+- a narrow claim that this path improves the current RTDL warm/raw rows by 1.27x at 65k and 1.26x at 262k on the tested RTX A5000 synthetic rows;
 - a narrow claim that RTDL beats the collected RTNN warm row at 65k under this raw-row protocol.
 
 This goal does not authorize:
@@ -92,7 +92,7 @@ Required additions:
 
 - reusable prepared search-point grid or RT structure;
 - batch/partition policy exposed in the execution plan;
-- raw/device-resident row continuation so large neighbor streams do not require Python dict materialization;
+- reusable compact/device-resident row continuation so large neighbor streams do not require Python dict materialization;
 - phase telemetry for pack, prepare, launch, copy, and normalization;
 - exact/approx policy and overflow telemetry.
 

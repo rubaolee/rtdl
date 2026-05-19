@@ -3767,6 +3767,125 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid(
     }
     counts_out[qidx] = count;
 }
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_count(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        uint32_t* counts_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const GpuPoint3D q = query_points[qidx];
+    const int cx = static_cast<int>(floorf((q.x - min_x) * inv_cell_size));
+    const int cy = static_cast<int>(floorf((q.y - min_y) * inv_cell_size));
+    const int cz = static_cast<int>(floorf((q.z - min_z) * inv_cell_size));
+    const float radius_sq = radius * radius;
+    uint32_t count = 0u;
+
+    for (int dz = -1; dz <= 1 && count < k_max; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1 && count < k_max; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1 && count < k_max; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end && count < k_max; ++pos) {
+                    const GpuPoint3D t = sorted_search_points[pos];
+                    const float sx = t.x - q.x;
+                    const float sy = t.y - q.y;
+                    const float sz = t.z - q.z;
+                    const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 <= radius_sq) {
+                        count += 1u;
+                    }
+                }
+            }
+        }
+    }
+    counts_out[qidx] = count;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_compact(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        const uint32_t* row_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        FrnRecord* output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const uint32_t row_begin = row_offsets[qidx];
+    const uint32_t row_end = row_offsets[qidx + 1u];
+    const uint32_t capacity = row_end - row_begin;
+    if (capacity == 0u) return;
+
+    const GpuPoint3D q = query_points[qidx];
+    FrnRecord* query_out = output + row_begin;
+    uint32_t count = 0u;
+    const int cx = static_cast<int>(floorf((q.x - min_x) * inv_cell_size));
+    const int cy = static_cast<int>(floorf((q.y - min_y) * inv_cell_size));
+    const int cz = static_cast<int>(floorf((q.z - min_z) * inv_cell_size));
+    const float radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const GpuPoint3D t = sorted_search_points[pos];
+                    const float sx = t.x - q.x;
+                    const float sy = t.y - q.y;
+                    const float sz = t.z - q.z;
+                    const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    insert_neighbor(query_out, capacity, &count, q.id, t.id, sqrtf(d2));
+                }
+            }
+        }
+    }
+}
 )CUDA";
 
 static const char* kFixedRadiusCountRtKernelSrc = R"CUDA(
@@ -4853,6 +4972,8 @@ static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
 static FrnCuFunction      g_frn3d_grid;
+static FrnCuFunction      g_frn3d_grid_count;
+static FrnCuFunction      g_frn3d_grid_compact;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;
 static KnnCuFunction      g_partner_point2d_aabb_pack;

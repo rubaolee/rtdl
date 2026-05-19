@@ -33,9 +33,9 @@ class Goal2357V22RtnnUniformCellNeighborStepTest(unittest.TestCase):
         self.assertIn("generic uniform-cell bounded-neighbor traversal", runner)
 
     def test_pod_artifacts_show_grid_beats_old_cuda_on_warm_raw_rows(self) -> None:
-        grid65 = _load("rtdl_grid_counts_raw_repeat_3d_65536_r002_k50.json")
+        grid65 = _load("rtdl_grid_compact_raw_repeat_3d_65536_r002_k50.json")
         cuda65 = _load("rtdl_cuda_raw_repeat_3d_65536_r002_k50.json")
-        grid262 = _load("rtdl_grid_counts_raw_repeat_3d_262144_r002_k50.json")
+        grid262 = _load("rtdl_grid_compact_raw_repeat_3d_262144_r002_k50.json")
         cuda262 = _load("rtdl_cuda_raw_repeat_3d_262144_r002_k50.json")
 
         for row in (grid65, cuda65, grid262, cuda262):
@@ -53,7 +53,7 @@ class Goal2357V22RtnnUniformCellNeighborStepTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("not RTNN parity", text)
         self.assertIn("default path is RT-core accelerated", text)
-        self.assertIn("0.523x", text)
+        self.assertIn("0.557x", text)
         self.assertIn("prepared_bounded_neighbor_search_3d", text)
         self.assertIn("not v3.0 user-defined shader injection", text)
 

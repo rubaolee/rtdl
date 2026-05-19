@@ -8368,6 +8368,10 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DGridKernelSrc, "frn3d_grid_kernel.cu");
         CU_CHECK(cuModuleLoadData(&g_frn3d_grid.module, ptx.c_str()));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid"));
+        g_frn3d_grid_count.module = g_frn3d_grid.module;
+        g_frn3d_grid_compact.module = g_frn3d_grid.module;
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_count"));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
     });
 
     double min_x = search_points[0].x;
@@ -8481,7 +8485,6 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
     DevPtr d_search(sizeof(GpuPoint3DHost) * search_count);
     DevPtr d_offsets(sizeof(uint32_t) * cell_offsets.size());
     DevPtr d_counts(sizeof(uint32_t) * query_count);
-    DevPtr d_output(sizeof(GpuFrnRecord) * output_capacity);
     upload(d_queries.ptr, gpu_queries.data(), query_count);
     upload(d_search.ptr, sorted_search.data(), search_count);
     upload(d_offsets.ptr, cell_offsets.data(), cell_offsets.size());
@@ -8494,7 +8497,7 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
     constexpr double kFixedRadiusCandidateEps = 1.0e-4;
     float radius_f = static_cast<float>(radius + kFixedRadiusCandidateEps);
     uint32_t k_max_u32 = static_cast<uint32_t>(kernel_k_max);
-    void* args[] = {
+    void* count_args[] = {
         &d_queries.ptr,
         &qc,
         &d_search.ptr,
@@ -8509,18 +8512,53 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         &radius_f,
         &k_max_u32,
         &d_counts.ptr,
-        &d_output.ptr,
     };
 
     unsigned block = 256;
     unsigned grid = (qc + block - 1u) / block;
-    CU_CHECK(cuLaunchKernel(g_frn3d_grid.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
+    CU_CHECK(cuLaunchKernel(g_frn3d_grid_count.fn, grid, 1, 1, block, 1, 1, 0, nullptr, count_args, nullptr));
     CU_CHECK(cuStreamSynchronize(nullptr));
 
     std::vector<uint32_t> gpu_counts(query_count);
     download(gpu_counts.data(), d_counts.ptr, query_count);
-    std::vector<GpuFrnRecord> gpu_rows(output_capacity);
-    download(gpu_rows.data(), d_output.ptr, output_capacity);
+    std::vector<uint32_t> row_offsets(query_count + 1u, 0u);
+    for (size_t i = 0; i < query_count; ++i) {
+        row_offsets[i + 1u] = row_offsets[i] + std::min(gpu_counts[i], k_max_u32);
+    }
+    const size_t compact_capacity = static_cast<size_t>(row_offsets.back());
+    if (compact_capacity > static_cast<size_t>(UINT32_MAX)) {
+        run_fixed_radius_neighbors_cuda_3d(
+            query_points, query_count,
+            search_points, search_count,
+            radius, k_max,
+            rows_out, row_count_out);
+        return;
+    }
+    DevPtr d_row_offsets(sizeof(uint32_t) * row_offsets.size());
+    DevPtr d_output(sizeof(GpuFrnRecord) * compact_capacity);
+    upload(d_row_offsets.ptr, row_offsets.data(), row_offsets.size());
+    void* compact_args[] = {
+        &d_queries.ptr,
+        &qc,
+        &d_search.ptr,
+        &d_offsets.ptr,
+        &d_row_offsets.ptr,
+        &grid_x,
+        &grid_y,
+        &grid_z,
+        &min_x_f,
+        &min_y_f,
+        &min_z_f,
+        &inv_cell_size,
+        &radius_f,
+        &k_max_u32,
+        &d_output.ptr,
+    };
+    CU_CHECK(cuLaunchKernel(g_frn3d_grid_compact.fn, grid, 1, 1, block, 1, 1, 0, nullptr, compact_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    std::vector<GpuFrnRecord> gpu_rows(compact_capacity);
+    download(gpu_rows.data(), d_output.ptr, compact_capacity);
 
     bool direct_query_ids = true;
     bool direct_search_ids = true;
@@ -8539,12 +8577,12 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
 
     if (direct_query_ids && direct_search_ids) {
         std::vector<RtdlFixedRadiusNeighborRow> rows;
-        rows.reserve(output_capacity);
+        rows.reserve(compact_capacity);
         for (size_t qidx = 0; qidx < query_count; ++qidx) {
             size_t current_count = 0;
             const RtdlPoint3D& q = query_points[qidx];
-            const size_t base = qidx * kernel_k_max;
-            const size_t populated = std::min(static_cast<size_t>(gpu_counts[qidx]), kernel_k_max);
+            const size_t base = row_offsets[qidx];
+            const size_t populated = row_offsets[qidx + 1u] - row_offsets[qidx];
             for (size_t slot = 0; slot < populated; ++slot) {
                 const GpuFrnRecord& gpu_row = gpu_rows[base + slot];
                 const size_t neighbor_index = static_cast<size_t>(gpu_row.neighbor_id);
@@ -8592,10 +8630,10 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
     }
 
     std::vector<RtdlFixedRadiusNeighborRow> exact_rows;
-    exact_rows.reserve(output_capacity);
+    exact_rows.reserve(compact_capacity);
     for (size_t qidx = 0; qidx < query_count; ++qidx) {
-        const size_t base = qidx * kernel_k_max;
-        const size_t populated = std::min(static_cast<size_t>(gpu_counts[qidx]), kernel_k_max);
+        const size_t base = row_offsets[qidx];
+        const size_t populated = row_offsets[qidx + 1u] - row_offsets[qidx];
         for (size_t slot = 0; slot < populated; ++slot) {
             const GpuFrnRecord& gpu_row = gpu_rows[base + slot];
             auto query_it = query_by_id.find(gpu_row.query_id);
