@@ -1,0 +1,4 @@
+commit=86856bb37f0f2a8d2f03b3677435b3988f646599
+python=Python 3.12.3
+NVIDIA RTX A5000, 570.211.01
+RTDL_OPTIX_LIBRARY=/root/rtdl_goal2392_pod/build/librtdl_optix.so
