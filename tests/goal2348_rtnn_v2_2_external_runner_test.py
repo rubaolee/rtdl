@@ -94,6 +94,10 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
         self.assertIn("packed-columns", text)
         self.assertIn("rt.pack_points", text)
         self.assertIn('"input_pack_sec": input_pack_sec', text)
+        self.assertIn("--execution-mode", text)
+        self.assertIn("prepared-optix", text)
+        self.assertIn("rt.prepare_optix", text)
+        self.assertIn('"execution_prepare_sec": execution_prepare_sec', text)
 
     def test_cuda12_patch_command_is_idempotent_and_external_only(self) -> None:
         runner = _load_runner()

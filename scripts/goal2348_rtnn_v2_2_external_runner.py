@@ -333,6 +333,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
     radius = float(args.radius)
     k_max = int(args.k_max)
     result_mode = getattr(args, "result_mode", "dict")
+    execution_mode = getattr(args, "execution_mode", "run-optix")
     repeat = int(getattr(args, "repeat", 1))
 
     @rt.kernel(backend="rtdl", precision="float_approx")
@@ -379,25 +380,41 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         point_count = len(points)
         query_count = len(queries)
     input_pack_sec = time.perf_counter() - pack_started
+    execution_prepare_sec = 0.0
+    prepared_execution = None
+    prepare_error = ""
+    if execution_mode == "prepared-optix":
+        prepare_started = time.perf_counter()
+        try:
+            prepared_execution = rt.prepare_optix(_goal2348_current_fixed_radius_neighbors_3d).bind(
+                query_points=queries,
+                search_points=points,
+            )
+        except Exception as exc:  # pragma: no cover - hardware/library path
+            prepare_error = repr(exc)
+        execution_prepare_sec = time.perf_counter() - prepare_started
     print(
         f"[goal2348] RTDL current 3D neighbors smoke start queries={query_count} "
-        f"points={point_count} input_mode={input_mode}",
+        f"points={point_count} input_mode={input_mode} execution_mode={execution_mode}",
         flush=True,
     )
     elapsed_runs = []
     row_count = 0
-    ok = True
-    error = ""
+    ok = not prepare_error
+    error = prepare_error
     phase_timings = None
-    for run_index in range(repeat):
+    for run_index in range(repeat if ok else 0):
         started = time.perf_counter()
         try:
-            rows = rt.run_optix(
-                _goal2348_current_fixed_radius_neighbors_3d,
-                result_mode=result_mode,
-                query_points=queries,
-                search_points=points,
-            )
+            if prepared_execution is not None:
+                rows = prepared_execution.run_raw() if result_mode == "raw" else prepared_execution.run()
+            else:
+                rows = rt.run_optix(
+                    _goal2348_current_fixed_radius_neighbors_3d,
+                    result_mode=result_mode,
+                    query_points=queries,
+                    search_points=points,
+                )
             row_count = len(rows)
             phase_timings = rt.get_last_fixed_radius_neighbors_3d_phase_timings()
             if result_mode == "raw":
@@ -439,6 +456,8 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         "result_mode": result_mode,
         "input_mode": input_mode,
         "input_pack_sec": input_pack_sec,
+        "execution_mode": execution_mode,
+        "execution_prepare_sec": execution_prepare_sec,
         "repeat": repeat,
         "row_count": row_count,
         "phase_timings": phase_timings,
@@ -449,8 +468,8 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
             "broad_rt_core_speedup_claim_authorized": False,
             "rt_core_neighbor_search_claim_authorized": forced_rt,
             "current_native_path": current_native_path,
-            "paper_equivalent_rtnn_row": False,
             "partitioned_or_batched_like_rtnn": False,
+            "prepared_execution_reuses_python_packed_inputs": execution_mode == "prepared-optix",
         },
     }
 
@@ -513,6 +532,7 @@ def main(argv: list[str] | None = None) -> int:
     smoke3d.add_argument("--k-max", type=int, default=50)
     smoke3d.add_argument("--result-mode", choices=("dict", "raw"), default="dict")
     smoke3d.add_argument("--input-mode", choices=("records", "packed-columns"), default="records")
+    smoke3d.add_argument("--execution-mode", choices=("run-optix", "prepared-optix"), default="run-optix")
     smoke3d.add_argument("--repeat", type=int, default=1)
     smoke3d.add_argument("--row-label", default="rtdl_current_3d_neighbors_smoke")
     smoke3d.add_argument("--json-out", type=Path, required=True)

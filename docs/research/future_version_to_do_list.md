@@ -290,6 +290,9 @@ Future work:
   normalization overhead for the current benchmark rows. Make packed/prepared
   column input policy a first-class part of the eventual primitive so serious
   users do not accidentally benchmark tuple-of-dict normalization.
+- Goal2365 added a prepared harness mode so the same packed columns can be
+  bound once and executed repeatedly. Future primitive work should expose this
+  as a stable API rather than leaving it only as benchmark runner policy.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
