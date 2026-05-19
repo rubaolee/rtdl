@@ -14,6 +14,7 @@ _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
 _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
 _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -2557,6 +2558,381 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
         "caller_supplied_core_flags": caller_supplied_core_flags,
         "host_bucket_index_used": False,
         "device_grid_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _fixed_radius_clique_safe_microcell_size(radius: float) -> float:
+    """Return a 3-D cell size whose cube diagonal is at most the radius."""
+    import math
+
+    radius = float(radius)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive for clique-safe microcells")
+    return radius / math.sqrt(3.0)
+
+
+def _fixed_radius_microcell_neighbor_range(radius: float, microcell_size: float) -> int:
+    import math
+
+    radius = float(radius)
+    microcell_size = float(microcell_size)
+    if radius <= 0.0 or microcell_size <= 0.0:
+        raise ValueError("radius and microcell_size must be positive")
+    return int(math.ceil(radius / microcell_size))
+
+
+def _cupy_radius_graph_components_3d_microcell_graph_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int lower_bound_microcell(const long long* values, const int count, const long long key) {
+            int left = 0;
+            int right = count;
+            while (left < right) {
+                const int mid = left + ((right - left) >> 1);
+                if (values[mid] < key) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+
+        extern "C" __device__
+        int find_microcell_root_readonly(const int* parent, int item) {
+            int root = item;
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
+                root = parent[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_microcell_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_microcell_root_readonly(parent, left);
+                int right_root = find_microcell_root_readonly(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __device__
+        long long make_microcell_id(const int gx, const int gy, const int gz, const int dim_x, const int dim_y) {
+            return (long long)gx + (long long)gy * (long long)dim_x + (long long)gz * (long long)dim_x * (long long)dim_y;
+        }
+
+        extern "C" __device__
+        void decode_microcell_id(const long long cell_id, const int dim_x, const int dim_y, int* gx, int* gy, int* gz) {
+            const long long plane = (long long)dim_x * (long long)dim_y;
+            *gz = (int)(cell_id / plane);
+            const long long rem = cell_id - (long long)(*gz) * plane;
+            *gy = (int)(rem / (long long)dim_x);
+            *gx = (int)(rem - (long long)(*gy) * (long long)dim_x);
+        }
+
+        extern "C" __global__
+        void microcell_graph_3d_union_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const int neighbor_range,
+            int* parent
+        ) {
+            const int cell_pos = blockDim.x * blockIdx.x + threadIdx.x;
+            if (cell_pos >= unique_cell_count) {
+                return;
+            }
+            int gx = 0;
+            int gy = 0;
+            int gz = 0;
+            decode_microcell_id(unique_cells[cell_pos], dim_x, dim_y, &gx, &gy, &gz);
+            const int source_start = cell_starts[cell_pos];
+            const int source_end = source_start + cell_counts[cell_pos];
+            for (int oz = -neighbor_range; oz <= neighbor_range; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -neighbor_range; oy <= neighbor_range; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -neighbor_range; ox <= neighbor_range; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long target_id = make_microcell_id(nx, ny, nz, dim_x, dim_y);
+                        const int target_pos = lower_bound_microcell(unique_cells, unique_cell_count, target_id);
+                        if (target_pos >= unique_cell_count || unique_cells[target_pos] != target_id) continue;
+                        if (target_pos <= cell_pos) continue;
+                        const int target_start = cell_starts[target_pos];
+                        const int target_end = target_start + cell_counts[target_pos];
+                        bool connected = false;
+                        for (int source_cursor = source_start; source_cursor < source_end && !connected; ++source_cursor) {
+                            const int left = sorted_point_indices[source_cursor];
+                            for (int target_cursor = target_start; target_cursor < target_end; ++target_cursor) {
+                                const int right = sorted_point_indices[target_cursor];
+                                const double dx = x[left] - x[right];
+                                const double dy = y[left] - y[right];
+                                const double dz = z[left] - z[right];
+                                if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                    connected = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (connected) {
+                            union_microcell_min_root(parent, cell_pos, target_pos);
+                        }
+                    }
+                }
+            }
+        }
+
+        extern "C" __global__
+        void microcell_graph_3d_label_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int unique_cell_count,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double microcell_size,
+            const int dim_x,
+            const int dim_y,
+            const int* parent,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / microcell_size);
+            const int gy = (int)floor((y[point] - min_y) / microcell_size);
+            const int gz = (int)floor((z[point] - min_z) / microcell_size);
+            const long long cell_id = make_microcell_id(gx, gy, gz, dim_x, dim_y);
+            const int pos = lower_bound_microcell(unique_cells, unique_cell_count, cell_id);
+            if (pos >= unique_cell_count || unique_cells[pos] != cell_id) {
+                labels[point] = -1ll;
+                return;
+            }
+            labels[point] = (long long)find_microcell_root_readonly(parent, pos) + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = (
+            cupy.RawKernel(source, "microcell_graph_3d_union_kernel"),
+            cupy.RawKernel(source, "microcell_graph_3d_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS
+
+
+def radius_graph_components_3d_cupy_microcell_graph_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "cupy",
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "caller_supplied_core_flags",
+    return_metadata: bool = False,
+):
+    """Label all-core 3-D radius graph components through clique-safe microcells."""
+    import math
+
+    if partner != "cupy":
+        raise ValueError("radius_graph_components_3d_cupy_microcell_graph_partner_columns currently requires partner='cupy'")
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    if "z" not in point_columns:
+        raise ValueError("radius_graph_components_3d_cupy_microcell_graph_partner_columns requires z point columns")
+    if (core_flags is None) != (neighbor_counts is None):
+        raise ValueError("core_flags and neighbor_counts must be supplied together")
+
+    runtime = _partner_module(partner)
+    cupy = runtime["module"]
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    fallback_reason = None
+    caller_supplied_core_flags = core_flags is not None
+    if not caller_supplied_core_flags:
+        fallback_reason = "missing_core_flags"
+    elif radius <= 0.0:
+        fallback_reason = "non_positive_radius"
+    else:
+        neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+        core_flags = cupy.asarray(core_flags, dtype=cupy.uint32)
+        if int(neighbor_counts.size) != point_count or int(core_flags.size) != point_count:
+            raise ValueError("core_flags and neighbor_counts must match point_count")
+        if not bool(cupy.all(core_flags != 0).item()):
+            fallback_reason = "not_all_points_core"
+
+    if fallback_reason is not None:
+        fallback = radius_graph_components_3d_cupy_grid_partner_columns(
+            point_columns,
+            radius=radius,
+            min_neighbors=min_neighbors,
+            partner=partner,
+            core_flags=core_flags,
+            neighbor_counts=neighbor_counts,
+            core_flag_source=core_flag_source,
+            return_metadata=True,
+        )
+        metadata = dict(fallback["metadata"])
+        metadata.update(
+            {
+                "adapter": "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
+                "fallback_adapter": "radius_graph_components_3d_cupy_grid_partner_columns",
+                "fallback_reason": fallback_reason,
+                "cell_graph_fast_path_active": False,
+                "cell_graph_granularity": "fallback_point_grid",
+                "microcell_size_policy": "not_used_fallback",
+                "neighbor_cell_range": None,
+                "rt_core_speedup_claim_authorized": False,
+                "v2_0_release_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        if return_metadata:
+            return {"columns": fallback["columns"], "metadata": metadata}
+        return fallback["columns"]
+
+    x = point_columns["x"].astype(cupy.float64, copy=False)
+    y = point_columns["y"].astype(cupy.float64, copy=False)
+    z = point_columns["z"].astype(cupy.float64, copy=False)
+    microcell_size = _fixed_radius_clique_safe_microcell_size(radius)
+    neighbor_cell_range = _fixed_radius_microcell_neighbor_range(radius, microcell_size)
+    min_x = float(cupy.min(x).item())
+    min_y = float(cupy.min(y).item())
+    min_z = float(cupy.min(z).item())
+    gx = cupy.floor((x - min_x) / microcell_size).astype(cupy.int64, copy=False)
+    gy = cupy.floor((y - min_y) / microcell_size).astype(cupy.int64, copy=False)
+    gz = cupy.floor((z - min_z) / microcell_size).astype(cupy.int64, copy=False)
+    dim_x = int(cupy.max(gx).item()) + 1
+    dim_y = int(cupy.max(gy).item()) + 1
+    dim_z = int(cupy.max(gz).item()) + 1
+    cell_ids = gx + gy * dim_x + gz * dim_x * dim_y
+    order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+    sorted_cell_ids = cell_ids[order].astype(cupy.int64, copy=False)
+    unique_cells, starts, counts = cupy.unique(
+        sorted_cell_ids,
+        return_index=True,
+        return_counts=True,
+    )
+    starts = starts.astype(cupy.int32, copy=False)
+    counts = counts.astype(cupy.int32, copy=False)
+    unique_cells = unique_cells.astype(cupy.int64, copy=False)
+    unique_cell_count = int(unique_cells.size)
+
+    parent = cupy.arange(unique_cell_count, dtype=cupy.int32)
+    labels = cupy.full((point_count,), -1, dtype=cupy.int64)
+    union_kernel, label_kernel = _cupy_radius_graph_components_3d_microcell_graph_kernels(cupy)
+    threads = 256
+    cell_blocks = (max(1, math.ceil(unique_cell_count / threads)),)
+    point_blocks = (max(1, math.ceil(point_count / threads)),)
+    union_kernel(
+        cell_blocks,
+        (threads,),
+        (
+            x,
+            y,
+            z,
+            unique_cells,
+            starts,
+            counts,
+            unique_cell_count,
+            order,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius * radius,
+            neighbor_cell_range,
+            parent,
+        ),
+    )
+    label_kernel(
+        point_blocks,
+        (threads,),
+        (
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            unique_cell_count,
+            min_x,
+            min_y,
+            min_z,
+            microcell_size,
+            dim_x,
+            dim_y,
+            parent,
+            labels,
+        ),
+    )
+    runtime["sync"]()
+
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": labels,
+        "is_core": core_flags,
+        "neighbor_counts": neighbor_counts,
+    }
+    metadata = {
+        "adapter": "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_cupy_microcell_radius_graph_component_labels_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": unique_cell_count,
+        "cell_graph_fast_path_active": True,
+        "cell_graph_granularity": "clique_safe_microcell",
+        "microcell_size": microcell_size,
+        "microcell_size_policy": "radius_div_sqrt3_cube_diagonal_within_radius",
+        "neighbor_cell_range": neighbor_cell_range,
+        "grid_dimensions": (dim_x, dim_y, dim_z),
+        "component_label_policy": "positive_microcell_root_index_labels_all_core",
+        "component_union_policy": "monotonic_atomic_min_microcell_union_after_exact_cross_pair",
+        "core_flag_source": str(core_flag_source),
+        "caller_supplied_core_flags": caller_supplied_core_flags,
+        "host_bucket_index_used": False,
+        "device_microcell_index_used": True,
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,
         "v2_0_release_authorized": False,

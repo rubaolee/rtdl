@@ -31,6 +31,7 @@ No DBSCAN-specific native ABI is added.
 | `partner_cupy_grid_components_3d` | Generic CuPy device-grid radius-graph components | Strong CUDA-core baseline; no RT cores |
 | `optix_core_flags_cupy_grid_components_3d` | OptiX-backend per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid uniform-cell CUDA summaries plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
+| `optix_rt_core_flags_cupy_microcell_graph_components_3d` | OptiX RT count-threshold device columns feed a clique-safe CuPy microcell component continuation | Experimental all-core fast path; falls back to the CuPy device grid when any point is non-core |
 | `partner_core_flags_3d` | Generic partner 3-D fixed-radius core flags only | Core-point phase, not full DBSCAN |
 | `optix_prepared_rows` | Prepared OptiX-backend 3-D fixed-radius neighbor rows, then Python component labels | Prepared uniform-cell CUDA path; materializes rows |
 
@@ -102,6 +103,18 @@ This path writes threshold-capped neighbor counts and core flags directly into
 CuPy device columns from a generic prepared 3-D fixed-radius RT traversal. It
 still uses the CuPy device-grid continuation to label components, so it is an
 RTDL composition primitive rather than a DBSCAN-specific native engine.
+
+For the experimental all-core microcell continuation, use:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_flags_cupy_microcell_graph_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+This path keeps the same RT core-flag phase, then tries a generic microcell
+component continuation. The microcells are small enough that each occupied
+microcell is internally connected. If any point is non-core, the adapter falls
+back to the CuPy device-grid continuation and records the fallback in metadata.
 
 ## OptiX Run
 

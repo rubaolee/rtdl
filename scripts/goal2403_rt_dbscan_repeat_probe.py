@@ -20,6 +20,7 @@ DEFAULT_MODES = (
     "partner_cupy_grid_components_3d",
     "optix_core_flags_cupy_grid_components_3d",
     "optix_rt_core_flags_cupy_grid_components_3d",
+    "optix_rt_core_flags_cupy_microcell_graph_components_3d",
 )
 
 
@@ -60,6 +61,9 @@ def run_repeat_probe(
                     "optix_core_flag_sec": metadata.get("optix_core_flag_sec"),
                     "optix_rt_count_threshold_sec": metadata.get("optix_rt_count_threshold_sec"),
                     "cupy_component_continuation_sec": metadata.get("cupy_component_continuation_sec"),
+                    "cell_graph_fast_path_active": metadata.get("cell_graph_fast_path_active"),
+                    "cell_graph_granularity": metadata.get("cell_graph_granularity"),
+                    "fallback_reason": metadata.get("fallback_reason"),
                     "rt_core_accelerated": result["claim_boundary"]["rt_core_accelerated"],
                     "materializes_neighbor_rows": metadata.get("materializes_neighbor_rows"),
                     "signature": result["signature"],

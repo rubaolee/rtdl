@@ -456,6 +456,7 @@ from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_spatial_bucket_partner_columns
 from .partner_adapters import radius_graph_components_3d_spatial_bucket_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_grid_partner_columns
+from .partner_adapters import radius_graph_components_3d_cupy_microcell_graph_partner_columns
 from .partner_adapters import columnar_rows_to_partner_columns
 from .partner_adapters import columnar_payload_to_partner_columns
 from .partner_adapters import partner_columnar_predicate_mask
@@ -1413,6 +1414,7 @@ __all__ = [
     "radius_graph_components_2d_spatial_bucket_partner_columns",
     "radius_graph_components_3d_spatial_bucket_partner_columns",
     "radius_graph_components_3d_cupy_grid_partner_columns",
+    "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
     "columnar_rows_to_partner_columns",
     "columnar_payload_to_partner_columns",
     "partner_columnar_predicate_mask",
