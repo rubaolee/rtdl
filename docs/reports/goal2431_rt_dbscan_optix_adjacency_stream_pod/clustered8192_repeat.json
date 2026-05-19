@@ -1,0 +1,232 @@
+{
+  "app": "rt_dbscan_repeat_probe",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "steady_state_probe_only": true
+  },
+  "dataset": "clustered3d",
+  "modes": [
+    "partner_cupy_prepared_adjacency_components_3d",
+    "optix_rt_core_adjacency_cupy_components_3d"
+  ],
+  "point_count": 8192,
+  "repeat_count": 3,
+  "rows": [
+    {
+      "app_elapsed_sec": 0.02804156020283699,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_directed_adjacency_stream",
+      "cupy_component_continuation_sec": 0.02804156020283699,
+      "directed_edge_count": 8429946,
+      "fallback_reason": null,
+      "materializes_directed_adjacency_stream": true,
+      "materializes_neighbor_rows": false,
+      "mode": "partner_cupy_prepared_adjacency_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.02804156020283699,
+      "prepared_adjacency_build_sec": 0.5976508650928736,
+      "prepared_adjacency_reused": false,
+      "prepared_adjacency_run_count": 1,
+      "prepared_composite_reused": null,
+      "prepared_composite_run_count": null,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 1,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 2048,
+          "2": 2048,
+          "3": 2048,
+          "4": 2048
+        },
+        "core_count": 8191,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.015322348102927208,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_directed_adjacency_stream",
+      "cupy_component_continuation_sec": 0.015322348102927208,
+      "directed_edge_count": 8429946,
+      "fallback_reason": null,
+      "materializes_directed_adjacency_stream": true,
+      "materializes_neighbor_rows": false,
+      "mode": "partner_cupy_prepared_adjacency_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.015322348102927208,
+      "prepared_adjacency_build_sec": 0.5976508650928736,
+      "prepared_adjacency_reused": true,
+      "prepared_adjacency_run_count": 2,
+      "prepared_composite_reused": null,
+      "prepared_composite_run_count": null,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 2,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 2048,
+          "2": 2048,
+          "3": 2048,
+          "4": 2048
+        },
+        "core_count": 8191,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.014395603910088539,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_directed_adjacency_stream",
+      "cupy_component_continuation_sec": 0.014395603910088539,
+      "directed_edge_count": 8429946,
+      "fallback_reason": null,
+      "materializes_directed_adjacency_stream": true,
+      "materializes_neighbor_rows": false,
+      "mode": "partner_cupy_prepared_adjacency_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.014395603910088539,
+      "prepared_adjacency_build_sec": 0.5976508650928736,
+      "prepared_adjacency_reused": true,
+      "prepared_adjacency_run_count": 3,
+      "prepared_composite_reused": null,
+      "prepared_composite_run_count": null,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": null,
+      "prepared_run_count": null,
+      "repeat_index": 3,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 2048,
+          "2": 2048,
+          "3": 2048,
+          "4": 2048
+        },
+        "core_count": 8191,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.030268676578998566,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_optix_directed_adjacency_stream",
+      "cupy_component_continuation_sec": 0.030268676578998566,
+      "directed_edge_count": 8429946,
+      "fallback_reason": null,
+      "materializes_directed_adjacency_stream": true,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_adjacency_cupy_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.0036010947078466415,
+      "outer_elapsed_sec": 0.030268676578998566,
+      "prepared_adjacency_build_sec": 0.8036806471645832,
+      "prepared_adjacency_reused": false,
+      "prepared_adjacency_run_count": 1,
+      "prepared_composite_build_sec": 0.8036806471645832,
+      "prepared_composite_reused": false,
+      "prepared_composite_run_count": 1,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": null,
+      "repeat_index": 1,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 2048,
+          "2": 2048,
+          "3": 2048,
+          "4": 2048
+        },
+        "core_count": 8191,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.014673074707388878,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_optix_directed_adjacency_stream",
+      "cupy_component_continuation_sec": 0.014673074707388878,
+      "directed_edge_count": 8429946,
+      "fallback_reason": null,
+      "materializes_directed_adjacency_stream": true,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_adjacency_cupy_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.0036010947078466415,
+      "outer_elapsed_sec": 0.014673074707388878,
+      "prepared_adjacency_build_sec": 0.8036806471645832,
+      "prepared_adjacency_reused": true,
+      "prepared_adjacency_run_count": 2,
+      "prepared_composite_build_sec": 0.8036806471645832,
+      "prepared_composite_reused": true,
+      "prepared_composite_run_count": 2,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": null,
+      "repeat_index": 2,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 2048,
+          "2": 2048,
+          "3": 2048,
+          "4": 2048
+        },
+        "core_count": 8191,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.013934863731265068,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_optix_directed_adjacency_stream",
+      "cupy_component_continuation_sec": 0.013934863731265068,
+      "directed_edge_count": 8429946,
+      "fallback_reason": null,
+      "materializes_directed_adjacency_stream": true,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_adjacency_cupy_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.0036010947078466415,
+      "outer_elapsed_sec": 0.013934863731265068,
+      "prepared_adjacency_build_sec": 0.8036806471645832,
+      "prepared_adjacency_reused": true,
+      "prepared_adjacency_run_count": 3,
+      "prepared_composite_build_sec": 0.8036806471645832,
+      "prepared_composite_reused": true,
+      "prepared_composite_run_count": 3,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": null,
+      "repeat_index": 3,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 2048,
+          "2": 2048,
+          "3": 2048,
+          "4": 2048
+        },
+        "core_count": 8191,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true
+}

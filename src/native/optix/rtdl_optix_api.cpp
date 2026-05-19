@@ -3189,6 +3189,23 @@ extern "C" int rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        const int64_t* edge_offsets,
+        int32_t* neighbor_indices_out,
+        size_t neighbor_index_capacity,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        write_prepared_fixed_radius_adjacency_3d_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_points, query_count, radius,
+            edge_offsets, neighbor_indices_out, neighbor_index_capacity);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d(void* prepared)
 {
     delete reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared);

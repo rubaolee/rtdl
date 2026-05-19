@@ -7216,6 +7216,18 @@ struct FixedRadiusCountThreshold3DRtLaunchParams {
     float trace_tmax;
 };
 
+struct FixedRadiusAdjacency3DRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3DHost* query_points;
+    const GpuPoint3DHost* search_points;
+    const int64_t* edge_offsets;
+    int32_t* neighbor_indices_out;
+    uint64_t neighbor_index_capacity;
+    uint32_t query_count;
+    float radius;
+    float trace_tmax;
+};
+
 struct GpuPointGroupBounds {
     float min_x, min_y, max_x, max_y;
     uint32_t id, point_offset, point_count, pad;
@@ -10103,6 +10115,86 @@ static void write_prepared_fixed_radius_count_threshold_3d_device_outputs_optix(
     OPTIX_CHECK(optixLaunch(g_frn3d_count_threshold_rt.pipe->pipeline, stream,
                              d_params.ptr, sizeof(FixedRadiusCountThreshold3DRtLaunchParams),
                              &g_frn3d_count_threshold_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_copy_s = 0.0;
+}
+
+static void write_prepared_fixed_radius_adjacency_3d_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        const RtdlPoint3D* query_points,
+        size_t query_count,
+        double radius,
+        const int64_t* edge_offsets,
+        int32_t* neighbor_indices_out,
+        size_t neighbor_index_capacity)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius adjacency 3D handle must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_adjacency_3d radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_adjacency_3d radius exceeds prepared max_radius");
+    }
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_adjacency_3d query_count exceeds uint32 limit");
+    if (query_count == 0) return;
+    if (!edge_offsets || !neighbor_indices_out)
+        throw std::runtime_error("fixed_radius_adjacency_3d device output pointers must not be null when query_count is nonzero");
+
+    std::call_once(g_frn3d_adjacency_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusAdjacency3DRtKernelSrc, "frn3d_adjacency_rt_kernel.cu");
+        g_frn3d_adjacency_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn3d_adjacency_probe",
+            "__miss__frn3d_adjacency_miss",
+            "__intersection__frn3d_adjacency_isect",
+            "__anyhit__frn3d_adjacency_anyhit",
+            nullptr, 2).release();
+    });
+
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            static_cast<float>(query_points[i].z),
+            query_points[i].id,
+        };
+    }
+
+    if (!prepared->accel.handle || prepared->search_points.empty()) {
+        return;
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    constexpr float kRadiusPad = 1.0e-4f;
+    const float radius_f = static_cast<float>(radius);
+    const float aabb_radius = static_cast<float>(prepared->max_radius) + kRadiusPad;
+
+    FixedRadiusAdjacency3DRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint3DHost*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
+    lp.edge_offsets = edge_offsets;
+    lp.neighbor_indices_out = neighbor_indices_out;
+    lp.neighbor_index_capacity = static_cast<uint64_t>(neighbor_index_capacity);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.radius = radius_f;
+    lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
+
+    DevPtr d_params(sizeof(FixedRadiusAdjacency3DRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_frn3d_adjacency_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusAdjacency3DRtLaunchParams),
+                             &g_frn3d_adjacency_rt.pipe->sbt,
                              static_cast<unsigned>(query_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
     auto t_end_trav = std::chrono::steady_clock::now();

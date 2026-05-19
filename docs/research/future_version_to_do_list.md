@@ -402,6 +402,14 @@ Future work:
   at 32768 clustered points. Next work should add a bounded/chunked adjacency
   stream and then a generic prepared OptiX fixed-radius adjacency writer that
   feeds the same partner continuation.
+- Goal2431 added the generic prepared OptiX fixed-radius adjacency writer. The
+  first pod evidence confirms that OptiX can fill the same caller-owned CuPy
+  `edge_offsets` / `neighbor_indices` stream and preserve exact labels. The
+  result is a correctness and architecture closure rather than a big speedup:
+  steady-state component labeling is near parity with the prepared pure-CuPy
+  adjacency stream, while stream preparation is heavier. The next performance
+  step is still bounded/chunked or grouped continuation, not DBSCAN-native
+  engine code.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.

@@ -577,6 +577,32 @@ def run_rt_dbscan_benchmark(
                 "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             }
         )
+    elif mode == "optix_rt_core_adjacency_cupy_components_3d":
+        with rt.prepare_optix_cupy_radius_graph_adjacency_3d(
+            points,
+            radius=resolved_radius,
+            partner="cupy",
+        ) as prepared:
+            result = rt.radius_graph_components_3d_optix_cupy_prepared_adjacency_partner_columns(
+                prepared,
+                min_neighbors=resolved_min_neighbors,
+                return_metadata=True,
+            )
+        rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "optix_rt_adjacency_cupy_radius_graph_components_3d",
+                "native_engine_summary_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+                "native_execution_path": "prepared_rt_core_adjacency_3d",
+                "optix_backend_used": True,
+                "rt_core_accelerated": True,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "materializes_directed_adjacency_stream": True,
+                "neighbor_count_policy": "exact_full_degree_from_prepared_rt_adjacency_stream",
+            }
+        )
     elif mode == "optix_rt_core_flags_cupy_microcell_graph_components_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
         output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
@@ -733,6 +759,7 @@ def main(argv: list[str] | None = None) -> int:
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
+            "optix_rt_core_adjacency_cupy_components_3d",
             "optix_rt_core_flags_cupy_microcell_graph_components_3d",
             "partner_core_flags_3d",
             "optix_prepared_rows",

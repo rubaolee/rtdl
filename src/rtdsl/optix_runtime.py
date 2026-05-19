@@ -1980,6 +1980,110 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             }
         }
 
+    def write_device_adjacency_columns(
+        self,
+        query_points,
+        *,
+        radius: float,
+        edge_offsets,
+        neighbor_indices_out,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius adjacency 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("write_device_adjacency_columns requires 3-D query points")
+
+        edge_offsets_handoff = _partner.prepare_direct_device_pointer_handoff(edge_offsets, access="read")
+        neighbor_indices_handoff = _partner.prepare_direct_device_pointer_handoff(neighbor_indices_out, access="write")
+        expected_device = (edge_offsets_handoff.device_type, edge_offsets_handoff.device_id)
+        if (neighbor_indices_handoff.device_type, neighbor_indices_handoff.device_id) != expected_device:
+            raise ValueError("edge_offsets and neighbor_indices_out must live on the same CUDA device")
+        if _partner_dtype_token(edge_offsets_handoff.dtype) != "int64":
+            raise ValueError("edge_offsets must use dtype int64")
+        if _partner_dtype_token(neighbor_indices_handoff.dtype) != "int32":
+            raise ValueError("neighbor_indices_out must use dtype int32")
+        if tuple(edge_offsets_handoff.shape) != (packed_queries.count + 1,):
+            raise ValueError("edge_offsets must have shape (query_count + 1,)")
+        if len(tuple(neighbor_indices_handoff.shape)) != 1:
+            raise ValueError("neighbor_indices_out must be one-dimensional")
+        if not _partner_contiguous_column_strides(edge_offsets_handoff.strides, itemsize=8):
+            raise ValueError("edge_offsets must be contiguous")
+        if not _partner_contiguous_column_strides(neighbor_indices_handoff.strides, itemsize=4):
+            raise ValueError("neighbor_indices_out must be contiguous")
+
+        if packed_queries.count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL,
+                    "query_count": 0,
+                    "neighbor_index_capacity": 0,
+                    "transfer_mode": "host_query_points_to_device_adjacency_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "direct_device_handoff_authorized": True,
+                    "true_zero_copy_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{_OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = write_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_void_p(edge_offsets_handoff.data_ptr),
+            ctypes.c_void_p(neighbor_indices_handoff.data_ptr),
+            ctypes.c_size_t(int(neighbor_indices_handoff.shape[0])),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL,
+                "native_engine_row_contract": "generic_fixed_radius_adjacency_3d_device_columns",
+                "native_execution_path": "prepared_rt_core_adjacency_3d",
+                "query_count": packed_queries.count,
+                "search_count": self._packed_search.count,
+                "radius": float(radius),
+                "neighbor_index_capacity": int(neighbor_indices_handoff.shape[0]),
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "host_query_points_to_device_adjacency_columns",
+                "source_protocols": tuple(sorted({
+                    edge_offsets_handoff.source_protocol,
+                    neighbor_indices_handoff.source_protocol,
+                })),
+                "source_devices": (f"{expected_device[0]}:{expected_device[1]}",),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "v2_0_release_authorized": False,
+                "paper_speedup_claim_authorized": False,
+            }
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -4009,6 +4113,9 @@ _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL = (
 _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs"
 )
+_OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL = (
+    "rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs"
+)
 
 
 def _partner_dtype_token(dtype) -> str:
@@ -4019,9 +4126,9 @@ def _partner_dtype_token(dtype) -> str:
 
 
 def _partner_dtype_itemsize(dtype_token: str) -> int:
-    if dtype_token in {"uint32", "float32", "float"}:
+    if dtype_token in {"uint32", "int32", "float32", "float"}:
         return 4
-    if dtype_token in {"float64", "double"}:
+    if dtype_token in {"int64", "float64", "double"}:
         return 8
     raise ValueError(f"unsupported partner dtype for stride validation: {dtype_token!r}")
 
@@ -7477,6 +7584,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_void_p,
             ctypes.c_void_p,
             ctypes.c_void_p,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int

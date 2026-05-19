@@ -35,6 +35,7 @@ No DBSCAN-specific native ABI is added.
 | `optix_core_flags_cupy_grid_components_3d` | OptiX-backend per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid uniform-cell CUDA summaries plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | OptiX RT count-threshold device columns feed a prepared CuPy device-grid component continuation | Same generic contract with reusable grid/order/workspace state for steady-state probes |
+| `optix_rt_core_adjacency_cupy_components_3d` | OptiX RT writes a generic directed fixed-radius adjacency stream, then CuPy labels components | First generic RT-produced continuation stream; no DBSCAN-native engine code |
 | `optix_rt_core_flags_cupy_microcell_graph_components_3d` | OptiX RT count-threshold device columns feed a clique-safe CuPy microcell component continuation | Experimental all-core fast path; falls back to the CuPy device grid when any point is non-core |
 | `partner_core_flags_3d` | Generic partner 3-D fixed-radius core flags only | Core-point phase, not full DBSCAN |
 | `optix_prepared_rows` | Prepared OptiX-backend 3-D fixed-radius neighbor rows, then Python component labels | Prepared uniform-cell CUDA path; materializes rows |
@@ -156,6 +157,21 @@ with rt.prepare_optix_cupy_radius_graph_components_3d(points, radius=radius) as 
 This is still not a DBSCAN-specific primitive. It is a prepared fixed-radius
 graph-component contract over a 3-D point set: OptiX writes threshold-capped
 core/count columns, then CuPy labels generic radius-graph components.
+
+For the generic RT-produced adjacency-stream path, use:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_adjacency_cupy_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+This path first asks the prepared OptiX scene for exact fixed-radius degree
+counts, builds a device offset column, then asks OptiX to fill a caller-owned
+CuPy `neighbor_indices` stream. CuPy consumes that stream for grouped union and
+labels. The contract is generic radius-graph adjacency, not DBSCAN-specific
+native code. It is also memory bounded: dense inputs can create very large
+directed edge streams, so use the prepared-grid mode when a dataset does not
+need materialized edges.
 
 For the experimental all-core microcell continuation, use:
 

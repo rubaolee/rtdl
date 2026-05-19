@@ -3223,6 +3223,183 @@ class PreparedOptixCupyRadiusGraphComponents3D:
             pass
 
 
+class PreparedOptixCupyRadiusGraphAdjacency3D:
+    """Prepared generic OptiX RT adjacency stream plus CuPy grouped continuation."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "cupy",
+        max_directed_edges: int | None = None,
+    ):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphAdjacency3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy adjacency radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.point_count = len(self.point_rows)
+        self.runtime = _partner_module(partner)
+        self.cupy = self.runtime["module"]
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixCupyRadiusGraphAdjacency3D requires 3-D point rows")
+
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.count_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            self.prepared_native,
+            self.point_rows,
+            radius=radius,
+            threshold=self.point_count,
+            partner=partner,
+            output_columns=self.count_columns,
+            return_metadata=True,
+        )
+        self.count_metadata = dict(threshold_result["metadata"])
+        self.neighbor_counts = threshold_result["columns"]["neighbor_counts"]
+        self.edge_offsets = self.cupy.empty((self.point_count + 1,), dtype=self.cupy.int64)
+        self.edge_offsets[0] = 0
+        self.edge_offsets[1:] = self.cupy.cumsum(self.neighbor_counts.astype(self.cupy.int64, copy=False))
+        self.runtime["sync"]()
+        self.directed_edge_count = int(self.edge_offsets[-1].item())
+        if max_directed_edges is not None and self.directed_edge_count > int(max_directed_edges):
+            raise ValueError(
+                "prepared OptiX radius-graph adjacency stream exceeds max_directed_edges "
+                f"({self.directed_edge_count} > {int(max_directed_edges)})"
+            )
+        self.neighbor_indices = self.cupy.empty((self.directed_edge_count,), dtype=self.cupy.int32)
+        self.native_adjacency_result = self.prepared_native.write_device_adjacency_columns(
+            self.point_rows,
+            radius=radius,
+            edge_offsets=self.edge_offsets,
+            neighbor_indices_out=self.neighbor_indices,
+        )
+        self.runtime["sync"]()
+        _, self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_adjacency_kernels(self.cupy)
+        self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
+        self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.labels_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int64)
+        self.run_count = 0
+        self.closed = False
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy adjacency radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flags = (self.neighbor_counts >= min_neighbors).astype(self.cupy.uint32, copy=False)
+        self.parent_workspace[...] = self.parent_initial
+        blocks = (max(1, (self.point_count + 255) // 256),)
+        threads = 256
+        self.union_kernel(
+            blocks,
+            (threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+            ),
+        )
+        self.label_kernel(
+            blocks,
+            (threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+                self.labels_workspace,
+            ),
+        )
+        self.runtime["sync"]()
+
+        adjacency_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": self.neighbor_counts,
+            "edge_offsets": self.edge_offsets,
+            "neighbor_indices": self.neighbor_indices,
+        }
+        native_metadata = dict(self.native_adjacency_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixCupyRadiusGraphAdjacency3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_cupy_directed_radius_graph_adjacency_component_labels_3d",
+            "native_engine_row_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+            "native_execution_path": "prepared_rt_core_adjacency_3d",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "directed_edge_count": self.directed_edge_count,
+            "edge_stream_policy": "optix_written_directed_radius_graph_neighbor_index_stream_with_offsets",
+            "edge_stream_reused": adjacency_reused,
+            "prepared_adjacency_run_count": self.run_count,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_prepared_directed_edge_stream",
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": True,
+            "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+            "count_metadata": self.count_metadata,
+            "native_adjacency_metadata": native_metadata,
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": bool(native_metadata.get("direct_device_handoff_authorized", False)),
+            "output_columns_true_zero_copy_authorized": bool(native_metadata.get("output_columns_true_zero_copy_authorized", False)),
+            "true_zero_copy_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphAdjacency3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 def prepare_optix_cupy_radius_graph_components_3d(
     point_rows,
     *,
@@ -3234,6 +3411,30 @@ def prepare_optix_cupy_radius_graph_components_3d(
 
 def radius_graph_components_3d_optix_cupy_prepared_partner_columns(
     prepared: PreparedOptixCupyRadiusGraphComponents3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_cupy_radius_graph_adjacency_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+    max_directed_edges: int | None = None,
+) -> PreparedOptixCupyRadiusGraphAdjacency3D:
+    return PreparedOptixCupyRadiusGraphAdjacency3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+        max_directed_edges=max_directed_edges,
+    )
+
+
+def radius_graph_components_3d_optix_cupy_prepared_adjacency_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphAdjacency3D,
     *,
     min_neighbors: int,
     return_metadata: bool = False,
