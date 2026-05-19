@@ -197,17 +197,10 @@ export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode planned_rt_dbscan --dataset clustered3d --point-count 131072 --no-validation
 ```
 
-This explicit benchmark-app plan is not a hidden dispatcher. It records an `execution_plan` in the JSON
-metadata, including the selected mode and reason. The policy is deliberately
-evidence-bounded:
-
-- compact `ngsim_dense` rows use the pure CuPy grid path;
-- road-shaped rows below the measured 262k crossover use the pure CuPy grid
-  path;
-- clustered rows and larger road-shaped rows use the prepared RT-count plus
-  prepared CuPy-grid bridge.
-
-After the Goal2425 prepared-baseline fairness pass, the policy is:
+This explicit benchmark-app plan is not a hidden dispatcher. It records an
+`execution_plan` in the JSON metadata, including the selected mode and reason.
+After the Goal2425 prepared-baseline fairness pass and the Goal2427 pod smoke,
+the evidence-bounded policy is:
 
 - compact `ngsim_dense` rows use the prepared pure-CuPy continuation;
 - `road3d` rows below the measured 524k crossover use the prepared pure-CuPy
