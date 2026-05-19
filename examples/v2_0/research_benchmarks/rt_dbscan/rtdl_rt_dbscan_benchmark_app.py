@@ -437,6 +437,28 @@ def run_rt_dbscan_benchmark(
                 "materializes_neighbor_rows": False,
             }
         )
+    elif mode == "partner_cupy_prepared_adjacency_components_3d":
+        point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
+        prepared_adjacency = rt.prepare_radius_graph_adjacency_3d_cupy_partner_columns(
+            point_columns,
+            radius=resolved_radius,
+            partner="cupy",
+        )
+        result = rt.radius_graph_components_3d_cupy_prepared_adjacency_partner_columns(
+            prepared_adjacency,
+            min_neighbors=resolved_min_neighbors,
+            return_metadata=True,
+        )
+        rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "partner_cupy_prepared_directed_adjacency_radius_graph_components_3d",
+                "rt_core_accelerated": False,
+                "materializes_neighbor_rows": False,
+                "materializes_directed_adjacency_stream": True,
+            }
+        )
     elif mode == "optix_core_flags_cupy_grid_components_3d":
         if resolved_min_neighbors > 64:
             raise ValueError("optix_core_flags_cupy_grid_components_3d currently requires min_neighbors <= 64")
@@ -707,6 +729,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_spatial_bucket_3d",
             "partner_cupy_grid_components_3d",
             "partner_cupy_prepared_grid_components_3d",
+            "partner_cupy_prepared_adjacency_components_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",

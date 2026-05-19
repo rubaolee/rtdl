@@ -456,9 +456,12 @@ from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_spatial_bucket_partner_columns
 from .partner_adapters import radius_graph_components_3d_spatial_bucket_partner_columns
 from .partner_adapters import PreparedCupyRadiusGraphComponents3DGrid
+from .partner_adapters import PreparedCupyRadiusGraphAdjacency3D
 from .partner_adapters import prepare_radius_graph_components_3d_cupy_grid_partner_columns
+from .partner_adapters import prepare_radius_graph_adjacency_3d_cupy_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_grid_partner_columns
 from .partner_adapters import radius_graph_components_3d_cupy_prepared_grid_partner_columns
+from .partner_adapters import radius_graph_components_3d_cupy_prepared_adjacency_partner_columns
 from .partner_adapters import PreparedOptixCupyRadiusGraphComponents3D
 from .partner_adapters import prepare_optix_cupy_radius_graph_components_3d
 from .partner_adapters import radius_graph_components_3d_optix_cupy_prepared_partner_columns
@@ -1420,9 +1423,12 @@ __all__ = [
     "radius_graph_components_2d_spatial_bucket_partner_columns",
     "radius_graph_components_3d_spatial_bucket_partner_columns",
     "PreparedCupyRadiusGraphComponents3DGrid",
+    "PreparedCupyRadiusGraphAdjacency3D",
     "prepare_radius_graph_components_3d_cupy_grid_partner_columns",
+    "prepare_radius_graph_adjacency_3d_cupy_partner_columns",
     "radius_graph_components_3d_cupy_grid_partner_columns",
     "radius_graph_components_3d_cupy_prepared_grid_partner_columns",
+    "radius_graph_components_3d_cupy_prepared_adjacency_partner_columns",
     "PreparedOptixCupyRadiusGraphComponents3D",
     "prepare_optix_cupy_radius_graph_components_3d",
     "radius_graph_components_3d_optix_cupy_prepared_partner_columns",

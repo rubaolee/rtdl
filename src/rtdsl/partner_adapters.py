@@ -2418,6 +2418,184 @@ def _cupy_radius_graph_components_3d_grid_kernels(cupy):
     return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
 
 
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = None
+
+
+def _cupy_radius_graph_components_3d_adjacency_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int lower_bound_adj_cell(const long long* values, const int count, const long long key) {
+            int left = 0;
+            int right = count;
+            while (left < right) {
+                const int mid = left + ((right - left) >> 1);
+                if (values[mid] < key) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+
+        extern "C" __device__
+        int find_adj_root_readonly(const int* parent, int item) {
+            int root = item;
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
+                root = parent[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_adj_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_adj_root_readonly(parent, left);
+                int right_root = find_adj_root_readonly(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __device__
+        long long make_adj_cell_id(const int gx, const int gy, const int gz, const int dim_x, const int dim_y) {
+            return (long long)gx + (long long)gy * (long long)dim_x + (long long)gz * (long long)dim_x * (long long)dim_y;
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_write_directed_adjacency_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const long long* edge_offsets,
+            int* neighbor_indices
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            long long cursor_out = edge_offsets[point];
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_adj_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_adj_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int scan = start; scan < end; ++scan) {
+                            const int other = sorted_point_indices[scan];
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                neighbor_indices[cursor_out] = other;
+                                ++cursor_out;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_adjacency_union_kernel(
+            const int point_count,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            int* parent
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count || core_flags[point] == 0u) {
+                return;
+            }
+            const long long start = edge_offsets[point];
+            const long long end = edge_offsets[point + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (other <= point || core_flags[other] == 0u) {
+                    continue;
+                }
+                union_adj_min_root(parent, point, other);
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_adjacency_label_kernel(
+            const int point_count,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            const int* parent,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_adj_root_readonly(parent, point) + 1ll;
+                return;
+            }
+            int best_root = -1;
+            const long long start = edge_offsets[point];
+            const long long end = edge_offsets[point + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (core_flags[other] == 0u) {
+                    continue;
+                }
+                const int root = find_adj_root_readonly(parent, other);
+                if (best_root < 0 || root < best_root) {
+                    best_root = root;
+                }
+            }
+            labels[point] = best_root < 0 ? -1ll : (long long)best_root + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = (
+            cupy.RawKernel(source, "radius_graph_3d_write_directed_adjacency_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_adjacency_union_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_adjacency_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS
+
+
 def radius_graph_components_3d_cupy_grid_partner_columns(
     point_columns: dict[str, object],
     *,
@@ -2742,6 +2920,189 @@ class PreparedCupyRadiusGraphComponents3DGrid:
         return columns
 
 
+class PreparedCupyRadiusGraphAdjacency3D:
+    """Prepared directed adjacency stream for generic 3-D fixed-radius graphs."""
+
+    def __init__(
+        self,
+        point_columns: dict[str, object],
+        *,
+        radius: float,
+        partner: str = "cupy",
+        max_directed_edges: int | None = None,
+    ):
+        import math
+
+        if partner != "cupy":
+            raise ValueError("PreparedCupyRadiusGraphAdjacency3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if "z" not in point_columns:
+            raise ValueError("PreparedCupyRadiusGraphAdjacency3D requires z point columns")
+        runtime = _partner_module(partner)
+        cupy = runtime["module"]
+        point_count = _column_length(point_columns, "ids")
+        if point_count <= 0:
+            raise ValueError("radius graph adjacency requires non-empty point columns")
+
+        self.runtime = runtime
+        self.cupy = cupy
+        self.partner = runtime["name"]
+        self.point_columns = point_columns
+        self.point_count = point_count
+        self.radius = radius
+        self.radius_sq = radius * radius
+        self.x = point_columns["x"].astype(cupy.float64, copy=False)
+        self.y = point_columns["y"].astype(cupy.float64, copy=False)
+        self.z = point_columns["z"].astype(cupy.float64, copy=False)
+        self.cell_size = radius if radius > 0.0 else 1.0
+        self.min_x = float(cupy.min(self.x).item())
+        self.min_y = float(cupy.min(self.y).item())
+        self.min_z = float(cupy.min(self.z).item())
+        gx = cupy.floor((self.x - self.min_x) / self.cell_size).astype(cupy.int64, copy=False)
+        gy = cupy.floor((self.y - self.min_y) / self.cell_size).astype(cupy.int64, copy=False)
+        gz = cupy.floor((self.z - self.min_z) / self.cell_size).astype(cupy.int64, copy=False)
+        self.dim_x = int(cupy.max(gx).item()) + 1
+        self.dim_y = int(cupy.max(gy).item()) + 1
+        self.dim_z = int(cupy.max(gz).item()) + 1
+        cell_ids = gx + gy * self.dim_x + gz * self.dim_x * self.dim_y
+        self.order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+        sorted_cell_ids = cell_ids[self.order].astype(cupy.int64, copy=False)
+        unique_cells, starts, counts = cupy.unique(
+            sorted_cell_ids,
+            return_index=True,
+            return_counts=True,
+        )
+        self.unique_cells = unique_cells.astype(cupy.int64, copy=False)
+        self.starts = starts.astype(cupy.int32, copy=False)
+        self.counts = counts.astype(cupy.int32, copy=False)
+        self.unique_cell_count = int(self.unique_cells.size)
+        self.threads = 256
+        self.blocks = (max(1, math.ceil(point_count / self.threads)),)
+
+        count_kernel, _, _ = _cupy_radius_graph_components_3d_grid_kernels(cupy)
+        self.neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
+        scratch_flags = cupy.zeros((point_count,), dtype=cupy.uint32)
+        count_kernel(
+            self.blocks,
+            (self.threads,),
+            self._common_args() + (1, self.neighbor_counts, scratch_flags),
+        )
+        self.edge_offsets = cupy.empty((point_count + 1,), dtype=cupy.int64)
+        self.edge_offsets[0] = 0
+        self.edge_offsets[1:] = cupy.cumsum(self.neighbor_counts.astype(cupy.int64, copy=False))
+        runtime["sync"]()
+        self.directed_edge_count = int(self.edge_offsets[-1].item())
+        if max_directed_edges is not None and self.directed_edge_count > int(max_directed_edges):
+            raise ValueError(
+                "prepared radius-graph adjacency stream exceeds max_directed_edges "
+                f"({self.directed_edge_count} > {int(max_directed_edges)})"
+            )
+        self.neighbor_indices = cupy.empty((self.directed_edge_count,), dtype=cupy.int32)
+        write_kernel, self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_adjacency_kernels(cupy)
+        write_kernel(
+            self.blocks,
+            (self.threads,),
+            self._common_args() + (self.edge_offsets, self.neighbor_indices),
+        )
+        self.parent_initial = cupy.arange(point_count, dtype=cupy.int32)
+        self.parent_workspace = cupy.empty((point_count,), dtype=cupy.int32)
+        self.labels_workspace = cupy.empty((point_count,), dtype=cupy.int64)
+        self.run_count = 0
+        runtime["sync"]()
+
+    def _common_args(self):
+        return (
+            self.x,
+            self.y,
+            self.z,
+            self.point_count,
+            self.unique_cells,
+            self.starts,
+            self.counts,
+            self.unique_cell_count,
+            self.order,
+            self.min_x,
+            self.min_y,
+            self.min_z,
+            self.cell_size,
+            self.dim_x,
+            self.dim_y,
+            self.dim_z,
+            self.radius_sq,
+        )
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        cupy = self.cupy
+        core_flags = (self.neighbor_counts >= min_neighbors).astype(cupy.uint32, copy=False)
+        self.parent_workspace[...] = self.parent_initial
+        self.union_kernel(
+            self.blocks,
+            (self.threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+            ),
+        )
+        self.label_kernel(
+            self.blocks,
+            (self.threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+                self.labels_workspace,
+            ),
+        )
+        self.runtime["sync"]()
+
+        prepared_adjacency_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": self.neighbor_counts,
+            "edge_offsets": self.edge_offsets,
+            "neighbor_indices": self.neighbor_indices,
+        }
+        metadata = {
+            "adapter": "PreparedCupyRadiusGraphAdjacency3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_partner_device_point_columns_3d",
+            "partner_reference_contract": "generic_prepared_cupy_directed_radius_graph_adjacency_component_labels_3d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "cell_count": self.unique_cell_count,
+            "directed_edge_count": self.directed_edge_count,
+            "edge_stream_policy": "directed_radius_graph_neighbor_index_stream_with_offsets",
+            "edge_stream_reused": prepared_adjacency_reused,
+            "prepared_adjacency_run_count": self.run_count,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_prepared_directed_edge_stream",
+            "host_bucket_index_used": False,
+            "device_grid_index_used": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+
 class PreparedOptixCupyRadiusGraphComponents3D:
     """Prepared generic OptiX RT + CuPy continuation for 3-D radius graph labels."""
 
@@ -2905,6 +3266,30 @@ def radius_graph_components_3d_cupy_prepared_grid_partner_columns(
         core_flag_source=core_flag_source,
         return_metadata=return_metadata,
     )
+
+
+def prepare_radius_graph_adjacency_3d_cupy_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "cupy",
+    max_directed_edges: int | None = None,
+) -> PreparedCupyRadiusGraphAdjacency3D:
+    return PreparedCupyRadiusGraphAdjacency3D(
+        point_columns,
+        radius=radius,
+        partner=partner,
+        max_directed_edges=max_directed_edges,
+    )
+
+
+def radius_graph_components_3d_cupy_prepared_adjacency_partner_columns(
+    prepared: PreparedCupyRadiusGraphAdjacency3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
 
 
 def _fixed_radius_clique_safe_microcell_size(radius: float) -> float:
