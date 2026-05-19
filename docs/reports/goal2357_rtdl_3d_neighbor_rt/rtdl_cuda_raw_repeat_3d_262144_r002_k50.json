@@ -1,0 +1,29 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "CUDA fixed-radius neighbor kernel behind OptiX runtime wrapper",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    7.750145044177771,
+    3.3364482186734676,
+    3.44422353990376
+  ],
+  "elapsed_sec": 3.44422353990376,
+  "error": "",
+  "external": "RTDL current",
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "query_count": 262144,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "rtdl_cuda_raw_repeat_3d_262144_r002_k50",
+  "row_count": 2514156,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 262144
+}

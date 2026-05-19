@@ -263,6 +263,38 @@ Boundary:
 - Do not block the current v2.x learner/release lane on full X-HD reproduction.
 - Promotion needs a separate design report, pod evidence, and external review.
 
+### RTNN-Informed 3D Bounded Neighbor Search
+
+Origin: Goal2353 RTNN pod baseline and Goal2357 uniform-cell neighbor step.
+
+Observation:
+
+- RTNN shows that nearest-neighbor performance comes from spatial organization,
+  batching/partitioning, and bounded output policy, not from merely calling
+  OptiX once.
+- Goal2357 added a generic uniform-cell 3D bounded-neighbor path for the OptiX
+  backend and kept the old all-pairs CUDA path plus a simple RT traversal probe
+  as explicit diagnostics.
+- The uniform-cell path improved same-protocol warm/raw RTDL rows over the old
+  CUDA path, and beat the collected RTNN 65k warm row, but still trailed RTNN at
+  262k.
+
+Future work:
+
+- Promote this into an explicit `prepared_bounded_neighbor_search_3d` primitive
+  with reusable prepared search-point structures, batch/partition policy,
+  raw/device-resident row continuation, and phase telemetry.
+- Study whether a real RT-core prepared variant can beat the uniform-cell path
+  only after the prepared contract exists; do not treat naked OptiX traversal as
+  sufficient.
+- Keep names generic: no native `rtnn` ABI names and no benchmark-specific
+  continuation.
+
+Boundary:
+
+- This is v2.x runtime/primitive work. It does not require v3.0 user-defined
+  shader injection unless users must author custom neighbor predicates.
+
 ## v3.0+ Architecture Ideas
 
 ### User-Defined Predicate Extension Surface

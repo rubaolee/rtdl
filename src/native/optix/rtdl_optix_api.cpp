@@ -3008,11 +3008,25 @@ extern "C" int rtdl_optix_run_fixed_radius_neighbors_3d(
             throw std::runtime_error("fixed_radius_neighbors k_max exceeds uint32 limit");
         *rows_out = nullptr; *row_count_out = 0;
         if (query_count == 0 || search_count == 0) return;
-        run_fixed_radius_neighbors_cuda_3d(
-            query_points, query_count,
-            search_points, search_count,
-            radius, k_max,
-            rows_out, row_count_out);
+        if (std::getenv("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_CUDA") != nullptr) {
+            run_fixed_radius_neighbors_cuda_3d(
+                query_points, query_count,
+                search_points, search_count,
+                radius, k_max,
+                rows_out, row_count_out);
+        } else if (std::getenv("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_RT") != nullptr) {
+            run_fixed_radius_neighbors_rt_3d(
+                query_points, query_count,
+                search_points, search_count,
+                radius, k_max,
+                rows_out, row_count_out);
+        } else {
+            run_fixed_radius_neighbors_grid_cuda_3d(
+                query_points, query_count,
+                search_points, search_count,
+                radius, k_max,
+                rows_out, row_count_out);
+        }
     }, error_out, error_size);
 }
 

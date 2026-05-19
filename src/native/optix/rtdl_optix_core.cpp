@@ -3560,6 +3560,215 @@ extern "C" __global__ void fixed_radius_neighbors_3d(
 }
 )CUDA";
 
+static const char* kFixedRadiusNeighbors3DRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+
+struct FixedRadiusNeighbors3DRtParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* query_points;
+    const GpuPoint3D* search_points;
+    FrnRecord* output;
+    uint32_t query_count;
+    uint32_t k_max;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusNeighbors3DRtParams params;
+}
+
+extern "C" __global__ void __raygen__frn3d_probe() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+
+    const GpuPoint3D q = params.query_points[qidx];
+    FrnRecord* query_out = params.output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(params.k_max);
+    for (uint32_t slot = 0; slot < params.k_max; ++slot) {
+        query_out[slot].query_id = q.id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+    }
+
+    unsigned int p0 = qidx;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__frn3d_miss() {}
+
+extern "C" __global__ void __intersection__frn3d_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float dz = t.z - q.z;
+    const float d2 = dx * dx + dy * dy + dz * dz;
+    const float radius_sq = params.radius * params.radius;
+    if (d2 > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__frn3d_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float dz = t.z - q.z;
+    const float d2 = dx * dx + dy * dy + dz * dz;
+    const float distance = sqrtf(d2);
+    FrnRecord* query_out = params.output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(params.k_max);
+
+    uint32_t insert_at = params.k_max;
+    for (uint32_t slot = 0; slot < params.k_max; ++slot) {
+        const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+        const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+        const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+        const bool better_id = same_distance && t.id < query_out[slot].neighbor_id;
+        if (empty || better_distance || better_id) {
+            insert_at = slot;
+            break;
+        }
+    }
+    if (insert_at < params.k_max) {
+        for (uint32_t slot = params.k_max - 1u; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1u];
+        }
+        query_out[insert_at].query_id = q.id;
+        query_out[insert_at].neighbor_id = t.id;
+        query_out[insert_at].distance = distance;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kFixedRadiusNeighbors3DGridKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+
+static __device__ __forceinline__ void insert_neighbor(
+        FrnRecord* query_out,
+        uint32_t k_max,
+        uint32_t* count,
+        uint32_t query_id,
+        uint32_t neighbor_id,
+        float distance)
+{
+    uint32_t insert_at = k_max;
+    const uint32_t used = *count < k_max ? *count : k_max;
+    for (uint32_t slot = 0; slot < used; ++slot) {
+        const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+        const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+        const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+        if (better_distance || better_id) {
+            insert_at = slot;
+            break;
+        }
+    }
+    if (insert_at == k_max && used < k_max) {
+        insert_at = used;
+    }
+    if (insert_at == k_max) {
+        return;
+    }
+    const uint32_t last_slot = used < k_max ? used : (k_max - 1u);
+    for (uint32_t slot = last_slot; slot > insert_at; --slot) {
+        query_out[slot] = query_out[slot - 1u];
+    }
+    query_out[insert_at].query_id = query_id;
+    query_out[insert_at].neighbor_id = neighbor_id;
+    query_out[insert_at].distance = distance;
+    if (*count < k_max) {
+        *count += 1u;
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        uint32_t* counts_out,
+        FrnRecord* output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const GpuPoint3D q = query_points[qidx];
+    FrnRecord* query_out = output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(k_max);
+    uint32_t count = 0u;
+
+    const int cx = static_cast<int>(floorf((q.x - min_x) * inv_cell_size));
+    const int cy = static_cast<int>(floorf((q.y - min_y) * inv_cell_size));
+    const int cz = static_cast<int>(floorf((q.z - min_z) * inv_cell_size));
+    const float radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const GpuPoint3D t = sorted_search_points[pos];
+                    const float sx = t.x - q.x;
+                    const float sy = t.y - q.y;
+                    const float sz = t.z - q.z;
+                    const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    insert_neighbor(query_out, k_max, &count, q.id, t.id, sqrtf(d2));
+                }
+            }
+        }
+    }
+    counts_out[qidx] = count;
+}
+)CUDA";
+
 static const char* kFixedRadiusCountRtKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
@@ -4631,6 +4840,7 @@ static RayAnyHitPipeline    g_rayanyhit_group_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
 static RayAnyHitPipeline    g_frn_count_host_rt;
 static RayAnyHitPipeline    g_frn_nearest_rt;
+static RayAnyHitPipeline    g_frn3d_rt;
 static RayAnyHitPipeline    g_point_group_threshold_rt;
 static RayAnyHitPipeline    g_point_group_nearest_rt;
 static KnnCuFunction       g_point_group_nearest_reduce;
@@ -4642,6 +4852,7 @@ static GraphEdgePipeline   g_graph_triangle;
 static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;
+static FrnCuFunction      g_frn3d_grid;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;
 static KnnCuFunction      g_partner_point2d_aabb_pack;

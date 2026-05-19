@@ -320,9 +320,11 @@ def run_rtdl_current_2d_smoke(args: argparse.Namespace) -> dict[str, object]:
 def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, object]:
     """Run RTDL's current 3-D fixed-radius neighbor path.
 
-    This is a useful current-implementation baseline, but it is not RTNN-parity
-    evidence: the native 3-D path currently lowers to a CUDA neighbor kernel,
-    not the prepared RT-core partitioned traversal design that RTNN studies.
+    This is a useful current-implementation baseline. Current main defaults to
+    the generic uniform-cell bounded-neighbor path; setting
+    RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_RT probes the simple custom-primitive
+    OptiX traversal, and RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_CUDA keeps the older
+    CUDA all-pairs path available for diagnostics.
     """
     sys.path.insert(0, str(ROOT / "src"))
     sys.path.insert(0, str(ROOT))
@@ -330,6 +332,8 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
 
     radius = float(args.radius)
     k_max = int(args.k_max)
+    result_mode = getattr(args, "result_mode", "dict")
+    repeat = int(getattr(args, "repeat", 1))
 
     @rt.kernel(backend="rtdl", precision="float_approx")
     def _goal2348_current_fixed_radius_neighbors_3d():
@@ -354,21 +358,44 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         f"[goal2348] RTDL current 3D neighbors smoke start queries={len(queries)} points={len(points)}",
         flush=True,
     )
-    started = time.perf_counter()
-    try:
-        rows = rt.run_optix(
-            _goal2348_current_fixed_radius_neighbors_3d,
-            query_points=queries,
-            search_points=points,
+    elapsed_runs = []
+    row_count = 0
+    ok = True
+    error = ""
+    for run_index in range(repeat):
+        started = time.perf_counter()
+        try:
+            rows = rt.run_optix(
+                _goal2348_current_fixed_radius_neighbors_3d,
+                result_mode=result_mode,
+                query_points=queries,
+                search_points=points,
+            )
+            row_count = len(rows)
+            if result_mode == "raw":
+                rows.close()
+        except Exception as exc:  # pragma: no cover - hardware/library path
+            row_count = 0
+            ok = False
+            error = repr(exc)
+            elapsed_runs.append(time.perf_counter() - started)
+            break
+        elapsed_runs.append(time.perf_counter() - started)
+        print(
+            f"[goal2348] RTDL current 3D neighbors repeat {run_index + 1}/{repeat} "
+            f"ok=True sec={elapsed_runs[-1]:.6f}",
+            flush=True,
         )
-        ok = True
-        error = ""
-    except Exception as exc:  # pragma: no cover - hardware/library path
-        rows = ()
-        ok = False
-        error = repr(exc)
-    elapsed_sec = time.perf_counter() - started
+    elapsed_sec = elapsed_runs[-1] if elapsed_runs else 0.0
     print(f"[goal2348] RTDL current 3D neighbors smoke done ok={ok} sec={elapsed_sec:.6f}", flush=True)
+    forced_cuda = os.environ.get("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_CUDA") is not None
+    forced_rt = os.environ.get("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_RT") is not None
+    if forced_cuda:
+        current_native_path = "CUDA fixed-radius neighbor kernel behind OptiX runtime wrapper"
+    elif forced_rt:
+        current_native_path = "generic OptiX custom-primitive bounded-neighbor traversal"
+    else:
+        current_native_path = "generic uniform-cell bounded-neighbor traversal"
     return {
         "runner": "goal2348_rtnn_v2_2_external_runner",
         "row": args.row_label,
@@ -376,18 +403,23 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
         "ok": ok,
         "elapsed_sec": elapsed_sec,
+        "elapsed_runs_sec": elapsed_runs,
         "query_count": len(queries),
         "search_count": len(points),
         "radius": radius,
         "k_max": k_max,
-        "row_count": len(rows),
+        "result_mode": result_mode,
+        "repeat": repeat,
+        "row_count": row_count,
         "error": error,
         "claim_boundary": {
             "paper_equivalent_rtnn_row": False,
             "rtdl_speedup_claim_authorized": False,
             "broad_rt_core_speedup_claim_authorized": False,
-            "rt_core_neighbor_search_claim_authorized": False,
-            "current_native_path": "CUDA fixed-radius neighbor kernel behind OptiX runtime wrapper",
+            "rt_core_neighbor_search_claim_authorized": forced_rt,
+            "current_native_path": current_native_path,
+            "paper_equivalent_rtnn_row": False,
+            "partitioned_or_batched_like_rtnn": False,
         },
     }
 
@@ -448,6 +480,8 @@ def main(argv: list[str] | None = None) -> int:
     smoke3d.add_argument("--query-file", type=Path)
     smoke3d.add_argument("--radius", type=float, default=0.02)
     smoke3d.add_argument("--k-max", type=int, default=50)
+    smoke3d.add_argument("--result-mode", choices=("dict", "raw"), default="dict")
+    smoke3d.add_argument("--repeat", type=int, default=1)
     smoke3d.add_argument("--row-label", default="rtdl_current_3d_neighbors_smoke")
     smoke3d.add_argument("--json-out", type=Path, required=True)
 
