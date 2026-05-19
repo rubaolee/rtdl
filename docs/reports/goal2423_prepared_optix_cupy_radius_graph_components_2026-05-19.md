@@ -2,7 +2,7 @@
 
 Date: 2026-05-19
 
-Status: local implementation complete; pod smoke required
+Status: implementation complete; pod smoke complete
 
 ## Purpose
 
@@ -59,3 +59,45 @@ device-resident radius-graph edge stream or grouped union continuation
 
 Goal2423 is the cleaner baseline users and future benchmarks should call while
 that larger primitive is designed.
+
+## Pod Smoke
+
+Artifacts:
+
+```text
+docs/reports/goal2423_prepared_optix_cupy_radius_graph_components_pod_smoke/
+```
+
+Environment:
+
+```text
+root@69.30.85.177 -p 22055
+commit 88c51e87c9f2b58cbe1063077e38edcbe6a0125b
+NVIDIA RTX A5000, driver 570.211.01
+Python 3.12.3
+CuPy 14.0.1
+```
+
+The pod focused tests passed:
+
+```text
+6 tests OK
+```
+
+The direct composite API smoke ran the prepared object twice and recorded:
+
+```text
+first run: prepared_composite_reused = false
+second run: prepared_composite_reused = true
+```
+
+The repeat probe smoke for `clustered3d / 32768` reported:
+
+| Mode | Warm-tail app sec |
+| --- | ---: |
+| `partner_cupy_grid_components_3d` | 0.184822 |
+| `optix_rt_core_flags_cupy_prepared_grid_components_3d` | 0.181392 |
+
+This smoke is not a new performance claim beyond Goals 2418 and 2420. It only
+confirms that the public composite wrapper preserves the established prepared
+path and reuse metadata.

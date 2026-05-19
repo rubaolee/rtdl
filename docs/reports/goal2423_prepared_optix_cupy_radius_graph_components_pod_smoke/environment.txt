@@ -1,0 +1,6 @@
+commit=88c51e87ec55547cbee25707000eab7b4b0b256f
+gpu=NVIDIA RTX A5000, 570.211.01
+python=Python 3.12.3
+cupy=14.0.1
+cuda_device_count=1
+RTDL_OPTIX_LIBRARY=/root/rtdl_goal2415/build/librtdl_optix.so

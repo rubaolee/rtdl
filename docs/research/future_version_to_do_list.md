@@ -383,6 +383,11 @@ Future work:
   explicit plan/explain path that reports the selected backend, partner,
   preparation/reuse state, RT phase timing, continuation timing, and claim
   boundary. Do not hide this behind an invisible dispatcher.
+- Goal2423 turned the proven prepared RT-count plus prepared CuPy-grid path
+  into a public generic composite runtime:
+  `prepare_optix_cupy_radius_graph_components_3d`. This is now the baseline
+  user-facing contract for current RT-DBSCAN-style experiments while deeper
+  device-resident edge-stream or grouped-union continuations are designed.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.

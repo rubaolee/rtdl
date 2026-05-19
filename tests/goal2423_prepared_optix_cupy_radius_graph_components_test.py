@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import pathlib
 import unittest
 
@@ -11,6 +12,7 @@ APP = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "rtdl_r
 README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "README.md"
 REPEAT = ROOT / "scripts" / "goal2403_rt_dbscan_repeat_probe.py"
 REPORT = ROOT / "docs" / "reports" / "goal2423_prepared_optix_cupy_radius_graph_components_2026-05-19.md"
+POD_SMOKE = ROOT / "docs" / "reports" / "goal2423_prepared_optix_cupy_radius_graph_components_pod_smoke"
 NATIVE = ROOT / "src" / "native"
 
 
@@ -44,6 +46,20 @@ class Goal2423PreparedOptixCupyRadiusGraphComponentsTest(unittest.TestCase):
         self.assertIn("does not add a native DBSCAN ABI", report)
         self.assertIn("device-resident radius-graph edge stream", report)
         self.assertIn("cleaner baseline", report)
+
+    def test_pod_smoke_records_composite_reuse(self) -> None:
+        direct = json.loads((POD_SMOKE / "direct_composite_smoke.json").read_text(encoding="utf-8"))
+        repeat = json.loads((POD_SMOKE / "clustered3d_32768_repeat3.json").read_text(encoding="utf-8"))
+
+        self.assertFalse(direct["first_metadata"]["prepared_composite_reused"])
+        self.assertTrue(direct["second_metadata"]["prepared_composite_reused"])
+        self.assertTrue(direct["second_metadata"]["prepared_cupy_grid_reused"])
+        self.assertTrue(repeat["signatures_match"])
+        prepared_rows = [
+            row for row in repeat["rows"]
+            if row["mode"] == "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+        ]
+        self.assertEqual([row.get("prepared_composite_reused") for row in prepared_rows], [False, True, True])
 
 
 if __name__ == "__main__":
