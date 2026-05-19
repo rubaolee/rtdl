@@ -333,6 +333,38 @@ Boundary:
 - This is v2.x runtime/primitive work. It does not require v3.0 user-defined
   shader injection unless users must author custom neighbor predicates.
 
+## RT-DBSCAN-Informed Fixed-Radius Component Continuation
+
+Origin: Goal2405 true OptiX RT count-threshold device columns.
+
+Observation:
+
+- Goal2405 added a generic true-RT `fixed_radius_count_threshold_3d` prepared
+  device-column path. It writes threshold-capped counts and core flags into
+  partner CUDA columns without neighbor-row materialization.
+- The path is faster than the earlier OptiX-backend uniform-cell summary bridge
+  and wins on a dense clustered 131k probe, but sparse road-like rows still
+  favor the pure CuPy grid continuation.
+- The remaining cost is not the core-flag threshold alone. The full DBSCAN
+  composition still runs a separate partner radius-graph component continuation,
+  which redoes candidate-pair traversal after RT thresholding.
+
+Future work:
+
+- Design a generic device-resident radius-graph component continuation contract
+  that can consume RT traversal hits or compact edge streams without returning
+  to host row materialization.
+- Keep the primitive generic: fixed-radius graph/component labels, grouped
+  union/find continuation, or row-stream continuation. Do not add
+  DBSCAN-specific native ABI.
+- Preserve explicit claim metadata for RT-core phase, partner continuation
+  phase, row materialization policy, and zero-copy/direct-device handoff policy.
+
+Boundary:
+
+- This belongs in v2.x runtime/primitive work. It is not a v3.0 shader-injection
+  feature unless users need to define custom hit predicates.
+
 ## v3.0+ Architecture Ideas
 
 ### User-Defined Predicate Extension Surface

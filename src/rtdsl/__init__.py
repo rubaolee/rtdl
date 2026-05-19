@@ -367,6 +367,7 @@ from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d_device_desc
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_neighbors_3d
+from .optix_runtime import prepare_optix_fixed_radius_count_threshold_3d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
 from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
@@ -383,6 +384,7 @@ from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixFixedRadiusNeighbors3D
+from .optix_runtime import PreparedOptixFixedRadiusCountThreshold3D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
@@ -410,6 +412,8 @@ from .partner_adapters import road_hazard_priority_flags_optix_partner_device_co
 from .partner_adapters import road_hazard_priority_flags_optix_prepared_partner_device_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_partner_columns
 from .partner_adapters import fixed_radius_count_threshold_3d_partner_columns
+from .partner_adapters import allocate_fixed_radius_count_threshold_3d_partner_device_output_columns
+from .partner_adapters import fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_device_columns
 from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
@@ -1320,6 +1324,7 @@ __all__ = [
     "prepare_optix",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_neighbors_3d",
+    "prepare_optix_fixed_radius_count_threshold_3d",
     "prepare_optix_fixed_radius_count_threshold_2d",
     "prepare_optix_fixed_radius_count_threshold_2d_device_search_columns",
     "prepare_optix_segment_polygon_anyhit_rows_2d",
@@ -1336,6 +1341,7 @@ __all__ = [
     "PreparedOptixExecution",
     "PreparedOptixFixedRadiusCountThreshold2D",
     "PreparedOptixFixedRadiusNeighbors3D",
+    "PreparedOptixFixedRadiusCountThreshold3D",
     "PreparedOptixKernel",
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixSegmentPolygonAnyHitRows2D",
@@ -1363,6 +1369,8 @@ __all__ = [
     "road_hazard_priority_flags_optix_prepared_partner_device_columns",
     "fixed_radius_count_threshold_2d_partner_columns",
     "fixed_radius_count_threshold_3d_partner_columns",
+    "allocate_fixed_radius_count_threshold_3d_partner_device_output_columns",
+    "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
     "fixed_radius_count_threshold_2d_optix_partner_device_columns",
     "allocate_fixed_radius_count_threshold_2d_partner_device_output_columns",
     "prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene",

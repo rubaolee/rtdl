@@ -19,6 +19,7 @@ from examples.v2_0.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app im
 DEFAULT_MODES = (
     "partner_cupy_grid_components_3d",
     "optix_core_flags_cupy_grid_components_3d",
+    "optix_rt_core_flags_cupy_grid_components_3d",
 )
 
 
@@ -57,6 +58,7 @@ def run_repeat_probe(
                     "outer_elapsed_sec": outer_elapsed,
                     "app_elapsed_sec": result["elapsed_sec"],
                     "optix_core_flag_sec": metadata.get("optix_core_flag_sec"),
+                    "optix_rt_count_threshold_sec": metadata.get("optix_rt_count_threshold_sec"),
                     "cupy_component_continuation_sec": metadata.get("cupy_component_continuation_sec"),
                     "rt_core_accelerated": result["claim_boundary"]["rt_core_accelerated"],
                     "materializes_neighbor_rows": metadata.get("materializes_neighbor_rows"),

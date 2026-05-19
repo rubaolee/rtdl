@@ -30,6 +30,7 @@ No DBSCAN-specific native ABI is added.
 | `partner_spatial_bucket_3d` | Generic partner 3-D spatial-bucket radius-graph components | Current best full DBSCAN continuation |
 | `partner_cupy_grid_components_3d` | Generic CuPy device-grid radius-graph components | Strong CUDA-core baseline; no RT cores |
 | `optix_core_flags_cupy_grid_components_3d` | OptiX-backend per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid uniform-cell CUDA summaries plus CUDA-core continuation; no neighbor-row materialization |
+| `optix_rt_core_flags_cupy_grid_components_3d` | OptiX RT count-threshold device columns feed CuPy device-grid component continuation | True RT traversal core flags plus CUDA-core continuation; no neighbor-row materialization |
 | `partner_core_flags_3d` | Generic partner 3-D fixed-radius core flags only | Core-point phase, not full DBSCAN |
 | `optix_prepared_rows` | Prepared OptiX-backend 3-D fixed-radius neighbor rows, then Python component labels | Prepared uniform-cell CUDA path; materializes rows |
 
@@ -90,6 +91,18 @@ This avoids materializing every neighbor row. It still materializes one summary
 row per point and copies those summaries into CuPy, so it is a bridge step, not
 the final paper-style device-output continuation. It is not an RT-core claim.
 
+For the true RT-core count-threshold bridge, use:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_flags_cupy_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+This path writes threshold-capped neighbor counts and core flags directly into
+CuPy device columns from a generic prepared 3-D fixed-radius RT traversal. It
+still uses the CuPy device-grid continuation to label components, so it is an
+RTDL composition primitive rather than a DBSCAN-specific native engine.
+
 ## OptiX Run
 
 On an NVIDIA machine with `librtdl_optix` built:
@@ -127,6 +140,6 @@ Any paper-scale claim needs a separate reviewed run with recorded data sources.
 - It cannot claim paper reproduction, paper-level speedups, or broad DBSCAN
   acceleration until the benchmark uses representative datasets, OptiX hardware
   timing, and external review.
-- The main runtime gaps are explicit: first-class 3-D fixed-radius threshold
-  device columns and a reusable device-resident radius-graph component
-  continuation that can combine with OptiX output without row materialization.
+- The main runtime gap is explicit: a reusable device-resident radius-graph
+  component continuation that can combine with OptiX output without redoing
+  candidate-pair traversal in the partner continuation.

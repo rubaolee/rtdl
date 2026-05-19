@@ -14,6 +14,7 @@ class Goal2403RtDbscanRepeatProbeTest(unittest.TestCase):
 
         self.assertIn("partner_cupy_grid_components_3d", text)
         self.assertIn("optix_core_flags_cupy_grid_components_3d", text)
+        self.assertIn("optix_rt_core_flags_cupy_grid_components_3d", text)
         self.assertIn("outer_elapsed_sec", text)
         self.assertIn("app_elapsed_sec", text)
         self.assertIn("steady_state_probe_only", text)

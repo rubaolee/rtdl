@@ -4243,6 +4243,98 @@ def fixed_radius_count_threshold_3d_partner_columns(
     return columns
 
 
+def allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+    query_count: int,
+    *,
+    partner: str = "cupy",
+) -> dict[str, object]:
+    """Allocate reusable partner-owned output columns for 3-D threshold runs."""
+    query_count = int(query_count)
+    if query_count < 0:
+        raise ValueError("query_count must be non-negative")
+    runtime = _partner_module(partner)
+    return {
+        "query_ids": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "neighbor_counts": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "threshold_flags": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+    }
+
+
+def _require_fixed_radius_threshold_3d_output_column_lengths(output_columns: dict[str, object], query_count: int) -> None:
+    for name in ("query_ids", "neighbor_counts", "threshold_flags"):
+        if name not in output_columns:
+            raise ValueError(f"output_columns must include {name!r}")
+        if _column_length(output_columns, name) != query_count:
+            raise ValueError(f"output_columns[{name!r}] length must match query point count")
+
+
+def fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+    prepared,
+    query_points,
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "cupy",
+    output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return 3-D fixed-radius count-threshold columns through a prepared OptiX RT scene."""
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _partner_module(partner)
+    packed_count = getattr(query_points, "count", None)
+    query_count = int(packed_count) if packed_count is not None and not callable(packed_count) else int(len(query_points))
+    output_reuse_authorized = output_columns is not None
+    if output_columns is None:
+        output_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            query_count,
+            partner=partner,
+        )
+    _require_fixed_radius_threshold_3d_output_column_lengths(output_columns, query_count)
+
+    native_result = prepared.write_device_count_threshold_columns(
+        query_points,
+        radius=radius,
+        threshold=threshold,
+        query_ids_out=output_columns["query_ids"],
+        neighbor_counts_out=output_columns["neighbor_counts"],
+        threshold_flags_out=output_columns["threshold_flags"],
+    )
+    runtime["sync"]()
+    columns = {
+        "query_ids": output_columns["query_ids"],
+        "neighbor_counts": output_columns["neighbor_counts"],
+        "threshold_flags": output_columns["threshold_flags"],
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+        "partner": runtime["name"],
+        "input_contract": "host_query_points_prepared_native_search_scene",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "app_count_materialization": "native_optix_rt_device_columns",
+        "app_count_host_materialization": False,
+        "query_count": query_count,
+        "radius": radius,
+        "threshold": threshold,
+        "output_columns_reused": output_reuse_authorized,
+        "direct_device_handoff_authorized": bool(native_result["metadata"]["direct_device_handoff_authorized"]),
+        "true_zero_copy_authorized": bool(native_result["metadata"]["true_zero_copy_authorized"]),
+        "rt_core_accelerated": bool(native_result["metadata"]["rt_core_accelerated"]),
+        "rt_core_speedup_claim_authorized": False,
+        "paper_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "native_metadata": native_result["metadata"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
 def fixed_radius_count_threshold_2d_optix_partner_device_columns(
     query_point_columns: dict[str, object],
     search_point_columns: dict[str, object],

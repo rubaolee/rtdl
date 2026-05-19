@@ -1831,6 +1831,188 @@ def prepare_optix_fixed_radius_neighbors_3d(
     return PreparedOptixFixedRadiusNeighbors3D(search_points, max_radius=max_radius)
 
 
+class PreparedOptixFixedRadiusCountThreshold3D:
+    """Prepared OptiX RT 3-D fixed-radius count-threshold scene.
+
+    The native contract is generic: a prepared search scene accepts host query
+    points and writes query ids, threshold-capped neighbor counts, and threshold
+    flags into caller-owned CUDA columns.
+    """
+
+    def __init__(self, search_points, *, max_radius: float):
+        if max_radius <= 0:
+            raise ValueError("max_radius must be positive")
+        packed = search_points if isinstance(search_points, PackedPoints) else pack_points(records=search_points, dimension=3)
+        if packed.dimension != 3:
+            raise ValueError("prepare_optix_fixed_radius_count_threshold_3d requires 3-D points")
+        self._packed_search = packed
+        self._max_radius = float(max_radius)
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_count_threshold_3d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_fixed_radius_count_threshold_3d; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            ctypes.c_double(self._max_radius),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def max_radius(self) -> float:
+        return self._max_radius
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def write_device_count_threshold_columns(
+        self,
+        query_points,
+        *,
+        radius: float,
+        threshold: int,
+        query_ids_out,
+        neighbor_counts_out,
+        threshold_flags_out,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius count-threshold 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("write_device_count_threshold_columns requires 3-D query points")
+
+        outputs = {}
+        expected_device = None
+        for name, value in {
+            "query_ids": query_ids_out,
+            "neighbor_counts": neighbor_counts_out,
+            "threshold_flags": threshold_flags_out,
+        }.items():
+            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            if expected_device is None:
+                expected_device = (handoff.device_type, handoff.device_id)
+            _require_partner_device_any_hit_output_layout(
+                handoff,
+                ray_count=packed_queries.count,
+                expected_device=expected_device,
+            )
+            outputs[name] = handoff
+
+        if packed_queries.count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL,
+                    "query_count": 0,
+                    "transfer_mode": "host_query_points_to_device_threshold_columns_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "direct_device_handoff_authorized": True,
+                    "true_zero_copy_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{_OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = write_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.c_void_p(outputs["query_ids"].data_ptr),
+            ctypes.c_void_p(outputs["neighbor_counts"].data_ptr),
+            ctypes.c_void_p(outputs["threshold_flags"].data_ptr),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL,
+                "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+                "native_execution_path": "prepared_rt_core_count_threshold_3d",
+                "query_count": packed_queries.count,
+                "search_count": self._packed_search.count,
+                "radius": float(radius),
+                "threshold": int(threshold),
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "host_query_points_to_device_threshold_columns",
+                "source_protocols": tuple(sorted({handoff.source_protocol for handoff in outputs.values()})),
+                "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in outputs.values()})),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "v2_0_release_authorized": False,
+                "paper_speedup_claim_authorized": False,
+            }
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixFixedRadiusCountThreshold3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_fixed_radius_count_threshold_3d(
+    search_points,
+    *,
+    max_radius: float,
+) -> PreparedOptixFixedRadiusCountThreshold3D:
+    return PreparedOptixFixedRadiusCountThreshold3D(search_points, max_radius=max_radius)
+
+
 def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
     search_point_columns: dict,
     *,
@@ -3823,6 +4005,9 @@ _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL = (
 )
 _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL = (
+    "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs"
 )
 
 
@@ -7265,6 +7450,38 @@ def _register_argtypes(lib) -> None:
         symbol.restype = ctypes.c_int
 
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d")
+    if symbol is not None:
+        symbol.argtypes = [ctypes.c_void_p]
+        symbol.restype = None
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_count_threshold_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d")
     if symbol is not None:
         symbol.argtypes = [ctypes.c_void_p]
         symbol.restype = None

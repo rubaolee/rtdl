@@ -99,6 +99,8 @@ if [ -n "${RTDL_OPTIX_LIBRARY:-}" ] && [ -f "${RTDL_OPTIX_LIBRARY}" ]; then
   if ensure_cupy; then
     run_json clustered3d_optix_core_flags_cupy_grid_4096 "${PYTHON_BIN}" "${APP}" --mode optix_core_flags_cupy_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
     run_json road3d_optix_core_flags_cupy_grid_4096 "${PYTHON_BIN}" "${APP}" --mode optix_core_flags_cupy_grid_components_3d --dataset road3d --point-count 4096 --no-validation
+    run_json clustered3d_optix_rt_core_flags_cupy_grid_4096 "${PYTHON_BIN}" "${APP}" --mode optix_rt_core_flags_cupy_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
+    run_json road3d_optix_rt_core_flags_cupy_grid_4096 "${PYTHON_BIN}" "${APP}" --mode optix_rt_core_flags_cupy_grid_components_3d --dataset road3d --point-count 4096 --no-validation
   else
     log "skip OptiX+CuPy bridge rows: CuPy unavailable"
   fi

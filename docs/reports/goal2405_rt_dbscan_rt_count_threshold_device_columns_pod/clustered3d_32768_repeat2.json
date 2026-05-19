@@ -1,0 +1,103 @@
+{
+  "app": "rt_dbscan_repeat_probe",
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "steady_state_probe_only": true
+  },
+  "dataset": "clustered3d",
+  "modes": [
+    "partner_cupy_grid_components_3d",
+    "optix_rt_core_flags_cupy_grid_components_3d"
+  ],
+  "point_count": 32768,
+  "repeat_count": 2,
+  "rows": [
+    {
+      "app_elapsed_sec": 0.7787070423364639,
+      "cupy_component_continuation_sec": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.9465523660182953,
+      "repeat_index": 1,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.1783340983092785,
+      "cupy_component_continuation_sec": null,
+      "materializes_neighbor_rows": null,
+      "mode": "partner_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.35596099123358727,
+      "repeat_index": 2,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.6896491665393114,
+      "cupy_component_continuation_sec": 0.058857636526227,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.5701577216386795,
+      "outer_elapsed_sec": 0.8670521546155214,
+      "repeat_index": 1,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "app_elapsed_sec": 0.2351384200155735,
+      "cupy_component_continuation_sec": 0.05970900505781174,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_flags_cupy_grid_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.0950403269380331,
+      "outer_elapsed_sec": 0.41623788326978683,
+      "repeat_index": 2,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true
+}

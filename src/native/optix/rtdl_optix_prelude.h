@@ -749,6 +749,21 @@ int  rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d(
          RtdlFixedRadiusNeighborSummary* summary_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d(void* prepared);
+int  rtdl_optix_prepare_fixed_radius_count_threshold_3d(
+         const RtdlPoint3D* search_points, size_t search_count,
+         double max_radius,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double radius,
+         size_t threshold,
+         uint32_t* query_ids_out,
+         uint32_t* neighbor_counts_out,
+         uint32_t* threshold_flags_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d(void* prepared);
 int  rtdl_optix_run_fixed_radius_count_threshold(
          const RtdlPoint* query_points, size_t query_count,
          const RtdlPoint* search_points, size_t search_count,

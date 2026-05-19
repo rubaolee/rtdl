@@ -3662,6 +3662,88 @@ extern "C" __global__ void __anyhit__frn3d_anyhit() {
 }
 )CUDA";
 
+static const char* kFixedRadiusCountThreshold3DRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+
+struct FixedRadiusCountThreshold3DRtParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* query_points;
+    const GpuPoint3D* search_points;
+    uint32_t* query_ids_out;
+    uint32_t* neighbor_counts_out;
+    uint32_t* threshold_flags_out;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusCountThreshold3DRtParams params;
+}
+
+extern "C" __global__ void __raygen__frn3d_count_threshold_probe() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+
+    const GpuPoint3D q = params.query_points[qidx];
+    params.query_ids_out[qidx] = q.id;
+    if (params.threshold == 0u) {
+        params.neighbor_counts_out[qidx] = 0u;
+        params.threshold_flags_out[qidx] = 1u;
+        return;
+    }
+
+    unsigned int p0 = qidx;
+    unsigned int p1 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1);
+    params.neighbor_counts_out[qidx] = p1;
+    params.threshold_flags_out[qidx] = p1 >= params.threshold ? 1u : 0u;
+}
+
+extern "C" __global__ void __miss__frn3d_count_threshold_miss() {}
+
+extern "C" __global__ void __intersection__frn3d_count_threshold_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float dz = t.z - q.z;
+    const float d2 = dx * dx + dy * dy + dz * dz;
+    const float radius_sq = params.radius * params.radius;
+    if (d2 <= radius_sq) {
+        optixReportIntersection(params.radius, 0u);
+    }
+}
+
+extern "C" __global__ void __anyhit__frn3d_count_threshold_anyhit() {
+    uint32_t count = optixGetPayload_1();
+    if (count < params.threshold) {
+        count += 1u;
+        optixSetPayload_1(count);
+    }
+    if (count >= params.threshold) {
+        optixTerminateRay();
+        return;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 static const char* kFixedRadiusNeighbors3DGridKernelSrc = R"CUDA(
 #include <stdint.h>
 
@@ -5422,6 +5504,7 @@ static RayAnyHitPipeline    g_frn_count_rt;
 static RayAnyHitPipeline    g_frn_count_host_rt;
 static RayAnyHitPipeline    g_frn_nearest_rt;
 static RayAnyHitPipeline    g_frn3d_rt;
+static RayAnyHitPipeline    g_frn3d_count_threshold_rt;
 static RayAnyHitPipeline    g_point_group_threshold_rt;
 static RayAnyHitPipeline    g_point_group_nearest_rt;
 static KnnCuFunction       g_point_group_nearest_reduce;

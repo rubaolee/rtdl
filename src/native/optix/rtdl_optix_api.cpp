@@ -3150,6 +3150,50 @@ extern "C" void rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d(void* prep
     delete reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared);
 }
 
+extern "C" int rtdl_optix_prepare_fixed_radius_count_threshold_3d(
+        const RtdlPoint3D* search_points, size_t search_count,
+        double max_radius,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!search_points && search_count != 0)
+            throw std::runtime_error("search_points pointer must not be null when search_count is nonzero");
+        if (max_radius <= 0.0)
+            throw std::runtime_error("fixed_radius_count_threshold_3d max_radius must be positive");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_count_threshold_3d search_count exceeds uint32 limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_fixed_radius_count_threshold_3d_rt_optix(
+            search_points, search_count, max_radius);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        write_prepared_fixed_radius_count_threshold_3d_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_points, query_count, radius, threshold,
+            query_ids_out, neighbor_counts_out, threshold_flags_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d(void* prepared)
+{
+    delete reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared);
+}
+
 extern "C" int rtdl_optix_run_fixed_radius_count_threshold(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,

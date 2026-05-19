@@ -1,0 +1,32 @@
+pod_ssh=root@69.30.85.177 -p 22055 -i C:\Users\Lestat\.ssh\id_ed25519_rtdl_codex_current_pod
+repo=/root/rtdl_goal2405_pod
+base_head=61bc82dd05dc83cf48aaabc3b302a80e64dc7159
+patched_status
+ M examples/v2_0/research_benchmarks/rt_dbscan/README.md
+ M examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py
+ M scripts/goal2392_rt_dbscan_pod_runner.sh
+ M scripts/goal2403_rt_dbscan_repeat_probe.py
+ M src/native/optix/rtdl_optix_api.cpp
+ M src/native/optix/rtdl_optix_core.cpp
+ M src/native/optix/rtdl_optix_prelude.h
+ M src/native/optix/rtdl_optix_workloads.cpp
+ M src/rtdsl/__init__.py
+ M src/rtdsl/optix_runtime.py
+ M src/rtdsl/partner_adapters.py
+ M tests/goal2403_rt_dbscan_repeat_probe_test.py
+?? docs/reports/goal2405_rt_dbscan_rt_count_threshold_device_columns_pod/
+?? tests/goal2405_rt_dbscan_rt_count_threshold_device_columns_test.py
+gpu
+NVIDIA RTX A5000, 570.211.01
+cuda_dirs
+/usr/local/cuda
+/usr/local/cuda-12
+/usr/local/cuda-12.8
+nvcc
+optix_sdk
+v8.1.0
+libnvoptix
+/usr/lib/x86_64-linux-gnu/libnvoptix.so.570.211.01
+/usr/lib/x86_64-linux-gnu/libnvoptix.so.1
+ldd_nvrtc
+	libnvrtc.so.12 => /usr/local/cuda/targets/x86_64-linux/lib/libnvrtc.so.12 (0x00007f7c41c70000)

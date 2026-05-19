@@ -7203,6 +7203,19 @@ struct FixedRadiusNeighbors3DRtLaunchParams {
     float trace_tmax;
 };
 
+struct FixedRadiusCountThreshold3DRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3DHost* query_points;
+    const GpuPoint3DHost* search_points;
+    uint32_t* query_ids_out;
+    uint32_t* neighbor_counts_out;
+    uint32_t* threshold_flags_out;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
 struct GpuPointGroupBounds {
     float min_x, min_y, max_x, max_y;
     uint32_t id, point_offset, point_count, pad;
@@ -9947,6 +9960,154 @@ static void run_fixed_radius_neighbors_rt_3d(
     g_optix_last_fixed_radius_3d_emitted_count = rows.size();
     *rows_out = out;
     *row_count_out = rows.size();
+}
+
+struct PreparedFixedRadiusCountThreshold3DRt {
+    std::vector<RtdlPoint3D> search_points;
+    std::unique_ptr<DevPtr> d_search;
+    AccelHolder accel;
+    double max_radius = 0.0;
+
+    PreparedFixedRadiusCountThreshold3DRt(
+            const RtdlPoint3D* source,
+            size_t source_count,
+            double radius_bound)
+        : search_points(source_count),
+          max_radius(radius_bound)
+    {
+        if (radius_bound <= 0.0) {
+            throw std::runtime_error("fixed_radius_count_threshold_3d prepared max_radius must be positive");
+        }
+        if (!source && source_count != 0) {
+            throw std::runtime_error("fixed_radius_count_threshold_3d source pointer must not be null when source_count is nonzero");
+        }
+        if (source_count == 0) {
+            return;
+        }
+        std::copy(source, source + source_count, search_points.begin());
+        std::vector<GpuPoint3DHost> gpu_search(source_count);
+        constexpr float kRadiusPad = 1.0e-4f;
+        const float aabb_radius = static_cast<float>(radius_bound) + kRadiusPad;
+        std::vector<OptixAabb> aabbs(source_count);
+        for (size_t i = 0; i < source_count; ++i) {
+            const RtdlPoint3D& p = source[i];
+            gpu_search[i] = {
+                static_cast<float>(p.x),
+                static_cast<float>(p.y),
+                static_cast<float>(p.z),
+                p.id,
+            };
+            OptixAabb aabb;
+            aabb.minX = gpu_search[i].x - aabb_radius;
+            aabb.minY = gpu_search[i].y - aabb_radius;
+            aabb.minZ = gpu_search[i].z - aabb_radius;
+            aabb.maxX = gpu_search[i].x + aabb_radius;
+            aabb.maxY = gpu_search[i].y + aabb_radius;
+            aabb.maxZ = gpu_search[i].z + aabb_radius;
+            aabbs[i] = aabb;
+        }
+        d_search = std::make_unique<DevPtr>(sizeof(GpuPoint3DHost) * gpu_search.size());
+        upload(d_search->ptr, gpu_search.data(), gpu_search.size());
+        accel = build_custom_accel(get_optix_context(), aabbs);
+    }
+};
+
+static PreparedFixedRadiusCountThreshold3DRt* prepare_fixed_radius_count_threshold_3d_rt_optix(
+        const RtdlPoint3D* search_points,
+        size_t search_count,
+        double max_radius)
+{
+    std::call_once(g_frn3d_count_threshold_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusCountThreshold3DRtKernelSrc, "frn3d_count_threshold_rt_kernel.cu");
+        g_frn3d_count_threshold_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn3d_count_threshold_probe",
+            "__miss__frn3d_count_threshold_miss",
+            "__intersection__frn3d_count_threshold_isect",
+            "__anyhit__frn3d_count_threshold_anyhit",
+            nullptr, 2).release();
+    });
+    return new PreparedFixedRadiusCountThreshold3DRt(search_points, search_count, max_radius);
+}
+
+static void write_prepared_fixed_radius_count_threshold_3d_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        const RtdlPoint3D* query_points,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius count-threshold 3D handle must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_count_threshold_3d radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_count_threshold_3d radius exceeds prepared max_radius");
+    }
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold_3d query_count exceeds uint32 limit");
+    if (threshold > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold_3d threshold exceeds uint32 limit");
+    if (query_count == 0) return;
+    if (!query_ids_out || !neighbor_counts_out || !threshold_flags_out)
+        throw std::runtime_error("fixed_radius_count_threshold_3d device output pointers must not be null when query_count is nonzero");
+
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    std::vector<uint32_t> query_ids(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            static_cast<float>(query_points[i].z),
+            query_points[i].id,
+        };
+        query_ids[i] = query_points[i].id;
+    }
+
+    if (!prepared->accel.handle || prepared->search_points.empty()) {
+        CUstream stream = 0;
+        CU_CHECK(cuMemcpyHtoD(reinterpret_cast<CUdeviceptr>(query_ids_out), query_ids.data(), sizeof(uint32_t) * query_count));
+        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(neighbor_counts_out), 0u, query_count));
+        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(threshold_flags_out), threshold == 0 ? 1u : 0u, query_count));
+        CU_CHECK(cuStreamSynchronize(stream));
+        return;
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    constexpr float kRadiusPad = 1.0e-4f;
+    const float radius_f = static_cast<float>(radius);
+    const float aabb_radius = static_cast<float>(prepared->max_radius) + kRadiusPad;
+
+    FixedRadiusCountThreshold3DRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint3DHost*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
+    lp.query_ids_out = query_ids_out;
+    lp.neighbor_counts_out = neighbor_counts_out;
+    lp.threshold_flags_out = threshold_flags_out;
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.threshold = static_cast<uint32_t>(threshold);
+    lp.radius = radius_f;
+    lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
+
+    DevPtr d_params(sizeof(FixedRadiusCountThreshold3DRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_frn3d_count_threshold_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusCountThreshold3DRtLaunchParams),
+                             &g_frn3d_count_threshold_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_copy_s = 0.0;
 }
 
 static void run_k_closest_hits_cuda(
