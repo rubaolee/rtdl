@@ -293,6 +293,11 @@ Future work:
 - Goal2365 added a prepared harness mode so the same packed columns can be
   bound once and executed repeatedly. Future primitive work should expose this
   as a stable API rather than leaving it only as benchmark runner policy.
+- Goal2369 pod results showed that current prepared execution reuses Python
+  packed inputs but not a native/device-resident 3D neighbor search structure:
+  packed `run-optix` and packed `prepared-optix` have similar warm times. The
+  next real prepared step must retain the native search structure/device
+  buffers across query runs.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.
