@@ -2190,15 +2190,12 @@ def _cupy_radius_graph_components_3d_grid_kernels(cupy):
         }
 
         extern "C" __device__
-        int find_root(int* parent, int item) {
+        int find_root_readonly(const int* parent, int item) {
             int root = item;
-            while (parent[root] != root) {
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
                 root = parent[root];
-            }
-            while (parent[item] != item) {
-                const int next = parent[item];
-                parent[item] = root;
-                item = next;
+                ++guard;
             }
             return root;
         }
@@ -2206,15 +2203,15 @@ def _cupy_radius_graph_components_3d_grid_kernels(cupy):
         extern "C" __device__
         void union_min_root(int* parent, int left, int right) {
             while (true) {
-                int left_root = find_root(parent, left);
-                int right_root = find_root(parent, right);
+                int left_root = find_root_readonly(parent, left);
+                int right_root = find_root_readonly(parent, right);
                 if (left_root == right_root) {
                     return;
                 }
                 const int high = left_root > right_root ? left_root : right_root;
                 const int low = left_root > right_root ? right_root : left_root;
-                const int old = atomicCAS(parent + high, high, low);
-                if (old == high || old == low) {
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
                     return;
                 }
             }
@@ -2331,7 +2328,7 @@ def _cupy_radius_graph_components_3d_grid_kernels(cupy):
                         const int end = start + cell_counts[pos];
                         for (int cursor = start; cursor < end; ++cursor) {
                             const int other = sorted_point_indices[cursor];
-                            if (other == point || core_flags[other] == 0u) continue;
+                            if (other <= point || core_flags[other] == 0u) continue;
                             const double dx = x[point] - x[other];
                             const double dy = y[point] - y[other];
                             const double dz = z[point] - z[other];
@@ -2372,7 +2369,7 @@ def _cupy_radius_graph_components_3d_grid_kernels(cupy):
                 return;
             }
             if (core_flags[point] != 0u) {
-                labels[point] = (long long)find_root(parent, point) + 1ll;
+                labels[point] = (long long)find_root_readonly(parent, point) + 1ll;
                 return;
             }
             const int gx = (int)floor((x[point] - min_x) / cell_size);
@@ -2400,7 +2397,7 @@ def _cupy_radius_graph_components_3d_grid_kernels(cupy):
                             const double dy = y[point] - y[other];
                             const double dz = z[point] - z[other];
                             if (dx * dx + dy * dy + dz * dz <= radius_sq) {
-                                const int root = find_root(parent, other);
+                                const int root = find_root_readonly(parent, other);
                                 if (best_root < 0 || root < best_root) {
                                     best_root = root;
                                 }
@@ -2536,6 +2533,7 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
         "candidate_edge_count": edge_count,
         "grid_dimensions": (dim_x, dim_y, dim_z),
         "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
         "host_bucket_index_used": False,
         "device_grid_index_used": True,
         "direct_device_handoff_authorized": False,
