@@ -1,0 +1,97 @@
+{
+  "commit": "660a35795cf906de211a177df95969068b22ca85",
+  "rows": [
+    {
+      "adjacency_directed_edge_count": 33,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.0027763713151216507,
+      "adjacency_run_times_sec": [
+        0.0010616406798362732,
+        0.00020960159599781036,
+        9.614787995815277e-05
+      ],
+      "adjacency_tail_median_sec": 0.00015287473797798157,
+      "dataset": "tiny",
+      "grid_prepare_sec": 0.10905310697853565,
+      "grid_run_times_sec": [
+        0.0011434592306613922,
+        0.0001878775656223297,
+        0.00013577193021774292
+      ],
+      "grid_tail_median_sec": 0.00016182474792003632,
+      "min_neighbors": 3,
+      "point_count": 9,
+      "radius": 0.2,
+      "signatures_match": true
+    },
+    {
+      "adjacency_directed_edge_count": 2114816,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.009821832180023193,
+      "adjacency_run_times_sec": [
+        0.0011085662990808487,
+        0.001093205064535141,
+        0.0010532159358263016
+      ],
+      "adjacency_tail_median_sec": 0.0010732105001807213,
+      "dataset": "clustered3d",
+      "grid_prepare_sec": 0.004117267206311226,
+      "grid_run_times_sec": [
+        0.010050639510154724,
+        0.010090906172990799,
+        0.010177573189139366
+      ],
+      "grid_tail_median_sec": 0.010134239681065083,
+      "min_neighbors": 12,
+      "point_count": 4096,
+      "radius": 0.055,
+      "signatures_match": true
+    },
+    {
+      "adjacency_directed_edge_count": 8429946,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.018038064241409302,
+      "adjacency_run_times_sec": [
+        0.0023990292102098465,
+        0.002396686002612114,
+        0.002434365451335907
+      ],
+      "adjacency_tail_median_sec": 0.0024155257269740105,
+      "dataset": "clustered3d",
+      "grid_prepare_sec": 0.0019981469959020615,
+      "grid_run_times_sec": [
+        0.021210234612226486,
+        0.02132859267294407,
+        0.021563682705163956
+      ],
+      "grid_tail_median_sec": 0.021446137689054012,
+      "min_neighbors": 12,
+      "point_count": 8192,
+      "radius": 0.055,
+      "signatures_match": null
+    },
+    {
+      "adjacency_directed_edge_count": 667400,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.0029698628932237625,
+      "adjacency_run_times_sec": [
+        0.0005414579063653946,
+        0.00031009502708911896,
+        0.000325886532664299
+      ],
+      "adjacency_tail_median_sec": 0.000317990779876709,
+      "dataset": "road3d",
+      "grid_prepare_sec": 0.0018419008702039719,
+      "grid_run_times_sec": [
+        0.0019523538649082184,
+        0.0018980912864208221,
+        0.0016461815685033798
+      ],
+      "grid_tail_median_sec": 0.001772136427462101,
+      "min_neighbors": 8,
+      "point_count": 4096,
+      "radius": 0.03,
+      "signatures_match": true
+    }
+  ]
+}

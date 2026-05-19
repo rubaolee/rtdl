@@ -1,0 +1,81 @@
+{
+  "commit": "660a35795cf906de211a177df95969068b22ca85",
+  "rows": [
+    {
+      "adjacency_directed_edge_count": 33880642,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.035427242517471313,
+      "adjacency_run_times_sec": [
+        0.006026500836014748,
+        0.005057508125901222,
+        0.0049443673342466354
+      ],
+      "adjacency_tail_median_sec": 0.005000937730073929,
+      "dataset": "clustered3d",
+      "grid_tail_median_sec": 0.04247582424432039,
+      "grid_times_sec": [
+        0.04313500039279461,
+        0.04238557629287243,
+        0.042566072195768356
+      ],
+      "point_count": 16384
+    },
+    {
+      "adjacency_directed_edge_count": 136345976,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.10778200067579746,
+      "adjacency_run_times_sec": [
+        0.010500259697437286,
+        0.010555153712630272,
+        0.010557105764746666
+      ],
+      "adjacency_tail_median_sec": 0.010556129738688469,
+      "dataset": "clustered3d",
+      "grid_tail_median_sec": 0.10804312024265528,
+      "grid_times_sec": [
+        0.10793190263211727,
+        0.10769674740731716,
+        0.10838949307799339
+      ],
+      "point_count": 32768
+    },
+    {
+      "adjacency_directed_edge_count": 42790008,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.019671715795993805,
+      "adjacency_run_times_sec": [
+        0.003160955384373665,
+        0.0027943309396505356,
+        0.002852514386177063
+      ],
+      "adjacency_tail_median_sec": 0.0028234226629137993,
+      "dataset": "road3d",
+      "grid_tail_median_sec": 0.027747330255806446,
+      "grid_times_sec": [
+        0.02752971276640892,
+        0.027725767344236374,
+        0.027768893167376518
+      ],
+      "point_count": 32768
+    },
+    {
+      "adjacency_directed_edge_count": 6143054,
+      "adjacency_error": null,
+      "adjacency_prepare_sec": 0.005311565473675728,
+      "adjacency_run_times_sec": [
+        0.00042931921780109406,
+        0.00041293539106845856,
+        0.0004028119146823883
+      ],
+      "adjacency_tail_median_sec": 0.00040787365287542343,
+      "dataset": "ngsim_dense",
+      "grid_tail_median_sec": 0.011515749618411064,
+      "grid_times_sec": [
+        0.011827908456325531,
+        0.011580461636185646,
+        0.011451037600636482
+      ],
+      "point_count": 32768
+    }
+  ]
+}
