@@ -26,6 +26,7 @@ No DBSCAN-specific native ABI is added.
 | Mode | Meaning | RTDL/partner role |
 | --- | --- | --- |
 | `cpu_reference` | Exact CPU spatial-bucket DBSCAN reference | Correctness oracle |
+| `planned_rt_dbscan` | Explicit benchmark-app plan that chooses a measured mode and records why | Plan/explain pattern; not a hidden runtime dispatcher |
 | `rtdl_cpu_rows` | Generic RTDL 3-D fixed-radius neighbor rows, then Python component labels | Same row contract without GPU |
 | `partner_spatial_bucket_3d` | Generic partner 3-D spatial-bucket radius-graph components | Current best full DBSCAN continuation |
 | `partner_cupy_grid_components_3d` | Generic CuPy device-grid radius-graph components | Strong CUDA-core baseline; no RT cores |
@@ -160,6 +161,29 @@ The built-in datasets are synthetic stressors:
 
 They are not substitutes for the paper's 3DRoad, Porto, 3DIono, or NGSIM data.
 Any paper-scale claim needs a separate reviewed run with recorded data sources.
+
+## Explicit Plan Mode
+
+The benchmark also exposes:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode planned_rt_dbscan --dataset clustered3d --point-count 131072 --no-validation
+```
+
+This explicit benchmark-app plan is not a hidden dispatcher. It records an `execution_plan` in the JSON
+metadata, including the selected mode and reason. The policy is deliberately
+evidence-bounded:
+
+- compact `ngsim_dense` rows use the pure CuPy grid path;
+- road-shaped rows below the measured 262k crossover use the pure CuPy grid
+  path;
+- clustered rows and larger road-shaped rows use the prepared RT-count plus
+  prepared CuPy-grid bridge.
+
+The plan mode is a learner-visible pattern for choosing between generic RTDL
+contracts and partner continuations. It is not a release claim and not a
+paper-reproduction claim.
 
 ## Claim Boundary
 

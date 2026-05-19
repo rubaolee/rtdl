@@ -25,6 +25,32 @@ DEFAULT_DATASET_CONFIG = {
 }
 
 
+def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object]:
+    """Return an explicit benchmark-app plan from the current reviewed evidence."""
+    point_count = int(point_count)
+    if dataset == "tiny":
+        selected_mode = "cpu_reference"
+        reason = "tiny correctness fixture; no GPU performance claim"
+    elif dataset == "ngsim_dense":
+        selected_mode = "partner_cupy_grid_components_3d"
+        reason = "Goal2420 showed compact ngsim_dense rows still favor pure CuPy through 131k"
+    elif dataset == "road3d" and point_count < 262144:
+        selected_mode = "partner_cupy_grid_components_3d"
+        reason = "Goal2418 showed road3d below the 262k crossover still favors or nearly ties pure CuPy"
+    else:
+        selected_mode = "optix_rt_core_flags_cupy_prepared_grid_components_3d"
+        reason = "Goal2418/Goal2420 showed prepared RT-count plus prepared CuPy grid is the current best bridge for this scale/shape"
+    return {
+        "adapter": "plan_rt_dbscan_execution",
+        "selected_mode": selected_mode,
+        "reason": reason,
+        "policy": "explicit_benchmark_plan_from_goal2418_goal2420_evidence",
+        "not_hidden_dispatcher": True,
+        "release_claim_authorized": False,
+        "paper_reproduction_claim_authorized": False,
+    }
+
+
 def _clamp01(value: float) -> float:
     return min(1.0, max(0.0, value))
 
@@ -321,6 +347,31 @@ def run_rt_dbscan_benchmark(
     resolved_point_count = int(point_count if point_count is not None else config["point_count"])
     resolved_radius = float(radius if radius is not None else config["radius"])
     resolved_min_neighbors = int(min_neighbors if min_neighbors is not None else config["min_neighbors"])
+    if mode == "planned_rt_dbscan":
+        plan = plan_rt_dbscan_execution(dataset, resolved_point_count)
+        selected_mode = str(plan["selected_mode"])
+        payload = run_rt_dbscan_benchmark(
+            mode=selected_mode,
+            dataset=dataset,
+            point_count=resolved_point_count,
+            radius=resolved_radius,
+            min_neighbors=resolved_min_neighbors,
+            seed=seed,
+            partner=partner,
+            include_rows=include_rows,
+            validate=validate,
+        )
+        payload["mode"] = mode
+        payload["selected_mode"] = selected_mode
+        metadata = dict(payload.get("metadata", {}))
+        metadata["execution_plan"] = plan
+        payload["metadata"] = metadata
+        claim_boundary = dict(payload.get("claim_boundary", {}))
+        claim_boundary["planned_execution"] = True
+        claim_boundary["automatic_hidden_dispatcher"] = False
+        claim_boundary["release_claim_authorized"] = False
+        payload["claim_boundary"] = claim_boundary
+        return payload
     points = make_rt_dbscan_points(dataset, point_count=resolved_point_count, seed=seed)
 
     start = time.perf_counter()
@@ -654,6 +705,7 @@ def main(argv: list[str] | None = None) -> int:
         "--mode",
         choices=(
             "cpu_reference",
+            "planned_rt_dbscan",
             "rtdl_cpu_rows",
             "partner_spatial_bucket_3d",
             "partner_cupy_grid_components_3d",
