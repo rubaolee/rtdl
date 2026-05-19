@@ -3690,6 +3690,16 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             if self.max_directed_edges_per_chunk is not None
             else "fixed_max_point_count"
         )
+        self.chunk_edge_offsets: list[object] = []
+        self.chunk_directed_edge_counts: list[int] = []
+        for start, end in self.chunk_ranges:
+            counts = self.neighbor_counts[start:end]
+            edge_offsets = self.cupy.empty((end - start + 1,), dtype=self.cupy.int64)
+            edge_offsets[0] = 0
+            edge_offsets[1:] = self.cupy.cumsum(counts.astype(self.cupy.int64, copy=False))
+            self.chunk_edge_offsets.append(edge_offsets)
+        self.runtime["sync"]()
+        self.chunk_directed_edge_counts = [int(edge_offsets[-1].item()) for edge_offsets in self.chunk_edge_offsets]
         (
             self.union_kernel,
             self.label_kernel,
@@ -3703,13 +3713,9 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
         self.run_count = 0
         self.closed = False
 
-    def _chunk_adjacency(self, start: int, end: int):
-        counts = self.neighbor_counts[start:end]
-        edge_offsets = self.cupy.empty((end - start + 1,), dtype=self.cupy.int64)
-        edge_offsets[0] = 0
-        edge_offsets[1:] = self.cupy.cumsum(counts.astype(self.cupy.int64, copy=False))
-        self.runtime["sync"]()
-        directed_edge_count = int(edge_offsets[-1].item())
+    def _chunk_adjacency(self, chunk_index: int, start: int, end: int):
+        edge_offsets = self.chunk_edge_offsets[chunk_index]
+        directed_edge_count = self.chunk_directed_edge_counts[chunk_index]
         if (
             self.max_directed_edges_per_chunk is not None
             and directed_edge_count > self.max_directed_edges_per_chunk
@@ -3739,8 +3745,12 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
         threads = 256
         chunk_edge_counts: list[int] = []
         native_union_metadata: list[dict[str, object]] = []
-        for start, end in self.chunk_ranges:
-            edge_offsets, neighbor_indices, directed_edge_count, native_metadata = self._chunk_adjacency(start, end)
+        for chunk_index, (start, end) in enumerate(self.chunk_ranges):
+            edge_offsets, neighbor_indices, directed_edge_count, native_metadata = self._chunk_adjacency(
+                chunk_index,
+                start,
+                end,
+            )
             blocks = (max(1, ((end - start) + threads - 1) // threads),)
             self.union_border_candidate_kernel(
                 blocks,
@@ -3799,6 +3809,10 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             "total_directed_edge_count": self.total_directed_edge_count,
             "max_chunk_directed_edge_count": max(chunk_edge_counts) if chunk_edge_counts else 0,
             "chunk_directed_edge_counts": tuple(chunk_edge_counts),
+            "prepared_chunk_edge_offsets_reused": chunked_reused,
+            "prepared_chunk_edge_offset_count": len(self.chunk_edge_offsets),
+            "prepared_chunk_edge_offsets_policy": "degree_prefix_offsets_prepared_once_per_chunk",
+            "neighbor_index_workspace_policy": "allocated_per_chunk_to_avoid_cross_stream_reuse_race",
             "edge_stream_policy": "memory_bounded_optix_written_directed_radius_graph_neighbor_index_stream_chunks",
             "edge_stream_reused": chunked_reused,
             "prepared_chunked_adjacency_run_count": self.run_count,
