@@ -1,0 +1,379 @@
+[goal2368] root=/root/work/rtdl_goal2368
+[goal2368] out_dir=/root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod
+[goal2368] head=03978783
+[goal2368] gpu=NVIDIA RTX A5000, 570.211.01
+[goal2368] cuda_paths=/usr/local/cuda /usr/local/cuda-12 /usr/local/cuda-12.8 
+[goal2368] optix_prefix=/root/vendor/optix-sdk
+[goal2368] START build-optix
+mkdir -p build
+/usr/local/cuda-12/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-sdk/include -I/usr/local/cuda-12/include  -DRTDL_OPTIX_INCLUDE_DIR=\"/root/vendor/optix-sdk/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC \
+	src/native/rtdl_optix.cpp \
+	-L/usr/local/cuda-12/lib64 -lcuda -lnvrtc  \
+	-o build/librtdl_optix.so
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[goal2368] DONE  build-optix
+[goal2368] START generate-65536
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "/root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/uniform3d_65536.csv",
+    "point_count": 65536,
+    "seed": 2346
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}
+[goal2368] DONE  generate-65536
+[goal2368] START records-run-optix-65536
+[goal2348] RTDL current 3D neighbors smoke start queries=65536 points=65536 input_mode=records execution_mode=run-optix
+[goal2348] RTDL current 3D neighbors repeat 1/3 ok=True sec=2.132270
+[goal2348] RTDL current 3D neighbors repeat 2/3 ok=True sec=0.721344
+[goal2348] RTDL current 3D neighbors repeat 3/3 ok=True sec=0.647949
+[goal2348] RTDL current 3D neighbors smoke done ok=True sec=0.647949
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_python_packed_inputs": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    2.1322700828313828,
+    0.7213440276682377,
+    0.6479494124650955
+  ],
+  "elapsed_sec": 0.6479494124650955,
+  "error": "",
+  "execution_mode": "run-optix",
+  "execution_prepare_sec": 0.0,
+  "external": "RTDL current",
+  "input_mode": "records",
+  "input_pack_sec": 0.10130081325769424,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 8.3173e-05,
+    "candidate_write_pass": 9.9057e-05,
+    "count_download_and_prefix": 0.000149369,
+    "emitted_count": 206434,
+    "exact_refine": 0.002581546,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.002699878,
+    "raw_candidate_count": 208572,
+    "row_download": 0.000576208,
+    "row_offset_upload": 1.9259e-05,
+    "upload": 0.000612729
+  },
+  "query_count": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "records_run_optix_65536",
+  "row_count": 206434,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536
+}
+[goal2368] DONE  records-run-optix-65536
+[goal2368] START packed-run-optix-65536
+[goal2348] RTDL current 3D neighbors smoke start queries=65536 points=65536 input_mode=packed-columns execution_mode=run-optix
+[goal2348] RTDL current 3D neighbors repeat 1/3 ok=True sec=0.693044
+[goal2348] RTDL current 3D neighbors repeat 2/3 ok=True sec=0.010280
+[goal2348] RTDL current 3D neighbors repeat 3/3 ok=True sec=0.010584
+[goal2348] RTDL current 3D neighbors smoke done ok=True sec=0.010584
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_python_packed_inputs": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    0.6930435430258512,
+    0.010280316695570946,
+    0.010583849623799324
+  ],
+  "elapsed_sec": 0.010583849623799324,
+  "error": "",
+  "execution_mode": "run-optix",
+  "execution_prepare_sec": 0.0,
+  "external": "RTDL current",
+  "input_mode": "packed-columns",
+  "input_pack_sec": 0.08388654328882694,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 8.2802e-05,
+    "candidate_write_pass": 9.8498e-05,
+    "count_download_and_prefix": 0.000154322,
+    "emitted_count": 206434,
+    "exact_refine": 0.004762522,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.002623689,
+    "raw_candidate_count": 208572,
+    "row_download": 0.001160295,
+    "row_offset_upload": 2.0006e-05,
+    "upload": 0.000497473
+  },
+  "query_count": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "packed_run_optix_65536",
+  "row_count": 206434,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536
+}
+[goal2368] DONE  packed-run-optix-65536
+[goal2368] START packed-prepared-optix-65536
+[goal2348] RTDL current 3D neighbors smoke start queries=65536 points=65536 input_mode=packed-columns execution_mode=prepared-optix
+[goal2348] RTDL current 3D neighbors repeat 1/3 ok=True sec=0.306814
+[goal2348] RTDL current 3D neighbors repeat 2/3 ok=True sec=0.010966
+[goal2348] RTDL current 3D neighbors repeat 3/3 ok=True sec=0.011261
+[goal2348] RTDL current 3D neighbors smoke done ok=True sec=0.011261
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_python_packed_inputs": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    0.3068139720708132,
+    0.010966368019580841,
+    0.011260537430644035
+  ],
+  "elapsed_sec": 0.011260537430644035,
+  "error": "",
+  "execution_mode": "prepared-optix",
+  "execution_prepare_sec": 0.2747317347675562,
+  "external": "RTDL current",
+  "input_mode": "packed-columns",
+  "input_pack_sec": 0.10138786025345325,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 8.2303e-05,
+    "candidate_write_pass": 9.7679e-05,
+    "count_download_and_prefix": 0.000153944,
+    "emitted_count": 206434,
+    "exact_refine": 0.004989054,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.002919128,
+    "raw_candidate_count": 208572,
+    "row_download": 0.001328467,
+    "row_offset_upload": 1.9247e-05,
+    "upload": 0.000471525
+  },
+  "query_count": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "packed_prepared_optix_65536",
+  "row_count": 206434,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536
+}
+[goal2368] DONE  packed-prepared-optix-65536
+[goal2368] START generate-262144
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "/root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/uniform3d_262144.csv",
+    "point_count": 262144,
+    "seed": 2346
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}
+[goal2368] DONE  generate-262144
+[goal2368] START records-run-optix-262144
+[goal2348] RTDL current 3D neighbors smoke start queries=262144 points=262144 input_mode=records execution_mode=run-optix
+[goal2348] RTDL current 3D neighbors repeat 1/3 ok=True sec=6.354594
+[goal2348] RTDL current 3D neighbors repeat 2/3 ok=True sec=2.868687
+[goal2348] RTDL current 3D neighbors repeat 3/3 ok=True sec=2.838983
+[goal2348] RTDL current 3D neighbors smoke done ok=True sec=2.838983
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_python_packed_inputs": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    6.354593520984054,
+    2.868686920031905,
+    2.8389831203967333
+  ],
+  "elapsed_sec": 2.8389831203967333,
+  "error": "",
+  "execution_mode": "run-optix",
+  "execution_prepare_sec": 0.0,
+  "external": "RTDL current",
+  "input_mode": "records",
+  "input_pack_sec": 0.3845474235713482,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 0.000397988,
+    "candidate_write_pass": 0.00177078,
+    "count_download_and_prefix": 0.000693393,
+    "emitted_count": 2512822,
+    "exact_refine": 0.066254737,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.011645569,
+    "raw_candidate_count": 2546552,
+    "row_download": 0.007922247,
+    "row_offset_upload": 7.2496e-05,
+    "upload": 0.001091523
+  },
+  "query_count": 262144,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "records_run_optix_262144",
+  "row_count": 2512822,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 262144
+}
+[goal2368] DONE  records-run-optix-262144
+[goal2368] START packed-run-optix-262144
+[goal2348] RTDL current 3D neighbors smoke start queries=262144 points=262144 input_mode=packed-columns execution_mode=run-optix
+[goal2348] RTDL current 3D neighbors repeat 1/3 ok=True sec=0.785405
+[goal2348] RTDL current 3D neighbors repeat 2/3 ok=True sec=0.119432
+[goal2348] RTDL current 3D neighbors repeat 3/3 ok=True sec=0.098917
+[goal2348] RTDL current 3D neighbors smoke done ok=True sec=0.098917
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_python_packed_inputs": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    0.7854051757603884,
+    0.11943206004798412,
+    0.09891742840409279
+  ],
+  "elapsed_sec": 0.09891742840409279,
+  "error": "",
+  "execution_mode": "run-optix",
+  "execution_prepare_sec": 0.0,
+  "external": "RTDL current",
+  "input_mode": "packed-columns",
+  "input_pack_sec": 0.40580619871616364,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 0.000391749,
+    "candidate_write_pass": 0.001776249,
+    "count_download_and_prefix": 0.000690083,
+    "emitted_count": 2512822,
+    "exact_refine": 0.062868452,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.011273812,
+    "raw_candidate_count": 2546552,
+    "row_download": 0.005300101,
+    "row_offset_upload": 8.6468e-05,
+    "upload": 0.004064351
+  },
+  "query_count": 262144,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "packed_run_optix_262144",
+  "row_count": 2512822,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 262144
+}
+[goal2368] DONE  packed-run-optix-262144
+[goal2368] START packed-prepared-optix-262144
+[goal2348] RTDL current 3D neighbors smoke start queries=262144 points=262144 input_mode=packed-columns execution_mode=prepared-optix
+[goal2348] RTDL current 3D neighbors repeat 1/3 ok=True sec=0.442171
+[goal2348] RTDL current 3D neighbors repeat 2/3 ok=True sec=0.125407
+[goal2348] RTDL current 3D neighbors repeat 3/3 ok=True sec=0.101737
+[goal2348] RTDL current 3D neighbors smoke done ok=True sec=0.101737
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "prepared_execution_reuses_python_packed_inputs": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    0.4421710632741451,
+    0.12540700286626816,
+    0.10173718072474003
+  ],
+  "elapsed_sec": 0.10173718072474003,
+  "error": "",
+  "execution_mode": "prepared-optix",
+  "execution_prepare_sec": 0.3360539171844721,
+  "external": "RTDL current",
+  "input_mode": "packed-columns",
+  "input_pack_sec": 0.4089618492871523,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 0.000397006,
+    "candidate_write_pass": 0.00177192,
+    "count_download_and_prefix": 0.00069357,
+    "emitted_count": 2512822,
+    "exact_refine": 0.06282432,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.011684829,
+    "raw_candidate_count": 2546552,
+    "row_download": 0.008439003,
+    "row_offset_upload": 8.1398e-05,
+    "upload": 0.005963605
+  },
+  "query_count": 262144,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "packed_prepared_optix_262144",
+  "row_count": 2512822,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 262144
+}
+[goal2368] DONE  packed-prepared-optix-262144
+[goal2368] artifacts:
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/generate_262144.json
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/generate_65536.json
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/rtdl_packed_prepared_optix_3d_262144_r002_k50.json
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/rtdl_packed_prepared_optix_3d_65536_r002_k50.json
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/rtdl_packed_run_optix_3d_262144_r002_k50.json
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/rtdl_packed_run_optix_3d_65536_r002_k50.json
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/rtdl_records_run_optix_3d_262144_r002_k50.json
+  /root/work/rtdl_goal2368/docs/reports/goal2368_rtnn_prepared_column_pod/rtdl_records_run_optix_3d_65536_r002_k50.json
