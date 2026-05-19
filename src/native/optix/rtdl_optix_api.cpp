@@ -3066,6 +3066,21 @@ extern "C" int rtdl_optix_run_prepared_fixed_radius_neighbors_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        size_t k_max,
+        RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            query_points, query_count, radius, k_max, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_count_prepared_fixed_radius_neighbors_3d(
         void* prepared,
         const RtdlPoint3D* query_points, size_t query_count,
