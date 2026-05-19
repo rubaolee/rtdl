@@ -2096,6 +2096,10 @@ def get_last_closed_shape_membership_phase_timings() -> dict[str, float | int | 
     return _get_last_closed_shape_membership_phase_timings_from_library(_load_optix_library())
 
 
+def get_last_fixed_radius_neighbors_3d_phase_timings() -> dict[str, float | int | str] | None:
+    return _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(_load_optix_library())
+
+
 def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | int | str] | None:
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_segment_pair_intersection_get_last_phase_timings")
     if symbol is None:
@@ -2199,6 +2203,70 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
         "candidate_count_pass": float(candidate_count.value),
         "candidate_write_pass": float(candidate_write.value),
         "candidate_download": float(candidate_download.value),
+        "exact_refine": float(exact_refine.value),
+        "raw_candidate_count": int(raw_candidates.value),
+        "emitted_count": int(emitted.value),
+    }
+
+
+def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[str, float | int | str] | None:
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_fixed_radius_neighbors_3d_get_last_phase_timings")
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    )
+    symbol.restype = ctypes.c_int
+    prepare = ctypes.c_double(0.0)
+    upload = ctypes.c_double(0.0)
+    candidate_count = ctypes.c_double(0.0)
+    count_download = ctypes.c_double(0.0)
+    row_offset_upload = ctypes.c_double(0.0)
+    candidate_write = ctypes.c_double(0.0)
+    row_download = ctypes.c_double(0.0)
+    exact_refine = ctypes.c_double(0.0)
+    raw_candidates = ctypes.c_size_t(0)
+    emitted = ctypes.c_size_t(0)
+    mode = ctypes.c_uint32(0)
+    status = symbol(
+        ctypes.byref(prepare),
+        ctypes.byref(upload),
+        ctypes.byref(candidate_count),
+        ctypes.byref(count_download),
+        ctypes.byref(row_offset_upload),
+        ctypes.byref(candidate_write),
+        ctypes.byref(row_download),
+        ctypes.byref(exact_refine),
+        ctypes.byref(raw_candidates),
+        ctypes.byref(emitted),
+        ctypes.byref(mode),
+    )
+    if status != 0:
+        return None
+    mode_value = int(mode.value)
+    return {
+        "mode": {
+            1: "all_pairs_cuda",
+            2: "uniform_cell_compact",
+            3: "simple_rt_traversal",
+        }.get(mode_value, "none"),
+        "prepare": float(prepare.value),
+        "upload": float(upload.value),
+        "candidate_count_pass": float(candidate_count.value),
+        "count_download_and_prefix": float(count_download.value),
+        "row_offset_upload": float(row_offset_upload.value),
+        "candidate_write_pass": float(candidate_write.value),
+        "row_download": float(row_download.value),
         "exact_refine": float(exact_refine.value),
         "raw_candidate_count": int(raw_candidates.value),
         "emitted_count": int(emitted.value),

@@ -857,6 +857,18 @@ int  rtdl_optix_segment_pair_intersection_get_last_phase_timings(
          size_t* raw_candidate_count_out,
          size_t* emitted_count_out,
          uint32_t* mode_out);
+int  rtdl_optix_fixed_radius_neighbors_3d_get_last_phase_timings(
+         double* prepare_out,
+         double* upload_out,
+         double* candidate_count_out,
+         double* count_download_out,
+         double* row_offset_upload_out,
+         double* candidate_write_out,
+         double* row_download_out,
+         double* exact_refine_out,
+         size_t* raw_candidate_count_out,
+         size_t* emitted_count_out,
+         uint32_t* mode_out);
 int  rtdl_optix_get_last_phase_timings(
          double* bvh_build_out,
          double* traversal_out,

@@ -1,0 +1,14 @@
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "docs/reports/goal2361_rtdl_3d_neighbor_phase/uniform3d_262144.csv",
+    "point_count": 262144,
+    "seed": 2357
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}

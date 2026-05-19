@@ -89,6 +89,18 @@ thread_local size_t g_optix_last_closed_shape_raw_candidate_count = 0;
 thread_local size_t g_optix_last_closed_shape_emitted_count = 0;
 thread_local uint32_t g_optix_last_closed_shape_mode = 0;
 
+thread_local double g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+thread_local double g_optix_last_fixed_radius_3d_upload_s = 0.0;
+thread_local double g_optix_last_fixed_radius_3d_count_s = 0.0;
+thread_local double g_optix_last_fixed_radius_3d_count_download_s = 0.0;
+thread_local double g_optix_last_fixed_radius_3d_row_offset_upload_s = 0.0;
+thread_local double g_optix_last_fixed_radius_3d_compact_s = 0.0;
+thread_local double g_optix_last_fixed_radius_3d_row_download_s = 0.0;
+thread_local double g_optix_last_fixed_radius_3d_exact_refine_s = 0.0;
+thread_local size_t g_optix_last_fixed_radius_3d_raw_candidate_count = 0;
+thread_local size_t g_optix_last_fixed_radius_3d_emitted_count = 0;
+thread_local uint32_t g_optix_last_fixed_radius_3d_mode = 0;
+
 extern "C" int rtdl_optix_columnar_payload_get_last_phase_timings(
         double* traversal,
         double* bitset_copy,
@@ -150,6 +162,33 @@ extern "C" int rtdl_optix_closed_shape_membership_get_last_phase_timings(
     return 0;
 }
 
+extern "C" int rtdl_optix_fixed_radius_neighbors_3d_get_last_phase_timings(
+        double* prepare,
+        double* upload,
+        double* candidate_count,
+        double* count_download,
+        double* row_offset_upload,
+        double* candidate_write,
+        double* row_download,
+        double* exact_refine,
+        size_t* raw_candidate_count,
+        size_t* emitted_count,
+        uint32_t* mode)
+{
+    if (prepare) *prepare = g_optix_last_fixed_radius_3d_prepare_s;
+    if (upload) *upload = g_optix_last_fixed_radius_3d_upload_s;
+    if (candidate_count) *candidate_count = g_optix_last_fixed_radius_3d_count_s;
+    if (count_download) *count_download = g_optix_last_fixed_radius_3d_count_download_s;
+    if (row_offset_upload) *row_offset_upload = g_optix_last_fixed_radius_3d_row_offset_upload_s;
+    if (candidate_write) *candidate_write = g_optix_last_fixed_radius_3d_compact_s;
+    if (row_download) *row_download = g_optix_last_fixed_radius_3d_row_download_s;
+    if (exact_refine) *exact_refine = g_optix_last_fixed_radius_3d_exact_refine_s;
+    if (raw_candidate_count) *raw_candidate_count = g_optix_last_fixed_radius_3d_raw_candidate_count;
+    if (emitted_count) *emitted_count = g_optix_last_fixed_radius_3d_emitted_count;
+    if (mode) *mode = g_optix_last_fixed_radius_3d_mode;
+    return 0;
+}
+
 static void reset_segment_pair_phase_timings(uint32_t mode)
 {
     g_optix_last_segment_pair_left_upload_s = 0.0;
@@ -173,6 +212,21 @@ static void reset_closed_shape_membership_phase_timings(uint32_t mode)
     g_optix_last_closed_shape_raw_candidate_count = 0;
     g_optix_last_closed_shape_emitted_count = 0;
     g_optix_last_closed_shape_mode = mode;
+}
+
+static void reset_fixed_radius_3d_phase_timings(uint32_t mode)
+{
+    g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+    g_optix_last_fixed_radius_3d_upload_s = 0.0;
+    g_optix_last_fixed_radius_3d_count_s = 0.0;
+    g_optix_last_fixed_radius_3d_count_download_s = 0.0;
+    g_optix_last_fixed_radius_3d_row_offset_upload_s = 0.0;
+    g_optix_last_fixed_radius_3d_compact_s = 0.0;
+    g_optix_last_fixed_radius_3d_row_download_s = 0.0;
+    g_optix_last_fixed_radius_3d_exact_refine_s = 0.0;
+    g_optix_last_fixed_radius_3d_raw_candidate_count = 0;
+    g_optix_last_fixed_radius_3d_emitted_count = 0;
+    g_optix_last_fixed_radius_3d_mode = mode;
 }
 
 static double seconds_between(
@@ -8218,6 +8272,7 @@ static void run_fixed_radius_neighbors_cuda_3d(
         size_t k_max,
         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
 {
+    reset_fixed_radius_3d_phase_timings(1u);
     (void)get_optix_context();
     std::call_once(g_frn3d.init, [&]() {
         std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DKernelSrc, "frn3d_kernel.cu");
@@ -8228,6 +8283,7 @@ static void run_fixed_radius_neighbors_cuda_3d(
     constexpr double kFixedRadiusCandidateEps = 1.0e-4;
     constexpr size_t kFixedRadiusSlack = 8;
 
+    auto t_start_prepare = std::chrono::steady_clock::now();
     std::vector<GpuPoint3DHost> gpu_queries(query_count);
     std::vector<GpuPoint3DHost> gpu_search(search_count);
     for (size_t i = 0; i < query_count; ++i)
@@ -8244,11 +8300,17 @@ static void run_fixed_radius_neighbors_cuda_3d(
         throw std::runtime_error("fixed_radius_neighbors output_capacity overflows size_t");
     }
     const size_t output_capacity = query_count * kernel_k_max;
+    auto t_end_prepare = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_prepare_s = seconds_between(t_start_prepare, t_end_prepare);
+
+    auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
     DevPtr d_search(sizeof(GpuPoint3DHost) * search_count);
     DevPtr d_output(sizeof(GpuFrnRecord) * output_capacity);
     upload(d_queries.ptr, gpu_queries.data(), query_count);
     upload(d_search.ptr, gpu_search.data(), search_count);
+    auto t_end_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_upload_s = seconds_between(t_start_upload, t_end_upload);
 
     uint32_t qc = static_cast<uint32_t>(query_count);
     uint32_t sc = static_cast<uint32_t>(search_count);
@@ -8266,12 +8328,19 @@ static void run_fixed_radius_neighbors_cuda_3d(
 
     unsigned block = 256;
     unsigned grid = (qc + block - 1) / block;
+    auto t_start_count = std::chrono::steady_clock::now();
     CU_CHECK(cuLaunchKernel(g_frn3d.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
     CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_count = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_count, t_end_count);
 
+    auto t_start_download = std::chrono::steady_clock::now();
     std::vector<GpuFrnRecord> gpu_rows(output_capacity);
     download(gpu_rows.data(), d_output.ptr, output_capacity);
+    auto t_end_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_download, t_end_download);
 
+    auto t_start_refine = std::chrono::steady_clock::now();
     std::unordered_map<uint32_t, const RtdlPoint3D*> query_by_id;
     std::unordered_map<uint32_t, const RtdlPoint3D*> search_by_id;
     query_by_id.reserve(query_count);
@@ -8344,6 +8413,10 @@ static void run_fixed_radius_neighbors_cuda_3d(
     if (!rows.empty()) {
         std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
     }
+    auto t_end_refine = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_refine, t_end_refine);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = output_capacity;
+    g_optix_last_fixed_radius_3d_emitted_count = rows.size();
     *rows_out = out;
     *row_count_out = rows.size();
 }
@@ -8374,6 +8447,8 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_compact.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_compact"));
     });
 
+    reset_fixed_radius_3d_phase_timings(2u);
+    auto t_start_prepare = std::chrono::steady_clock::now();
     double min_x = search_points[0].x;
     double min_y = search_points[0].y;
     double min_z = search_points[0].z;
@@ -8480,7 +8555,11 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         throw std::runtime_error("fixed_radius_neighbors_3d grid output_capacity overflows size_t");
     }
     const size_t output_capacity = query_count * kernel_k_max;
+    (void)output_capacity;
+    auto t_end_prepare = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_prepare_s = seconds_between(t_start_prepare, t_end_prepare);
 
+    auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
     DevPtr d_search(sizeof(GpuPoint3DHost) * search_count);
     DevPtr d_offsets(sizeof(uint32_t) * cell_offsets.size());
@@ -8488,6 +8567,8 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
     upload(d_queries.ptr, gpu_queries.data(), query_count);
     upload(d_search.ptr, sorted_search.data(), search_count);
     upload(d_offsets.ptr, cell_offsets.data(), cell_offsets.size());
+    auto t_end_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_upload_s = seconds_between(t_start_upload, t_end_upload);
 
     uint32_t qc = static_cast<uint32_t>(query_count);
     float min_x_f = static_cast<float>(min_x);
@@ -8516,9 +8597,13 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
 
     unsigned block = 256;
     unsigned grid = (qc + block - 1u) / block;
+    auto t_start_count = std::chrono::steady_clock::now();
     CU_CHECK(cuLaunchKernel(g_frn3d_grid_count.fn, grid, 1, 1, block, 1, 1, 0, nullptr, count_args, nullptr));
     CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_count = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_s = seconds_between(t_start_count, t_end_count);
 
+    auto t_start_count_download = std::chrono::steady_clock::now();
     std::vector<uint32_t> gpu_counts(query_count);
     download(gpu_counts.data(), d_counts.ptr, query_count);
     std::vector<uint32_t> row_offsets(query_count + 1u, 0u);
@@ -8526,6 +8611,9 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         row_offsets[i + 1u] = row_offsets[i] + std::min(gpu_counts[i], k_max_u32);
     }
     const size_t compact_capacity = static_cast<size_t>(row_offsets.back());
+    auto t_end_count_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_count_download_s = seconds_between(t_start_count_download, t_end_count_download);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = compact_capacity;
     if (compact_capacity > static_cast<size_t>(UINT32_MAX)) {
         run_fixed_radius_neighbors_cuda_3d(
             query_points, query_count,
@@ -8536,7 +8624,10 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
     }
     DevPtr d_row_offsets(sizeof(uint32_t) * row_offsets.size());
     DevPtr d_output(sizeof(GpuFrnRecord) * compact_capacity);
+    auto t_start_row_offset_upload = std::chrono::steady_clock::now();
     upload(d_row_offsets.ptr, row_offsets.data(), row_offsets.size());
+    auto t_end_row_offset_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_offset_upload_s = seconds_between(t_start_row_offset_upload, t_end_row_offset_upload);
     void* compact_args[] = {
         &d_queries.ptr,
         &qc,
@@ -8554,12 +8645,19 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         &k_max_u32,
         &d_output.ptr,
     };
+    auto t_start_compact = std::chrono::steady_clock::now();
     CU_CHECK(cuLaunchKernel(g_frn3d_grid_compact.fn, grid, 1, 1, block, 1, 1, 0, nullptr, compact_args, nullptr));
     CU_CHECK(cuStreamSynchronize(nullptr));
+    auto t_end_compact = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_compact_s = seconds_between(t_start_compact, t_end_compact);
 
+    auto t_start_row_download = std::chrono::steady_clock::now();
     std::vector<GpuFrnRecord> gpu_rows(compact_capacity);
     download(gpu_rows.data(), d_output.ptr, compact_capacity);
+    auto t_end_row_download = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_row_download, t_end_row_download);
 
+    auto t_start_refine = std::chrono::steady_clock::now();
     bool direct_query_ids = true;
     bool direct_search_ids = true;
     for (size_t i = 0; i < query_count; ++i) {
@@ -8613,6 +8711,9 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
         if (!rows.empty()) {
             std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
         }
+        auto t_end_refine = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_refine, t_end_refine);
+        g_optix_last_fixed_radius_3d_emitted_count = rows.size();
         *rows_out = out;
         *row_count_out = rows.size();
         return;
@@ -8692,6 +8793,10 @@ static void run_fixed_radius_neighbors_grid_cuda_3d(
     if (!rows.empty()) {
         std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
     }
+    auto t_end_refine = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_refine, t_end_refine);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = compact_capacity;
+    g_optix_last_fixed_radius_3d_emitted_count = rows.size();
     *rows_out = out;
     *row_count_out = rows.size();
 }
@@ -8703,6 +8808,7 @@ static void run_fixed_radius_neighbors_rt_3d(
         size_t k_max,
         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
 {
+    reset_fixed_radius_3d_phase_timings(3u);
     std::call_once(g_frn3d_rt.init, [&]() {
         std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DRtKernelSrc, "frn3d_rt_kernel.cu");
         g_frn3d_rt.pipe = build_pipeline(
@@ -8718,6 +8824,7 @@ static void run_fixed_radius_neighbors_rt_3d(
     const float radius_f = static_cast<float>(radius);
     const float aabb_radius = radius_f + kRadiusPad;
 
+    auto t_start_prepare = std::chrono::steady_clock::now();
     std::vector<GpuPoint3DHost> gpu_queries(query_count);
     std::vector<GpuPoint3DHost> gpu_search(search_count);
     for (size_t i = 0; i < query_count; ++i) {
@@ -8742,12 +8849,17 @@ static void run_fixed_radius_neighbors_rt_3d(
         throw std::runtime_error("fixed_radius_neighbors_3d rt output_capacity overflows size_t");
     }
     const size_t output_capacity = query_count * kernel_k_max;
+    auto t_end_prepare = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_prepare_s = seconds_between(t_start_prepare, t_end_prepare);
 
+    auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
     DevPtr d_search(sizeof(GpuPoint3DHost) * search_count);
     DevPtr d_output(sizeof(GpuFrnRecord) * output_capacity);
     upload(d_queries.ptr, gpu_queries.data(), query_count);
     upload(d_search.ptr, gpu_search.data(), search_count);
+    auto t_end_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_upload_s = seconds_between(t_start_upload, t_end_upload);
 
     std::vector<OptixAabb> aabbs(search_count);
     for (size_t i = 0; i < search_count; ++i) {
@@ -8766,6 +8878,7 @@ static void run_fixed_radius_neighbors_rt_3d(
     AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
     auto t_end_bvh = std::chrono::steady_clock::now();
     g_optix_last_bvh_build_s = std::chrono::duration<double>(t_end_bvh - t_start_bvh).count();
+    g_optix_last_fixed_radius_3d_prepare_s += g_optix_last_bvh_build_s;
 
     FixedRadiusNeighbors3DRtLaunchParams lp;
     lp.traversable = accel.handle;
@@ -8789,13 +8902,16 @@ static void run_fixed_radius_neighbors_rt_3d(
     CU_CHECK(cuStreamSynchronize(stream));
     auto t_end_trav = std::chrono::steady_clock::now();
     g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_fixed_radius_3d_compact_s = g_optix_last_traversal_s;
 
     auto t_start_copy = std::chrono::steady_clock::now();
     std::vector<GpuFrnRecord> gpu_rows(output_capacity);
     download(gpu_rows.data(), d_output.ptr, output_capacity);
     auto t_end_copy = std::chrono::steady_clock::now();
     g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
+    g_optix_last_fixed_radius_3d_row_download_s = g_optix_last_copy_s;
 
+    auto t_start_refine = std::chrono::steady_clock::now();
     std::unordered_map<uint32_t, const RtdlPoint3D*> query_by_id;
     std::unordered_map<uint32_t, const RtdlPoint3D*> search_by_id;
     query_by_id.reserve(query_count);
@@ -8868,6 +8984,10 @@ static void run_fixed_radius_neighbors_rt_3d(
     if (!rows.empty()) {
         std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
     }
+    auto t_end_refine = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_refine, t_end_refine);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = output_capacity;
+    g_optix_last_fixed_radius_3d_emitted_count = rows.size();
     *rows_out = out;
     *row_count_out = rows.size();
 }

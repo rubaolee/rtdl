@@ -93,7 +93,7 @@ Required additions:
 - reusable prepared search-point grid or RT structure;
 - batch/partition policy exposed in the execution plan;
 - reusable compact/device-resident row continuation so large neighbor streams do not require Python dict materialization;
-- phase telemetry for pack, prepare, launch, copy, and normalization;
+- phase telemetry for pack, prepare, launch, copy, and normalization (Goal2361 adds the first fixed-radius 3D timing probe);
 - exact/approx policy and overflow telemetry.
 
 That remains v2.x runtime work, not v3.0 user-defined shader injection.

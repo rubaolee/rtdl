@@ -1,0 +1,44 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    0.6454048920422792,
+    0.011556006968021393,
+    0.011291256174445152
+  ],
+  "elapsed_sec": 0.011291256174445152,
+  "error": "",
+  "external": "RTDL current",
+  "input_mode": "packed-columns",
+  "input_pack_sec": 0.10497204773128033,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 7.5669e-05,
+    "candidate_write_pass": 0.000102212,
+    "count_download_and_prefix": 0.000156476,
+    "emitted_count": 206168,
+    "exact_refine": 0.004879815,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.002988954,
+    "raw_candidate_count": 208168,
+    "row_download": 0.001214045,
+    "row_offset_upload": 2.1529e-05,
+    "upload": 0.000507969
+  },
+  "query_count": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "goal2363_packed_columns_65536",
+  "row_count": 206168,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536
+}

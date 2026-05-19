@@ -90,6 +90,10 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
         self.assertIn("generic uniform-cell bounded-neighbor traversal", text)
         self.assertIn("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_RT", text)
         self.assertIn("RTDL_OPTIX_FIXED_RADIUS_3D_FORCE_CUDA", text)
+        self.assertIn("--input-mode", text)
+        self.assertIn("packed-columns", text)
+        self.assertIn("rt.pack_points", text)
+        self.assertIn('"input_pack_sec": input_pack_sec', text)
 
     def test_cuda12_patch_command_is_idempotent_and_external_only(self) -> None:
         runner = _load_runner()

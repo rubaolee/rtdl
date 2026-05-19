@@ -1,0 +1,42 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "current_native_path": "generic uniform-cell bounded-neighbor traversal",
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "elapsed_runs_sec": [
+    2.1723935697227716,
+    0.7526528481394053,
+    0.7754755765199661
+  ],
+  "elapsed_sec": 0.7754755765199661,
+  "error": "",
+  "external": "RTDL current",
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_optix_smoke",
+  "ok": true,
+  "phase_timings": {
+    "candidate_count_pass": 8.7419e-05,
+    "candidate_write_pass": 0.000103119,
+    "count_download_and_prefix": 0.000228202,
+    "emitted_count": 206168,
+    "exact_refine": 0.005389034,
+    "mode": "uniform_cell_compact",
+    "prepare": 0.003649206,
+    "raw_candidate_count": 208168,
+    "row_download": 0.001384311,
+    "row_offset_upload": 2.1988e-05,
+    "upload": 0.000674434
+  },
+  "query_count": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "raw",
+  "row": "goal2361_grid_phase_65536",
+  "row_count": 206168,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536
+}

@@ -282,8 +282,14 @@ Observation:
 Future work:
 
 - Promote this into an explicit `prepared_bounded_neighbor_search_3d` primitive
-  with reusable prepared search-point structures, batch/partition policy,
-  raw/device-resident row continuation, and phase telemetry.
+  with reusable prepared search-point structures, batch/partition policy, and
+  raw/device-resident row continuation. Goal2361 added first-phase telemetry for
+  the existing path; use that evidence to choose whether preparation reuse,
+  partitioning, row continuation, or exact-normalization removal comes first.
+- Goal2363 showed that the packed-column user path removes most Python record
+  normalization overhead for the current benchmark rows. Make packed/prepared
+  column input policy a first-class part of the eventual primitive so serious
+  users do not accidentally benchmark tuple-of-dict normalization.
 - Study whether a real RT-core prepared variant can beat the uniform-cell path
   only after the prepared contract exists; do not treat naked OptiX traversal as
   sufficient.

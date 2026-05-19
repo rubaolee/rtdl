@@ -351,17 +351,44 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
                 rows.append({"id": idx, "x": x, "y": y, "z": z})
         return tuple(rows)
 
+    def _load_packed_points(path: Path):
+        ids = []
+        xs = []
+        ys = []
+        zs = []
+        with path.open("r", encoding="utf-8") as handle:
+            for idx, line in enumerate(handle):
+                x, y, z = (float(part) for part in line.strip().split(","))
+                ids.append(idx)
+                xs.append(x)
+                ys.append(y)
+                zs.append(z)
+        return rt.pack_points(ids=ids, x=xs, y=ys, z=zs, dimension=3)
+
     query_file = args.query_file or args.point_file
-    points = _load_points(args.point_file)
-    queries = points if query_file == args.point_file else _load_points(query_file)
+    input_mode = getattr(args, "input_mode", "records")
+    pack_started = time.perf_counter()
+    if input_mode == "packed-columns":
+        points = _load_packed_points(args.point_file)
+        queries = points if query_file == args.point_file else _load_packed_points(query_file)
+        point_count = int(points.count)
+        query_count = int(queries.count)
+    else:
+        points = _load_points(args.point_file)
+        queries = points if query_file == args.point_file else _load_points(query_file)
+        point_count = len(points)
+        query_count = len(queries)
+    input_pack_sec = time.perf_counter() - pack_started
     print(
-        f"[goal2348] RTDL current 3D neighbors smoke start queries={len(queries)} points={len(points)}",
+        f"[goal2348] RTDL current 3D neighbors smoke start queries={query_count} "
+        f"points={point_count} input_mode={input_mode}",
         flush=True,
     )
     elapsed_runs = []
     row_count = 0
     ok = True
     error = ""
+    phase_timings = None
     for run_index in range(repeat):
         started = time.perf_counter()
         try:
@@ -372,6 +399,7 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
                 search_points=points,
             )
             row_count = len(rows)
+            phase_timings = rt.get_last_fixed_radius_neighbors_3d_phase_timings()
             if result_mode == "raw":
                 rows.close()
         except Exception as exc:  # pragma: no cover - hardware/library path
@@ -404,13 +432,16 @@ def run_rtdl_current_3d_neighbors_smoke(args: argparse.Namespace) -> dict[str, o
         "ok": ok,
         "elapsed_sec": elapsed_sec,
         "elapsed_runs_sec": elapsed_runs,
-        "query_count": len(queries),
-        "search_count": len(points),
+        "query_count": query_count,
+        "search_count": point_count,
         "radius": radius,
         "k_max": k_max,
         "result_mode": result_mode,
+        "input_mode": input_mode,
+        "input_pack_sec": input_pack_sec,
         "repeat": repeat,
         "row_count": row_count,
+        "phase_timings": phase_timings,
         "error": error,
         "claim_boundary": {
             "paper_equivalent_rtnn_row": False,
@@ -481,6 +512,7 @@ def main(argv: list[str] | None = None) -> int:
     smoke3d.add_argument("--radius", type=float, default=0.02)
     smoke3d.add_argument("--k-max", type=int, default=50)
     smoke3d.add_argument("--result-mode", choices=("dict", "raw"), default="dict")
+    smoke3d.add_argument("--input-mode", choices=("records", "packed-columns"), default="records")
     smoke3d.add_argument("--repeat", type=int, default=1)
     smoke3d.add_argument("--row-label", default="rtdl_current_3d_neighbors_smoke")
     smoke3d.add_argument("--json-out", type=Path, required=True)

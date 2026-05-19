@@ -347,6 +347,7 @@ from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
 from .optix_runtime import get_last_db_phase_timings
+from .optix_runtime import get_last_fixed_radius_neighbors_3d_phase_timings
 from .optix_runtime import OptixGroupIndexBuffer
 from .optix_runtime import OptixRay2DBuffer
 from .optix_runtime import OptixPoseIndexBuffer
