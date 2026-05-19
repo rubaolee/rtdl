@@ -1,0 +1,181 @@
+{
+  "app": "rt_dbscan_benchmark",
+  "claim_boundary": {
+    "automatic_hidden_dispatcher": false,
+    "full_dbscan": true,
+    "host_bucket_index_used": false,
+    "native_dbscan_abi_added": false,
+    "paper_dataset_reproduction": false,
+    "paper_reproduction_claim_authorized": false,
+    "paper_speedup_claim_authorized": false,
+    "planned_continuation_execution": true,
+    "release_claim_authorized": false,
+    "rt_core_accelerated": true
+  },
+  "dataset": "clustered3d",
+  "elapsed_sec": 1.3892655652016401,
+  "matches_reference": true,
+  "metadata": {
+    "adapter": "PreparedOptixCupyRadiusGraphAdjacency3D.run",
+    "automatic_hidden_dispatcher": false,
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "component_union_policy": "monotonic_atomic_min_from_prepared_directed_edge_stream",
+    "count_metadata": {
+      "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+      "app_count_host_materialization": false,
+      "app_count_materialization": "native_optix_rt_device_columns",
+      "direct_device_handoff_authorized": true,
+      "input_contract": "host_query_points_prepared_native_search_scene",
+      "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+      "native_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.001637754961848259,
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "native_execution_path": "prepared_rt_core_count_threshold_3d",
+        "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "query_count": 4096,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "search_count": 4096,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "threshold": 4096,
+        "transfer_mode": "host_query_points_to_device_threshold_columns",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "output_columns_reused": true,
+      "paper_speedup_claim_authorized": false,
+      "partner": "cupy",
+      "query_count": 4096,
+      "radius": 0.055,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "threshold": 4096,
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "direct_device_handoff_authorized": true,
+    "directed_edge_count": 2114816,
+    "edge_stream_policy": "optix_written_directed_radius_graph_neighbor_index_stream_with_offsets",
+    "edge_stream_reused": false,
+    "execution_plan": {
+      "adapter": "plan_rt_dbscan_continuation_execution",
+      "directed_edge_budget": 64000000,
+      "estimated_directed_edge_count": 2113929,
+      "estimated_full_adjacency_bytes": 8488492,
+      "evidence_goals": [
+        "Goal2431",
+        "Goal2433",
+        "Goal2435"
+      ],
+      "full_stream_fits_budget": true,
+      "not_hidden_dispatcher": true,
+      "paper_reproduction_claim_authorized": false,
+      "planner_surface": "benchmark_app_plan_explain_not_engine_dispatch",
+      "policy": "explicit_continuation_plan_from_goal2431_2433_2435_adjacency_evidence",
+      "reason": "estimated directed adjacency stream fits the explicit budget; Goal2431/2435 evidence says the full stream is faster than chunked when it fits",
+      "release_claim_authorized": false,
+      "selected_mode": "optix_rt_core_adjacency_cupy_components_3d"
+    },
+    "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+    "materializes_directed_adjacency_stream": true,
+    "materializes_neighbor_rows": false,
+    "materializes_neighbor_summaries": false,
+    "min_neighbors": 12,
+    "native_adjacency_metadata": {
+      "backend": "optix",
+      "direct_device_handoff_authorized": true,
+      "materializes_neighbor_rows": false,
+      "native_elapsed_sec": 0.3094151243567467,
+      "native_engine_row_contract": "generic_fixed_radius_adjacency_3d_device_columns",
+      "native_execution_path": "prepared_rt_core_adjacency_3d",
+      "native_symbol": "rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs",
+      "neighbor_index_capacity": 2114816,
+      "output_columns_true_zero_copy_authorized": true,
+      "paper_speedup_claim_authorized": false,
+      "query_count": 4096,
+      "radius": 0.055,
+      "rt_core_accelerated": true,
+      "search_count": 4096,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cupy"
+      ],
+      "transfer_mode": "host_query_points_to_device_adjacency_columns",
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false
+    },
+    "native_engine_row_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+    "native_engine_summary_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+    "native_execution_path": "prepared_rt_core_adjacency_3d",
+    "neighbor_count_policy": "exact_full_degree_from_prepared_rt_adjacency_stream",
+    "optix_backend_used": true,
+    "output_columns_reused": true,
+    "output_columns_true_zero_copy_authorized": true,
+    "partner": "cupy",
+    "partner_reference_contract": "generic_prepared_optix_cupy_directed_radius_graph_adjacency_component_labels_3d",
+    "path": "optix_rt_adjacency_cupy_radius_graph_components_3d",
+    "point_count": 4096,
+    "prepared_adjacency_run_count": 1,
+    "prepared_optix_scene_reused": true,
+    "radius": 0.055,
+    "rt_core_accelerated": true,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 12,
+  "mode": "planned_rt_dbscan_continuation",
+  "paper": {
+    "authors": [
+      "Vani Nagarajan",
+      "Milind Kulkarni"
+    ],
+    "doi": "10.1109/IPDPS54959.2023.00100",
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023"
+  },
+  "pod_smoke": {
+    "name": "clustered4096_full_adjacency_validated",
+    "outer_elapsed_sec": 3.5348810646682978,
+    "source_commit": "1aa52fad5746899c768fa8e4473bca59344569e7",
+    "timeout_sec": 180
+  },
+  "point_count": 4096,
+  "radius": 0.055,
+  "reference_signature": {
+    "cluster_sizes": {
+      "1": 1024,
+      "2": 1024,
+      "3": 1024,
+      "4": 1024
+    },
+    "core_count": 4094,
+    "noise_count": 0
+  },
+  "seed": 20260519,
+  "selected_mode": "optix_rt_core_adjacency_cupy_components_3d",
+  "signature": {
+    "cluster_sizes": {
+      "1": 1024,
+      "2": 1024,
+      "3": 1024,
+      "4": 1024
+    },
+    "core_count": 4094,
+    "noise_count": 0
+  }
+}

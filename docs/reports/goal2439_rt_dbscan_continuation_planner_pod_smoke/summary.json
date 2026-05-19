@@ -1,0 +1,63 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "hidden_dispatcher": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_claim_authorized": false
+  },
+  "commit": "1aa52fad5746899c768fa8e4473bca59344569e7",
+  "goal": "Goal2439",
+  "rows": [
+    {
+      "dataset": "tiny",
+      "directed_edge_budget": 64000000,
+      "elapsed_sec": 0.00010988116264343262,
+      "estimated_directed_edge_count": 33,
+      "full_stream_fits_budget": true,
+      "matches_reference": true,
+      "mode": "planned_rt_dbscan_continuation",
+      "name": "tiny_validated",
+      "not_hidden_dispatcher": true,
+      "outer_elapsed_sec": 0.41624453477561474,
+      "paper_reproduction_claim_authorized": false,
+      "point_count": 9,
+      "release_claim_authorized": false,
+      "rt_core_accelerated": false,
+      "selected_mode": "cpu_reference"
+    },
+    {
+      "dataset": "clustered3d",
+      "directed_edge_budget": 64000000,
+      "elapsed_sec": 1.3892655652016401,
+      "estimated_directed_edge_count": 2113929,
+      "full_stream_fits_budget": true,
+      "matches_reference": true,
+      "mode": "planned_rt_dbscan_continuation",
+      "name": "clustered4096_full_adjacency_validated",
+      "not_hidden_dispatcher": true,
+      "outer_elapsed_sec": 3.5348810646682978,
+      "paper_reproduction_claim_authorized": false,
+      "point_count": 4096,
+      "release_claim_authorized": false,
+      "rt_core_accelerated": true,
+      "selected_mode": "optix_rt_core_adjacency_cupy_components_3d"
+    },
+    {
+      "dataset": "clustered3d",
+      "directed_edge_budget": 64000000,
+      "elapsed_sec": 1.7274958565831184,
+      "estimated_directed_edge_count": 135291470,
+      "full_stream_fits_budget": false,
+      "matches_reference": null,
+      "mode": "planned_rt_dbscan_continuation",
+      "name": "clustered32768_chunked_adjacency_no_validation",
+      "not_hidden_dispatcher": true,
+      "outer_elapsed_sec": 2.5938223972916603,
+      "paper_reproduction_claim_authorized": false,
+      "point_count": 32768,
+      "release_claim_authorized": false,
+      "rt_core_accelerated": true,
+      "selected_mode": "optix_rt_core_chunked_adjacency_cupy_components_3d"
+    }
+  ]
+}
