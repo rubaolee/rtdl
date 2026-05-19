@@ -2423,6 +2423,9 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
     radius: float,
     min_neighbors: int,
     partner: str = "cupy",
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "device_grid_count_kernel",
     return_metadata: bool = False,
 ):
     """Label 3-D radius-graph components with a device-resident CuPy grid."""
@@ -2470,8 +2473,17 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
     unique_cells = unique_cells.astype(cupy.int64, copy=False)
     unique_cell_count = int(unique_cells.size)
 
-    neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
-    core_flags = cupy.zeros((point_count,), dtype=cupy.uint32)
+    if (core_flags is None) != (neighbor_counts is None):
+        raise ValueError("core_flags and neighbor_counts must be supplied together")
+    caller_supplied_core_flags = core_flags is not None
+    if caller_supplied_core_flags:
+        neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+        core_flags = cupy.asarray(core_flags, dtype=cupy.uint32)
+        if int(neighbor_counts.size) != point_count or int(core_flags.size) != point_count:
+            raise ValueError("core_flags and neighbor_counts must match point_count")
+    else:
+        neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
+        core_flags = cupy.zeros((point_count,), dtype=cupy.uint32)
     parent = cupy.arange(point_count, dtype=cupy.int32)
     labels = cupy.full((point_count,), -1, dtype=cupy.int64)
     count_kernel, union_kernel, label_kernel = _cupy_radius_graph_components_3d_grid_kernels(cupy)
@@ -2496,11 +2508,12 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
         dim_z,
         radius * radius,
     )
-    count_kernel(
-        blocks,
-        (threads,),
-        common + (min_neighbors, neighbor_counts, core_flags),
-    )
+    if not caller_supplied_core_flags:
+        count_kernel(
+            blocks,
+            (threads,),
+            common + (min_neighbors, neighbor_counts, core_flags),
+        )
     union_kernel(
         blocks,
         (threads,),
@@ -2534,6 +2547,8 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
         "grid_dimensions": (dim_x, dim_y, dim_z),
         "component_label_policy": "positive_root_index_labels_noise_minus_one",
         "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": str(core_flag_source),
+        "caller_supplied_core_flags": caller_supplied_core_flags,
         "host_bucket_index_used": False,
         "device_grid_index_used": True,
         "direct_device_handoff_authorized": False,

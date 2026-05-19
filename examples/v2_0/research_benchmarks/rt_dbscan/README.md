@@ -29,6 +29,7 @@ No DBSCAN-specific native ABI is added.
 | `rtdl_cpu_rows` | Generic RTDL 3-D fixed-radius neighbor rows, then Python component labels | Same row contract without GPU |
 | `partner_spatial_bucket_3d` | Generic partner 3-D spatial-bucket radius-graph components | Current best full DBSCAN continuation |
 | `partner_cupy_grid_components_3d` | Generic CuPy device-grid radius-graph components | Strong CUDA-core baseline; no RT cores |
+| `optix_core_flags_cupy_grid_components_3d` | OptiX per-query fixed-radius summaries feed CuPy device-grid component continuation | Hybrid RT-core core flags plus CUDA-core continuation; no neighbor-row materialization |
 | `partner_core_flags_3d` | Generic partner 3-D fixed-radius core flags only | Core-point phase, not full DBSCAN |
 | `optix_prepared_rows` | Prepared OptiX 3-D fixed-radius neighbor rows, then Python component labels | RT-core path, but materializes rows |
 
@@ -73,6 +74,20 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbsc
 This path builds and probes the grid on the CUDA device with CuPy raw kernels.
 It is intentionally not an RT-core claim; it is the baseline RTDL must compare
 against before saying the RT path is useful.
+
+## Hybrid OptiX + Partner Run
+
+The current strongest bridge mode uses OptiX to compute per-query fixed-radius
+summary rows, then hands core flags/counts to the CuPy device-grid continuation:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_core_flags_cupy_grid_components_3d --dataset clustered3d --point-count 4096 --no-validation
+```
+
+This avoids materializing every neighbor row. It still materializes one summary
+row per point and copies those summaries into CuPy, so it is a bridge step, not
+the final paper-style device-output continuation.
 
 ## OptiX Run
 

@@ -225,6 +225,29 @@ def _rows_from_partner_columns(columns: dict[str, object], *, partner: str) -> t
     )
 
 
+def _optix_ranked_summaries_to_cupy_core_columns(
+    points: tuple[rt.Point3D, ...],
+    summaries: Iterable[dict[str, object]],
+    *,
+    min_neighbors: int,
+):
+    import cupy
+
+    by_query_id = {int(row["query_id"]): row for row in summaries}
+    counts: list[int] = []
+    flags: list[int] = []
+    for point in points:
+        row = by_query_id.get(point.id)
+        count = 0 if row is None else int(row["neighbor_count"])
+        counts.append(count)
+        flags.append(1 if count >= min_neighbors else 0)
+    return {
+        "neighbor_counts": cupy.asarray(counts, dtype=cupy.uint32),
+        "core_flags": cupy.asarray(flags, dtype=cupy.uint32),
+        "summary_rows": len(by_query_id),
+    }
+
+
 def _component_rows_from_neighbor_rows(
     points: tuple[rt.Point3D, ...],
     neighbor_rows: Iterable[dict[str, object]],
@@ -339,6 +362,50 @@ def run_rt_dbscan_benchmark(
         )
         rows = _rows_from_partner_columns(result["columns"], partner="cupy")
         metadata = dict(result["metadata"])
+    elif mode == "optix_core_flags_cupy_grid_components_3d":
+        if resolved_min_neighbors > 64:
+            raise ValueError("optix_core_flags_cupy_grid_components_3d currently requires min_neighbors <= 64")
+        optix_start = time.perf_counter()
+        with rt.prepare_optix_fixed_radius_neighbors_3d(points, max_radius=resolved_radius) as prepared:
+            summaries = prepared.run_ranked_summary(
+                points,
+                radius=resolved_radius,
+                k_max=max(1, resolved_min_neighbors),
+            )
+        optix_elapsed = time.perf_counter() - optix_start
+        core_columns = _optix_ranked_summaries_to_cupy_core_columns(
+            points,
+            summaries,
+            min_neighbors=resolved_min_neighbors,
+        )
+        point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
+        continuation_start = time.perf_counter()
+        result = rt.radius_graph_components_3d_cupy_grid_partner_columns(
+            point_columns,
+            radius=resolved_radius,
+            min_neighbors=resolved_min_neighbors,
+            partner="cupy",
+            core_flags=core_columns["core_flags"],
+            neighbor_counts=core_columns["neighbor_counts"],
+            core_flag_source="optix_ranked_fixed_radius_summary_threshold",
+            return_metadata=True,
+        )
+        continuation_elapsed = time.perf_counter() - continuation_start
+        rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "optix_core_flags_cupy_grid_radius_graph_components_3d",
+                "optix_core_flag_summary_rows": core_columns["summary_rows"],
+                "optix_core_flag_sec": optix_elapsed,
+                "cupy_component_continuation_sec": continuation_elapsed,
+                "native_engine_summary_contract": "generic_prepared_ranked_fixed_radius_neighbor_summaries_3d",
+                "rt_core_accelerated": True,
+                "materializes_neighbor_summaries": True,
+                "materializes_neighbor_rows": False,
+                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            }
+        )
     elif mode == "partner_core_flags_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner=partner)
         result = rt.fixed_radius_count_threshold_3d_partner_columns(
@@ -440,6 +507,7 @@ def main(argv: list[str] | None = None) -> int:
             "rtdl_cpu_rows",
             "partner_spatial_bucket_3d",
             "partner_cupy_grid_components_3d",
+            "optix_core_flags_cupy_grid_components_3d",
             "partner_core_flags_3d",
             "optix_prepared_rows",
         ),
