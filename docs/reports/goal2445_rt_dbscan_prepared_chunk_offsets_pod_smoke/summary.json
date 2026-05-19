@@ -1,0 +1,65 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_claim_authorized": false
+  },
+  "commit": "2d938df526ff4b68e6831a926fb2d8262e574ffb",
+  "dataset": "clustered3d",
+  "goal": "Goal2445",
+  "point_count": 32768,
+  "prepare_elapsed_sec": 1.28538229316473,
+  "rows": [
+    {
+      "adjacency_write_pass_count": 1,
+      "chunk_count": 18,
+      "chunk_planning_policy": "adaptive_degree_budget_and_max_point_count",
+      "count_chunk_count": 8,
+      "elapsed_sec": 0.6968958992511034,
+      "max_chunk_directed_edge_count": 7999889,
+      "max_directed_edges_per_chunk": 8000000,
+      "neighbor_index_workspace_policy": "allocated_per_chunk_to_avoid_cross_stream_reuse_race",
+      "prepared_chunk_edge_offset_count": 18,
+      "prepared_chunk_edge_offsets_policy": "degree_prefix_offsets_prepared_once_per_chunk",
+      "prepared_chunk_edge_offsets_reused": false,
+      "repeat_index": 1,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      },
+      "total_directed_edge_count": 136345984
+    },
+    {
+      "adjacency_write_pass_count": 1,
+      "chunk_count": 18,
+      "chunk_planning_policy": "adaptive_degree_budget_and_max_point_count",
+      "count_chunk_count": 8,
+      "elapsed_sec": 0.3390790577977896,
+      "max_chunk_directed_edge_count": 7999889,
+      "max_directed_edges_per_chunk": 8000000,
+      "neighbor_index_workspace_policy": "allocated_per_chunk_to_avoid_cross_stream_reuse_race",
+      "prepared_chunk_edge_offset_count": 18,
+      "prepared_chunk_edge_offsets_policy": "degree_prefix_offsets_prepared_once_per_chunk",
+      "prepared_chunk_edge_offsets_reused": true,
+      "repeat_index": 2,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      },
+      "total_directed_edge_count": 136345984
+    }
+  ],
+  "signatures_match": true
+}
