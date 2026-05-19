@@ -22,6 +22,8 @@ class Goal2400RtDbscanOptixSummaryBridgeTest(unittest.TestCase):
         self.assertIn("neighbor_counts=None", text)
         self.assertIn("caller_supplied_core_flags", text)
         self.assertIn('"core_flag_source": str(core_flag_source)', text)
+        self.assertIn('"candidate_edge_count_policy": edge_count_policy', text)
+        self.assertIn("not_reported_for_caller_supplied_threshold_capped_counts", text)
         self.assertIn("if not caller_supplied_core_flags:", text)
 
     def test_benchmark_app_exposes_optix_summary_bridge_mode(self) -> None:

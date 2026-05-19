@@ -2526,7 +2526,12 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
     )
     runtime["sync"]()
 
-    edge_count = int((int(cupy.sum(neighbor_counts).item()) - point_count) // 2)
+    if caller_supplied_core_flags:
+        edge_count = None
+        edge_count_policy = "not_reported_for_caller_supplied_threshold_capped_counts"
+    else:
+        edge_count = int((int(cupy.sum(neighbor_counts).item()) - point_count) // 2)
+        edge_count_policy = "exact_from_device_grid_neighbor_counts"
     columns = {
         "point_ids": point_columns["ids"],
         "component_labels": labels,
@@ -2544,6 +2549,7 @@ def radius_graph_components_3d_cupy_grid_partner_columns(
         "min_neighbors": min_neighbors,
         "cell_count": unique_cell_count,
         "candidate_edge_count": edge_count,
+        "candidate_edge_count_policy": edge_count_policy,
         "grid_dimensions": (dim_x, dim_y, dim_z),
         "component_label_policy": "positive_root_index_labels_noise_minus_one",
         "component_union_policy": "monotonic_atomic_min_core_edge_union",
