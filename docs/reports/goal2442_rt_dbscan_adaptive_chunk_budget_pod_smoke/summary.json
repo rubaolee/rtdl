@@ -1,0 +1,25 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "release_claim_authorized": false
+  },
+  "commit": "931275f6846b2e6ba19f336e814089783584d4d7",
+  "goal": "Goal2442",
+  "row": {
+    "adjacency_write_pass_count": 1,
+    "chunk_count": 18,
+    "chunk_planning_policy": "adaptive_degree_budget_and_max_point_count",
+    "count_chunk_count": 8,
+    "dataset": "clustered3d",
+    "elapsed_sec": 1.982987655326724,
+    "matches_reference": null,
+    "max_chunk_directed_edge_count": 7999889,
+    "max_chunk_points": 4096,
+    "max_directed_edges_per_chunk": 8000000,
+    "mode": "optix_rt_core_chunked_adjacency_cupy_components_3d",
+    "point_count": 32768,
+    "rt_core_accelerated": true,
+    "total_directed_edge_count": 136345984
+  }
+}
