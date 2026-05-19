@@ -394,6 +394,14 @@ Future work:
   prepared pure CuPy through 262k. Goal2427 then smoked the updated explicit
   plan on the pod. The planning/correctness issue is closed for this stage; the
   remaining performance issue is the generic continuation itself.
+- Goal2430 prototyped a prepared CuPy directed adjacency stream. It showed the
+  generic continuation idea is real: after stream preparation, grouped
+  union/find continuation was about 5.6x to 28x faster than the prepared CuPy
+  grid continuation on the measured pod rows. The boundary is memory: dense
+  rows can materialize very large directed streams, for example 136345976 edges
+  at 32768 clustered points. Next work should add a bounded/chunked adjacency
+  stream and then a generic prepared OptiX fixed-radius adjacency writer that
+  feeds the same partner continuation.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.

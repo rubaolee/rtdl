@@ -13,6 +13,7 @@ README = ROOT / "examples" / "v2_0" / "research_benchmarks" / "rt_dbscan" / "REA
 REPORT = ROOT / "docs" / "reports" / "goal2430_rt_dbscan_prepared_adjacency_stream_prototype_2026-05-19.md"
 ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2430_rt_dbscan_prepared_adjacency_stream_pod"
 REPEAT = ROOT / "scripts" / "goal2403_rt_dbscan_repeat_probe.py"
+TODO = ROOT / "docs" / "research" / "future_version_to_do_list.md"
 NATIVE = ROOT / "src" / "native"
 
 
@@ -71,10 +72,13 @@ class Goal2430RtDbscanPreparedAdjacencyStreamPrototypeTest(unittest.TestCase):
 
     def test_report_records_memory_boundary_and_next_generic_step(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
+        todo = TODO.read_text(encoding="utf-8")
 
         self.assertIn("136345976 directed edges", report)
         self.assertIn("bounded or chunked edge-stream contract", report)
         self.assertIn("generic prepared fixed-radius OptiX adjacency writer", report)
+        self.assertIn("Goal2430 prototyped a prepared CuPy directed adjacency stream", todo)
+        self.assertIn("bounded/chunked adjacency", todo)
 
 
 if __name__ == "__main__":
