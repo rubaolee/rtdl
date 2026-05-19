@@ -23,6 +23,32 @@ DEFAULT_DATASET_CONFIG = {
     "road3d": {"point_count": 512, "radius": 0.030, "min_neighbors": 8},
     "ngsim_dense": {"point_count": 512, "radius": 0.012, "min_neighbors": 20},
 }
+DEFAULT_DIRECTED_ADJACENCY_EDGE_BUDGET = 64_000_000
+DIRECTED_ADJACENCY_INDEX_BYTES = 4
+DIRECTED_ADJACENCY_OFFSET_BYTES = 8
+
+
+def estimate_rt_dbscan_directed_adjacency_edges(dataset: str, point_count: int) -> int:
+    """Return an evidence-bounded estimate for directed fixed-radius adjacency size."""
+    point_count = int(point_count)
+    if point_count < 1:
+        raise ValueError("point_count must be positive")
+    if dataset == "tiny":
+        return 33
+    if dataset == "clustered3d":
+        return max(point_count, int(round(0.126 * point_count * point_count)))
+    if dataset == "road3d":
+        return max(point_count, int(round(0.018 * point_count * point_count)))
+    if dataset == "ngsim_dense":
+        return max(point_count, int(round(0.055 * point_count * point_count)))
+    raise ValueError("dataset must be tiny, clustered3d, road3d, or ngsim_dense")
+
+
+def _estimated_directed_adjacency_bytes(point_count: int, directed_edges: int) -> int:
+    return (
+        int(directed_edges) * DIRECTED_ADJACENCY_INDEX_BYTES
+        + (int(point_count) + 1) * DIRECTED_ADJACENCY_OFFSET_BYTES
+    )
 
 
 def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object]:
@@ -48,6 +74,57 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         "selected_mode": selected_mode,
         "reason": reason,
         "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
+        "not_hidden_dispatcher": True,
+        "release_claim_authorized": False,
+        "paper_reproduction_claim_authorized": False,
+    }
+
+
+def plan_rt_dbscan_continuation_execution(
+    dataset: str,
+    point_count: int,
+    *,
+    directed_edge_budget: int | None = None,
+) -> dict[str, object]:
+    """Plan the explicit adjacency-continuation contract for RT-DBSCAN experiments."""
+    point_count = int(point_count)
+    edge_budget = int(
+        DEFAULT_DIRECTED_ADJACENCY_EDGE_BUDGET
+        if directed_edge_budget is None
+        else directed_edge_budget
+    )
+    if edge_budget < 1:
+        raise ValueError("directed_edge_budget must be positive")
+    estimated_edges = estimate_rt_dbscan_directed_adjacency_edges(dataset, point_count)
+    estimated_bytes = _estimated_directed_adjacency_bytes(point_count, estimated_edges)
+    full_stream_fits_budget = estimated_edges <= edge_budget
+
+    if dataset == "tiny":
+        selected_mode = "cpu_reference"
+        reason = "tiny correctness fixture; no GPU continuation plan is needed"
+    elif full_stream_fits_budget:
+        selected_mode = "optix_rt_core_adjacency_cupy_components_3d"
+        reason = (
+            "estimated directed adjacency stream fits the explicit budget; "
+            "Goal2431/2435 evidence says the full stream is faster than chunked when it fits"
+        )
+    else:
+        selected_mode = "optix_rt_core_chunked_adjacency_cupy_components_3d"
+        reason = (
+            "estimated directed adjacency stream exceeds the explicit budget; "
+            "Goal2433/2435 evidence says the chunked stream caps peak adjacency storage"
+        )
+    return {
+        "adapter": "plan_rt_dbscan_continuation_execution",
+        "selected_mode": selected_mode,
+        "reason": reason,
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_adjacency_evidence",
+        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435"],
+        "estimated_directed_edge_count": estimated_edges,
+        "directed_edge_budget": edge_budget,
+        "estimated_full_adjacency_bytes": estimated_bytes,
+        "full_stream_fits_budget": full_stream_fits_budget,
+        "planner_surface": "benchmark_app_plan_explain_not_engine_dispatch",
         "not_hidden_dispatcher": True,
         "release_claim_authorized": False,
         "paper_reproduction_claim_authorized": False,
@@ -345,6 +422,7 @@ def run_rt_dbscan_benchmark(
     partner: str,
     include_rows: bool,
     validate: bool,
+    adjacency_edge_budget: int | None = None,
 ) -> dict[str, object]:
     config = DEFAULT_DATASET_CONFIG[dataset]
     resolved_point_count = int(point_count if point_count is not None else config["point_count"])
@@ -363,6 +441,7 @@ def run_rt_dbscan_benchmark(
             partner=partner,
             include_rows=include_rows,
             validate=validate,
+            adjacency_edge_budget=adjacency_edge_budget,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -373,6 +452,37 @@ def run_rt_dbscan_benchmark(
         claim_boundary["planned_execution"] = True
         claim_boundary["automatic_hidden_dispatcher"] = False
         claim_boundary["release_claim_authorized"] = False
+        payload["claim_boundary"] = claim_boundary
+        return payload
+    if mode == "planned_rt_dbscan_continuation":
+        plan = plan_rt_dbscan_continuation_execution(
+            dataset,
+            resolved_point_count,
+            directed_edge_budget=adjacency_edge_budget,
+        )
+        selected_mode = str(plan["selected_mode"])
+        payload = run_rt_dbscan_benchmark(
+            mode=selected_mode,
+            dataset=dataset,
+            point_count=resolved_point_count,
+            radius=resolved_radius,
+            min_neighbors=resolved_min_neighbors,
+            seed=seed,
+            partner=partner,
+            include_rows=include_rows,
+            validate=validate,
+            adjacency_edge_budget=adjacency_edge_budget,
+        )
+        payload["mode"] = mode
+        payload["selected_mode"] = selected_mode
+        metadata = dict(payload.get("metadata", {}))
+        metadata["execution_plan"] = plan
+        payload["metadata"] = metadata
+        claim_boundary = dict(payload.get("claim_boundary", {}))
+        claim_boundary["planned_continuation_execution"] = True
+        claim_boundary["automatic_hidden_dispatcher"] = False
+        claim_boundary["release_claim_authorized"] = False
+        claim_boundary["paper_reproduction_claim_authorized"] = False
         payload["claim_boundary"] = claim_boundary
         return payload
     points = make_rt_dbscan_points(dataset, point_count=resolved_point_count, seed=seed)
@@ -778,6 +888,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=(
             "cpu_reference",
             "planned_rt_dbscan",
+            "planned_rt_dbscan_continuation",
             "rtdl_cpu_rows",
             "partner_spatial_bucket_3d",
             "partner_cupy_grid_components_3d",
@@ -802,6 +913,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
     parser.add_argument("--include-rows", action="store_true")
     parser.add_argument("--no-validation", action="store_true")
+    parser.add_argument("--adjacency-edge-budget", type=int, default=None)
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -815,6 +927,7 @@ def main(argv: list[str] | None = None) -> int:
                 partner=args.partner,
                 include_rows=args.include_rows,
                 validate=not args.no_validation,
+                adjacency_edge_budget=args.adjacency_edge_budget,
             ),
             indent=2,
             sort_keys=True,

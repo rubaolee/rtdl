@@ -255,6 +255,36 @@ The plan mode is a learner-visible pattern for choosing between generic RTDL
 contracts and partner continuations. It is not a release claim and not a
 paper-reproduction claim.
 
+## Explicit Continuation Plan Mode
+
+The benchmark also exposes a second explicit plan for the adjacency-continuation
+contract added after Goals 2431/2433/2435:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode planned_rt_dbscan_continuation --dataset clustered3d --point-count 32768 --adjacency-edge-budget 64000000 --no-validation
+```
+
+This is also a plan/explain path, not hidden dispatch. It records:
+
+- the estimated directed fixed-radius adjacency edge count;
+- the explicit edge budget;
+- whether the full stream fits that budget;
+- the selected generic contract;
+- the evidence goals used for the decision.
+
+Current policy:
+
+- `tiny` stays on the CPU reference fixture;
+- if the estimated full directed adjacency stream fits the budget, use
+  `optix_rt_core_adjacency_cupy_components_3d`;
+- if the stream exceeds the budget, use
+  `optix_rt_core_chunked_adjacency_cupy_components_3d`.
+
+This planner is for continuation experiments where exact adjacency is required.
+It does not replace the one-shot `planned_rt_dbscan` policy, and it does not
+authorize a paper-level speedup or release claim.
+
 ## Claim Boundary
 
 - This study can show whether RTDL exposes the right generic primitives for
