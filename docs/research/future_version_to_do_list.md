@@ -436,9 +436,16 @@ Future work:
 - Goal2444/2445 prepared each chunk's prefix offset column once and reused it
   across repeated chunked runs. The 32,768-point clustered pod smoke showed the
   second prepared run using `prepared_chunk_edge_offsets_reused=true`, with
-  matching component signatures. The implementation intentionally still
-  allocates `neighbor_indices` per chunk until OptiX/CuPy stream ordering is
-  proven enough to reuse one workspace safely.
+  matching component signatures.
+- Goal2447/2449/2450 tested the remaining small workspace-reuse idea. A single
+  reused neighbor-index workspace was correct but 1.044x slower than default;
+  bounded pools of 4, 8, and 18 workspaces were also slower or only parity on
+  the RTX A5000 smoke. Keep per-chunk allocation as the performance default.
+- Goal2452 found a better immediate policy win: the explicit continuation
+  planner was too conservative. On the RTX A5000, full OptiX directed adjacency
+  for the 32,768-point clustered row was about 6.4x faster than chunking and
+  fit memory, so the default directed-edge budget was raised to 160,000,000.
+  Chunking remains the memory-bounded branch above that explicit budget.
 - Keep the primitive generic: fixed-radius graph/component labels, grouped
   union/find continuation, or row-stream continuation. Do not add
   DBSCAN-specific native ABI.
@@ -448,10 +455,9 @@ Future work:
   stream continuation that can consume RT traversal hits or bounded edge chunks
   with fewer launches and less intermediate storage. Do not solve it with a
   DBSCAN-specific kernel.
-- A smaller pre-leap investigation is stream-safe bounded neighbor-index
-  workspace reuse. Treat this as a separate proof: if OptiX writes and CuPy
-  kernels are not ordered on the same stream, explicit synchronization may erase
-  the benefit.
+- Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
+  stream-ordered event mechanism avoids device-wide synchronization. The
+  current evidence says the next useful work is the grouped continuation leap.
 
 Boundary:
 

@@ -273,7 +273,7 @@ contract added after Goals 2431/2433/2435:
 
 ```bash
 export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode planned_rt_dbscan_continuation --dataset clustered3d --point-count 32768 --adjacency-edge-budget 64000000 --no-validation
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode planned_rt_dbscan_continuation --dataset clustered3d --point-count 32768 --no-validation
 ```
 
 This is also a plan/explain path, not hidden dispatch. It records:
@@ -291,6 +291,12 @@ Current policy:
   `optix_rt_core_adjacency_cupy_components_3d`;
 - if the stream exceeds the budget, use
   `optix_rt_core_chunked_adjacency_cupy_components_3d`.
+
+Goal2452 raised the default directed-edge budget to 160,000,000 after pod
+evidence showed that the full adjacency stream is much faster than chunking for
+the 32,768-point clustered row when it fits GPU memory. Pass a smaller
+`--adjacency-edge-budget`, such as `64000000`, when you specifically want to
+force the chunked memory-bounded branch for comparison.
 
 This planner is for continuation experiments where exact adjacency is required.
 It does not replace the one-shot `planned_rt_dbscan` policy, and it does not

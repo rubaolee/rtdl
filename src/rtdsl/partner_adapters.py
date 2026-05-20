@@ -3624,6 +3624,8 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
         partner: str = "cupy",
         max_chunk_points: int = 4096,
         max_directed_edges_per_chunk: int | None = None,
+        reuse_neighbor_index_workspace: bool = False,
+        neighbor_index_workspace_pool_size: int = 0,
     ):
         if partner != "cupy":
             raise ValueError("PreparedOptixCupyRadiusGraphChunkedAdjacency3D currently requires partner='cupy'")
@@ -3645,6 +3647,12 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
         )
         if self.max_directed_edges_per_chunk is not None and self.max_directed_edges_per_chunk <= 0:
             raise ValueError("max_directed_edges_per_chunk must be positive when provided")
+        neighbor_index_workspace_pool_size = int(neighbor_index_workspace_pool_size)
+        if neighbor_index_workspace_pool_size < 0:
+            raise ValueError("neighbor_index_workspace_pool_size must be non-negative")
+        self.reuse_neighbor_index_workspace = bool(reuse_neighbor_index_workspace)
+        if self.reuse_neighbor_index_workspace and neighbor_index_workspace_pool_size == 0:
+            neighbor_index_workspace_pool_size = 1
         self.runtime = _partner_module(partner)
         self.cupy = self.runtime["module"]
         self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
@@ -3700,6 +3708,19 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             self.chunk_edge_offsets.append(edge_offsets)
         self.runtime["sync"]()
         self.chunk_directed_edge_counts = [int(edge_offsets[-1].item()) for edge_offsets in self.chunk_edge_offsets]
+        self.neighbor_index_workspaces: list[object] = []
+        self.neighbor_index_workspace_size = 0
+        self.neighbor_index_workspace_pool_size = min(
+            neighbor_index_workspace_pool_size,
+            len(self.chunk_directed_edge_counts),
+        )
+        if self.neighbor_index_workspace_pool_size > 0:
+            self.reuse_neighbor_index_workspace = True
+            self.neighbor_index_workspace_size = max(self.chunk_directed_edge_counts, default=0)
+            self.neighbor_index_workspaces = [
+                self.cupy.empty((self.neighbor_index_workspace_size,), dtype=self.cupy.int32)
+                for _ in range(self.neighbor_index_workspace_pool_size)
+            ]
         (
             self.union_kernel,
             self.label_kernel,
@@ -3724,7 +3745,11 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
                 "chunked OptiX radius-graph adjacency stream exceeds max_directed_edges_per_chunk "
                 f"({directed_edge_count} > {self.max_directed_edges_per_chunk})"
             )
-        neighbor_indices = self.cupy.empty((directed_edge_count,), dtype=self.cupy.int32)
+        if self.neighbor_index_workspaces:
+            workspace_index = chunk_index % self.neighbor_index_workspace_pool_size
+            neighbor_indices = self.neighbor_index_workspaces[workspace_index][:directed_edge_count]
+        else:
+            neighbor_indices = self.cupy.empty((directed_edge_count,), dtype=self.cupy.int32)
         native_result = self.prepared_native.write_device_adjacency_columns(
             self.point_rows[start:end],
             radius=self.radius,
@@ -3746,6 +3771,8 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
         chunk_edge_counts: list[int] = []
         native_union_metadata: list[dict[str, object]] = []
         for chunk_index, (start, end) in enumerate(self.chunk_ranges):
+            if self.neighbor_index_workspaces and chunk_index >= self.neighbor_index_workspace_pool_size:
+                self.runtime["sync"]()
             edge_offsets, neighbor_indices, directed_edge_count, native_metadata = self._chunk_adjacency(
                 chunk_index,
                 start,
@@ -3812,7 +3839,17 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             "prepared_chunk_edge_offsets_reused": chunked_reused,
             "prepared_chunk_edge_offset_count": len(self.chunk_edge_offsets),
             "prepared_chunk_edge_offsets_policy": "degree_prefix_offsets_prepared_once_per_chunk",
-            "neighbor_index_workspace_policy": "allocated_per_chunk_to_avoid_cross_stream_reuse_race",
+            "neighbor_index_workspace_policy": (
+                "single_prepared_workspace_with_explicit_chunk_sync"
+                if self.neighbor_index_workspace_pool_size == 1
+                else "prepared_workspace_pool_with_explicit_reuse_sync"
+                if self.neighbor_index_workspace_pool_size > 1
+                else "allocated_per_chunk_to_avoid_cross_stream_reuse_race"
+            ),
+            "neighbor_index_workspace_reused": self.reuse_neighbor_index_workspace,
+            "neighbor_index_workspace_pool_size": self.neighbor_index_workspace_pool_size,
+            "neighbor_index_workspace_size": self.neighbor_index_workspace_size,
+            "chunk_sync_for_neighbor_index_workspace_reuse": self.reuse_neighbor_index_workspace,
             "edge_stream_policy": "memory_bounded_optix_written_directed_radius_graph_neighbor_index_stream_chunks",
             "edge_stream_reused": chunked_reused,
             "prepared_chunked_adjacency_run_count": self.run_count,
@@ -3914,6 +3951,8 @@ def prepare_optix_cupy_radius_graph_chunked_adjacency_3d(
     partner: str = "cupy",
     max_chunk_points: int = 4096,
     max_directed_edges_per_chunk: int | None = None,
+    reuse_neighbor_index_workspace: bool = False,
+    neighbor_index_workspace_pool_size: int = 0,
 ) -> PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
     return PreparedOptixCupyRadiusGraphChunkedAdjacency3D(
         point_rows,
@@ -3921,6 +3960,8 @@ def prepare_optix_cupy_radius_graph_chunked_adjacency_3d(
         partner=partner,
         max_chunk_points=max_chunk_points,
         max_directed_edges_per_chunk=max_directed_edges_per_chunk,
+        reuse_neighbor_index_workspace=reuse_neighbor_index_workspace,
+        neighbor_index_workspace_pool_size=neighbor_index_workspace_pool_size,
     )
 
 

@@ -1,0 +1,23 @@
+{
+  "claim_boundary": {
+    "automatic_hidden_dispatcher": false,
+    "full_dbscan": true,
+    "host_bucket_index_used": false,
+    "native_dbscan_abi_added": false,
+    "paper_dataset_reproduction": false,
+    "paper_reproduction_claim_authorized": false,
+    "paper_speedup_claim_authorized": false,
+    "planned_continuation_execution": true,
+    "release_claim_authorized": false,
+    "rt_core_accelerated": true
+  },
+  "directed_edge_budget": 160000000,
+  "elapsed_sec": 1.6375182308256626,
+  "estimated_directed_edge_count": 135291470,
+  "full_stream_fits_budget": true,
+  "goal": "goal2453_rt_dbscan_planner_budget_pod_smoke",
+  "matches_reference": null,
+  "mode": "planned_rt_dbscan_continuation",
+  "not_hidden_dispatcher": true,
+  "selected_mode": "optix_rt_core_adjacency_cupy_components_3d"
+}

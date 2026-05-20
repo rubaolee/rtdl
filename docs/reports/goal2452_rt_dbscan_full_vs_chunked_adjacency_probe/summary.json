@@ -1,0 +1,104 @@
+{
+  "chunked_adjacency": {
+    "first_outer_elapsed_sec": 0.7321795150637627,
+    "last_row": {
+      "app_elapsed_sec": 0.3820408321917057,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_optix_chunked_directed_adjacency_stream",
+      "chunk_count": 18,
+      "chunk_sync_for_neighbor_index_workspace_reuse": false,
+      "cupy_component_continuation_sec": 0.3820408321917057,
+      "directed_edge_count": 136345984,
+      "fallback_reason": null,
+      "materializes_bounded_directed_adjacency_chunks": true,
+      "materializes_directed_adjacency_stream": false,
+      "materializes_neighbor_rows": false,
+      "max_chunk_directed_edge_count": 7999889,
+      "max_directed_edges_per_chunk": 8000000,
+      "mode": "optix_rt_core_chunked_adjacency_cupy_components_3d",
+      "neighbor_index_workspace_pool_size": 0,
+      "neighbor_index_workspace_reused": false,
+      "neighbor_index_workspace_size": 0,
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": null,
+      "outer_elapsed_sec": 0.3820408321917057,
+      "prepared_adjacency_build_sec": 1.1576962321996689,
+      "prepared_adjacency_reused": true,
+      "prepared_adjacency_run_count": 4,
+      "prepared_composite_build_sec": 1.1576962321996689,
+      "prepared_composite_reused": true,
+      "prepared_composite_run_count": 4,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": null,
+      "repeat_index": 4,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    "signatures_match": true,
+    "steady_state_best_outer_elapsed_sec": 0.3820408321917057,
+    "steady_state_mean_outer_elapsed_sec": 0.3918370498965184
+  },
+  "claim_boundary": {
+    "paper_speedup_claim_authorized": false,
+    "planner_policy_candidate": true,
+    "pod_probe_only": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dataset": "clustered3d",
+  "full_adjacency": {
+    "first_outer_elapsed_sec": 0.07742269337177277,
+    "last_row": {
+      "app_elapsed_sec": 0.06038908660411835,
+      "cell_graph_fast_path_active": null,
+      "cell_graph_granularity": "prepared_optix_directed_adjacency_stream",
+      "cupy_component_continuation_sec": 0.06038908660411835,
+      "directed_edge_count": 136345984,
+      "fallback_reason": null,
+      "materializes_directed_adjacency_stream": true,
+      "materializes_neighbor_rows": false,
+      "mode": "optix_rt_core_adjacency_cupy_components_3d",
+      "optix_core_flag_sec": null,
+      "optix_rt_count_threshold_sec": 0.0174529068171978,
+      "outer_elapsed_sec": 0.06038908660411835,
+      "prepared_adjacency_build_sec": 1.618935626000166,
+      "prepared_adjacency_reused": true,
+      "prepared_adjacency_run_count": 4,
+      "prepared_composite_build_sec": 1.618935626000166,
+      "prepared_composite_reused": true,
+      "prepared_composite_run_count": 4,
+      "prepared_grid_build_sec": null,
+      "prepared_grid_reused": null,
+      "prepared_optix_scene_reused": true,
+      "prepared_run_count": null,
+      "repeat_index": 4,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    "signatures_match": true,
+    "steady_state_best_outer_elapsed_sec": 0.06038908660411835,
+    "steady_state_mean_outer_elapsed_sec": 0.061457750077048935
+  },
+  "full_over_chunked_time_ratio": 0.15684517350587324,
+  "goal": "goal2452_rt_dbscan_full_vs_chunked_adjacency_probe",
+  "point_count": 32768
+}

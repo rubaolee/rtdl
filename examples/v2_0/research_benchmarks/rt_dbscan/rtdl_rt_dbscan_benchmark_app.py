@@ -23,7 +23,7 @@ DEFAULT_DATASET_CONFIG = {
     "road3d": {"point_count": 512, "radius": 0.030, "min_neighbors": 8},
     "ngsim_dense": {"point_count": 512, "radius": 0.012, "min_neighbors": 20},
 }
-DEFAULT_DIRECTED_ADJACENCY_EDGE_BUDGET = 64_000_000
+DEFAULT_DIRECTED_ADJACENCY_EDGE_BUDGET = 160_000_000
 DIRECTED_ADJACENCY_INDEX_BYTES = 4
 DIRECTED_ADJACENCY_OFFSET_BYTES = 8
 
@@ -106,7 +106,7 @@ def plan_rt_dbscan_continuation_execution(
         selected_mode = "optix_rt_core_adjacency_cupy_components_3d"
         reason = (
             "estimated directed adjacency stream fits the explicit budget; "
-            "Goal2431/2435 evidence says the full stream is faster than chunked when it fits"
+            "Goal2431/2435/2452 evidence says the full stream is faster than chunked when it fits"
         )
     else:
         selected_mode = "optix_rt_core_chunked_adjacency_cupy_components_3d"
@@ -118,8 +118,8 @@ def plan_rt_dbscan_continuation_execution(
         "adapter": "plan_rt_dbscan_continuation_execution",
         "selected_mode": selected_mode,
         "reason": reason,
-        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_adjacency_evidence",
-        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435"],
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_adjacency_evidence",
+        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435", "Goal2452"],
         "estimated_directed_edge_count": estimated_edges,
         "directed_edge_budget": edge_budget,
         "estimated_full_adjacency_bytes": estimated_bytes,
@@ -424,6 +424,8 @@ def run_rt_dbscan_benchmark(
     validate: bool,
     adjacency_edge_budget: int | None = None,
     chunk_adjacency_edge_budget: int | None = None,
+    reuse_chunk_neighbor_index_workspace: bool = False,
+    chunk_neighbor_index_workspace_pool_size: int = 0,
 ) -> dict[str, object]:
     config = DEFAULT_DATASET_CONFIG[dataset]
     resolved_point_count = int(point_count if point_count is not None else config["point_count"])
@@ -444,6 +446,8 @@ def run_rt_dbscan_benchmark(
             validate=validate,
             adjacency_edge_budget=adjacency_edge_budget,
             chunk_adjacency_edge_budget=chunk_adjacency_edge_budget,
+            reuse_chunk_neighbor_index_workspace=reuse_chunk_neighbor_index_workspace,
+            chunk_neighbor_index_workspace_pool_size=chunk_neighbor_index_workspace_pool_size,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -475,6 +479,8 @@ def run_rt_dbscan_benchmark(
             validate=validate,
             adjacency_edge_budget=adjacency_edge_budget,
             chunk_adjacency_edge_budget=chunk_adjacency_edge_budget,
+            reuse_chunk_neighbor_index_workspace=reuse_chunk_neighbor_index_workspace,
+            chunk_neighbor_index_workspace_pool_size=chunk_neighbor_index_workspace_pool_size,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -722,6 +728,8 @@ def run_rt_dbscan_benchmark(
             radius=resolved_radius,
             partner="cupy",
             max_directed_edges_per_chunk=chunk_adjacency_edge_budget,
+            reuse_neighbor_index_workspace=reuse_chunk_neighbor_index_workspace,
+            neighbor_index_workspace_pool_size=chunk_neighbor_index_workspace_pool_size,
         ) as prepared:
             result = rt.radius_graph_components_3d_optix_cupy_prepared_chunked_adjacency_partner_columns(
                 prepared,
@@ -919,6 +927,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-validation", action="store_true")
     parser.add_argument("--adjacency-edge-budget", type=int, default=None)
     parser.add_argument("--chunk-adjacency-edge-budget", type=int, default=None)
+    parser.add_argument("--reuse-chunk-neighbor-index-workspace", action="store_true")
+    parser.add_argument("--chunk-neighbor-index-workspace-pool-size", type=int, default=0)
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -934,6 +944,8 @@ def main(argv: list[str] | None = None) -> int:
                 validate=not args.no_validation,
                 adjacency_edge_budget=args.adjacency_edge_budget,
                 chunk_adjacency_edge_budget=args.chunk_adjacency_edge_budget,
+                reuse_chunk_neighbor_index_workspace=args.reuse_chunk_neighbor_index_workspace,
+                chunk_neighbor_index_workspace_pool_size=args.chunk_neighbor_index_workspace_pool_size,
             ),
             indent=2,
             sort_keys=True,

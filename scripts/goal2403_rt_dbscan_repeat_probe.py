@@ -310,6 +310,9 @@ def _run_prepared_optix_chunked_adjacency_repeat_rows(
     dataset: str,
     point_count: int,
     repeat_count: int,
+    max_directed_edges_per_chunk: int | None,
+    reuse_neighbor_index_workspace: bool,
+    neighbor_index_workspace_pool_size: int,
 ) -> tuple[list[dict[str, object]], object]:
     config = DEFAULT_DATASET_CONFIG[dataset]
     resolved_radius = float(config["radius"])
@@ -321,6 +324,9 @@ def _run_prepared_optix_chunked_adjacency_repeat_rows(
         points,
         radius=resolved_radius,
         partner="cupy",
+        max_directed_edges_per_chunk=max_directed_edges_per_chunk,
+        reuse_neighbor_index_workspace=reuse_neighbor_index_workspace,
+        neighbor_index_workspace_pool_size=neighbor_index_workspace_pool_size,
     )
     prepared_composite_build_sec = time.perf_counter() - prepare_start
 
@@ -359,6 +365,13 @@ def _run_prepared_optix_chunked_adjacency_repeat_rows(
                     "directed_edge_count": metadata.get("total_directed_edge_count"),
                     "max_chunk_directed_edge_count": metadata.get("max_chunk_directed_edge_count"),
                     "chunk_count": metadata.get("chunk_count"),
+                    "max_directed_edges_per_chunk": metadata.get("max_directed_edges_per_chunk"),
+                    "neighbor_index_workspace_reused": metadata.get("neighbor_index_workspace_reused"),
+                    "neighbor_index_workspace_pool_size": metadata.get("neighbor_index_workspace_pool_size"),
+                    "neighbor_index_workspace_size": metadata.get("neighbor_index_workspace_size"),
+                    "chunk_sync_for_neighbor_index_workspace_reuse": metadata.get(
+                        "chunk_sync_for_neighbor_index_workspace_reuse"
+                    ),
                     "prepared_grid_reused": None,
                     "prepared_run_count": None,
                     "prepared_composite_reused": metadata.get("edge_stream_reused"),
@@ -383,6 +396,9 @@ def run_repeat_probe(
     point_count: int,
     repeat_count: int,
     modes: tuple[str, ...],
+    chunk_adjacency_edge_budget: int | None = None,
+    reuse_chunk_neighbor_index_workspace: bool = False,
+    chunk_neighbor_index_workspace_pool_size: int = 0,
 ) -> dict[str, object]:
     if repeat_count < 1:
         raise ValueError("repeat_count must be positive")
@@ -430,6 +446,9 @@ def run_repeat_probe(
                 dataset=dataset,
                 point_count=point_count,
                 repeat_count=repeat_count,
+                max_directed_edges_per_chunk=chunk_adjacency_edge_budget,
+                reuse_neighbor_index_workspace=reuse_chunk_neighbor_index_workspace,
+                neighbor_index_workspace_pool_size=chunk_neighbor_index_workspace_pool_size,
             )
             rows.extend(prepared_rows)
             signatures.setdefault(mode, signature)
@@ -494,6 +513,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--point-count", type=int, default=4096)
     parser.add_argument("--repeat-count", type=int, default=4)
     parser.add_argument("--mode", action="append", choices=DEFAULT_MODES, dest="modes")
+    parser.add_argument("--chunk-adjacency-edge-budget", type=int, default=None)
+    parser.add_argument("--reuse-chunk-neighbor-index-workspace", action="store_true")
+    parser.add_argument("--chunk-neighbor-index-workspace-pool-size", type=int, default=0)
     args = parser.parse_args(argv)
     modes = tuple(args.modes) if args.modes else DEFAULT_MODES
     print(
@@ -503,6 +525,9 @@ def main(argv: list[str] | None = None) -> int:
                 point_count=args.point_count,
                 repeat_count=args.repeat_count,
                 modes=modes,
+                chunk_adjacency_edge_budget=args.chunk_adjacency_edge_budget,
+                reuse_chunk_neighbor_index_workspace=args.reuse_chunk_neighbor_index_workspace,
+                chunk_neighbor_index_workspace_pool_size=args.chunk_neighbor_index_workspace_pool_size,
             ),
             indent=2,
             sort_keys=True,
