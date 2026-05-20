@@ -1,0 +1,134 @@
+{
+  "dataset": "clustered3d",
+  "grouped_native_tail_mean_sec": 0.07942800736054778,
+  "grouped_native_tail_median_sec": 0.07901619840413332,
+  "min_neighbors": 12,
+  "point_count": 65536,
+  "prepare_sec": 0.18841377831995487,
+  "radius": 0.055,
+  "repeat_rows": [
+    {
+      "core_flag_cache_reused": false,
+      "count_native_elapsed_sec": 0.005476811900734901,
+      "count_threshold": 12,
+      "elapsed_sec": 0.195256769657135,
+      "grouped_native_elapsed_sec": 0.08000102825462818,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 1,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.005476811900734901,
+      "count_threshold": 12,
+      "elapsed_sec": 0.08162930980324745,
+      "grouped_native_elapsed_sec": 0.08112539164721966,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 2,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.005476811900734901,
+      "count_threshold": 12,
+      "elapsed_sec": 0.07910162769258022,
+      "grouped_native_elapsed_sec": 0.07855424098670483,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 3,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.005476811900734901,
+      "count_threshold": 12,
+      "elapsed_sec": 0.0794865395873785,
+      "grouped_native_elapsed_sec": 0.07901475951075554,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 4,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.005476811900734901,
+      "count_threshold": 12,
+      "elapsed_sec": 0.07942256890237331,
+      "grouped_native_elapsed_sec": 0.0790176372975111,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 5,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true,
+  "tail_mean_sec": 0.07991001149639487,
+  "tail_median_sec": 0.07945455424487591
+}

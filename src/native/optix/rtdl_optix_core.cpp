@@ -3891,6 +3891,10 @@ extern "C" __global__ void __miss__frn3d_grouped_union_miss() {}
 extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t qidx = optixGetPayload_0();
+    const uint32_t source = params.query_index_offset + qidx;
+    if (params.all_predicate != 0u && prim <= source) {
+        return;
+    }
     const GpuPoint3D q = params.query_points[qidx];
     const GpuPoint3D t = params.search_points[prim];
     const float dx = t.x - q.x;

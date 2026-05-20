@@ -1,0 +1,134 @@
+{
+  "dataset": "clustered3d",
+  "grouped_native_tail_mean_sec": 0.0288527961820364,
+  "grouped_native_tail_median_sec": 0.028997009620070457,
+  "min_neighbors": 12,
+  "point_count": 32768,
+  "prepare_sec": 1.3324915952980518,
+  "radius": 0.055,
+  "repeat_rows": [
+    {
+      "core_flag_cache_reused": false,
+      "count_native_elapsed_sec": 0.0033829081803560257,
+      "count_threshold": 12,
+      "elapsed_sec": 0.5587875582277775,
+      "grouped_native_elapsed_sec": 0.49610835313796997,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": null,
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 1,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.0033829081803560257,
+      "count_threshold": 12,
+      "elapsed_sec": 0.030391309410333633,
+      "grouped_native_elapsed_sec": 0.029713595286011696,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": null,
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 2,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.0033829081803560257,
+      "count_threshold": 12,
+      "elapsed_sec": 0.03046313300728798,
+      "grouped_native_elapsed_sec": 0.029878856614232063,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": null,
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 3,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.0033829081803560257,
+      "count_threshold": 12,
+      "elapsed_sec": 0.02889280393719673,
+      "grouped_native_elapsed_sec": 0.02828042395412922,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": null,
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 4,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.0033829081803560257,
+      "count_threshold": 12,
+      "elapsed_sec": 0.027988657355308533,
+      "grouped_native_elapsed_sec": 0.02753830887377262,
+      "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_predicate_mode": null,
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 5,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true,
+  "tail_mean_sec": 0.02943397592753172,
+  "tail_median_sec": 0.029642056673765182
+}

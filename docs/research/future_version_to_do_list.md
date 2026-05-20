@@ -479,6 +479,11 @@ Future work:
   65,536-point clustered RT-DBSCAN row by about 1.13x on the RTX A5000 pod. It
   does not help mixed predicate rows; the next large step is still a generic
   blocked/segmented continuation that reduces global atomic pressure.
+- Goal2465 moved the all-items `target > source` condition into the OptiX
+  intersection program, so hits that anyhit would ignore are not reported. This
+  improves the dense 65,536-point clustered row by another about 1.08x on the
+  same RTX A5000 pod. The deeper remaining work is unchanged: reduce global
+  atomic pressure for generic grouped continuations.
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.
