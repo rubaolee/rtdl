@@ -454,7 +454,9 @@ Future work:
 - The remaining RT-DBSCAN performance leap is a lower-overhead generic grouped
   stream continuation that can consume RT traversal hits or bounded edge chunks
   with fewer launches and less intermediate storage. Do not solve it with a
-  DBSCAN-specific kernel.
+  DBSCAN-specific kernel. Goal2455 captured the design target and recommends a
+  generic fixed-radius grouped component continuation as the first concrete
+  proof.
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.
