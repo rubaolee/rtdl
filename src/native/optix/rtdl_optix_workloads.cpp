@@ -7238,6 +7238,7 @@ struct FixedRadiusGroupedUnion3DRtLaunchParams {
     uint32_t query_count;
     uint32_t query_index_offset;
     uint32_t item_count;
+    uint32_t all_predicate;
     float radius;
     float trace_tmax;
 };
@@ -10323,6 +10324,7 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.query_index_offset = static_cast<uint32_t>(query_index_offset);
     lp.item_count = static_cast<uint32_t>(item_count);
+    lp.all_predicate = (predicate_flags == nullptr) ? 1u : 0u;
     lp.radius = radius_f;
     lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
 
@@ -10363,8 +10365,11 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_opt
     if (item_count < query_count)
         throw std::runtime_error("fixed_radius_grouped_union_3d_self workspaces must cover every prepared search item");
     if (query_count == 0) return;
-    if (!predicate_flags || !parent_out || !fallback_candidate_out)
-        throw std::runtime_error("fixed_radius_grouped_union_3d_self device continuation pointers must not be null when query_count is nonzero");
+    if (!parent_out)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self parent pointer must not be null when query_count is nonzero");
+    const bool all_predicate = predicate_flags == nullptr && fallback_candidate_out == nullptr;
+    if (!all_predicate && (!predicate_flags || !fallback_candidate_out))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self predicate and fallback pointers must both be null only for all-items mode");
     if (!prepared->d_search)
         throw std::runtime_error("fixed_radius_grouped_union_3d_self prepared search device buffer is missing");
     if (!prepared->accel.handle || prepared->search_points.empty()) {

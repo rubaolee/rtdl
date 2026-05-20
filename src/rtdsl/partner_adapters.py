@@ -3941,6 +3941,7 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
         self._cached_core_flags = None
         self._cached_neighbor_counts = None
         self._cached_count_metadata: dict[str, object] | None = None
+        self._cached_all_core_flags_true: bool | None = None
         self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
         self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
         self.border_core_candidate_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
@@ -3970,16 +3971,28 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             self._cached_core_flags = threshold_result["columns"]["threshold_flags"]
             self._cached_neighbor_counts = threshold_result["columns"]["neighbor_counts"]
             self._cached_count_metadata = dict(threshold_result["metadata"])
+            self._cached_all_core_flags_true = bool(self.cupy.all(self._cached_core_flags).item())
         core_flags = self._cached_core_flags
         neighbor_counts = self._cached_neighbor_counts
+        all_core_flags_true = bool(self._cached_all_core_flags_true)
         self.parent_workspace[...] = self.parent_initial
-        self.border_core_candidate_workspace.fill(self.point_count)
-        native_result = self.prepared_native.apply_device_grouped_union_self(
-            radius=self.radius,
-            predicate_flags=core_flags,
-            parent_out=self.parent_workspace,
-            fallback_candidate_out=self.border_core_candidate_workspace,
-        )
+        if all_core_flags_true:
+            native_result = self.prepared_native.apply_device_grouped_union_all_self(
+                radius=self.radius,
+                parent_out=self.parent_workspace,
+            )
+            grouped_stream_policy = "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace"
+            fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+        else:
+            self.border_core_candidate_workspace.fill(self.point_count)
+            native_result = self.prepared_native.apply_device_grouped_union_self(
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+            )
+            grouped_stream_policy = "optix_applies_predicated_union_and_border_candidate_during_traversal"
+            fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
         threads = 256
         label_blocks = (max(1, (self.point_count + threads - 1) // threads),)
         self.border_candidate_label_kernel(
@@ -4008,22 +4021,29 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "partner": self.partner,
             "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
             "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
-            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
-            "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+            "native_engine_row_contract": native_metadata.get(
+                "native_engine_row_contract",
+                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            ),
+            "native_execution_path": native_metadata.get(
+                "native_execution_path",
+                "prepared_rt_core_grouped_union_3d_self_query",
+            ),
             "query_source": "prepared_search_points_self_query_device",
             "point_count": self.point_count,
             "radius": self.radius,
             "min_neighbors": min_neighbors,
             "prepared_grouped_stream_run_count": self.run_count,
             "prepared_grouped_stream_reused": grouped_reused,
-            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_stream_policy": grouped_stream_policy,
             "component_label_policy": "positive_root_index_labels_noise_minus_one",
             "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
-            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "fallback_candidate_policy": fallback_candidate_policy,
             "prepared_optix_scene_reused": True,
             "output_columns_reused": True,
             "core_flag_threshold": min_neighbors,
             "core_flag_cache_reused": core_flag_cache_reused,
+            "all_core_flags_true": all_core_flags_true,
             "optix_backend_used": True,
             "rt_core_accelerated": True,
             "materializes_neighbor_summaries": False,

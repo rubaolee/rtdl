@@ -473,6 +473,12 @@ Future work:
   Goal2459. The remaining RT-DBSCAN runtime work is now deeper: reduce
   grouped-union global atomic pressure with a generic segmented/blocked
   continuation design, not a DBSCAN-specific native endpoint.
+- Goal2463 added a generic all-items-eligible grouped-union mode for prepared
+  fixed-radius self-query continuations. It helps dense rows where the
+  count-threshold pass proves every item is predicate-true, improving the
+  65,536-point clustered RT-DBSCAN row by about 1.13x on the RTX A5000 pod. It
+  does not help mixed predicate rows; the next large step is still a generic
+  blocked/segmented continuation that reduces global atomic pressure.
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.

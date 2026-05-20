@@ -2333,6 +2333,103 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             }
         }
 
+    def apply_device_grouped_union_all_self(
+        self,
+        *,
+        radius: float,
+        parent_out,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius grouped-union all-items self 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+
+        parent_handoff = _partner.prepare_direct_device_pointer_handoff(parent_out, access="readwrite")
+        if _partner_dtype_token(parent_handoff.dtype) != "int32":
+            raise ValueError("parent_out must use dtype int32")
+        if len(tuple(parent_handoff.shape)) != 1:
+            raise ValueError("parent_out must be one-dimensional")
+        if int(parent_handoff.shape[0]) < self._packed_search.count:
+            raise ValueError("grouped-union all-items self workspace must cover every prepared search item")
+        if not _partner_contiguous_column_strides(parent_handoff.strides, itemsize=4):
+            raise ValueError("parent_out must be contiguous")
+
+        query_count = self._packed_search.count
+        if query_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                    "query_count": 0,
+                    "query_index_offset": 0,
+                    "search_count": self._packed_search.count,
+                    "item_count": int(parent_handoff.shape[0]),
+                    "query_source": "prepared_search_points_self_query_device",
+                    "predicate_mode": "all_items_true_no_fallback_candidates",
+                    "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "materializes_directed_adjacency_stream": False,
+                    "direct_device_handoff_authorized": True,
+                    "true_zero_copy_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        apply_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+        )
+        if apply_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = apply_symbol(
+            self._handle,
+            ctypes.c_double(float(radius)),
+            ctypes.c_void_p(0),
+            ctypes.c_void_p(parent_handoff.data_ptr),
+            ctypes.c_void_p(0),
+            ctypes.c_size_t(int(parent_handoff.shape[0])),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+                "query_source": "prepared_search_points_self_query_device",
+                "predicate_mode": "all_items_true_no_fallback_candidates",
+                "query_count": query_count,
+                "query_index_offset": 0,
+                "search_count": self._packed_search.count,
+                "item_count": int(parent_handoff.shape[0]),
+                "radius": float(radius),
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+                "source_protocols": (parent_handoff.source_protocol,),
+                "source_devices": (f"{parent_handoff.device_type}:{parent_handoff.device_id}",),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "materializes_directed_adjacency_stream": False,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "v2_0_release_authorized": False,
+                "paper_speedup_claim_authorized": False,
+            }
+        }
+
     def close(self) -> None:
         if self._closed:
             return

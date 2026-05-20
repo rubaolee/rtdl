@@ -3833,6 +3833,7 @@ struct FixedRadiusGroupedUnion3DRtParams {
     uint32_t query_count;
     uint32_t query_index_offset;
     uint32_t item_count;
+    uint32_t all_predicate;
     float radius;
     float trace_tmax;
 };
@@ -3907,6 +3908,14 @@ extern "C" __global__ void __anyhit__frn3d_grouped_union_anyhit() {
     const uint32_t source = params.query_index_offset + local_source;
     const uint32_t target = optixGetPrimitiveIndex();
     if (source >= params.item_count || target >= params.item_count) {
+        optixIgnoreIntersection();
+        return;
+    }
+
+    if (params.all_predicate != 0u) {
+        if (target > source) {
+            union_grouped_min_root(params.parent_out, (int)source, (int)target);
+        }
         optixIgnoreIntersection();
         return;
     }
