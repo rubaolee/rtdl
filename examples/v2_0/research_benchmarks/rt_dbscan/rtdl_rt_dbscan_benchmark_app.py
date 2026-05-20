@@ -106,20 +106,20 @@ def plan_rt_dbscan_continuation_execution(
         selected_mode = "optix_rt_core_adjacency_cupy_components_3d"
         reason = (
             "estimated directed adjacency stream fits the explicit budget; "
-            "Goal2431/2435/2452 evidence says the full stream is faster than chunked when it fits"
+            "Goal2431/2435/2452/2457 evidence says the full stream is faster than chunked or grouped when it fits"
         )
     else:
-        selected_mode = "optix_rt_core_chunked_adjacency_cupy_components_3d"
+        selected_mode = "optix_rt_core_grouped_stream_cupy_components_3d"
         reason = (
             "estimated directed adjacency stream exceeds the explicit budget; "
-            "Goal2433/2435 evidence says the chunked stream caps peak adjacency storage"
+            "Goal2457 evidence says the grouped stream avoids the giant neighbor-index table and beats chunked continuation"
         )
     return {
         "adapter": "plan_rt_dbscan_continuation_execution",
         "selected_mode": selected_mode,
         "reason": reason,
-        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_adjacency_evidence",
-        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435", "Goal2452"],
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_adjacency_evidence",
+        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435", "Goal2452", "Goal2457"],
         "estimated_directed_edge_count": estimated_edges,
         "directed_edge_budget": edge_budget,
         "estimated_full_adjacency_bytes": estimated_bytes,
@@ -752,6 +752,33 @@ def run_rt_dbscan_benchmark(
                 "neighbor_count_policy": "exact_full_degree_from_prepared_rt_chunked_adjacency_stream",
             }
         )
+    elif mode == "optix_rt_core_grouped_stream_cupy_components_3d":
+        with rt.prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
+            points,
+            radius=resolved_radius,
+            partner="cupy",
+        ) as prepared:
+            result = rt.radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
+                prepared,
+                min_neighbors=resolved_min_neighbors,
+                return_metadata=True,
+            )
+        rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "path": "optix_rt_grouped_stream_cupy_radius_graph_components_3d",
+                "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+                "native_execution_path": "prepared_rt_core_grouped_union_3d",
+                "optix_backend_used": True,
+                "rt_core_accelerated": True,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "materializes_directed_adjacency_stream": False,
+                "materializes_bounded_directed_adjacency_chunks": False,
+                "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+            }
+        )
     elif mode == "optix_rt_core_flags_cupy_microcell_graph_components_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
         output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
@@ -911,6 +938,7 @@ def main(argv: list[str] | None = None) -> int:
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",
             "optix_rt_core_adjacency_cupy_components_3d",
             "optix_rt_core_chunked_adjacency_cupy_components_3d",
+            "optix_rt_core_grouped_stream_cupy_components_3d",
             "optix_rt_core_flags_cupy_microcell_graph_components_3d",
             "partner_core_flags_3d",
             "optix_prepared_rows",

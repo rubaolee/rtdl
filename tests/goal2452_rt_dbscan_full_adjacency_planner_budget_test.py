@@ -25,13 +25,13 @@ class Goal2452RtDbscanFullAdjacencyPlannerBudgetTest(unittest.TestCase):
         self.assertTrue(plan["full_stream_fits_budget"])
         self.assertIn("Goal2452", plan["evidence_goals"])
 
-        forced_chunked = plan_rt_dbscan_continuation_execution(
+        forced_grouped = plan_rt_dbscan_continuation_execution(
             "clustered3d",
             32768,
             directed_edge_budget=64_000_000,
         )
-        self.assertEqual(forced_chunked["selected_mode"], "optix_rt_core_chunked_adjacency_cupy_components_3d")
-        self.assertFalse(forced_chunked["full_stream_fits_budget"])
+        self.assertEqual(forced_grouped["selected_mode"], "optix_rt_core_grouped_stream_cupy_components_3d")
+        self.assertFalse(forced_grouped["full_stream_fits_budget"])
 
     def test_pod_artifact_supports_full_stream_policy(self) -> None:
         summary = json.loads(SUMMARY.read_text(encoding="utf-8"))

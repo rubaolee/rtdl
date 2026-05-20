@@ -3815,6 +3815,115 @@ extern "C" __global__ void __anyhit__frn3d_adjacency_anyhit() {
 }
 )CUDA";
 
+static const char* kFixedRadiusGroupedUnion3DRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+
+struct FixedRadiusGroupedUnion3DRtParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* query_points;
+    const GpuPoint3D* search_points;
+    const uint32_t* predicate_flags;
+    int* parent_out;
+    int* fallback_candidate_out;
+    uint32_t query_count;
+    uint32_t query_index_offset;
+    uint32_t item_count;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusGroupedUnion3DRtParams params;
+}
+
+extern "C" __device__
+int find_grouped_union_root_readonly(int* parent, int item) {
+    int root = item;
+    int guard = 0;
+    while (parent[root] != root && guard < 4096) {
+        root = parent[root];
+        ++guard;
+    }
+    return root;
+}
+
+extern "C" __device__
+void union_grouped_min_root(int* parent, int left, int right) {
+    while (true) {
+        int left_root = find_grouped_union_root_readonly(parent, left);
+        int right_root = find_grouped_union_root_readonly(parent, right);
+        if (left_root == right_root) {
+            return;
+        }
+        const int high = left_root > right_root ? left_root : right_root;
+        const int low = left_root > right_root ? right_root : left_root;
+        const int old = atomicMin(parent + high, low);
+        if (old == high) {
+            return;
+        }
+    }
+}
+
+extern "C" __global__ void __raygen__frn3d_grouped_union_probe() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+
+    const GpuPoint3D q = params.query_points[qidx];
+    unsigned int p0 = qidx;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__frn3d_grouped_union_miss() {}
+
+extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float dz = t.z - q.z;
+    const float d2 = dx * dx + dy * dy + dz * dz;
+    const float radius_sq = params.radius * params.radius;
+    if (d2 <= radius_sq) {
+        optixReportIntersection(params.radius, 0u);
+    }
+}
+
+extern "C" __global__ void __anyhit__frn3d_grouped_union_anyhit() {
+    const uint32_t local_source = optixGetPayload_0();
+    const uint32_t source = params.query_index_offset + local_source;
+    const uint32_t target = optixGetPrimitiveIndex();
+    if (source >= params.item_count || target >= params.item_count) {
+        optixIgnoreIntersection();
+        return;
+    }
+
+    const bool source_predicate = params.predicate_flags[source] != 0u;
+    const bool target_predicate = params.predicate_flags[target] != 0u;
+    if (source_predicate) {
+        if (target > source && target_predicate) {
+            union_grouped_min_root(params.parent_out, (int)source, (int)target);
+        }
+    } else if (target_predicate) {
+        atomicMin(params.fallback_candidate_out + source, (int)target);
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 static const char* kFixedRadiusNeighbors3DGridKernelSrc = R"CUDA(
 #include <stdint.h>
 
@@ -5577,6 +5686,7 @@ static RayAnyHitPipeline    g_frn_nearest_rt;
 static RayAnyHitPipeline    g_frn3d_rt;
 static RayAnyHitPipeline    g_frn3d_count_threshold_rt;
 static RayAnyHitPipeline    g_frn3d_adjacency_rt;
+static RayAnyHitPipeline    g_frn3d_grouped_union_rt;
 static RayAnyHitPipeline    g_point_group_threshold_rt;
 static RayAnyHitPipeline    g_point_group_nearest_rt;
 static KnnCuFunction       g_point_group_nearest_reduce;

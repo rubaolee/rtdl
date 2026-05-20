@@ -771,6 +771,16 @@ int  rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs(
          int32_t* neighbor_indices_out,
          size_t neighbor_index_capacity,
          char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         size_t query_index_offset,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         size_t item_count,
+         char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d(void* prepared);
 int  rtdl_optix_run_fixed_radius_count_threshold(
          const RtdlPoint* query_points, size_t query_count,

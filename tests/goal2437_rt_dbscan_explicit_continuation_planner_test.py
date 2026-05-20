@@ -19,7 +19,7 @@ REPORT = ROOT / "docs" / "reports" / "goal2437_rt_dbscan_explicit_continuation_p
 
 
 class Goal2437RtDbscanExplicitContinuationPlannerTest(unittest.TestCase):
-    def test_continuation_plan_selects_full_or_chunked_from_explicit_budget(self) -> None:
+    def test_continuation_plan_selects_full_or_grouped_from_explicit_budget(self) -> None:
         tiny = plan_rt_dbscan_continuation_execution("tiny", 9)
         self.assertEqual(tiny["selected_mode"], "cpu_reference")
         self.assertTrue(tiny["not_hidden_dispatcher"])
@@ -35,8 +35,9 @@ class Goal2437RtDbscanExplicitContinuationPlannerTest(unittest.TestCase):
         self.assertLessEqual(larger_full["estimated_directed_edge_count"], DEFAULT_DIRECTED_ADJACENCY_EDGE_BUDGET)
         self.assertTrue(larger_full["full_stream_fits_budget"])
 
-        forced_chunked = plan_rt_dbscan_continuation_execution("clustered3d", 4096, directed_edge_budget=1_000_000)
-        self.assertEqual(forced_chunked["selected_mode"], "optix_rt_core_chunked_adjacency_cupy_components_3d")
+        forced_grouped = plan_rt_dbscan_continuation_execution("clustered3d", 4096, directed_edge_budget=1_000_000)
+        self.assertEqual(forced_grouped["selected_mode"], "optix_rt_core_grouped_stream_cupy_components_3d")
+        self.assertFalse(forced_grouped["full_stream_fits_budget"])
 
         forced_full = plan_rt_dbscan_continuation_execution("clustered3d", 32768, directed_edge_budget=200_000_000)
         self.assertEqual(forced_full["selected_mode"], "optix_rt_core_adjacency_cupy_components_3d")
@@ -54,9 +55,9 @@ class Goal2437RtDbscanExplicitContinuationPlannerTest(unittest.TestCase):
         self.assertEqual(continuation["selected_mode"], "optix_rt_core_adjacency_cupy_components_3d")
         self.assertEqual(
             continuation["policy"],
-            "explicit_continuation_plan_from_goal2431_2433_2435_2452_adjacency_evidence",
+            "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_adjacency_evidence",
         )
-        self.assertEqual(continuation["evidence_goals"], ["Goal2431", "Goal2433", "Goal2435", "Goal2452"])
+        self.assertEqual(continuation["evidence_goals"], ["Goal2431", "Goal2433", "Goal2435", "Goal2452", "Goal2457"])
 
     def test_tiny_planned_continuation_executes_without_gpu_and_records_plan(self) -> None:
         payload = run_rt_dbscan_benchmark(

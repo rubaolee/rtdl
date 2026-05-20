@@ -3902,6 +3902,162 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             pass
 
 
+class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
+    """Prepared generic OptiX RT grouped stream continuation plus CuPy labels."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "cupy",
+    ):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy grouped stream radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.point_count = len(self.point_rows)
+        self.runtime = _partner_module(partner)
+        self.cupy = self.runtime["module"]
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D requires 3-D point rows")
+
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.count_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            self.prepared_native,
+            self.point_rows,
+            radius=radius,
+            threshold=self.point_count,
+            partner=partner,
+            output_columns=self.count_columns,
+            return_metadata=True,
+        )
+        self.count_metadata = dict(threshold_result["metadata"])
+        self.neighbor_counts = threshold_result["columns"]["neighbor_counts"]
+        self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
+        self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.border_core_candidate_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.labels_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int64)
+        _, _, _, self.border_candidate_label_kernel = _cupy_radius_graph_components_3d_chunked_adjacency_kernels(self.cupy)
+        self.run_count = 0
+        self.closed = False
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy grouped stream radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flags = (self.neighbor_counts >= min_neighbors).astype(self.cupy.uint32, copy=False)
+        self.parent_workspace[...] = self.parent_initial
+        self.border_core_candidate_workspace.fill(self.point_count)
+        native_result = self.prepared_native.apply_device_grouped_union(
+            self.point_rows,
+            radius=self.radius,
+            query_index_offset=0,
+            predicate_flags=core_flags,
+            parent_out=self.parent_workspace,
+            fallback_candidate_out=self.border_core_candidate_workspace,
+        )
+        threads = 256
+        label_blocks = (max(1, (self.point_count + threads - 1) // threads),)
+        self.border_candidate_label_kernel(
+            label_blocks,
+            (threads,),
+            (
+                self.point_count,
+                core_flags,
+                self.parent_workspace,
+                self.border_core_candidate_workspace,
+                self.labels_workspace,
+            ),
+        )
+        self.runtime["sync"]()
+        grouped_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": self.neighbor_counts,
+        }
+        native_metadata = dict(native_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+            "native_execution_path": "prepared_rt_core_grouped_union_3d",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "prepared_grouped_stream_run_count": self.run_count,
+            "prepared_grouped_stream_reused": grouped_reused,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": False,
+            "adjacency_write_pass_count": 0,
+            "grouped_stream_continuation_pass_count": 1,
+            "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+            "count_metadata": self.count_metadata,
+            "native_grouped_stream_metadata": native_metadata,
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 def prepare_optix_cupy_radius_graph_components_3d(
     point_rows,
     *,
@@ -3967,6 +4123,28 @@ def prepare_optix_cupy_radius_graph_chunked_adjacency_3d(
 
 def radius_graph_components_3d_optix_cupy_prepared_chunked_adjacency_partner_columns(
     prepared: PreparedOptixCupyRadiusGraphChunkedAdjacency3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+) -> PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
+    return PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+    )
+
+
+def radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D,
     *,
     min_neighbors: int,
     return_metadata: bool = False,

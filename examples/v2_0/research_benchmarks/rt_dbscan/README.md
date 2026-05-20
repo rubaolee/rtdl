@@ -37,6 +37,7 @@ No DBSCAN-specific native ABI is added.
 | `optix_rt_core_flags_cupy_prepared_grid_components_3d` | OptiX RT count-threshold device columns feed a prepared CuPy device-grid component continuation | Same generic contract with reusable grid/order/workspace state for steady-state probes |
 | `optix_rt_core_adjacency_cupy_components_3d` | OptiX RT writes a generic directed fixed-radius adjacency stream, then CuPy labels components | First generic RT-produced continuation stream; no DBSCAN-native engine code |
 | `optix_rt_core_chunked_adjacency_cupy_components_3d` | OptiX RT writes bounded generic directed fixed-radius adjacency chunks, then CuPy labels components | Memory-bounded stream variant; does not hold the whole edge table at once |
+| `optix_rt_core_grouped_stream_cupy_components_3d` | OptiX RT applies generic predicate-grouped union and fallback-candidate capture during traversal, then CuPy labels components | Over-budget dense-stream variant; avoids materializing a full neighbor-index table |
 | `optix_rt_core_flags_cupy_microcell_graph_components_3d` | OptiX RT count-threshold device columns feed a clique-safe CuPy microcell component continuation | Experimental all-core fast path; falls back to the CuPy device grid when any point is non-core |
 | `partner_core_flags_3d` | Generic partner 3-D fixed-radius core flags only | Core-point phase, not full DBSCAN |
 | `optix_prepared_rows` | Prepared OptiX-backend 3-D fixed-radius neighbor rows, then Python component labels | Prepared uniform-cell CUDA path; materializes rows |
@@ -197,6 +198,21 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbsc
 The chunk planner first counts exact fixed-radius degrees, then chooses chunk
 ranges that obey both `max_chunk_points` and the requested directed-edge budget.
 This is a memory-control knob, not a speedup claim.
+
+For the generic grouped-stream continuation path, use:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_grouped_stream_cupy_components_3d --dataset clustered3d --point-count 65536 --no-validation
+```
+
+This path keeps the native ABI generic: OptiX receives caller-owned predicate,
+parent, and fallback-candidate device columns, then applies fixed-radius hit
+traversal to update those columns without creating a giant neighbor-index
+array. Goal2457 made this the explicit continuation-plan branch when the full
+stream no longer fits the directed-edge budget. Full adjacency remains the
+preferred branch when it fits; chunked adjacency remains available as a manual
+memory-control diagnostic.
 
 For the experimental all-core microcell continuation, use:
 

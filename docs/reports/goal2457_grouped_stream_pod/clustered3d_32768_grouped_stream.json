@@ -1,0 +1,385 @@
+{
+  "error": null,
+  "mode": "grouped_stream",
+  "prepare_metadata": {},
+  "prepare_sec": 1.2246552761644125,
+  "repeat_elapsed_sec": [
+    0.5002550985664129,
+    0.07501096464693546,
+    0.07327706180512905
+  ],
+  "rows": [
+    {
+      "elapsed_sec": 0.5002550985664129,
+      "metadata": {
+        "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+        "adjacency_write_pass_count": 0,
+        "automatic_hidden_dispatcher": false,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+        "count_metadata": {
+          "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+          "app_count_host_materialization": false,
+          "app_count_materialization": "native_optix_rt_device_columns",
+          "direct_device_handoff_authorized": true,
+          "input_contract": "host_query_points_prepared_native_search_scene",
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_metadata": {
+            "backend": "optix",
+            "direct_device_handoff_authorized": true,
+            "materializes_neighbor_rows": false,
+            "native_elapsed_sec": 0.017711304128170013,
+            "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+            "native_execution_path": "prepared_rt_core_count_threshold_3d",
+            "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+            "output_columns_true_zero_copy_authorized": true,
+            "paper_speedup_claim_authorized": false,
+            "query_count": 32768,
+            "radius": 0.055,
+            "rt_core_accelerated": true,
+            "search_count": 32768,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "cupy"
+            ],
+            "threshold": 32768,
+            "transfer_mode": "host_query_points_to_device_threshold_columns",
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false
+          },
+          "output_columns_reused": true,
+          "paper_speedup_claim_authorized": false,
+          "partner": "cupy",
+          "query_count": 32768,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "rt_core_speedup_claim_authorized": false,
+          "threshold": 32768,
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "direct_device_handoff_authorized": true,
+        "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+        "grouped_stream_continuation_pass_count": 1,
+        "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+        "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+        "materializes_bounded_directed_adjacency_chunks": false,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "materializes_neighbor_summaries": false,
+        "min_neighbors": 12,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d",
+        "native_grouped_stream_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "item_count": 32768,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.3947903588414192,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+          "native_execution_path": "prepared_rt_core_grouped_union_3d",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 32768,
+          "query_index_offset": 0,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "search_count": 32768,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "transfer_mode": "host_query_points_to_device_grouped_union_workspaces",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+        "optix_backend_used": true,
+        "output_columns_reused": true,
+        "output_columns_true_zero_copy_authorized": true,
+        "partner": "cupy",
+        "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+        "point_count": 32768,
+        "prepared_grouped_stream_reused": false,
+        "prepared_grouped_stream_run_count": 1,
+        "prepared_optix_scene_reused": true,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "repeat": 1,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "elapsed_sec": 0.07501096464693546,
+      "metadata": {
+        "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+        "adjacency_write_pass_count": 0,
+        "automatic_hidden_dispatcher": false,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+        "count_metadata": {
+          "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+          "app_count_host_materialization": false,
+          "app_count_materialization": "native_optix_rt_device_columns",
+          "direct_device_handoff_authorized": true,
+          "input_contract": "host_query_points_prepared_native_search_scene",
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_metadata": {
+            "backend": "optix",
+            "direct_device_handoff_authorized": true,
+            "materializes_neighbor_rows": false,
+            "native_elapsed_sec": 0.017711304128170013,
+            "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+            "native_execution_path": "prepared_rt_core_count_threshold_3d",
+            "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+            "output_columns_true_zero_copy_authorized": true,
+            "paper_speedup_claim_authorized": false,
+            "query_count": 32768,
+            "radius": 0.055,
+            "rt_core_accelerated": true,
+            "search_count": 32768,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "cupy"
+            ],
+            "threshold": 32768,
+            "transfer_mode": "host_query_points_to_device_threshold_columns",
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false
+          },
+          "output_columns_reused": true,
+          "paper_speedup_claim_authorized": false,
+          "partner": "cupy",
+          "query_count": 32768,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "rt_core_speedup_claim_authorized": false,
+          "threshold": 32768,
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "direct_device_handoff_authorized": true,
+        "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+        "grouped_stream_continuation_pass_count": 1,
+        "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+        "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+        "materializes_bounded_directed_adjacency_chunks": false,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "materializes_neighbor_summaries": false,
+        "min_neighbors": 12,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d",
+        "native_grouped_stream_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "item_count": 32768,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.029423832893371582,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+          "native_execution_path": "prepared_rt_core_grouped_union_3d",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 32768,
+          "query_index_offset": 0,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "search_count": 32768,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "transfer_mode": "host_query_points_to_device_grouped_union_workspaces",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+        "optix_backend_used": true,
+        "output_columns_reused": true,
+        "output_columns_true_zero_copy_authorized": true,
+        "partner": "cupy",
+        "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+        "point_count": 32768,
+        "prepared_grouped_stream_reused": true,
+        "prepared_grouped_stream_run_count": 2,
+        "prepared_optix_scene_reused": true,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "repeat": 2,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "elapsed_sec": 0.07327706180512905,
+      "metadata": {
+        "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+        "adjacency_write_pass_count": 0,
+        "automatic_hidden_dispatcher": false,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+        "count_metadata": {
+          "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+          "app_count_host_materialization": false,
+          "app_count_materialization": "native_optix_rt_device_columns",
+          "direct_device_handoff_authorized": true,
+          "input_contract": "host_query_points_prepared_native_search_scene",
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_metadata": {
+            "backend": "optix",
+            "direct_device_handoff_authorized": true,
+            "materializes_neighbor_rows": false,
+            "native_elapsed_sec": 0.017711304128170013,
+            "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+            "native_execution_path": "prepared_rt_core_count_threshold_3d",
+            "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+            "output_columns_true_zero_copy_authorized": true,
+            "paper_speedup_claim_authorized": false,
+            "query_count": 32768,
+            "radius": 0.055,
+            "rt_core_accelerated": true,
+            "search_count": 32768,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "cupy"
+            ],
+            "threshold": 32768,
+            "transfer_mode": "host_query_points_to_device_threshold_columns",
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false
+          },
+          "output_columns_reused": true,
+          "paper_speedup_claim_authorized": false,
+          "partner": "cupy",
+          "query_count": 32768,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "rt_core_speedup_claim_authorized": false,
+          "threshold": 32768,
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "direct_device_handoff_authorized": true,
+        "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+        "grouped_stream_continuation_pass_count": 1,
+        "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+        "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+        "materializes_bounded_directed_adjacency_chunks": false,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "materializes_neighbor_summaries": false,
+        "min_neighbors": 12,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d",
+        "native_grouped_stream_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "item_count": 32768,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.03008951060473919,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
+          "native_execution_path": "prepared_rt_core_grouped_union_3d",
+          "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 32768,
+          "query_index_offset": 0,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "search_count": 32768,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "transfer_mode": "host_query_points_to_device_grouped_union_workspaces",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+        "optix_backend_used": true,
+        "output_columns_reused": true,
+        "output_columns_true_zero_copy_authorized": true,
+        "partner": "cupy",
+        "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+        "point_count": 32768,
+        "prepared_grouped_stream_reused": true,
+        "prepared_grouped_stream_run_count": 3,
+        "prepared_optix_scene_reused": true,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "repeat": 3,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signature": {
+    "cluster_sizes": {
+      "1": 8192,
+      "2": 8192,
+      "3": 8192,
+      "4": 8192
+    },
+    "core_count": 32767,
+    "noise_count": 0
+  },
+  "tail_mean_sec": 0.07414401322603226,
+  "tail_median_sec": 0.07414401322603226
+}

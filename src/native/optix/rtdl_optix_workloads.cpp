@@ -7228,6 +7228,20 @@ struct FixedRadiusAdjacency3DRtLaunchParams {
     float trace_tmax;
 };
 
+struct FixedRadiusGroupedUnion3DRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3DHost* query_points;
+    const GpuPoint3DHost* search_points;
+    const uint32_t* predicate_flags;
+    int32_t* parent_out;
+    int32_t* fallback_candidate_out;
+    uint32_t query_count;
+    uint32_t query_index_offset;
+    uint32_t item_count;
+    float radius;
+    float trace_tmax;
+};
+
 struct GpuPointGroupBounds {
     float min_x, min_y, max_x, max_y;
     uint32_t id, point_offset, point_count, pad;
@@ -10195,6 +10209,98 @@ static void write_prepared_fixed_radius_adjacency_3d_device_outputs_optix(
     OPTIX_CHECK(optixLaunch(g_frn3d_adjacency_rt.pipe->pipeline, stream,
                              d_params.ptr, sizeof(FixedRadiusAdjacency3DRtLaunchParams),
                              &g_frn3d_adjacency_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_copy_s = 0.0;
+}
+
+static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        const RtdlPoint3D* query_points,
+        size_t query_count,
+        size_t query_index_offset,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        size_t item_count)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius grouped-union 3D handle must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_grouped_union_3d radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_grouped_union_3d radius exceeds prepared max_radius");
+    }
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d query_count exceeds uint32 limit");
+    if (query_index_offset > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d query_index_offset exceeds uint32 limit");
+    if (item_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d item_count exceeds uint32 limit");
+    if (query_index_offset > item_count || query_count > item_count - query_index_offset)
+        throw std::runtime_error("fixed_radius_grouped_union_3d query range must be inside item_count");
+    if (item_count < prepared->search_points.size())
+        throw std::runtime_error("fixed_radius_grouped_union_3d workspaces must cover every prepared search item");
+    if (query_count == 0) return;
+    if (!predicate_flags || !parent_out || !fallback_candidate_out)
+        throw std::runtime_error("fixed_radius_grouped_union_3d device continuation pointers must not be null when query_count is nonzero");
+
+    std::call_once(g_frn3d_grouped_union_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusGroupedUnion3DRtKernelSrc, "frn3d_grouped_union_rt_kernel.cu");
+        g_frn3d_grouped_union_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn3d_grouped_union_probe",
+            "__miss__frn3d_grouped_union_miss",
+            "__intersection__frn3d_grouped_union_isect",
+            "__anyhit__frn3d_grouped_union_anyhit",
+            nullptr, 1).release();
+    });
+
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            static_cast<float>(query_points[i].z),
+            query_points[i].id,
+        };
+    }
+
+    if (!prepared->accel.handle || prepared->search_points.empty()) {
+        return;
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+
+    constexpr float kRadiusPad = 1.0e-4f;
+    const float radius_f = static_cast<float>(radius);
+    const float aabb_radius = static_cast<float>(prepared->max_radius) + kRadiusPad;
+
+    FixedRadiusGroupedUnion3DRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint3DHost*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
+    lp.predicate_flags = predicate_flags;
+    lp.parent_out = parent_out;
+    lp.fallback_candidate_out = fallback_candidate_out;
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.query_index_offset = static_cast<uint32_t>(query_index_offset);
+    lp.item_count = static_cast<uint32_t>(item_count);
+    lp.radius = radius_f;
+    lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
+
+    DevPtr d_params(sizeof(FixedRadiusGroupedUnion3DRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_frn3d_grouped_union_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusGroupedUnion3DRtLaunchParams),
+                             &g_frn3d_grouped_union_rt.pipe->sbt,
                              static_cast<unsigned>(query_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
     auto t_end_trav = std::chrono::steady_clock::now();

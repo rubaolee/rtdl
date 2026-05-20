@@ -457,6 +457,12 @@ Future work:
   DBSCAN-specific kernel. Goal2455 captured the design target and recommends a
   generic fixed-radius grouped component continuation as the first concrete
   proof.
+- Goal2457 implemented that first concrete proof for OptiX fixed-radius
+  grouped union workspaces. It improves the dense over-budget branch versus
+  chunked adjacency, but full adjacency remains faster when the whole stream
+  fits. Future v2.x work should keep this as a generic predicate/grouped
+  continuation family and look for lower-overhead atomics or segmented
+  reductions, not DBSCAN-native ABI.
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.
