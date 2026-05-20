@@ -209,10 +209,11 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbsc
 This path keeps the native ABI generic: OptiX receives caller-owned predicate,
 parent, and fallback-candidate device columns, then applies fixed-radius hit
 traversal to update those columns without creating a giant neighbor-index
-array. Goal2457 made this the explicit continuation-plan branch when the full
-stream no longer fits the directed-edge budget. Full adjacency remains the
-preferred branch when it fits; chunked adjacency remains available as a manual
-memory-control diagnostic.
+array. The core predicate is built from threshold-capped counts at
+`min_neighbors`, not exact full degree counts. Goal2457 made this the explicit
+continuation-plan branch when the full stream no longer fits the directed-edge
+budget. Full adjacency remains the preferred branch when it fits; chunked
+adjacency remains available as a manual memory-control diagnostic.
 
 For the experimental all-core microcell continuation, use:
 

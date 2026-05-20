@@ -3937,17 +3937,10 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             self.point_count,
             partner=partner,
         )
-        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
-            self.prepared_native,
-            self.point_rows,
-            radius=radius,
-            threshold=self.point_count,
-            partner=partner,
-            output_columns=self.count_columns,
-            return_metadata=True,
-        )
-        self.count_metadata = dict(threshold_result["metadata"])
-        self.neighbor_counts = threshold_result["columns"]["neighbor_counts"]
+        self._cached_core_threshold: int | None = None
+        self._cached_core_flags = None
+        self._cached_neighbor_counts = None
+        self._cached_count_metadata: dict[str, object] | None = None
         self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
         self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
         self.border_core_candidate_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
@@ -3962,7 +3955,23 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
         min_neighbors = int(min_neighbors)
         if min_neighbors < 1:
             raise ValueError("min_neighbors must be at least 1")
-        core_flags = (self.neighbor_counts >= min_neighbors).astype(self.cupy.uint32, copy=False)
+        core_flag_cache_reused = self._cached_core_threshold == min_neighbors
+        if not core_flag_cache_reused:
+            threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                self.prepared_native,
+                self.point_rows,
+                radius=self.radius,
+                threshold=min_neighbors,
+                partner=self.partner,
+                output_columns=self.count_columns,
+                return_metadata=True,
+            )
+            self._cached_core_threshold = min_neighbors
+            self._cached_core_flags = threshold_result["columns"]["threshold_flags"]
+            self._cached_neighbor_counts = threshold_result["columns"]["neighbor_counts"]
+            self._cached_count_metadata = dict(threshold_result["metadata"])
+        core_flags = self._cached_core_flags
+        neighbor_counts = self._cached_neighbor_counts
         self.parent_workspace[...] = self.parent_initial
         self.border_core_candidate_workspace.fill(self.point_count)
         native_result = self.prepared_native.apply_device_grouped_union(
@@ -3993,7 +4002,7 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "point_ids": self.point_columns["ids"],
             "component_labels": self.labels_workspace,
             "is_core": core_flags,
-            "neighbor_counts": self.neighbor_counts,
+            "neighbor_counts": neighbor_counts,
         }
         native_metadata = dict(native_result["metadata"])
         metadata = {
@@ -4014,6 +4023,8 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
             "prepared_optix_scene_reused": True,
             "output_columns_reused": True,
+            "core_flag_threshold": min_neighbors,
+            "core_flag_cache_reused": core_flag_cache_reused,
             "optix_backend_used": True,
             "rt_core_accelerated": True,
             "materializes_neighbor_summaries": False,
@@ -4022,8 +4033,8 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "materializes_bounded_directed_adjacency_chunks": False,
             "adjacency_write_pass_count": 0,
             "grouped_stream_continuation_pass_count": 1,
-            "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
-            "count_metadata": self.count_metadata,
+            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,

@@ -463,6 +463,10 @@ Future work:
   fits. Future v2.x work should keep this as a generic predicate/grouped
   continuation family and look for lower-overhead atomics or segmented
   reductions, not DBSCAN-native ABI.
+- Goal2459 removed unnecessary exact-degree work from the grouped-stream core
+  predicate by using threshold-capped count flags at `min_neighbors`. The count
+  phase is no longer the main bottleneck; the remaining hard target is the
+  grouped-union pass and its global atomic pressure.
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.

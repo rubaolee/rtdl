@@ -776,7 +776,7 @@ def run_rt_dbscan_benchmark(
                 "materializes_neighbor_rows": False,
                 "materializes_directed_adjacency_stream": False,
                 "materializes_bounded_directed_adjacency_chunks": False,
-                "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             }
         )
     elif mode == "optix_rt_core_flags_cupy_microcell_graph_components_3d":
