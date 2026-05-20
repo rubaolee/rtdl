@@ -467,6 +467,12 @@ Future work:
   predicate by using threshold-capped count flags at `min_neighbors`. The count
   phase is no longer the main bottleneck; the remaining hard target is the
   grouped-union pass and its global atomic pressure.
+- Goal2461 removed the grouped-stream self-query host repack/upload by adding a
+  generic prepared-search self-query device path. On the RTX A5000 pod, the
+  steady-state grouped continuation improved by about 2.3x-2.5x versus
+  Goal2459. The remaining RT-DBSCAN runtime work is now deeper: reduce
+  grouped-union global atomic pressure with a generic segmented/blocked
+  continuation design, not a DBSCAN-specific native endpoint.
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.

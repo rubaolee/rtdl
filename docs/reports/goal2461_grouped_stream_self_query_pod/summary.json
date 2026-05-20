@@ -1,0 +1,494 @@
+{
+  "planned_65536": {
+    "app": "rt_dbscan_benchmark",
+    "claim_boundary": {
+      "automatic_hidden_dispatcher": false,
+      "full_dbscan": true,
+      "host_bucket_index_used": false,
+      "native_dbscan_abi_added": false,
+      "paper_dataset_reproduction": false,
+      "paper_reproduction_claim_authorized": false,
+      "paper_speedup_claim_authorized": false,
+      "planned_continuation_execution": true,
+      "release_claim_authorized": false,
+      "rt_core_accelerated": true
+    },
+    "dataset": "clustered3d",
+    "elapsed_sec": 0.5360254924744368,
+    "matches_reference": null,
+    "metadata": {
+      "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+      "adjacency_write_pass_count": 0,
+      "automatic_hidden_dispatcher": false,
+      "component_label_policy": "positive_root_index_labels_noise_minus_one",
+      "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+      "core_flag_cache_reused": false,
+      "core_flag_threshold": 12,
+      "count_metadata": {
+        "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+        "app_count_host_materialization": false,
+        "app_count_materialization": "native_optix_rt_device_columns",
+        "direct_device_handoff_authorized": true,
+        "input_contract": "host_query_points_prepared_native_search_scene",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "native_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.015444474294781685,
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_execution_path": "prepared_rt_core_count_threshold_3d",
+          "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 65536,
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "search_count": 65536,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "threshold": 12,
+          "transfer_mode": "host_query_points_to_device_threshold_columns",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "output_columns_reused": true,
+        "paper_speedup_claim_authorized": false,
+        "partner": "cupy",
+        "query_count": 65536,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "threshold": 12,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "direct_device_handoff_authorized": true,
+      "execution_plan": {
+        "adapter": "plan_rt_dbscan_continuation_execution",
+        "directed_edge_budget": 160000000,
+        "estimated_directed_edge_count": 541165879,
+        "estimated_full_adjacency_bytes": 2165187812,
+        "evidence_goals": [
+          "Goal2431",
+          "Goal2433",
+          "Goal2435",
+          "Goal2452",
+          "Goal2457",
+          "Goal2461"
+        ],
+        "full_stream_fits_budget": false,
+        "not_hidden_dispatcher": true,
+        "paper_reproduction_claim_authorized": false,
+        "planner_surface": "benchmark_app_plan_explain_not_engine_dispatch",
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_adjacency_evidence",
+        "reason": "estimated directed adjacency stream exceeds the explicit budget; Goal2457 and Goal2461 evidence says the grouped stream avoids the giant neighbor-index table, reuses the prepared self-query device buffer, and beats chunked continuation",
+        "release_claim_authorized": false,
+        "selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d"
+      },
+      "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+      "grouped_stream_continuation_pass_count": 1,
+      "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+      "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+      "materializes_bounded_directed_adjacency_chunks": false,
+      "materializes_directed_adjacency_stream": false,
+      "materializes_neighbor_rows": false,
+      "materializes_neighbor_summaries": false,
+      "min_neighbors": 12,
+      "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+      "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "native_grouped_stream_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "item_count": 65536,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.09390444681048393,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "query_count": 65536,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "search_count": 65536,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "optix_backend_used": true,
+      "output_columns_reused": true,
+      "output_columns_true_zero_copy_authorized": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+      "path": "optix_rt_grouped_stream_cupy_radius_graph_components_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": false,
+      "prepared_grouped_stream_run_count": 1,
+      "prepared_optix_scene_reused": true,
+      "query_source": "prepared_search_points_self_query_device",
+      "radius": 0.055,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "min_neighbors": 12,
+    "mode": "planned_rt_dbscan_continuation",
+    "paper": {
+      "authors": [
+        "Vani Nagarajan",
+        "Milind Kulkarni"
+      ],
+      "doi": "10.1109/IPDPS54959.2023.00100",
+      "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+      "venue": "IPDPS 2023"
+    },
+    "point_count": 65536,
+    "radius": 0.055,
+    "reference_signature": null,
+    "seed": 20260519,
+    "selected_mode": "optix_rt_core_grouped_stream_cupy_components_3d",
+    "signature": {
+      "cluster_sizes": {
+        "1": 16384,
+        "2": 16384,
+        "3": 16384,
+        "4": 16384
+      },
+      "core_count": 65536,
+      "noise_count": 0
+    }
+  },
+  "summaries": [
+    {
+      "dataset": "clustered3d",
+      "min_neighbors": 12,
+      "point_count": 32768,
+      "prepare_sec": 1.050707332789898,
+      "radius": 0.055,
+      "repeat_rows": [
+        {
+          "core_flag_cache_reused": false,
+          "count_native_elapsed_sec": 0.0032218266278505325,
+          "count_threshold": 12,
+          "elapsed_sec": 0.44535158202052116,
+          "grouped_native_elapsed_sec": 0.38275172002613544,
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 1,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.0032218266278505325,
+          "count_threshold": 12,
+          "elapsed_sec": 0.029414720833301544,
+          "grouped_native_elapsed_sec": 0.028658036142587662,
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 2,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.0032218266278505325,
+          "count_threshold": 12,
+          "elapsed_sec": 0.029946137219667435,
+          "grouped_native_elapsed_sec": 0.029344486072659492,
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 3,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          }
+        }
+      ],
+      "signatures_match": true,
+      "tail_mean_sec": 0.02968042902648449,
+      "tail_median_sec": 0.02968042902648449
+    },
+    {
+      "dataset": "clustered3d",
+      "min_neighbors": 12,
+      "point_count": 65536,
+      "prepare_sec": 0.2226340752094984,
+      "radius": 0.055,
+      "repeat_rows": [
+        {
+          "core_flag_cache_reused": false,
+          "count_native_elapsed_sec": 0.010595520958304405,
+          "count_threshold": 12,
+          "elapsed_sec": 0.2180911973118782,
+          "grouped_native_elapsed_sec": 0.10162540897727013,
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 1,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.010595520958304405,
+          "count_threshold": 12,
+          "elapsed_sec": 0.09576393105089664,
+          "grouped_native_elapsed_sec": 0.09518078155815601,
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 2,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.010595520958304405,
+          "count_threshold": 12,
+          "elapsed_sec": 0.09599955566227436,
+          "grouped_native_elapsed_sec": 0.09529983624815941,
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 3,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          }
+        }
+      ],
+      "signatures_match": true,
+      "tail_mean_sec": 0.0958817433565855,
+      "tail_median_sec": 0.0958817433565855
+    }
+  ],
+  "tiny_smoke": {
+    "app": "rt_dbscan_benchmark",
+    "claim_boundary": {
+      "full_dbscan": true,
+      "host_bucket_index_used": false,
+      "native_dbscan_abi_added": false,
+      "paper_dataset_reproduction": false,
+      "paper_speedup_claim_authorized": false,
+      "rt_core_accelerated": true
+    },
+    "dataset": "tiny",
+    "elapsed_sec": 0.00260990671813488,
+    "matches_reference": true,
+    "metadata": {
+      "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+      "adjacency_write_pass_count": 0,
+      "automatic_hidden_dispatcher": false,
+      "component_label_policy": "positive_root_index_labels_noise_minus_one",
+      "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+      "core_flag_cache_reused": false,
+      "core_flag_threshold": 3,
+      "count_metadata": {
+        "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+        "app_count_host_materialization": false,
+        "app_count_materialization": "native_optix_rt_device_columns",
+        "direct_device_handoff_authorized": true,
+        "input_contract": "host_query_points_prepared_native_search_scene",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "native_metadata": {
+          "backend": "optix",
+          "direct_device_handoff_authorized": true,
+          "materializes_neighbor_rows": false,
+          "native_elapsed_sec": 0.00014470331370830536,
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+          "native_execution_path": "prepared_rt_core_count_threshold_3d",
+          "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+          "output_columns_true_zero_copy_authorized": true,
+          "paper_speedup_claim_authorized": false,
+          "query_count": 9,
+          "radius": 0.2,
+          "rt_core_accelerated": true,
+          "search_count": 9,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "cupy"
+          ],
+          "threshold": 3,
+          "transfer_mode": "host_query_points_to_device_threshold_columns",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false
+        },
+        "output_columns_reused": true,
+        "paper_speedup_claim_authorized": false,
+        "partner": "cupy",
+        "query_count": 9,
+        "radius": 0.2,
+        "rt_core_accelerated": true,
+        "rt_core_speedup_claim_authorized": false,
+        "threshold": 3,
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "direct_device_handoff_authorized": true,
+      "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+      "grouped_stream_continuation_pass_count": 1,
+      "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+      "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+      "materializes_bounded_directed_adjacency_chunks": false,
+      "materializes_directed_adjacency_stream": false,
+      "materializes_neighbor_rows": false,
+      "materializes_neighbor_summaries": false,
+      "min_neighbors": 3,
+      "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+      "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "native_grouped_stream_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "item_count": 9,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 8.03489238023758e-05,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "query_count": 9,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.2,
+        "rt_core_accelerated": true,
+        "search_count": 9,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "optix_backend_used": true,
+      "output_columns_reused": true,
+      "output_columns_true_zero_copy_authorized": true,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+      "path": "optix_rt_grouped_stream_cupy_radius_graph_components_3d",
+      "point_count": 9,
+      "prepared_grouped_stream_reused": false,
+      "prepared_grouped_stream_run_count": 1,
+      "prepared_optix_scene_reused": true,
+      "query_source": "prepared_search_points_self_query_device",
+      "radius": 0.2,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "min_neighbors": 3,
+    "mode": "optix_rt_core_grouped_stream_cupy_components_3d",
+    "paper": {
+      "authors": [
+        "Vani Nagarajan",
+        "Milind Kulkarni"
+      ],
+      "doi": "10.1109/IPDPS54959.2023.00100",
+      "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+      "venue": "IPDPS 2023"
+    },
+    "point_count": 9,
+    "radius": 0.2,
+    "reference_signature": {
+      "cluster_sizes": {
+        "1": 4,
+        "2": 4
+      },
+      "core_count": 8,
+      "noise_count": 1
+    },
+    "seed": 20260519,
+    "signature": {
+      "cluster_sizes": {
+        "1": 4,
+        "2": 4
+      },
+      "core_count": 8,
+      "noise_count": 1
+    }
+  }
+}

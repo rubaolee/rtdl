@@ -55,9 +55,12 @@ class Goal2437RtDbscanExplicitContinuationPlannerTest(unittest.TestCase):
         self.assertEqual(continuation["selected_mode"], "optix_rt_core_adjacency_cupy_components_3d")
         self.assertEqual(
             continuation["policy"],
-            "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_adjacency_evidence",
+            "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_adjacency_evidence",
         )
-        self.assertEqual(continuation["evidence_goals"], ["Goal2431", "Goal2433", "Goal2435", "Goal2452", "Goal2457"])
+        self.assertEqual(
+            continuation["evidence_goals"],
+            ["Goal2431", "Goal2433", "Goal2435", "Goal2452", "Goal2457", "Goal2461"],
+        )
 
     def test_tiny_planned_continuation_executes_without_gpu_and_records_plan(self) -> None:
         payload = run_rt_dbscan_benchmark(

@@ -112,14 +112,15 @@ def plan_rt_dbscan_continuation_execution(
         selected_mode = "optix_rt_core_grouped_stream_cupy_components_3d"
         reason = (
             "estimated directed adjacency stream exceeds the explicit budget; "
-            "Goal2457 evidence says the grouped stream avoids the giant neighbor-index table and beats chunked continuation"
+            "Goal2457 and Goal2461 evidence says the grouped stream avoids the giant neighbor-index table, "
+            "reuses the prepared self-query device buffer, and beats chunked continuation"
         )
     return {
         "adapter": "plan_rt_dbscan_continuation_execution",
         "selected_mode": selected_mode,
         "reason": reason,
-        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_adjacency_evidence",
-        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435", "Goal2452", "Goal2457"],
+        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_adjacency_evidence",
+        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435", "Goal2452", "Goal2457", "Goal2461"],
         "estimated_directed_edge_count": estimated_edges,
         "directed_edge_budget": edge_budget,
         "estimated_full_adjacency_bytes": estimated_bytes,
@@ -768,8 +769,9 @@ def run_rt_dbscan_benchmark(
         metadata.update(
             {
                 "path": "optix_rt_grouped_stream_cupy_radius_graph_components_3d",
-                "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
-                "native_execution_path": "prepared_rt_core_grouped_union_3d",
+                "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+                "query_source": "prepared_search_points_self_query_device",
                 "optix_backend_used": True,
                 "rt_core_accelerated": True,
                 "materializes_neighbor_summaries": False,

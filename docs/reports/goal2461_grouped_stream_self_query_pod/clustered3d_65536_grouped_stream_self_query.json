@@ -1,0 +1,78 @@
+{
+  "dataset": "clustered3d",
+  "min_neighbors": 12,
+  "point_count": 65536,
+  "prepare_sec": 0.2226340752094984,
+  "radius": 0.055,
+  "repeat_rows": [
+    {
+      "core_flag_cache_reused": false,
+      "count_native_elapsed_sec": 0.010595520958304405,
+      "count_threshold": 12,
+      "elapsed_sec": 0.2180911973118782,
+      "grouped_native_elapsed_sec": 0.10162540897727013,
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 1,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.010595520958304405,
+      "count_threshold": 12,
+      "elapsed_sec": 0.09576393105089664,
+      "grouped_native_elapsed_sec": 0.09518078155815601,
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 2,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.010595520958304405,
+      "count_threshold": 12,
+      "elapsed_sec": 0.09599955566227436,
+      "grouped_native_elapsed_sec": 0.09529983624815941,
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 3,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true,
+  "tail_mean_sec": 0.0958817433565855,
+  "tail_median_sec": 0.0958817433565855
+}

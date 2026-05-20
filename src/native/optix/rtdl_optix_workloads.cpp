@@ -10216,6 +10216,17 @@ static void write_prepared_fixed_radius_adjacency_3d_device_outputs_optix(
     g_optix_last_copy_s = 0.0;
 }
 
+static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        const GpuPoint3DHost* device_query_points,
+        size_t query_count,
+        size_t query_index_offset,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        size_t item_count);
+
 static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         PreparedFixedRadiusCountThreshold3DRt* prepared,
         const RtdlPoint3D* query_points,
@@ -10247,17 +10258,6 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     if (!predicate_flags || !parent_out || !fallback_candidate_out)
         throw std::runtime_error("fixed_radius_grouped_union_3d device continuation pointers must not be null when query_count is nonzero");
 
-    std::call_once(g_frn3d_grouped_union_rt.init, [&]() {
-        std::string ptx = compile_to_ptx(kFixedRadiusGroupedUnion3DRtKernelSrc, "frn3d_grouped_union_rt_kernel.cu");
-        g_frn3d_grouped_union_rt.pipe = build_pipeline(
-            get_optix_context(), ptx,
-            "__raygen__frn3d_grouped_union_probe",
-            "__miss__frn3d_grouped_union_miss",
-            "__intersection__frn3d_grouped_union_isect",
-            "__anyhit__frn3d_grouped_union_anyhit",
-            nullptr, 1).release();
-    });
-
     std::vector<GpuPoint3DHost> gpu_queries(query_count);
     for (size_t i = 0; i < query_count; ++i) {
         gpu_queries[i] = {
@@ -10275,13 +10275,47 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
     upload(d_queries.ptr, gpu_queries.data(), query_count);
 
+    launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+        prepared,
+        reinterpret_cast<const GpuPoint3DHost*>(d_queries.ptr),
+        query_count,
+        query_index_offset,
+        radius,
+        predicate_flags,
+        parent_out,
+        fallback_candidate_out,
+        item_count);
+}
+
+static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        const GpuPoint3DHost* device_query_points,
+        size_t query_count,
+        size_t query_index_offset,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        size_t item_count)
+{
+    std::call_once(g_frn3d_grouped_union_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusGroupedUnion3DRtKernelSrc, "frn3d_grouped_union_rt_kernel.cu");
+        g_frn3d_grouped_union_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn3d_grouped_union_probe",
+            "__miss__frn3d_grouped_union_miss",
+            "__intersection__frn3d_grouped_union_isect",
+            "__anyhit__frn3d_grouped_union_anyhit",
+            nullptr, 1).release();
+    });
+
     constexpr float kRadiusPad = 1.0e-4f;
     const float radius_f = static_cast<float>(radius);
     const float aabb_radius = static_cast<float>(prepared->max_radius) + kRadiusPad;
 
     FixedRadiusGroupedUnion3DRtLaunchParams lp;
     lp.traversable = prepared->accel.handle;
-    lp.query_points = reinterpret_cast<const GpuPoint3DHost*>(d_queries.ptr);
+    lp.query_points = device_query_points;
     lp.search_points = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
     lp.predicate_flags = predicate_flags;
     lp.parent_out = parent_out;
@@ -10306,6 +10340,47 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     auto t_end_trav = std::chrono::steady_clock::now();
     g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
     g_optix_last_copy_s = 0.0;
+}
+
+static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        size_t item_count)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius grouped-union 3D handle must not be null");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_grouped_union_3d_self radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self radius exceeds prepared max_radius");
+    }
+    const size_t query_count = prepared->search_points.size();
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self query_count exceeds uint32 limit");
+    if (item_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self item_count exceeds uint32 limit");
+    if (item_count < query_count)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self workspaces must cover every prepared search item");
+    if (query_count == 0) return;
+    if (!predicate_flags || !parent_out || !fallback_candidate_out)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self device continuation pointers must not be null when query_count is nonzero");
+    if (!prepared->d_search)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self prepared search device buffer is missing");
+    if (!prepared->accel.handle || prepared->search_points.empty()) {
+        return;
+    }
+
+    launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+        prepared,
+        reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr),
+        query_count,
+        0,
+        radius,
+        predicate_flags,
+        parent_out,
+        fallback_candidate_out,
+        item_count);
 }
 
 static void run_k_closest_hits_cuda(

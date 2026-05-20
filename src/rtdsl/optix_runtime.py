@@ -2213,6 +2213,126 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             }
         }
 
+    def apply_device_grouped_union_self(
+        self,
+        *,
+        radius: float,
+        predicate_flags,
+        parent_out,
+        fallback_candidate_out,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius grouped-union self 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+
+        predicate_handoff = _partner.prepare_direct_device_pointer_handoff(predicate_flags, access="read")
+        parent_handoff = _partner.prepare_direct_device_pointer_handoff(parent_out, access="readwrite")
+        fallback_handoff = _partner.prepare_direct_device_pointer_handoff(fallback_candidate_out, access="readwrite")
+        expected_device = (predicate_handoff.device_type, predicate_handoff.device_id)
+        if (parent_handoff.device_type, parent_handoff.device_id) != expected_device:
+            raise ValueError("predicate_flags and parent_out must live on the same CUDA device")
+        if (fallback_handoff.device_type, fallback_handoff.device_id) != expected_device:
+            raise ValueError("predicate_flags and fallback_candidate_out must live on the same CUDA device")
+        if _partner_dtype_token(predicate_handoff.dtype) != "uint32":
+            raise ValueError("predicate_flags must use dtype uint32")
+        if _partner_dtype_token(parent_handoff.dtype) != "int32":
+            raise ValueError("parent_out must use dtype int32")
+        if _partner_dtype_token(fallback_handoff.dtype) != "int32":
+            raise ValueError("fallback_candidate_out must use dtype int32")
+        if len(tuple(predicate_handoff.shape)) != 1:
+            raise ValueError("predicate_flags must be one-dimensional")
+        if tuple(parent_handoff.shape) != tuple(predicate_handoff.shape):
+            raise ValueError("parent_out must have the same shape as predicate_flags")
+        if tuple(fallback_handoff.shape) != tuple(predicate_handoff.shape):
+            raise ValueError("fallback_candidate_out must have the same shape as predicate_flags")
+        if int(predicate_handoff.shape[0]) < self._packed_search.count:
+            raise ValueError("grouped-union self workspaces must cover every prepared search item")
+        if not _partner_contiguous_column_strides(predicate_handoff.strides, itemsize=4):
+            raise ValueError("predicate_flags must be contiguous")
+        if not _partner_contiguous_column_strides(parent_handoff.strides, itemsize=4):
+            raise ValueError("parent_out must be contiguous")
+        if not _partner_contiguous_column_strides(fallback_handoff.strides, itemsize=4):
+            raise ValueError("fallback_candidate_out must be contiguous")
+
+        query_count = self._packed_search.count
+        if query_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                    "query_count": 0,
+                    "query_index_offset": 0,
+                    "search_count": self._packed_search.count,
+                    "item_count": int(predicate_handoff.shape[0]),
+                    "query_source": "prepared_search_points_self_query_device",
+                    "transfer_mode": "prepared_device_search_points_self_grouped_union_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "materializes_directed_adjacency_stream": False,
+                    "direct_device_handoff_authorized": True,
+                    "true_zero_copy_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        apply_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+        )
+        if apply_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = apply_symbol(
+            self._handle,
+            ctypes.c_double(float(radius)),
+            ctypes.c_void_p(predicate_handoff.data_ptr),
+            ctypes.c_void_p(parent_handoff.data_ptr),
+            ctypes.c_void_p(fallback_handoff.data_ptr),
+            ctypes.c_size_t(int(predicate_handoff.shape[0])),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+                "query_source": "prepared_search_points_self_query_device",
+                "query_count": query_count,
+                "query_index_offset": 0,
+                "search_count": self._packed_search.count,
+                "item_count": int(predicate_handoff.shape[0]),
+                "radius": float(radius),
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+                "source_protocols": tuple(sorted({
+                    predicate_handoff.source_protocol,
+                    parent_handoff.source_protocol,
+                    fallback_handoff.source_protocol,
+                })),
+                "source_devices": (f"{expected_device[0]}:{expected_device[1]}",),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "materializes_directed_adjacency_stream": False,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "v2_0_release_authorized": False,
+                "paper_speedup_claim_authorized": False,
+            }
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -4247,6 +4367,9 @@ _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL = (
 )
 _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
 )
 
 
@@ -7745,6 +7868,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_void_p,
             ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
             ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
             ctypes.c_double,
             ctypes.c_void_p,
             ctypes.c_void_p,

@@ -1,0 +1,78 @@
+{
+  "dataset": "clustered3d",
+  "min_neighbors": 12,
+  "point_count": 32768,
+  "prepare_sec": 1.050707332789898,
+  "radius": 0.055,
+  "repeat_rows": [
+    {
+      "core_flag_cache_reused": false,
+      "count_native_elapsed_sec": 0.0032218266278505325,
+      "count_threshold": 12,
+      "elapsed_sec": 0.44535158202052116,
+      "grouped_native_elapsed_sec": 0.38275172002613544,
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 1,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.0032218266278505325,
+      "count_threshold": 12,
+      "elapsed_sec": 0.029414720833301544,
+      "grouped_native_elapsed_sec": 0.028658036142587662,
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 2,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    },
+    {
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.0032218266278505325,
+      "count_threshold": 12,
+      "elapsed_sec": 0.029946137219667435,
+      "grouped_native_elapsed_sec": 0.029344486072659492,
+      "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "grouped_query_source": "prepared_search_points_self_query_device",
+      "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+      "repeat": 3,
+      "signature": {
+        "cluster_sizes": {
+          "1": 8192,
+          "2": 8192,
+          "3": 8192,
+          "4": 8192
+        },
+        "core_count": 32767,
+        "noise_count": 0
+      }
+    }
+  ],
+  "signatures_match": true,
+  "tail_mean_sec": 0.02968042902648449,
+  "tail_median_sec": 0.02968042902648449
+}

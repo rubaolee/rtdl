@@ -3974,10 +3974,8 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
         neighbor_counts = self._cached_neighbor_counts
         self.parent_workspace[...] = self.parent_initial
         self.border_core_candidate_workspace.fill(self.point_count)
-        native_result = self.prepared_native.apply_device_grouped_union(
-            self.point_rows,
+        native_result = self.prepared_native.apply_device_grouped_union_self(
             radius=self.radius,
-            query_index_offset=0,
             predicate_flags=core_flags,
             parent_out=self.parent_workspace,
             fallback_candidate_out=self.border_core_candidate_workspace,
@@ -4010,8 +4008,9 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "partner": self.partner,
             "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
             "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
-            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
-            "native_execution_path": "prepared_rt_core_grouped_union_3d",
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+            "query_source": "prepared_search_points_self_query_device",
             "point_count": self.point_count,
             "radius": self.radius,
             "min_neighbors": min_neighbors,
