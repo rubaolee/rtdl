@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ..grouped_reduction import GroupedReductionCapacityStatus
+from ..grouped_reduction import GroupedReductionSpec
 from ..partner_adapters import _column_length
 from ..partner_adapters import _partner_module
 from ..partner_adapters import partner_group_any_by_key
@@ -103,6 +105,18 @@ def robot_collision_pose_flags_optix_prepared_partner_device_columns(
         "ray_any_hit_flags": ray_flags,
         "pose_collision_flags": pose_flags,
     }
+    group_capacity = pose_count if pose_count > 0 else None
+    grouped_reduction_spec = GroupedReductionSpec(
+        operation="group_any",
+        group_keys=("pose_index",),
+        group_capacity=group_capacity,
+    )
+    grouped_reduction_capacity_status = GroupedReductionCapacityStatus(
+        group_capacity=group_capacity,
+        row_count=pose_count,
+        required_capacity=pose_count,
+        overflowed=False,
+    )
     metadata = dict(native_result["metadata"])
     metadata.update(
         {
@@ -114,6 +128,8 @@ def robot_collision_pose_flags_optix_prepared_partner_device_columns(
             "output_columns_reused": output_reuse_authorized,
             "input_contract": "caller_supplied_partner_device_ray_columns_and_pose_indices",
             "native_engine_row_contract": "generic_ray_primitive_any_hit_flags",
+            "grouped_reduction_contract": grouped_reduction_spec.to_metadata(),
+            "grouped_reduction_capacity_status": grouped_reduction_capacity_status.to_metadata(),
             "app_flag_materialization": "partner_gpu_pose_flags_from_native_any_hit_ray_flags",
             "app_flag_host_materialization": False,
             "v2_0_release_authorized": False,
