@@ -575,7 +575,7 @@ class PreparedOptixKernel:
                 name: _normalize_records(name, self.expected_inputs[name].geometry.name, payload)
                 for name, payload in inputs.items()
             }
-            return _prepare_db_optix_execution(self.compiled, normalized_inputs, self.library)
+            return _prepare_columnar_optix_execution(self.compiled, normalized_inputs, self.library)
         packed = {
             name: _pack_for_geometry(self.expected_inputs[name], payload)
             for name, payload in inputs.items()
@@ -4227,7 +4227,7 @@ def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mo
 
 
 @dataclass(frozen=True)
-class PreparedOptixDbExecution:
+class PreparedOptixColumnarExecution:
     compiled: CompiledKernel
     library: object
     predicate_name: str
@@ -4271,7 +4271,10 @@ class PreparedOptixDbExecution:
             rows.close()
 
 
-class OptixPreparedDbDataset:
+PreparedOptixDbExecution = PreparedOptixColumnarExecution
+
+
+class OptixPreparedColumnarPayload:
     def __init__(
         self,
         lib,
@@ -4478,7 +4481,7 @@ class PreparedOptixDbDataset:
             fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
             columns_array = None
             keepalive = ()
-        self._dataset = OptixPreparedDbDataset(
+        self._dataset = OptixPreparedColumnarPayload(
             _load_optix_library(),
             fields_array,
             row_values_array,
@@ -4507,7 +4510,7 @@ class PreparedOptixDbDataset:
         prepared = cls.__new__(cls)
         prepared._field_maps = field_maps
         prepared._reverse_maps = reverse_maps
-        prepared._dataset = OptixPreparedDbDataset(
+        prepared._dataset = OptixPreparedColumnarPayload(
             _load_optix_library(),
             None,
             None,
@@ -5593,7 +5596,10 @@ def _db_primary_fields_from_clauses(clauses) -> tuple[str, ...]:
     return tuple(fields)
 
 
-def _prepare_db_optix_execution(compiled: CompiledKernel, normalized_inputs, lib) -> PreparedOptixDbExecution:
+OptixPreparedDbDataset = OptixPreparedColumnarPayload
+
+
+def _prepare_columnar_optix_execution(compiled: CompiledKernel, normalized_inputs, lib) -> PreparedOptixColumnarExecution:
     predicate_name = compiled.refine_op.predicate.name
     if predicate_name == "conjunctive_scan":
         predicates_name = compiled.candidates.left.name
@@ -5604,7 +5610,7 @@ def _prepare_db_optix_execution(compiled: CompiledKernel, normalized_inputs, lib
         predicates = normalized_inputs[predicates_name]
         columns_array, row_count, keepalive = _encode_db_table_columnar(table_rows)
         clauses_array = _encode_db_clauses(predicates.clauses)
-        dataset = OptixPreparedDbDataset(
+        dataset = OptixPreparedColumnarPayload(
             lib,
             None,
             None,
@@ -5615,7 +5621,7 @@ def _prepare_db_optix_execution(compiled: CompiledKernel, normalized_inputs, lib
             transfer="columnar",
             keepalive=keepalive,
         )
-        return PreparedOptixDbExecution(
+        return PreparedOptixColumnarExecution(
             compiled=compiled,
             library=lib,
             predicate_name=predicate_name,
@@ -5641,7 +5647,7 @@ def _prepare_db_optix_execution(compiled: CompiledKernel, normalized_inputs, lib
     )
     columns_array, row_count, keepalive = _encode_db_table_columnar(encoded_rows)
     clauses_array = _encode_db_clauses(encoded_predicates)
-    dataset = OptixPreparedDbDataset(
+    dataset = OptixPreparedColumnarPayload(
         lib,
         None,
         None,
@@ -5652,7 +5658,7 @@ def _prepare_db_optix_execution(compiled: CompiledKernel, normalized_inputs, lib
         transfer="columnar",
         keepalive=keepalive,
     )
-    return PreparedOptixDbExecution(
+    return PreparedOptixColumnarExecution(
         compiled=compiled,
         library=lib,
         predicate_name=predicate_name,

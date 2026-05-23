@@ -643,7 +643,7 @@ class PreparedEmbreeKernel:
                 name: _normalize_records(name, self.expected_inputs[name].geometry.name, payload)
                 for name, payload in inputs.items()
             }
-            return _prepare_db_embree_execution(self.compiled, normalized_inputs, self.library)
+            return _prepare_columnar_embree_execution(self.compiled, normalized_inputs, self.library)
 
         packed_inputs = {
             name: _pack_for_geometry(self.expected_inputs[name], payload)
@@ -2255,7 +2255,7 @@ def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, resu
 
 
 @dataclass(frozen=True)
-class PreparedEmbreeDbExecution:
+class PreparedEmbreeColumnarExecution:
     compiled: CompiledKernel
     library: object
     predicate_name: str
@@ -2299,7 +2299,10 @@ class PreparedEmbreeDbExecution:
             rows.close()
 
 
-class EmbreePreparedDbDataset:
+PreparedEmbreeDbExecution = PreparedEmbreeColumnarExecution
+
+
+class EmbreePreparedColumnarPayload:
     def __init__(
         self,
         library,
@@ -2458,7 +2461,7 @@ class PreparedEmbreeDbDataset:
             fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
             columns_array = None
             keepalive = ()
-        self._dataset = EmbreePreparedDbDataset(
+        self._dataset = EmbreePreparedColumnarPayload(
             _load_embree_library(),
             fields_array,
             row_values_array,
@@ -2487,7 +2490,7 @@ class PreparedEmbreeDbDataset:
         prepared = cls.__new__(cls)
         prepared._field_maps = field_maps
         prepared._reverse_maps = reverse_maps
-        prepared._dataset = EmbreePreparedDbDataset(
+        prepared._dataset = EmbreePreparedColumnarPayload(
             _load_embree_library(),
             None,
             None,
@@ -2922,7 +2925,10 @@ def _db_primary_fields_from_clauses(clauses) -> tuple[str, ...]:
     return tuple(fields)
 
 
-def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, library) -> PreparedEmbreeDbExecution:
+EmbreePreparedDbDataset = EmbreePreparedColumnarPayload
+
+
+def _prepare_columnar_embree_execution(compiled: CompiledKernel, normalized_inputs, library) -> PreparedEmbreeColumnarExecution:
     predicate_name = compiled.refine_op.predicate.name
     if predicate_name == "conjunctive_scan":
         predicates_name = compiled.candidates.left.name
@@ -2933,7 +2939,7 @@ def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, li
         predicates = normalized_inputs[predicates_name]
         columns_array, row_count, keepalive = _encode_db_table_columnar(table_rows)
         clauses_array = _encode_db_clauses(predicates.clauses)
-        dataset = EmbreePreparedDbDataset(
+        dataset = EmbreePreparedColumnarPayload(
             library,
             None,
             None,
@@ -2944,7 +2950,7 @@ def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, li
             transfer="columnar",
             keepalive=keepalive,
         )
-        return PreparedEmbreeDbExecution(
+        return PreparedEmbreeColumnarExecution(
             compiled=compiled,
             library=library,
             predicate_name=predicate_name,
@@ -2970,7 +2976,7 @@ def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, li
     )
     columns_array, row_count, keepalive = _encode_db_table_columnar(encoded_rows)
     clauses_array = _encode_db_clauses(encoded_predicates)
-    dataset = EmbreePreparedDbDataset(
+    dataset = EmbreePreparedColumnarPayload(
         library,
         None,
         None,
@@ -2981,7 +2987,7 @@ def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, li
         transfer="columnar",
         keepalive=keepalive,
     )
-    return PreparedEmbreeDbExecution(
+    return PreparedEmbreeColumnarExecution(
         compiled=compiled,
         library=library,
         predicate_name=predicate_name,
