@@ -1934,7 +1934,7 @@ static std::vector<size_t> columnar_collect_candidate_row_indices_optix_prepared
     return row_indices;
 }
 
-static void run_db_conjunctive_scan_optix(
+static void run_columnar_multi_predicate_scan_optix(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -1982,7 +1982,7 @@ static void run_db_conjunctive_scan_optix(
     *row_count_out = rows.size();
 }
 
-static void run_db_grouped_count_optix(
+static void run_columnar_grouped_count_optix(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -2034,7 +2034,7 @@ static void run_db_grouped_count_optix(
     *row_count_out = rows.size();
 }
 
-static void run_db_grouped_sum_optix(
+static void run_columnar_grouped_sum_optix(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -2092,7 +2092,7 @@ static void run_db_grouped_sum_optix(
     *row_count_out = rows.size();
 }
 
-static OptixColumnarPayloadImpl* create_db_dataset_optix(
+static OptixColumnarPayloadImpl* create_columnar_payload_optix(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -2145,7 +2145,7 @@ static OptixColumnarPayloadImpl* create_db_dataset_optix(
     return dataset.release();
 }
 
-static OptixColumnarPayloadImpl* create_db_dataset_optix_columnar(
+static OptixColumnarPayloadImpl* create_columnar_payload_optix_from_columns(
         const RtdlPayloadField* fields,
         size_t field_count,
         size_t row_count,
@@ -2197,7 +2197,7 @@ static OptixColumnarPayloadImpl* create_db_dataset_optix_columnar(
     return dataset.release();
 }
 
-static void run_db_conjunctive_scan_optix_prepared(
+static void run_columnar_multi_predicate_scan_optix_prepared(
         OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,
@@ -2241,7 +2241,7 @@ static void run_db_conjunctive_scan_optix_prepared(
     g_optix_last_columnar_emitted_count = rows.size();
 }
 
-static void run_db_conjunctive_scan_count_optix_prepared(
+static void run_columnar_multi_predicate_scan_count_optix_prepared(
         OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,
@@ -2267,7 +2267,7 @@ static void run_db_conjunctive_scan_count_optix_prepared(
     g_optix_last_columnar_emitted_count = candidate_row_indices.size();
 }
 
-static void run_db_grouped_count_optix_prepared(
+static void run_columnar_grouped_count_optix_prepared(
         OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,
@@ -2326,7 +2326,7 @@ static void run_db_grouped_count_optix_prepared(
     g_optix_last_columnar_emitted_count = rows.size();
 }
 
-static void run_db_grouped_sum_optix_prepared(
+static void run_columnar_grouped_sum_optix_prepared(
         OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,

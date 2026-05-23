@@ -18,7 +18,7 @@ Scope marker: active Embree/OptiX implementation internals.
   `ColumnarGroupedCountRayQueryState`, and
   `ColumnarGroupedSumRayQueryState`.
 - Active helper functions and globals now use `columnar_*` and
-  `g_columnar_*` names instead of `db_*` and `g_db*`.
+  `g_columnar_*` names instead of `db_*`, embedded `_db_`, and `g_db*`.
 - Active implementation constants now use `kColumnar*`, `kColumnKind*`,
   `kColumnOp*`, `RTDL_COLUMN_KIND_*`, and `RTDL_COLUMN_OP_*`.
 - The field-oriented helpers produced by the rename are intentionally named
@@ -38,8 +38,8 @@ not change runtime semantics.
 
 - Added `tests/goal2555_native_columnar_helper_boundary_test.py`.
 - The test scans active Embree/OptiX implementation files and rejects
-  DB-shaped helper identifiers, uppercase `DB` implementation wording, and
-  old `RTDL_DB_*` implementation constants.
+  DB-shaped helper identifiers, embedded `_db_` helper fragments, uppercase
+  `DB` implementation wording, and old `RTDL_DB_*` implementation constants.
 - The test also checks for representative replacement names and rejects the
   ambiguous `columnar_*_columnar_*` artifacts that can result from mechanical
   renames.

@@ -3913,7 +3913,7 @@ extern "C" int rtdl_optix_run_conjunctive_scan(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_db_conjunctive_scan_optix(
+        run_columnar_multi_predicate_scan_optix(
             fields, field_count,
             row_values, row_count,
             clauses, clause_count,
@@ -3935,7 +3935,7 @@ extern "C" int rtdl_optix_run_grouped_count(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_db_grouped_count_optix(
+        run_columnar_grouped_count_optix(
             fields, field_count,
             row_values, row_count,
             clauses, clause_count,
@@ -3959,7 +3959,7 @@ extern "C" int rtdl_optix_run_grouped_sum(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_db_grouped_sum_optix(
+        run_columnar_grouped_sum_optix(
             fields, field_count,
             row_values, row_count,
             clauses, clause_count,
@@ -3981,7 +3981,7 @@ extern "C" int rtdl_optix_columnar_payload_create(
             throw std::runtime_error("dataset output pointer must not be null");
         }
         *dataset_out = nullptr;
-        auto* dataset = create_db_dataset_optix(
+        auto* dataset = create_columnar_payload_optix(
             fields, field_count,
             row_values, row_count,
             primary_fields, primary_field_count);
@@ -4001,7 +4001,7 @@ extern "C" int rtdl_optix_columnar_payload_create_from_columns(
             throw std::runtime_error("dataset output pointer must not be null");
         }
         *dataset_out = nullptr;
-        auto* dataset = create_db_dataset_optix_columnar(
+        auto* dataset = create_columnar_payload_optix_from_columns(
             fields, field_count,
             row_count,
             primary_fields, primary_field_count);
@@ -4315,7 +4315,7 @@ extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_db_conjunctive_scan_optix_prepared(
+        run_columnar_multi_predicate_scan_optix_prepared(
             reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             rows_out, row_count_out);
@@ -4333,7 +4333,7 @@ extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan_count(
             throw std::runtime_error("row_count_out pointer must not be null");
         }
         *row_count_out = 0;
-        run_db_conjunctive_scan_count_optix_prepared(
+        run_columnar_multi_predicate_scan_count_optix_prepared(
             reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             row_count_out);
@@ -4353,7 +4353,7 @@ extern "C" int rtdl_optix_columnar_payload_grouped_reduction_count(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_db_grouped_count_optix_prepared(
+        run_columnar_grouped_count_optix_prepared(
             reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             group_key_field,
@@ -4375,7 +4375,7 @@ extern "C" int rtdl_optix_columnar_payload_grouped_reduction_sum(
         }
         *rows_out = nullptr;
         *row_count_out = 0;
-        run_db_grouped_sum_optix_prepared(
+        run_columnar_grouped_sum_optix_prepared(
             reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             group_key_field,
@@ -4437,7 +4437,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
                 RtdlColumnCompactSummaryResult& result = results[index];
                 result.operation = request.operation;
                 if (request.operation == kRtdlColumnCompactSummaryScanCount) {
-                    run_db_conjunctive_scan_count_optix_prepared(
+                    run_columnar_multi_predicate_scan_count_optix_prepared(
                         impl,
                         request.clauses,
                         request.clause_count,
@@ -4447,7 +4447,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
                     if (!request.group_key_field) {
                         throw std::runtime_error("grouped_count compact summary requires group_key_field");
                     }
-                    run_db_grouped_count_optix_prepared(
+                    run_columnar_grouped_count_optix_prepared(
                         impl,
                         request.clauses,
                         request.clause_count,
@@ -4459,7 +4459,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
                     if (!request.group_key_field || !request.value_field) {
                         throw std::runtime_error("grouped_sum compact summary requires group_key_field and value_field");
                     }
-                    run_db_grouped_sum_optix_prepared(
+                    run_columnar_grouped_sum_optix_prepared(
                         impl,
                         request.clauses,
                         request.clause_count,

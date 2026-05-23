@@ -22,6 +22,7 @@ OLD_HELPER_PATTERNS = (
     r"\bg_db[A-Za-z0-9_]*\b",
     r"\bkDb[A-Za-z0-9_]*\b",
     r"\bdb_[a-z][A-Za-z0-9_]*\b",
+    r"\b[A-Za-z0-9]+_db_[A-Za-z0-9_]*\b",
     r"\bDB\b",
     r"\bRTDL_DB_[A-Z0-9_]+\b",
 )
@@ -32,6 +33,8 @@ GENERIC_HELPER_TOKENS = (
     "ColumnarRowBoxSceneData",
     "ColumnarGroupedCountRayQueryState",
     "ColumnarGroupedSumRayQueryState",
+    "run_columnar_multi_predicate_scan_optix",
+    "create_columnar_payload_optix_from_columns",
     "columnar_validate_payload_fields",
     "columnar_copy_dataset_from_payload_fields",
     "kColumnarMaxRowsPerJob",
