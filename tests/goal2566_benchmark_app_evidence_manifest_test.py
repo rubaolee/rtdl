@@ -25,6 +25,11 @@ class Goal2566BenchmarkAppEvidenceManifestTest(unittest.TestCase):
         payload = json.loads(MANIFEST.read_text(encoding="utf-8"))
         for path in payload["consensus_sources"]:
             self.assertTrue((ROOT / path).exists(), path)
+        shared = payload["shared_substrate_contracts"]
+        self.assertTrue((ROOT / shared["device_column_descriptor"]["report"]).exists())
+        self.assertTrue((ROOT / shared["grouped_reduction"]["report"]).exists())
+        self.assertTrue((ROOT / shared["grouped_reduction"]["dispatcher_bridge_report"]).exists())
+        self.assertTrue((ROOT / shared["grouped_reduction"]["robot_group_any_bridge_report"]).exists())
         for app in payload["apps"]:
             self.assertTrue((ROOT / app["example_path"]).exists(), app["example_path"])
             self.assertTrue((ROOT / app["closeout_report"]).exists(), app["closeout_report"])
@@ -33,6 +38,14 @@ class Goal2566BenchmarkAppEvidenceManifestTest(unittest.TestCase):
 
     def test_manifest_keeps_claim_flags_bounded(self) -> None:
         payload = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual(
+            payload["shared_substrate_contracts"]["grouped_reduction"]["contract_version"],
+            "rtdl.grouped_reduction.v1",
+        )
+        self.assertEqual(
+            payload["shared_substrate_contracts"]["grouped_reduction"]["overflow_policy"],
+            "fail_closed",
+        )
         for app in payload["apps"]:
             self.assertFalse(app["native_engine_app_specific_abi"], app["app_id"])
             self.assertFalse(app["authors_code_reproduction_authorized"], app["app_id"])

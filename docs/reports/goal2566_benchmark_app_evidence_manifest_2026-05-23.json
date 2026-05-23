@@ -5,6 +5,33 @@
   "source_tree_policy": "source-tree execution only: PYTHONPATH=src:. python ...",
   "release_status": "internal snapshot evidence only",
   "claim_boundary": "This manifest supports internal and external review of benchmark-app evidence. It does not authorize public release wording, public speedup claims, whole-app acceleration claims, authors-code reproduction claims, SQL/DBMS claims, robot-solver claims, or native app-specific ABI claims.",
+  "shared_substrate_contracts": {
+    "device_column_descriptor": {
+      "contract": "DeviceColumnDescriptor",
+      "report": "docs/reports/goal2565_device_column_descriptor_contract_2026-05-23.md",
+      "status": "python_contract_active",
+      "claim_boundary": "Descriptor contract only; no public zero-copy or speedup claim."
+    },
+    "grouped_reduction": {
+      "contract_version": "rtdl.grouped_reduction.v1",
+      "report": "docs/reports/goal2567_grouped_reduction_substrate_contract_2026-05-23.md",
+      "dispatcher_bridge_report": "docs/reports/goal2568_partner_resident_dispatcher_grouped_contract_2026-05-23.md",
+      "robot_group_any_bridge_report": "docs/reports/goal2569_robot_collision_group_any_contract_metadata_2026-05-23.md",
+      "status": "python_contract_active_native_migration_pending",
+      "operations": [
+        "group_any",
+        "group_count",
+        "group_sum_i64",
+        "group_sum_f64",
+        "group_min_i64",
+        "group_max_i64",
+        "group_sum_count_i64",
+        "group_stats_i64"
+      ],
+      "overflow_policy": "fail_closed",
+      "claim_boundary": "Shared grouped-reduction contract only; backend support and performance claims require separate evidence."
+    }
+  },
   "consensus_sources": [
     "docs/reports/goal2529_finished_benchmark_apps_consensus_packet_2026-05-23.md",
     "docs/reports/goal2529_claude_review_finished_benchmark_apps_2026-05-23.md",

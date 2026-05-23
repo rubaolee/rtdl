@@ -22,6 +22,12 @@ For each app it records the example path, closeout report, primitive contracts,
 backend status, correctness oracle, performance artifact paths, language/runtime
 contributions, and explicit claim boundaries.
 
+The manifest also records shared substrate contracts added after the app
+closeouts:
+
+- `DeviceColumnDescriptor`
+- `rtdl.grouped_reduction.v1`
+
 ## Boundary
 
 The manifest is review infrastructure only. It does not authorize public
@@ -38,5 +44,6 @@ Added `tests/goal2566_benchmark_app_evidence_manifest_test.py` to validate:
 - listed performance artifacts exist;
 - all public speedup and native app-specific ABI flags remain false;
 - the consensus and claim-boundary text is present.
+- shared substrate contract reports exist.
 
 No pod was used.
