@@ -97,6 +97,8 @@ from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS
 from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_TARGET
 from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL
 from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_TRANSFER_MODE
+from .columnar_partner import DEVICE_COLUMN_DESCRIPTOR_HOST_MATERIALIZATION_BOUNDARY
+from .columnar_partner import DeviceColumnDescriptor
 from .columnar_partner import PartnerResidentColumnarRecordSet
 from .columnar_partner import PartnerResidentColumnHandoff
 from .columnar_partner import partner_resident_columnar_native_execution_requirements
@@ -1109,6 +1111,8 @@ __all__ = [
     "PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_TARGET",
     "PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL",
     "PARTNER_RESIDENT_COLUMNAR_TRANSFER_MODE",
+    "DEVICE_COLUMN_DESCRIPTOR_HOST_MATERIALIZATION_BOUNDARY",
+    "DeviceColumnDescriptor",
     "PartnerResidentColumnarRecordSet",
     "PartnerResidentColumnHandoff",
     "SUPPORTED_AGGREGATES",

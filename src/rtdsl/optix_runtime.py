@@ -114,6 +114,7 @@ from .graph_reference import normalize_edge_set
 from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
 from . import partner as _partner
+from .columnar_partner import DeviceColumnDescriptor
 from .columnar_partner import PartnerResidentColumnarRecordSet
 from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS
 from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL
@@ -5526,19 +5527,20 @@ def _encode_partner_resident_device_payload_fields(
     encoded_fields = []
     keepalive: list[object] = []
     for field in descriptor.fields:
+        if not isinstance(field, DeviceColumnDescriptor):
+            raise ValueError("partner-resident fields must be DeviceColumnDescriptor instances")
         name_bytes = field.name.encode("utf-8")
         keepalive.append(name_bytes)
-        itemsize = _partner_resident_device_payload_itemsize(field.handoff.dtype)
         encoded_fields.append(
             _RtdlDevicePayloadField(
                 name_bytes,
                 _partner_resident_device_payload_kind(field.logical_kind),
-                _partner_resident_device_payload_dtype(field.handoff.dtype),
+                _partner_resident_device_payload_dtype(field.dtype_token),
                 _DEVICE_PAYLOAD_DEVICE_CUDA,
-                int(field.handoff.device_id),
-                int(field.handoff.shape[0]),
-                _partner_resident_device_payload_stride_bytes(field.handoff.strides, itemsize=itemsize),
-                int(field.handoff.data_ptr),
+                int(field.device_id),
+                int(field.element_count),
+                int(field.stride_bytes),
+                int(field.device_ptr),
             )
         )
     return (_RtdlDevicePayloadField * len(encoded_fields))(*encoded_fields), tuple(keepalive)
