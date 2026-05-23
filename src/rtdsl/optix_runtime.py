@@ -120,6 +120,8 @@ from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS
 from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL
 from .columnar_partner import plan_partner_resident_columnar_native_execution
 from .columnar_partner import prepare_partner_resident_columnar_record_set
+from .grouped_reduction import GroupedReductionCapacityStatus
+from .grouped_reduction import GroupedReductionSpec
 
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
@@ -154,6 +156,14 @@ OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS = (
     "sum_count",
     "stats",
 )
+_OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTION_OPERATIONS = {
+    "count": "group_count",
+    "sum": "group_sum_i64",
+    "min": "group_min_i64",
+    "max": "group_max_i64",
+    "sum_count": "group_sum_count_i64",
+    "stats": "group_stats_i64",
+}
 _OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTION_SYMBOLS = {
     "count": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL,
     "sum": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL,
@@ -5366,6 +5376,7 @@ def run_optix_partner_resident_columnar_grouped_i64_reduction(
             reduction_name=reduction_name,
             semantic_aggregate=semantic_aggregate,
             group_capacity=resolved_group_capacity,
+            row_count=len(rows),
         ),
     }
 
@@ -5376,8 +5387,21 @@ def _partner_resident_grouped_i64_reduction_metadata(
     reduction_name: str,
     semantic_aggregate: str | None,
     group_capacity: int,
+    row_count: int,
 ) -> dict[str, object]:
     symbol_name = _OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTION_SYMBOLS[reduction_name]
+    grouped_reduction_spec = GroupedReductionSpec(
+        operation=_OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTION_OPERATIONS[reduction_name],
+        group_keys=tuple(normalized_query.group_keys),
+        value_field=None if reduction_name == "count" else normalized_query.value_field,
+        group_capacity=group_capacity,
+    )
+    capacity_status = GroupedReductionCapacityStatus(
+        group_capacity=group_capacity,
+        row_count=row_count,
+        required_capacity=row_count,
+        overflowed=False,
+    )
     result_fields = [normalized_query.group_keys[0]]
     if reduction_name == "stats":
         result_fields.extend(("count", "sum", "min", "max"))
@@ -5392,6 +5416,8 @@ def _partner_resident_grouped_i64_reduction_metadata(
         "partner_resident_grouped_i64_dispatcher_version": "goal2519",
         "operation": reduction_name,
         "reduction": reduction_name,
+        "grouped_reduction_contract": grouped_reduction_spec.to_metadata(),
+        "grouped_reduction_capacity_status": capacity_status.to_metadata(),
         "semantic_aggregate": str(semantic_aggregate) if semantic_aggregate is not None else reduction_name,
         "group_keys": list(normalized_query.group_keys),
         "group_key_field": normalized_query.group_keys[0],
