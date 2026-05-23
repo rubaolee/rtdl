@@ -33,9 +33,12 @@ from .oracle_runtime import _DB_KIND_BOOL
 from .oracle_runtime import _DB_KIND_FLOAT64
 from .oracle_runtime import _DB_KIND_INT64
 from .oracle_runtime import _DB_KIND_TEXT
-from .oracle_runtime import _RtdlDbField
-from .oracle_runtime import _RtdlDbGroupedCountRow
-from .oracle_runtime import _RtdlDbRowIdRow
+from .oracle_runtime import _RtdlColumnField
+from .oracle_runtime import _RtdlGroupedCountRow
+from .oracle_runtime import _RtdlColumnRowIdRow
+from .oracle_runtime import _RtdlDbField  # legacy compatibility marker
+from .oracle_runtime import _RtdlDbGroupedCountRow  # legacy compatibility marker
+from .oracle_runtime import _RtdlDbRowIdRow  # legacy compatibility marker
 from .oracle_runtime import _encode_db_clauses
 from .oracle_runtime import _encode_db_field_kind
 from .oracle_runtime import _encode_db_table
@@ -2124,7 +2127,7 @@ def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, resu
         predicates = normalized_inputs[predicates_name]
         fields_array, row_values_array, row_count = _encode_db_table(table_rows)
         clauses_array = _encode_db_clauses(predicates.clauses)
-        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        rows_ptr = ctypes.POINTER(_RtdlColumnRowIdRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = library.rtdl_embree_run_conjunctive_scan(
@@ -2144,7 +2147,7 @@ def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, resu
             library=library,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbRowIdRow,
+            row_type=_RtdlColumnRowIdRow,
             field_names=("row_id",),
         )
         return row_view if result_mode == "raw" else row_view.to_dict_rows()
@@ -2171,7 +2174,7 @@ def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, resu
     error = ctypes.create_string_buffer(4096)
 
     if predicate_name == "grouped_count":
-        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        rows_ptr = ctypes.POINTER(_RtdlGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
         status = library.rtdl_embree_run_grouped_count(
             fields_array,
@@ -2191,7 +2194,7 @@ def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, resu
             library=library,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbGroupedCountRow,
+            row_type=_RtdlGroupedCountRow,
             field_names=("group_key", "count"),
         )
         if result_mode == "raw":
@@ -2370,7 +2373,7 @@ class EmbreePreparedColumnarPayload:
         self._closed = True
 
     def conjunctive_scan(self, clauses_array) -> EmbreeRowView:
-        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        rows_ptr = ctypes.POINTER(_RtdlColumnRowIdRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = self.library.rtdl_embree_columnar_payload_multi_predicate_scan(
@@ -2387,12 +2390,12 @@ class EmbreePreparedColumnarPayload:
             library=self.library,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbRowIdRow,
+            row_type=_RtdlColumnRowIdRow,
             field_names=("row_id",),
         )
 
     def grouped_count(self, clauses_array, group_key_field: bytes) -> EmbreeRowView:
-        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        rows_ptr = ctypes.POINTER(_RtdlGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = self.library.rtdl_embree_columnar_payload_grouped_reduction_count(
@@ -2410,7 +2413,7 @@ class EmbreePreparedColumnarPayload:
             library=self.library,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbGroupedCountRow,
+            row_type=_RtdlGroupedCountRow,
             field_names=("group_key", "count"),
         )
 
@@ -4639,13 +4642,13 @@ def _load_embree_library():
     optional_db_conjunctive_scan = _require_optional_embree_symbol(library, "rtdl_embree_run_conjunctive_scan")
     if optional_db_conjunctive_scan is not None:
         optional_db_conjunctive_scan.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlColumnRowIdRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -4655,14 +4658,14 @@ def _load_embree_library():
     optional_db_grouped_count = _require_optional_embree_symbol(library, "rtdl_embree_run_grouped_count")
     if optional_db_grouped_count is not None:
         optional_db_grouped_count.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -4672,7 +4675,7 @@ def _load_embree_library():
     optional_db_grouped_sum = _require_optional_embree_symbol(library, "rtdl_embree_run_grouped_sum")
     if optional_db_grouped_sum is not None:
         optional_db_grouped_sum.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
@@ -4690,7 +4693,7 @@ def _load_embree_library():
     optional_db_dataset_create = _require_optional_embree_symbol(library, "rtdl_embree_columnar_payload_create")
     if optional_db_dataset_create is not None:
         optional_db_dataset_create.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
@@ -4731,7 +4734,7 @@ def _load_embree_library():
             ctypes.c_void_p,
             ctypes.c_void_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlColumnRowIdRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -4747,7 +4750,7 @@ def _load_embree_library():
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,

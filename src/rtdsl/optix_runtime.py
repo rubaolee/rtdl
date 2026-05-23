@@ -62,9 +62,12 @@ from .embree_runtime import _columnar_record_set_to_column_mapping
 from .oracle_runtime import _decode_db_group_key
 from .oracle_runtime import _DB_KIND_FLOAT64
 from .oracle_runtime import _DB_KIND_INT64
-from .oracle_runtime import _RtdlDbField
-from .oracle_runtime import _RtdlDbGroupedCountRow
-from .oracle_runtime import _RtdlDbRowIdRow
+from .oracle_runtime import _RtdlColumnField
+from .oracle_runtime import _RtdlGroupedCountRow
+from .oracle_runtime import _RtdlColumnRowIdRow
+from .oracle_runtime import _RtdlDbField  # legacy compatibility marker
+from .oracle_runtime import _RtdlDbGroupedCountRow  # legacy compatibility marker
+from .oracle_runtime import _RtdlDbRowIdRow  # legacy compatibility marker
 from .oracle_runtime import _encode_db_clauses
 from .oracle_runtime import _encode_db_table
 from .oracle_runtime import _encode_db_text_clause_values
@@ -458,7 +461,7 @@ class _RtdlDbCompactSummaryResult(ctypes.Structure):
     _fields_ = [
         ("operation", ctypes.c_uint32),
         ("scalar_value", ctypes.c_size_t),
-        ("count_rows", ctypes.POINTER(_RtdlDbGroupedCountRow)),
+        ("count_rows", ctypes.POINTER(_RtdlGroupedCountRow)),
         ("count_row_count", ctypes.c_size_t),
         ("sum_rows", ctypes.POINTER(_RtdlDbGroupedSumRow)),
         ("sum_row_count", ctypes.c_size_t),
@@ -4097,7 +4100,7 @@ def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mo
         predicates = normalized_inputs[predicates_name]
         fields_array, row_values_array, row_count = _encode_db_table(table_rows)
         clauses_array = _encode_db_clauses(predicates.clauses)
-        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        rows_ptr = ctypes.POINTER(_RtdlColumnRowIdRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = symbol(
@@ -4117,7 +4120,7 @@ def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mo
             library=lib,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbRowIdRow,
+            row_type=_RtdlColumnRowIdRow,
             field_names=("row_id",),
         )
         return row_view if result_mode == "raw" else row_view.to_dict_rows()
@@ -4147,7 +4150,7 @@ def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mo
         symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_count")
         if symbol is None:
             raise ValueError("current OptiX backend does not yet export DB grouped_count support")
-        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        rows_ptr = ctypes.POINTER(_RtdlGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
         status = symbol(
             fields_array,
@@ -4167,7 +4170,7 @@ def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mo
             library=lib,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbGroupedCountRow,
+            row_type=_RtdlGroupedCountRow,
             field_names=("group_key", "count"),
         )
         if result_mode == "raw":
@@ -4342,7 +4345,7 @@ class OptixPreparedColumnarPayload:
         self._closed = True
 
     def conjunctive_scan(self, clauses_array) -> OptixRowView:
-        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        rows_ptr = ctypes.POINTER(_RtdlColumnRowIdRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = self.library.rtdl_optix_columnar_payload_multi_predicate_scan(
@@ -4359,7 +4362,7 @@ class OptixPreparedColumnarPayload:
             library=self.library,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbRowIdRow,
+            row_type=_RtdlColumnRowIdRow,
             field_names=("row_id",),
         )
 
@@ -4412,7 +4415,7 @@ class OptixPreparedColumnarPayload:
             symbol(results_ptr, ctypes.c_size_t(result_count))
 
     def grouped_count(self, clauses_array, group_key_field: bytes) -> OptixRowView:
-        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        rows_ptr = ctypes.POINTER(_RtdlGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = self.library.rtdl_optix_columnar_payload_grouped_reduction_count(
@@ -4430,7 +4433,7 @@ class OptixPreparedColumnarPayload:
             library=self.library,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbGroupedCountRow,
+            row_type=_RtdlGroupedCountRow,
             field_names=("group_key", "count"),
         )
 
@@ -4908,7 +4911,7 @@ def run_optix_partner_resident_columnar_grouped_count_i64(
             "loaded OptiX backend library does not export "
             f"{symbol_name}; rebuild the OptiX backend from current main"
         )
-    rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+    rows_ptr = ctypes.POINTER(_RtdlGroupedCountRow)()
     row_count_out = ctypes.c_size_t()
     overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
@@ -4950,7 +4953,7 @@ def run_optix_partner_resident_columnar_grouped_count_i64(
         library=lib,
         rows_ptr=rows_ptr,
         row_count=row_count_out.value,
-        row_type=_RtdlDbGroupedCountRow,
+        row_type=_RtdlGroupedCountRow,
         field_names=("group_key", "count"),
     )
     try:
@@ -10587,13 +10590,13 @@ def _register_argtypes(lib) -> None:
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_conjunctive_scan")
     if symbol is not None:
         symbol.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlColumnRowIdRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10603,14 +10606,14 @@ def _register_argtypes(lib) -> None:
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_count")
     if symbol is not None:
         symbol.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10620,7 +10623,7 @@ def _register_argtypes(lib) -> None:
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_sum")
     if symbol is not None:
         symbol.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
@@ -10638,7 +10641,7 @@ def _register_argtypes(lib) -> None:
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_create")
     if symbol is not None:
         symbol.argtypes = [
-            ctypes.POINTER(_RtdlDbField),
+            ctypes.POINTER(_RtdlColumnField),
             ctypes.c_size_t,
             ctypes.c_void_p,
             ctypes.c_size_t,
@@ -10687,7 +10690,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10704,7 +10707,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.c_char_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
@@ -10826,7 +10829,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_void_p,
             ctypes.c_void_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlColumnRowIdRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10852,7 +10855,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
