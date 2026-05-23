@@ -3901,10 +3901,10 @@ extern "C" int rtdl_optix_run_edge_neighbor_intersection_packet(
 }
 
 extern "C" int rtdl_optix_run_conjunctive_scan(
-        const RtdlDbField* fields, size_t field_count,
-        const RtdlDbScalar* row_values, size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
-        RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+        const RtdlColumnField* fields, size_t field_count,
+        const RtdlColumnScalar* row_values, size_t row_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
+        RtdlColumnRowIdRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -3922,11 +3922,11 @@ extern "C" int rtdl_optix_run_conjunctive_scan(
 }
 
 extern "C" int rtdl_optix_run_grouped_count(
-        const RtdlDbField* fields, size_t field_count,
-        const RtdlDbScalar* row_values, size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnField* fields, size_t field_count,
+        const RtdlColumnScalar* row_values, size_t row_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
-        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        RtdlGroupedCountRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -3945,12 +3945,12 @@ extern "C" int rtdl_optix_run_grouped_count(
 }
 
 extern "C" int rtdl_optix_run_grouped_sum(
-        const RtdlDbField* fields, size_t field_count,
-        const RtdlDbScalar* row_values, size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnField* fields, size_t field_count,
+        const RtdlColumnScalar* row_values, size_t row_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
-        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        RtdlGroupedSumRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -3970,10 +3970,10 @@ extern "C" int rtdl_optix_run_grouped_sum(
 }
 
 extern "C" int rtdl_optix_columnar_payload_create(
-        const RtdlDbField* fields, size_t field_count,
-        const RtdlDbScalar* row_values, size_t row_count,
+        const RtdlColumnField* fields, size_t field_count,
+        const RtdlColumnScalar* row_values, size_t row_count,
         const char* const* primary_fields, size_t primary_field_count,
-        RtdlOptixDbDataset** dataset_out,
+        RtdlOptixColumnarPayload** dataset_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -3985,7 +3985,7 @@ extern "C" int rtdl_optix_columnar_payload_create(
             fields, field_count,
             row_values, row_count,
             primary_fields, primary_field_count);
-        *dataset_out = reinterpret_cast<RtdlOptixDbDataset*>(dataset);
+        *dataset_out = reinterpret_cast<RtdlOptixColumnarPayload*>(dataset);
     }, error_out, error_size);
 }
 
@@ -3993,7 +3993,7 @@ extern "C" int rtdl_optix_columnar_payload_create_from_columns(
         const RtdlPayloadField* fields, size_t field_count,
         size_t row_count,
         const char* const* primary_fields, size_t primary_field_count,
-        RtdlOptixDbDataset** dataset_out,
+        RtdlOptixColumnarPayload** dataset_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4005,7 +4005,7 @@ extern "C" int rtdl_optix_columnar_payload_create_from_columns(
             fields, field_count,
             row_count,
             primary_fields, primary_field_count);
-        *dataset_out = reinterpret_cast<RtdlOptixDbDataset*>(dataset);
+        *dataset_out = reinterpret_cast<RtdlOptixColumnarPayload*>(dataset);
     }, error_out, error_size);
 }
 
@@ -4013,7 +4013,7 @@ extern "C" int rtdl_optix_columnar_payload_create_from_device_columns(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
         const char* const* primary_fields, size_t primary_field_count,
-        RtdlOptixDbDataset** dataset_out,
+        RtdlOptixColumnarPayload** dataset_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4053,17 +4053,17 @@ extern "C" int rtdl_optix_columnar_payload_create_from_device_columns(
             size_t expected_stride = 0;
             if (field.dtype == kRtdlDevicePayloadDtypeInt64) {
                 expected_stride = sizeof(int64_t);
-                if (field.kind != kRtdlDbKindInt64) {
+                if (field.kind != kRtdlColumnKindInt64) {
                     throw std::runtime_error("int64 device columns must use int64 logical kind");
                 }
             } else if (field.dtype == kRtdlDevicePayloadDtypeUint32) {
                 expected_stride = sizeof(uint32_t);
-                if (field.kind != kRtdlDbKindInt64) {
+                if (field.kind != kRtdlColumnKindInt64) {
                     throw std::runtime_error("uint32 device columns must use int64-compatible logical kind");
                 }
             } else if (field.dtype == kRtdlDevicePayloadDtypeFloat64) {
                 expected_stride = sizeof(double);
-                if (field.kind != kRtdlDbKindFloat64) {
+                if (field.kind != kRtdlColumnKindFloat64) {
                     throw std::runtime_error("float64 device columns must use float64 logical kind");
                 }
             } else {
@@ -4076,7 +4076,7 @@ extern "C" int rtdl_optix_columnar_payload_create_from_device_columns(
                 if (has_row_id) {
                     throw std::runtime_error("device-column payload must contain exactly one row_id field");
                 }
-                if (field.kind != kRtdlDbKindInt64) {
+                if (field.kind != kRtdlColumnKindInt64) {
                     throw std::runtime_error("device-column row_id must use int64-compatible logical kind");
                 }
                 has_row_id = true;
@@ -4097,9 +4097,9 @@ extern "C" int rtdl_optix_columnar_payload_create_from_device_columns(
 extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
-        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        RtdlGroupedCountRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4118,10 +4118,10 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64(
 extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         size_t group_capacity,
-        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        RtdlGroupedCountRow** rows_out, size_t* row_count_out,
         uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
@@ -4143,10 +4143,10 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacit
 extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
-        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        RtdlGroupedSumRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4166,11 +4166,11 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64(
 extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        RtdlGroupedSumRow** rows_out, size_t* row_count_out,
         uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
@@ -4193,11 +4193,11 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
 extern "C" int rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        RtdlGroupedSumRow** rows_out, size_t* row_count_out,
         uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
@@ -4220,11 +4220,11 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
 extern "C" int rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        RtdlGroupedSumRow** rows_out, size_t* row_count_out,
         uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
@@ -4247,11 +4247,11 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
 extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumCountRow** rows_out, size_t* row_count_out,
+        RtdlGroupedSumCountRow** rows_out, size_t* row_count_out,
         uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
@@ -4274,11 +4274,11 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_cap
 extern "C" int rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity(
         const RtdlDevicePayloadField* fields, size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses, size_t clause_count,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedStatsRow** rows_out, size_t* row_count_out,
+        RtdlGroupedStatsRow** rows_out, size_t* row_count_out,
         uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
@@ -4298,15 +4298,15 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacit
     }, error_out, error_size);
 }
 
-extern "C" void rtdl_optix_columnar_payload_destroy(RtdlOptixDbDataset* dataset)
+extern "C" void rtdl_optix_columnar_payload_destroy(RtdlOptixColumnarPayload* dataset)
 {
     delete reinterpret_cast<OptixDbDatasetImpl*>(dataset);
 }
 
 extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan(
-        RtdlOptixDbDataset* dataset,
-        const RtdlDbClause* clauses, size_t clause_count,
-        RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+        RtdlOptixColumnarPayload* dataset,
+        const RtdlColumnClause* clauses, size_t clause_count,
+        RtdlColumnRowIdRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4323,8 +4323,8 @@ extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan(
 }
 
 extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan_count(
-        RtdlOptixDbDataset* dataset,
-        const RtdlDbClause* clauses, size_t clause_count,
+        RtdlOptixColumnarPayload* dataset,
+        const RtdlColumnClause* clauses, size_t clause_count,
         size_t* row_count_out,
         char* error_out, size_t error_size)
 {
@@ -4341,10 +4341,10 @@ extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan_count(
 }
 
 extern "C" int rtdl_optix_columnar_payload_grouped_reduction_count(
-        RtdlOptixDbDataset* dataset,
-        const RtdlDbClause* clauses, size_t clause_count,
+        RtdlOptixColumnarPayload* dataset,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
-        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        RtdlGroupedCountRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4362,11 +4362,11 @@ extern "C" int rtdl_optix_columnar_payload_grouped_reduction_count(
 }
 
 extern "C" int rtdl_optix_columnar_payload_grouped_reduction_sum(
-        RtdlOptixDbDataset* dataset,
-        const RtdlDbClause* clauses, size_t clause_count,
+        RtdlOptixColumnarPayload* dataset,
+        const RtdlColumnClause* clauses, size_t clause_count,
         const char* group_key_field,
         const char* value_field,
-        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        RtdlGroupedSumRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4384,7 +4384,7 @@ extern "C" int rtdl_optix_columnar_payload_grouped_reduction_sum(
     }, error_out, error_size);
 }
 
-static void rtdl_optix_fill_columnar_compact_summary_phase(RtdlDbCompactSummaryResult& result)
+static void rtdl_optix_fill_columnar_compact_summary_phase(RtdlColumnCompactSummaryResult& result)
 {
     result.traversal = g_optix_last_db_traversal_s;
     result.bitset_copyback = g_optix_last_db_bitset_copy_s;
@@ -4395,7 +4395,7 @@ static void rtdl_optix_fill_columnar_compact_summary_phase(RtdlDbCompactSummaryR
 }
 
 extern "C" void rtdl_optix_columnar_compact_summary_results_destroy(
-        RtdlDbCompactSummaryResult* results,
+        RtdlColumnCompactSummaryResult* results,
         size_t result_count)
 {
     if (!results) {
@@ -4409,10 +4409,10 @@ extern "C" void rtdl_optix_columnar_compact_summary_results_destroy(
 }
 
 extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
-        RtdlOptixDbDataset* dataset,
-        const RtdlDbCompactSummaryRequest* requests,
+        RtdlOptixColumnarPayload* dataset,
+        const RtdlColumnCompactSummaryRequest* requests,
         size_t request_count,
-        RtdlDbCompactSummaryResult** results_out,
+        RtdlColumnCompactSummaryResult** results_out,
         size_t* result_count_out,
         char* error_out, size_t error_size)
 {
@@ -4430,20 +4430,20 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
         *result_count_out = 0;
 
         auto* impl = reinterpret_cast<OptixDbDatasetImpl*>(dataset);
-        std::vector<RtdlDbCompactSummaryResult> results(request_count);
+        std::vector<RtdlColumnCompactSummaryResult> results(request_count);
         try {
             for (size_t index = 0; index < request_count; ++index) {
-                const RtdlDbCompactSummaryRequest& request = requests[index];
-                RtdlDbCompactSummaryResult& result = results[index];
+                const RtdlColumnCompactSummaryRequest& request = requests[index];
+                RtdlColumnCompactSummaryResult& result = results[index];
                 result.operation = request.operation;
-                if (request.operation == kRtdlDbCompactSummaryScanCount) {
+                if (request.operation == kRtdlColumnCompactSummaryScanCount) {
                     run_db_conjunctive_scan_count_optix_prepared(
                         impl,
                         request.clauses,
                         request.clause_count,
                         &result.scalar_value);
                     rtdl_optix_fill_columnar_compact_summary_phase(result);
-                } else if (request.operation == kRtdlDbCompactSummaryGroupedCount) {
+                } else if (request.operation == kRtdlColumnCompactSummaryGroupedCount) {
                     if (!request.group_key_field) {
                         throw std::runtime_error("grouped_count compact summary requires group_key_field");
                     }
@@ -4455,7 +4455,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
                         &result.count_rows,
                         &result.count_row_count);
                     rtdl_optix_fill_columnar_compact_summary_phase(result);
-                } else if (request.operation == kRtdlDbCompactSummaryGroupedSum) {
+                } else if (request.operation == kRtdlColumnCompactSummaryGroupedSum) {
                     if (!request.group_key_field || !request.value_field) {
                         throw std::runtime_error("grouped_sum compact summary requires group_key_field and value_field");
                     }
@@ -4473,7 +4473,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
                 }
             }
         } catch (...) {
-            for (RtdlDbCompactSummaryResult& result : results) {
+            for (RtdlColumnCompactSummaryResult& result : results) {
                 std::free(result.count_rows);
                 std::free(result.sum_rows);
                 result.count_rows = nullptr;
@@ -4482,10 +4482,10 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
             throw;
         }
 
-        auto* out = static_cast<RtdlDbCompactSummaryResult*>(
-            std::calloc(results.size(), sizeof(RtdlDbCompactSummaryResult)));
+        auto* out = static_cast<RtdlColumnCompactSummaryResult*>(
+            std::calloc(results.size(), sizeof(RtdlColumnCompactSummaryResult)));
         if (!out && !results.empty()) {
-            for (RtdlDbCompactSummaryResult& result : results) {
+            for (RtdlColumnCompactSummaryResult& result : results) {
                 std::free(result.count_rows);
                 std::free(result.sum_rows);
                 result.count_rows = nullptr;
@@ -4494,7 +4494,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
             throw std::bad_alloc();
         }
         if (!results.empty()) {
-            std::memcpy(out, results.data(), sizeof(RtdlDbCompactSummaryResult) * results.size());
+            std::memcpy(out, results.data(), sizeof(RtdlColumnCompactSummaryResult) * results.size());
         }
         *results_out = out;
         *result_count_out = results.size();

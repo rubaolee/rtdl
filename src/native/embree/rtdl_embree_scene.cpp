@@ -226,23 +226,23 @@ struct KnnRowsQueryState3D {
 };
 
 struct ColumnarPredicateScanRayQueryState {
-  const RtdlDbField* fields;
+  const RtdlColumnField* fields;
   size_t field_count;
-  const RtdlDbScalar* row_values;
+  const RtdlColumnScalar* row_values;
   size_t row_count;
-  const RtdlDbClause* clauses;
+  const RtdlColumnClause* clauses;
   size_t clause_count;
   size_t max_candidate_rows;
   std::unordered_set<uint32_t>* seen_row_ids;
-  std::vector<RtdlDbRowIdRow>* rows;
+  std::vector<RtdlColumnRowIdRow>* rows;
 };
 
 struct DbGroupedCountRayQueryState {
-  const RtdlDbField* fields;
+  const RtdlColumnField* fields;
   size_t field_count;
-  const RtdlDbScalar* row_values;
+  const RtdlColumnScalar* row_values;
   size_t row_count;
-  const RtdlDbClause* clauses;
+  const RtdlColumnClause* clauses;
   size_t clause_count;
   size_t group_field_index;
   size_t max_candidate_rows;
@@ -252,11 +252,11 @@ struct DbGroupedCountRayQueryState {
 };
 
 struct DbGroupedSumRayQueryState {
-  const RtdlDbField* fields;
+  const RtdlColumnField* fields;
   size_t field_count;
-  const RtdlDbScalar* row_values;
+  const RtdlColumnScalar* row_values;
   size_t row_count;
-  const RtdlDbClause* clauses;
+  const RtdlColumnClause* clauses;
   size_t clause_count;
   size_t group_field_index;
   size_t value_field_index;
@@ -427,11 +427,11 @@ void set_ray_occluded_3d(RTCRay* ray, const Vec3& origin, const Vec3& direction,
   ray->flags = 0;
 }
 
-bool db_scalar_is_numeric(const RtdlDbScalar& value) {
+bool db_scalar_is_numeric(const RtdlColumnScalar& value) {
   return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
 }
 
-double db_scalar_as_double(const RtdlDbScalar& value) {
+double db_scalar_as_double(const RtdlColumnScalar& value) {
   if (value.kind == kDbKindInt64 || value.kind == kDbKindBool) {
     return static_cast<double>(value.int_value);
   }
@@ -441,7 +441,7 @@ double db_scalar_as_double(const RtdlDbScalar& value) {
   throw std::runtime_error("DB scalar is not numeric");
 }
 
-int db_scalar_compare(const RtdlDbScalar& left, const RtdlDbScalar& right) {
+int db_scalar_compare(const RtdlColumnScalar& left, const RtdlColumnScalar& right) {
   if (left.kind == kDbKindText || right.kind == kDbKindText) {
     const char* left_text = left.string_value == nullptr ? "" : left.string_value;
     const char* right_text = right.string_value == nullptr ? "" : right.string_value;
@@ -465,7 +465,7 @@ int db_scalar_compare(const RtdlDbScalar& left, const RtdlDbScalar& right) {
   return 0;
 }
 
-size_t db_find_field_index(const RtdlDbField* fields, size_t field_count, const char* name) {
+size_t db_find_field_index(const RtdlColumnField* fields, size_t field_count, const char* name) {
   for (size_t index = 0; index < field_count; ++index) {
     if (std::strcmp(fields[index].name, name) == 0) {
       return index;
@@ -474,8 +474,8 @@ size_t db_find_field_index(const RtdlDbField* fields, size_t field_count, const 
   throw std::runtime_error(std::string("unknown DB field: ") + name);
 }
 
-const RtdlDbScalar& db_row_value(
-    const RtdlDbScalar* row_values,
+const RtdlColumnScalar& db_row_value(
+    const RtdlColumnScalar* row_values,
     size_t row_index,
     size_t field_count,
     size_t field_index) {
@@ -483,13 +483,13 @@ const RtdlDbScalar& db_row_value(
 }
 
 bool db_row_matches_clause(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_index,
-    const RtdlDbClause& clause) {
+    const RtdlColumnClause& clause) {
   const size_t field_index = db_find_field_index(fields, field_count, clause.field);
-  const RtdlDbScalar& row_value = db_row_value(row_values, row_index, field_count, field_index);
+  const RtdlColumnScalar& row_value = db_row_value(row_values, row_index, field_count, field_index);
   const int cmp_lo = db_scalar_compare(row_value, clause.value);
   switch (clause.op) {
     case kDbOpEq:
@@ -510,11 +510,11 @@ bool db_row_matches_clause(
 }
 
 bool db_row_matches_all_clauses(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_index,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count) {
   for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
     if (!db_row_matches_clause(fields, field_count, row_values, row_index, clauses[clause_index])) {
@@ -1089,7 +1089,7 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
       db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
       return;
     }
-    const RtdlDbScalar& group_value = db_row_value(
+    const RtdlColumnScalar& group_value = db_row_value(
         state->row_values,
         box.row_index,
         state->field_count,
@@ -1118,12 +1118,12 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
     db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
     return;
   }
-  const RtdlDbScalar& group_value = db_row_value(
+  const RtdlColumnScalar& group_value = db_row_value(
       state->row_values,
       box.row_index,
       state->field_count,
       state->group_field_index);
-  const RtdlDbScalar& sum_value = db_row_value(
+  const RtdlColumnScalar& sum_value = db_row_value(
       state->row_values,
       box.row_index,
       state->field_count,

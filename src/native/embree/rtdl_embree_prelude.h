@@ -265,12 +265,12 @@ struct RtdlTriangleRow {
   uint32_t w;
 };
 
-struct RtdlDbField {
+struct RtdlColumnField {
   const char* name;
   uint32_t kind;
 };
 
-struct RtdlDbScalar {
+struct RtdlColumnScalar {
   uint32_t kind;
   int64_t int_value;
   double double_value;
@@ -285,28 +285,36 @@ struct RtdlPayloadField {
   const char* const* string_values;
 };
 
-struct RtdlDbClause {
+struct RtdlColumnClause {
   const char* field;
   uint32_t op;
-  RtdlDbScalar value;
-  RtdlDbScalar value_hi;
+  RtdlColumnScalar value;
+  RtdlColumnScalar value_hi;
 };
 
-struct RtdlDbRowIdRow {
+struct RtdlColumnRowIdRow {
   uint32_t row_id;
 };
 
-struct RtdlDbGroupedCountRow {
+struct RtdlGroupedCountRow {
   int64_t group_key;
   int64_t count;
 };
 
-struct RtdlDbGroupedSumRow {
+struct RtdlGroupedSumRow {
   int64_t group_key;
   int64_t sum;
 };
 
-struct RtdlEmbreeDbDataset;
+struct RtdlEmbreeColumnarPayload;
+
+using RtdlDbField = RtdlColumnField;
+using RtdlDbScalar = RtdlColumnScalar;
+using RtdlDbClause = RtdlColumnClause;
+using RtdlDbRowIdRow = RtdlColumnRowIdRow;
+using RtdlDbGroupedCountRow = RtdlGroupedCountRow;
+using RtdlDbGroupedSumRow = RtdlGroupedSumRow;
+using RtdlEmbreeDbDataset = RtdlEmbreeColumnarPayload;
 
 int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out);
 void rtdl_embree_configure_threads(size_t thread_count);
@@ -586,49 +594,49 @@ int rtdl_embree_run_edge_neighbor_intersection_packet(
     char* error_out,
     size_t error_size);
 int rtdl_embree_run_conjunctive_scan(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
-    RtdlDbRowIdRow** rows_out,
+    RtdlColumnRowIdRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_run_grouped_count(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
-    RtdlDbGroupedCountRow** rows_out,
+    RtdlGroupedCountRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_run_grouped_sum(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
     const char* value_field,
-    RtdlDbGroupedSumRow** rows_out,
+    RtdlGroupedSumRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_columnar_payload_create(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
     const char* const* primary_fields,
     size_t primary_field_count,
-    RtdlEmbreeDbDataset** dataset_out,
+    RtdlEmbreeColumnarPayload** dataset_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_columnar_payload_create_from_columns(
@@ -637,34 +645,34 @@ int rtdl_embree_columnar_payload_create_from_columns(
     size_t row_count,
     const char* const* primary_fields,
     size_t primary_field_count,
-    RtdlEmbreeDbDataset** dataset_out,
+    RtdlEmbreeColumnarPayload** dataset_out,
     char* error_out,
     size_t error_size);
-void rtdl_embree_columnar_payload_destroy(RtdlEmbreeDbDataset* dataset);
+void rtdl_embree_columnar_payload_destroy(RtdlEmbreeColumnarPayload* dataset);
 int rtdl_embree_columnar_payload_multi_predicate_scan(
-    RtdlEmbreeDbDataset* dataset,
-    const RtdlDbClause* clauses,
+    RtdlEmbreeColumnarPayload* dataset,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
-    RtdlDbRowIdRow** rows_out,
+    RtdlColumnRowIdRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_columnar_payload_grouped_reduction_count(
-    RtdlEmbreeDbDataset* dataset,
-    const RtdlDbClause* clauses,
+    RtdlEmbreeColumnarPayload* dataset,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
-    RtdlDbGroupedCountRow** rows_out,
+    RtdlGroupedCountRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_columnar_payload_grouped_reduction_sum(
-    RtdlEmbreeDbDataset* dataset,
-    const RtdlDbClause* clauses,
+    RtdlEmbreeColumnarPayload* dataset,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
     const char* value_field,
-    RtdlDbGroupedSumRow** rows_out,
+    RtdlGroupedSumRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);

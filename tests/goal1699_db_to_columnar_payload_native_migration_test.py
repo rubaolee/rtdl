@@ -196,10 +196,8 @@ class Goal1699DbToColumnarPayloadNativeMigrationTest(unittest.TestCase):
         strict_symbols = set(strict_occurrences)
         real_symbols = strict_symbols - false_positive_symbols
 
-        self.assertEqual(len(strict_symbols), 9)
-        self.assertEqual(len(strict_occurrences), 14)
-        self.assertEqual(len(false_positive_symbols), 9)
-        self.assertEqual(len(false_positive_occurrences), 14)
+        self.assertEqual(strict_symbols, false_positive_symbols)
+        self.assertEqual(strict_occurrences, false_positive_occurrences)
         self.assertEqual(len(real_symbols), 0)
 
         by_family = Counter(_first_family(symbol) for symbol in real_symbols)

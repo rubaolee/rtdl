@@ -43,9 +43,9 @@ struct ColumnarPredicateScanLaunchParams {
 
 struct OptixDbDatasetImpl {
     std::vector<std::string> field_names;
-    std::vector<RtdlDbField> fields;
+    std::vector<RtdlColumnField> fields;
     std::vector<std::string> scalar_strings;
-    std::vector<RtdlDbScalar> row_values;
+    std::vector<RtdlColumnScalar> row_values;
     size_t row_count = 0;
     std::vector<DbPrimaryAxis> primary_axes;
     std::vector<DbRowMeta> row_metas;
@@ -238,7 +238,7 @@ static double seconds_between(
 }
 
 static size_t db_find_field_index_or_throw(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
         const char* name)
 {
@@ -253,8 +253,8 @@ static size_t db_find_field_index_or_throw(
     throw std::runtime_error(std::string("unknown DB field: ") + name);
 }
 
-static const RtdlDbScalar& db_row_value(
-        const RtdlDbScalar* row_values,
+static const RtdlColumnScalar& db_row_value(
+        const RtdlColumnScalar* row_values,
         size_t row_index,
         size_t field_count,
         size_t field_index)
@@ -262,7 +262,7 @@ static const RtdlDbScalar& db_row_value(
     return row_values[row_index * field_count + field_index];
 }
 
-static bool db_scalar_is_numeric(const RtdlDbScalar& value)
+static bool db_scalar_is_numeric(const RtdlColumnScalar& value)
 {
     return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
 }
@@ -272,7 +272,7 @@ static bool db_field_kind_is_numeric(uint32_t kind)
     return kind == kDbKindInt64 || kind == kDbKindFloat64 || kind == kDbKindBool;
 }
 
-static double db_scalar_as_double(const RtdlDbScalar& value)
+static double db_scalar_as_double(const RtdlColumnScalar& value)
 {
     if (value.kind == kDbKindInt64 || value.kind == kDbKindBool) {
         return static_cast<double>(value.int_value);
@@ -283,7 +283,7 @@ static double db_scalar_as_double(const RtdlDbScalar& value)
     throw std::runtime_error("DB scalar is not numeric");
 }
 
-static int db_compare_scalar(const RtdlDbScalar& left, const RtdlDbScalar& right)
+static int db_compare_scalar(const RtdlColumnScalar& left, const RtdlColumnScalar& right)
 {
     if (left.kind != right.kind) {
         const double lhs = db_scalar_as_double(left);
@@ -315,7 +315,7 @@ static int db_compare_scalar(const RtdlDbScalar& left, const RtdlDbScalar& right
     }
 }
 
-static bool db_clause_matches_scalar(const RtdlDbClause& clause, const RtdlDbScalar& candidate)
+static bool db_clause_matches_scalar(const RtdlColumnClause& clause, const RtdlColumnScalar& candidate)
 {
     const int cmp_lo = db_compare_scalar(candidate, clause.value);
     switch (clause.op) {
@@ -337,16 +337,16 @@ static bool db_clause_matches_scalar(const RtdlDbClause& clause, const RtdlDbSca
 }
 
 static bool db_row_matches_all_clauses(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_index,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count)
 {
     for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
         const size_t field_index = db_find_field_index_or_throw(fields, field_count, clauses[clause_index].field);
-        const RtdlDbScalar& candidate = db_row_value(row_values, row_index, field_count, field_index);
+        const RtdlColumnScalar& candidate = db_row_value(row_values, row_index, field_count, field_index);
         if (!db_clause_matches_scalar(clauses[clause_index], candidate)) {
             return false;
         }
@@ -355,7 +355,7 @@ static bool db_row_matches_all_clauses(
 }
 
 static std::vector<double> db_sorted_distinct_numeric_values(
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
         size_t field_count,
         size_t field_index)
@@ -363,7 +363,7 @@ static std::vector<double> db_sorted_distinct_numeric_values(
     std::vector<double> values;
     values.reserve(row_count);
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
-        const RtdlDbScalar& value = db_row_value(row_values, row_index, field_count, field_index);
+        const RtdlColumnScalar& value = db_row_value(row_values, row_index, field_count, field_index);
         if (!db_scalar_is_numeric(value)) {
             throw std::runtime_error("first-wave OptiX DB lowering requires numeric primary scan clauses");
         }
@@ -374,7 +374,7 @@ static std::vector<double> db_sorted_distinct_numeric_values(
     return values;
 }
 
-static bool db_clause_matches_numeric_value(const RtdlDbClause& clause, double value)
+static bool db_clause_matches_numeric_value(const RtdlColumnClause& clause, double value)
 {
     const double lo = db_scalar_as_double(clause.value);
     switch (clause.op) {
@@ -396,11 +396,11 @@ static bool db_clause_matches_numeric_value(const RtdlDbClause& clause, double v
 }
 
 static DbPrimaryAxis db_make_primary_axis(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
-        const RtdlDbClause& clause)
+        const RtdlColumnClause& clause)
 {
     const size_t field_index = db_find_field_index_or_throw(fields, field_count, clause.field);
     const std::vector<double> sorted_values =
@@ -424,9 +424,9 @@ static DbPrimaryAxis db_make_primary_axis(
 }
 
 static DbPrimaryAxis db_make_full_primary_axis(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
         const char* field_name)
 {
@@ -443,7 +443,7 @@ static DbPrimaryAxis db_make_full_primary_axis(
         sorted_values.empty() ? 0 : static_cast<int64_t>(sorted_values.size())};
 }
 
-static DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlDbClause& clause)
+static DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlColumnClause& clause)
 {
     DbPrimaryAxis ranged = axis;
     int64_t encoded_lo = -1;
@@ -463,7 +463,7 @@ static DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const 
     return ranged;
 }
 
-static int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlDbScalar& value)
+static int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlColumnScalar& value)
 {
     const double needle = db_scalar_as_double(value);
     const auto it = std::lower_bound(axis.sorted_values.begin(), axis.sorted_values.end(), needle);
@@ -474,25 +474,25 @@ static int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlDbScala
 }
 
 static std::vector<DbRowMeta> db_build_row_metas(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count)
 {
     const size_t row_id_index = db_find_field_index_or_throw(fields, field_count, "row_id");
     std::vector<DbRowMeta> metas;
     metas.reserve(row_count);
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
-        const RtdlDbScalar& row_id_value = db_row_value(row_values, row_index, field_count, row_id_index);
+        const RtdlColumnScalar& row_id_value = db_row_value(row_values, row_index, field_count, row_id_index);
         metas.push_back({row_index, static_cast<uint32_t>(row_id_value.int_value)});
     }
     return metas;
 }
 
 static std::vector<OptixAabb> db_build_row_aabbs(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
         const std::vector<DbPrimaryAxis>& axes)
 {
@@ -522,7 +522,7 @@ static std::vector<OptixAabb> db_build_row_aabbs(
 
 static std::vector<DbPrimaryAxis> db_dataset_query_axes(
         const OptixDbDatasetImpl& dataset,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count)
 {
     std::vector<DbPrimaryAxis> axes = dataset.primary_axes;
@@ -539,7 +539,7 @@ static std::vector<DbPrimaryAxis> db_dataset_query_axes(
     return axes;
 }
 
-static std::vector<const char*> db_default_primary_fields(const RtdlDbField* fields, size_t field_count)
+static std::vector<const char*> db_default_primary_fields(const RtdlColumnField* fields, size_t field_count)
 {
     std::vector<const char*> names;
     for (size_t index = 0; index < field_count && names.size() < 3; ++index) {
@@ -553,7 +553,7 @@ static std::vector<const char*> db_default_primary_fields(const RtdlDbField* fie
     return names;
 }
 
-static size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t scalar_count)
+static size_t db_count_scalar_strings(const RtdlColumnScalar* row_values, size_t scalar_count)
 {
     size_t count = 0;
     for (size_t index = 0; index < scalar_count; ++index) {
@@ -566,9 +566,9 @@ static size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t sca
 
 static void db_copy_dataset_payload(
         OptixDbDatasetImpl& dataset,
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count)
 {
     dataset.field_names.reserve(field_count);
@@ -584,7 +584,7 @@ static void db_copy_dataset_payload(
     dataset.scalar_strings.reserve(db_count_scalar_strings(row_values, scalar_count));
     dataset.row_values.reserve(scalar_count);
     for (size_t index = 0; index < scalar_count; ++index) {
-        RtdlDbScalar copied = row_values[index];
+        RtdlColumnScalar copied = row_values[index];
         if (copied.kind == kDbKindText && copied.string_value) {
             dataset.scalar_strings.emplace_back(copied.string_value);
             copied.string_value = dataset.scalar_strings.back().c_str();
@@ -991,7 +991,7 @@ static void db_validate_device_payload_grouped_i64_inputs(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
@@ -1036,15 +1036,15 @@ static void db_validate_device_payload_grouped_i64_inputs(
             throw std::runtime_error("device-column payload fields must live on the same CUDA device");
         }
         if (field.dtype == kRtdlDevicePayloadDtypeInt64) {
-            if (field.kind != kRtdlDbKindInt64 || field.stride_bytes != sizeof(int64_t)) {
+            if (field.kind != kRtdlColumnKindInt64 || field.stride_bytes != sizeof(int64_t)) {
                 throw std::runtime_error("int64 device columns must be int64 logical kind and contiguous");
             }
         } else if (field.dtype == kRtdlDevicePayloadDtypeUint32) {
-            if (field.kind != kRtdlDbKindInt64 || field.stride_bytes != sizeof(uint32_t)) {
+            if (field.kind != kRtdlColumnKindInt64 || field.stride_bytes != sizeof(uint32_t)) {
                 throw std::runtime_error("uint32 device columns must be int64-compatible logical kind and contiguous");
             }
         } else if (field.dtype == kRtdlDevicePayloadDtypeFloat64) {
-            if (field.kind != kRtdlDbKindFloat64 || field.stride_bytes != sizeof(double)) {
+            if (field.kind != kRtdlColumnKindFloat64 || field.stride_bytes != sizeof(double)) {
                 throw std::runtime_error("float64 device columns must be float64 logical kind and contiguous");
             }
         } else {
@@ -1063,7 +1063,7 @@ static void db_validate_device_payload_grouped_i64_inputs(
         }
     }
     for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
-        const RtdlDbClause& clause = clauses[clause_index];
+        const RtdlColumnClause& clause = clauses[clause_index];
         const size_t field_index = db_device_payload_field_index_or_throw(fields, field_count, clause.field);
         if (!db_field_kind_is_numeric(fields[field_index].kind)) {
             throw std::runtime_error("device-column grouped execution supports numeric predicates only");
@@ -1095,13 +1095,13 @@ static std::vector<DeviceColumnRuntimeField> db_make_device_runtime_fields(
 static std::vector<DeviceColumnRuntimeClause> db_make_device_runtime_clauses(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count)
 {
     std::vector<DeviceColumnRuntimeClause> runtime_clauses;
     runtime_clauses.reserve(clause_count);
     for (size_t index = 0; index < clause_count; ++index) {
-        const RtdlDbClause& clause = clauses[index];
+        const RtdlColumnClause& clause = clauses[index];
         DeviceColumnRuntimeClause encoded{};
         encoded.field_index = static_cast<uint32_t>(
             db_device_payload_field_index_or_throw(fields, field_count, clause.field));
@@ -1120,16 +1120,16 @@ static void db_launch_device_column_grouped_i64(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
         uint32_t operation,
-        std::vector<RtdlDbGroupedCountRow>& count_rows,
-        std::vector<RtdlDbGroupedSumRow>& sum_rows,
-        std::vector<RtdlDbGroupedSumCountRow>& sum_count_rows,
-        std::vector<RtdlDbGroupedStatsRow>& stats_rows,
+        std::vector<RtdlGroupedCountRow>& count_rows,
+        std::vector<RtdlGroupedSumRow>& sum_rows,
+        std::vector<RtdlGroupedSumCountRow>& sum_count_rows,
+        std::vector<RtdlGroupedStatsRow>& stats_rows,
         uint32_t* overflowed_out)
 {
     if (overflowed_out) {
@@ -1276,7 +1276,7 @@ static void db_launch_device_column_grouped_i64(
     DevPtr d_row_count(sizeof(uint32_t));
     CU_CHECK(cuMemsetD8(d_row_count.ptr, 0, sizeof(uint32_t)));
     if (operation == kDeviceColumnGroupedOpCount) {
-        DevPtr d_rows(sizeof(RtdlDbGroupedCountRow) * group_capacity);
+        DevPtr d_rows(sizeof(RtdlGroupedCountRow) * group_capacity);
         void* compact_args[] = {
             &d_counts.ptr,
             &params.group_capacity,
@@ -1299,7 +1299,7 @@ static void db_launch_device_column_grouped_i64(
             download(count_rows.data(), d_rows.ptr, compact_row_count);
         }
     } else if (operation == kDeviceColumnGroupedOpSumCount) {
-        DevPtr d_rows(sizeof(RtdlDbGroupedSumCountRow) * group_capacity);
+        DevPtr d_rows(sizeof(RtdlGroupedSumCountRow) * group_capacity);
         void* compact_args[] = {
             &d_counts.ptr,
             &d_sums.ptr,
@@ -1323,7 +1323,7 @@ static void db_launch_device_column_grouped_i64(
             download(sum_count_rows.data(), d_rows.ptr, compact_row_count);
         }
     } else if (operation == kDeviceColumnGroupedOpStats) {
-        DevPtr d_rows(sizeof(RtdlDbGroupedStatsRow) * group_capacity);
+        DevPtr d_rows(sizeof(RtdlGroupedStatsRow) * group_capacity);
         void* compact_args[] = {
             &d_counts.ptr,
             &d_sums.ptr,
@@ -1349,7 +1349,7 @@ static void db_launch_device_column_grouped_i64(
             download(stats_rows.data(), d_rows.ptr, compact_row_count);
         }
     } else {
-        DevPtr d_rows(sizeof(RtdlDbGroupedSumRow) * group_capacity);
+        DevPtr d_rows(sizeof(RtdlGroupedSumRow) * group_capacity);
         void* compact_args[] = {
             &d_counts.ptr,
             &d_sums.ptr,
@@ -1379,11 +1379,11 @@ static void run_device_column_grouped_count_i64_optix_with_capacity(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         size_t group_capacity,
-        RtdlDbGroupedCountRow** rows_out,
+        RtdlGroupedCountRow** rows_out,
         size_t* row_count_out,
         uint32_t* overflowed_out)
 {
@@ -1394,10 +1394,10 @@ static void run_device_column_grouped_count_i64_optix_with_capacity(
     *row_count_out = 0;
     *overflowed_out = 0u;
 
-    std::vector<RtdlDbGroupedCountRow> rows;
-    std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
-    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
-    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    std::vector<RtdlGroupedCountRow> rows;
+    std::vector<RtdlGroupedSumRow> unused_sum_rows;
+    std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlGroupedStatsRow> unused_stats_rows;
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         nullptr, group_capacity, kDeviceColumnGroupedOpCount,
@@ -1405,12 +1405,12 @@ static void run_device_column_grouped_count_i64_optix_with_capacity(
     if (*overflowed_out != 0u) {
         return;
     }
-    auto* out = static_cast<RtdlDbGroupedCountRow*>(std::malloc(sizeof(RtdlDbGroupedCountRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedCountRow*>(std::malloc(sizeof(RtdlGroupedCountRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedCountRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedCountRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -1420,10 +1420,10 @@ static void run_device_column_grouped_count_i64_optix(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
-        RtdlDbGroupedCountRow** rows_out,
+        RtdlGroupedCountRow** rows_out,
         size_t* row_count_out)
 {
     uint32_t overflowed = 0u;
@@ -1439,12 +1439,12 @@ static void run_device_column_grouped_sum_i64_optix_with_capacity(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumRow** rows_out,
+        RtdlGroupedSumRow** rows_out,
         size_t* row_count_out,
         uint32_t* overflowed_out)
 {
@@ -1455,10 +1455,10 @@ static void run_device_column_grouped_sum_i64_optix_with_capacity(
     *row_count_out = 0;
     *overflowed_out = 0u;
 
-    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
-    std::vector<RtdlDbGroupedSumRow> rows;
-    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
-    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    std::vector<RtdlGroupedCountRow> unused_count_rows;
+    std::vector<RtdlGroupedSumRow> rows;
+    std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlGroupedStatsRow> unused_stats_rows;
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpSum,
@@ -1466,12 +1466,12 @@ static void run_device_column_grouped_sum_i64_optix_with_capacity(
     if (*overflowed_out != 0u) {
         return;
     }
-    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedSumRow*>(std::malloc(sizeof(RtdlGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedSumRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -1481,11 +1481,11 @@ static void run_device_column_grouped_sum_i64_optix(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
-        RtdlDbGroupedSumRow** rows_out,
+        RtdlGroupedSumRow** rows_out,
         size_t* row_count_out)
 {
     uint32_t overflowed = 0u;
@@ -1501,12 +1501,12 @@ static void run_device_column_grouped_min_i64_optix_with_capacity(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumRow** rows_out,
+        RtdlGroupedSumRow** rows_out,
         size_t* row_count_out,
         uint32_t* overflowed_out)
 {
@@ -1517,10 +1517,10 @@ static void run_device_column_grouped_min_i64_optix_with_capacity(
     *row_count_out = 0;
     *overflowed_out = 0u;
 
-    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
-    std::vector<RtdlDbGroupedSumRow> rows;
-    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
-    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    std::vector<RtdlGroupedCountRow> unused_count_rows;
+    std::vector<RtdlGroupedSumRow> rows;
+    std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlGroupedStatsRow> unused_stats_rows;
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpMin,
@@ -1528,12 +1528,12 @@ static void run_device_column_grouped_min_i64_optix_with_capacity(
     if (*overflowed_out != 0u) {
         return;
     }
-    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedSumRow*>(std::malloc(sizeof(RtdlGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedSumRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -1543,12 +1543,12 @@ static void run_device_column_grouped_max_i64_optix_with_capacity(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumRow** rows_out,
+        RtdlGroupedSumRow** rows_out,
         size_t* row_count_out,
         uint32_t* overflowed_out)
 {
@@ -1559,10 +1559,10 @@ static void run_device_column_grouped_max_i64_optix_with_capacity(
     *row_count_out = 0;
     *overflowed_out = 0u;
 
-    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
-    std::vector<RtdlDbGroupedSumRow> rows;
-    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
-    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    std::vector<RtdlGroupedCountRow> unused_count_rows;
+    std::vector<RtdlGroupedSumRow> rows;
+    std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlGroupedStatsRow> unused_stats_rows;
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpMax,
@@ -1570,12 +1570,12 @@ static void run_device_column_grouped_max_i64_optix_with_capacity(
     if (*overflowed_out != 0u) {
         return;
     }
-    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedSumRow*>(std::malloc(sizeof(RtdlGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedSumRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -1585,12 +1585,12 @@ static void run_device_column_grouped_sum_count_i64_optix_with_capacity(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedSumCountRow** rows_out,
+        RtdlGroupedSumCountRow** rows_out,
         size_t* row_count_out,
         uint32_t* overflowed_out)
 {
@@ -1601,10 +1601,10 @@ static void run_device_column_grouped_sum_count_i64_optix_with_capacity(
     *row_count_out = 0;
     *overflowed_out = 0u;
 
-    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
-    std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
-    std::vector<RtdlDbGroupedSumCountRow> rows;
-    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    std::vector<RtdlGroupedCountRow> unused_count_rows;
+    std::vector<RtdlGroupedSumRow> unused_sum_rows;
+    std::vector<RtdlGroupedSumCountRow> rows;
+    std::vector<RtdlGroupedStatsRow> unused_stats_rows;
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpSumCount,
@@ -1612,13 +1612,13 @@ static void run_device_column_grouped_sum_count_i64_optix_with_capacity(
     if (*overflowed_out != 0u) {
         return;
     }
-    auto* out = static_cast<RtdlDbGroupedSumCountRow*>(
-        std::malloc(sizeof(RtdlDbGroupedSumCountRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedSumCountRow*>(
+        std::malloc(sizeof(RtdlGroupedSumCountRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumCountRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedSumCountRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -1628,12 +1628,12 @@ static void run_device_column_grouped_stats_i64_optix_with_capacity(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
         size_t group_capacity,
-        RtdlDbGroupedStatsRow** rows_out,
+        RtdlGroupedStatsRow** rows_out,
         size_t* row_count_out,
         uint32_t* overflowed_out)
 {
@@ -1644,10 +1644,10 @@ static void run_device_column_grouped_stats_i64_optix_with_capacity(
     *row_count_out = 0;
     *overflowed_out = 0u;
 
-    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
-    std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
-    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
-    std::vector<RtdlDbGroupedStatsRow> rows;
+    std::vector<RtdlGroupedCountRow> unused_count_rows;
+    std::vector<RtdlGroupedSumRow> unused_sum_rows;
+    std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlGroupedStatsRow> rows;
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpStats,
@@ -1655,13 +1655,13 @@ static void run_device_column_grouped_stats_i64_optix_with_capacity(
     if (*overflowed_out != 0u) {
         return;
     }
-    auto* out = static_cast<RtdlDbGroupedStatsRow*>(
-        std::malloc(sizeof(RtdlDbGroupedStatsRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedStatsRow*>(
+        std::malloc(sizeof(RtdlGroupedStatsRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedStatsRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedStatsRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -1693,7 +1693,7 @@ static void db_copy_dataset_columnar_payload(
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
         for (size_t field_index = 0; field_index < field_count; ++field_index) {
             const RtdlPayloadField& field = fields[field_index];
-            RtdlDbScalar value{};
+            RtdlColumnScalar value{};
             value.kind = field.kind;
             if (field.kind == kDbKindFloat64) {
                 value.double_value = field.double_values[row_index];
@@ -1711,11 +1711,11 @@ static void db_copy_dataset_columnar_payload(
 }
 
 static void db_validate_db_inputs(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count)
 {
     if (!fields || field_count == 0 || !row_values) {
@@ -1730,11 +1730,11 @@ static void db_validate_db_inputs(
 }
 
 static std::vector<size_t> db_collect_candidate_row_indices_optix(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count)
 {
     std::vector<DbPrimaryAxis> axes;
@@ -1830,7 +1830,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
 
 static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         const OptixDbDatasetImpl& dataset,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count)
 {
     const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(dataset, clauses, clause_count);
@@ -1935,13 +1935,13 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
 }
 
 static void run_db_conjunctive_scan_optix(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
-        RtdlDbRowIdRow** rows_out,
+        RtdlColumnRowIdRow** rows_out,
         size_t* row_count_out)
 {
     if (!rows_out || !row_count_out) {
@@ -1961,36 +1961,36 @@ static void run_db_conjunctive_scan_optix(
     const std::vector<DbRowMeta> row_metas = db_build_row_metas(fields, field_count, row_values, row_count);
     const std::vector<size_t> candidate_row_indices =
         db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
-    std::vector<RtdlDbRowIdRow> rows;
+    std::vector<RtdlColumnRowIdRow> rows;
     rows.reserve(candidate_row_indices.size());
     for (size_t row_index : candidate_row_indices) {
         rows.push_back({row_metas[row_index].row_id});
     }
 
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlColumnRowIdRow& left, const RtdlColumnRowIdRow& right) {
         return left.row_id < right.row_id;
     });
 
-    auto* out = static_cast<RtdlDbRowIdRow*>(std::malloc(sizeof(RtdlDbRowIdRow) * rows.size()));
+    auto* out = static_cast<RtdlColumnRowIdRow*>(std::malloc(sizeof(RtdlColumnRowIdRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbRowIdRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlColumnRowIdRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
 }
 
 static void run_db_grouped_count_optix(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
-        RtdlDbGroupedCountRow** rows_out,
+        RtdlGroupedCountRow** rows_out,
         size_t* row_count_out)
 {
     if (!rows_out || !row_count_out) {
@@ -2009,41 +2009,41 @@ static void run_db_grouped_count_optix(
         db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
     std::unordered_map<int64_t, int64_t> counts;
     for (size_t row_index : candidate_row_indices) {
-        const RtdlDbScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
+        const RtdlColumnScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
         counts[group_value.int_value] += 1;
         if (counts.size() > kDbMaxGroupsPerJob) {
             throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
         }
     }
-    std::vector<RtdlDbGroupedCountRow> rows;
+    std::vector<RtdlGroupedCountRow> rows;
     rows.reserve(counts.size());
     for (const auto& entry : counts) {
         rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedCountRow& left, const RtdlDbGroupedCountRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedCountRow& left, const RtdlGroupedCountRow& right) {
         return left.group_key < right.group_key;
     });
-    auto* out = static_cast<RtdlDbGroupedCountRow*>(std::malloc(sizeof(RtdlDbGroupedCountRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedCountRow*>(std::malloc(sizeof(RtdlGroupedCountRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedCountRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedCountRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
 }
 
 static void run_db_grouped_sum_optix(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
-        RtdlDbGroupedSumRow** rows_out,
+        RtdlGroupedSumRow** rows_out,
         size_t* row_count_out)
 {
     if (!rows_out || !row_count_out) {
@@ -2066,36 +2066,36 @@ static void run_db_grouped_sum_optix(
         db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
     std::unordered_map<int64_t, int64_t> sums;
     for (size_t row_index : candidate_row_indices) {
-        const RtdlDbScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
-        const RtdlDbScalar& sum_value = db_row_value(row_values, row_index, field_count, value_field_index);
+        const RtdlColumnScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
+        const RtdlColumnScalar& sum_value = db_row_value(row_values, row_index, field_count, value_field_index);
         sums[group_value.int_value] += sum_value.int_value;
         if (sums.size() > kDbMaxGroupsPerJob) {
             throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
         }
     }
-    std::vector<RtdlDbGroupedSumRow> rows;
+    std::vector<RtdlGroupedSumRow> rows;
     rows.reserve(sums.size());
     for (const auto& entry : sums) {
         rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedSumRow& left, const RtdlDbGroupedSumRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedSumRow& left, const RtdlGroupedSumRow& right) {
         return left.group_key < right.group_key;
     });
-    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedSumRow*>(std::malloc(sizeof(RtdlGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedSumRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
 }
 
 static OptixDbDatasetImpl* create_db_dataset_optix(
-        const RtdlDbField* fields,
+        const RtdlColumnField* fields,
         size_t field_count,
-        const RtdlDbScalar* row_values,
+        const RtdlColumnScalar* row_values,
         size_t row_count,
         const char* const* primary_fields,
         size_t primary_field_count)
@@ -2199,9 +2199,9 @@ static OptixDbDatasetImpl* create_db_dataset_optix_columnar(
 
 static void run_db_conjunctive_scan_optix_prepared(
         OptixDbDatasetImpl* dataset,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
-        RtdlDbRowIdRow** rows_out,
+        RtdlColumnRowIdRow** rows_out,
         size_t* row_count_out)
 {
     if (!dataset) {
@@ -2219,20 +2219,20 @@ static void run_db_conjunctive_scan_optix_prepared(
     const std::vector<size_t> candidate_row_indices =
         db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
     auto t_start_output = std::chrono::steady_clock::now();
-    std::vector<RtdlDbRowIdRow> rows;
+    std::vector<RtdlColumnRowIdRow> rows;
     rows.reserve(candidate_row_indices.size());
     for (size_t row_index : candidate_row_indices) {
         rows.push_back({dataset->row_metas[row_index].row_id});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlColumnRowIdRow& left, const RtdlColumnRowIdRow& right) {
         return left.row_id < right.row_id;
     });
-    auto* out = static_cast<RtdlDbRowIdRow*>(std::malloc(sizeof(RtdlDbRowIdRow) * rows.size()));
+    auto* out = static_cast<RtdlColumnRowIdRow*>(std::malloc(sizeof(RtdlColumnRowIdRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbRowIdRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlColumnRowIdRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -2243,7 +2243,7 @@ static void run_db_conjunctive_scan_optix_prepared(
 
 static void run_db_conjunctive_scan_count_optix_prepared(
         OptixDbDatasetImpl* dataset,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         size_t* row_count_out)
 {
@@ -2269,10 +2269,10 @@ static void run_db_conjunctive_scan_count_optix_prepared(
 
 static void run_db_grouped_count_optix_prepared(
         OptixDbDatasetImpl* dataset,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
-        RtdlDbGroupedCountRow** rows_out,
+        RtdlGroupedCountRow** rows_out,
         size_t* row_count_out)
 {
     if (!dataset) {
@@ -2297,27 +2297,27 @@ static void run_db_grouped_count_optix_prepared(
     auto t_start_output = std::chrono::steady_clock::now();
     std::unordered_map<int64_t, int64_t> counts;
     for (size_t row_index : candidate_row_indices) {
-        const RtdlDbScalar& group_value =
+        const RtdlColumnScalar& group_value =
             db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
         counts[group_value.int_value] += 1;
         if (counts.size() > kDbMaxGroupsPerJob) {
             throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
         }
     }
-    std::vector<RtdlDbGroupedCountRow> rows;
+    std::vector<RtdlGroupedCountRow> rows;
     rows.reserve(counts.size());
     for (const auto& entry : counts) {
         rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedCountRow& left, const RtdlDbGroupedCountRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedCountRow& left, const RtdlGroupedCountRow& right) {
         return left.group_key < right.group_key;
     });
-    auto* out = static_cast<RtdlDbGroupedCountRow*>(std::malloc(sizeof(RtdlDbGroupedCountRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedCountRow*>(std::malloc(sizeof(RtdlGroupedCountRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedCountRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedCountRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();
@@ -2328,11 +2328,11 @@ static void run_db_grouped_count_optix_prepared(
 
 static void run_db_grouped_sum_optix_prepared(
         OptixDbDatasetImpl* dataset,
-        const RtdlDbClause* clauses,
+        const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
         const char* value_field,
-        RtdlDbGroupedSumRow** rows_out,
+        RtdlGroupedSumRow** rows_out,
         size_t* row_count_out)
 {
     if (!dataset) {
@@ -2363,29 +2363,29 @@ static void run_db_grouped_sum_optix_prepared(
     auto t_start_output = std::chrono::steady_clock::now();
     std::unordered_map<int64_t, int64_t> sums;
     for (size_t row_index : candidate_row_indices) {
-        const RtdlDbScalar& group_value =
+        const RtdlColumnScalar& group_value =
             db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
-        const RtdlDbScalar& sum_value =
+        const RtdlColumnScalar& sum_value =
             db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), value_field_index);
         sums[group_value.int_value] += sum_value.int_value;
         if (sums.size() > kDbMaxGroupsPerJob) {
             throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
         }
     }
-    std::vector<RtdlDbGroupedSumRow> rows;
+    std::vector<RtdlGroupedSumRow> rows;
     rows.reserve(sums.size());
     for (const auto& entry : sums) {
         rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedSumRow& left, const RtdlDbGroupedSumRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedSumRow& left, const RtdlGroupedSumRow& right) {
         return left.group_key < right.group_key;
     });
-    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    auto* out = static_cast<RtdlGroupedSumRow*>(std::malloc(sizeof(RtdlGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
     }
     if (!rows.empty()) {
-        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+        std::memcpy(out, rows.data(), sizeof(RtdlGroupedSumRow) * rows.size());
     }
     *rows_out = out;
     *row_count_out = rows.size();

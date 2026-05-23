@@ -276,22 +276,27 @@ struct RtdlTriangleRow {
     uint32_t w;
 };
 
-struct RtdlDbField {
+struct RtdlColumnField {
     const char* name;
     uint32_t kind;
 };
 
-struct RtdlDbScalar {
+struct RtdlColumnScalar {
     uint32_t kind;
     int64_t int_value;
     double double_value;
     const char* string_value;
 };
 
-constexpr uint32_t kRtdlDbKindInt64 = 1u;
-constexpr uint32_t kRtdlDbKindFloat64 = 2u;
-constexpr uint32_t kRtdlDbKindBool = 3u;
-constexpr uint32_t kRtdlDbKindText = 4u;
+constexpr uint32_t kRtdlColumnKindInt64 = 1u;
+constexpr uint32_t kRtdlColumnKindFloat64 = 2u;
+constexpr uint32_t kRtdlColumnKindBool = 3u;
+constexpr uint32_t kRtdlColumnKindText = 4u;
+
+constexpr uint32_t kRtdlDbKindInt64 = kRtdlColumnKindInt64;
+constexpr uint32_t kRtdlDbKindFloat64 = kRtdlColumnKindFloat64;
+constexpr uint32_t kRtdlDbKindBool = kRtdlColumnKindBool;
+constexpr uint32_t kRtdlDbKindText = kRtdlColumnKindText;
 
 struct RtdlPayloadField {
     const char* name;
@@ -317,34 +322,34 @@ struct RtdlDevicePayloadField {
     uint64_t device_ptr;
 };
 
-struct RtdlDbClause {
+struct RtdlColumnClause {
     const char* field;
     uint32_t op;
-    RtdlDbScalar value;
-    RtdlDbScalar value_hi;
+    RtdlColumnScalar value;
+    RtdlColumnScalar value_hi;
 };
 
-struct RtdlDbRowIdRow {
+struct RtdlColumnRowIdRow {
     uint32_t row_id;
 };
 
-struct RtdlDbGroupedCountRow {
+struct RtdlGroupedCountRow {
     int64_t group_key;
     int64_t count;
 };
 
-struct RtdlDbGroupedSumRow {
+struct RtdlGroupedSumRow {
     int64_t group_key;
     int64_t sum;
 };
 
-struct RtdlDbGroupedSumCountRow {
+struct RtdlGroupedSumCountRow {
     int64_t group_key;
     int64_t sum;
     int64_t count;
 };
 
-struct RtdlDbGroupedStatsRow {
+struct RtdlGroupedStatsRow {
     int64_t group_key;
     int64_t count;
     int64_t sum;
@@ -352,24 +357,28 @@ struct RtdlDbGroupedStatsRow {
     int64_t max;
 };
 
-constexpr uint32_t kRtdlDbCompactSummaryScanCount = 1u;
-constexpr uint32_t kRtdlDbCompactSummaryGroupedCount = 2u;
-constexpr uint32_t kRtdlDbCompactSummaryGroupedSum = 3u;
+constexpr uint32_t kRtdlColumnCompactSummaryScanCount = 1u;
+constexpr uint32_t kRtdlColumnCompactSummaryGroupedCount = 2u;
+constexpr uint32_t kRtdlColumnCompactSummaryGroupedSum = 3u;
 
-struct RtdlDbCompactSummaryRequest {
+constexpr uint32_t kRtdlDbCompactSummaryScanCount = kRtdlColumnCompactSummaryScanCount;
+constexpr uint32_t kRtdlDbCompactSummaryGroupedCount = kRtdlColumnCompactSummaryGroupedCount;
+constexpr uint32_t kRtdlDbCompactSummaryGroupedSum = kRtdlColumnCompactSummaryGroupedSum;
+
+struct RtdlColumnCompactSummaryRequest {
     uint32_t operation;
-    const RtdlDbClause* clauses;
+    const RtdlColumnClause* clauses;
     size_t clause_count;
     const char* group_key_field;
     const char* value_field;
 };
 
-struct RtdlDbCompactSummaryResult {
+struct RtdlColumnCompactSummaryResult {
     uint32_t operation;
     size_t scalar_value;
-    RtdlDbGroupedCountRow* count_rows;
+    RtdlGroupedCountRow* count_rows;
     size_t count_row_count;
-    RtdlDbGroupedSumRow* sum_rows;
+    RtdlGroupedSumRow* sum_rows;
     size_t sum_row_count;
     double traversal;
     double bitset_copyback;
@@ -379,7 +388,19 @@ struct RtdlDbCompactSummaryResult {
     size_t emitted_count;
 };
 
-struct RtdlOptixDbDataset;
+struct RtdlOptixColumnarPayload;
+
+using RtdlDbField = RtdlColumnField;
+using RtdlDbScalar = RtdlColumnScalar;
+using RtdlDbClause = RtdlColumnClause;
+using RtdlDbRowIdRow = RtdlColumnRowIdRow;
+using RtdlDbGroupedCountRow = RtdlGroupedCountRow;
+using RtdlDbGroupedSumRow = RtdlGroupedSumRow;
+using RtdlDbGroupedSumCountRow = RtdlGroupedSumCountRow;
+using RtdlDbGroupedStatsRow = RtdlGroupedStatsRow;
+using RtdlDbCompactSummaryRequest = RtdlColumnCompactSummaryRequest;
+using RtdlDbCompactSummaryResult = RtdlColumnCompactSummaryResult;
+using RtdlOptixDbDataset = RtdlOptixColumnarPayload;
 
 int  rtdl_optix_get_version(int* major_out, int* minor_out, int* patch_out);
 int  rtdl_optix_run_segment_pair_intersection(
@@ -1084,151 +1105,151 @@ int  rtdl_optix_run_edge_neighbor_intersection_packet(
          RtdlTriangleRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_conjunctive_scan(
-         const RtdlDbField* fields, size_t field_count,
-         const RtdlDbScalar* row_values, size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
-         RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+         const RtdlColumnField* fields, size_t field_count,
+         const RtdlColumnScalar* row_values, size_t row_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
+         RtdlColumnRowIdRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_grouped_count(
-         const RtdlDbField* fields, size_t field_count,
-         const RtdlDbScalar* row_values, size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnField* fields, size_t field_count,
+         const RtdlColumnScalar* row_values, size_t row_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
-         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         RtdlGroupedCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_grouped_sum(
-         const RtdlDbField* fields, size_t field_count,
-         const RtdlDbScalar* row_values, size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnField* fields, size_t field_count,
+         const RtdlColumnScalar* row_values, size_t row_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
-         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         RtdlGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_payload_create(
-         const RtdlDbField* fields, size_t field_count,
-         const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlColumnField* fields, size_t field_count,
+         const RtdlColumnScalar* row_values, size_t row_count,
          const char* const* primary_fields, size_t primary_field_count,
-         RtdlOptixDbDataset** dataset_out,
+         RtdlOptixColumnarPayload** dataset_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_payload_create_from_columns(
          const RtdlPayloadField* fields, size_t field_count,
          size_t row_count,
          const char* const* primary_fields, size_t primary_field_count,
-         RtdlOptixDbDataset** dataset_out,
+         RtdlOptixColumnarPayload** dataset_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_payload_create_from_device_columns(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
          const char* const* primary_fields, size_t primary_field_count,
-         RtdlOptixDbDataset** dataset_out,
+         RtdlOptixColumnarPayload** dataset_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_count_i64(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
-         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         RtdlGroupedCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          size_t group_capacity,
-         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         RtdlGroupedCountRow** rows_out, size_t* row_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_sum_i64(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
-         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         RtdlGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
          size_t group_capacity,
-         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         RtdlGroupedSumRow** rows_out, size_t* row_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
          size_t group_capacity,
-         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         RtdlGroupedSumRow** rows_out, size_t* row_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
          size_t group_capacity,
-         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         RtdlGroupedSumRow** rows_out, size_t* row_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
          size_t group_capacity,
-         RtdlDbGroupedSumCountRow** rows_out, size_t* row_count_out,
+         RtdlGroupedSumCountRow** rows_out, size_t* row_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
          size_t row_count,
-         const RtdlDbClause* clauses, size_t clause_count,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
          size_t group_capacity,
-         RtdlDbGroupedStatsRow** rows_out, size_t* row_count_out,
+         RtdlGroupedStatsRow** rows_out, size_t* row_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
-void rtdl_optix_columnar_payload_destroy(RtdlOptixDbDataset* dataset);
+void rtdl_optix_columnar_payload_destroy(RtdlOptixColumnarPayload* dataset);
 int  rtdl_optix_columnar_payload_multi_predicate_scan(
-         RtdlOptixDbDataset* dataset,
-         const RtdlDbClause* clauses, size_t clause_count,
-         RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+         RtdlOptixColumnarPayload* dataset,
+         const RtdlColumnClause* clauses, size_t clause_count,
+         RtdlColumnRowIdRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_payload_multi_predicate_scan_count(
-         RtdlOptixDbDataset* dataset,
-         const RtdlDbClause* clauses, size_t clause_count,
+         RtdlOptixColumnarPayload* dataset,
+         const RtdlColumnClause* clauses, size_t clause_count,
          size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_payload_grouped_reduction_count(
-         RtdlOptixDbDataset* dataset,
-         const RtdlDbClause* clauses, size_t clause_count,
+         RtdlOptixColumnarPayload* dataset,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
-         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         RtdlGroupedCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_payload_grouped_reduction_sum(
-         RtdlOptixDbDataset* dataset,
-         const RtdlDbClause* clauses, size_t clause_count,
+         RtdlOptixColumnarPayload* dataset,
+         const RtdlColumnClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,
-         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         RtdlGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_payload_compact_summary_batch(
-         RtdlOptixDbDataset* dataset,
-         const RtdlDbCompactSummaryRequest* requests,
+         RtdlOptixColumnarPayload* dataset,
+         const RtdlColumnCompactSummaryRequest* requests,
          size_t request_count,
-         RtdlDbCompactSummaryResult** results_out,
+         RtdlColumnCompactSummaryResult** results_out,
          size_t* result_count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_columnar_compact_summary_results_destroy(
-         RtdlDbCompactSummaryResult* results,
+         RtdlColumnCompactSummaryResult* results,
          size_t result_count);
 int  rtdl_optix_columnar_payload_get_last_phase_timings(
          double* traversal_out,

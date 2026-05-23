@@ -20,9 +20,9 @@ struct DbPrimaryAxis {
 
 struct EmbreeDbDatasetImpl {
   std::vector<std::string> field_names;
-  std::vector<RtdlDbField> fields;
+  std::vector<RtdlColumnField> fields;
   std::vector<std::string> scalar_strings;
-  std::vector<RtdlDbScalar> row_values;
+  std::vector<RtdlColumnScalar> row_values;
   size_t row_count;
   std::vector<DbPrimaryAxis> primary_axes;
   std::vector<DbRowBox> boxes;
@@ -292,7 +292,7 @@ void run_query_index_ranges(size_t query_count, WorkerFn worker_fn) {
   }
 }
 
-size_t db_find_field_index_or_throw(const RtdlDbField* fields, size_t field_count, const char* name) {
+size_t db_find_field_index_or_throw(const RtdlColumnField* fields, size_t field_count, const char* name) {
   return db_find_field_index(fields, field_count, name);
 }
 
@@ -301,14 +301,14 @@ bool db_field_kind_is_numeric(uint32_t kind) {
 }
 
 std::vector<double> db_sorted_distinct_numeric_values(
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
     size_t field_count,
     size_t field_index) {
   std::vector<double> values;
   values.reserve(row_count);
   for (size_t row_index = 0; row_index < row_count; ++row_index) {
-    const RtdlDbScalar& value = db_row_value(row_values, row_index, field_count, field_index);
+    const RtdlColumnScalar& value = db_row_value(row_values, row_index, field_count, field_index);
     if (!db_scalar_is_numeric(value)) {
       throw std::runtime_error("first-wave Embree DB lowering requires numeric primary scan clauses");
     }
@@ -319,7 +319,7 @@ std::vector<double> db_sorted_distinct_numeric_values(
   return values;
 }
 
-bool db_clause_matches_numeric_value(const RtdlDbClause& clause, double value) {
+bool db_clause_matches_numeric_value(const RtdlColumnClause& clause, double value) {
   const double lo = db_scalar_as_double(clause.value);
   switch (clause.op) {
     case kDbOpEq:
@@ -340,9 +340,9 @@ bool db_clause_matches_numeric_value(const RtdlDbClause& clause, double value) {
 }
 
 DbPrimaryAxis db_make_full_primary_axis(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
     const char* field_name) {
   const size_t field_index = db_find_field_index_or_throw(fields, field_count, field_name);
@@ -359,11 +359,11 @@ DbPrimaryAxis db_make_full_primary_axis(
 }
 
 DbPrimaryAxis db_make_primary_axis(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause& clause) {
+    const RtdlColumnClause& clause) {
   const size_t field_index = db_find_field_index_or_throw(fields, field_count, clause.field);
   const std::vector<double> sorted_values =
       db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
@@ -385,7 +385,7 @@ DbPrimaryAxis db_make_primary_axis(
   return {field_index, sorted_values, encoded_lo, encoded_hi};
 }
 
-DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlDbClause& clause) {
+DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlColumnClause& clause) {
   DbPrimaryAxis ranged = axis;
   int64_t encoded_lo = -1;
   int64_t encoded_hi = -1;
@@ -404,7 +404,7 @@ DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlDbC
   return ranged;
 }
 
-int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlDbScalar& value) {
+int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlColumnScalar& value) {
   const double needle = db_scalar_as_double(value);
   const auto it = std::lower_bound(axis.sorted_values.begin(), axis.sorted_values.end(), needle);
   if (it == axis.sorted_values.end() || *it != needle) {
@@ -414,16 +414,16 @@ int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlDbScalar& valu
 }
 
 std::vector<DbRowBox> db_build_row_boxes(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
     const std::vector<DbPrimaryAxis>& axes) {
   const size_t row_id_index = db_find_field_index_or_throw(fields, field_count, "row_id");
   std::vector<DbRowBox> boxes;
   boxes.reserve(row_count);
   for (size_t row_index = 0; row_index < row_count; ++row_index) {
-    const RtdlDbScalar& row_id_value = db_row_value(row_values, row_index, field_count, row_id_index);
+    const RtdlColumnScalar& row_id_value = db_row_value(row_values, row_index, field_count, row_id_index);
     const double x = axes.size() >= 1
         ? static_cast<double>(db_encode_axis_value(axes[0], db_row_value(row_values, row_index, field_count, axes[0].field_index)))
         : 1.0;
@@ -440,7 +440,7 @@ std::vector<DbRowBox> db_build_row_boxes(
 
 std::vector<DbPrimaryAxis> db_dataset_query_axes(
     const EmbreeDbDatasetImpl& dataset,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count) {
   std::vector<DbPrimaryAxis> axes = dataset.primary_axes;
   for (DbPrimaryAxis& axis : axes) {
@@ -492,11 +492,11 @@ void db_throw_if_limit_error() {
 }
 
 void db_validate_db_inputs(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count) {
   if (field_count == 0 || fields == nullptr || row_values == nullptr) {
     throw std::runtime_error("dataset inputs must not be null");
@@ -507,7 +507,7 @@ void db_validate_db_inputs(
   db_throw_if_row_count_exceeds_limit(row_count);
 }
 
-std::vector<const char*> db_default_primary_fields(const RtdlDbField* fields, size_t field_count) {
+std::vector<const char*> db_default_primary_fields(const RtdlColumnField* fields, size_t field_count) {
   std::vector<const char*> names;
   for (size_t index = 0; index < field_count && names.size() < 3; ++index) {
     if (std::strcmp(fields[index].name, "row_id") == 0) {
@@ -520,7 +520,7 @@ std::vector<const char*> db_default_primary_fields(const RtdlDbField* fields, si
   return names;
 }
 
-size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t scalar_count) {
+size_t db_count_scalar_strings(const RtdlColumnScalar* row_values, size_t scalar_count) {
   size_t count = 0;
   for (size_t index = 0; index < scalar_count; ++index) {
     if (row_values[index].kind == kDbKindText && row_values[index].string_value != nullptr) {
@@ -532,9 +532,9 @@ size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t scalar_cou
 
 void db_copy_dataset_payload(
     EmbreeDbDatasetImpl& dataset,
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count) {
   dataset.field_names.reserve(field_count);
   for (size_t index = 0; index < field_count; ++index) {
@@ -549,7 +549,7 @@ void db_copy_dataset_payload(
   dataset.scalar_strings.reserve(db_count_scalar_strings(row_values, scalar_count));
   dataset.row_values.reserve(scalar_count);
   for (size_t index = 0; index < scalar_count; ++index) {
-    RtdlDbScalar copied = row_values[index];
+    RtdlColumnScalar copied = row_values[index];
     if (copied.kind == kDbKindText && copied.string_value != nullptr) {
       dataset.scalar_strings.emplace_back(copied.string_value);
       copied.string_value = dataset.scalar_strings.back().c_str();
@@ -609,7 +609,7 @@ void db_copy_dataset_columnar_payload(
   for (size_t row_index = 0; row_index < row_count; ++row_index) {
     for (size_t field_index = 0; field_index < field_count; ++field_index) {
       const RtdlPayloadField& field = fields[field_index];
-      RtdlDbScalar value{};
+      RtdlColumnScalar value{};
       value.kind = field.kind;
       if (field.kind == kDbKindFloat64) {
         value.double_value = field.double_values[row_index];
@@ -2749,13 +2749,13 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_edge_neighbor_intersection_packet(
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
-    RtdlDbRowIdRow** rows_out,
+    RtdlColumnRowIdRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -2792,7 +2792,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
     rtcCommitScene(holder.scene);
 
     std::unordered_set<uint32_t> seen_row_ids;
-    std::vector<RtdlDbRowIdRow> rows;
+    std::vector<RtdlColumnRowIdRow> rows;
     ColumnarPredicateScanRayQueryState state {
         fields,
         field_count,
@@ -2820,7 +2820,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
       g_query_state = nullptr;
       db_throw_if_limit_error();
     });
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlColumnRowIdRow& left, const RtdlColumnRowIdRow& right) {
       return left.row_id < right.row_id;
     });
     *rows_out = copy_rows_out(rows);
@@ -2829,14 +2829,14 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_count(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
-    RtdlDbGroupedCountRow** rows_out,
+    RtdlGroupedCountRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -2901,12 +2901,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_count(
       g_query_state = nullptr;
       db_throw_if_limit_error();
     });
-    std::vector<RtdlDbGroupedCountRow> rows;
+    std::vector<RtdlGroupedCountRow> rows;
     rows.reserve(counts.size());
     for (const auto& entry : counts) {
       rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedCountRow& left, const RtdlDbGroupedCountRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedCountRow& left, const RtdlGroupedCountRow& right) {
       return left.group_key < right.group_key;
     });
     *rows_out = copy_rows_out(rows);
@@ -2915,15 +2915,15 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_count(
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
-    const RtdlDbClause* clauses,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
     const char* value_field,
-    RtdlDbGroupedSumRow** rows_out,
+    RtdlGroupedSumRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -2993,12 +2993,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
       g_query_state = nullptr;
       db_throw_if_limit_error();
     });
-    std::vector<RtdlDbGroupedSumRow> rows;
+    std::vector<RtdlGroupedSumRow> rows;
     rows.reserve(sums.size());
     for (const auto& entry : sums) {
       rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedSumRow& left, const RtdlDbGroupedSumRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedSumRow& left, const RtdlGroupedSumRow& right) {
       return left.group_key < right.group_key;
     });
     *rows_out = copy_rows_out(rows);
@@ -3007,13 +3007,13 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create(
-    const RtdlDbField* fields,
+    const RtdlColumnField* fields,
     size_t field_count,
-    const RtdlDbScalar* row_values,
+    const RtdlColumnScalar* row_values,
     size_t row_count,
     const char* const* primary_fields,
     size_t primary_field_count,
-    RtdlEmbreeDbDataset** dataset_out,
+    RtdlEmbreeColumnarPayload** dataset_out,
     char* error_out,
     size_t error_size) {
   return handle_native_call([&]() {
@@ -3060,7 +3060,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create(
           dataset->row_count,
           dataset->primary_axes);
       db_attach_dataset_scene(*dataset);
-      *dataset_out = reinterpret_cast<RtdlEmbreeDbDataset*>(dataset);
+      *dataset_out = reinterpret_cast<RtdlEmbreeColumnarPayload*>(dataset);
     } catch (...) {
       delete dataset;
       throw;
@@ -3074,7 +3074,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create_from_columns(
     size_t row_count,
     const char* const* primary_fields,
     size_t primary_field_count,
-    RtdlEmbreeDbDataset** dataset_out,
+    RtdlEmbreeColumnarPayload** dataset_out,
     char* error_out,
     size_t error_size) {
   return handle_native_call([&]() {
@@ -3121,7 +3121,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create_from_columns(
           dataset->row_count,
           dataset->primary_axes);
       db_attach_dataset_scene(*dataset);
-      *dataset_out = reinterpret_cast<RtdlEmbreeDbDataset*>(dataset);
+      *dataset_out = reinterpret_cast<RtdlEmbreeColumnarPayload*>(dataset);
     } catch (...) {
       delete dataset;
       throw;
@@ -3129,15 +3129,15 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create_from_columns(
   }, error_out, error_size);
 }
 
-RTDL_EMBREE_EXPORT void rtdl_embree_columnar_payload_destroy(RtdlEmbreeDbDataset* dataset) {
+RTDL_EMBREE_EXPORT void rtdl_embree_columnar_payload_destroy(RtdlEmbreeColumnarPayload* dataset) {
   delete reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
-    RtdlEmbreeDbDataset* dataset,
-    const RtdlDbClause* clauses,
+    RtdlEmbreeColumnarPayload* dataset,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
-    RtdlDbRowIdRow** rows_out,
+    RtdlColumnRowIdRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -3157,7 +3157,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
 
     const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
     std::unordered_set<uint32_t> seen_row_ids;
-    std::vector<RtdlDbRowIdRow> rows;
+    std::vector<RtdlColumnRowIdRow> rows;
     ColumnarPredicateScanRayQueryState state {
         impl->fields.data(),
         impl->fields.size(),
@@ -3175,7 +3175,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
     });
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlColumnRowIdRow& left, const RtdlColumnRowIdRow& right) {
       return left.row_id < right.row_id;
     });
     *rows_out = copy_rows_out(rows);
@@ -3184,11 +3184,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_count(
-    RtdlEmbreeDbDataset* dataset,
-    const RtdlDbClause* clauses,
+    RtdlEmbreeColumnarPayload* dataset,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
-    RtdlDbGroupedCountRow** rows_out,
+    RtdlGroupedCountRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -3233,12 +3233,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_count(
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
     });
-    std::vector<RtdlDbGroupedCountRow> rows;
+    std::vector<RtdlGroupedCountRow> rows;
     rows.reserve(counts.size());
     for (const auto& entry : counts) {
       rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedCountRow& left, const RtdlDbGroupedCountRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedCountRow& left, const RtdlGroupedCountRow& right) {
       return left.group_key < right.group_key;
     });
     *rows_out = copy_rows_out(rows);
@@ -3247,12 +3247,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_count(
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_sum(
-    RtdlEmbreeDbDataset* dataset,
-    const RtdlDbClause* clauses,
+    RtdlEmbreeColumnarPayload* dataset,
+    const RtdlColumnClause* clauses,
     size_t clause_count,
     const char* group_key_field,
     const char* value_field,
-    RtdlDbGroupedSumRow** rows_out,
+    RtdlGroupedSumRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size) {
@@ -3305,12 +3305,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_sum(
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
     });
-    std::vector<RtdlDbGroupedSumRow> rows;
+    std::vector<RtdlGroupedSumRow> rows;
     rows.reserve(sums.size());
     for (const auto& entry : sums) {
       rows.push_back({entry.first, entry.second});
     }
-    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedSumRow& left, const RtdlDbGroupedSumRow& right) {
+    std::sort(rows.begin(), rows.end(), [](const RtdlGroupedSumRow& left, const RtdlGroupedSumRow& right) {
       return left.group_key < right.group_key;
     });
     *rows_out = copy_rows_out(rows);
