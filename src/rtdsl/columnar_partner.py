@@ -80,7 +80,7 @@ def partner_resident_columnar_native_execution_requirements() -> dict[str, Any]:
         "current_blockers": (
             "Current executable OptiX columnar payload ABI accepts host RtdlPayloadField pointers.",
             "Device-column OptiX symbol is a fail-closed scaffold only.",
-            "Current OptiX DB dataset stores host RtdlDbScalar row_values.",
+            "Current OptiX compatibility payload stores host scalar row_values.",
             "Current OptiX exact filtering and grouped count/sum reductions read host row_values.",
             "Goal2505 descriptors explicitly set native_execution_authorized=False.",
         ),
@@ -94,7 +94,7 @@ def partner_resident_columnar_native_execution_requirements() -> dict[str, Any]:
             "contiguous layout contract",
         ),
         "first_executable_slice": (
-            "numeric RayDB-style columns only",
+            "numeric columnar aggregate columns only",
             "row_id dtype int64 or uint32",
             "data column dtype int64, uint32, or float64",
             "count and int64 sum aggregates only",
@@ -111,7 +111,7 @@ def partner_resident_columnar_native_execution_requirements() -> dict[str, Any]:
             "true zero-copy public claim",
         ),
         "claim_boundary": (
-            "Partner-resident columnar descriptors are not executable by the OptiX native DB "
+            "Partner-resident columnar descriptors are not executable by the OptiX native columnar "
             "path until a device-column ABI and device-side predicate/reduction path exist. "
             "Do not fall back to hidden device-to-host table staging while claiming native "
             "partner-resident execution."
