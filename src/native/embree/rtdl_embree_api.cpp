@@ -2793,7 +2793,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
 
     std::unordered_set<uint32_t> seen_row_ids;
     std::vector<RtdlDbRowIdRow> rows;
-    DbScanRayQueryState state {
+    ColumnarPredicateScanRayQueryState state {
         fields,
         field_count,
         row_values,
@@ -2813,7 +2813,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
           static_cast<float>((z_hi - z_lo) + 2));
       RTCIntersectArguments args;
       rtcInitIntersectArguments(&args);
-      g_query_kind = QueryKind::kDbScanRay;
+      g_query_kind = QueryKind::kColumnarPredicateScanRay;
       g_query_state = &state;
       rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
@@ -3158,7 +3158,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
     const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
     std::unordered_set<uint32_t> seen_row_ids;
     std::vector<RtdlDbRowIdRow> rows;
-    DbScanRayQueryState state {
+    ColumnarPredicateScanRayQueryState state {
         impl->fields.data(),
         impl->fields.size(),
         impl->row_values.data(),
@@ -3169,7 +3169,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
         &seen_row_ids,
         &rows};
     db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
-      g_query_kind = QueryKind::kDbScanRay;
+      g_query_kind = QueryKind::kColumnarPredicateScanRay;
       g_query_state = &state;
       rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;

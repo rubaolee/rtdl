@@ -53,7 +53,7 @@ enum class QueryKind {
   kNearestPoint,
   kKnnRows,
   kKnnRows3D,
-  kDbScanRay,
+  kColumnarPredicateScanRay,
   kDbGroupedCountRay,
   kDbGroupedSumRay,
 };
@@ -225,7 +225,7 @@ struct KnnRowsQueryState3D {
   std::vector<RtdlKnnNeighborRow>* rows;
 };
 
-struct DbScanRayQueryState {
+struct ColumnarPredicateScanRayQueryState {
   const RtdlDbField* fields;
   size_t field_count;
   const RtdlDbScalar* row_values;
@@ -1037,7 +1037,7 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
   if (g_db_limit_error) {
     return;
   }
-  if (g_query_kind != QueryKind::kDbScanRay
+  if (g_query_kind != QueryKind::kColumnarPredicateScanRay
       && g_query_kind != QueryKind::kDbGroupedCountRay
       && g_query_kind != QueryKind::kDbGroupedSumRay) {
     return;
@@ -1048,8 +1048,8 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
   if (!ray_hits_db_box(rayhit->ray, box)) {
     return;
   }
-  if (g_query_kind == QueryKind::kDbScanRay) {
-    auto* state = static_cast<DbScanRayQueryState*>(g_query_state);
+  if (g_query_kind == QueryKind::kColumnarPredicateScanRay) {
+    auto* state = static_cast<ColumnarPredicateScanRayQueryState*>(g_query_state);
     if (state->seen_row_ids->find(box.row_id) != state->seen_row_ids->end()) {
       return;
     }

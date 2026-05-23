@@ -5389,13 +5389,13 @@ extern "C" __global__ void pack_triangle2d_device_columns(
 }
 )CUDA";
 
-// ---------- DB conjunctive_scan kernel --------------------------------------
+// ---------- Columnar predicate-scan kernel ----------------------------------
 
-static const char* kDbScanKernelSrc = R"CUDA(
+static const char* kColumnarPredicateScanKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
 
-struct DbScanParams {
+struct ColumnarPredicateScanParams {
     OptixTraversableHandle traversable;
     uint32_t* hit_words;
     uint32_t hit_word_count;
@@ -5408,10 +5408,10 @@ struct DbScanParams {
 };
 
 extern "C" {
-__constant__ DbScanParams params;
+__constant__ ColumnarPredicateScanParams params;
 }
 
-extern "C" __global__ void __raygen__db_scan_probe() {
+extern "C" __global__ void __raygen__columnar_predicate_scan_probe() {
     const uint32_t x_index = optixGetLaunchIndex().x;
     const uint32_t y_index = optixGetLaunchIndex().y;
     if (x_index >= params.x_count || y_index >= params.y_count) {
@@ -5433,13 +5433,13 @@ extern "C" __global__ void __raygen__db_scan_probe() {
         0, 1, 0);
 }
 
-extern "C" __global__ void __miss__db_scan_miss() {}
+extern "C" __global__ void __miss__columnar_predicate_scan_miss() {}
 
-extern "C" __global__ void __intersection__db_scan_isect() {
+extern "C" __global__ void __intersection__columnar_predicate_scan_isect() {
     optixReportIntersection(0.5f, 0u);
 }
 
-extern "C" __global__ void __anyhit__db_scan_anyhit() {
+extern "C" __global__ void __anyhit__columnar_predicate_scan_anyhit() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t word = prim >> 5;
     if (word < params.hit_word_count) {
@@ -5746,7 +5746,7 @@ struct RayHitCount3DPipeline {
     std::once_flag   init;
 };
 
-struct DbScanPipeline {
+struct ColumnarPredicateScanPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag init;
 };
@@ -5802,7 +5802,7 @@ static RayAnyHitPipeline    g_point_group_nearest_rt;
 static KnnCuFunction       g_point_group_nearest_reduce;
 static SegPolyPipeline     g_segpoly;
 static SegPolyPipeline     g_segpoly_rows;
-static DbScanPipeline      g_dbscan;
+static ColumnarPredicateScanPipeline g_columnar_predicate_scan;
 static GraphEdgePipeline   g_graph_bfs;
 static GraphEdgePipeline   g_graph_triangle;
 static PnsCuFunction      g_pns;

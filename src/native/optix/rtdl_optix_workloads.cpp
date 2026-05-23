@@ -29,7 +29,7 @@ struct DbRowMeta {
     uint32_t row_id;
 };
 
-struct DbScanLaunchParams {
+struct ColumnarPredicateScanLaunchParams {
     OptixTraversableHandle traversable;
     uint32_t* hit_words;
     uint32_t hit_word_count;
@@ -1755,14 +1755,16 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
         return {};
     }
 
-    std::call_once(g_dbscan.init, [&]() {
-        std::string ptx = compile_to_ptx(kDbScanKernelSrc, "db_scan_kernel.cu");
-        g_dbscan.pipe = build_pipeline(
+    std::call_once(g_columnar_predicate_scan.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kColumnarPredicateScanKernelSrc,
+            "columnar_predicate_scan_kernel.cu");
+        g_columnar_predicate_scan.pipe = build_pipeline(
             get_optix_context(), ptx,
-            "__raygen__db_scan_probe",
-            "__miss__db_scan_miss",
-            "__intersection__db_scan_isect",
-            "__anyhit__db_scan_anyhit",
+            "__raygen__columnar_predicate_scan_probe",
+            "__miss__columnar_predicate_scan_miss",
+            "__intersection__columnar_predicate_scan_isect",
+            "__anyhit__columnar_predicate_scan_anyhit",
             nullptr,
             0).release();
     });
@@ -1775,7 +1777,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
 
     const uint32_t x_count = x_hi - x_lo + 1u;
     const uint32_t y_count = y_hi - y_lo + 1u;
-    DbScanLaunchParams lp;
+    ColumnarPredicateScanLaunchParams lp;
     lp.traversable = accel.handle;
     lp.hit_words = reinterpret_cast<uint32_t*>(d_hit_words.ptr);
     lp.hit_word_count = hit_word_count;
@@ -1786,17 +1788,17 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
     lp.x_count = x_count;
     lp.y_count = y_count;
 
-    DevPtr d_params(sizeof(DbScanLaunchParams));
+    DevPtr d_params(sizeof(ColumnarPredicateScanLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
     auto t_start_trav = std::chrono::steady_clock::now();
     OPTIX_CHECK(optixLaunch(
-        g_dbscan.pipe->pipeline,
+        g_columnar_predicate_scan.pipe->pipeline,
         stream,
         d_params.ptr,
-        sizeof(DbScanLaunchParams),
-        &g_dbscan.pipe->sbt,
+        sizeof(ColumnarPredicateScanLaunchParams),
+        &g_columnar_predicate_scan.pipe->sbt,
         x_count,
         y_count,
         1));
@@ -1843,14 +1845,16 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         return {};
     }
 
-    std::call_once(g_dbscan.init, [&]() {
-        std::string ptx = compile_to_ptx(kDbScanKernelSrc, "db_scan_kernel.cu");
-        g_dbscan.pipe = build_pipeline(
+    std::call_once(g_columnar_predicate_scan.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kColumnarPredicateScanKernelSrc,
+            "columnar_predicate_scan_kernel.cu");
+        g_columnar_predicate_scan.pipe = build_pipeline(
             get_optix_context(), ptx,
-            "__raygen__db_scan_probe",
-            "__miss__db_scan_miss",
-            "__intersection__db_scan_isect",
-            "__anyhit__db_scan_anyhit",
+            "__raygen__columnar_predicate_scan_probe",
+            "__miss__columnar_predicate_scan_miss",
+            "__intersection__columnar_predicate_scan_isect",
+            "__anyhit__columnar_predicate_scan_anyhit",
             nullptr,
             0).release();
     });
@@ -1861,7 +1865,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
 
     const uint32_t x_count = x_hi - x_lo + 1u;
     const uint32_t y_count = y_hi - y_lo + 1u;
-    DbScanLaunchParams lp;
+    ColumnarPredicateScanLaunchParams lp;
     lp.traversable = dataset.accel.handle;
     lp.hit_words = reinterpret_cast<uint32_t*>(d_hit_words.ptr);
     lp.hit_word_count = hit_word_count;
@@ -1872,17 +1876,17 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
     lp.x_count = x_count;
     lp.y_count = y_count;
 
-    DevPtr d_params(sizeof(DbScanLaunchParams));
+    DevPtr d_params(sizeof(ColumnarPredicateScanLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
     auto t_start_trav = std::chrono::steady_clock::now();
     OPTIX_CHECK(optixLaunch(
-        g_dbscan.pipe->pipeline,
+        g_columnar_predicate_scan.pipe->pipeline,
         stream,
         d_params.ptr,
-        sizeof(DbScanLaunchParams),
-        &g_dbscan.pipe->sbt,
+        sizeof(ColumnarPredicateScanLaunchParams),
+        &g_columnar_predicate_scan.pipe->sbt,
         x_count,
         y_count,
         1));
