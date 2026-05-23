@@ -9,8 +9,9 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
+APP_ADAPTER = ROOT / "src" / "rtdsl" / "app_adapters" / "barnes_hut.py"
 INIT = ROOT / "src" / "rtdsl" / "__init__.py"
-EXAMPLE = ROOT / "examples" / "rtdl_barnes_hut_force_app.py"
+EXAMPLE = ROOT / "examples" / "v2_0" / "apps" / "simulation" / "rtdl_barnes_hut_force_app.py"
 PREFLIGHT = ROOT / "scripts" / "goal1908_v2_local_preflight.py"
 REPORT = ROOT / "docs" / "reports" / "goal1979_exact_pairwise_force_partner_barnes_hut_reference_2026-05-14.md"
 POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1979_pod_exact_pairwise_force_barnes_hut_cupy_perf.json"
@@ -19,22 +20,22 @@ POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1979_pod_exact_pairwise_force_ba
 class Goal1979ExactPairwiseForcePartnerBarnesHutReferenceTest(unittest.TestCase):
     def test_partner_adapter_exposes_generic_weighted_point_force_vectors(self) -> None:
         adapters = ADAPTERS.read_text(encoding="utf-8")
+        app_adapter = APP_ADAPTER.read_text(encoding="utf-8")
         init_text = INIT.read_text(encoding="utf-8")
 
-        for name in (
-            "weighted_point_rows_to_partner_columns",
-            "pairwise_inverse_square_force_2d_partner_columns",
-        ):
-            self.assertIn(f"def {name}", adapters)
-            self.assertIn(f"from .partner_adapters import {name}", init_text)
-            self.assertIn(f'"{name}"', init_text)
-        self.assertIn("generic_pairwise_inverse_square_force_2d", adapters)
-        self.assertIn("caller_supplied_partner_device_weighted_point_columns", adapters)
-        self.assertIn("exclude_equal_ids", adapters)
-        self.assertIn("torch.rsqrt", adapters)
-        self.assertIn("cupy.RawKernel", adapters)
-        self.assertIn("pairwise_force_2d", adapters)
-        self.assertIn("rt_core_speedup_claim_authorized", adapters)
+        self.assertIn("def weighted_point_rows_to_partner_columns", adapters)
+        self.assertIn("from .partner_adapters import weighted_point_rows_to_partner_columns", init_text)
+        self.assertIn("def pairwise_inverse_square_force_2d_partner_columns", app_adapter)
+        self.assertIn("from .app_adapters import pairwise_inverse_square_force_2d_partner_columns", init_text)
+        self.assertIn('"pairwise_inverse_square_force_2d_partner_columns"', init_text)
+        self.assertNotIn("def pairwise_inverse_square_force_2d_partner_columns", adapters)
+        self.assertIn("generic_pairwise_inverse_square_force_2d", app_adapter)
+        self.assertIn("caller_supplied_partner_device_weighted_point_columns", app_adapter)
+        self.assertIn("exclude_equal_ids", app_adapter)
+        self.assertIn("torch.rsqrt", app_adapter)
+        self.assertIn("cupy.RawKernel", app_adapter)
+        self.assertIn("pairwise_force_2d", app_adapter)
+        self.assertIn("rt_core_speedup_claim_authorized", app_adapter)
 
     def test_barnes_app_exposes_partner_exact_force_without_rt_core_claim(self) -> None:
         text = EXAMPLE.read_text(encoding="utf-8")

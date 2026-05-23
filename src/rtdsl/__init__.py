@@ -519,7 +519,7 @@ from .partner_adapters import partner_page_columns
 from .partner_adapters import partner_unique_pair_keys
 from .partner_adapters import point_rows_to_partner_columns
 from .partner_adapters import weighted_point_rows_to_partner_columns
-from .partner_adapters import pairwise_inverse_square_force_2d_partner_columns
+from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
 from .partner_continuations import PartnerCandidateRows
