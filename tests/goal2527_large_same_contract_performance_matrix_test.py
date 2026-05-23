@@ -55,7 +55,7 @@ class Goal2527LargeSameContractPerformanceMatrixTest(unittest.TestCase):
         source = OPTIX_WORKLOADS.read_text(encoding="utf-8")
         self.assertIn("kDeviceColumnGroupedMaxRowsPerJob = 100000000", source)
         self.assertIn("device-column grouped execution row_count must be in 1..100000000", source)
-        self.assertIn("kDbMaxRowsPerJob = 1000000", source)
+        self.assertIn("kColumnarMaxRowsPerJob = 1000000", source)
 
     def test_fused_stats_path_is_generic_and_exported(self) -> None:
         runtime = OPTIX_RUNTIME.read_text(encoding="utf-8")
@@ -65,7 +65,8 @@ class Goal2527LargeSameContractPerformanceMatrixTest(unittest.TestCase):
         self.assertIn("OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL", runtime)
         self.assertIn("run_optix_partner_resident_columnar_grouped_stats_i64", runtime)
         self.assertIn('"stats"', runtime)
-        self.assertIn("struct RtdlDbGroupedStatsRow", prelude)
+        self.assertIn("struct RtdlGroupedStatsRow", prelude)
+        self.assertIn("using RtdlDbGroupedStatsRow = RtdlGroupedStatsRow;", prelude)
         self.assertIn("rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity", api)
         self.assertIn("RTDL_GROUPED_OP_STATS", workloads)
         self.assertNotIn("raydb", runtime.lower())

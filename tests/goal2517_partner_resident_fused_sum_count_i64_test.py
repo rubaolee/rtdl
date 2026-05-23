@@ -64,7 +64,8 @@ class Goal2517PartnerResidentFusedSumCountI64Test(unittest.TestCase):
         symbol = "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity"
         for source in (api, prelude, runtime):
             self.assertIn(symbol, source)
-        self.assertIn("struct RtdlDbGroupedSumCountRow", prelude)
+        self.assertIn("struct RtdlGroupedSumCountRow", prelude)
+        self.assertIn("using RtdlDbGroupedSumCountRow = RtdlGroupedSumCountRow;", prelude)
         self.assertIn("RTDL_GROUPED_OP_SUM_COUNT = 5u", workloads)
         self.assertIn("device_column_grouped_i64_compact_sum_count_kernel", workloads)
         self.assertIn("compact_sum_count_fn", workloads)

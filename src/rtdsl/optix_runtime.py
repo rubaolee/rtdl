@@ -425,6 +425,11 @@ class _RtdlDbGroupedStatsRow(ctypes.Structure):
     ]
 
 
+_RtdlGroupedSumRow = _RtdlDbGroupedSumRow
+_RtdlGroupedSumCountRow = _RtdlDbGroupedSumCountRow
+_RtdlGroupedStatsRow = _RtdlDbGroupedStatsRow
+
+
 class _RtdlDevicePayloadField(ctypes.Structure):
     _fields_ = [
         ("name", ctypes.c_char_p),
@@ -441,6 +446,9 @@ class _RtdlDevicePayloadField(ctypes.Structure):
 _DB_COMPACT_SUMMARY_OP_SCAN_COUNT = 1
 _DB_COMPACT_SUMMARY_OP_GROUPED_COUNT = 2
 _DB_COMPACT_SUMMARY_OP_GROUPED_SUM = 3
+_COLUMN_COMPACT_SUMMARY_OP_SCAN_COUNT = _DB_COMPACT_SUMMARY_OP_SCAN_COUNT
+_COLUMN_COMPACT_SUMMARY_OP_GROUPED_COUNT = _DB_COMPACT_SUMMARY_OP_GROUPED_COUNT
+_COLUMN_COMPACT_SUMMARY_OP_GROUPED_SUM = _DB_COMPACT_SUMMARY_OP_GROUPED_SUM
 _DEVICE_PAYLOAD_DEVICE_CUDA = 1
 _DEVICE_PAYLOAD_DTYPE_INT64 = 1
 _DEVICE_PAYLOAD_DTYPE_UINT32 = 2
@@ -463,7 +471,7 @@ class _RtdlDbCompactSummaryResult(ctypes.Structure):
         ("scalar_value", ctypes.c_size_t),
         ("count_rows", ctypes.POINTER(_RtdlGroupedCountRow)),
         ("count_row_count", ctypes.c_size_t),
-        ("sum_rows", ctypes.POINTER(_RtdlDbGroupedSumRow)),
+        ("sum_rows", ctypes.POINTER(_RtdlGroupedSumRow)),
         ("sum_row_count", ctypes.c_size_t),
         ("traversal", ctypes.c_double),
         ("bitset_copyback", ctypes.c_double),
@@ -472,6 +480,10 @@ class _RtdlDbCompactSummaryResult(ctypes.Structure):
         ("raw_candidate_count", ctypes.c_size_t),
         ("emitted_count", ctypes.c_size_t),
     ]
+
+
+_RtdlColumnCompactSummaryRequest = _RtdlDbCompactSummaryRequest
+_RtdlColumnCompactSummaryResult = _RtdlDbCompactSummaryResult
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -4190,7 +4202,7 @@ def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mo
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_sum")
     if symbol is None:
         raise ValueError("current OptiX backend does not yet export DB grouped_sum support")
-    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    rows_ptr = ctypes.POINTER(_RtdlGroupedSumRow)()
     row_count_out = ctypes.c_size_t()
     status = symbol(
         fields_array,
@@ -4211,7 +4223,7 @@ def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mo
         library=lib,
         rows_ptr=rows_ptr,
         row_count=row_count_out.value,
-        row_type=_RtdlDbGroupedSumRow,
+        row_type=_RtdlGroupedSumRow,
         field_names=("group_key", "sum"),
     )
     if result_mode == "raw":
@@ -4394,7 +4406,7 @@ class OptixPreparedColumnarPayload:
         symbol = getattr(self.library, "rtdl_optix_columnar_payload_compact_summary_batch", None)
         if symbol is None:
             return None
-        results_ptr = ctypes.POINTER(_RtdlDbCompactSummaryResult)()
+        results_ptr = ctypes.POINTER(_RtdlColumnCompactSummaryResult)()
         result_count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = symbol(
@@ -4438,7 +4450,7 @@ class OptixPreparedColumnarPayload:
         )
 
     def grouped_sum(self, clauses_array, group_key_field: bytes, value_field: bytes) -> OptixRowView:
-        rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+        rows_ptr = ctypes.POINTER(_RtdlGroupedSumRow)()
         row_count_out = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
         status = self.library.rtdl_optix_columnar_payload_grouped_reduction_sum(
@@ -4457,7 +4469,7 @@ class OptixPreparedColumnarPayload:
             library=self.library,
             rows_ptr=rows_ptr,
             row_count=row_count_out.value,
-            row_type=_RtdlDbGroupedSumRow,
+            row_type=_RtdlGroupedSumRow,
             field_names=("group_key", "sum"),
         )
 
@@ -4585,7 +4597,7 @@ class PreparedOptixDbDataset:
         if getattr(self._dataset.library, "rtdl_optix_columnar_payload_compact_summary_batch", None) is None:
             return None
 
-        encoded_requests: list[_RtdlDbCompactSummaryRequest] = []
+        encoded_requests: list[_RtdlColumnCompactSummaryRequest] = []
         request_meta: list[dict[str, object]] = []
         keepalive: list[object] = []
         for request in requests:
@@ -4595,8 +4607,8 @@ class PreparedOptixDbDataset:
                 clauses_array = _encode_db_clauses(self._encode_clauses(bundle.clauses))
                 keepalive.append(clauses_array)
                 encoded_requests.append(
-                    _RtdlDbCompactSummaryRequest(
-                        _DB_COMPACT_SUMMARY_OP_SCAN_COUNT,
+                    _RtdlColumnCompactSummaryRequest(
+                        _COLUMN_COMPACT_SUMMARY_OP_SCAN_COUNT,
                         ctypes.cast(clauses_array, ctypes.c_void_p),
                         len(clauses_array),
                         None,
@@ -4620,10 +4632,10 @@ class PreparedOptixDbDataset:
                 )
                 keepalive.extend(item for item in (clauses_array, group_key_field, value_field) if item is not None)
                 encoded_requests.append(
-                    _RtdlDbCompactSummaryRequest(
-                        _DB_COMPACT_SUMMARY_OP_GROUPED_SUM
+                    _RtdlColumnCompactSummaryRequest(
+                        _COLUMN_COMPACT_SUMMARY_OP_GROUPED_SUM
                         if operation == "grouped_sum_summary"
-                        else _DB_COMPACT_SUMMARY_OP_GROUPED_COUNT,
+                        else _COLUMN_COMPACT_SUMMARY_OP_GROUPED_COUNT,
                         ctypes.cast(clauses_array, ctypes.c_void_p),
                         len(clauses_array),
                         group_key_field,
@@ -4634,7 +4646,7 @@ class PreparedOptixDbDataset:
             else:
                 raise ValueError(f"unsupported DB compact-summary batch operation: {operation}")
 
-        requests_array = (_RtdlDbCompactSummaryRequest * len(encoded_requests))(*encoded_requests)
+        requests_array = (_RtdlColumnCompactSummaryRequest * len(encoded_requests))(*encoded_requests)
         native_result = self._dataset.compact_summary_batch_native(requests_array, len(encoded_requests))
         if native_result is None:
             return None
@@ -5006,7 +5018,7 @@ def run_optix_partner_resident_columnar_grouped_sum_i64(
             "loaded OptiX backend library does not export "
             f"{symbol_name}; rebuild the OptiX backend from current main"
         )
-    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    rows_ptr = ctypes.POINTER(_RtdlGroupedSumRow)()
     row_count_out = ctypes.c_size_t()
     overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
@@ -5049,7 +5061,7 @@ def run_optix_partner_resident_columnar_grouped_sum_i64(
         library=lib,
         rows_ptr=rows_ptr,
         row_count=row_count_out.value,
-        row_type=_RtdlDbGroupedSumRow,
+        row_type=_RtdlGroupedSumRow,
         field_names=("group_key", "sum"),
     )
     try:
@@ -5137,7 +5149,7 @@ def run_optix_partner_resident_columnar_grouped_sum_count_i64(
             f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL}; "
             "rebuild the OptiX backend from current main"
         )
-    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumCountRow)()
+    rows_ptr = ctypes.POINTER(_RtdlGroupedSumCountRow)()
     row_count_out = ctypes.c_size_t()
     overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
@@ -5166,7 +5178,7 @@ def run_optix_partner_resident_columnar_grouped_sum_count_i64(
         library=lib,
         rows_ptr=rows_ptr,
         row_count=row_count_out.value,
-        row_type=_RtdlDbGroupedSumCountRow,
+        row_type=_RtdlGroupedSumCountRow,
         field_names=("group_key", "sum", "count"),
     )
     try:
@@ -5224,7 +5236,7 @@ def run_optix_partner_resident_columnar_grouped_stats_i64(
             f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL}; "
             "rebuild the OptiX backend from current main"
         )
-    rows_ptr = ctypes.POINTER(_RtdlDbGroupedStatsRow)()
+    rows_ptr = ctypes.POINTER(_RtdlGroupedStatsRow)()
     row_count_out = ctypes.c_size_t()
     overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
@@ -5253,7 +5265,7 @@ def run_optix_partner_resident_columnar_grouped_stats_i64(
         library=lib,
         rows_ptr=rows_ptr,
         row_count=row_count_out.value,
-        row_type=_RtdlDbGroupedStatsRow,
+        row_type=_RtdlGroupedStatsRow,
         field_names=("group_key", "count", "sum", "min", "max"),
     )
     try:
@@ -5454,7 +5466,7 @@ def _run_optix_partner_resident_columnar_grouped_value_i64(
             "loaded OptiX backend library does not export "
             f"{symbol_name}; rebuild the OptiX backend from current main"
         )
-    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    rows_ptr = ctypes.POINTER(_RtdlGroupedSumRow)()
     row_count_out = ctypes.c_size_t()
     overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
@@ -5483,7 +5495,7 @@ def _run_optix_partner_resident_columnar_grouped_value_i64(
         library=lib,
         rows_ptr=rows_ptr,
         row_count=row_count_out.value,
-        row_type=_RtdlDbGroupedSumRow,
+        row_type=_RtdlGroupedSumRow,
         field_names=("group_key", operation),
     )
     try:
@@ -10631,7 +10643,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.c_char_p,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedSumRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10725,7 +10737,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.c_char_p,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedSumRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10743,7 +10755,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p,
             ctypes.c_char_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedSumRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
@@ -10766,7 +10778,7 @@ def _register_argtypes(lib) -> None:
                 ctypes.c_char_p,
                 ctypes.c_char_p,
                 ctypes.c_size_t,
-                ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+                ctypes.POINTER(ctypes.POINTER(_RtdlGroupedSumRow)),
                 ctypes.POINTER(ctypes.c_size_t),
                 ctypes.POINTER(ctypes.c_uint32),
                 ctypes.c_char_p,
@@ -10788,7 +10800,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p,
             ctypes.c_char_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumCountRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedSumCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
@@ -10810,7 +10822,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p,
             ctypes.c_char_p,
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedStatsRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedStatsRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
@@ -10870,7 +10882,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.c_char_p,
             ctypes.c_char_p,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlGroupedSumRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10881,9 +10893,9 @@ def _register_argtypes(lib) -> None:
     if symbol is not None:
         symbol.argtypes = [
             ctypes.c_void_p,
-            ctypes.POINTER(_RtdlDbCompactSummaryRequest),
+            ctypes.POINTER(_RtdlColumnCompactSummaryRequest),
             ctypes.c_size_t,
-            ctypes.POINTER(ctypes.POINTER(_RtdlDbCompactSummaryResult)),
+            ctypes.POINTER(ctypes.POINTER(_RtdlColumnCompactSummaryResult)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
@@ -10892,7 +10904,7 @@ def _register_argtypes(lib) -> None:
 
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_compact_summary_results_destroy")
     if symbol is not None:
-        symbol.argtypes = [ctypes.POINTER(_RtdlDbCompactSummaryResult), ctypes.c_size_t]
+        symbol.argtypes = [ctypes.POINTER(_RtdlColumnCompactSummaryResult), ctypes.c_size_t]
         symbol.restype = None
 
     symbol = _find_optional_backend_symbol(lib, OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL)
