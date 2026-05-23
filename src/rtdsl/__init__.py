@@ -80,6 +80,7 @@ from .columnar_aggregate_reference import ColumnarAggregateLoweringPlan
 from .columnar_aggregate_reference import ColumnarRecordSet
 from .columnar_aggregate_reference import COMPOSITE_COLUMNAR_AGGREGATE_LOWERINGS
 from .columnar_aggregate_reference import columnar_plan_to_grouped_query
+from .columnar_aggregate_reference import columnar_plan_to_grouped_reduction_spec
 from .columnar_aggregate_reference import columnar_record_set_to_row_mappings
 from .columnar_aggregate_reference import decompose_columnar_aggregate_plan
 from .columnar_aggregate_reference import evaluate_columnar_grouped_aggregate
@@ -104,6 +105,17 @@ from .columnar_partner import PartnerResidentColumnHandoff
 from .columnar_partner import partner_resident_columnar_native_execution_requirements
 from .columnar_partner import plan_partner_resident_columnar_native_execution
 from .columnar_partner import prepare_partner_resident_columnar_record_set
+from .grouped_reduction import COLUMNAR_AGGREGATE_TO_GROUPED_REDUCTION
+from .grouped_reduction import GROUPED_REDUCTION_CONTRACT_VERSION
+from .grouped_reduction import GROUPED_REDUCTION_OPERATIONS
+from .grouped_reduction import GROUPED_REDUCTION_OUTPUT_MODE_COMPACT_ROWS
+from .grouped_reduction import GROUPED_REDUCTION_OVERFLOW_POLICY_FAIL_CLOSED
+from .grouped_reduction import GROUPED_REDUCTION_VALUE_OPERATIONS
+from .grouped_reduction import GroupedReductionCapacityStatus
+from .grouped_reduction import GroupedReductionSpec
+from .grouped_reduction import grouped_reduction_contract_metadata
+from .grouped_reduction import grouped_reduction_spec_from_columnar_plan
+from .grouped_reduction import normalize_grouped_reduction_spec
 from .aggregate_tree_reference import AGGREGATE_OPENING_ROWS_2D_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT
@@ -1106,6 +1118,12 @@ __all__ = [
     "ColumnarAggregatePlan",
     "ColumnarAggregateResult",
     "ColumnarRecordSet",
+    "COLUMNAR_AGGREGATE_TO_GROUPED_REDUCTION",
+    "GROUPED_REDUCTION_CONTRACT_VERSION",
+    "GROUPED_REDUCTION_OPERATIONS",
+    "GROUPED_REDUCTION_OUTPUT_MODE_COMPACT_ROWS",
+    "GROUPED_REDUCTION_OVERFLOW_POLICY_FAIL_CLOSED",
+    "GROUPED_REDUCTION_VALUE_OPERATIONS",
     "PARTNER_RESIDENT_COLUMNAR_BACKENDS",
     "PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS",
     "PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_TARGET",
@@ -1115,8 +1133,11 @@ __all__ = [
     "DeviceColumnDescriptor",
     "PartnerResidentColumnarRecordSet",
     "PartnerResidentColumnHandoff",
+    "GroupedReductionCapacityStatus",
+    "GroupedReductionSpec",
     "SUPPORTED_AGGREGATES",
     "columnar_plan_to_grouped_query",
+    "columnar_plan_to_grouped_reduction_spec",
     "columnar_record_set_to_row_mappings",
     "WeightedPointRow",
     "build_bucketized_aggregate_tree_2d",
@@ -1187,6 +1208,9 @@ __all__ = [
     "prepare_partner_resident_columnar_record_set",
     "plan_partner_resident_columnar_native_execution",
     "plan_columnar_aggregate_lowering",
+    "grouped_reduction_contract_metadata",
+    "grouped_reduction_spec_from_columnar_plan",
+    "normalize_grouped_reduction_spec",
     "run_partner_ray_triangle_any_hit_2d",
     "validate_v2_0_partner_protocol_contract",
     "v2_0_partner_protocol_contract",

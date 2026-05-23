@@ -5,6 +5,8 @@ from typing import Any, Mapping, Sequence
 
 from .db_reference import PredicateClause
 from .db_reference import _normalize_predicate_clause
+from .grouped_reduction import GroupedReductionSpec
+from .grouped_reduction import grouped_reduction_spec_from_columnar_plan
 
 UINT32_MAX = 0xFFFFFFFF
 SUPPORTED_AGGREGATES = ("count", "sum", "min", "max", "avg_as_sum_count")
@@ -173,6 +175,13 @@ def columnar_plan_to_grouped_query(plan: Mapping[str, Any] | ColumnarAggregatePl
     if aggregate_plan.value_field is not None:
         query["value_field"] = aggregate_plan.value_field
     return query
+
+
+def columnar_plan_to_grouped_reduction_spec(
+    plan: Mapping[str, Any] | ColumnarAggregatePlan,
+) -> GroupedReductionSpec:
+    aggregate_plan = normalize_columnar_aggregate_plan(plan)
+    return grouped_reduction_spec_from_columnar_plan(aggregate_plan)
 
 
 def decompose_columnar_aggregate_plan(
