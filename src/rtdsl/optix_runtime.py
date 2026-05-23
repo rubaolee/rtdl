@@ -4780,8 +4780,21 @@ def prepare_optix_db_dataset(table_rows, *, primary_fields=(), transfer: str = "
     return PreparedOptixDbDataset(table_rows, primary_fields=primary_fields, transfer=transfer)
 
 
-def prepare_optix_columnar_record_set(record_set, *, primary_fields=()) -> PreparedOptixDbDataset:
-    return PreparedOptixDbDataset.from_columnar_record_set(record_set, primary_fields=primary_fields)
+class PreparedOptixColumnarPayload(PreparedOptixDbDataset):
+    """Generic prepared columnar payload API; `PreparedOptixDbDataset` is legacy."""
+
+
+def prepare_optix_columnar_payload(
+    table_rows,
+    *,
+    primary_fields=(),
+    transfer: str = "row",
+) -> PreparedOptixColumnarPayload:
+    return PreparedOptixColumnarPayload(table_rows, primary_fields=primary_fields, transfer=transfer)
+
+
+def prepare_optix_columnar_record_set(record_set, *, primary_fields=()) -> PreparedOptixColumnarPayload:
+    return PreparedOptixColumnarPayload.from_columnar_record_set(record_set, primary_fields=primary_fields)
 
 
 def prepare_optix_partner_resident_columnar_record_set(

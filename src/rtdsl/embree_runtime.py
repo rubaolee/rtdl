@@ -2655,8 +2655,21 @@ def prepare_embree_db_dataset(table_rows, *, primary_fields=(), transfer: str = 
     return PreparedEmbreeDbDataset(table_rows, primary_fields=primary_fields, transfer=transfer)
 
 
-def prepare_embree_columnar_record_set(record_set, *, primary_fields=()) -> PreparedEmbreeDbDataset:
-    return PreparedEmbreeDbDataset.from_columnar_record_set(record_set, primary_fields=primary_fields)
+class PreparedEmbreeColumnarPayload(PreparedEmbreeDbDataset):
+    """Generic prepared columnar payload API; `PreparedEmbreeDbDataset` is legacy."""
+
+
+def prepare_embree_columnar_payload(
+    table_rows,
+    *,
+    primary_fields=(),
+    transfer: str = "row",
+) -> PreparedEmbreeColumnarPayload:
+    return PreparedEmbreeColumnarPayload(table_rows, primary_fields=primary_fields, transfer=transfer)
+
+
+def prepare_embree_columnar_record_set(record_set, *, primary_fields=()) -> PreparedEmbreeColumnarPayload:
+    return PreparedEmbreeColumnarPayload.from_columnar_record_set(record_set, primary_fields=primary_fields)
 
 
 def _encode_all_db_text_columns(table_rows):

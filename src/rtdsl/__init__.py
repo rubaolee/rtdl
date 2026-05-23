@@ -430,6 +430,7 @@ from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64
 from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL
 from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS
 from .optix_runtime import prepare_optix
+from .optix_runtime import prepare_optix_columnar_payload
 from .optix_runtime import prepare_optix_columnar_record_set
 from .optix_runtime import prepare_optix_partner_resident_columnar_record_set
 from .optix_runtime import prepare_optix_db_dataset
@@ -449,6 +450,7 @@ from .optix_runtime import prepare_optix_group_indices_2d
 from .optix_runtime import prepare_optix_pose_indices_2d
 from .optix_runtime import prepare_optix_rays_2d
 from .optix_runtime import PreparedOptixRaySegmentGroupCount2D
+from .optix_runtime import PreparedOptixColumnarPayload
 from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
@@ -621,8 +623,10 @@ from .embree_runtime import PackedRays
 from .embree_runtime import PackedSegments
 from .embree_runtime import PackedTriangles
 from .embree_runtime import prepare_embree
+from .embree_runtime import prepare_embree_columnar_payload
 from .embree_runtime import prepare_embree_columnar_record_set
 from .embree_runtime import prepare_embree_db_dataset
+from .embree_runtime import PreparedEmbreeColumnarPayload
 from .embree_runtime import PreparedEmbreeDbDataset
 from .embree_runtime import PreparedEmbreeExecution
 from .embree_runtime import PreparedEmbreeKernel
@@ -1484,6 +1488,7 @@ __all__ = [
     "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL",
     "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS",
     "prepare_optix",
+    "prepare_optix_columnar_payload",
     "prepare_optix_columnar_record_set",
     "prepare_optix_partner_resident_columnar_record_set",
     "prepare_optix_db_dataset",
@@ -1511,6 +1516,7 @@ __all__ = [
     "prepare_optix_pose_indices_2d",
     "prepare_optix_rays_2d",
     "PreparedOptixRaySegmentGroupCount2D",
+    "PreparedOptixColumnarPayload",
     "PreparedOptixDbDataset",
     "PreparedOptixExecution",
     "PreparedOptixFixedRadiusCountThreshold2D",
@@ -1736,9 +1742,11 @@ __all__ = [
     "prepare_apple_rt_ray_triangle_any_hit_2d",
     "prepare_apple_rt_ray_triangle_closest_hit",
     "prepare_apple_rt_rays_2d",
+    "prepare_embree_columnar_payload",
     "prepare_embree_columnar_record_set",
     "prepare_embree_db_dataset",
     "prepare_postgresql_denorm_table",
+    "PreparedEmbreeColumnarPayload",
     "PreparedEmbreeDbDataset",
     "PreparedEmbreeExecution",
     "PreparedEmbreeKernel",
