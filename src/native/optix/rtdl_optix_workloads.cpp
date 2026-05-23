@@ -1129,8 +1129,12 @@ static void db_launch_device_column_grouped_i64(
         std::vector<RtdlDbGroupedCountRow>& count_rows,
         std::vector<RtdlDbGroupedSumRow>& sum_rows,
         std::vector<RtdlDbGroupedSumCountRow>& sum_count_rows,
-        std::vector<RtdlDbGroupedStatsRow>& stats_rows)
+        std::vector<RtdlDbGroupedStatsRow>& stats_rows,
+        uint32_t* overflowed_out)
 {
+    if (overflowed_out) {
+        *overflowed_out = 0u;
+    }
     db_validate_device_payload_grouped_i64_inputs(
         fields, field_count, row_count, clauses, clause_count, group_key_field, value_field, group_capacity);
 
@@ -1262,7 +1266,11 @@ static void db_launch_device_column_grouped_i64(
     uint32_t invalid_group_count = 0;
     download(&invalid_group_count, d_invalid.ptr, 1);
     if (invalid_group_count != 0) {
-        throw std::runtime_error("device-column grouped execution requires dense non-negative group keys below group_capacity");
+        if (!overflowed_out) {
+            throw std::runtime_error("device-column grouped execution requires dense non-negative group keys below group_capacity");
+        }
+        *overflowed_out = 1u;
+        return;
     }
 
     DevPtr d_row_count(sizeof(uint32_t));
@@ -1376,13 +1384,15 @@ static void run_device_column_grouped_count_i64_optix_with_capacity(
         const char* group_key_field,
         size_t group_capacity,
         RtdlDbGroupedCountRow** rows_out,
-        size_t* row_count_out)
+        size_t* row_count_out,
+        uint32_t* overflowed_out)
 {
-    if (!rows_out || !row_count_out) {
-        throw std::runtime_error("output pointers must not be null");
+    if (!rows_out || !row_count_out || !overflowed_out) {
+        throw std::runtime_error("rows_out, row_count_out, and overflowed_out must not be null");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
+    *overflowed_out = 0u;
 
     std::vector<RtdlDbGroupedCountRow> rows;
     std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
@@ -1391,7 +1401,10 @@ static void run_device_column_grouped_count_i64_optix_with_capacity(
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         nullptr, group_capacity, kDeviceColumnGroupedOpCount,
-        rows, unused_sum_rows, unused_sum_count_rows, unused_stats_rows);
+        rows, unused_sum_rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
+    if (*overflowed_out != 0u) {
+        return;
+    }
     auto* out = static_cast<RtdlDbGroupedCountRow*>(std::malloc(sizeof(RtdlDbGroupedCountRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
@@ -1413,9 +1426,13 @@ static void run_device_column_grouped_count_i64_optix(
         RtdlDbGroupedCountRow** rows_out,
         size_t* row_count_out)
 {
+    uint32_t overflowed = 0u;
     run_device_column_grouped_count_i64_optix_with_capacity(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
-        kDbMaxGroupsPerJob, rows_out, row_count_out);
+        kDbMaxGroupsPerJob, rows_out, row_count_out, &overflowed);
+    if (overflowed != 0u) {
+        throw std::runtime_error("device-column grouped execution requires dense non-negative group keys below group_capacity");
+    }
 }
 
 static void run_device_column_grouped_sum_i64_optix_with_capacity(
@@ -1428,13 +1445,15 @@ static void run_device_column_grouped_sum_i64_optix_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumRow** rows_out,
-        size_t* row_count_out)
+        size_t* row_count_out,
+        uint32_t* overflowed_out)
 {
-    if (!rows_out || !row_count_out) {
-        throw std::runtime_error("output pointers must not be null");
+    if (!rows_out || !row_count_out || !overflowed_out) {
+        throw std::runtime_error("rows_out, row_count_out, and overflowed_out must not be null");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
+    *overflowed_out = 0u;
 
     std::vector<RtdlDbGroupedCountRow> unused_count_rows;
     std::vector<RtdlDbGroupedSumRow> rows;
@@ -1443,7 +1462,10 @@ static void run_device_column_grouped_sum_i64_optix_with_capacity(
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpSum,
-        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows);
+        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
+    if (*overflowed_out != 0u) {
+        return;
+    }
     auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
@@ -1466,9 +1488,13 @@ static void run_device_column_grouped_sum_i64_optix(
         RtdlDbGroupedSumRow** rows_out,
         size_t* row_count_out)
 {
+    uint32_t overflowed = 0u;
     run_device_column_grouped_sum_i64_optix_with_capacity(
         fields, field_count, row_count, clauses, clause_count, group_key_field, value_field,
-        kDbMaxGroupsPerJob, rows_out, row_count_out);
+        kDbMaxGroupsPerJob, rows_out, row_count_out, &overflowed);
+    if (overflowed != 0u) {
+        throw std::runtime_error("device-column grouped execution requires dense non-negative group keys below group_capacity");
+    }
 }
 
 static void run_device_column_grouped_min_i64_optix_with_capacity(
@@ -1481,13 +1507,15 @@ static void run_device_column_grouped_min_i64_optix_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumRow** rows_out,
-        size_t* row_count_out)
+        size_t* row_count_out,
+        uint32_t* overflowed_out)
 {
-    if (!rows_out || !row_count_out) {
-        throw std::runtime_error("output pointers must not be null");
+    if (!rows_out || !row_count_out || !overflowed_out) {
+        throw std::runtime_error("rows_out, row_count_out, and overflowed_out must not be null");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
+    *overflowed_out = 0u;
 
     std::vector<RtdlDbGroupedCountRow> unused_count_rows;
     std::vector<RtdlDbGroupedSumRow> rows;
@@ -1496,7 +1524,10 @@ static void run_device_column_grouped_min_i64_optix_with_capacity(
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpMin,
-        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows);
+        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
+    if (*overflowed_out != 0u) {
+        return;
+    }
     auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
@@ -1518,13 +1549,15 @@ static void run_device_column_grouped_max_i64_optix_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumRow** rows_out,
-        size_t* row_count_out)
+        size_t* row_count_out,
+        uint32_t* overflowed_out)
 {
-    if (!rows_out || !row_count_out) {
-        throw std::runtime_error("output pointers must not be null");
+    if (!rows_out || !row_count_out || !overflowed_out) {
+        throw std::runtime_error("rows_out, row_count_out, and overflowed_out must not be null");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
+    *overflowed_out = 0u;
 
     std::vector<RtdlDbGroupedCountRow> unused_count_rows;
     std::vector<RtdlDbGroupedSumRow> rows;
@@ -1533,7 +1566,10 @@ static void run_device_column_grouped_max_i64_optix_with_capacity(
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpMax,
-        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows);
+        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
+    if (*overflowed_out != 0u) {
+        return;
+    }
     auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
     if (!out && !rows.empty()) {
         throw std::bad_alloc();
@@ -1555,13 +1591,15 @@ static void run_device_column_grouped_sum_count_i64_optix_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumCountRow** rows_out,
-        size_t* row_count_out)
+        size_t* row_count_out,
+        uint32_t* overflowed_out)
 {
-    if (!rows_out || !row_count_out) {
-        throw std::runtime_error("output pointers must not be null");
+    if (!rows_out || !row_count_out || !overflowed_out) {
+        throw std::runtime_error("rows_out, row_count_out, and overflowed_out must not be null");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
+    *overflowed_out = 0u;
 
     std::vector<RtdlDbGroupedCountRow> unused_count_rows;
     std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
@@ -1570,7 +1608,10 @@ static void run_device_column_grouped_sum_count_i64_optix_with_capacity(
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpSumCount,
-        unused_count_rows, unused_sum_rows, rows, unused_stats_rows);
+        unused_count_rows, unused_sum_rows, rows, unused_stats_rows, overflowed_out);
+    if (*overflowed_out != 0u) {
+        return;
+    }
     auto* out = static_cast<RtdlDbGroupedSumCountRow*>(
         std::malloc(sizeof(RtdlDbGroupedSumCountRow) * rows.size()));
     if (!out && !rows.empty()) {
@@ -1593,13 +1634,15 @@ static void run_device_column_grouped_stats_i64_optix_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedStatsRow** rows_out,
-        size_t* row_count_out)
+        size_t* row_count_out,
+        uint32_t* overflowed_out)
 {
-    if (!rows_out || !row_count_out) {
-        throw std::runtime_error("output pointers must not be null");
+    if (!rows_out || !row_count_out || !overflowed_out) {
+        throw std::runtime_error("rows_out, row_count_out, and overflowed_out must not be null");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
+    *overflowed_out = 0u;
 
     std::vector<RtdlDbGroupedCountRow> unused_count_rows;
     std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
@@ -1608,7 +1651,10 @@ static void run_device_column_grouped_stats_i64_optix_with_capacity(
     db_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpStats,
-        unused_count_rows, unused_sum_rows, unused_sum_count_rows, rows);
+        unused_count_rows, unused_sum_rows, unused_sum_count_rows, rows, overflowed_out);
+    if (*overflowed_out != 0u) {
+        return;
+    }
     auto* out = static_cast<RtdlDbGroupedStatsRow*>(
         std::malloc(sizeof(RtdlDbGroupedStatsRow) * rows.size()));
     if (!out && !rows.empty()) {

@@ -4839,6 +4839,21 @@ def prepare_optix_partner_resident_columnar_record_set(
     raise RuntimeError("OptiX partner-resident columnar scaffold unexpectedly returned success")
 
 
+def _raise_on_partner_resident_grouped_capacity_overflow(
+    overflowed: ctypes.c_uint32,
+    *,
+    operation: str,
+    group_capacity: int,
+) -> None:
+    if int(overflowed.value) == 0:
+        return
+    raise RuntimeError(
+        "OptiX partner-resident grouped "
+        f"{operation} overflowed explicit group_capacity={group_capacity}; "
+        "increase group_capacity or remap group keys before using exact rows"
+    )
+
+
 def run_optix_partner_resident_columnar_grouped_count_i64(
     descriptor,
     query,
@@ -4879,6 +4894,7 @@ def run_optix_partner_resident_columnar_grouped_count_i64(
         )
     rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
     row_count_out = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
     common_args = (
         fields_array,
@@ -4894,6 +4910,7 @@ def run_optix_partner_resident_columnar_grouped_count_i64(
             ctypes.c_size_t(resolved_group_capacity),
             ctypes.byref(rows_ptr),
             ctypes.byref(row_count_out),
+            ctypes.byref(overflowed),
             error,
             len(error),
         )
@@ -4907,6 +4924,12 @@ def run_optix_partner_resident_columnar_grouped_count_i64(
         )
     )
     _check_status(status, error)
+    if resolved_group_capacity is not None:
+        _raise_on_partner_resident_grouped_capacity_overflow(
+            overflowed,
+            operation="count",
+            group_capacity=resolved_group_capacity,
+        )
     rows = OptixRowView(
         library=lib,
         rows_ptr=rows_ptr,
@@ -4966,6 +4989,7 @@ def run_optix_partner_resident_columnar_grouped_sum_i64(
         )
     rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
     row_count_out = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
     common_args = (
         fields_array,
@@ -4982,6 +5006,7 @@ def run_optix_partner_resident_columnar_grouped_sum_i64(
             ctypes.c_size_t(resolved_group_capacity),
             ctypes.byref(rows_ptr),
             ctypes.byref(row_count_out),
+            ctypes.byref(overflowed),
             error,
             len(error),
         )
@@ -4995,6 +5020,12 @@ def run_optix_partner_resident_columnar_grouped_sum_i64(
         )
     )
     _check_status(status, error)
+    if resolved_group_capacity is not None:
+        _raise_on_partner_resident_grouped_capacity_overflow(
+            overflowed,
+            operation="sum",
+            group_capacity=resolved_group_capacity,
+        )
     rows = OptixRowView(
         library=lib,
         rows_ptr=rows_ptr,
@@ -5089,6 +5120,7 @@ def run_optix_partner_resident_columnar_grouped_sum_count_i64(
         )
     rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumCountRow)()
     row_count_out = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
     status = symbol(
         fields_array,
@@ -5101,10 +5133,16 @@ def run_optix_partner_resident_columnar_grouped_sum_count_i64(
         ctypes.c_size_t(resolved_group_capacity),
         ctypes.byref(rows_ptr),
         ctypes.byref(row_count_out),
+        ctypes.byref(overflowed),
         error,
         len(error),
     )
     _check_status(status, error)
+    _raise_on_partner_resident_grouped_capacity_overflow(
+        overflowed,
+        operation="sum_count",
+        group_capacity=resolved_group_capacity,
+    )
     rows = OptixRowView(
         library=lib,
         rows_ptr=rows_ptr,
@@ -5169,6 +5207,7 @@ def run_optix_partner_resident_columnar_grouped_stats_i64(
         )
     rows_ptr = ctypes.POINTER(_RtdlDbGroupedStatsRow)()
     row_count_out = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
     status = symbol(
         fields_array,
@@ -5181,10 +5220,16 @@ def run_optix_partner_resident_columnar_grouped_stats_i64(
         ctypes.c_size_t(resolved_group_capacity),
         ctypes.byref(rows_ptr),
         ctypes.byref(row_count_out),
+        ctypes.byref(overflowed),
         error,
         len(error),
     )
     _check_status(status, error)
+    _raise_on_partner_resident_grouped_capacity_overflow(
+        overflowed,
+        operation="stats",
+        group_capacity=resolved_group_capacity,
+    )
     rows = OptixRowView(
         library=lib,
         rows_ptr=rows_ptr,
@@ -5392,6 +5437,7 @@ def _run_optix_partner_resident_columnar_grouped_value_i64(
         )
     rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
     row_count_out = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
     status = symbol(
         fields_array,
@@ -5404,10 +5450,16 @@ def _run_optix_partner_resident_columnar_grouped_value_i64(
         ctypes.c_size_t(resolved_group_capacity),
         ctypes.byref(rows_ptr),
         ctypes.byref(row_count_out),
+        ctypes.byref(overflowed),
         error,
         len(error),
     )
     _check_status(status, error)
+    _raise_on_partner_resident_grouped_capacity_overflow(
+        overflowed,
+        operation=operation,
+        group_capacity=resolved_group_capacity,
+    )
     rows = OptixRowView(
         library=lib,
         rows_ptr=rows_ptr,
@@ -10635,6 +10687,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]
@@ -10670,6 +10723,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
             ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]
@@ -10692,6 +10746,7 @@ def _register_argtypes(lib) -> None:
                 ctypes.c_size_t,
                 ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
                 ctypes.POINTER(ctypes.c_size_t),
+                ctypes.POINTER(ctypes.c_uint32),
                 ctypes.c_char_p,
                 ctypes.c_size_t,
             ]
@@ -10713,6 +10768,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumCountRow)),
             ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]
@@ -10734,6 +10790,7 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedStatsRow)),
             ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]

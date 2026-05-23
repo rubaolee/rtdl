@@ -1136,6 +1136,7 @@ int  rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity(
          const char* group_key_field,
          size_t group_capacity,
          RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_sum_i64(
          const RtdlDevicePayloadField* fields, size_t field_count,
@@ -1153,6 +1154,7 @@ int  rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
          const char* value_field,
          size_t group_capacity,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
@@ -1162,6 +1164,7 @@ int  rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
          const char* value_field,
          size_t group_capacity,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
@@ -1171,6 +1174,7 @@ int  rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
          const char* value_field,
          size_t group_capacity,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
@@ -1180,6 +1184,7 @@ int  rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity(
          const char* value_field,
          size_t group_capacity,
          RtdlDbGroupedSumCountRow** rows_out, size_t* row_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity(
          const RtdlDevicePayloadField* fields, size_t field_count,
@@ -1189,6 +1194,7 @@ int  rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity(
          const char* value_field,
          size_t group_capacity,
          RtdlDbGroupedStatsRow** rows_out, size_t* row_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 void rtdl_optix_columnar_payload_destroy(RtdlOptixDbDataset* dataset);
 int  rtdl_optix_columnar_payload_multi_predicate_scan(

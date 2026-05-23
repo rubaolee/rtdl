@@ -4122,6 +4122,7 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacit
         const char* group_key_field,
         size_t group_capacity,
         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4134,7 +4135,8 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacit
             group_key_field,
             group_capacity,
             rows_out,
-            row_count_out);
+            row_count_out,
+            overflowed_out);
     }, error_out, error_size);
 }
 
@@ -4169,6 +4171,7 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4182,7 +4185,8 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
             value_field,
             group_capacity,
             rows_out,
-            row_count_out);
+            row_count_out,
+            overflowed_out);
     }, error_out, error_size);
 }
 
@@ -4194,6 +4198,7 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4207,7 +4212,8 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
             value_field,
             group_capacity,
             rows_out,
-            row_count_out);
+            row_count_out,
+            overflowed_out);
     }, error_out, error_size);
 }
 
@@ -4219,6 +4225,7 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4232,7 +4239,8 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
             value_field,
             group_capacity,
             rows_out,
-            row_count_out);
+            row_count_out,
+            overflowed_out);
     }, error_out, error_size);
 }
 
@@ -4244,6 +4252,7 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_cap
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedSumCountRow** rows_out, size_t* row_count_out,
+        uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4257,7 +4266,8 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_cap
             value_field,
             group_capacity,
             rows_out,
-            row_count_out);
+            row_count_out,
+            overflowed_out);
     }, error_out, error_size);
 }
 
@@ -4269,6 +4279,7 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacit
         const char* value_field,
         size_t group_capacity,
         RtdlDbGroupedStatsRow** rows_out, size_t* row_count_out,
+        uint32_t* overflowed_out,
         char* error_out, size_t error_size)
 {
     return handle_native_call([&]() {
@@ -4282,7 +4293,8 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacit
             value_field,
             group_capacity,
             rows_out,
-            row_count_out);
+            row_count_out,
+            overflowed_out);
     }, error_out, error_size);
 }
 
