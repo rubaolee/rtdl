@@ -135,6 +135,11 @@ struct RtdlRay3D {
     uint32_t id;
     double ox, oy, oz, dx, dy, dz, tmax;
 };
+
+struct RtdlSegment3D {
+    uint32_t id;
+    double x0, y0, z0, x1, y1, z1;
+};
 #pragma pack(pop)
 
 struct RtdlSegmentPairIntersectionRow {
@@ -283,12 +288,33 @@ struct RtdlDbScalar {
     const char* string_value;
 };
 
+constexpr uint32_t kRtdlDbKindInt64 = 1u;
+constexpr uint32_t kRtdlDbKindFloat64 = 2u;
+constexpr uint32_t kRtdlDbKindBool = 3u;
+constexpr uint32_t kRtdlDbKindText = 4u;
+
 struct RtdlPayloadField {
     const char* name;
     uint32_t kind;
     const int64_t* int_values;
     const double* double_values;
     const char* const* string_values;
+};
+
+constexpr uint32_t kRtdlDevicePayloadDeviceCuda = 1u;
+constexpr uint32_t kRtdlDevicePayloadDtypeInt64 = 1u;
+constexpr uint32_t kRtdlDevicePayloadDtypeUint32 = 2u;
+constexpr uint32_t kRtdlDevicePayloadDtypeFloat64 = 3u;
+
+struct RtdlDevicePayloadField {
+    const char* name;
+    uint32_t kind;
+    uint32_t dtype;
+    uint32_t device_type;
+    uint32_t device_id;
+    size_t element_count;
+    size_t stride_bytes;
+    uint64_t device_ptr;
 };
 
 struct RtdlDbClause {
@@ -310,6 +336,20 @@ struct RtdlDbGroupedCountRow {
 struct RtdlDbGroupedSumRow {
     int64_t group_key;
     int64_t sum;
+};
+
+struct RtdlDbGroupedSumCountRow {
+    int64_t group_key;
+    int64_t sum;
+    int64_t count;
+};
+
+struct RtdlDbGroupedStatsRow {
+    int64_t group_key;
+    int64_t count;
+    int64_t sum;
+    int64_t min;
+    int64_t max;
 };
 
 constexpr uint32_t kRtdlDbCompactSummaryScanCount = 1u;
@@ -452,6 +492,37 @@ int  rtdl_optix_run_ray_anyhit_3d(
          const RtdlTriangle3D* triangles, size_t triangle_count,
          RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_create(
+         const RtdlTriangle3D* triangles, size_t triangle_count,
+         void** handle_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags(
+         void* handle,
+         const RtdlSegment3D* segments, size_t segment_count,
+         const uint32_t* group_offsets, size_t group_count,
+         uint8_t* flags_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_grouped_segment_query_create(
+         const RtdlSegment3D* segments, size_t segment_count,
+         const uint32_t* group_offsets, size_t group_count,
+         void** query_handle_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_flags(
+         void* scene_handle,
+         void* query_handle,
+         uint8_t* flags_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_count(
+         void* scene_handle,
+         void* query_handle,
+         uint32_t* flagged_group_count_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_static_triangle_scene_3d_grouped_segment_query_destroy(
+         void* query_handle);
+void rtdl_optix_static_triangle_scene_3d_destroy(void* handle);
 int  rtdl_optix_run_ray_segment_group_count_2d(
          const RtdlRay2D* rays, size_t ray_count,
          const RtdlSegment* segments, size_t segment_count,
@@ -781,12 +852,120 @@ int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs(
          int32_t* fallback_candidate_out,
          size_t item_count,
          char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs_with_options(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         size_t query_index_offset,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint32_t same_root_culling,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs_with_execution_options(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         size_t query_index_offset,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint32_t same_root_culling,
+         uint32_t direct_side_effect,
+         size_t item_count,
+         char* error_out, size_t error_size);
 int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs(
          void* prepared,
          double radius,
          const uint32_t* predicate_flags,
          int32_t* parent_out,
          int32_t* fallback_candidate_out,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_options(
+         void* prepared,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint32_t same_root_culling,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_execution_options(
+         void* prepared,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint32_t same_root_culling,
+         uint32_t direct_side_effect,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry(
+         void* prepared,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint64_t* telemetry_out,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry_and_options(
+         void* prepared,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint64_t* telemetry_out,
+         uint32_t same_root_culling,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry_and_execution_options(
+         void* prepared,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint64_t* telemetry_out,
+         uint32_t same_root_culling,
+         uint32_t direct_side_effect,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs(
+         void* prepared,
+         size_t query_start,
+         size_t query_count,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint64_t* telemetry_out,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_with_options(
+         void* prepared,
+         size_t query_start,
+         size_t query_count,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint64_t* telemetry_out,
+         uint32_t same_root_culling,
+         size_t item_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_with_execution_options(
+         void* prepared,
+         size_t query_start,
+         size_t query_count,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint64_t* telemetry_out,
+         uint32_t same_root_culling,
+         uint32_t direct_side_effect,
          size_t item_count,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d(void* prepared);
@@ -936,6 +1115,80 @@ int  rtdl_optix_columnar_payload_create_from_columns(
          size_t row_count,
          const char* const* primary_fields, size_t primary_field_count,
          RtdlOptixDbDataset** dataset_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_payload_create_from_device_columns(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const char* const* primary_fields, size_t primary_field_count,
+         RtdlOptixDbDataset** dataset_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_count_i64(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         size_t group_capacity,
+         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_sum_i64(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         size_t group_capacity,
+         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         size_t group_capacity,
+         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         size_t group_capacity,
+         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         size_t group_capacity,
+         RtdlDbGroupedSumCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity(
+         const RtdlDevicePayloadField* fields, size_t field_count,
+         size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         size_t group_capacity,
+         RtdlDbGroupedStatsRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_columnar_payload_destroy(RtdlOptixDbDataset* dataset);
 int  rtdl_optix_columnar_payload_multi_predicate_scan(

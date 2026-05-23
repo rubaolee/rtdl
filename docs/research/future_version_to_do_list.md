@@ -484,6 +484,89 @@ Future work:
   improves the dense 65,536-point clustered row by another about 1.08x on the
   same RTX A5000 pod. The deeper remaining work is unchanged: reduce global
   atomic pressure for generic grouped continuations.
+- Goal2467 opened the next Mac-local design step for a generic
+  blocked/segmented grouped continuation. The design target is
+  `generic_fixed_radius_blocked_grouped_component_continuation_3d`, recorded as
+  non-executable and `needs-more-evidence` until native implementation, pod
+  timing, and external review exist. A Mac-local CPU simulator now fixes the
+  semantic and telemetry contract for segment count, fixed capacity,
+  proposal-rejection rate, atomic-attempt counters, and fail-closed fallback.
+  Keep this app-independent; RT-DBSCAN is only the benchmark stressor.
+- Goal2468 added local overhead-breakdown instrumentation for the grouped
+  stream benchmark path and replayable pod runner. The next pod run should
+  attribute the gap between full warm elapsed time and native grouped RT time
+  before choosing label-materialization, Python/CuPy orchestration, or native
+  grouped-continuation work. This is diagnostic plumbing only; it is not a
+  performance claim.
+- Goal2468 pod evidence on RTX PRO 4500 Blackwell attributed the current
+  grouped-stream full-vs-native gap mostly to Python row materialization,
+  label densification, and benchmark signature construction. At 65,536
+  clustered points, native grouped RT was about 58.9 ms while row
+  materialization plus densification plus signature was about 66.4 ms.
+  Before deeper native work, add a raw column/label benchmark mode or
+  device/partner-column signature path that avoids Python dictionary rows when
+  users do not ask for row output.
+- Goal2469 added the first local version of that path:
+  `optix_rt_core_grouped_stream_cupy_column_signature_3d`. It keeps the
+  row-returning grouped-stream mode intact but computes the benchmark signature
+  from partner column arrays without Python row dictionaries. RTX 2000 Ada pod
+  timing showed the no-row consumer path reduced measured benchmark tail time
+  from 0.091646 s to 0.068829 s at 32,768 clustered points and from 0.236771 s
+  to 0.196566 s at 65,536 clustered points. The stable attribution is
+  host-side gap reduction: removing Python row dictionaries and label
+  densification, partially offset by the column-signature computation. This is
+  not a faster native RT primitive claim. Gemini review accepted this narrow
+  boundary, and the Codex/Gemini consensus records Goal2469 as closed for the
+  benchmark-consumer row-materialization issue.
+- Goal2470 ran a Mac-local segment-sensitivity sweep over the Goal2467
+  simulator. It found that naive tiny fixed-hit segments are unlikely to reduce
+  global atomic pressure enough: at 2,048 clustered points, 64-hit segments
+  reject only about 0.06% of global parent attempts and 256-hit segments reject
+  only about 1.35%. Larger 2,048-hit segments reject about 46%, but require
+  larger fixed buffers. The first native prototype should therefore use large
+  enough segment buffers or spatial/Morton/query-local grouping, not a naive
+  many-tiny-query-chunks launch plan.
+- Goal2471 starts the telemetry-first native slice by adding optional
+  caller-owned `uint64[4]` grouped-union atomic counters to the generic prepared
+  OptiX fixed-radius grouped-union self-query path. This is instrumentation,
+  not an optimization: the default non-telemetry symbol remains unchanged.
+  Goal2471 pod validation on an RTX A5000 confirmed all-items parent counters
+  and predicated fallback counters execute correctly, so the counters can now be
+  used as evidence for later optimization studies.
+- Goal2472 adds the first concrete blocked-continuation runtime scaffold: a
+  generic prepared fixed-radius grouped-union self-query range symbol and an
+  explicit RT-DBSCAN benchmark mode that can run grouped continuation over
+  contiguous prepared-search query blocks. This is still a candidate path, not
+  a default dispatcher or speed claim. RTX A5000 pod evidence showed query
+  range blocking is correct but slower than the unblocked path: `8192`-item
+  blocks were 2.39x-2.84x slower end-to-end and `32768`-item blocks were still
+  1.06x-1.09x slower end-to-end. Keep the range symbol as a generic scaffold,
+  but do not promote query chunking as the next optimization. The next useful
+  work is a true segmented/proposal-reduction path that reduces global parent
+  atomic attempts inside a launch.
+- Goal2473 used Goal2471 telemetry at benchmark scale on the RTX A5000. The
+  current optimized grouped-union path records only about 1.19x-1.23x parent
+  atomic attempts per point at 32,768 and 65,536 clustered points, while native
+  grouped time is still about 31 ms and 83 ms respectively. This weakens the
+  hypothesis that duplicate global parent atomics alone dominate. The next
+  optimization should also target RT hit reporting/anyhit work or a generic
+  connectivity-proposal contract that produces fewer useful callbacks, not just
+  local deduplication of already-small atomic counts.
+- Goal2474 starts that direction by moving generic predicated grouped-union
+  no-op filtering into the OptiX intersection program. In predicated mode, hits
+  that cannot affect parent union or fallback candidates are rejected before
+  `optixReportIntersection`; anyhit keeps the same checks as a safety net. This
+  is pod-validated as part of Goal2475 and mostly affects mixed-predicate rows.
+- Goal2475 adds a stronger generic culling candidate for dense parent-union
+  rows: after the exact radius test, the OptiX intersection program reads the
+  current union-find roots and skips `optixReportIntersection` when source and
+  target are already connected. This targets anyhit callback overhead rather
+  than atomic count alone. RTX A5000 pod evidence was positive: grouped-native
+  median improved by about 19.1% at 32,768 clustered points and 19.9% at 65,536
+  clustered points; total column-signature benchmark median improved by about
+  3.9% and 10.8% respectively, with signatures matching. Treat this as an
+  internal engineering win accepted by Codex/Gemini consensus; public wording
+  still requires the normal release-claim process.
 - Do not spend more v2.2 time on neighbor-index workspace reuse unless a new
   stream-ordered event mechanism avoids device-wide synchronization. The
   current evidence says the next useful work is the grouped continuation leap.

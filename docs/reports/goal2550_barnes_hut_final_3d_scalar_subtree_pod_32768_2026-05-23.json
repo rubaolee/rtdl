@@ -1,0 +1,85 @@
+{
+  "backend": "torch_cuda_extension_subtree_containment_float32_scalar_3d",
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "body_count": 32768,
+  "bucket_size": 32,
+  "contract": "generic_aggregate_frontier_inverse_square_scalar_sum_3d_v1",
+  "deltas": {
+    "checksum_scalar_force_abs": 2460868.59375,
+    "contribution_row_count": 0,
+    "max_scalar_abs_error": 524598.7729816437,
+    "max_scalar_relative_error": 3.30193391111884e-05,
+    "mean_scalar_abs_error": 394.9007666134273,
+    "mean_scalar_relative_error": 1.679236610394568e-07,
+    "visited_node_total": 0
+  },
+  "device": "NVIDIA RTX A5000",
+  "input_file": "/root/rtbarneshut_32768_input.txt",
+  "metadata": {
+    "authors_code_comparison": true,
+    "claim_boundary": "3-D scalar inverse-square subtree-containment prototype. Same dimensionality and force shape as authors' sample, but not yet the exact same tree construction or RT traversal contract.",
+    "native_engine_app_specific": false,
+    "paper_reproduction": false,
+    "partner_resident_kernel": true,
+    "public_speedup_claim_authorized": false,
+    "same_dimension_as_authors": true,
+    "same_scalar_inverse_square_force_shape_as_authors": true,
+    "same_tree_contract_as_authors": false
+  },
+  "reference": {
+    "checksum_scalar_force": 58630181311938.41,
+    "summary": {
+      "aggregate_contribution_row_count": 2282546,
+      "contribution_row_count": 3314685,
+      "exact_contribution_row_count": 1032139,
+      "leaf_node_count": 4094,
+      "root_count": 1,
+      "source_count": 32768,
+      "tree_node_count": 4679,
+      "visited_node_total": 2751371
+    }
+  },
+  "repeats": 20,
+  "result": {
+    "aggregate_contribution_row_count": 2282546,
+    "checksum_scalar_force": 58630183772807.0,
+    "contribution_row_count": 3314685,
+    "exact_contribution_row_count": 1032139,
+    "visited_node_total": 2751371
+  },
+  "softening": 0.0,
+  "theta": 0.5,
+  "timing_ms": {
+    "extension_compile": 55.03629148006439,
+    "resident_kernel_mean": 0.5217871993780137,
+    "resident_kernel_min": 0.5028480291366577,
+    "resident_kernel_runs": [
+      0.5238400101661682,
+      0.7784640192985535,
+      0.5115839838981628,
+      0.5114560127258301,
+      0.5070080161094666,
+      0.5076159834861755,
+      0.5050560235977173,
+      0.5056319832801819,
+      0.5028480291366577,
+      0.508575975894928,
+      0.5037440061569214,
+      0.5052480101585388,
+      0.5063999891281128,
+      0.5066559910774231,
+      0.5052480101585388,
+      0.5071039795875549,
+      0.5041599869728088,
+      0.5059199929237366,
+      0.524511992931366,
+      0.5046719908714294
+    ],
+    "tensor_prepare_host_to_device": 202.0970657467842,
+    "tree_prepare_cpu": 330.18966764211655
+  },
+  "tree_summary": {
+    "leaf_node_count": 4094,
+    "tree_node_count": 4679
+  }
+}

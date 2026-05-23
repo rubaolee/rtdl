@@ -1,0 +1,42 @@
+{
+  "case_shape": {
+    "group_count": 192,
+    "link_count": 3,
+    "pose_count": 64,
+    "probe_points_per_group": 9,
+    "segment_count": 1728,
+    "static_obstacle_triangle_count": 32
+  },
+  "claim_boundary": {
+    "internal_exact_subpath_evidence_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "count_mode_all_counts_match": true,
+  "count_mode_all_match": true,
+  "count_mode_group_flags_downloaded_to_python": false,
+  "count_mode_python_group_flags_materialized": false,
+  "count_mode_result_kind": "uint32_flagged_group_count",
+  "count_mode_true_zero_copy_authorized": false,
+  "cuda_for_build_and_run": "13.0 (/usr/local/cuda)",
+  "dataset": "scaled",
+  "device_buffers_tail_median_output_postprocess_seconds": 3.897026181221008e-05,
+  "device_buffers_tail_median_total_seconds": 0.0001154877245426178,
+  "device_buffers_tail_median_traversal_seconds": 4.0051e-05,
+  "device_count_tail_median_output_postprocess_seconds": 3.129243850708008e-07,
+  "device_count_tail_median_total_seconds": 5.0187110900878906e-05,
+  "device_count_tail_median_traversal_seconds": 2.98915e-05,
+  "driver": "570.133.07",
+  "flags_mode_all_match": true,
+  "goal": "Goal2490",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "optix_prefix": "/workspace/vendor/optix-dev",
+  "output_postprocess_median_ratio_flags_over_count": 124.53571428571429,
+  "pod": "ssh root@157.157.221.29 -p 23792 -i ~/.ssh/id_ed25519_rtdl_codex",
+  "reference_flagged_group_count": 70,
+  "repeats": 11,
+  "total_median_ratio_flags_over_count": 2.3011431116389547,
+  "traversal_median_ratio_flags_over_count": 1.3398792298814044,
+  "warmup": 3
+}

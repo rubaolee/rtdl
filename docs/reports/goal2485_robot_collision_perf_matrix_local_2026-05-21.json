@@ -1,0 +1,128 @@
+{
+  "app": "robot_collision_benchmark",
+  "case_shape": {
+    "link_count": 3,
+    "obstacle_count": 16,
+    "pose_count": 64,
+    "static_obstacle_triangle_count": 32
+  },
+  "claim_boundary": {
+    "authors_code_comparison_claim_authorized": false,
+    "continuous_collision_supported": false,
+    "exact_solid_collision_claim_authorized": false,
+    "internal_evidence_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  },
+  "dataset": "scaled",
+  "goal": "Goal2485",
+  "rows": [
+    {
+      "backend": "python",
+      "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+      "mode": "cpu_reference",
+      "parity_reference": "exact_2d_cpu_reference",
+      "runs": [
+        {
+          "elapsed_sec": 0.12648883299971203,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": true,
+          "iteration": 0
+        },
+        {
+          "elapsed_sec": 0.14284645799943974,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": true,
+          "iteration": 1
+        },
+        {
+          "elapsed_sec": 0.12501391599926137,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 2
+        },
+        {
+          "elapsed_sec": 0.125224917000196,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 3
+        },
+        {
+          "elapsed_sec": 0.1248997499997131,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 4
+        },
+        {
+          "elapsed_sec": 0.12471487499988143,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 5
+        },
+        {
+          "elapsed_sec": 0.12511512499986566,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 6
+        }
+      ],
+      "status": "ok",
+      "tail_median_total_run_seconds": 0.12501391599926137
+    },
+    {
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "embree",
+      "case_shape": {
+        "group_count": 192,
+        "link_count": 3,
+        "pose_count": 64,
+        "probe_points_per_group": 9,
+        "segment_count": 1728,
+        "static_obstacle_triangle_count": 32
+      },
+      "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+      "mode": "embree_prepared",
+      "parity_reference": "goal2481_probe_reference",
+      "reuse_metadata": {
+        "all_measured_runs_match_probe_reference": true,
+        "all_run_signatures_identical": true,
+        "measured_run_count": 5,
+        "native_query_output_buffer_reuse_note": "current Python ABI reuses prepared scene and Python input sequences; native query/output buffers are repacked per run",
+        "native_query_output_buffers_reused": false,
+        "prepare_build_seconds_constant": true,
+        "prepared_run_indices": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "prepared_run_indices_strictly_increase": true,
+        "prepared_scene_reused": true,
+        "query_input_sequences_reused": true,
+        "repeat_count": 7,
+        "warmup_rows_dropped": 2
+      },
+      "status": "ok",
+      "tail_median_phase_timing_seconds": {
+        "output_postprocess": 5.708000571758021e-06,
+        "prepare_build": 0.00016204100029426627,
+        "query_pack": 0.002358624999942549,
+        "traversal": 1.55e-05
+      },
+      "tail_median_total_run_seconds": 0.0024037919993133983
+    },
+    {
+      "backend": "optix",
+      "mode": "optix_prepared",
+      "status": "skipped"
+    }
+  ],
+  "warmup_protocol": {
+    "repeat_count": 7,
+    "rule": "drop warmup rows and report tail medians",
+    "warmup_count": 2
+  }
+}

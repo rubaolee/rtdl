@@ -1,0 +1,38 @@
+{
+  "baseline": "std_thread_exact_pairwise_force_2d",
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "body_count": 8192,
+  "build_dir": null,
+  "compile_elapsed_ms": 410.2305000051274,
+  "compile_stderr": "",
+  "compiler": "/usr/bin/clang++",
+  "metadata": {
+    "authors_code_comparison": false,
+    "claim_boundary": "Local exact O(N^2) std::thread CPU baseline only. It is useful for sanity/performance pressure, but it is not RT-BarnesHut paper-code timing and not a whole-app RTDL speedup claim.",
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "same_contract_as_paper_code": false
+  },
+  "runs": [
+    {
+      "baseline": "std_thread_exact_pairwise_force_2d",
+      "body_count": 8192,
+      "checksum_force_x": 4.09e-10,
+      "checksum_force_y": 7.451e-09,
+      "elapsed_ms": 88.918083,
+      "threads": 1
+    },
+    {
+      "baseline": "std_thread_exact_pairwise_force_2d",
+      "body_count": 8192,
+      "checksum_force_x": 4.09e-10,
+      "checksum_force_y": 7.451e-09,
+      "elapsed_ms": 20.008792,
+      "threads": 4
+    }
+  ],
+  "thread_counts": [
+    1,
+    4
+  ]
+}

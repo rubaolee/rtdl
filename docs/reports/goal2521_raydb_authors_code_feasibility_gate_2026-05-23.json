@@ -1,0 +1,38 @@
+{
+  "authors_code_available": true,
+  "authors_code_built": false,
+  "authors_code_timed": false,
+  "authors_repository": "https://github.com/LonelySlim/myOptixDB.git",
+  "authors_repository_branch": "fin",
+  "authors_repository_head": "a610c00d7334d8907435cc0a124f9ca8392ee456",
+  "authors_repository_head_date": "2024-11-06 18:47:36 +0800",
+  "authors_repository_head_subject": "v0.5",
+  "build_gate_status": "blocked_without_dedicated_pod_and_legacy_toolchain",
+  "comparison_gate_status": "blocked_not_same_contract_yet",
+  "data_gate_status": "blocked_generated_ssb_sf20_data_not_present",
+  "dataset_size_in_authors_run_script": 119994608,
+  "goal": "Goal2521 RayDB authors-code feasibility gate",
+  "license_gate_status": "unresolved_no_repo_level_license_file",
+  "local_inspection_clone": "/tmp/rtdl_goal2521_myOptixDB",
+  "native_rtdl_changes": false,
+  "next_authorized_goal": "Goal2522 may attempt build-only reproduction only after pod/toolchain/data-cost acceptance",
+  "performance_comparison_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "same_contract_requirements": [
+    "same input rows and columns",
+    "same predicates",
+    "same grouping keys",
+    "same aggregate result modes",
+    "same result materialization boundary",
+    "same correctness oracle"
+  ],
+  "same_contract_status": {
+    "aggregate_modes_match": false,
+    "correctness_oracle_available": false,
+    "input_fixture_match": false,
+    "query_contract_match": false,
+    "result_materialization_match": false
+  },
+  "source_copied_into_rtdl": false,
+  "verdict": "do_not_time_or_compare_yet"
+}

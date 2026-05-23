@@ -1,0 +1,187 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "cases": {
+    "cpu_python_reference": {
+      "all_match_cpu_reference": true,
+      "backend": "cpu_python_reference",
+      "claim_boundary": "Backend matrix for the generic columnar grouped aggregate contract only. Timings are diagnostic and do not authorize public speedup, whole-app, authors-code, true zero-copy, SQL-engine, or DBMS claims.",
+      "median_elapsed_sec": 1.2165997759439051e-05,
+      "modes": {
+        "avg_as_sum_count": {
+          "lowering_plan": {
+            "backend": "cpu_python_reference",
+            "claim_boundary": "CPU oracle for the generic columnar grouped aggregate contract. No native acceleration, public speedup, or true zero-copy claim is authorized.",
+            "direct_columnar_record_set_api": true,
+            "materializes_input_rows_for_wrapper": false,
+            "next_engine_target": "native_count_sum_parity",
+            "requires_runtime_validation": false,
+            "supported_aggregates": [
+              "count",
+              "sum",
+              "min",
+              "max",
+              "avg_as_sum_count"
+            ],
+            "transfer_path": "python_columnar_reference",
+            "true_zero_copy_authorized": false,
+            "unsupported_aggregates": [],
+            "uses_compatibility_wrapper": false
+          },
+          "matches_cpu_reference": true,
+          "max_elapsed_sec": 1.2584001524373889e-05,
+          "median_elapsed_sec": 1.154200072051026e-05,
+          "min_elapsed_sec": 1.1041000107070431e-05,
+          "row_count": 3,
+          "samples_elapsed_sec": [
+            1.2584001524373889e-05,
+            1.195799995912239e-05,
+            1.154200072051026e-05,
+            1.1041996913263574e-05,
+            1.1041000107070431e-05
+          ],
+          "status": "ok"
+        },
+        "count": {
+          "lowering_plan": {
+            "backend": "cpu_python_reference",
+            "claim_boundary": "CPU oracle for the generic columnar grouped aggregate contract. No native acceleration, public speedup, or true zero-copy claim is authorized.",
+            "direct_columnar_record_set_api": true,
+            "materializes_input_rows_for_wrapper": false,
+            "next_engine_target": "native_count_sum_parity",
+            "requires_runtime_validation": false,
+            "supported_aggregates": [
+              "count",
+              "sum",
+              "min",
+              "max",
+              "avg_as_sum_count"
+            ],
+            "transfer_path": "python_columnar_reference",
+            "true_zero_copy_authorized": false,
+            "unsupported_aggregates": [],
+            "uses_compatibility_wrapper": false
+          },
+          "matches_cpu_reference": true,
+          "max_elapsed_sec": 4.824999996344559e-05,
+          "median_elapsed_sec": 1.5124998753890395e-05,
+          "min_elapsed_sec": 1.1415999324526638e-05,
+          "row_count": 3,
+          "samples_elapsed_sec": [
+            4.824999996344559e-05,
+            2.1084000763949007e-05,
+            1.5124998753890395e-05,
+            1.270900247618556e-05,
+            1.1415999324526638e-05
+          ],
+          "status": "ok"
+        },
+        "max": {
+          "lowering_plan": {
+            "backend": "cpu_python_reference",
+            "claim_boundary": "CPU oracle for the generic columnar grouped aggregate contract. No native acceleration, public speedup, or true zero-copy claim is authorized.",
+            "direct_columnar_record_set_api": true,
+            "materializes_input_rows_for_wrapper": false,
+            "next_engine_target": "native_count_sum_parity",
+            "requires_runtime_validation": false,
+            "supported_aggregates": [
+              "count",
+              "sum",
+              "min",
+              "max",
+              "avg_as_sum_count"
+            ],
+            "transfer_path": "python_columnar_reference",
+            "true_zero_copy_authorized": false,
+            "unsupported_aggregates": [],
+            "uses_compatibility_wrapper": false
+          },
+          "matches_cpu_reference": true,
+          "max_elapsed_sec": 1.2500000593718141e-05,
+          "median_elapsed_sec": 1.2208001862745732e-05,
+          "min_elapsed_sec": 1.2041000445606187e-05,
+          "row_count": 3,
+          "samples_elapsed_sec": [
+            1.2500000593718141e-05,
+            1.2165997759439051e-05,
+            1.2458000128390267e-05,
+            1.2208001862745732e-05,
+            1.2041000445606187e-05
+          ],
+          "status": "ok"
+        },
+        "min": {
+          "lowering_plan": {
+            "backend": "cpu_python_reference",
+            "claim_boundary": "CPU oracle for the generic columnar grouped aggregate contract. No native acceleration, public speedup, or true zero-copy claim is authorized.",
+            "direct_columnar_record_set_api": true,
+            "materializes_input_rows_for_wrapper": false,
+            "next_engine_target": "native_count_sum_parity",
+            "requires_runtime_validation": false,
+            "supported_aggregates": [
+              "count",
+              "sum",
+              "min",
+              "max",
+              "avg_as_sum_count"
+            ],
+            "transfer_path": "python_columnar_reference",
+            "true_zero_copy_authorized": false,
+            "unsupported_aggregates": [],
+            "uses_compatibility_wrapper": false
+          },
+          "matches_cpu_reference": true,
+          "max_elapsed_sec": 1.2583001080201939e-05,
+          "median_elapsed_sec": 1.2124997738283128e-05,
+          "min_elapsed_sec": 1.2000000424450263e-05,
+          "row_count": 3,
+          "samples_elapsed_sec": [
+            1.2583001080201939e-05,
+            1.2249998690094799e-05,
+            1.2000000424450263e-05,
+            1.2000000424450263e-05,
+            1.2124997738283128e-05
+          ],
+          "status": "ok"
+        },
+        "sum": {
+          "lowering_plan": {
+            "backend": "cpu_python_reference",
+            "claim_boundary": "CPU oracle for the generic columnar grouped aggregate contract. No native acceleration, public speedup, or true zero-copy claim is authorized.",
+            "direct_columnar_record_set_api": true,
+            "materializes_input_rows_for_wrapper": false,
+            "next_engine_target": "native_count_sum_parity",
+            "requires_runtime_validation": false,
+            "supported_aggregates": [
+              "count",
+              "sum",
+              "min",
+              "max",
+              "avg_as_sum_count"
+            ],
+            "transfer_path": "python_columnar_reference",
+            "true_zero_copy_authorized": false,
+            "unsupported_aggregates": [],
+            "uses_compatibility_wrapper": false
+          },
+          "matches_cpu_reference": true,
+          "max_elapsed_sec": 1.5542002074653283e-05,
+          "median_elapsed_sec": 1.1874999472638592e-05,
+          "min_elapsed_sec": 1.1042000551242381e-05,
+          "row_count": 3,
+          "samples_elapsed_sec": [
+            1.5542002074653283e-05,
+            1.2207998224766925e-05,
+            1.1374999303370714e-05,
+            1.1042000551242381e-05,
+            1.1874999472638592e-05
+          ],
+          "status": "ok"
+        }
+      },
+      "status": "ok"
+    }
+  },
+  "claim_boundary": "Backend matrix for the generic columnar grouped aggregate contract only. Timings are diagnostic and do not authorize public speedup, whole-app, authors-code, true zero-copy, SQL-engine, or DBMS claims.",
+  "goal": "goal2500_raydb_style_backend_matrix",
+  "repeats": 5
+}

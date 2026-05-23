@@ -15,11 +15,11 @@
   "rows": [
     {
       "app": "service_coverage_gaps",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_service_coverage_gaps_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_service_coverage_gaps_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [],
       "classification": "timing_schema_mismatch",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_service_coverage_gaps_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_service_coverage_gaps_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -33,11 +33,11 @@
     },
     {
       "app": "event_hotspot_screening",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_event_hotspot_screening_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_event_hotspot_screening_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [],
       "classification": "timing_schema_mismatch",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_event_hotspot_screening_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_event_hotspot_screening_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -51,11 +51,11 @@
     },
     {
       "app": "facility_knn_assignment",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_facility_knn_assignment_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_facility_knn_assignment_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [],
       "classification": "timing_schema_mismatch",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_facility_knn_assignment_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_facility_knn_assignment_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -91,7 +91,7 @@
     },
     {
       "app": "road_hazard_screening",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_road_hazard_screening_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_road_hazard_screening_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [
         "run_phases",
@@ -100,7 +100,7 @@
         "run_phases.summary_postprocess_sec"
       ],
       "classification": "phase_mapped_diagnostic",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_road_hazard_screening_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_road_hazard_screening_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -140,11 +140,11 @@
     },
     {
       "app": "segment_polygon_hitcount",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_segment_polygon_hitcount_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_segment_polygon_hitcount_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [],
       "classification": "timing_schema_mismatch",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_segment_polygon_hitcount_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_segment_polygon_hitcount_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -173,11 +173,11 @@
     },
     {
       "app": "segment_polygon_anyhit_rows",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_segment_polygon_anyhit_rows_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_segment_polygon_anyhit_rows_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [],
       "classification": "timing_schema_mismatch",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_segment_polygon_anyhit_rows_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_segment_polygon_anyhit_rows_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -207,7 +207,7 @@
     },
     {
       "app": "graph_visibility_edges",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_graph_visibility_edges_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_graph_visibility_edges_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [
         "graph_phase_totals_sec",
@@ -222,7 +222,7 @@
         "sections.visibility_edges.run_phases.summary_postprocess_sec"
       ],
       "classification": "missing_current_artifact",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_graph_visibility_edges_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_graph_visibility_edges_embree.json",
       "current_artifact_present": false,
       "current_timing_keys": [],
       "direct_speedup_claim_authorized": false,
@@ -233,7 +233,7 @@
     },
     {
       "app": "graph_bfs",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_graph_bfs_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_graph_bfs_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [
         "graph_phase_totals_sec",
@@ -252,7 +252,7 @@
         "sections.bfs.run_phases.row_materialization_sec"
       ],
       "classification": "missing_current_artifact",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_graph_bfs_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_graph_bfs_embree.json",
       "current_artifact_present": false,
       "current_timing_keys": [],
       "direct_speedup_claim_authorized": false,
@@ -263,7 +263,7 @@
     },
     {
       "app": "graph_triangle_count",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_graph_triangle_count_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_graph_triangle_count_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [
         "graph_phase_totals_sec",
@@ -282,7 +282,7 @@
         "sections.triangle_count.run_phases.row_materialization_sec"
       ],
       "classification": "missing_current_artifact",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_graph_triangle_count_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_graph_triangle_count_embree.json",
       "current_artifact_present": false,
       "current_timing_keys": [],
       "direct_speedup_claim_authorized": false,
@@ -293,7 +293,7 @@
     },
     {
       "app": "hausdorff_distance",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_hausdorff_distance_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_hausdorff_distance_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [
         "run_phases",
@@ -302,7 +302,7 @@
         "run_phases.validation_sec"
       ],
       "classification": "phase_mapped_diagnostic",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_hausdorff_distance_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_hausdorff_distance_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.app_level_phase_aliases",
@@ -358,11 +358,11 @@
     },
     {
       "app": "ann_candidate_search",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_ann_candidate_search_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_ann_candidate_search_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [],
       "classification": "timing_schema_mismatch",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_ann_candidate_search_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_ann_candidate_search_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -398,11 +398,11 @@
     },
     {
       "app": "barnes_hut_force_app",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_barnes_hut_force_app_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_barnes_hut_force_app_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [],
       "classification": "timing_schema_mismatch",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_barnes_hut_force_app_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_barnes_hut_force_app_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -438,7 +438,7 @@
     },
     {
       "app": "polygon_pair_overlap_area_rows",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_polygon_pair_overlap_area_rows_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_polygon_pair_overlap_area_rows_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [
         "run_phases",
@@ -448,7 +448,7 @@
         "summary.total_intersection_area"
       ],
       "classification": "phase_mapped_diagnostic",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_polygon_pair_overlap_area_rows_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_polygon_pair_overlap_area_rows_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",
@@ -490,7 +490,7 @@
     },
     {
       "app": "polygon_set_jaccard",
-      "baseline_artifact": "docs\\reports\\goal1746_v1_0_polygon_set_jaccard_embree.json",
+      "baseline_artifact": "docs/reports/goal1746_v1_0_polygon_set_jaccard_embree.json",
       "baseline_artifact_present": true,
       "baseline_timing_keys": [
         "rows[0].intersection_area",
@@ -502,7 +502,7 @@
         "summary.intersection_area"
       ],
       "classification": "phase_mapped_diagnostic",
-      "current_artifact": "docs\\reports\\goal1660_v1_6_11_polygon_set_jaccard_embree.json",
+      "current_artifact": "docs/reports/goal1660_v1_6_11_polygon_set_jaccard_embree.json",
       "current_artifact_present": true,
       "current_timing_keys": [
         "cloud_claim_contract.required_phase_groups",

@@ -1,0 +1,166 @@
+{
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "bucket_size": 32,
+  "claim_boundary": "Mac-local Python reference timing for materialized contribution rows versus streamed vector sums; not native timing, not authors-code timing, and not public speedup evidence.",
+  "date": "2026-05-23",
+  "records": [
+    {
+      "body_count": 2048,
+      "checksum_force_x": 6676.391582063414,
+      "checksum_force_y": 82526.92929468362,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_opening_frontier_2d_v1+generic_weighted_inverse_square_contribution_rows_2d_v1+generic_grouped_vector_sum_rows_2d_v1+python_force_interpretation",
+      "elapsed_ms": 1342.5930829980643,
+      "force_row_count": 2048,
+      "max_relative_error": 0.6312036154438222,
+      "mode": "bucketized_force_cpu",
+      "opening_summary": {
+        "accepted_aggregate_row_count": 54264,
+        "fallback_exact_row_count": 204231,
+        "leaf_node_count": 151,
+        "max_depth": 4,
+        "root_count": 1,
+        "source_count": 2048,
+        "sources_with_any_output": 2048,
+        "tree_node_count": 201,
+        "visited_node_total": 85512
+      },
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 151,
+        "max_depth": 4,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 2048,
+        "tree_node_count": 201
+      },
+      "validation_skipped": false,
+      "vector_sum_summary": {
+        "contribution_row_count": 258495,
+        "source_count": 2048,
+        "sources_with_contributions": 2048
+      }
+    },
+    {
+      "body_count": 2048,
+      "checksum_delta_x_vs_materialized": 0.0,
+      "checksum_delta_y_vs_materialized": 0.0,
+      "checksum_force_x": 6676.391582063414,
+      "checksum_force_y": 82526.92929468362,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_opening_frontier_2d_v1+generic_weighted_inverse_square_vector_sum_2d_v1+python_force_interpretation",
+      "elapsed_ms": 1032.3725839989493,
+      "elapsed_ratio_vs_materialized": 0.7689392989375603,
+      "force_row_count": 2048,
+      "max_relative_error": 0.6312036154438222,
+      "mode": "streamed_force_sum_bucketized_cpu",
+      "opening_summary": {
+        "accepted_aggregate_row_count": 54264,
+        "fallback_exact_row_count": 204231,
+        "leaf_node_count": 151,
+        "max_depth": 4,
+        "root_count": 1,
+        "source_count": 2048,
+        "sources_with_any_output": 2048,
+        "tree_node_count": 201,
+        "visited_node_total": 85512
+      },
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 151,
+        "max_depth": 4,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 2048,
+        "tree_node_count": 201
+      },
+      "validation_skipped": false,
+      "vector_sum_summary": {
+        "aggregate_contribution_row_count": 54264,
+        "contribution_row_count": 258495,
+        "exact_contribution_row_count": 204231,
+        "materialized_contribution_rows": false,
+        "source_count": 2048,
+        "sources_with_contributions": 2048,
+        "target_count": 2048
+      }
+    },
+    {
+      "body_count": 8192,
+      "checksum_force_x": 42285.84638745057,
+      "checksum_force_y": 384452.03803287394,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_opening_frontier_2d_v1+generic_weighted_inverse_square_contribution_rows_2d_v1+generic_grouped_vector_sum_rows_2d_v1+python_force_interpretation",
+      "elapsed_ms": 3950.846667001315,
+      "force_row_count": 8192,
+      "max_relative_error": null,
+      "mode": "bucketized_force_cpu",
+      "opening_summary": {
+        "accepted_aggregate_row_count": 341095,
+        "fallback_exact_row_count": 847868,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "root_count": 1,
+        "source_count": 8192,
+        "sources_with_any_output": 8192,
+        "tree_node_count": 813,
+        "visited_node_total": 509600
+      },
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 813
+      },
+      "validation_skipped": true,
+      "vector_sum_summary": {
+        "contribution_row_count": 1188963,
+        "source_count": 8192,
+        "sources_with_contributions": 8192
+      }
+    },
+    {
+      "body_count": 8192,
+      "checksum_delta_x_vs_materialized": 0.0,
+      "checksum_delta_y_vs_materialized": 0.0,
+      "checksum_force_x": 42285.84638745057,
+      "checksum_force_y": 384452.03803287394,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_opening_frontier_2d_v1+generic_weighted_inverse_square_vector_sum_2d_v1+python_force_interpretation",
+      "elapsed_ms": 2660.299416995258,
+      "elapsed_ratio_vs_materialized": 0.6733491935323372,
+      "force_row_count": 8192,
+      "max_relative_error": null,
+      "mode": "streamed_force_sum_bucketized_cpu",
+      "opening_summary": {
+        "accepted_aggregate_row_count": 341095,
+        "fallback_exact_row_count": 847868,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "root_count": 1,
+        "source_count": 8192,
+        "sources_with_any_output": 8192,
+        "tree_node_count": 813,
+        "visited_node_total": 509600
+      },
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 813
+      },
+      "validation_skipped": true,
+      "vector_sum_summary": {
+        "aggregate_contribution_row_count": 341095,
+        "contribution_row_count": 1188963,
+        "exact_contribution_row_count": 847868,
+        "materialized_contribution_rows": false,
+        "source_count": 8192,
+        "sources_with_contributions": 8192,
+        "target_count": 8192
+      }
+    }
+  ]
+}

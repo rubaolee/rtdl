@@ -1,0 +1,138 @@
+{
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "claim_boundary": "Pod Python reference timing only; not native timing, not OptiX timing, not authors-code timing, and not public speedup evidence.",
+  "date": "2026-05-23",
+  "pod": "root@203.57.40.169:10297",
+  "records": [
+    {
+      "body_count": 2048,
+      "checksum_force_x": 194.75168638651124,
+      "checksum_force_y": 1299.2558708885672,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_opening_frontier_2d_v1+generic_weighted_inverse_square_vector_sum_2d_v1+python_force_interpretation",
+      "elapsed_ms": 2449.2206275463104,
+      "force_row_count": 2048,
+      "force_rows_truncated": true,
+      "max_relative_error": 0.6312036154438222,
+      "mode": "streamed_force_sum_bucketized_cpu",
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 151,
+        "max_depth": 4,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 2048,
+        "tree_node_count": 201
+      },
+      "validation_skipped": false,
+      "vector_sum_summary": {
+        "aggregate_contribution_row_count": 54264,
+        "contribution_row_count": 258495,
+        "exact_contribution_row_count": 204231,
+        "materialized_contribution_rows": false,
+        "source_count": 2048,
+        "sources_with_contributions": 2048,
+        "target_count": 2048
+      }
+    },
+    {
+      "body_count": 2048,
+      "checksum_force_x": 194.75168638650337,
+      "checksum_force_y": 1299.2558708885786,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_frontier_weighted_vector_sum_2d_v1+python_force_interpretation",
+      "elapsed_ms": 1804.9844726920128,
+      "force_row_count": 2048,
+      "force_rows_truncated": true,
+      "max_relative_error": 0.631203615443819,
+      "mode": "fused_frontier_force_sum_bucketized_cpu",
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 151,
+        "max_depth": 4,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 2048,
+        "tree_node_count": 201
+      },
+      "validation_skipped": false,
+      "vector_sum_summary": {
+        "aggregate_contribution_row_count": 54264,
+        "contribution_row_count": 258495,
+        "exact_contribution_row_count": 204231,
+        "leaf_node_count": 151,
+        "materialized_contribution_rows": false,
+        "materialized_frontier_rows": false,
+        "root_count": 1,
+        "source_count": 2048,
+        "sources_with_contributions": 2048,
+        "target_count": 2048,
+        "tree_node_count": 201,
+        "visited_node_total": 85512
+      }
+    },
+    {
+      "body_count": 8192,
+      "checksum_force_x": -6690.977008212641,
+      "checksum_force_y": 17887.56175876863,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_opening_frontier_2d_v1+generic_weighted_inverse_square_vector_sum_2d_v1+python_force_interpretation",
+      "elapsed_ms": 5741.451725363731,
+      "force_row_count": 8192,
+      "force_rows_truncated": true,
+      "max_relative_error": null,
+      "mode": "streamed_force_sum_bucketized_cpu",
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 813
+      },
+      "validation_skipped": true,
+      "vector_sum_summary": {
+        "aggregate_contribution_row_count": 341095,
+        "contribution_row_count": 1188963,
+        "exact_contribution_row_count": 847868,
+        "materialized_contribution_rows": false,
+        "source_count": 8192,
+        "sources_with_contributions": 8192,
+        "target_count": 8192
+      }
+    },
+    {
+      "body_count": 8192,
+      "checksum_force_x": -6690.977008212632,
+      "checksum_force_y": 17887.56175876883,
+      "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_frontier_weighted_vector_sum_2d_v1+python_force_interpretation",
+      "elapsed_ms": 1157.39955753088,
+      "force_row_count": 8192,
+      "force_rows_truncated": true,
+      "max_relative_error": null,
+      "mode": "fused_frontier_force_sum_bucketized_cpu",
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 813
+      },
+      "validation_skipped": true,
+      "vector_sum_summary": {
+        "aggregate_contribution_row_count": 341095,
+        "contribution_row_count": 1188963,
+        "exact_contribution_row_count": 847868,
+        "leaf_node_count": 610,
+        "materialized_contribution_rows": false,
+        "materialized_frontier_rows": false,
+        "root_count": 1,
+        "source_count": 8192,
+        "sources_with_contributions": 8192,
+        "target_count": 8192,
+        "tree_node_count": 813,
+        "visited_node_total": 509600
+      }
+    }
+  ]
+}

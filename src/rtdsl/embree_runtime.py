@@ -3,11 +3,15 @@ from __future__ import annotations
 import ctypes
 import ctypes.util
 import functools
+import math
+import operator
 import os
 import platform
 import subprocess
 import tempfile
 import time
+from collections.abc import Iterable
+from collections.abc import Mapping
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
@@ -78,6 +82,9 @@ EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_run_conjunctive_scan",
     "rtdl_embree_run_grouped_count",
     "rtdl_embree_run_grouped_sum",
+    "rtdl_embree_static_triangle_scene_3d_create",
+    "rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags",
+    "rtdl_embree_static_triangle_scene_3d_destroy",
     "rtdl_embree_columnar_payload_create",
     "rtdl_embree_columnar_payload_create_from_columns",
     "rtdl_embree_columnar_payload_destroy",
@@ -317,6 +324,20 @@ class _RtdlRay3D(ctypes.Structure):
         ("dy", ctypes.c_double),
         ("dz", ctypes.c_double),
         ("tmax", ctypes.c_double),
+    ]
+
+
+class _RtdlSegment3D(ctypes.Structure):
+    _layout_ = "ms"
+    _pack_ = 1
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("z0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+        ("z1", ctypes.c_double),
     ]
 
 
@@ -1464,6 +1485,371 @@ def fixed_radius_count_threshold_2d_embree(
         view.close()
 
 
+def _coerce_xyz_triplets(name: str, values) -> tuple[tuple[float, float, float], ...]:
+    if isinstance(values, (str, bytes)) or not isinstance(values, Iterable):
+        raise ValueError(f"{name} must be an iterable of 3D coordinates")
+    coords: list[tuple[float, float, float]] = []
+    for index, item in enumerate(values):
+        if isinstance(item, Mapping):
+            raw = (item["x"], item["y"], item["z"])
+        elif all(hasattr(item, attr) for attr in ("x", "y", "z")):
+            raw = (item.x, item.y, item.z)
+        else:
+            try:
+                raw = tuple(item)
+            except TypeError as exc:
+                raise ValueError(f"{name}[{index}] must be a 3D coordinate") from exc
+            if len(raw) != 3:
+                raise ValueError(f"{name}[{index}] must contain exactly 3 coordinates")
+        point = (float(raw[0]), float(raw[1]), float(raw[2]))
+        if not all(math.isfinite(value) for value in point):
+            raise ValueError(f"{name}[{index}] coordinates must be finite")
+        coords.append(point)
+    return tuple(coords)
+
+
+def _triangle3d_area2_squared(triangle: _CanonicalTriangle3D) -> float:
+    ax = triangle.x1 - triangle.x0
+    ay = triangle.y1 - triangle.y0
+    az = triangle.z1 - triangle.z0
+    bx = triangle.x2 - triangle.x0
+    by = triangle.y2 - triangle.y0
+    bz = triangle.z2 - triangle.z0
+    cx = ay * bz - az * by
+    cy = az * bx - ax * bz
+    cz = ax * by - ay * bx
+    return cx * cx + cy * cy + cz * cz
+
+
+def _pack_static_triangles_3d(triangles) -> PackedTriangles:
+    if isinstance(triangles, PackedTriangles):
+        if triangles.dimension != 3:
+            raise ValueError("prepared static triangle scene requires 3D triangles")
+        return triangles
+    normalized = _normalize_records("triangles", "triangles", triangles)
+    if any(not isinstance(item, _CanonicalTriangle3D) for item in normalized):
+        raise ValueError("prepared static triangle scene requires 3D triangles")
+    for index, triangle in enumerate(normalized):
+        values = (
+            triangle.x0,
+            triangle.y0,
+            triangle.z0,
+            triangle.x1,
+            triangle.y1,
+            triangle.z1,
+            triangle.x2,
+            triangle.y2,
+            triangle.z2,
+        )
+        if not all(math.isfinite(value) for value in values):
+            raise ValueError(f"triangles[{index}] coordinates must be finite")
+        if _triangle3d_area2_squared(triangle) == 0.0:
+            raise ValueError(f"triangles[{index}] must have non-zero area")
+    return pack_triangles(records=normalized, dimension=3)
+
+
+def _pack_segments_3d_from_endpoints(segment_start_xyz, segment_end_xyz) -> tuple[object, int]:
+    starts = _coerce_xyz_triplets("segment_start_xyz", segment_start_xyz)
+    ends = _coerce_xyz_triplets("segment_end_xyz", segment_end_xyz)
+    if len(starts) != len(ends):
+        raise ValueError("segment_start_xyz and segment_end_xyz must have the same length")
+    records = []
+    for index, (start, end) in enumerate(zip(starts, ends)):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        dz = end[2] - start[2]
+        if dx == 0.0 and dy == 0.0 and dz == 0.0:
+            raise ValueError(f"segment {index} must have non-zero length")
+        records.append(_RtdlSegment3D(index, start[0], start[1], start[2], end[0], end[1], end[2]))
+    array = (_RtdlSegment3D * len(records))(*records)
+    return array, len(records)
+
+
+def _pack_group_offsets_u32(segment_group_offsets, segment_count: int) -> tuple[object, int]:
+    if isinstance(segment_group_offsets, (str, bytes)) or not isinstance(segment_group_offsets, Iterable):
+        raise ValueError("segment_group_offsets must be an iterable of offsets")
+    offsets = [int(value) for value in segment_group_offsets]
+    if not offsets:
+        raise ValueError("segment_group_offsets must contain at least one offset")
+    if offsets[0] != 0:
+        raise ValueError("segment_group_offsets[0] must be 0")
+    if offsets[-1] != segment_count:
+        raise ValueError("final segment_group_offsets entry must equal the segment count")
+    for index, offset in enumerate(offsets):
+        if offset < 0 or offset > 0xFFFFFFFF:
+            raise ValueError(f"segment_group_offsets[{index}] must fit uint32")
+        if index != 0 and offset < offsets[index - 1]:
+            raise ValueError("segment_group_offsets must be monotonic")
+    array = (ctypes.c_uint32 * len(offsets))(*offsets)
+    return array, len(offsets) - 1
+
+
+class PreparedGroupedSegmentQuery3D:
+    """Reusable host-side buffers for grouped finite 3D segment queries."""
+
+    contract = "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1"
+
+    def __init__(self, segment_start_xyz, segment_end_xyz, segment_group_offsets) -> None:
+        prepare_start = time.perf_counter()
+        self.segments, self.segment_count = _pack_segments_3d_from_endpoints(segment_start_xyz, segment_end_xyz)
+        self.group_offsets, self.group_count = _pack_group_offsets_u32(
+            segment_group_offsets,
+            int(self.segment_count),
+        )
+        self.flags = (ctypes.c_uint8 * int(self.group_count))()
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        self._reuse_count = 0
+
+    @property
+    def reuse_count(self) -> int:
+        return self._reuse_count
+
+    def _mark_reused(self) -> int:
+        self._reuse_count += 1
+        return self._reuse_count
+
+    def reset_flags(self) -> None:
+        for index in range(int(self.group_count)):
+            self.flags[index] = 0
+
+    def descriptor(self) -> dict[str, object]:
+        return {
+            "contract": self.contract,
+            "segment_count": int(self.segment_count),
+            "group_count": int(self.group_count),
+            "query_buffer_kind": "ctypes_host_rtdl_segment3d_array",
+            "group_offsets_buffer_kind": "ctypes_host_uint32_offsets",
+            "output_buffer_kind": "ctypes_host_uint8_group_flags",
+            "copy_boundary": "python_ctypes_host_buffer",
+            "device": "host",
+            "owner": "python_runtime_wrapper",
+            "host_query_buffers_reused": True,
+            "host_output_buffer_reused": True,
+            "native_device_query_buffers_reused": False,
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+        }
+
+
+def prepare_grouped_segment_query_3d(
+    segment_start_xyz,
+    segment_end_xyz,
+    segment_group_offsets,
+) -> PreparedGroupedSegmentQuery3D:
+    """Prepare reusable host buffers for a grouped finite 3D segment query."""
+    return PreparedGroupedSegmentQuery3D(segment_start_xyz, segment_end_xyz, segment_group_offsets)
+
+
+class PreparedEmbreeStaticTriangleScene3D:
+    """Reusable Embree handle for grouped finite 3D segment any-hit flags."""
+
+    contract = "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1"
+
+    def __init__(self, triangles) -> None:
+        self._library = _load_configured_embree_library()
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._run_count = 0
+        self._packed_triangles = _pack_static_triangles_3d(triangles)
+        self.triangle_count = int(self._packed_triangles.count)
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = self._library.rtdl_embree_static_triangle_scene_3d_create(
+            self._packed_triangles.records,
+            self._packed_triangles.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        if self._handle:
+            self._library.rtdl_embree_static_triangle_scene_3d_destroy(self._handle)
+        self._closed = True
+        self._handle = ctypes.c_void_p()
+
+    def __enter__(self) -> "PreparedEmbreeStaticTriangleScene3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def run_grouped_segment_any_hit_flags(
+        self,
+        segment_start_xyz,
+        segment_end_xyz,
+        segment_group_offsets,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared Embree static triangle scene handle is closed")
+        pack_start = time.perf_counter()
+        segments, segment_count = _pack_segments_3d_from_endpoints(segment_start_xyz, segment_end_xyz)
+        group_offsets, group_count = _pack_group_offsets_u32(segment_group_offsets, segment_count)
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        flags = (ctypes.c_uint8 * group_count)()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags(
+            self._handle,
+            segments,
+            segment_count,
+            group_offsets,
+            group_count,
+            flags,
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        post_start = time.perf_counter()
+        flags_list = [int(flags[index]) for index in range(group_count)]
+        output_postprocess_seconds = time.perf_counter() - post_start
+        self._run_count += 1
+        return {
+            "backend": "embree",
+            "contract": self.contract,
+            "flags": flags_list,
+            "flag_format": "uint8_byte_per_query_group",
+            "segment_count": int(segment_count),
+            "group_count": int(group_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+                "output_postprocess": float(output_postprocess_seconds),
+            },
+            "precision_metadata": {
+                "host_input": "float64",
+                "embree_bvh_bounds": "float32",
+                "native_intersection_callback": "float64",
+                "coordinate_narrowing_recorded": True,
+            },
+            "claim_boundary": {
+                "paper_reproduction": False,
+                "authors_code_comparison": False,
+                "public_speedup_claim": False,
+                "native_app_api": False,
+                "exact_solid_contact": False,
+                "continuous_swept_support": False,
+                "row_witnesses": False,
+                "optix_parity": False,
+            },
+        }
+
+    def run_prepared_grouped_segment_any_hit_flags(
+        self,
+        prepared_query: PreparedGroupedSegmentQuery3D,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared Embree static triangle scene handle is closed")
+        if not isinstance(prepared_query, PreparedGroupedSegmentQuery3D):
+            raise TypeError("prepared_query must be PreparedGroupedSegmentQuery3D")
+
+        clear_start = time.perf_counter()
+        prepared_query.reset_flags()
+        output_clear_seconds = time.perf_counter() - clear_start
+
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags(
+            self._handle,
+            prepared_query.segments,
+            prepared_query.segment_count,
+            prepared_query.group_offsets,
+            prepared_query.group_count,
+            prepared_query.flags,
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        post_start = time.perf_counter()
+        flags_list = [int(prepared_query.flags[index]) for index in range(int(prepared_query.group_count))]
+        output_postprocess_seconds = time.perf_counter() - post_start
+        self._run_count += 1
+        prepared_query_run_index = prepared_query._mark_reused()
+        descriptor = prepared_query.descriptor()
+        return {
+            "backend": "embree",
+            "contract": self.contract,
+            "flags": flags_list,
+            "flag_format": "uint8_byte_per_query_group",
+            "segment_count": int(prepared_query.segment_count),
+            "group_count": int(prepared_query.group_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "prepared_query_used": True,
+            "prepared_query_run_index": prepared_query_run_index,
+            "host_query_output_buffers_reused": True,
+            "native_query_output_buffers_reused": False,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "prepared_query_build": float(prepared_query.prepare_seconds),
+                "output_clear": float(output_clear_seconds),
+                "traversal": float(traversal_seconds.value),
+                "output_postprocess": float(output_postprocess_seconds),
+            },
+            "buffer_reuse_metadata": descriptor,
+            "precision_metadata": {
+                "host_input": "float64",
+                "embree_bvh_bounds": "float32",
+                "native_intersection_callback": "float64",
+                "coordinate_narrowing_recorded": True,
+            },
+            "claim_boundary": {
+                "paper_reproduction": False,
+                "authors_code_comparison": False,
+                "public_speedup_claim": False,
+                "native_app_api": False,
+                "exact_solid_contact": False,
+                "continuous_swept_support": False,
+                "row_witnesses": False,
+                "optix_parity": False,
+                "true_zero_copy": False,
+            },
+        }
+
+
+def prepare_embree_static_triangle_scene_3d(triangles) -> PreparedEmbreeStaticTriangleScene3D:
+    """Prepare a reusable Embree static 3D triangle scene."""
+    return PreparedEmbreeStaticTriangleScene3D(triangles)
+
+
+def run_embree_grouped_segment_any_hit_flags_3d(
+    triangles,
+    segment_start_xyz,
+    segment_end_xyz,
+    segment_group_offsets,
+) -> dict[str, object]:
+    """Run the Goal2481 grouped finite segment any-hit flag contract once."""
+    with prepare_embree_static_triangle_scene_3d(triangles) as prepared:
+        return prepared.run_grouped_segment_any_hit_flags(
+            segment_start_xyz,
+            segment_end_xyz,
+            segment_group_offsets,
+        )
+
+
 class PreparedEmbreeFixedRadiusCountThreshold2D:
     """Reusable Embree BVH for repeated 2-D fixed-radius count-threshold queries."""
 
@@ -2089,8 +2475,42 @@ class PreparedEmbreeDbDataset:
         self._transfer = transfer
         self.row_count = row_count
 
+    @classmethod
+    def from_columnar_record_set(cls, record_set, *, primary_fields=()) -> "PreparedEmbreeDbDataset":
+        columns, field_maps, reverse_maps = _encode_all_db_text_column_mapping(
+            _columnar_record_set_to_column_mapping(record_set)
+        )
+        columns_array, row_count, keepalive, columnar_metadata = _encode_db_column_mapping_columnar_with_metadata(
+            columns,
+            error_prefix="Embree direct columnar record-set path",
+        )
+        prepared = cls.__new__(cls)
+        prepared._field_maps = field_maps
+        prepared._reverse_maps = reverse_maps
+        prepared._dataset = EmbreePreparedDbDataset(
+            _load_embree_library(),
+            None,
+            None,
+            row_count,
+            primary_fields=primary_fields,
+            columns_array=columns_array,
+            field_count=len(columns_array),
+            transfer="columnar",
+            keepalive=keepalive,
+        )
+        prepared._fields_array = None
+        prepared._row_values_array = None
+        prepared._columns_array = columns_array
+        prepared._transfer = "columnar_record_set"
+        prepared._columnar_preparation_metadata = columnar_metadata
+        prepared.row_count = row_count
+        return prepared
+
     def close(self) -> None:
         self._dataset.close()
+
+    def columnar_preparation_metadata(self) -> dict[str, object]:
+        return dict(getattr(self, "_columnar_preparation_metadata", {}))
 
     def conjunctive_scan(self, predicates) -> tuple[dict[str, object], ...]:
         bundle = normalize_predicate_bundle(predicates)
@@ -2235,6 +2655,10 @@ def prepare_embree_db_dataset(table_rows, *, primary_fields=(), transfer: str = 
     return PreparedEmbreeDbDataset(table_rows, primary_fields=primary_fields, transfer=transfer)
 
 
+def prepare_embree_columnar_record_set(record_set, *, primary_fields=()) -> PreparedEmbreeDbDataset:
+    return PreparedEmbreeDbDataset.from_columnar_record_set(record_set, primary_fields=primary_fields)
+
+
 def _encode_all_db_text_columns(table_rows):
     field_maps: dict[str, dict[object, int]] = {}
     reverse_maps: dict[str, dict[int, object]] = {}
@@ -2256,45 +2680,146 @@ def _encode_all_db_text_columns(table_rows):
     return tuple(encoded_rows), field_maps, reverse_maps
 
 
-def _encode_db_table_columnar(table_rows) -> tuple[object, int, tuple[object, ...]]:
-    if not table_rows:
-        raise ValueError("Embree columnar DB path requires at least one denormalized table row")
-    field_names = tuple(str(name) for name in table_rows[0].keys())
+def _columnar_record_set_to_column_mapping(record_set) -> dict[str, object]:
+    from .columnar_aggregate_reference import ColumnarRecordSet
+
+    if isinstance(record_set, ColumnarRecordSet):
+        row_ids = record_set.row_ids
+        raw_columns = record_set.columns
+    elif isinstance(record_set, Mapping):
+        row_ids = record_set.get("row_ids")
+        raw_columns = record_set.get("columns")
+    else:
+        raise ValueError("direct columnar record-set path requires a mapping or ColumnarRecordSet")
+    if row_ids is None:
+        raise ValueError("direct columnar record-set path requires `row_ids`")
+    if not isinstance(raw_columns, Mapping):
+        raise ValueError("direct columnar record-set path requires a `columns` mapping")
+    if "row_id" in {str(name) for name in raw_columns.keys()}:
+        raise ValueError("direct columnar record-set path reserves the `row_id` field name")
+    row_count = _column_length(row_ids, "row_ids")
+    if row_count == 0:
+        raise ValueError("direct columnar record-set path requires at least one row_id")
+    seen_row_ids = set()
+    for index, row_id in enumerate(row_ids):
+        try:
+            row_id_int = operator.index(row_id)
+        except TypeError as exc:
+            raise ValueError(f"row_id at index {index} must be an integer") from exc
+        if isinstance(row_id, bool) or row_id_int < 0 or row_id_int > 0xFFFFFFFF:
+            raise ValueError(f"row_id at index {index} must be in uint32 range")
+        if row_id_int in seen_row_ids:
+            raise ValueError("row_ids must be unique")
+        seen_row_ids.add(row_id_int)
+
+    columns = {"row_id": row_ids}
+    for name, values in raw_columns.items():
+        field = str(name)
+        if not field:
+            raise ValueError("column names must be non-empty")
+        if _column_length(values, field) != row_count:
+            raise ValueError(f"column `{field}` length must match row_ids length")
+        columns[field] = values
+    if len(columns) == 1:
+        raise ValueError("direct columnar record-set path requires at least one non-row_id column")
+    return columns
+
+
+def _encode_all_db_text_column_mapping(columns):
+    field_maps: dict[str, dict[object, int]] = {}
+    reverse_maps: dict[str, dict[int, object]] = {}
+    normalized = {str(field): values for field, values in columns.items()}
+    for field, values in normalized.items():
+        dtype_kind = _column_dtype_kind(values)
+        if dtype_kind in {"b", "i", "u", "f"}:
+            continue
+        if not any(isinstance(value, str) for value in values):
+            continue
+        unique_values = sorted(set(values))
+        encode_map = {value: index + 1 for index, value in enumerate(unique_values)}
+        field_maps[field] = encode_map
+        reverse_maps[field] = {code: value for value, code in encode_map.items()}
+    encoded_columns = dict(normalized)
+    for field, encode_map in field_maps.items():
+        encoded_columns[field] = tuple(encode_map[value] for value in normalized[field])
+    return encoded_columns, field_maps, reverse_maps
+
+
+def _encode_db_column_mapping_columnar(columns, *, error_prefix: str) -> tuple[object, int, tuple[object, ...]]:
+    columns_array, row_count, keepalive, _metadata = _encode_db_column_mapping_columnar_with_metadata(
+        columns,
+        error_prefix=error_prefix,
+    )
+    return columns_array, row_count, keepalive
+
+
+def _encode_db_column_mapping_columnar_with_metadata(
+    columns,
+    *,
+    error_prefix: str,
+) -> tuple[object, int, tuple[object, ...], dict[str, object]]:
+    field_names = tuple(str(name) for name in columns.keys())
+    if not field_names:
+        raise ValueError(f"{error_prefix} requires at least one column")
     if "row_id" not in field_names:
-        raise ValueError("Embree columnar DB path requires a `row_id` field")
-    field_set = set(field_names)
-    for index, row in enumerate(table_rows):
-        if set(str(name) for name in row.keys()) != field_set:
-            raise ValueError(f"denorm table row {index} does not match the first-row schema")
+        raise ValueError(f"{error_prefix} requires a `row_id` field")
+    normalized = {str(name): values for name, values in columns.items()}
+    row_count = len(normalized["row_id"])
+    if row_count == 0:
+        raise ValueError(f"{error_prefix} requires at least one row")
+    for name, values in normalized.items():
+        if len(values) != row_count:
+            raise ValueError(f"{error_prefix} column `{name}` length must match row_id length")
 
     columns = []
     keepalive: list[object] = []
+    metadata: dict[str, object] = {
+        "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+        "typed_host_buffer_columns": [],
+        "copied_columns": [],
+        "text_encoded_columns": [],
+        "native_abi_added": False,
+        "true_zero_copy_authorized": False,
+    }
     null_int_values = ctypes.POINTER(ctypes.c_int64)()
     null_double_values = ctypes.POINTER(ctypes.c_double)()
     null_string_values = ctypes.POINTER(ctypes.c_char_p)()
     for name in field_names:
-        kind = _encode_db_field_kind(table_rows[0][name])
+        source_values = normalized[name]
+        kind = _encode_db_column_kind(source_values)
         name_bytes = name.encode("utf-8")
         keepalive.append(name_bytes)
         int_values = null_int_values
         double_values = null_double_values
         string_values = null_string_values
-        if kind == _DB_KIND_FLOAT64:
-            values = (ctypes.c_double * len(table_rows))(*(float(row[name]) for row in table_rows))
+        typed_pointer = _try_numpy_typed_column_pointer(source_values, kind, row_count)
+        if typed_pointer is not None:
+            pointer, owner = typed_pointer
+            keepalive.append(owner)
+            if kind == _DB_KIND_FLOAT64:
+                double_values = pointer
+            else:
+                int_values = pointer
+            metadata["typed_host_buffer_columns"].append(name)
+        elif kind == _DB_KIND_FLOAT64:
+            values = (ctypes.c_double * row_count)(*(float(value) for value in source_values))
             keepalive.append(values)
             double_values = values
+            metadata["copied_columns"].append(name)
         elif kind == _DB_KIND_TEXT:
-            encoded_values = tuple(str(row[name]).encode("utf-8") for row in table_rows)
+            encoded_values = tuple(str(value).encode("utf-8") for value in source_values)
             values = (ctypes.c_char_p * len(encoded_values))(*encoded_values)
             keepalive.extend(encoded_values)
             keepalive.append(values)
             string_values = values
+            metadata["text_encoded_columns"].append(name)
         else:
-            values = (ctypes.c_int64 * len(table_rows))(
-                *((1 if row[name] else 0) if kind == _DB_KIND_BOOL else int(row[name]) for row in table_rows)
+            values = (ctypes.c_int64 * row_count)(
+                *((1 if value else 0) if kind == _DB_KIND_BOOL else int(value) for value in source_values)
             )
             keepalive.append(values)
             int_values = values
+            metadata["copied_columns"].append(name)
         columns.append(
             _RtdlPayloadField(
                 name=name_bytes,
@@ -2307,7 +2832,70 @@ def _encode_db_table_columnar(table_rows) -> tuple[object, int, tuple[object, ..
 
     columns_array = (_RtdlPayloadField * len(columns))(*columns)
     keepalive.append(columns_array)
-    return columns_array, len(table_rows), tuple(keepalive)
+    metadata["typed_host_buffer_column_count"] = len(metadata["typed_host_buffer_columns"])
+    metadata["copied_column_count"] = len(metadata["copied_columns"])
+    metadata["text_encoded_column_count"] = len(metadata["text_encoded_columns"])
+    metadata["all_numeric_columns_use_typed_host_buffers"] = (
+        metadata["copied_column_count"] == 0 and metadata["text_encoded_column_count"] == 0
+    )
+    return columns_array, row_count, tuple(keepalive), metadata
+
+
+def _column_length(values, name: str) -> int:
+    try:
+        return len(values)
+    except TypeError as exc:
+        raise ValueError(f"{name} must be a sized column") from exc
+
+
+def _column_dtype_kind(values) -> str | None:
+    dtype = getattr(values, "dtype", None)
+    return getattr(dtype, "kind", None)
+
+
+def _encode_db_column_kind(values) -> int:
+    dtype = getattr(values, "dtype", None)
+    dtype_kind = getattr(dtype, "kind", None)
+    if dtype_kind == "b":
+        return _DB_KIND_BOOL
+    if dtype_kind in {"i", "u"}:
+        return _DB_KIND_INT64
+    if str(dtype) == "float64":
+        return _DB_KIND_FLOAT64
+    return _encode_db_field_kind(values[0])
+
+
+def _try_numpy_typed_column_pointer(values, kind: int, row_count: int):
+    if _column_length(values, "column") != row_count:
+        return None
+    if getattr(values, "ndim", None) != 1:
+        return None
+    flags = getattr(values, "flags", None)
+    if flags is None or not flags["C_CONTIGUOUS"] or not flags["ALIGNED"]:
+        return None
+    dtype_name = str(getattr(values, "dtype", ""))
+    ctypes_owner = getattr(values, "ctypes", None)
+    if ctypes_owner is None:
+        return None
+    if kind == _DB_KIND_FLOAT64 and dtype_name == "float64":
+        return ctypes_owner.data_as(ctypes.POINTER(ctypes.c_double)), values
+    if kind == _DB_KIND_INT64 and dtype_name == "int64":
+        return ctypes_owner.data_as(ctypes.POINTER(ctypes.c_int64)), values
+    return None
+
+
+def _encode_db_table_columnar(table_rows) -> tuple[object, int, tuple[object, ...]]:
+    if not table_rows:
+        raise ValueError("Embree columnar DB path requires at least one denormalized table row")
+    field_names = tuple(str(name) for name in table_rows[0].keys())
+    if "row_id" not in field_names:
+        raise ValueError("Embree columnar DB path requires a `row_id` field")
+    field_set = set(field_names)
+    for index, row in enumerate(table_rows):
+        if set(str(name) for name in row.keys()) != field_set:
+            raise ValueError(f"denorm table row {index} does not match the first-row schema")
+    columns = {name: tuple(row[name] for row in table_rows) for name in field_names}
+    return _encode_db_column_mapping_columnar(columns, error_prefix="Embree columnar DB path")
 
 
 def _db_primary_fields_from_clauses(clauses) -> tuple[str, ...]:
@@ -3742,6 +4330,31 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_closest_3d.restype = ctypes.c_int
+
+    library.rtdl_embree_static_triangle_scene_3d_create.argtypes = [
+        ctypes.POINTER(_RtdlTriangle3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_static_triangle_scene_3d_create.restype = ctypes.c_int
+
+    library.rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags.argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlSegment3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags.restype = ctypes.c_int
+
+    library.rtdl_embree_static_triangle_scene_3d_destroy.argtypes = [ctypes.c_void_p]
+    library.rtdl_embree_static_triangle_scene_3d_destroy.restype = None
 
     library.rtdl_embree_run_segment_shape_hitcount.argtypes = [
         ctypes.POINTER(_RtdlSegment),

@@ -1,0 +1,84 @@
+{
+  "baseline": "std_thread_same_contract_barnes_hut_2d",
+  "body_count": 32768,
+  "bucket_size": 32,
+  "build_ms": 27.052703,
+  "compile": {
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-pthread",
+      "/tmp/rtdl_bh_cpp_cky9w9i6/same_contract_barnes_hut.cpp",
+      "-o",
+      "/tmp/rtdl_bh_cpp_cky9w9i6/same_contract_barnes_hut"
+    ],
+    "elapsed_ms": 1583.675503730774,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "metadata": {
+    "authors_code_comparison": false,
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "same_contract_as_rtdl_fused_reference": true
+  },
+  "run_command": [
+    "/tmp/rtdl_bh_cpp_cky9w9i6/same_contract_barnes_hut",
+    "--body-count",
+    "32768",
+    "--thread-counts",
+    "1,4,16",
+    "--bucket-size",
+    "32",
+    "--max-depth",
+    "32",
+    "--theta",
+    "0.75",
+    "--softening",
+    "0.05"
+  ],
+  "run_elapsed_ms": 1005.1151514053345,
+  "runs": [
+    {
+      "aggregate_contribution_row_count": 1864577,
+      "checksum_force_x": -52016.809665311994,
+      "checksum_force_y": 105365.71026298037,
+      "contribution_row_count": 5695980,
+      "exact_contribution_row_count": 3831403,
+      "force_ms": 709.438446,
+      "threads": 1,
+      "visited_node_total": 2711968
+    },
+    {
+      "aggregate_contribution_row_count": 1864577,
+      "checksum_force_x": -52016.809665311994,
+      "checksum_force_y": 105365.71026298037,
+      "contribution_row_count": 5695980,
+      "exact_contribution_row_count": 3831403,
+      "force_ms": 206.865935,
+      "threads": 4,
+      "visited_node_total": 2711968
+    },
+    {
+      "aggregate_contribution_row_count": 1864577,
+      "checksum_force_x": -52016.809665311994,
+      "checksum_force_y": 105365.71026298037,
+      "contribution_row_count": 5695980,
+      "exact_contribution_row_count": 3831403,
+      "force_ms": 58.287309,
+      "threads": 16,
+      "visited_node_total": 2711968
+    }
+  ],
+  "softening": 0.05,
+  "theta": 0.75,
+  "tree_summary": {
+    "leaf_node_count": 2260,
+    "max_depth": 6,
+    "max_leaf_member_count": 32,
+    "source_count": 32768,
+    "tree_node_count": 3013
+  }
+}

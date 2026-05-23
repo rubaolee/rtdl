@@ -1,0 +1,96 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "candidate_decisions": {
+    "crystal": {
+      "reason": "no `crystal` command or Python package candidate was available in the pod probe",
+      "role": "user-mentioned possible GPU database",
+      "status": "not_available_on_pod"
+    },
+    "duckdb": {
+      "reason": "installable in an isolated Python venv and directly expresses the exact fixture contract",
+      "role": "quick embedded analytical SQL baseline",
+      "status": "already_selected_by_goal2524"
+    },
+    "heavydb_or_omnisci": {
+      "reason": "no server command is installed; bringing up a server would be a separate database project",
+      "role": "server-style GPU database candidate",
+      "status": "not_quick_for_goal2525"
+    },
+    "postgresql": {
+      "reason": "available on the pod after apt install and directly expresses the exact fixture contract",
+      "role": "SQL correctness oracle and CPU DBMS diagnostic timing",
+      "status": "already_selected_by_goal2522_goal2523"
+    },
+    "rapids_cudf": {
+      "reason": "cuDF/pylibcudf is not preinstalled in this pod. Installing RAPIDS is large, CUDA/Python-version sensitive, and should be a separate goal if we need a GPU baseline.",
+      "role": "first plausible GPU dataframe/database-like baseline",
+      "status": "defer_to_dedicated_install_goal"
+    }
+  },
+  "claim_boundary": "This is an environment and candidate-readiness gate for possible GPU database baselines. It does not run a GPU database benchmark and does not authorize public speedup, whole-DBMS, authors-code, RayDB reproduction, true zero-copy, or GPU-database claims.",
+  "command_status": {
+    "crystal": {
+      "available": false,
+      "path": null
+    },
+    "heavydb": {
+      "available": false,
+      "path": null
+    },
+    "nvidia-smi": {
+      "available": true,
+      "path": "/usr/bin/nvidia-smi"
+    },
+    "omnisci_server": {
+      "available": false,
+      "path": null
+    }
+  },
+  "goal": "goal2525_gpu_database_candidate_gate",
+  "gpu_database_timing_available_now": false,
+  "gpu_probe": {
+    "available": true,
+    "command": [
+      "nvidia-smi",
+      "--query-gpu=name,driver_version,memory.total",
+      "--format=csv,noheader"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB"
+  },
+  "performance_claim_authorized": false,
+  "python_package_status": {
+    "cudf": {
+      "available": false,
+      "version": null
+    },
+    "cupy": {
+      "available": false,
+      "version": null
+    },
+    "duckdb": {
+      "available": true,
+      "version": "1.5.3"
+    },
+    "numba": {
+      "available": false,
+      "version": null
+    },
+    "pyarrow": {
+      "available": false,
+      "version": null
+    },
+    "pylibcudf": {
+      "available": false,
+      "version": null
+    }
+  },
+  "recommended_first_gpu_database_candidate": "rapids_cudf",
+  "recommended_next_gpu_goal": "Create a dedicated RAPIDS/cuDF install-and-contract goal only if a GPU DB-like baseline is still worth the setup cost after PostgreSQL and DuckDB diagnostics.",
+  "selected_next_absolute_baselines": [
+    "postgresql_diagnostic",
+    "duckdb_quick_baseline"
+  ],
+  "status": "ok"
+}

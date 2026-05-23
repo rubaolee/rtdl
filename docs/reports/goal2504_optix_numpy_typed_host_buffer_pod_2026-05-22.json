@@ -1,0 +1,58 @@
+{
+  "all_match_cpu_reference": true,
+  "backend": "optix",
+  "claim_boundary": "OptiX NumPy typed host-buffer handoff smoke only; no true zero-copy, speedup, authors-code, SQL, DBMS, or whole-app claim.",
+  "columnar_preparation_metadata": {
+    "all_numeric_columns_use_typed_host_buffers": true,
+    "copied_column_count": 0,
+    "copied_columns": [],
+    "native_abi_added": false,
+    "text_encoded_column_count": 0,
+    "text_encoded_columns": [],
+    "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+    "true_zero_copy_authorized": false,
+    "typed_host_buffer_column_count": 6,
+    "typed_host_buffer_columns": [
+      "row_id",
+      "region_id",
+      "ship_year",
+      "discount",
+      "quantity",
+      "revenue"
+    ]
+  },
+  "lowering_plan": {
+    "backend": "optix",
+    "claim_boundary": "Native count/sum parity only. The path avoids Python row-mapping materialization and can reuse matching typed host buffers, but it still may stage unsupported columns and does not authorize min/max support, true zero-copy, public speedup, or whole-app wording.",
+    "direct_columnar_record_set_api": true,
+    "materializes_input_rows_for_wrapper": false,
+    "next_engine_target": "partner_resident_column_handoff",
+    "requires_runtime_validation": true,
+    "supported_aggregates": [
+      "count",
+      "sum"
+    ],
+    "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+    "true_zero_copy_authorized": false,
+    "unsupported_aggregates": [
+      "min",
+      "max",
+      "avg_as_sum_count"
+    ],
+    "uses_compatibility_wrapper": false
+  },
+  "rows": [
+    {
+      "region_id": 0,
+      "sum": 190
+    },
+    {
+      "region_id": 1,
+      "sum": 200
+    },
+    {
+      "region_id": 2,
+      "sum": 80
+    }
+  ]
+}

@@ -212,8 +212,12 @@ traversal to update those columns without creating a giant neighbor-index
 array. The core predicate is built from threshold-capped counts at
 `min_neighbors`, not exact full degree counts. Goal2457 made this the explicit
 continuation-plan branch when the full stream no longer fits the directed-edge
-budget. Full adjacency remains the preferred branch when it fits; chunked
-adjacency remains available as a manual memory-control diagnostic.
+budget. Later grouped-union work moved self-query input onto device-resident
+prepared search points, added the all-items path, added predicate/same-root
+intersection culling, and kept the intersection-direct side-effect experiment
+default-off after A/B evidence was mixed to negative. Full adjacency remains
+the preferred branch when it fits; chunked adjacency remains available as a
+manual memory-control diagnostic.
 
 For the experimental all-core microcell continuation, use:
 
@@ -307,13 +311,17 @@ Current policy:
 - if the estimated full directed adjacency stream fits the budget, use
   `optix_rt_core_adjacency_cupy_components_3d`;
 - if the stream exceeds the budget, use
-  `optix_rt_core_chunked_adjacency_cupy_components_3d`.
+  `optix_rt_core_grouped_stream_cupy_components_3d`.
 
 Goal2452 raised the default directed-edge budget to 160,000,000 after pod
 evidence showed that the full adjacency stream is much faster than chunking for
-the 32,768-point clustered row when it fits GPU memory. Pass a smaller
-`--adjacency-edge-budget`, such as `64000000`, when you specifically want to
-force the chunked memory-bounded branch for comparison.
+the 32,768-point clustered row when it fits GPU memory. Goal2457 and the later
+grouped-union work changed the over-budget policy to grouped stream because it
+avoids both full neighbor-index materialization and repeated partner candidate
+traversal. Use `optix_rt_core_chunked_adjacency_cupy_components_3d` directly
+when you specifically want a chunked memory-bounded diagnostic for comparison.
+Pass `--adjacency-edge-budget` when you want to test the explicit full-vs-
+grouped plan threshold.
 
 This planner is for continuation experiments where exact adjacency is required.
 It does not replace the one-shot `planned_rt_dbscan` policy, and it does not
@@ -323,9 +331,14 @@ authorize a paper-level speedup or release claim.
 
 - This study can show whether RTDL exposes the right generic primitives for
   RT-DBSCAN-style applications.
-- It cannot claim paper reproduction, paper-level speedups, or broad DBSCAN
-  acceleration until the benchmark uses representative datasets, OptiX hardware
-  timing, and external review.
-- The main runtime gap is explicit: a reusable device-resident radius-graph
-  component continuation that can combine with OptiX output without redoing
-  candidate-pair traversal in the partner continuation.
+- For the current v2.x benchmark-app scope, RT-DBSCAN is implemented with
+  app-agnostic fixed-radius rows, summaries, adjacency streams, and grouped
+  union/continuation primitives. No DBSCAN-specific native ABI is required.
+- It still cannot claim paper reproduction, paper-level speedups, or broad
+  DBSCAN acceleration until representative paper datasets/code are available,
+  hardware timing is reviewed for the exact claim path, and external review
+  accepts the wording.
+- Remaining work is outside this project-close scope unless new evidence
+  justifies a v3-scale native algorithm: paper reproduction, broader hardware
+  backends, public speedup wording, and any replacement for grouped-union that
+  changes the generic primitive contract.

@@ -1,0 +1,602 @@
+{
+  "claim_boundary": {
+    "goal2465_compatible_baseline_only": true,
+    "goal2467_performance_claim_authorized": false,
+    "native_goal2467_implementation": false
+  },
+  "cuda_nvcc": "Build cuda_12.8.r12.8/compiler.35583870_0",
+  "gpu": "NVIDIA RTX 2000 Ada Generation, 550.127.05",
+  "signature_mode": "row",
+  "simulator_metadata_sample": {
+    "adapter": "simulate_fixed_radius_blocked_grouped_component_continuation_3d",
+    "app_independent_engine_required": true,
+    "baseline_global_parent_atomic_attempts": 382,
+    "candidate_native_contract": "fixed_radius_hit_stream_to_segmented_grouped_union_workspaces",
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "deduplicated_union_proposals": 289,
+    "fallback_to_unblocked_grouped_union": false,
+    "global_parent_atomic_attempts": 289,
+    "global_parent_atomic_successes": 56,
+    "hit_stream_pair_count": 562,
+    "input_contract": "host_point_rows_fixed_radius_3d_with_predicate_flags",
+    "local_or_segment_union_proposals": 382,
+    "max_segment_hits": 64,
+    "native_abi_added": false,
+    "overflow_segment_count": 0,
+    "performance_claim_authorized": false,
+    "predicate_true_count": 60,
+    "proposal_rejection_rate": 0.24345549738219896,
+    "reference_only": true,
+    "release_claim_authorized": false,
+    "rt_core_accelerated": false,
+    "runtime_route_authorized": false,
+    "segment_capacity_hits": 64,
+    "segment_count": 9,
+    "segment_target_hits": 64,
+    "target_primitive": "generic_fixed_radius_blocked_grouped_component_continuation_3d"
+  },
+  "source_commit": "a9193856547bf692069955a3dbaf6c3e00c09b1b",
+  "source_dirty": [
+    "M docs/research/future_version_to_do_list.md",
+    " M examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+    "?? docs/reports/goal2467_blocked_grouped_continuation_design_2026-05-20.md",
+    "?? docs/reports/goal2467_grouped_stream_baseline_pod/",
+    "?? docs/reports/goal2467_grouped_stream_baseline_pod_2026-05-20.md",
+    "?? docs/reports/goal2468_grouped_stream_overhead_pod/",
+    "?? docs/reports/goal2468_grouped_stream_overhead_pod_2026-05-20.md",
+    "?? docs/reports/goal2468_rt_dbscan_overhead_breakdown_instrumentation_2026-05-20.md",
+    "?? docs/reports/goal2469_grouped_stream_row_signature_pod/",
+    "?? docs/reports/goal2469_rt_dbscan_column_signature_mode_2026-05-20.md",
+    "?? docs/reviews/goal2467_codex_gemini_consensus_blocked_grouped_design_2026-05-20.md",
+    "?? docs/reviews/goal2467_gemini_blocked_grouped_design_review_2026-05-20.md",
+    "?? scripts/goal2467_grouped_stream_baseline_pod_runner.py",
+    "?? tests/goal2467_blocked_grouped_continuation_design_test.py",
+    "?? tests/goal2468_rt_dbscan_overhead_breakdown_instrumentation_test.py",
+    "?? tests/goal2469_rt_dbscan_column_signature_mode_test.py"
+  ],
+  "summaries": [
+    {
+      "dataset": "clustered3d",
+      "grouped_native_tail_mean_sec": 0.06085427477955818,
+      "grouped_native_tail_median_sec": 0.062264977023005486,
+      "min_neighbors": 12,
+      "point_count": 32768,
+      "prepare_sec": 5.04094447940588,
+      "radius": 0.055,
+      "repeat_rows": [
+        {
+          "core_flag_cache_reused": false,
+          "count_native_elapsed_sec": 0.0033309832215309143,
+          "count_threshold": 12,
+          "elapsed_sec": 3.0523605048656464,
+          "grouped_native_elapsed_sec": 0.5648450218141079,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": null,
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 1,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 2.4319543950259686,
+              "count_native_current_run_sec": 0.0033309832215309143,
+              "elapsed_sec": 3.0523605048656464,
+              "grouped_native_sec": 0.5648450218141079,
+              "known_host_phase_sec": 3.0523540787398815,
+              "known_native_current_run_sec": 0.5681760050356388,
+              "unattributed_elapsed_sec": 6.426125764846802e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 3.0001304000616074,
+              "densify_cluster_labels_sec": 0.018816914409399033,
+              "rows_materialization_sec": 0.028466805815696716,
+              "signature_sec": 0.004939958453178406
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.0033309832215309143,
+          "count_threshold": 12,
+          "elapsed_sec": 0.09754600748419762,
+          "grouped_native_elapsed_sec": 0.06252197921276093,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": null,
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 2,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.0004745982587337494,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.09754600748419762,
+              "grouped_native_sec": 0.06252197921276093,
+              "known_host_phase_sec": 0.09754268079996109,
+              "known_native_current_run_sec": 0.06252197921276093,
+              "unattributed_elapsed_sec": 3.3266842365264893e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.06299657747149467,
+              "densify_cluster_labels_sec": 0.012555539608001709,
+              "rows_materialization_sec": 0.017438463866710663,
+              "signature_sec": 0.004552099853754044
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.0033309832215309143,
+          "count_threshold": 12,
+          "elapsed_sec": 0.09206234663724899,
+          "grouped_native_elapsed_sec": 0.06218079850077629,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": null,
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 3,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.00037028267979621887,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.09206234663724899,
+              "grouped_native_sec": 0.06218079850077629,
+              "known_host_phase_sec": 0.09206020087003708,
+              "known_native_current_run_sec": 0.06218079850077629,
+              "unattributed_elapsed_sec": 2.1457672119140625e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.06255108118057251,
+              "densify_cluster_labels_sec": 0.011191725730895996,
+              "rows_materialization_sec": 0.013597086071968079,
+              "signature_sec": 0.004720307886600494
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.0033309832215309143,
+          "count_threshold": 12,
+          "elapsed_sec": 0.09123013913631439,
+          "grouped_native_elapsed_sec": 0.06234915554523468,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": null,
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 4,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.0003686286509037018,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.09123013913631439,
+              "grouped_native_sec": 0.06234915554523468,
+              "known_host_phase_sec": 0.09122755751013756,
+              "known_native_current_run_sec": 0.06234915554523468,
+              "unattributed_elapsed_sec": 2.5816261768341064e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.06271778419613838,
+              "densify_cluster_labels_sec": 0.010834969580173492,
+              "rows_materialization_sec": 0.013038408011198044,
+              "signature_sec": 0.00463639572262764
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.0033309832215309143,
+          "count_threshold": 12,
+          "elapsed_sec": 0.08407972007989883,
+          "grouped_native_elapsed_sec": 0.05636516585946083,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": null,
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 5,
+          "signature": {
+            "cluster_sizes": {
+              "1": 8192,
+              "2": 8192,
+              "3": 8192,
+              "4": 8192
+            },
+            "core_count": 32767,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.00037878379225730896,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.08407972007989883,
+              "grouped_native_sec": 0.05636516585946083,
+              "known_host_phase_sec": 0.08407760038971901,
+              "known_native_current_run_sec": 0.05636516585946083,
+              "unattributed_elapsed_sec": 2.119690179824829e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.05674394965171814,
+              "densify_cluster_labels_sec": 0.010084245353937149,
+              "rows_materialization_sec": 0.012688443064689636,
+              "signature_sec": 0.0045609623193740845
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        }
+      ],
+      "signature_mode": "row",
+      "signatures_match": true,
+      "tail_mean_sec": 0.09122955333441496,
+      "tail_median_sec": 0.09164624288678169,
+      "tail_timing_breakdown_median_sec": {
+        "derived": {
+          "adapter_non_native_estimated_sec": 0.0003745332360267639,
+          "count_native_current_run_sec": 0.0,
+          "grouped_native_sec": 0.062264977023005486,
+          "known_native_current_run_sec": 0.062264977023005486,
+          "unattributed_elapsed_sec": 2.3636966943740845e-06
+        },
+        "host_observed": {
+          "adapter_run_sec": 0.06263443268835545,
+          "densify_cluster_labels_sec": 0.011013347655534744,
+          "rows_materialization_sec": 0.013317747041583061,
+          "signature_sec": 0.004598679021000862
+        },
+        "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "grouped_native_tail_mean_sec": 0.1750331362709403,
+      "grouped_native_tail_median_sec": 0.17496830597519875,
+      "min_neighbors": 12,
+      "point_count": 65536,
+      "prepare_sec": 0.09576841816306114,
+      "radius": 0.055,
+      "repeat_rows": [
+        {
+          "core_flag_cache_reused": false,
+          "count_native_elapsed_sec": 0.007292583584785461,
+          "count_threshold": 12,
+          "elapsed_sec": 0.3143492303788662,
+          "grouped_native_elapsed_sec": 0.1748727634549141,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 1,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.057385724037885666,
+              "count_native_current_run_sec": 0.007292583584785461,
+              "elapsed_sec": 0.3143492303788662,
+              "grouped_native_sec": 0.1748727634549141,
+              "known_host_phase_sec": 0.31434549763798714,
+              "known_native_current_run_sec": 0.18216534703969955,
+              "unattributed_elapsed_sec": 3.732740879058838e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.23955107107758522,
+              "densify_cluster_labels_sec": 0.0224444679915905,
+              "rows_materialization_sec": 0.043085772544145584,
+              "signature_sec": 0.009264186024665833
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.007292583584785461,
+          "count_threshold": 12,
+          "elapsed_sec": 0.23906005173921585,
+          "grouped_native_elapsed_sec": 0.17533209547400475,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 2,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.00027125701308250427,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.23906005173921585,
+              "grouped_native_sec": 0.17533209547400475,
+              "known_host_phase_sec": 0.23905599117279053,
+              "known_native_current_run_sec": 0.17533209547400475,
+              "unattributed_elapsed_sec": 4.060566425323486e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.17560335248708725,
+              "densify_cluster_labels_sec": 0.02374904975295067,
+              "rows_materialization_sec": 0.03051792085170746,
+              "signature_sec": 0.00918566808104515
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.007292583584785461,
+          "count_threshold": 12,
+          "elapsed_sec": 0.23647504299879074,
+          "grouped_native_elapsed_sec": 0.1749880015850067,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 3,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.00033301860094070435,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.23647504299879074,
+              "grouped_native_sec": 0.1749880015850067,
+              "known_host_phase_sec": 0.2364717274904251,
+              "known_native_current_run_sec": 0.1749880015850067,
+              "unattributed_elapsed_sec": 3.3155083656311035e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.17532102018594742,
+              "densify_cluster_labels_sec": 0.023814547806978226,
+              "rows_materialization_sec": 0.02829720824956894,
+              "signature_sec": 0.009038951247930527
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.007292583584785461,
+          "count_threshold": 12,
+          "elapsed_sec": 0.2370067946612835,
+          "grouped_native_elapsed_sec": 0.17494861036539078,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 4,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.00027950480580329895,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.2370067946612835,
+              "grouped_native_sec": 0.17494861036539078,
+              "known_host_phase_sec": 0.2370022013783455,
+              "known_native_current_run_sec": 0.17494861036539078,
+              "unattributed_elapsed_sec": 4.59328293800354e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.17522811517119408,
+              "densify_cluster_labels_sec": 0.02345702052116394,
+              "rows_materialization_sec": 0.029127709567546844,
+              "signature_sec": 0.009189356118440628
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        },
+        {
+          "core_flag_cache_reused": true,
+          "count_native_elapsed_sec": 0.007292583584785461,
+          "count_threshold": 12,
+          "elapsed_sec": 0.23653582856059074,
+          "grouped_native_elapsed_sec": 0.17486383765935898,
+          "grouped_native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+          "grouped_native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+          "grouped_predicate_mode": "all_items_true_no_fallback_candidates",
+          "grouped_query_source": "prepared_search_points_self_query_device",
+          "grouped_transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "repeat": 5,
+          "signature": {
+            "cluster_sizes": {
+              "1": 16384,
+              "2": 16384,
+              "3": 16384,
+              "4": 16384
+            },
+            "core_count": 65536,
+            "noise_count": 0
+          },
+          "timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.0003168843686580658,
+              "count_native_current_run_sec": 0.0,
+              "elapsed_sec": 0.23653582856059074,
+              "grouped_native_sec": 0.17486383765935898,
+              "known_host_phase_sec": 0.2365313209593296,
+              "known_native_current_run_sec": 0.17486383765935898,
+              "unattributed_elapsed_sec": 4.507601261138916e-06
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.17518072202801704,
+              "densify_cluster_labels_sec": 0.023701902478933334,
+              "rows_materialization_sec": 0.02835487574338913,
+              "signature_sec": 0.009293820708990097
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          }
+        }
+      ],
+      "signature_mode": "row",
+      "signatures_match": true,
+      "tail_mean_sec": 0.2372694294899702,
+      "tail_median_sec": 0.23677131161093712,
+      "tail_timing_breakdown_median_sec": {
+        "derived": {
+          "adapter_non_native_estimated_sec": 0.0002981945872306824,
+          "count_native_current_run_sec": 0.0,
+          "grouped_native_sec": 0.17496830597519875,
+          "known_native_current_run_sec": 0.17496830597519875,
+          "unattributed_elapsed_sec": 4.284083843231201e-06
+        },
+        "host_observed": {
+          "adapter_run_sec": 0.17527456767857075,
+          "densify_cluster_labels_sec": 0.023725476115942,
+          "rows_materialization_sec": 0.028741292655467987,
+          "signature_sec": 0.00918751209974289
+        },
+        "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+      }
+    }
+  ],
+  "tiny_smoke_matches_reference": true
+}

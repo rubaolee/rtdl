@@ -74,6 +74,56 @@ from .baseline_contracts import InputContract
 from .baseline_contracts import validate_compiled_kernel_against_baseline
 from .baseline_contracts import WorkloadContract
 from .codegen import generate_optix_project
+from .columnar_aggregate_reference import ColumnarAggregatePlan
+from .columnar_aggregate_reference import ColumnarAggregateResult
+from .columnar_aggregate_reference import ColumnarAggregateLoweringPlan
+from .columnar_aggregate_reference import ColumnarRecordSet
+from .columnar_aggregate_reference import COMPOSITE_COLUMNAR_AGGREGATE_LOWERINGS
+from .columnar_aggregate_reference import columnar_plan_to_grouped_query
+from .columnar_aggregate_reference import columnar_record_set_to_row_mappings
+from .columnar_aggregate_reference import decompose_columnar_aggregate_plan
+from .columnar_aggregate_reference import evaluate_columnar_grouped_aggregate
+from .columnar_aggregate_reference import merge_columnar_grouped_sum_count_rows
+from .columnar_aggregate_reference import NATIVE_COLUMNAR_COUNT_SUM_BACKENDS
+from .columnar_aggregate_reference import PARTNER_RESIDENT_COLUMNAR_COUNT_SUM_BACKENDS
+from .columnar_aggregate_reference import PARTNER_RESIDENT_COLUMNAR_I64_REDUCTION_BACKENDS
+from .columnar_aggregate_reference import PARTNER_RESIDENT_COLUMNAR_I64_REDUCTIONS
+from .columnar_aggregate_reference import normalize_columnar_aggregate_plan
+from .columnar_aggregate_reference import normalize_columnar_record_set
+from .columnar_aggregate_reference import plan_columnar_aggregate_lowering
+from .columnar_aggregate_reference import SUPPORTED_AGGREGATES
+from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_BACKENDS
+from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS
+from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_TARGET
+from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL
+from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_TRANSFER_MODE
+from .columnar_partner import PartnerResidentColumnarRecordSet
+from .columnar_partner import PartnerResidentColumnHandoff
+from .columnar_partner import partner_resident_columnar_native_execution_requirements
+from .columnar_partner import plan_partner_resident_columnar_native_execution
+from .columnar_partner import prepare_partner_resident_columnar_record_set
+from .aggregate_tree_reference import AGGREGATE_OPENING_ROWS_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT
+from .aggregate_tree_reference import GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT
+from .aggregate_tree_reference import WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT
+from .aggregate_tree_reference import WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT
+from .aggregate_tree_reference import VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT
+from .aggregate_tree_reference import AggregateNodeRow
+from .aggregate_tree_reference import AggregateTreeNodeRow
+from .aggregate_tree_reference import WeightedPointRow
+from .aggregate_tree_reference import build_bucketized_aggregate_tree_2d
+from .aggregate_tree_reference import evaluate_weighted_inverse_square_contribution_rows_2d
+from .aggregate_tree_reference import evaluate_aggregate_tree_opening_frontier_2d
+from .aggregate_tree_reference import evaluate_aggregate_opening_rows_2d
+from .aggregate_tree_reference import estimate_vector_sum_materialization_pressure_2d
+from .aggregate_tree_reference import morton_code_2d
+from .aggregate_tree_reference import normalize_aggregate_node_rows
+from .aggregate_tree_reference import normalize_weighted_point_rows
+from .aggregate_tree_reference import sum_weighted_inverse_square_contributions_2d
+from .aggregate_tree_reference import sum_aggregate_frontier_weighted_vectors_2d
+from .aggregate_tree_reference import sum_vector_contribution_rows_2d
 from .datasets import arcgis_pages_to_cdb
 from .datasets import build_arcgis_geojson_query_url
 from .datasets import build_arcgis_query_url
@@ -111,9 +161,14 @@ from .embree_runtime import EmbreeThreadConfig
 from .embree_runtime import directed_hausdorff_2d_embree
 from .embree_runtime import fixed_radius_count_threshold_2d_embree
 from .embree_runtime import prepare_embree_fixed_radius_count_threshold_2d
+from .embree_runtime import prepare_grouped_segment_query_3d
 from .embree_runtime import prepare_embree_knn_rows_2d
+from .embree_runtime import prepare_embree_static_triangle_scene_3d
 from .embree_runtime import PreparedEmbreeFixedRadiusCountThreshold2D
+from .embree_runtime import PreparedGroupedSegmentQuery3D
 from .embree_runtime import PreparedEmbreeKnnRows2D
+from .embree_runtime import PreparedEmbreeStaticTriangleScene3D
+from .embree_runtime import run_embree_grouped_segment_any_hit_flags_3d
 from .engine_feature_matrix import assert_engine_feature_supported
 from .engine_feature_matrix import engine_feature_support
 from .engine_feature_matrix import engine_feature_support_matrix
@@ -364,7 +419,19 @@ from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_partner_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs
 from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d
 from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d_device_descriptors
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_DEVICE_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MIN_I64_WITH_CAPACITY_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MAX_I64_WITH_CAPACITY_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL
+from .optix_runtime import OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS
 from .optix_runtime import prepare_optix
+from .optix_runtime import prepare_optix_columnar_record_set
+from .optix_runtime import prepare_optix_partner_resident_columnar_record_set
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_neighbors_3d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_3d
@@ -375,6 +442,8 @@ from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangles
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
+from .optix_runtime import prepare_optix_static_triangle_scene_3d
+from .optix_runtime import prepare_optix_grouped_segment_query_3d
 from .optix_runtime import prepare_ray_segment_group_count_2d_optix
 from .optix_runtime import prepare_optix_group_indices_2d
 from .optix_runtime import prepare_optix_pose_indices_2d
@@ -387,6 +456,8 @@ from .optix_runtime import PreparedOptixFixedRadiusNeighbors3D
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold3D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
+from .optix_runtime import PreparedOptixStaticTriangleScene3D
+from .optix_runtime import PreparedOptixGroupedSegmentQuery3D
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
 from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
 from .optix_runtime import PreparedOptixPointClosedShapeMembership2D
@@ -394,6 +465,14 @@ from .optix_runtime import closed_shape_membership_2d_optix
 from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
 from .optix_runtime import prepare_point_closed_shape_membership_2d_optix
 from .optix_runtime import ray_segment_group_count_2d_optix
+from .optix_runtime import run_optix_partner_resident_columnar_grouped_count_i64
+from .optix_runtime import run_optix_partner_resident_columnar_grouped_sum_i64
+from .optix_runtime import run_optix_partner_resident_columnar_grouped_min_i64
+from .optix_runtime import run_optix_partner_resident_columnar_grouped_max_i64
+from .optix_runtime import run_optix_partner_resident_columnar_grouped_sum_count_i64
+from .optix_runtime import run_optix_partner_resident_columnar_grouped_stats_i64
+from .optix_runtime import run_optix_partner_resident_columnar_grouped_i64_reduction
+from .optix_runtime import run_optix_grouped_segment_any_hit_flags_3d
 from .optix_runtime import run_optix
 from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
 from .partner_adapters import segment_polygon_anyhit_rows_optix_partner
@@ -542,6 +621,7 @@ from .embree_runtime import PackedRays
 from .embree_runtime import PackedSegments
 from .embree_runtime import PackedTriangles
 from .embree_runtime import prepare_embree
+from .embree_runtime import prepare_embree_columnar_record_set
 from .embree_runtime import prepare_embree_db_dataset
 from .embree_runtime import PreparedEmbreeDbDataset
 from .embree_runtime import PreparedEmbreeExecution
@@ -1007,6 +1087,31 @@ __all__ = [
     "bfs_expand_cpu",
     "CandidateSet",
     "CompiledKernel",
+    "AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT",
+    "AGGREGATE_OPENING_ROWS_2D_CONTRACT",
+    "AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT",
+    "GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT",
+    "WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT",
+    "WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT",
+    "VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT",
+    "AggregateNodeRow",
+    "AggregateTreeNodeRow",
+    "ColumnarAggregateLoweringPlan",
+    "ColumnarAggregatePlan",
+    "ColumnarAggregateResult",
+    "ColumnarRecordSet",
+    "PARTNER_RESIDENT_COLUMNAR_BACKENDS",
+    "PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS",
+    "PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_TARGET",
+    "PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL",
+    "PARTNER_RESIDENT_COLUMNAR_TRANSFER_MODE",
+    "PartnerResidentColumnarRecordSet",
+    "PartnerResidentColumnHandoff",
+    "SUPPORTED_AGGREGATES",
+    "columnar_plan_to_grouped_query",
+    "columnar_record_set_to_row_mappings",
+    "WeightedPointRow",
+    "build_bucketized_aggregate_tree_2d",
     "contains",
     "conjunctive_scan",
     "conjunctive_scan_apple_rt",
@@ -1027,9 +1132,26 @@ __all__ = [
     "GeometryInput",
     "GeometryType",
     "GenerateOnlyRequest",
+    "COMPOSITE_COLUMNAR_AGGREGATE_LOWERINGS",
+    "decompose_columnar_aggregate_plan",
+    "evaluate_aggregate_opening_rows_2d",
+    "evaluate_aggregate_tree_opening_frontier_2d",
+    "evaluate_weighted_inverse_square_contribution_rows_2d",
+    "estimate_vector_sum_materialization_pressure_2d",
+    "evaluate_columnar_grouped_aggregate",
+    "merge_columnar_grouped_sum_count_rows",
     "GroupedAggregateQuery",
     "GroupedQuery",
     "GroupedQueryLayout",
+    "NATIVE_COLUMNAR_COUNT_SUM_BACKENDS",
+    "PARTNER_RESIDENT_COLUMNAR_COUNT_SUM_BACKENDS",
+    "PARTNER_RESIDENT_COLUMNAR_I64_REDUCTION_BACKENDS",
+    "PARTNER_RESIDENT_COLUMNAR_I64_REDUCTIONS",
+    "morton_code_2d",
+    "normalize_aggregate_node_rows",
+    "normalize_weighted_point_rows",
+    "sum_weighted_inverse_square_contributions_2d",
+    "sum_vector_contribution_rows_2d",
     "grouped_count",
     "grouped_count_cpu",
     "grouped_count_apple_rt",
@@ -1053,12 +1175,18 @@ __all__ = [
     "RtdlOutputSpec",
     "RtdlTensorDescriptor",
     "prepare_direct_device_pointer_handoff",
+    "partner_resident_columnar_native_execution_requirements",
+    "prepare_partner_resident_columnar_record_set",
+    "plan_partner_resident_columnar_native_execution",
+    "plan_columnar_aggregate_lowering",
     "run_partner_ray_triangle_any_hit_2d",
     "validate_v2_0_partner_protocol_contract",
     "v2_0_partner_protocol_contract",
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",
+    "normalize_columnar_aggregate_plan",
+    "normalize_columnar_record_set",
     "refine_polygon_pair_overlap_area_rows_for_pairs",
     "refine_polygon_set_jaccard_for_pairs",
     "reduce_polygon_pair_exact_area_summary_for_candidates",
@@ -1313,12 +1441,17 @@ __all__ = [
     "directed_hausdorff_2d_embree",
     "fixed_radius_count_threshold_2d_embree",
     "prepare_embree_fixed_radius_count_threshold_2d",
+    "prepare_grouped_segment_query_3d",
     "prepare_embree_knn_rows_2d",
+    "prepare_embree_static_triangle_scene_3d",
+    "run_embree_grouped_segment_any_hit_flags_3d",
     "knn_rows_cpu",
     "EmbreeRowView",
     "EmbreeThreadConfig",
     "PreparedEmbreeFixedRadiusCountThreshold2D",
+    "PreparedGroupedSegmentQuery3D",
     "PreparedEmbreeKnnRows2D",
+    "PreparedEmbreeStaticTriangleScene3D",
     "configure_embree",
     "collect_polygon_pair_candidates_bounded_embree",
     "embree_thread_config",
@@ -1340,7 +1473,19 @@ __all__ = [
     "pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs",
     "run_optix_partner_ray_triangle_any_hit_2d",
     "run_optix_partner_ray_triangle_any_hit_2d_device_descriptors",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_DEVICE_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MIN_I64_WITH_CAPACITY_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MAX_I64_WITH_CAPACITY_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL",
+    "OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS",
     "prepare_optix",
+    "prepare_optix_columnar_record_set",
+    "prepare_optix_partner_resident_columnar_record_set",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_neighbors_3d",
     "prepare_optix_fixed_radius_count_threshold_3d",
@@ -1351,6 +1496,16 @@ __all__ = [
     "prepare_optix_ray_triangle_any_hit_2d",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangles",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene",
+    "prepare_optix_static_triangle_scene_3d",
+    "prepare_optix_grouped_segment_query_3d",
+    "run_optix_partner_resident_columnar_grouped_count_i64",
+    "run_optix_partner_resident_columnar_grouped_sum_i64",
+    "run_optix_partner_resident_columnar_grouped_min_i64",
+    "run_optix_partner_resident_columnar_grouped_max_i64",
+    "run_optix_partner_resident_columnar_grouped_sum_count_i64",
+    "run_optix_partner_resident_columnar_grouped_stats_i64",
+    "run_optix_partner_resident_columnar_grouped_i64_reduction",
+    "run_optix_grouped_segment_any_hit_flags_3d",
     "prepare_ray_segment_group_count_2d_optix",
     "prepare_optix_group_indices_2d",
     "prepare_optix_pose_indices_2d",
@@ -1363,6 +1518,8 @@ __all__ = [
     "PreparedOptixFixedRadiusCountThreshold3D",
     "PreparedOptixKernel",
     "PreparedOptixRayTriangleAnyHit2D",
+    "PreparedOptixStaticTriangleScene3D",
+    "PreparedOptixGroupedSegmentQuery3D",
     "PreparedOptixSegmentPolygonAnyHitRows2D",
     "PreparedOptixSegmentPolygonHitcount2D",
     "PreparedOptixPointClosedShapeMembership2D",
@@ -1579,6 +1736,7 @@ __all__ = [
     "prepare_apple_rt_ray_triangle_any_hit_2d",
     "prepare_apple_rt_ray_triangle_closest_hit",
     "prepare_apple_rt_rays_2d",
+    "prepare_embree_columnar_record_set",
     "prepare_embree_db_dataset",
     "prepare_postgresql_denorm_table",
     "PreparedEmbreeDbDataset",

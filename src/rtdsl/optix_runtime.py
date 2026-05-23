@@ -39,6 +39,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Mapping
 
 from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlPoint
@@ -48,13 +49,19 @@ from .embree_runtime import _RtdlTriangle
 from .embree_runtime import _RtdlTriangle3D
 from .embree_runtime import _RtdlRay2D
 from .embree_runtime import _RtdlRay3D
+from .embree_runtime import _RtdlSegment3D
 from .embree_runtime import _RtdlFrontierVertex
 from .embree_runtime import _RtdlBfsExpandRow
 from .embree_runtime import _RtdlEdgeSeed
 from .embree_runtime import _RtdlTriangleRow
 from .embree_runtime import _RtdlPayloadField
 from .embree_runtime import _encode_db_table_columnar
+from .embree_runtime import _encode_db_column_mapping_columnar_with_metadata
+from .embree_runtime import _encode_all_db_text_column_mapping
+from .embree_runtime import _columnar_record_set_to_column_mapping
 from .oracle_runtime import _decode_db_group_key
+from .oracle_runtime import _DB_KIND_FLOAT64
+from .oracle_runtime import _DB_KIND_INT64
 from .oracle_runtime import _RtdlDbField
 from .oracle_runtime import _RtdlDbGroupedCountRow
 from .oracle_runtime import _RtdlDbRowIdRow
@@ -71,6 +78,10 @@ from .embree_runtime import PackedGraphCSR
 from .embree_runtime import PackedVertexFrontier
 from .embree_runtime import PackedVertexSet
 from .embree_runtime import PackedEdgeSet
+from .embree_runtime import PreparedGroupedSegmentQuery3D
+from .embree_runtime import _pack_group_offsets_u32
+from .embree_runtime import _pack_segments_3d_from_endpoints
+from .embree_runtime import _pack_static_triangles_3d
 from .embree_runtime import _encode_all_db_text_columns
 from .embree_runtime import _pack_points_columns_numpy
 from .db_reference import PredicateClause
@@ -100,11 +111,53 @@ from .graph_reference import normalize_edge_set
 from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
 from . import partner as _partner
+from .columnar_partner import PartnerResidentColumnarRecordSet
+from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS
+from .columnar_partner import PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL
+from .columnar_partner import plan_partner_resident_columnar_native_execution
+from .columnar_partner import prepare_partner_resident_columnar_record_set
 
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_optix_execution_cache: OrderedDict[tuple[object, ...], "PreparedOptixExecution"] = OrderedDict()
 _DB_MAX_ROWS_PER_JOB = 1_000_000
+OPTIX_PARTNER_RESIDENT_COLUMNAR_DEVICE_SYMBOL = PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_SYMBOL = "rtdl_optix_columnar_device_payload_grouped_count_i64"
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_SYMBOL = "rtdl_optix_columnar_device_payload_grouped_sum_i64"
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL = (
+    "rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity"
+)
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL = (
+    "rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity"
+)
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MIN_I64_WITH_CAPACITY_SYMBOL = (
+    "rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity"
+)
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MAX_I64_WITH_CAPACITY_SYMBOL = (
+    "rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity"
+)
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL = (
+    "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity"
+)
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL = (
+    "rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity"
+)
+OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS = (
+    "count",
+    "sum",
+    "min",
+    "max",
+    "sum_count",
+    "stats",
+)
+_OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTION_SYMBOLS = {
+    "count": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL,
+    "sum": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL,
+    "min": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MIN_I64_WITH_CAPACITY_SYMBOL,
+    "max": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MAX_I64_WITH_CAPACITY_SYMBOL,
+    "sum_count": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL,
+    "stats": OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL,
+}
 OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL = "rtdl_optix_collect_k_bounded_i64_device"
 OPTIX_COLLECT_K_BOUNDED_I64_HOST_SYMBOL = "rtdl_optix_collect_k_bounded_i64"
 
@@ -351,9 +404,44 @@ class _RtdlDbGroupedSumRow(ctypes.Structure):
     ]
 
 
+class _RtdlDbGroupedSumCountRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("sum", ctypes.c_int64),
+        ("count", ctypes.c_int64),
+    ]
+
+
+class _RtdlDbGroupedStatsRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("count", ctypes.c_int64),
+        ("sum", ctypes.c_int64),
+        ("min", ctypes.c_int64),
+        ("max", ctypes.c_int64),
+    ]
+
+
+class _RtdlDevicePayloadField(ctypes.Structure):
+    _fields_ = [
+        ("name", ctypes.c_char_p),
+        ("kind", ctypes.c_uint32),
+        ("dtype", ctypes.c_uint32),
+        ("device_type", ctypes.c_uint32),
+        ("device_id", ctypes.c_uint32),
+        ("element_count", ctypes.c_size_t),
+        ("stride_bytes", ctypes.c_size_t),
+        ("device_ptr", ctypes.c_uint64),
+    ]
+
+
 _DB_COMPACT_SUMMARY_OP_SCAN_COUNT = 1
 _DB_COMPACT_SUMMARY_OP_GROUPED_COUNT = 2
 _DB_COMPACT_SUMMARY_OP_GROUPED_SUM = 3
+_DEVICE_PAYLOAD_DEVICE_CUDA = 1
+_DEVICE_PAYLOAD_DTYPE_INT64 = 1
+_DEVICE_PAYLOAD_DTYPE_UINT32 = 2
+_DEVICE_PAYLOAD_DTYPE_FLOAT64 = 3
 
 
 class _RtdlDbCompactSummaryRequest(ctypes.Structure):
@@ -2093,6 +2181,8 @@ class PreparedOptixFixedRadiusCountThreshold3D:
         predicate_flags,
         parent_out,
         fallback_candidate_out,
+        same_root_culling: bool = True,
+        direct_side_effect: bool = False,
     ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared OptiX fixed-radius grouped-union 3D handle is closed")
@@ -2100,6 +2190,8 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             raise ValueError("radius must be non-negative")
         if radius > self._max_radius:
             raise ValueError("radius must be less than or equal to prepared max_radius")
+        same_root_culling = _require_bool(same_root_culling, name="same_root_culling")
+        direct_side_effect = _require_bool(direct_side_effect, name="direct_side_effect")
         query_index_offset = int(query_index_offset)
         if query_index_offset < 0:
             raise ValueError("query_index_offset must be non-negative")
@@ -2142,7 +2234,14 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             return {
                 "metadata": {
                     "backend": "optix",
-                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL,
+                    "native_symbol": (
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+                        if direct_side_effect
+                        else
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL
+                        if same_root_culling
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_OPTIONS_SYMBOL
+                    ),
                     "query_count": 0,
                     "query_index_offset": query_index_offset,
                     "item_count": int(predicate_handoff.shape[0]),
@@ -2150,43 +2249,93 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "rt_core_accelerated": True,
                     "materializes_neighbor_rows": False,
                     "materializes_directed_adjacency_stream": False,
+                    "grouped_union_same_root_culling_enabled": same_root_culling,
+                    "grouped_union_same_root_culling_policy": (
+                        "parent_union_same_root_before_anyhit"
+                        if same_root_culling
+                        else "disabled_by_caller"
+                    ),
+                    "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                    "grouped_union_direct_side_effect_policy": (
+                        _grouped_union_direct_side_effect_policy(direct_side_effect)
+                    ),
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": False,
                 }
             }
 
         lib = _load_optix_library()
+        symbol_name = (
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+            if direct_side_effect
+            else
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL
+            if same_root_culling
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_OPTIONS_SYMBOL
+        )
         apply_symbol = _find_optional_backend_symbol(
             lib,
-            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL,
+            symbol_name,
         )
         if apply_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                f"{_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL}; "
+                f"{symbol_name}; "
                 "rebuild the OptiX backend from current main"
             )
         error = ctypes.create_string_buffer(4096)
         start = time.perf_counter()
-        status = apply_symbol(
-            self._handle,
-            packed_queries.records,
-            packed_queries.count,
-            ctypes.c_size_t(query_index_offset),
-            ctypes.c_double(float(radius)),
-            ctypes.c_void_p(predicate_handoff.data_ptr),
-            ctypes.c_void_p(parent_handoff.data_ptr),
-            ctypes.c_void_p(fallback_handoff.data_ptr),
-            ctypes.c_size_t(int(predicate_handoff.shape[0])),
-            error,
-            len(error),
-        )
+        if direct_side_effect:
+            status = apply_symbol(
+                self._handle,
+                packed_queries.records,
+                packed_queries.count,
+                ctypes.c_size_t(query_index_offset),
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif same_root_culling:
+            status = apply_symbol(
+                self._handle,
+                packed_queries.records,
+                packed_queries.count,
+                ctypes.c_size_t(query_index_offset),
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        else:
+            status = apply_symbol(
+                self._handle,
+                packed_queries.records,
+                packed_queries.count,
+                ctypes.c_size_t(query_index_offset),
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_uint32(0),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
         _check_status(status, error)
         elapsed = time.perf_counter() - start
         return {
             "metadata": {
                 "backend": "optix",
-                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL,
+                "native_symbol": symbol_name,
                 "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_device_workspaces",
                 "native_execution_path": "prepared_rt_core_grouped_union_3d",
                 "query_count": packed_queries.count,
@@ -2205,6 +2354,16 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "rt_core_accelerated": True,
                 "materializes_neighbor_rows": False,
                 "materializes_directed_adjacency_stream": False,
+                "grouped_union_same_root_culling_enabled": same_root_culling,
+                "grouped_union_same_root_culling_policy": (
+                    "parent_union_same_root_before_anyhit"
+                    if same_root_culling
+                    else "disabled_by_caller"
+                ),
+                "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                "grouped_union_direct_side_effect_policy": (
+                    _grouped_union_direct_side_effect_policy(direct_side_effect)
+                ),
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
                 "true_zero_copy_authorized": False,
@@ -2220,6 +2379,9 @@ class PreparedOptixFixedRadiusCountThreshold3D:
         predicate_flags,
         parent_out,
         fallback_candidate_out,
+        telemetry_out=None,
+        same_root_culling: bool = True,
+        direct_side_effect: bool = False,
     ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared OptiX fixed-radius grouped-union self 3D handle is closed")
@@ -2227,6 +2389,8 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             raise ValueError("radius must be non-negative")
         if radius > self._max_radius:
             raise ValueError("radius must be less than or equal to prepared max_radius")
+        same_root_culling = _require_bool(same_root_culling, name="same_root_culling")
+        direct_side_effect = _require_bool(direct_side_effect, name="direct_side_effect")
 
         predicate_handoff = _partner.prepare_direct_device_pointer_handoff(predicate_flags, access="read")
         parent_handoff = _partner.prepare_direct_device_pointer_handoff(parent_out, access="readwrite")
@@ -2256,13 +2420,39 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             raise ValueError("parent_out must be contiguous")
         if not _partner_contiguous_column_strides(fallback_handoff.strides, itemsize=4):
             raise ValueError("fallback_candidate_out must be contiguous")
+        telemetry_handoff = None
+        if telemetry_out is not None:
+            telemetry_handoff = _partner.prepare_direct_device_pointer_handoff(telemetry_out, access="readwrite")
+            if (telemetry_handoff.device_type, telemetry_handoff.device_id) != expected_device:
+                raise ValueError("grouped-union telemetry_out must live on the same CUDA device")
+            if _partner_dtype_token(telemetry_handoff.dtype) != "uint64":
+                raise ValueError("grouped-union telemetry_out must use dtype uint64")
+            if len(tuple(telemetry_handoff.shape)) != 1:
+                raise ValueError("grouped-union telemetry_out must be one-dimensional")
+            if int(telemetry_handoff.shape[0]) < 4:
+                raise ValueError("grouped-union telemetry_out must contain at least four counters")
+            if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
+                raise ValueError("grouped-union telemetry_out must be contiguous")
 
         query_count = self._packed_search.count
         if query_count == 0:
             return {
                 "metadata": {
                     "backend": "optix",
-                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                    "native_symbol": (
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+                        if telemetry_handoff is not None and direct_side_effect
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+                        if direct_side_effect
+                        else
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_SYMBOL
+                        if telemetry_handoff is not None and same_root_culling
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_OPTIONS_SYMBOL
+                        if telemetry_handoff is not None
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL
+                        if same_root_culling
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_OPTIONS_SYMBOL
+                    ),
                     "query_count": 0,
                     "query_index_offset": 0,
                     "search_count": self._packed_search.count,
@@ -2272,40 +2462,127 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "rt_core_accelerated": True,
                     "materializes_neighbor_rows": False,
                     "materializes_directed_adjacency_stream": False,
+                    "grouped_union_same_root_culling_enabled": same_root_culling,
+                    "grouped_union_same_root_culling_policy": (
+                        "parent_union_same_root_before_anyhit"
+                        if same_root_culling
+                        else "disabled_by_caller"
+                    ),
+                    "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                    "grouped_union_direct_side_effect_policy": (
+                        _grouped_union_direct_side_effect_policy(direct_side_effect)
+                    ),
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": False,
+                    "grouped_union_telemetry_requested": telemetry_handoff is not None,
                 }
             }
 
         lib = _load_optix_library()
-        apply_symbol = _find_optional_backend_symbol(
-            lib,
-            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+        symbol_name = (
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+            if telemetry_handoff is not None and direct_side_effect
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+            if direct_side_effect
+            else
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_SYMBOL
+            if telemetry_handoff is not None and same_root_culling
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_OPTIONS_SYMBOL
+            if telemetry_handoff is not None
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL
+            if same_root_culling
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_OPTIONS_SYMBOL
         )
+        apply_symbol = _find_optional_backend_symbol(lib, symbol_name)
         if apply_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                f"{_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL}; "
+                f"{symbol_name}; "
                 "rebuild the OptiX backend from current main"
             )
         error = ctypes.create_string_buffer(4096)
         start = time.perf_counter()
-        status = apply_symbol(
-            self._handle,
-            ctypes.c_double(float(radius)),
-            ctypes.c_void_p(predicate_handoff.data_ptr),
-            ctypes.c_void_p(parent_handoff.data_ptr),
-            ctypes.c_void_p(fallback_handoff.data_ptr),
-            ctypes.c_size_t(int(predicate_handoff.shape[0])),
-            error,
-            len(error),
-        )
+        if telemetry_handoff is not None and direct_side_effect:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif direct_side_effect:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif telemetry_handoff is not None and same_root_culling:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif telemetry_handoff is not None:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_uint32(0),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif same_root_culling:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        else:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(fallback_handoff.data_ptr),
+                ctypes.c_uint32(0),
+                ctypes.c_size_t(int(predicate_handoff.shape[0])),
+                error,
+                len(error),
+            )
         _check_status(status, error)
         elapsed = time.perf_counter() - start
         return {
             "metadata": {
                 "backend": "optix",
-                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                "native_symbol": symbol_name,
                 "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
                 "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
                 "query_source": "prepared_search_points_self_query_device",
@@ -2325,6 +2602,26 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "rt_core_accelerated": True,
                 "materializes_neighbor_rows": False,
                 "materializes_directed_adjacency_stream": False,
+                "grouped_union_intersection_culling_policy": (
+                    "predicate_aware_connectivity_and_fallback_before_anyhit"
+                ),
+                "grouped_union_same_root_culling_enabled": same_root_culling,
+                "grouped_union_same_root_culling_policy": (
+                    "parent_union_same_root_before_anyhit"
+                    if same_root_culling
+                    else "disabled_by_caller"
+                ),
+                "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                "grouped_union_direct_side_effect_policy": (
+                    _grouped_union_direct_side_effect_policy(direct_side_effect)
+                ),
+                "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                "grouped_union_telemetry_contract": (
+                    "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+                    "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
+                    if telemetry_handoff is not None
+                    else None
+                ),
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
                 "true_zero_copy_authorized": False,
@@ -2338,6 +2635,9 @@ class PreparedOptixFixedRadiusCountThreshold3D:
         *,
         radius: float,
         parent_out,
+        telemetry_out=None,
+        same_root_culling: bool = True,
+        direct_side_effect: bool = False,
     ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared OptiX fixed-radius grouped-union all-items self 3D handle is closed")
@@ -2345,6 +2645,8 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             raise ValueError("radius must be non-negative")
         if radius > self._max_radius:
             raise ValueError("radius must be less than or equal to prepared max_radius")
+        same_root_culling = _require_bool(same_root_culling, name="same_root_culling")
+        direct_side_effect = _require_bool(direct_side_effect, name="direct_side_effect")
 
         parent_handoff = _partner.prepare_direct_device_pointer_handoff(parent_out, access="readwrite")
         if _partner_dtype_token(parent_handoff.dtype) != "int32":
@@ -2355,13 +2657,42 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             raise ValueError("grouped-union all-items self workspace must cover every prepared search item")
         if not _partner_contiguous_column_strides(parent_handoff.strides, itemsize=4):
             raise ValueError("parent_out must be contiguous")
+        telemetry_handoff = None
+        if telemetry_out is not None:
+            telemetry_handoff = _partner.prepare_direct_device_pointer_handoff(telemetry_out, access="readwrite")
+            if (telemetry_handoff.device_type, telemetry_handoff.device_id) != (
+                parent_handoff.device_type,
+                parent_handoff.device_id,
+            ):
+                raise ValueError("grouped-union telemetry_out must live on the same CUDA device")
+            if _partner_dtype_token(telemetry_handoff.dtype) != "uint64":
+                raise ValueError("grouped-union telemetry_out must use dtype uint64")
+            if len(tuple(telemetry_handoff.shape)) != 1:
+                raise ValueError("grouped-union telemetry_out must be one-dimensional")
+            if int(telemetry_handoff.shape[0]) < 4:
+                raise ValueError("grouped-union telemetry_out must contain at least four counters")
+            if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
+                raise ValueError("grouped-union telemetry_out must be contiguous")
 
         query_count = self._packed_search.count
         if query_count == 0:
             return {
                 "metadata": {
                     "backend": "optix",
-                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                    "native_symbol": (
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+                        if telemetry_handoff is not None and direct_side_effect
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+                        if direct_side_effect
+                        else
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_SYMBOL
+                        if telemetry_handoff is not None and same_root_culling
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_OPTIONS_SYMBOL
+                        if telemetry_handoff is not None
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL
+                        if same_root_culling
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_OPTIONS_SYMBOL
+                    ),
                     "query_count": 0,
                     "query_index_offset": 0,
                     "search_count": self._packed_search.count,
@@ -2372,40 +2703,127 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "rt_core_accelerated": True,
                     "materializes_neighbor_rows": False,
                     "materializes_directed_adjacency_stream": False,
+                    "grouped_union_same_root_culling_enabled": same_root_culling,
+                    "grouped_union_same_root_culling_policy": (
+                        "parent_union_same_root_before_anyhit"
+                        if same_root_culling
+                        else "disabled_by_caller"
+                    ),
+                    "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                    "grouped_union_direct_side_effect_policy": (
+                        _grouped_union_direct_side_effect_policy(direct_side_effect)
+                    ),
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": False,
+                    "grouped_union_telemetry_requested": telemetry_handoff is not None,
                 }
             }
 
         lib = _load_optix_library()
-        apply_symbol = _find_optional_backend_symbol(
-            lib,
-            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+        symbol_name = (
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
+            if telemetry_handoff is not None and direct_side_effect
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+            if direct_side_effect
+            else
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_SYMBOL
+            if telemetry_handoff is not None and same_root_culling
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_OPTIONS_SYMBOL
+            if telemetry_handoff is not None
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL
+            if same_root_culling
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_OPTIONS_SYMBOL
         )
+        apply_symbol = _find_optional_backend_symbol(lib, symbol_name)
         if apply_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                f"{_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL}; "
+                f"{symbol_name}; "
                 "rebuild the OptiX backend from current main"
             )
         error = ctypes.create_string_buffer(4096)
         start = time.perf_counter()
-        status = apply_symbol(
-            self._handle,
-            ctypes.c_double(float(radius)),
-            ctypes.c_void_p(0),
-            ctypes.c_void_p(parent_handoff.data_ptr),
-            ctypes.c_void_p(0),
-            ctypes.c_size_t(int(parent_handoff.shape[0])),
-            error,
-            len(error),
-        )
+        if telemetry_handoff is not None and direct_side_effect:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif direct_side_effect:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif telemetry_handoff is not None and same_root_culling:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif telemetry_handoff is not None:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(telemetry_handoff.data_ptr),
+                ctypes.c_uint32(0),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        elif same_root_culling:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
+        else:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0),
+                ctypes.c_uint32(0),
+                ctypes.c_size_t(int(parent_handoff.shape[0])),
+                error,
+                len(error),
+            )
         _check_status(status, error)
         elapsed = time.perf_counter() - start
         return {
             "metadata": {
                 "backend": "optix",
-                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                "native_symbol": symbol_name,
                 "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
                 "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
                 "query_source": "prepared_search_points_self_query_device",
@@ -2422,6 +2840,285 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "rt_core_accelerated": True,
                 "materializes_neighbor_rows": False,
                 "materializes_directed_adjacency_stream": False,
+                "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+                "grouped_union_same_root_culling_enabled": same_root_culling,
+                "grouped_union_same_root_culling_policy": (
+                    "parent_union_same_root_before_anyhit"
+                    if same_root_culling
+                    else "disabled_by_caller"
+                ),
+                "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                "grouped_union_direct_side_effect_policy": (
+                    _grouped_union_direct_side_effect_policy(direct_side_effect)
+                ),
+                "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                "grouped_union_telemetry_contract": (
+                    "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+                    "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
+                    if telemetry_handoff is not None
+                    else None
+                ),
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "v2_0_release_authorized": False,
+                "paper_speedup_claim_authorized": False,
+            }
+        }
+
+    def apply_device_grouped_union_self_range(
+        self,
+        *,
+        query_start: int,
+        query_count: int,
+        radius: float,
+        parent_out,
+        predicate_flags=None,
+        fallback_candidate_out=None,
+        telemetry_out=None,
+        same_root_culling: bool = True,
+        direct_side_effect: bool = False,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius grouped-union self-range 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        same_root_culling = _require_bool(same_root_culling, name="same_root_culling")
+        direct_side_effect = _require_bool(direct_side_effect, name="direct_side_effect")
+        query_start = int(query_start)
+        query_count = int(query_count)
+        prepared_count = int(self._packed_search.count)
+        if query_start < 0 or query_count < 0:
+            raise ValueError("query_start and query_count must be non-negative")
+        if query_start > prepared_count or query_count > prepared_count - query_start:
+            raise ValueError("grouped-union self-range query window must be inside prepared search items")
+
+        all_predicate = predicate_flags is None and fallback_candidate_out is None
+        if not all_predicate and (predicate_flags is None or fallback_candidate_out is None):
+            raise ValueError(
+                "predicate_flags and fallback_candidate_out must both be omitted only for all-items mode"
+            )
+
+        parent_handoff = _partner.prepare_direct_device_pointer_handoff(parent_out, access="readwrite")
+        if _partner_dtype_token(parent_handoff.dtype) != "int32":
+            raise ValueError("parent_out must use dtype int32")
+        if len(tuple(parent_handoff.shape)) != 1:
+            raise ValueError("parent_out must be one-dimensional")
+        if int(parent_handoff.shape[0]) < prepared_count:
+            raise ValueError("grouped-union self-range parent workspace must cover every prepared search item")
+        if not _partner_contiguous_column_strides(parent_handoff.strides, itemsize=4):
+            raise ValueError("parent_out must be contiguous")
+
+        predicate_handoff = None
+        fallback_handoff = None
+        expected_device = (parent_handoff.device_type, parent_handoff.device_id)
+        if not all_predicate:
+            predicate_handoff = _partner.prepare_direct_device_pointer_handoff(predicate_flags, access="read")
+            fallback_handoff = _partner.prepare_direct_device_pointer_handoff(
+                fallback_candidate_out,
+                access="readwrite",
+            )
+            expected_device = (predicate_handoff.device_type, predicate_handoff.device_id)
+            if (parent_handoff.device_type, parent_handoff.device_id) != expected_device:
+                raise ValueError("predicate_flags and parent_out must live on the same CUDA device")
+            if (fallback_handoff.device_type, fallback_handoff.device_id) != expected_device:
+                raise ValueError("predicate_flags and fallback_candidate_out must live on the same CUDA device")
+            if _partner_dtype_token(predicate_handoff.dtype) != "uint32":
+                raise ValueError("predicate_flags must use dtype uint32")
+            if _partner_dtype_token(fallback_handoff.dtype) != "int32":
+                raise ValueError("fallback_candidate_out must use dtype int32")
+            if len(tuple(predicate_handoff.shape)) != 1:
+                raise ValueError("predicate_flags must be one-dimensional")
+            if tuple(parent_handoff.shape) != tuple(predicate_handoff.shape):
+                raise ValueError("parent_out must have the same shape as predicate_flags")
+            if tuple(fallback_handoff.shape) != tuple(predicate_handoff.shape):
+                raise ValueError("fallback_candidate_out must have the same shape as predicate_flags")
+            if int(predicate_handoff.shape[0]) < prepared_count:
+                raise ValueError("grouped-union self-range workspaces must cover every prepared search item")
+            if not _partner_contiguous_column_strides(predicate_handoff.strides, itemsize=4):
+                raise ValueError("predicate_flags must be contiguous")
+            if not _partner_contiguous_column_strides(fallback_handoff.strides, itemsize=4):
+                raise ValueError("fallback_candidate_out must be contiguous")
+
+        telemetry_handoff = None
+        if telemetry_out is not None:
+            telemetry_handoff = _partner.prepare_direct_device_pointer_handoff(telemetry_out, access="readwrite")
+            if (telemetry_handoff.device_type, telemetry_handoff.device_id) != expected_device:
+                raise ValueError("grouped-union telemetry_out must live on the same CUDA device")
+            if _partner_dtype_token(telemetry_handoff.dtype) != "uint64":
+                raise ValueError("grouped-union telemetry_out must use dtype uint64")
+            if len(tuple(telemetry_handoff.shape)) != 1:
+                raise ValueError("grouped-union telemetry_out must be one-dimensional")
+            if int(telemetry_handoff.shape[0]) < 4:
+                raise ValueError("grouped-union telemetry_out must contain at least four counters")
+            if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
+                raise ValueError("grouped-union telemetry_out must be contiguous")
+
+        item_count = int(parent_handoff.shape[0])
+        if query_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": (
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+                        if direct_side_effect
+                        else
+                        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_SYMBOL
+                        if same_root_culling
+                        else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_OPTIONS_SYMBOL
+                    ),
+                    "query_count": 0,
+                    "query_index_offset": query_start,
+                    "search_count": prepared_count,
+                    "item_count": item_count,
+                    "query_source": "prepared_search_points_self_query_device_range",
+                    "predicate_mode": "all_items_true_no_fallback_candidates" if all_predicate else "predicate_flags",
+                    "transfer_mode": "prepared_device_search_points_self_range_grouped_union_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "materializes_directed_adjacency_stream": False,
+                    "grouped_union_query_range_requested": True,
+                    "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                    "grouped_union_same_root_culling_enabled": same_root_culling,
+                    "grouped_union_same_root_culling_policy": (
+                        "parent_union_same_root_before_anyhit"
+                        if same_root_culling
+                        else "disabled_by_caller"
+                    ),
+                    "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                    "grouped_union_direct_side_effect_policy": (
+                        _grouped_union_direct_side_effect_policy(direct_side_effect)
+                    ),
+                    "direct_device_handoff_authorized": True,
+                    "true_zero_copy_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        symbol_name = (
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
+            if direct_side_effect
+            else
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_SYMBOL
+            if same_root_culling
+            else _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_OPTIONS_SYMBOL
+        )
+        apply_symbol = _find_optional_backend_symbol(
+            lib,
+            symbol_name,
+        )
+        if apply_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        if direct_side_effect:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_size_t(query_start),
+                ctypes.c_size_t(query_count),
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0 if predicate_handoff is None else predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0 if fallback_handoff is None else fallback_handoff.data_ptr),
+                ctypes.c_void_p(0 if telemetry_handoff is None else telemetry_handoff.data_ptr),
+                ctypes.c_uint32(1 if same_root_culling else 0),
+                ctypes.c_uint32(1),
+                ctypes.c_size_t(item_count),
+                error,
+                len(error),
+            )
+        elif same_root_culling:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_size_t(query_start),
+                ctypes.c_size_t(query_count),
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0 if predicate_handoff is None else predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0 if fallback_handoff is None else fallback_handoff.data_ptr),
+                ctypes.c_void_p(0 if telemetry_handoff is None else telemetry_handoff.data_ptr),
+                ctypes.c_size_t(item_count),
+                error,
+                len(error),
+            )
+        else:
+            status = apply_symbol(
+                self._handle,
+                ctypes.c_size_t(query_start),
+                ctypes.c_size_t(query_count),
+                ctypes.c_double(float(radius)),
+                ctypes.c_void_p(0 if predicate_handoff is None else predicate_handoff.data_ptr),
+                ctypes.c_void_p(parent_handoff.data_ptr),
+                ctypes.c_void_p(0 if fallback_handoff is None else fallback_handoff.data_ptr),
+                ctypes.c_void_p(0 if telemetry_handoff is None else telemetry_handoff.data_ptr),
+                ctypes.c_uint32(0),
+                ctypes.c_size_t(item_count),
+                error,
+                len(error),
+            )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        protocols = [parent_handoff.source_protocol]
+        if predicate_handoff is not None:
+            protocols.append(predicate_handoff.source_protocol)
+        if fallback_handoff is not None:
+            protocols.append(fallback_handoff.source_protocol)
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": symbol_name,
+                "native_engine_row_contract": (
+                    "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_range_device_parent_workspace"
+                    if all_predicate
+                    else "generic_prepared_fixed_radius_grouped_union_3d_self_range_device_workspaces"
+                ),
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_range",
+                "query_source": "prepared_search_points_self_query_device_range",
+                "predicate_mode": "all_items_true_no_fallback_candidates" if all_predicate else "predicate_flags",
+                "query_count": query_count,
+                "query_index_offset": query_start,
+                "query_range_end": query_start + query_count,
+                "search_count": prepared_count,
+                "item_count": item_count,
+                "radius": float(radius),
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "prepared_device_search_points_self_range_grouped_union_workspaces",
+                "query_range_policy": "explicit_contiguous_prepared_search_range",
+                "grouped_union_query_range_requested": True,
+                "grouped_union_blocked_candidate": True,
+                "source_protocols": tuple(sorted(set(protocols))),
+                "source_devices": (f"{expected_device[0]}:{expected_device[1]}",),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "materializes_directed_adjacency_stream": False,
+                "grouped_union_intersection_culling_policy": (
+                    "all_items_target_gt_source_before_anyhit"
+                    if all_predicate
+                    else "predicate_aware_connectivity_and_fallback_before_anyhit"
+                ),
+                "grouped_union_same_root_culling_enabled": same_root_culling,
+                "grouped_union_same_root_culling_policy": (
+                    "parent_union_same_root_before_anyhit"
+                    if same_root_culling
+                    else "disabled_by_caller"
+                ),
+                "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                "grouped_union_direct_side_effect_policy": (
+                    _grouped_union_direct_side_effect_policy(direct_side_effect)
+                ),
+                "grouped_union_telemetry_requested": telemetry_handoff is not None,
+                "grouped_union_telemetry_contract": (
+                    "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,"
+                    "uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes"
+                    if telemetry_handoff is not None
+                    else None
+                ),
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
                 "true_zero_copy_authorized": False,
@@ -3798,8 +4495,42 @@ class PreparedOptixDbDataset:
         self._transfer = transfer
         self.row_count = row_count
 
+    @classmethod
+    def from_columnar_record_set(cls, record_set, *, primary_fields=()) -> "PreparedOptixDbDataset":
+        columns, field_maps, reverse_maps = _encode_all_db_text_column_mapping(
+            _columnar_record_set_to_column_mapping(record_set)
+        )
+        columns_array, row_count, keepalive, columnar_metadata = _encode_db_column_mapping_columnar_with_metadata(
+            columns,
+            error_prefix="OptiX direct columnar record-set path",
+        )
+        prepared = cls.__new__(cls)
+        prepared._field_maps = field_maps
+        prepared._reverse_maps = reverse_maps
+        prepared._dataset = OptixPreparedDbDataset(
+            _load_optix_library(),
+            None,
+            None,
+            row_count,
+            primary_fields=primary_fields,
+            columns_array=columns_array,
+            field_count=len(columns_array),
+            transfer="columnar",
+            keepalive=keepalive,
+        )
+        prepared._fields_array = None
+        prepared._row_values_array = None
+        prepared._columns_array = columns_array
+        prepared._transfer = "columnar_record_set"
+        prepared._columnar_preparation_metadata = columnar_metadata
+        prepared.row_count = row_count
+        return prepared
+
     def close(self) -> None:
         self._dataset.close()
+
+    def columnar_preparation_metadata(self) -> dict[str, object]:
+        return dict(getattr(self, "_columnar_preparation_metadata", {}))
 
     def conjunctive_scan(self, predicates) -> tuple[dict[str, object], ...]:
         bundle = normalize_predicate_bundle(predicates)
@@ -4047,6 +4778,743 @@ class PreparedOptixDbDataset:
 
 def prepare_optix_db_dataset(table_rows, *, primary_fields=(), transfer: str = "row") -> PreparedOptixDbDataset:
     return PreparedOptixDbDataset(table_rows, primary_fields=primary_fields, transfer=transfer)
+
+
+def prepare_optix_columnar_record_set(record_set, *, primary_fields=()) -> PreparedOptixDbDataset:
+    return PreparedOptixDbDataset.from_columnar_record_set(record_set, primary_fields=primary_fields)
+
+
+def prepare_optix_partner_resident_columnar_record_set(
+    descriptor,
+    *,
+    primary_fields=(),
+    allow_scaffold_probe: bool = False,
+):
+    prepared_descriptor = (
+        descriptor
+        if isinstance(descriptor, PartnerResidentColumnarRecordSet)
+        else prepare_partner_resident_columnar_record_set(descriptor, backend="optix")
+    )
+    plan = plan_partner_resident_columnar_native_execution(prepared_descriptor)
+    if not allow_scaffold_probe:
+        raise RuntimeError(
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_DEVICE_SYMBOL} is scaffolded but not executable; "
+            f"native_execution_allowed={plan['native_execution_allowed']} "
+            f"status={PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS}. "
+            "Pass allow_scaffold_probe=True only to verify the native fail-closed symbol."
+        )
+
+    fields_array, keepalive = _encode_partner_resident_device_payload_fields(prepared_descriptor)
+    primary_field_bytes = tuple(str(name).encode("utf-8") for name in primary_fields)
+    primary_fields_array = (
+        (ctypes.c_char_p * len(primary_field_bytes))(*primary_field_bytes)
+        if primary_field_bytes
+        else None
+    )
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(lib, OPTIX_PARTNER_RESIDENT_COLUMNAR_DEVICE_SYMBOL)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export "
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_DEVICE_SYMBOL}; rebuild the OptiX backend from current main"
+        )
+    handle = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        ctypes.c_size_t(prepared_descriptor.row_count),
+        primary_fields_array,
+        ctypes.c_size_t(len(primary_field_bytes)),
+        ctypes.byref(handle),
+        error,
+        len(error),
+    )
+    keepalive = (keepalive, primary_field_bytes, primary_fields_array)
+    _check_status(status, error)
+    if handle:
+        destroy = _find_optional_backend_symbol(lib, "rtdl_optix_columnar_payload_destroy")
+        if destroy is not None:
+            destroy(handle)
+    raise RuntimeError("OptiX partner-resident columnar scaffold unexpectedly returned success")
+
+
+def run_optix_partner_resident_columnar_grouped_count_i64(
+    descriptor,
+    query,
+    *,
+    allow_experimental_native: bool = False,
+    group_capacity: int | None = None,
+) -> tuple[dict[str, object], ...]:
+    if not allow_experimental_native:
+        raise RuntimeError(
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_SYMBOL} is experimental; "
+            "pass allow_experimental_native=True only for controlled partner-resident CUDA validation"
+        )
+    prepared_descriptor = (
+        descriptor
+        if isinstance(descriptor, PartnerResidentColumnarRecordSet)
+        else prepare_partner_resident_columnar_record_set(descriptor, backend="optix")
+    )
+    normalized_query = normalize_grouped_query(query)
+    if len(normalized_query.group_keys) != 1:
+        raise ValueError("experimental partner-resident grouped_count supports exactly one group key")
+    group_key = normalized_query.group_keys[0]
+    resolved_group_capacity = _resolve_partner_resident_group_capacity(query, group_capacity)
+    fields_array, keepalive = _encode_partner_resident_device_payload_fields(prepared_descriptor)
+    clauses_array = _encode_db_clauses(normalized_query.predicates)
+    group_key_field = group_key.encode("utf-8")
+    keepalive = (keepalive, clauses_array, group_key_field)
+    lib = _load_optix_library()
+    symbol_name = (
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL
+        if resolved_group_capacity is not None
+        else OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_SYMBOL
+    )
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export "
+            f"{symbol_name}; rebuild the OptiX backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    common_args = (
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        ctypes.c_size_t(prepared_descriptor.row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_key_field,
+    )
+    status = (
+        symbol(
+            *common_args,
+            ctypes.c_size_t(resolved_group_capacity),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        if resolved_group_capacity is not None
+        else symbol(
+            *common_args,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+    )
+    _check_status(status, error)
+    rows = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count_out.value,
+        row_type=_RtdlDbGroupedCountRow,
+        field_names=("group_key", "count"),
+    )
+    try:
+        return tuple(
+            {group_key: int(rows.rows_ptr[index].group_key), "count": int(rows.rows_ptr[index].count)}
+            for index in range(rows.row_count)
+        )
+    finally:
+        rows.close()
+
+
+def run_optix_partner_resident_columnar_grouped_sum_i64(
+    descriptor,
+    query,
+    *,
+    allow_experimental_native: bool = False,
+    group_capacity: int | None = None,
+) -> tuple[dict[str, object], ...]:
+    if not allow_experimental_native:
+        raise RuntimeError(
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_SYMBOL} is experimental; "
+            "pass allow_experimental_native=True only for controlled partner-resident CUDA validation"
+        )
+    prepared_descriptor = (
+        descriptor
+        if isinstance(descriptor, PartnerResidentColumnarRecordSet)
+        else prepare_partner_resident_columnar_record_set(descriptor, backend="optix")
+    )
+    normalized_query = normalize_grouped_query(query)
+    if len(normalized_query.group_keys) != 1:
+        raise ValueError("experimental partner-resident grouped_sum supports exactly one group key")
+    if not normalized_query.value_field:
+        raise ValueError("experimental partner-resident grouped_sum requires a value_field")
+    group_key = normalized_query.group_keys[0]
+    resolved_group_capacity = _resolve_partner_resident_group_capacity(query, group_capacity)
+    fields_array, keepalive = _encode_partner_resident_device_payload_fields(prepared_descriptor)
+    clauses_array = _encode_db_clauses(normalized_query.predicates)
+    group_key_field = group_key.encode("utf-8")
+    value_field = normalized_query.value_field.encode("utf-8")
+    keepalive = (keepalive, clauses_array, group_key_field, value_field)
+    lib = _load_optix_library()
+    symbol_name = (
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL
+        if resolved_group_capacity is not None
+        else OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_SYMBOL
+    )
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export "
+            f"{symbol_name}; rebuild the OptiX backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    common_args = (
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        ctypes.c_size_t(prepared_descriptor.row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_key_field,
+        value_field,
+    )
+    status = (
+        symbol(
+            *common_args,
+            ctypes.c_size_t(resolved_group_capacity),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        if resolved_group_capacity is not None
+        else symbol(
+            *common_args,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+    )
+    _check_status(status, error)
+    rows = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count_out.value,
+        row_type=_RtdlDbGroupedSumRow,
+        field_names=("group_key", "sum"),
+    )
+    try:
+        return tuple(
+            {group_key: int(rows.rows_ptr[index].group_key), "sum": int(rows.rows_ptr[index].sum)}
+            for index in range(rows.row_count)
+        )
+    finally:
+        rows.close()
+
+
+def run_optix_partner_resident_columnar_grouped_min_i64(
+    descriptor,
+    query,
+    *,
+    allow_experimental_native: bool = False,
+    group_capacity: int | None = None,
+) -> tuple[dict[str, object], ...]:
+    return _run_optix_partner_resident_columnar_grouped_value_i64(
+        descriptor,
+        query,
+        operation="min",
+        symbol_name=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MIN_I64_WITH_CAPACITY_SYMBOL,
+        allow_experimental_native=allow_experimental_native,
+        group_capacity=group_capacity,
+    )
+
+
+def run_optix_partner_resident_columnar_grouped_max_i64(
+    descriptor,
+    query,
+    *,
+    allow_experimental_native: bool = False,
+    group_capacity: int | None = None,
+) -> tuple[dict[str, object], ...]:
+    return _run_optix_partner_resident_columnar_grouped_value_i64(
+        descriptor,
+        query,
+        operation="max",
+        symbol_name=OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MAX_I64_WITH_CAPACITY_SYMBOL,
+        allow_experimental_native=allow_experimental_native,
+        group_capacity=group_capacity,
+    )
+
+
+def run_optix_partner_resident_columnar_grouped_sum_count_i64(
+    descriptor,
+    query,
+    *,
+    allow_experimental_native: bool = False,
+    group_capacity: int | None = None,
+) -> tuple[dict[str, object], ...]:
+    if not allow_experimental_native:
+        raise RuntimeError(
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL} is experimental; "
+            "pass allow_experimental_native=True only for controlled partner-resident CUDA validation"
+        )
+    prepared_descriptor = (
+        descriptor
+        if isinstance(descriptor, PartnerResidentColumnarRecordSet)
+        else prepare_partner_resident_columnar_record_set(descriptor, backend="optix")
+    )
+    normalized_query = normalize_grouped_query(query)
+    if len(normalized_query.group_keys) != 1:
+        raise ValueError("experimental partner-resident grouped_sum_count supports exactly one group key")
+    if not normalized_query.value_field:
+        raise ValueError("experimental partner-resident grouped_sum_count requires a value_field")
+    group_key = normalized_query.group_keys[0]
+    resolved_group_capacity = _resolve_partner_resident_group_capacity(query, group_capacity)
+    if resolved_group_capacity is None:
+        raise ValueError("experimental partner-resident grouped_sum_count requires explicit group_capacity")
+    fields_array, keepalive = _encode_partner_resident_device_payload_fields(prepared_descriptor)
+    clauses_array = _encode_db_clauses(normalized_query.predicates)
+    group_key_field = group_key.encode("utf-8")
+    value_field = normalized_query.value_field.encode("utf-8")
+    keepalive = (keepalive, clauses_array, group_key_field, value_field)
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL,
+    )
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export "
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL}; "
+            "rebuild the OptiX backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumCountRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        ctypes.c_size_t(prepared_descriptor.row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_key_field,
+        value_field,
+        ctypes.c_size_t(resolved_group_capacity),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    rows = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count_out.value,
+        row_type=_RtdlDbGroupedSumCountRow,
+        field_names=("group_key", "sum", "count"),
+    )
+    try:
+        return tuple(
+            {
+                group_key: int(rows.rows_ptr[index].group_key),
+                "sum": int(rows.rows_ptr[index].sum),
+                "count": int(rows.rows_ptr[index].count),
+            }
+            for index in range(rows.row_count)
+        )
+    finally:
+        rows.close()
+
+
+def run_optix_partner_resident_columnar_grouped_stats_i64(
+    descriptor,
+    query,
+    *,
+    allow_experimental_native: bool = False,
+    group_capacity: int | None = None,
+) -> tuple[dict[str, object], ...]:
+    if not allow_experimental_native:
+        raise RuntimeError(
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL} is experimental; "
+            "pass allow_experimental_native=True only for controlled partner-resident CUDA validation"
+        )
+    prepared_descriptor = (
+        descriptor
+        if isinstance(descriptor, PartnerResidentColumnarRecordSet)
+        else prepare_partner_resident_columnar_record_set(descriptor, backend="optix")
+    )
+    normalized_query = normalize_grouped_query(query)
+    if len(normalized_query.group_keys) != 1:
+        raise ValueError("experimental partner-resident grouped_stats supports exactly one group key")
+    if not normalized_query.value_field:
+        raise ValueError("experimental partner-resident grouped_stats requires a value_field")
+    group_key = normalized_query.group_keys[0]
+    resolved_group_capacity = _resolve_partner_resident_group_capacity(query, group_capacity)
+    if resolved_group_capacity is None:
+        raise ValueError("experimental partner-resident grouped_stats requires explicit group_capacity")
+    fields_array, keepalive = _encode_partner_resident_device_payload_fields(prepared_descriptor)
+    clauses_array = _encode_db_clauses(normalized_query.predicates)
+    group_key_field = group_key.encode("utf-8")
+    value_field = normalized_query.value_field.encode("utf-8")
+    keepalive = (keepalive, clauses_array, group_key_field, value_field)
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL,
+    )
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export "
+            f"{OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL}; "
+            "rebuild the OptiX backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedStatsRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        ctypes.c_size_t(prepared_descriptor.row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_key_field,
+        value_field,
+        ctypes.c_size_t(resolved_group_capacity),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    rows = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count_out.value,
+        row_type=_RtdlDbGroupedStatsRow,
+        field_names=("group_key", "count", "sum", "min", "max"),
+    )
+    try:
+        return tuple(
+            {
+                group_key: int(rows.rows_ptr[index].group_key),
+                "count": int(rows.rows_ptr[index].count),
+                "sum": int(rows.rows_ptr[index].sum),
+                "min": int(rows.rows_ptr[index].min),
+                "max": int(rows.rows_ptr[index].max),
+            }
+            for index in range(rows.row_count)
+        )
+    finally:
+        rows.close()
+
+
+def run_optix_partner_resident_columnar_grouped_i64_reduction(
+    descriptor,
+    query,
+    *,
+    reduction: str,
+    allow_experimental_native: bool = False,
+    group_capacity: int | None = None,
+    semantic_aggregate: str | None = None,
+) -> dict[str, object]:
+    """Dispatch one supported partner-resident grouped i64 reduction.
+
+    This is the app-facing Python boundary. It keeps native symbol selection in
+    the runtime layer and requires explicit dense group capacity for every mode.
+    """
+    if not allow_experimental_native:
+        raise RuntimeError(
+            "partner-resident grouped i64 reductions are experimental; pass "
+            "allow_experimental_native=True only for controlled CUDA validation"
+        )
+    reduction_name = str(reduction)
+    if reduction_name not in OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS:
+        supported = ", ".join(OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS)
+        raise ValueError(f"unsupported partner-resident grouped i64 reduction `{reduction_name}`; supported: {supported}")
+    normalized_query = normalize_grouped_query(query)
+    if len(normalized_query.group_keys) != 1:
+        raise ValueError("partner-resident grouped i64 dispatcher supports exactly one group key")
+    if reduction_name != "count" and not normalized_query.value_field:
+        raise ValueError(f"partner-resident grouped i64 reduction `{reduction_name}` requires a value_field")
+    resolved_group_capacity = _resolve_partner_resident_group_capacity(query, group_capacity)
+    if resolved_group_capacity is None:
+        raise ValueError("partner-resident grouped i64 dispatcher requires explicit group_capacity")
+
+    if reduction_name == "count":
+        rows = run_optix_partner_resident_columnar_grouped_count_i64(
+            descriptor,
+            query,
+            allow_experimental_native=True,
+            group_capacity=resolved_group_capacity,
+        )
+    elif reduction_name == "sum":
+        rows = run_optix_partner_resident_columnar_grouped_sum_i64(
+            descriptor,
+            query,
+            allow_experimental_native=True,
+            group_capacity=resolved_group_capacity,
+        )
+    elif reduction_name == "min":
+        rows = run_optix_partner_resident_columnar_grouped_min_i64(
+            descriptor,
+            query,
+            allow_experimental_native=True,
+            group_capacity=resolved_group_capacity,
+        )
+    elif reduction_name == "max":
+        rows = run_optix_partner_resident_columnar_grouped_max_i64(
+            descriptor,
+            query,
+            allow_experimental_native=True,
+            group_capacity=resolved_group_capacity,
+        )
+    elif reduction_name == "sum_count":
+        rows = run_optix_partner_resident_columnar_grouped_sum_count_i64(
+            descriptor,
+            query,
+            allow_experimental_native=True,
+            group_capacity=resolved_group_capacity,
+        )
+    else:
+        rows = run_optix_partner_resident_columnar_grouped_stats_i64(
+            descriptor,
+            query,
+            allow_experimental_native=True,
+            group_capacity=resolved_group_capacity,
+        )
+
+    return {
+        "rows": rows,
+        "metadata": _partner_resident_grouped_i64_reduction_metadata(
+            normalized_query,
+            reduction_name=reduction_name,
+            semantic_aggregate=semantic_aggregate,
+            group_capacity=resolved_group_capacity,
+        ),
+    }
+
+
+def _partner_resident_grouped_i64_reduction_metadata(
+    normalized_query,
+    *,
+    reduction_name: str,
+    semantic_aggregate: str | None,
+    group_capacity: int,
+) -> dict[str, object]:
+    symbol_name = _OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTION_SYMBOLS[reduction_name]
+    result_fields = [normalized_query.group_keys[0]]
+    if reduction_name == "stats":
+        result_fields.extend(("count", "sum", "min", "max"))
+    elif reduction_name == "sum_count":
+        result_fields.extend(("sum", "count"))
+    elif reduction_name == "count":
+        result_fields.append("count")
+    else:
+        result_fields.append(reduction_name)
+    return {
+        "partner_resident_grouped_i64_dispatcher": True,
+        "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+        "operation": reduction_name,
+        "reduction": reduction_name,
+        "semantic_aggregate": str(semantic_aggregate) if semantic_aggregate is not None else reduction_name,
+        "group_keys": list(normalized_query.group_keys),
+        "group_key_field": normalized_query.group_keys[0],
+        "value_field": normalized_query.value_field,
+        "predicate_count": len(normalized_query.predicates),
+        "group_capacity": group_capacity,
+        "group_capacity_explicit": True,
+        "native_reduction_symbol": symbol_name,
+        "native_grouped_reduction_symbol": symbol_name,
+        "result_fields": result_fields,
+        "native_launch_count": 1,
+        "fused_native_reduction": reduction_name in {"sum_count", "stats"},
+        "fused_native_reduction_symbol": symbol_name if reduction_name in {"sum_count", "stats"} else None,
+        "generic_sum_count_abi_used": reduction_name == "sum_count",
+        "generic_stats_abi_used": reduction_name == "stats",
+        "native_avg_abi_added": False,
+        "native_abi_added": False,
+        "experimental_native_execution": True,
+        "allow_experimental_native_required": True,
+        "compact_grouped_output_materialized": True,
+        "input_table_copied_back_to_python_rows": False,
+        "true_zero_copy_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "Experimental OptiX partner-resident grouped i64 reduction dispatch. "
+            "The runtime selects generic grouped native reductions from app-neutral "
+            "operation names; this does not authorize SQL, DBMS, true zero-copy, "
+            "whole-app, or public performance wording."
+        ),
+    }
+
+
+
+def _run_optix_partner_resident_columnar_grouped_value_i64(
+    descriptor,
+    query,
+    *,
+    operation: str,
+    symbol_name: str,
+    allow_experimental_native: bool,
+    group_capacity: int | None,
+) -> tuple[dict[str, object], ...]:
+    if not allow_experimental_native:
+        raise RuntimeError(
+            f"{symbol_name} is experimental; pass allow_experimental_native=True only for controlled "
+            "partner-resident CUDA validation"
+        )
+    prepared_descriptor = (
+        descriptor
+        if isinstance(descriptor, PartnerResidentColumnarRecordSet)
+        else prepare_partner_resident_columnar_record_set(descriptor, backend="optix")
+    )
+    normalized_query = normalize_grouped_query(query)
+    if len(normalized_query.group_keys) != 1:
+        raise ValueError(f"experimental partner-resident grouped_{operation} supports exactly one group key")
+    if not normalized_query.value_field:
+        raise ValueError(f"experimental partner-resident grouped_{operation} requires a value_field")
+    group_key = normalized_query.group_keys[0]
+    resolved_group_capacity = _resolve_partner_resident_group_capacity(query, group_capacity)
+    if resolved_group_capacity is None:
+        raise ValueError(
+            f"experimental partner-resident grouped_{operation} requires explicit group_capacity"
+        )
+    fields_array, keepalive = _encode_partner_resident_device_payload_fields(prepared_descriptor)
+    clauses_array = _encode_db_clauses(normalized_query.predicates)
+    group_key_field = group_key.encode("utf-8")
+    value_field = normalized_query.value_field.encode("utf-8")
+    keepalive = (keepalive, clauses_array, group_key_field, value_field)
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export "
+            f"{symbol_name}; rebuild the OptiX backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        ctypes.c_size_t(prepared_descriptor.row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_key_field,
+        value_field,
+        ctypes.c_size_t(resolved_group_capacity),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    rows = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count_out.value,
+        row_type=_RtdlDbGroupedSumRow,
+        field_names=("group_key", operation),
+    )
+    try:
+        return tuple(
+            {group_key: int(rows.rows_ptr[index].group_key), operation: int(rows.rows_ptr[index].sum)}
+            for index in range(rows.row_count)
+        )
+    finally:
+        rows.close()
+
+
+def _resolve_partner_resident_group_capacity(query, group_capacity: int | None) -> int | None:
+    raw_capacity = group_capacity
+    if raw_capacity is None and isinstance(query, Mapping):
+        raw_capacity = query.get("group_capacity")
+    if raw_capacity is None:
+        return None
+    if isinstance(raw_capacity, bool) or not isinstance(raw_capacity, int):
+        raise ValueError("experimental partner-resident group_capacity must be a positive integer")
+    if raw_capacity <= 0 or raw_capacity > _DB_MAX_ROWS_PER_JOB:
+        raise ValueError("experimental partner-resident group_capacity must be in 1..1000000")
+    return int(raw_capacity)
+
+
+def _encode_partner_resident_device_payload_fields(
+    descriptor: PartnerResidentColumnarRecordSet,
+) -> tuple[object, tuple[object, ...]]:
+    encoded_fields = []
+    keepalive: list[object] = []
+    for field in descriptor.fields:
+        name_bytes = field.name.encode("utf-8")
+        keepalive.append(name_bytes)
+        itemsize = _partner_resident_device_payload_itemsize(field.handoff.dtype)
+        encoded_fields.append(
+            _RtdlDevicePayloadField(
+                name_bytes,
+                _partner_resident_device_payload_kind(field.logical_kind),
+                _partner_resident_device_payload_dtype(field.handoff.dtype),
+                _DEVICE_PAYLOAD_DEVICE_CUDA,
+                int(field.handoff.device_id),
+                int(field.handoff.shape[0]),
+                _partner_resident_device_payload_stride_bytes(field.handoff.strides, itemsize=itemsize),
+                int(field.handoff.data_ptr),
+            )
+        )
+    return (_RtdlDevicePayloadField * len(encoded_fields))(*encoded_fields), tuple(keepalive)
+
+
+def _partner_resident_device_payload_kind(logical_kind: str) -> int:
+    if logical_kind in {"row_id", "int64"}:
+        return _DB_KIND_INT64
+    if logical_kind == "float64":
+        return _DB_KIND_FLOAT64
+    raise ValueError(f"unsupported partner-resident logical kind: {logical_kind}")
+
+
+def _partner_resident_device_payload_dtype(dtype: str) -> int:
+    normalized = _partner_resident_dtype_token(dtype)
+    if normalized == "int64":
+        return _DEVICE_PAYLOAD_DTYPE_INT64
+    if normalized == "uint32":
+        return _DEVICE_PAYLOAD_DTYPE_UINT32
+    if normalized in {"float64", "double"}:
+        return _DEVICE_PAYLOAD_DTYPE_FLOAT64
+    raise ValueError(f"unsupported partner-resident dtype: {dtype}")
+
+
+def _partner_resident_device_payload_itemsize(dtype: str) -> int:
+    normalized = _partner_resident_dtype_token(dtype)
+    if normalized in {"int64", "float64", "double"}:
+        return 8
+    if normalized == "uint32":
+        return 4
+    raise ValueError(f"unsupported partner-resident dtype: {dtype}")
+
+
+def _partner_resident_device_payload_stride_bytes(
+    strides: tuple[int, ...] | None,
+    *,
+    itemsize: int,
+) -> int:
+    if strides in (None, (1,), (itemsize,)):
+        return itemsize
+    raise ValueError("partner-resident device payload fields must be contiguous")
+
+
+def _partner_resident_dtype_token(dtype: str) -> str:
+    normalized = str(dtype).strip().lower()
+    if normalized.startswith("torch."):
+        normalized = normalized.removeprefix("torch.")
+    if normalized.startswith("numpy."):
+        normalized = normalized.removeprefix("numpy.")
+    aliases = {
+        "int64_t": "int64",
+        "longlong": "int64",
+        "long long": "int64",
+        "uint32_t": "uint32",
+        "unsigned int": "uint32",
+        "float64": "float64",
+        "double": "double",
+    }
+    return aliases.get(normalized, normalized)
 
 
 def _db_primary_fields_from_clauses(clauses) -> tuple[str, ...]:
@@ -4465,9 +5933,53 @@ _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL = (
 _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs"
 )
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs_with_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs_with_execution_options"
+)
 _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs"
 )
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_execution_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry_and_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry_and_execution_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_with_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_with_execution_options"
+)
+
+
+def _grouped_union_direct_side_effect_policy(enabled: bool) -> str:
+    return (
+        "intersection_program_side_effect_no_anyhit_report"
+        if enabled
+        else "disabled_by_default_anyhit_side_effect"
+    )
+
+
+def _require_bool(value: bool, *, name: str) -> bool:
+    if not isinstance(value, bool):
+        raise TypeError(f"{name} must be a bool")
+    return value
 
 
 def _partner_dtype_token(dtype) -> str:
@@ -6343,6 +7855,584 @@ def prepare_optix_ray_triangle_any_hit_2d(triangles) -> PreparedOptixRayTriangle
     return PreparedOptixRayTriangleAnyHit2D(triangles)
 
 
+class PreparedOptixGroupedSegmentQuery3D:
+    """Reusable OptiX device buffers for grouped finite 3D segment queries."""
+
+    contract = "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1"
+
+    def __init__(self, segment_start_xyz, segment_end_xyz, segment_group_offsets) -> None:
+        self._lib = _load_optix_library()
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._reuse_count = 0
+        prepare_start = time.perf_counter()
+        self._host_query = PreparedGroupedSegmentQuery3D(
+            segment_start_xyz,
+            segment_end_xyz,
+            segment_group_offsets,
+        )
+        self.segment_count = int(self._host_query.segment_count)
+        self.group_count = int(self._host_query.group_count)
+        self.flags = (ctypes.c_uint8 * self.group_count)()
+        create_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_create",
+        )
+        if create_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_create. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = create_symbol(
+            self._host_query.segments,
+            self._host_query.segment_count,
+            self._host_query.group_offsets,
+            self._host_query.group_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self.prepare_seconds = time.perf_counter() - prepare_start
+
+    @property
+    def reuse_count(self) -> int:
+        return self._reuse_count
+
+    def _mark_reused(self) -> int:
+        self._reuse_count += 1
+        return self._reuse_count
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_destroy",
+            )
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixGroupedSegmentQuery3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def descriptor(self) -> dict[str, object]:
+        return {
+            "contract": self.contract,
+            "segment_count": int(self.segment_count),
+            "group_count": int(self.group_count),
+            "query_buffer_kind": "native_optix_device_rtdl_segment3d_as_ray_array",
+            "group_offsets_buffer_kind": "native_optix_device_uint32_offsets",
+            "group_indices_buffer_kind": "native_optix_device_uint32_group_indices",
+            "segment_output_buffer_kind": "not_materialized",
+            "output_buffer_kind": "native_optix_device_uint32_group_flags",
+            "host_output_buffer_kind": "ctypes_host_uint8_group_flags",
+            "copy_boundary": "compact_group_flags_device_to_host",
+            "device": "cuda_device",
+            "owner": "optix_native_runtime",
+            "host_query_buffers_reused": True,
+            "host_output_buffer_reused": True,
+            "native_device_query_buffers_reused": True,
+            "native_device_output_buffer_reused": True,
+            "query_segments_uploaded_each_run": False,
+            "per_segment_records_materialized": False,
+            "per_segment_records_downloaded_to_host": False,
+            "group_flags_downloaded_to_host": True,
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+        }
+
+
+class PreparedOptixStaticTriangleScene3D:
+    """Reusable OptiX handle for grouped finite 3D segment any-hit flags."""
+
+    contract = "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1"
+
+    def __init__(self, triangles) -> None:
+        self._lib = _load_optix_library()
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._run_count = 0
+        self._packed_triangles = _pack_static_triangles_3d(triangles)
+        self.triangle_count = int(self._packed_triangles.count)
+        create_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_create",
+        )
+        if create_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_create. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = create_symbol(
+            self._packed_triangles.records,
+            self._packed_triangles.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                "rtdl_optix_static_triangle_scene_3d_destroy",
+            )
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixStaticTriangleScene3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def run_grouped_segment_any_hit_flags(
+        self,
+        segment_start_xyz,
+        segment_end_xyz,
+        segment_group_offsets,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        segments, segment_count = _pack_segments_3d_from_endpoints(segment_start_xyz, segment_end_xyz)
+        group_offsets, group_count = _pack_group_offsets_u32(segment_group_offsets, segment_count)
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        flags = (ctypes.c_uint8 * group_count)()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            segments,
+            segment_count,
+            group_offsets,
+            group_count,
+            flags,
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        post_start = time.perf_counter()
+        flags_list = [int(flags[index]) for index in range(group_count)]
+        output_postprocess_seconds = time.perf_counter() - post_start
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "contract": self.contract,
+            "flags": flags_list,
+            "flag_format": "uint8_byte_per_query_group",
+            "segment_count": int(segment_count),
+            "group_count": int(group_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+                "output_postprocess": float(output_postprocess_seconds),
+            },
+            "precision_metadata": {
+                "host_input": "float64",
+                "optix_bvh_bounds": "float32",
+                "device_traversal_input": "float32",
+                "device_intersection_kernel": "float32",
+                "coordinate_narrowing_recorded": True,
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_segments_uploaded_each_run": True,
+                "group_flags_downloaded_to_host": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "paper_reproduction": False,
+                "authors_code_comparison": False,
+                "public_speedup_claim": False,
+                "native_app_api": False,
+                "exact_solid_contact": False,
+                "continuous_swept_support": False,
+                "row_witnesses": False,
+                "release_action": False,
+            },
+        }
+
+    def run_prepared_grouped_segment_any_hit_flags(
+        self,
+        prepared_query: PreparedGroupedSegmentQuery3D,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(prepared_query, PreparedGroupedSegmentQuery3D):
+            raise TypeError("prepared_query must be PreparedGroupedSegmentQuery3D")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        clear_start = time.perf_counter()
+        prepared_query.reset_flags()
+        output_clear_seconds = time.perf_counter() - clear_start
+
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            prepared_query.segments,
+            prepared_query.segment_count,
+            prepared_query.group_offsets,
+            prepared_query.group_count,
+            prepared_query.flags,
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        post_start = time.perf_counter()
+        flags_list = [int(prepared_query.flags[index]) for index in range(int(prepared_query.group_count))]
+        output_postprocess_seconds = time.perf_counter() - post_start
+        self._run_count += 1
+        prepared_query_run_index = prepared_query._mark_reused()
+        descriptor = prepared_query.descriptor()
+        return {
+            "backend": "optix",
+            "contract": self.contract,
+            "flags": flags_list,
+            "flag_format": "uint8_byte_per_query_group",
+            "segment_count": int(prepared_query.segment_count),
+            "group_count": int(prepared_query.group_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "prepared_query_used": True,
+            "prepared_query_run_index": prepared_query_run_index,
+            "host_query_output_buffers_reused": True,
+            "native_query_output_buffers_reused": False,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "prepared_query_build": float(prepared_query.prepare_seconds),
+                "output_clear": float(output_clear_seconds),
+                "traversal": float(traversal_seconds.value),
+                "output_postprocess": float(output_postprocess_seconds),
+            },
+            "buffer_reuse_metadata": descriptor,
+            "precision_metadata": {
+                "host_input": "float64",
+                "optix_bvh_bounds": "float32",
+                "device_traversal_input": "float32",
+                "device_intersection_kernel": "float32",
+                "coordinate_narrowing_recorded": True,
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_segments_uploaded_each_run": True,
+                "group_flags_downloaded_to_host": True,
+                "host_query_output_buffers_reused": True,
+                "native_device_query_buffers_reused": False,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "paper_reproduction": False,
+                "authors_code_comparison": False,
+                "public_speedup_claim": False,
+                "native_app_api": False,
+                "exact_solid_contact": False,
+                "continuous_swept_support": False,
+                "row_witnesses": False,
+                "release_action": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def run_native_prepared_grouped_segment_any_hit_flags(
+        self,
+        prepared_query: PreparedOptixGroupedSegmentQuery3D,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(prepared_query, PreparedOptixGroupedSegmentQuery3D):
+            raise TypeError("prepared_query must be PreparedOptixGroupedSegmentQuery3D")
+        if prepared_query._closed:
+            raise RuntimeError("prepared OptiX grouped segment query handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_flags",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_flags. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            prepared_query._handle,
+            prepared_query.flags,
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        post_start = time.perf_counter()
+        flags_list = [int(prepared_query.flags[index]) for index in range(int(prepared_query.group_count))]
+        output_postprocess_seconds = time.perf_counter() - post_start
+        self._run_count += 1
+        prepared_query_run_index = prepared_query._mark_reused()
+        descriptor = prepared_query.descriptor()
+        return {
+            "backend": "optix",
+            "contract": self.contract,
+            "flags": flags_list,
+            "flag_format": "uint8_byte_per_query_group",
+            "segment_count": int(prepared_query.segment_count),
+            "group_count": int(prepared_query.group_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "prepared_query_used": True,
+            "prepared_query_run_index": prepared_query_run_index,
+            "host_query_output_buffers_reused": True,
+            "native_query_output_buffers_reused": True,
+            "native_device_query_buffers_reused": True,
+            "native_device_output_buffer_reused": True,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "prepared_query_build": float(prepared_query.prepare_seconds),
+                "traversal": float(traversal_seconds.value),
+                "output_postprocess": float(output_postprocess_seconds),
+            },
+            "buffer_reuse_metadata": descriptor,
+            "precision_metadata": {
+                "host_input": "float64",
+                "optix_bvh_bounds": "float32",
+                "device_traversal_input": "float32",
+                "device_intersection_kernel": "float32",
+                "coordinate_narrowing_recorded": True,
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_segments_uploaded_each_run": False,
+                "group_flags_downloaded_to_host": True,
+                "per_segment_records_downloaded_to_host": False,
+                "host_query_output_buffers_reused": True,
+                "native_device_query_buffers_reused": True,
+                "native_device_output_buffer_reused": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "paper_reproduction": False,
+                "authors_code_comparison": False,
+                "public_speedup_claim": False,
+                "native_app_api": False,
+                "exact_solid_contact": False,
+                "continuous_swept_support": False,
+                "row_witnesses": False,
+                "release_action": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def run_native_prepared_grouped_segment_any_hit_count(
+        self,
+        prepared_query: PreparedOptixGroupedSegmentQuery3D,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(prepared_query, PreparedOptixGroupedSegmentQuery3D):
+            raise TypeError("prepared_query must be PreparedOptixGroupedSegmentQuery3D")
+        if prepared_query._closed:
+            raise RuntimeError("prepared OptiX grouped segment query handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_count",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_count. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        flagged_group_count = ctypes.c_uint32()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            prepared_query._handle,
+            ctypes.byref(flagged_group_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        post_start = time.perf_counter()
+        count_value = int(flagged_group_count.value)
+        output_postprocess_seconds = time.perf_counter() - post_start
+        self._run_count += 1
+        prepared_query_run_index = prepared_query._mark_reused()
+        descriptor = prepared_query.descriptor()
+        descriptor.update(
+            {
+                "result_kind": "uint32_flagged_group_count",
+                "copy_boundary": "group_flags_device_to_native_host_then_scalar_to_python",
+                "group_flags_downloaded_to_python": False,
+                "python_group_flags_materialized": False,
+                "flagged_group_count_returned_to_python": True,
+            }
+        )
+        return {
+            "backend": "optix",
+            "contract": self.contract,
+            "result_kind": "uint32_flagged_group_count",
+            "flagged_group_count": count_value,
+            "flag_format": "count_only_no_group_flags",
+            "segment_count": int(prepared_query.segment_count),
+            "group_count": int(prepared_query.group_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "prepared_query_used": True,
+            "prepared_query_run_index": prepared_query_run_index,
+            "host_query_output_buffers_reused": True,
+            "native_query_output_buffers_reused": True,
+            "native_device_query_buffers_reused": True,
+            "native_device_output_buffer_reused": True,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "prepared_query_build": float(prepared_query.prepare_seconds),
+                "traversal": float(traversal_seconds.value),
+                "output_postprocess": float(output_postprocess_seconds),
+            },
+            "buffer_reuse_metadata": descriptor,
+            "precision_metadata": {
+                "host_input": "float64",
+                "optix_bvh_bounds": "float32",
+                "device_traversal_input": "float32",
+                "device_intersection_kernel": "float32",
+                "coordinate_narrowing_recorded": True,
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_segments_uploaded_each_run": False,
+                "group_flags_downloaded_to_host": True,
+                "group_flags_downloaded_to_python": False,
+                "per_segment_records_downloaded_to_host": False,
+                "python_group_flags_materialized": False,
+                "host_query_output_buffers_reused": True,
+                "native_device_query_buffers_reused": True,
+                "native_device_output_buffer_reused": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "paper_reproduction": False,
+                "authors_code_comparison": False,
+                "public_speedup_claim": False,
+                "native_app_api": False,
+                "exact_solid_contact": False,
+                "continuous_swept_support": False,
+                "row_witnesses": False,
+                "release_action": False,
+                "true_zero_copy": False,
+            },
+        }
+
+
+def prepare_optix_static_triangle_scene_3d(triangles) -> PreparedOptixStaticTriangleScene3D:
+    return PreparedOptixStaticTriangleScene3D(triangles)
+
+
+def prepare_optix_grouped_segment_query_3d(
+    segment_start_xyz,
+    segment_end_xyz,
+    segment_group_offsets,
+) -> PreparedOptixGroupedSegmentQuery3D:
+    """Prepare reusable native OptiX device buffers for a grouped finite 3D segment query."""
+    return PreparedOptixGroupedSegmentQuery3D(
+        segment_start_xyz,
+        segment_end_xyz,
+        segment_group_offsets,
+    )
+
+
+def run_optix_grouped_segment_any_hit_flags_3d(
+    triangles,
+    segment_start_xyz,
+    segment_end_xyz,
+    segment_group_offsets,
+) -> dict[str, object]:
+    with prepare_optix_static_triangle_scene_3d(triangles) as prepared:
+        return prepared.run_grouped_segment_any_hit_flags(
+            segment_start_xyz,
+            segment_end_xyz,
+            segment_group_offsets,
+        )
+
+
 def prepare_optix_ray_triangle_any_hit_2d_device_triangles(
     triangle_columns: dict,
 ) -> PreparedOptixRayTriangleAnyHit2D:
@@ -7349,6 +9439,93 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_anyhit3d.restype = ctypes.c_int
+    optional_static_scene_3d_create = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_create",
+    )
+    if optional_static_scene_3d_create is not None:
+        optional_static_scene_3d_create.argtypes = [
+            ctypes.POINTER(_RtdlTriangle3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_create.restype = ctypes.c_int
+    optional_static_scene_3d_run = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags",
+    )
+    if optional_static_scene_3d_run is not None:
+        optional_static_scene_3d_run.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint8),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_run.restype = ctypes.c_int
+    optional_static_scene_3d_query_create = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_create",
+    )
+    if optional_static_scene_3d_query_create is not None:
+        optional_static_scene_3d_query_create.argtypes = [
+            ctypes.POINTER(_RtdlSegment3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_query_create.restype = ctypes.c_int
+    optional_static_scene_3d_query_run = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_flags",
+    )
+    if optional_static_scene_3d_query_run is not None:
+        optional_static_scene_3d_query_run.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint8),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_query_run.restype = ctypes.c_int
+    optional_static_scene_3d_query_count = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_count",
+    )
+    if optional_static_scene_3d_query_count is not None:
+        optional_static_scene_3d_query_count.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_query_count.restype = ctypes.c_int
+    optional_static_scene_3d_query_destroy = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_destroy",
+    )
+    if optional_static_scene_3d_query_destroy is not None:
+        optional_static_scene_3d_query_destroy.argtypes = [ctypes.c_void_p]
+        optional_static_scene_3d_query_destroy.restype = None
+    optional_static_scene_3d_destroy = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_destroy",
+    )
+    if optional_static_scene_3d_destroy is not None:
+        optional_static_scene_3d_destroy.argtypes = [ctypes.c_void_p]
+        optional_static_scene_3d_destroy.restype = None
     optional_ray_segment_group_count = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_run_ray_segment_group_count_2d",
@@ -7974,6 +10151,26 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
+    for symbol_name, option_count in (
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_OPTIONS_SYMBOL, 1),
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL, 2),
+    ):
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is not None:
+            symbol.argtypes = [
+                ctypes.c_void_p,
+                ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+                ctypes.c_size_t,
+                ctypes.c_double,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                *([ctypes.c_uint32] * option_count),
+                ctypes.c_size_t,
+                ctypes.c_char_p, ctypes.c_size_t,
+            ]
+            symbol.restype = ctypes.c_int
+
     symbol = _find_optional_backend_symbol(
         lib,
         _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
@@ -7989,6 +10186,100 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
+
+    for symbol_name, option_count in (
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_OPTIONS_SYMBOL, 1),
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL, 2),
+    ):
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is not None:
+            symbol.argtypes = [
+                ctypes.c_void_p,
+                ctypes.c_double,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                *([ctypes.c_uint32] * option_count),
+                ctypes.c_size_t,
+                ctypes.c_char_p, ctypes.c_size_t,
+            ]
+            symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    for symbol_name, option_count in (
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_OPTIONS_SYMBOL, 1),
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECUTION_OPTIONS_SYMBOL, 2),
+    ):
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is not None:
+            symbol.argtypes = [
+                ctypes.c_void_p,
+                ctypes.c_double,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                *([ctypes.c_uint32] * option_count),
+                ctypes.c_size_t,
+                ctypes.c_char_p, ctypes.c_size_t,
+            ]
+            symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    for symbol_name, option_count in (
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_OPTIONS_SYMBOL, 1),
+        (_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL, 2),
+    ):
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is not None:
+            symbol.argtypes = [
+                ctypes.c_void_p,
+                ctypes.c_size_t,
+                ctypes.c_size_t,
+                ctypes.c_double,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                *([ctypes.c_uint32] * option_count),
+                ctypes.c_size_t,
+                ctypes.c_char_p, ctypes.c_size_t,
+            ]
+            symbol.restype = ctypes.c_int
 
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d")
     if symbol is not None:
@@ -8297,6 +10588,152 @@ def _register_argtypes(lib) -> None:
             ctypes.POINTER(ctypes.c_char_p),
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, OPTIX_PARTNER_RESIDENT_COLUMNAR_DEVICE_SYMBOL)
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_char_p),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_SYMBOL)
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_COUNT_I64_WITH_CAPACITY_SYMBOL)
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_SYMBOL)
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_I64_WITH_CAPACITY_SYMBOL)
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    for symbol_name in (
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MIN_I64_WITH_CAPACITY_SYMBOL,
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_MAX_I64_WITH_CAPACITY_SYMBOL,
+    ):
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is not None:
+            symbol.argtypes = [
+                ctypes.POINTER(_RtdlDevicePayloadField),
+                ctypes.c_size_t,
+                ctypes.c_size_t,
+                ctypes.c_void_p,
+                ctypes.c_size_t,
+                ctypes.c_char_p,
+                ctypes.c_char_p,
+                ctypes.c_size_t,
+                ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+                ctypes.POINTER(ctypes.c_size_t),
+                ctypes.c_char_p,
+                ctypes.c_size_t,
+            ]
+            symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDevicePayloadField),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedStatsRow)),
+            ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]

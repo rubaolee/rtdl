@@ -1,0 +1,722 @@
+{
+  "app_direct_low_level_symbols_absent": true,
+  "app_suite_all_match_cpu_reference": true,
+  "app_suite_modes": [
+    "count",
+    "sum",
+    "min",
+    "max",
+    "avg_as_sum_count"
+  ],
+  "app_uses_dispatcher": true,
+  "avg_metadata": {
+    "allow_experimental_native_required": true,
+    "authors_code_comparison": false,
+    "claim_boundary": "Experimental OptiX partner-resident count/sum/min/max parity and composite avg_as_sum_count=sum+count lowering through a generic fused sum_count pass for the synthetic RayDB-style columnar aggregate contract. This demonstrates Python+partner+RTDL descriptor execution for CUDA tensors, but it does not reproduce RayDB, expose SQL/DBMS behavior, authorize true zero-copy wording, or authorize performance wording.",
+    "compact_grouped_output_materialized": true,
+    "composite_lowering": [
+      "sum",
+      "count"
+    ],
+    "contract": "columnar_grouped_aggregate_optix_partner_resident_experimental",
+    "experimental_native_execution": true,
+    "fixture": "tiny_denormalized_columnar",
+    "fused_native_reduction": true,
+    "fused_native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity",
+    "generic_sum_count_abi_used": true,
+    "group_capacity": 3,
+    "group_capacity_explicit": true,
+    "group_key_field": "region_id",
+    "group_keys": [
+      "region_id"
+    ],
+    "input_table_copied_back_to_python_rows": false,
+    "lowering_plan": {
+      "backend": "optix_partner_resident_experimental",
+      "claim_boundary": "Experimental partner-resident OptiX int64 grouped count/sum/min/max plus composite avg_as_sum_count lowering over count+sum. The path accepts CUDA partner column descriptors and materializes compact grouped rows at the boundary, but it does not authorize true zero-copy, whole-app, or public speedup wording.",
+      "direct_columnar_record_set_api": true,
+      "materializes_input_rows_for_wrapper": false,
+      "next_engine_target": "stabilize_partner_resident_columnar_payload_native_execution",
+      "requires_runtime_validation": true,
+      "supported_aggregates": [
+        "count",
+        "sum",
+        "min",
+        "max",
+        "avg_as_sum_count"
+      ],
+      "transfer_path": "partner_resident_cuda_column_descriptors_to_experimental_optix_grouped_i64",
+      "true_zero_copy_authorized": false,
+      "unsupported_aggregates": [],
+      "uses_compatibility_wrapper": false
+    },
+    "native_abi_added": false,
+    "native_avg_abi_added": false,
+    "native_grouped_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity",
+    "native_launch_count": 1,
+    "native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity",
+    "operation": "sum_count",
+    "paper_reproduction": false,
+    "partner_input_constructed_by_fixture": true,
+    "partner_resident_descriptor": {
+      "backend": "optix",
+      "claim_boundary": "Descriptor-only partner-resident columnar handoff. Native OptiX execution, row-id uniqueness validation, true zero-copy, speedup, SQL, DBMS, and whole-app claims are not authorized.",
+      "device": "cuda:0",
+      "field_names": [
+        "row_id",
+        "region_id",
+        "ship_year",
+        "discount",
+        "quantity",
+        "revenue"
+      ],
+      "fields": [
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 139740537949184,
+          "device": "cuda:0",
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "logical_kind": "row_id",
+          "name": "row_id",
+          "shape": [
+            8
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 139740537949696,
+          "device": "cuda:0",
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "logical_kind": "int64",
+          "name": "region_id",
+          "shape": [
+            8
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 139740537950208,
+          "device": "cuda:0",
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "logical_kind": "int64",
+          "name": "ship_year",
+          "shape": [
+            8
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 139740537950720,
+          "device": "cuda:0",
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "logical_kind": "int64",
+          "name": "discount",
+          "shape": [
+            8
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 139740537951232,
+          "device": "cuda:0",
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "logical_kind": "int64",
+          "name": "quantity",
+          "shape": [
+            8
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 139740537951744,
+          "device": "cuda:0",
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "logical_kind": "int64",
+          "name": "revenue",
+          "shape": [
+            8
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        }
+      ],
+      "native_execution_authorized": false,
+      "row_count": 8,
+      "row_id_uniqueness_validated": false,
+      "source_protocols": [
+        "torch"
+      ],
+      "transfer_mode": "partner_resident_column_descriptor_only",
+      "true_zero_copy_authorized": false
+    },
+    "partner_resident_grouped_i64_dispatcher": true,
+    "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+    "predicate_count": 3,
+    "public_speedup_claim_authorized": false,
+    "reduction": "sum_count",
+    "result_fields": [
+      "region_id",
+      "sum",
+      "count"
+    ],
+    "rt_core_accelerated": false,
+    "semantic_aggregate": "avg_as_sum_count",
+    "true_zero_copy_authorized": false,
+    "value_field": "revenue"
+  },
+  "claim_boundary": "Experimental dispatcher-boundary evidence only. The app asks for generic grouped i64 reductions; the runtime selects native symbols. No SQL, DBMS, whole-app, true zero-copy, or public performance claim is authorized.",
+  "cuda_available": true,
+  "descriptor": {
+    "backend": "optix",
+    "claim_boundary": "Descriptor-only partner-resident columnar handoff. Native OptiX execution, row-id uniqueness validation, true zero-copy, speedup, SQL, DBMS, and whole-app claims are not authorized.",
+    "device": "cuda:0",
+    "field_names": [
+      "row_id",
+      "region_id",
+      "ship_year",
+      "discount",
+      "quantity",
+      "revenue"
+    ],
+    "fields": [
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 139740537946112,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "row_id",
+        "name": "row_id",
+        "shape": [
+          8
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 139740537946624,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "int64",
+        "name": "region_id",
+        "shape": [
+          8
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 139740537947136,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "int64",
+        "name": "ship_year",
+        "shape": [
+          8
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 139740537947648,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "int64",
+        "name": "discount",
+        "shape": [
+          8
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 139740537948160,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "int64",
+        "name": "quantity",
+        "shape": [
+          8
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 139740537948672,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "int64",
+        "name": "revenue",
+        "shape": [
+          8
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      }
+    ],
+    "native_execution_authorized": false,
+    "row_count": 8,
+    "row_id_uniqueness_validated": false,
+    "source_protocols": [
+      "torch"
+    ],
+    "transfer_mode": "partner_resident_column_descriptor_only",
+    "true_zero_copy_authorized": false
+  },
+  "direct_cases": {
+    "avg_as_sum_count": {
+      "composite_lowering": [
+        "sum",
+        "count"
+      ],
+      "cpu_rows": [
+        {
+          "count": 2,
+          "region_id": 0,
+          "sum": 190
+        },
+        {
+          "count": 1,
+          "region_id": 1,
+          "sum": 200
+        },
+        {
+          "count": 1,
+          "region_id": 2,
+          "sum": 80
+        }
+      ],
+      "matches_cpu_reference": true,
+      "metadata": {
+        "allow_experimental_native_required": true,
+        "claim_boundary": "Experimental OptiX partner-resident grouped i64 reduction dispatch. The runtime selects generic grouped native reductions from app-neutral operation names; this does not authorize SQL, DBMS, true zero-copy, whole-app, or public performance wording.",
+        "compact_grouped_output_materialized": true,
+        "experimental_native_execution": true,
+        "fused_native_reduction": true,
+        "fused_native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity",
+        "generic_sum_count_abi_used": true,
+        "group_capacity": 3,
+        "group_capacity_explicit": true,
+        "group_key_field": "region_id",
+        "group_keys": [
+          "region_id"
+        ],
+        "input_table_copied_back_to_python_rows": false,
+        "native_abi_added": false,
+        "native_avg_abi_added": false,
+        "native_grouped_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity",
+        "native_launch_count": 1,
+        "native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity",
+        "operation": "sum_count",
+        "partner_resident_grouped_i64_dispatcher": true,
+        "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+        "predicate_count": 3,
+        "public_speedup_claim_authorized": false,
+        "reduction": "sum_count",
+        "result_fields": [
+          "region_id",
+          "sum",
+          "count"
+        ],
+        "semantic_aggregate": "avg_as_sum_count",
+        "true_zero_copy_authorized": false,
+        "value_field": "revenue"
+      },
+      "reduction": "sum_count",
+      "rows": [
+        {
+          "count": 2,
+          "region_id": 0,
+          "sum": 190
+        },
+        {
+          "count": 1,
+          "region_id": 1,
+          "sum": 200
+        },
+        {
+          "count": 1,
+          "region_id": 2,
+          "sum": 80
+        }
+      ]
+    },
+    "count": {
+      "composite_lowering": [],
+      "cpu_rows": [
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 1,
+          "region_id": 1
+        },
+        {
+          "count": 1,
+          "region_id": 2
+        }
+      ],
+      "matches_cpu_reference": true,
+      "metadata": {
+        "allow_experimental_native_required": true,
+        "claim_boundary": "Experimental OptiX partner-resident grouped i64 reduction dispatch. The runtime selects generic grouped native reductions from app-neutral operation names; this does not authorize SQL, DBMS, true zero-copy, whole-app, or public performance wording.",
+        "compact_grouped_output_materialized": true,
+        "experimental_native_execution": true,
+        "fused_native_reduction": false,
+        "fused_native_reduction_symbol": null,
+        "generic_sum_count_abi_used": false,
+        "group_capacity": 3,
+        "group_capacity_explicit": true,
+        "group_key_field": "region_id",
+        "group_keys": [
+          "region_id"
+        ],
+        "input_table_copied_back_to_python_rows": false,
+        "native_abi_added": false,
+        "native_avg_abi_added": false,
+        "native_grouped_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity",
+        "native_launch_count": 1,
+        "native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity",
+        "operation": "count",
+        "partner_resident_grouped_i64_dispatcher": true,
+        "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+        "predicate_count": 3,
+        "public_speedup_claim_authorized": false,
+        "reduction": "count",
+        "result_fields": [
+          "region_id",
+          "count"
+        ],
+        "semantic_aggregate": "count",
+        "true_zero_copy_authorized": false,
+        "value_field": null
+      },
+      "reduction": "count",
+      "rows": [
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 1,
+          "region_id": 1
+        },
+        {
+          "count": 1,
+          "region_id": 2
+        }
+      ]
+    },
+    "max": {
+      "composite_lowering": [],
+      "cpu_rows": [
+        {
+          "max": 100,
+          "region_id": 0
+        },
+        {
+          "max": 200,
+          "region_id": 1
+        },
+        {
+          "max": 80,
+          "region_id": 2
+        }
+      ],
+      "matches_cpu_reference": true,
+      "metadata": {
+        "allow_experimental_native_required": true,
+        "claim_boundary": "Experimental OptiX partner-resident grouped i64 reduction dispatch. The runtime selects generic grouped native reductions from app-neutral operation names; this does not authorize SQL, DBMS, true zero-copy, whole-app, or public performance wording.",
+        "compact_grouped_output_materialized": true,
+        "experimental_native_execution": true,
+        "fused_native_reduction": false,
+        "fused_native_reduction_symbol": null,
+        "generic_sum_count_abi_used": false,
+        "group_capacity": 3,
+        "group_capacity_explicit": true,
+        "group_key_field": "region_id",
+        "group_keys": [
+          "region_id"
+        ],
+        "input_table_copied_back_to_python_rows": false,
+        "native_abi_added": false,
+        "native_avg_abi_added": false,
+        "native_grouped_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity",
+        "native_launch_count": 1,
+        "native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity",
+        "operation": "max",
+        "partner_resident_grouped_i64_dispatcher": true,
+        "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+        "predicate_count": 3,
+        "public_speedup_claim_authorized": false,
+        "reduction": "max",
+        "result_fields": [
+          "region_id",
+          "max"
+        ],
+        "semantic_aggregate": "max",
+        "true_zero_copy_authorized": false,
+        "value_field": "revenue"
+      },
+      "reduction": "max",
+      "rows": [
+        {
+          "max": 100,
+          "region_id": 0
+        },
+        {
+          "max": 200,
+          "region_id": 1
+        },
+        {
+          "max": 80,
+          "region_id": 2
+        }
+      ]
+    },
+    "min": {
+      "composite_lowering": [],
+      "cpu_rows": [
+        {
+          "min": 90,
+          "region_id": 0
+        },
+        {
+          "min": 200,
+          "region_id": 1
+        },
+        {
+          "min": 80,
+          "region_id": 2
+        }
+      ],
+      "matches_cpu_reference": true,
+      "metadata": {
+        "allow_experimental_native_required": true,
+        "claim_boundary": "Experimental OptiX partner-resident grouped i64 reduction dispatch. The runtime selects generic grouped native reductions from app-neutral operation names; this does not authorize SQL, DBMS, true zero-copy, whole-app, or public performance wording.",
+        "compact_grouped_output_materialized": true,
+        "experimental_native_execution": true,
+        "fused_native_reduction": false,
+        "fused_native_reduction_symbol": null,
+        "generic_sum_count_abi_used": false,
+        "group_capacity": 3,
+        "group_capacity_explicit": true,
+        "group_key_field": "region_id",
+        "group_keys": [
+          "region_id"
+        ],
+        "input_table_copied_back_to_python_rows": false,
+        "native_abi_added": false,
+        "native_avg_abi_added": false,
+        "native_grouped_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity",
+        "native_launch_count": 1,
+        "native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity",
+        "operation": "min",
+        "partner_resident_grouped_i64_dispatcher": true,
+        "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+        "predicate_count": 3,
+        "public_speedup_claim_authorized": false,
+        "reduction": "min",
+        "result_fields": [
+          "region_id",
+          "min"
+        ],
+        "semantic_aggregate": "min",
+        "true_zero_copy_authorized": false,
+        "value_field": "revenue"
+      },
+      "reduction": "min",
+      "rows": [
+        {
+          "min": 90,
+          "region_id": 0
+        },
+        {
+          "min": 200,
+          "region_id": 1
+        },
+        {
+          "min": 80,
+          "region_id": 2
+        }
+      ]
+    },
+    "sum": {
+      "composite_lowering": [],
+      "cpu_rows": [
+        {
+          "region_id": 0,
+          "sum": 190
+        },
+        {
+          "region_id": 1,
+          "sum": 200
+        },
+        {
+          "region_id": 2,
+          "sum": 80
+        }
+      ],
+      "matches_cpu_reference": true,
+      "metadata": {
+        "allow_experimental_native_required": true,
+        "claim_boundary": "Experimental OptiX partner-resident grouped i64 reduction dispatch. The runtime selects generic grouped native reductions from app-neutral operation names; this does not authorize SQL, DBMS, true zero-copy, whole-app, or public performance wording.",
+        "compact_grouped_output_materialized": true,
+        "experimental_native_execution": true,
+        "fused_native_reduction": false,
+        "fused_native_reduction_symbol": null,
+        "generic_sum_count_abi_used": false,
+        "group_capacity": 3,
+        "group_capacity_explicit": true,
+        "group_key_field": "region_id",
+        "group_keys": [
+          "region_id"
+        ],
+        "input_table_copied_back_to_python_rows": false,
+        "native_abi_added": false,
+        "native_avg_abi_added": false,
+        "native_grouped_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity",
+        "native_launch_count": 1,
+        "native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity",
+        "operation": "sum",
+        "partner_resident_grouped_i64_dispatcher": true,
+        "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+        "predicate_count": 3,
+        "public_speedup_claim_authorized": false,
+        "reduction": "sum",
+        "result_fields": [
+          "region_id",
+          "sum"
+        ],
+        "semantic_aggregate": "sum",
+        "true_zero_copy_authorized": false,
+        "value_field": "revenue"
+      },
+      "reduction": "sum",
+      "rows": [
+        {
+          "region_id": 0,
+          "sum": 190
+        },
+        {
+          "region_id": 1,
+          "sum": 200
+        },
+        {
+          "region_id": 2,
+          "sum": 80
+        }
+      ]
+    }
+  },
+  "direct_dispatch_all_match_cpu_reference": true,
+  "dispatcher_exported": true,
+  "dispatcher_reductions": [
+    "count",
+    "sum",
+    "min",
+    "max",
+    "sum_count"
+  ],
+  "git_head": "a9193856547bf692069955a3dbaf6c3e00c09b1b",
+  "goal": "Goal2519 partner-resident grouped i64 dispatch boundary",
+  "ld_library_path": "/usr/local/cuda-12.8/compat:/usr/local/cuda/lib64:",
+  "native_avg_symbol_absent": true,
+  "optix_version": [
+    8,
+    0,
+    0
+  ],
+  "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "rtdl_optix_lib": "/root/rtdl_python_only_goal2517/build/librtdl_optix.so",
+  "status": "ok",
+  "torch_version": "2.8.0+cu128"
+}

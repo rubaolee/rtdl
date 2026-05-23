@@ -13,6 +13,7 @@ constexpr uint32_t kDbOpBetween = 6u;
 constexpr size_t kDbMaxRowsPerJob = 1000000;
 constexpr size_t kDbMaxCandidateRowsPerJob = 1000000;
 constexpr size_t kDbMaxGroupsPerJob = 65536;
+constexpr size_t kDeviceColumnGroupedMaxRowsPerJob = 100000000;
 constexpr float kDbBoxPad = 1.0e-3f;
 constexpr float kGraphEdgeBoxPad = 1.0e-3f;
 
@@ -619,6 +620,1005 @@ static void db_validate_columnar_inputs(
             throw std::runtime_error("field text values must not be null");
         }
     }
+}
+
+struct DeviceColumnGroupedI64Function {
+    CUmodule module = nullptr;
+    CUfunction fn = nullptr;
+    CUfunction init_values_fn = nullptr;
+    CUfunction compact_count_fn = nullptr;
+    CUfunction compact_sum_fn = nullptr;
+    CUfunction compact_sum_count_fn = nullptr;
+    CUfunction compact_stats_fn = nullptr;
+    std::once_flag init;
+};
+
+static DeviceColumnGroupedI64Function g_device_column_grouped_i64;
+
+struct DeviceColumnRuntimeField {
+    uint64_t device_ptr;
+    uint32_t kind;
+    uint32_t dtype;
+};
+
+struct DeviceColumnRuntimeClause {
+    uint32_t field_index;
+    uint32_t op;
+    uint32_t value_kind;
+    int64_t int_value;
+    double double_value;
+    int64_t int_value_hi;
+    double double_value_hi;
+};
+
+struct DeviceColumnGroupedI64Params {
+    const DeviceColumnRuntimeField* fields;
+    uint32_t field_count;
+    uint32_t row_count;
+    const DeviceColumnRuntimeClause* clauses;
+    uint32_t clause_count;
+    uint32_t group_field_index;
+    uint32_t value_field_index;
+    uint32_t operation;
+    uint32_t group_capacity;
+    unsigned long long* group_counts;
+    unsigned long long* group_sums;
+    unsigned long long* group_mins;
+    unsigned long long* group_maxs;
+    uint32_t* invalid_group_count;
+};
+
+struct DeviceColumnGroupedCountRow {
+    int64_t group_key;
+    int64_t count;
+};
+
+struct DeviceColumnGroupedSumRow {
+    int64_t group_key;
+    int64_t sum;
+};
+
+struct DeviceColumnGroupedSumCountRow {
+    int64_t group_key;
+    int64_t sum;
+    int64_t count;
+};
+
+struct DeviceColumnGroupedStatsRow {
+    int64_t group_key;
+    int64_t count;
+    int64_t sum;
+    int64_t min;
+    int64_t max;
+};
+
+static const char* kDeviceColumnGroupedI64KernelSrc = R"CUDA(
+#include <stdint.h>
+
+struct DeviceColumnRuntimeField {
+    uint64_t device_ptr;
+    uint32_t kind;
+    uint32_t dtype;
+};
+
+struct DeviceColumnRuntimeClause {
+    uint32_t field_index;
+    uint32_t op;
+    uint32_t value_kind;
+    int64_t int_value;
+    double double_value;
+    int64_t int_value_hi;
+    double double_value_hi;
+};
+
+struct DeviceColumnGroupedI64Params {
+    const DeviceColumnRuntimeField* fields;
+    uint32_t field_count;
+    uint32_t row_count;
+    const DeviceColumnRuntimeClause* clauses;
+    uint32_t clause_count;
+    uint32_t group_field_index;
+    uint32_t value_field_index;
+    uint32_t operation;
+    uint32_t group_capacity;
+    unsigned long long* group_counts;
+    unsigned long long* group_sums;
+    unsigned long long* group_mins;
+    unsigned long long* group_maxs;
+    uint32_t* invalid_group_count;
+};
+
+struct DeviceColumnGroupedCountRow {
+    int64_t group_key;
+    int64_t count;
+};
+
+struct DeviceColumnGroupedSumRow {
+    int64_t group_key;
+    int64_t sum;
+};
+
+struct DeviceColumnGroupedSumCountRow {
+    int64_t group_key;
+    int64_t sum;
+    int64_t count;
+};
+
+struct DeviceColumnGroupedStatsRow {
+    int64_t group_key;
+    int64_t count;
+    int64_t sum;
+    int64_t min;
+    int64_t max;
+};
+
+enum {
+    RTDL_DB_KIND_INT64 = 1u,
+    RTDL_DB_KIND_FLOAT64 = 2u,
+    RTDL_DEVICE_DTYPE_INT64 = 1u,
+    RTDL_DEVICE_DTYPE_UINT32 = 2u,
+    RTDL_DEVICE_DTYPE_FLOAT64 = 3u,
+    RTDL_DB_OP_EQ = 1u,
+    RTDL_DB_OP_LT = 2u,
+    RTDL_DB_OP_LE = 3u,
+    RTDL_DB_OP_GT = 4u,
+    RTDL_DB_OP_GE = 5u,
+    RTDL_DB_OP_BETWEEN = 6u,
+    RTDL_GROUPED_OP_COUNT = 1u,
+    RTDL_GROUPED_OP_SUM = 2u,
+    RTDL_GROUPED_OP_MIN = 3u,
+    RTDL_GROUPED_OP_MAX = 4u,
+    RTDL_GROUPED_OP_SUM_COUNT = 5u,
+    RTDL_GROUPED_OP_STATS = 6u
+};
+
+__device__ double device_column_read_numeric_double(const DeviceColumnRuntimeField& field, uint32_t row)
+{
+    if (field.dtype == RTDL_DEVICE_DTYPE_FLOAT64) {
+        return reinterpret_cast<const double*>(field.device_ptr)[row];
+    }
+    if (field.dtype == RTDL_DEVICE_DTYPE_UINT32) {
+        return static_cast<double>(reinterpret_cast<const uint32_t*>(field.device_ptr)[row]);
+    }
+    return static_cast<double>(reinterpret_cast<const int64_t*>(field.device_ptr)[row]);
+}
+
+__device__ long long device_column_read_i64_compatible(const DeviceColumnRuntimeField& field, uint32_t row)
+{
+    if (field.dtype == RTDL_DEVICE_DTYPE_UINT32) {
+        return static_cast<long long>(reinterpret_cast<const uint32_t*>(field.device_ptr)[row]);
+    }
+    return static_cast<long long>(reinterpret_cast<const int64_t*>(field.device_ptr)[row]);
+}
+
+__device__ double device_clause_value_as_double(uint32_t kind, int64_t int_value, double double_value)
+{
+    return kind == RTDL_DB_KIND_FLOAT64 ? double_value : static_cast<double>(int_value);
+}
+
+__device__ bool device_clause_matches(double candidate, const DeviceColumnRuntimeClause& clause)
+{
+    const double lo = device_clause_value_as_double(clause.value_kind, clause.int_value, clause.double_value);
+    if (clause.op == RTDL_DB_OP_EQ) return candidate == lo;
+    if (clause.op == RTDL_DB_OP_LT) return candidate < lo;
+    if (clause.op == RTDL_DB_OP_LE) return candidate <= lo;
+    if (clause.op == RTDL_DB_OP_GT) return candidate > lo;
+    if (clause.op == RTDL_DB_OP_GE) return candidate >= lo;
+    if (clause.op == RTDL_DB_OP_BETWEEN) {
+        const double hi = device_clause_value_as_double(clause.value_kind, clause.int_value_hi, clause.double_value_hi);
+        return candidate >= lo && candidate <= hi;
+    }
+    return false;
+}
+
+__device__ long long device_atomic_min_i64(long long* address, long long value)
+{
+    unsigned long long* address_as_ull = reinterpret_cast<unsigned long long*>(address);
+    unsigned long long old = *address_as_ull;
+    unsigned long long assumed;
+    do {
+        assumed = old;
+        const long long current = static_cast<long long>(assumed);
+        if (current <= value) return current;
+        old = atomicCAS(address_as_ull, assumed, static_cast<unsigned long long>(value));
+    } while (assumed != old);
+    return static_cast<long long>(old);
+}
+
+__device__ long long device_atomic_max_i64(long long* address, long long value)
+{
+    unsigned long long* address_as_ull = reinterpret_cast<unsigned long long*>(address);
+    unsigned long long old = *address_as_ull;
+    unsigned long long assumed;
+    do {
+        assumed = old;
+        const long long current = static_cast<long long>(assumed);
+        if (current >= value) return current;
+        old = atomicCAS(address_as_ull, assumed, static_cast<unsigned long long>(value));
+    } while (assumed != old);
+    return static_cast<long long>(old);
+}
+
+extern "C" __global__ void device_column_grouped_i64_init_values_kernel(
+    long long* group_values,
+    uint32_t group_capacity,
+    long long initial_value)
+{
+    const uint32_t group = blockIdx.x * blockDim.x + threadIdx.x;
+    if (group >= group_capacity) return;
+    group_values[group] = initial_value;
+}
+
+extern "C" __global__ void device_column_grouped_i64_kernel(DeviceColumnGroupedI64Params params)
+{
+    const uint32_t row = blockIdx.x * blockDim.x + threadIdx.x;
+    if (row >= params.row_count) return;
+
+    for (uint32_t clause_index = 0; clause_index < params.clause_count; ++clause_index) {
+        const DeviceColumnRuntimeClause& clause = params.clauses[clause_index];
+        const DeviceColumnRuntimeField& field = params.fields[clause.field_index];
+        const double candidate = device_column_read_numeric_double(field, row);
+        if (!device_clause_matches(candidate, clause)) return;
+    }
+
+    const DeviceColumnRuntimeField& group_field = params.fields[params.group_field_index];
+    const long long group_key = device_column_read_i64_compatible(group_field, row);
+    if (group_key < 0 || group_key >= static_cast<long long>(params.group_capacity)) {
+        atomicAdd(params.invalid_group_count, 1u);
+        return;
+    }
+    const uint32_t group = static_cast<uint32_t>(group_key);
+    atomicAdd(params.group_counts + group, 1ull);
+    if (params.operation == RTDL_GROUPED_OP_SUM ||
+        params.operation == RTDL_GROUPED_OP_MIN ||
+        params.operation == RTDL_GROUPED_OP_MAX ||
+        params.operation == RTDL_GROUPED_OP_SUM_COUNT ||
+        params.operation == RTDL_GROUPED_OP_STATS) {
+        const DeviceColumnRuntimeField& value_field = params.fields[params.value_field_index];
+        const long long value = device_column_read_i64_compatible(value_field, row);
+        if (params.operation == RTDL_GROUPED_OP_SUM || params.operation == RTDL_GROUPED_OP_SUM_COUNT) {
+            atomicAdd(params.group_sums + group, static_cast<unsigned long long>(value));
+        } else if (params.operation == RTDL_GROUPED_OP_MIN) {
+            device_atomic_min_i64(reinterpret_cast<long long*>(params.group_sums) + group, value);
+        } else if (params.operation == RTDL_GROUPED_OP_MAX) {
+            device_atomic_max_i64(reinterpret_cast<long long*>(params.group_sums) + group, value);
+        } else {
+            atomicAdd(params.group_sums + group, static_cast<unsigned long long>(value));
+            device_atomic_min_i64(reinterpret_cast<long long*>(params.group_mins) + group, value);
+            device_atomic_max_i64(reinterpret_cast<long long*>(params.group_maxs) + group, value);
+        }
+    }
+}
+
+extern "C" __global__ void device_column_grouped_i64_compact_count_kernel(
+    const unsigned long long* group_counts,
+    uint32_t group_capacity,
+    DeviceColumnGroupedCountRow* rows_out,
+    uint32_t* row_count_out)
+{
+    const uint32_t group = blockIdx.x * blockDim.x + threadIdx.x;
+    if (group >= group_capacity) return;
+    const unsigned long long count = group_counts[group];
+    if (count == 0ull) return;
+    const uint32_t row_index = atomicAdd(row_count_out, 1u);
+    rows_out[row_index].group_key = static_cast<int64_t>(group);
+    rows_out[row_index].count = static_cast<int64_t>(count);
+}
+
+extern "C" __global__ void device_column_grouped_i64_compact_sum_kernel(
+    const unsigned long long* group_counts,
+    const unsigned long long* group_sums,
+    uint32_t group_capacity,
+    DeviceColumnGroupedSumRow* rows_out,
+    uint32_t* row_count_out)
+{
+    const uint32_t group = blockIdx.x * blockDim.x + threadIdx.x;
+    if (group >= group_capacity) return;
+    if (group_counts[group] == 0ull) return;
+    const uint32_t row_index = atomicAdd(row_count_out, 1u);
+    rows_out[row_index].group_key = static_cast<int64_t>(group);
+    rows_out[row_index].sum = static_cast<int64_t>(group_sums[group]);
+}
+
+extern "C" __global__ void device_column_grouped_i64_compact_sum_count_kernel(
+    const unsigned long long* group_counts,
+    const unsigned long long* group_sums,
+    uint32_t group_capacity,
+    DeviceColumnGroupedSumCountRow* rows_out,
+    uint32_t* row_count_out)
+{
+    const uint32_t group = blockIdx.x * blockDim.x + threadIdx.x;
+    if (group >= group_capacity) return;
+    const unsigned long long count = group_counts[group];
+    if (count == 0ull) return;
+    const uint32_t row_index = atomicAdd(row_count_out, 1u);
+    rows_out[row_index].group_key = static_cast<int64_t>(group);
+    rows_out[row_index].sum = static_cast<int64_t>(group_sums[group]);
+    rows_out[row_index].count = static_cast<int64_t>(count);
+}
+
+extern "C" __global__ void device_column_grouped_i64_compact_stats_kernel(
+    const unsigned long long* group_counts,
+    const unsigned long long* group_sums,
+    const unsigned long long* group_mins,
+    const unsigned long long* group_maxs,
+    uint32_t group_capacity,
+    DeviceColumnGroupedStatsRow* rows_out,
+    uint32_t* row_count_out)
+{
+    const uint32_t group = blockIdx.x * blockDim.x + threadIdx.x;
+    if (group >= group_capacity) return;
+    const unsigned long long count = group_counts[group];
+    if (count == 0ull) return;
+    const uint32_t row_index = atomicAdd(row_count_out, 1u);
+    rows_out[row_index].group_key = static_cast<int64_t>(group);
+    rows_out[row_index].count = static_cast<int64_t>(count);
+    rows_out[row_index].sum = static_cast<int64_t>(group_sums[group]);
+    rows_out[row_index].min = static_cast<int64_t>(group_mins[group]);
+    rows_out[row_index].max = static_cast<int64_t>(group_maxs[group]);
+}
+)CUDA";
+
+static size_t db_device_payload_field_index_or_throw(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        const char* name)
+{
+    if (!name) {
+        throw std::runtime_error("device-column payload field name must not be null");
+    }
+    for (size_t index = 0; index < field_count; ++index) {
+        if (fields[index].name && std::strcmp(fields[index].name, name) == 0) {
+            return index;
+        }
+    }
+    throw std::runtime_error(std::string("unknown device-column payload field: ") + name);
+}
+
+static bool db_device_payload_dtype_is_i64_compatible(uint32_t dtype)
+{
+    return dtype == kRtdlDevicePayloadDtypeInt64 || dtype == kRtdlDevicePayloadDtypeUint32;
+}
+
+constexpr uint32_t kDeviceColumnGroupedOpCount = 1u;
+constexpr uint32_t kDeviceColumnGroupedOpSum = 2u;
+constexpr uint32_t kDeviceColumnGroupedOpMin = 3u;
+constexpr uint32_t kDeviceColumnGroupedOpMax = 4u;
+constexpr uint32_t kDeviceColumnGroupedOpSumCount = 5u;
+constexpr uint32_t kDeviceColumnGroupedOpStats = 6u;
+
+static void db_validate_device_payload_grouped_i64_inputs(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity)
+{
+    if (!fields || field_count == 0) {
+        throw std::runtime_error("device-column grouped execution requires at least one field");
+    }
+    if (row_count == 0 || row_count > kDeviceColumnGroupedMaxRowsPerJob) {
+        throw std::runtime_error("device-column grouped execution row_count must be in 1..100000000");
+    }
+    if (group_capacity == 0 || group_capacity > kDbMaxRowsPerJob) {
+        throw std::runtime_error("device-column grouped execution group_capacity must be in 1..1000000");
+    }
+    if (clause_count > 0 && !clauses) {
+        throw std::runtime_error("device-column grouped execution clause pointer must not be null");
+    }
+    if (!group_key_field) {
+        throw std::runtime_error("device-column grouped execution requires a group_key_field");
+    }
+
+    uint32_t expected_device_id = 0;
+    bool expected_device_id_set = false;
+    for (size_t index = 0; index < field_count; ++index) {
+        const RtdlDevicePayloadField& field = fields[index];
+        if (!field.name || field.name[0] == '\0') {
+            throw std::runtime_error("device-column payload field names must be non-empty");
+        }
+        if (field.device_type != kRtdlDevicePayloadDeviceCuda) {
+            throw std::runtime_error("device-column grouped execution requires CUDA device pointers");
+        }
+        if (field.device_ptr == 0) {
+            throw std::runtime_error("device-column payload fields require non-zero device_ptr");
+        }
+        if (field.element_count != row_count) {
+            throw std::runtime_error("device-column payload field length must match row_count");
+        }
+        if (!expected_device_id_set) {
+            expected_device_id = field.device_id;
+            expected_device_id_set = true;
+        } else if (field.device_id != expected_device_id) {
+            throw std::runtime_error("device-column payload fields must live on the same CUDA device");
+        }
+        if (field.dtype == kRtdlDevicePayloadDtypeInt64) {
+            if (field.kind != kRtdlDbKindInt64 || field.stride_bytes != sizeof(int64_t)) {
+                throw std::runtime_error("int64 device columns must be int64 logical kind and contiguous");
+            }
+        } else if (field.dtype == kRtdlDevicePayloadDtypeUint32) {
+            if (field.kind != kRtdlDbKindInt64 || field.stride_bytes != sizeof(uint32_t)) {
+                throw std::runtime_error("uint32 device columns must be int64-compatible logical kind and contiguous");
+            }
+        } else if (field.dtype == kRtdlDevicePayloadDtypeFloat64) {
+            if (field.kind != kRtdlDbKindFloat64 || field.stride_bytes != sizeof(double)) {
+                throw std::runtime_error("float64 device columns must be float64 logical kind and contiguous");
+            }
+        } else {
+            throw std::runtime_error("unsupported device-column payload dtype");
+        }
+    }
+
+    const size_t group_index = db_device_payload_field_index_or_throw(fields, field_count, group_key_field);
+    if (!db_device_payload_dtype_is_i64_compatible(fields[group_index].dtype)) {
+        throw std::runtime_error("device-column grouped execution requires an int64-compatible group key");
+    }
+    if (value_field) {
+        const size_t value_index = db_device_payload_field_index_or_throw(fields, field_count, value_field);
+        if (!db_device_payload_dtype_is_i64_compatible(fields[value_index].dtype)) {
+            throw std::runtime_error("device-column grouped value reduction requires an int64-compatible value field");
+        }
+    }
+    for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+        const RtdlDbClause& clause = clauses[clause_index];
+        const size_t field_index = db_device_payload_field_index_or_throw(fields, field_count, clause.field);
+        if (!db_field_kind_is_numeric(fields[field_index].kind)) {
+            throw std::runtime_error("device-column grouped execution supports numeric predicates only");
+        }
+        if (clause.op < kDbOpEq || clause.op > kDbOpBetween) {
+            throw std::runtime_error("device-column grouped execution encountered unsupported predicate op");
+        }
+        if (!db_scalar_is_numeric(clause.value)) {
+            throw std::runtime_error("device-column grouped execution supports numeric predicate values only");
+        }
+        if (clause.op == kDbOpBetween && !db_scalar_is_numeric(clause.value_hi)) {
+            throw std::runtime_error("device-column grouped execution supports numeric between upper bounds only");
+        }
+    }
+}
+
+static std::vector<DeviceColumnRuntimeField> db_make_device_runtime_fields(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count)
+{
+    std::vector<DeviceColumnRuntimeField> runtime_fields;
+    runtime_fields.reserve(field_count);
+    for (size_t index = 0; index < field_count; ++index) {
+        runtime_fields.push_back({fields[index].device_ptr, fields[index].kind, fields[index].dtype});
+    }
+    return runtime_fields;
+}
+
+static std::vector<DeviceColumnRuntimeClause> db_make_device_runtime_clauses(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count)
+{
+    std::vector<DeviceColumnRuntimeClause> runtime_clauses;
+    runtime_clauses.reserve(clause_count);
+    for (size_t index = 0; index < clause_count; ++index) {
+        const RtdlDbClause& clause = clauses[index];
+        DeviceColumnRuntimeClause encoded{};
+        encoded.field_index = static_cast<uint32_t>(
+            db_device_payload_field_index_or_throw(fields, field_count, clause.field));
+        encoded.op = clause.op;
+        encoded.value_kind = clause.value.kind;
+        encoded.int_value = clause.value.int_value;
+        encoded.double_value = clause.value.double_value;
+        encoded.int_value_hi = clause.value_hi.int_value;
+        encoded.double_value_hi = clause.value_hi.double_value;
+        runtime_clauses.push_back(encoded);
+    }
+    return runtime_clauses;
+}
+
+static void db_launch_device_column_grouped_i64(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        uint32_t operation,
+        std::vector<RtdlDbGroupedCountRow>& count_rows,
+        std::vector<RtdlDbGroupedSumRow>& sum_rows,
+        std::vector<RtdlDbGroupedSumCountRow>& sum_count_rows,
+        std::vector<RtdlDbGroupedStatsRow>& stats_rows)
+{
+    db_validate_device_payload_grouped_i64_inputs(
+        fields, field_count, row_count, clauses, clause_count, group_key_field, value_field, group_capacity);
+
+    const std::vector<DeviceColumnRuntimeField> runtime_fields =
+        db_make_device_runtime_fields(fields, field_count);
+    const std::vector<DeviceColumnRuntimeClause> runtime_clauses =
+        db_make_device_runtime_clauses(fields, field_count, clauses, clause_count);
+    const size_t group_index = db_device_payload_field_index_or_throw(fields, field_count, group_key_field);
+    const size_t value_index = value_field
+        ? db_device_payload_field_index_or_throw(fields, field_count, value_field)
+        : group_index;
+
+    std::call_once(g_device_column_grouped_i64.init, [&]() {
+        const std::string ptx = compile_to_ptx(
+            kDeviceColumnGroupedI64KernelSrc,
+            "device_column_grouped_i64_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_device_column_grouped_i64.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_kernel"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.init_values_fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_init_values_kernel"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.compact_count_fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_compact_count_kernel"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.compact_sum_fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_compact_sum_kernel"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.compact_sum_count_fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_compact_sum_count_kernel"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_column_grouped_i64.compact_stats_fn,
+            g_device_column_grouped_i64.module,
+            "device_column_grouped_i64_compact_stats_kernel"));
+    });
+
+    DevPtr d_fields(sizeof(DeviceColumnRuntimeField) * runtime_fields.size());
+    upload(d_fields.ptr, runtime_fields.data(), runtime_fields.size());
+    DevPtr d_clauses(sizeof(DeviceColumnRuntimeClause) * std::max<size_t>(runtime_clauses.size(), 1));
+    if (!runtime_clauses.empty()) {
+        upload(d_clauses.ptr, runtime_clauses.data(), runtime_clauses.size());
+    }
+    DevPtr d_counts(sizeof(unsigned long long) * group_capacity);
+    DevPtr d_sums(sizeof(unsigned long long) * group_capacity);
+    std::unique_ptr<DevPtr> d_mins;
+    std::unique_ptr<DevPtr> d_maxs;
+    DevPtr d_invalid(sizeof(uint32_t));
+    CU_CHECK(cuMemsetD8(d_counts.ptr, 0, sizeof(unsigned long long) * group_capacity));
+    CU_CHECK(cuMemsetD8(d_sums.ptr, 0, sizeof(unsigned long long) * group_capacity));
+    CU_CHECK(cuMemsetD8(d_invalid.ptr, 0, sizeof(uint32_t)));
+    const unsigned int threads = 256;
+    const unsigned int compact_blocks = static_cast<unsigned int>((group_capacity + threads - 1) / threads);
+    uint32_t runtime_group_capacity = static_cast<uint32_t>(group_capacity);
+    if (operation == kDeviceColumnGroupedOpMin || operation == kDeviceColumnGroupedOpMax) {
+        long long initial_value = operation == kDeviceColumnGroupedOpMin
+            ? std::numeric_limits<int64_t>::max()
+            : std::numeric_limits<int64_t>::min();
+        void* init_args[] = {
+            &d_sums.ptr,
+            &runtime_group_capacity,
+            &initial_value,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.init_values_fn,
+            compact_blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, init_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+    } else if (operation == kDeviceColumnGroupedOpStats) {
+        d_mins = std::make_unique<DevPtr>(sizeof(unsigned long long) * group_capacity);
+        d_maxs = std::make_unique<DevPtr>(sizeof(unsigned long long) * group_capacity);
+        long long min_initial_value = std::numeric_limits<int64_t>::max();
+        void* min_init_args[] = {
+            &d_mins->ptr,
+            &runtime_group_capacity,
+            &min_initial_value,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.init_values_fn,
+            compact_blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, min_init_args, nullptr));
+        long long max_initial_value = std::numeric_limits<int64_t>::min();
+        void* max_init_args[] = {
+            &d_maxs->ptr,
+            &runtime_group_capacity,
+            &max_initial_value,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.init_values_fn,
+            compact_blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, max_init_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+    }
+
+    DeviceColumnGroupedI64Params params{};
+    params.fields = reinterpret_cast<const DeviceColumnRuntimeField*>(d_fields.ptr);
+    params.field_count = static_cast<uint32_t>(field_count);
+    params.row_count = static_cast<uint32_t>(row_count);
+    params.clauses = reinterpret_cast<const DeviceColumnRuntimeClause*>(d_clauses.ptr);
+    params.clause_count = static_cast<uint32_t>(clause_count);
+    params.group_field_index = static_cast<uint32_t>(group_index);
+    params.value_field_index = static_cast<uint32_t>(value_index);
+    params.operation = operation;
+    params.group_capacity = runtime_group_capacity;
+    params.group_counts = reinterpret_cast<unsigned long long*>(d_counts.ptr);
+    params.group_sums = reinterpret_cast<unsigned long long*>(d_sums.ptr);
+    params.group_mins = d_mins ? reinterpret_cast<unsigned long long*>(d_mins->ptr) : nullptr;
+    params.group_maxs = d_maxs ? reinterpret_cast<unsigned long long*>(d_maxs->ptr) : nullptr;
+    params.invalid_group_count = reinterpret_cast<uint32_t*>(d_invalid.ptr);
+
+    void* args[] = {&params};
+    const unsigned int blocks = static_cast<unsigned int>((row_count + threads - 1) / threads);
+    CU_CHECK(cuLaunchKernel(
+        g_device_column_grouped_i64.fn,
+        blocks, 1, 1,
+        threads, 1, 1,
+        0, nullptr, args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    uint32_t invalid_group_count = 0;
+    download(&invalid_group_count, d_invalid.ptr, 1);
+    if (invalid_group_count != 0) {
+        throw std::runtime_error("device-column grouped execution requires dense non-negative group keys below group_capacity");
+    }
+
+    DevPtr d_row_count(sizeof(uint32_t));
+    CU_CHECK(cuMemsetD8(d_row_count.ptr, 0, sizeof(uint32_t)));
+    if (operation == kDeviceColumnGroupedOpCount) {
+        DevPtr d_rows(sizeof(RtdlDbGroupedCountRow) * group_capacity);
+        void* compact_args[] = {
+            &d_counts.ptr,
+            &params.group_capacity,
+            &d_rows.ptr,
+            &d_row_count.ptr,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.compact_count_fn,
+            compact_blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, compact_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        uint32_t compact_row_count = 0;
+        download(&compact_row_count, d_row_count.ptr, 1);
+        if (compact_row_count > group_capacity) {
+            throw std::runtime_error("device-column grouped compact output row count exceeded group_capacity");
+        }
+        count_rows.resize(compact_row_count);
+        if (compact_row_count != 0) {
+            download(count_rows.data(), d_rows.ptr, compact_row_count);
+        }
+    } else if (operation == kDeviceColumnGroupedOpSumCount) {
+        DevPtr d_rows(sizeof(RtdlDbGroupedSumCountRow) * group_capacity);
+        void* compact_args[] = {
+            &d_counts.ptr,
+            &d_sums.ptr,
+            &params.group_capacity,
+            &d_rows.ptr,
+            &d_row_count.ptr,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.compact_sum_count_fn,
+            compact_blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, compact_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        uint32_t compact_row_count = 0;
+        download(&compact_row_count, d_row_count.ptr, 1);
+        if (compact_row_count > group_capacity) {
+            throw std::runtime_error("device-column grouped compact output row count exceeded group_capacity");
+        }
+        sum_count_rows.resize(compact_row_count);
+        if (compact_row_count != 0) {
+            download(sum_count_rows.data(), d_rows.ptr, compact_row_count);
+        }
+    } else if (operation == kDeviceColumnGroupedOpStats) {
+        DevPtr d_rows(sizeof(RtdlDbGroupedStatsRow) * group_capacity);
+        void* compact_args[] = {
+            &d_counts.ptr,
+            &d_sums.ptr,
+            &d_mins->ptr,
+            &d_maxs->ptr,
+            &params.group_capacity,
+            &d_rows.ptr,
+            &d_row_count.ptr,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.compact_stats_fn,
+            compact_blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, compact_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        uint32_t compact_row_count = 0;
+        download(&compact_row_count, d_row_count.ptr, 1);
+        if (compact_row_count > group_capacity) {
+            throw std::runtime_error("device-column grouped compact output row count exceeded group_capacity");
+        }
+        stats_rows.resize(compact_row_count);
+        if (compact_row_count != 0) {
+            download(stats_rows.data(), d_rows.ptr, compact_row_count);
+        }
+    } else {
+        DevPtr d_rows(sizeof(RtdlDbGroupedSumRow) * group_capacity);
+        void* compact_args[] = {
+            &d_counts.ptr,
+            &d_sums.ptr,
+            &params.group_capacity,
+            &d_rows.ptr,
+            &d_row_count.ptr,
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_device_column_grouped_i64.compact_sum_fn,
+            compact_blocks, 1, 1,
+            threads, 1, 1,
+            0, nullptr, compact_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        uint32_t compact_row_count = 0;
+        download(&compact_row_count, d_row_count.ptr, 1);
+        if (compact_row_count > group_capacity) {
+            throw std::runtime_error("device-column grouped compact output row count exceeded group_capacity");
+        }
+        sum_rows.resize(compact_row_count);
+        if (compact_row_count != 0) {
+            download(sum_rows.data(), d_rows.ptr, compact_row_count);
+        }
+    }
+}
+
+static void run_device_column_grouped_count_i64_optix_with_capacity(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        size_t group_capacity,
+        RtdlDbGroupedCountRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RtdlDbGroupedCountRow> rows;
+    std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
+    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    db_launch_device_column_grouped_i64(
+        fields, field_count, row_count, clauses, clause_count, group_key_field,
+        nullptr, group_capacity, kDeviceColumnGroupedOpCount,
+        rows, unused_sum_rows, unused_sum_count_rows, unused_stats_rows);
+    auto* out = static_cast<RtdlDbGroupedCountRow*>(std::malloc(sizeof(RtdlDbGroupedCountRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedCountRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_device_column_grouped_count_i64_optix(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        RtdlDbGroupedCountRow** rows_out,
+        size_t* row_count_out)
+{
+    run_device_column_grouped_count_i64_optix_with_capacity(
+        fields, field_count, row_count, clauses, clause_count, group_key_field,
+        kDbMaxGroupsPerJob, rows_out, row_count_out);
+}
+
+static void run_device_column_grouped_sum_i64_optix_with_capacity(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
+    std::vector<RtdlDbGroupedSumRow> rows;
+    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    db_launch_device_column_grouped_i64(
+        fields, field_count, row_count, clauses, clause_count, group_key_field,
+        value_field, group_capacity, kDeviceColumnGroupedOpSum,
+        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows);
+    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_device_column_grouped_sum_i64_optix(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        RtdlDbGroupedSumRow** rows_out,
+        size_t* row_count_out)
+{
+    run_device_column_grouped_sum_i64_optix_with_capacity(
+        fields, field_count, row_count, clauses, clause_count, group_key_field, value_field,
+        kDbMaxGroupsPerJob, rows_out, row_count_out);
+}
+
+static void run_device_column_grouped_min_i64_optix_with_capacity(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
+    std::vector<RtdlDbGroupedSumRow> rows;
+    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    db_launch_device_column_grouped_i64(
+        fields, field_count, row_count, clauses, clause_count, group_key_field,
+        value_field, group_capacity, kDeviceColumnGroupedOpMin,
+        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows);
+    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_device_column_grouped_max_i64_optix_with_capacity(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
+    std::vector<RtdlDbGroupedSumRow> rows;
+    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    db_launch_device_column_grouped_i64(
+        fields, field_count, row_count, clauses, clause_count, group_key_field,
+        value_field, group_capacity, kDeviceColumnGroupedOpMax,
+        unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows);
+    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_device_column_grouped_sum_count_i64_optix_with_capacity(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumCountRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
+    std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
+    std::vector<RtdlDbGroupedSumCountRow> rows;
+    std::vector<RtdlDbGroupedStatsRow> unused_stats_rows;
+    db_launch_device_column_grouped_i64(
+        fields, field_count, row_count, clauses, clause_count, group_key_field,
+        value_field, group_capacity, kDeviceColumnGroupedOpSumCount,
+        unused_count_rows, unused_sum_rows, rows, unused_stats_rows);
+    auto* out = static_cast<RtdlDbGroupedSumCountRow*>(
+        std::malloc(sizeof(RtdlDbGroupedSumCountRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumCountRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_device_column_grouped_stats_i64_optix_with_capacity(
+        const RtdlDevicePayloadField* fields,
+        size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedStatsRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RtdlDbGroupedCountRow> unused_count_rows;
+    std::vector<RtdlDbGroupedSumRow> unused_sum_rows;
+    std::vector<RtdlDbGroupedSumCountRow> unused_sum_count_rows;
+    std::vector<RtdlDbGroupedStatsRow> rows;
+    db_launch_device_column_grouped_i64(
+        fields, field_count, row_count, clauses, clause_count, group_key_field,
+        value_field, group_capacity, kDeviceColumnGroupedOpStats,
+        unused_count_rows, unused_sum_rows, unused_sum_count_rows, rows);
+    auto* out = static_cast<RtdlDbGroupedStatsRow*>(
+        std::malloc(sizeof(RtdlDbGroupedStatsRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedStatsRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
 }
 
 static void db_copy_dataset_columnar_payload(
@@ -5574,6 +6574,167 @@ struct PreparedRays2D {
     }
 };
 
+struct PreparedStaticTriangleScene3D {
+    size_t triangle_count = 0;
+    DevPtr d_triangles;
+    AccelHolder accel;
+
+    explicit PreparedStaticTriangleScene3D(const RtdlTriangle3D* source, size_t count)
+        : triangle_count(count), d_triangles(sizeof(GpuTriangle3DHost) * count)
+    {
+        if (!source && count != 0)
+            throw std::runtime_error("triangle pointer must not be null when triangle_count is nonzero");
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("triangle_count exceeds uint32 launch limit");
+        if (count == 0) return;
+
+        std::vector<GpuTriangle3DHost> gpu_tris(count);
+        for (size_t i = 0; i < count; ++i) {
+            const double values[9] = {
+                source[i].x0, source[i].y0, source[i].z0,
+                source[i].x1, source[i].y1, source[i].z1,
+                source[i].x2, source[i].y2, source[i].z2,
+            };
+            for (double value : values) {
+                if (!std::isfinite(value))
+                    throw std::runtime_error("triangle coordinates must be finite");
+            }
+            gpu_tris[i] = {
+                static_cast<float>(source[i].x0),
+                static_cast<float>(source[i].y0),
+                static_cast<float>(source[i].z0),
+                static_cast<float>(source[i].x1),
+                static_cast<float>(source[i].y1),
+                static_cast<float>(source[i].z1),
+                static_cast<float>(source[i].x2),
+                static_cast<float>(source[i].y2),
+                static_cast<float>(source[i].z2),
+                source[i].id
+            };
+        }
+        upload(d_triangles.ptr, gpu_tris.data(), gpu_tris.size());
+
+        std::vector<OptixAabb> aabbs(count);
+        for (size_t i = 0; i < count; ++i) {
+            aabbs[i] = aabb_for_triangle_3d(
+                gpu_tris[i].x0, gpu_tris[i].y0, gpu_tris[i].z0,
+                gpu_tris[i].x1, gpu_tris[i].y1, gpu_tris[i].z1,
+                gpu_tris[i].x2, gpu_tris[i].y2, gpu_tris[i].z2);
+        }
+        accel = build_custom_accel(get_optix_context(), aabbs);
+    }
+};
+
+static void validate_grouped_segment_query_3d_inputs(
+        const RtdlSegment3D* segments,
+        size_t segment_count,
+        const uint32_t* group_offsets,
+        size_t group_count)
+{
+    if (!segments && segment_count != 0)
+        throw std::runtime_error("segment pointer must not be null when segment_count is nonzero");
+    if (!group_offsets && group_count != 0)
+        throw std::runtime_error("group offsets pointer must not be null when group_count is nonzero");
+    if (segment_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment_count exceeds uint32 launch limit");
+    if (group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 limit");
+    if (group_count == 0) {
+        if (segment_count != 0)
+            throw std::runtime_error("segment_count must be zero when group_count is zero");
+        return;
+    }
+    if (group_offsets[0] != 0u)
+        throw std::runtime_error("first group offset must be zero");
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+        const uint32_t begin = group_offsets[group_index];
+        const uint32_t end = group_offsets[group_index + 1];
+        if (end < begin)
+            throw std::runtime_error("group offsets must be monotonic");
+        if (static_cast<size_t>(end) > segment_count)
+            throw std::runtime_error("group offsets exceed segment_count");
+    }
+    if (static_cast<size_t>(group_offsets[group_count]) != segment_count)
+        throw std::runtime_error("final group offset must equal segment_count");
+}
+
+static GpuRay3DHost pack_segment_3d_as_gpu_ray(const RtdlSegment3D& segment)
+{
+    const double values[6] = {
+        segment.x0, segment.y0, segment.z0,
+        segment.x1, segment.y1, segment.z1,
+    };
+    for (double value : values) {
+        if (!std::isfinite(value))
+            throw std::runtime_error("segment coordinates must be finite");
+    }
+    const double ddx = segment.x1 - segment.x0;
+    const double ddy = segment.y1 - segment.y0;
+    const double ddz = segment.z1 - segment.z0;
+    const double dlen = std::sqrt(ddx * ddx + ddy * ddy + ddz * ddz);
+    if (dlen == 0.0)
+        throw std::runtime_error("zero-length segments are invalid");
+    const float dx = static_cast<float>(ddx);
+    const float dy = static_cast<float>(ddy);
+    const float dz = static_cast<float>(ddz);
+    const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+    if (!(len > 0.0f))
+        throw std::runtime_error("segment length is not representable as float32");
+    return {
+        static_cast<float>(segment.x0),
+        static_cast<float>(segment.y0),
+        static_cast<float>(segment.z0),
+        dx / len, dy / len, dz / len,
+        len,
+        segment.id
+    };
+}
+
+struct PreparedGroupedSegmentQuery3D {
+    size_t segment_count = 0;
+    size_t group_count = 0;
+    DevPtr d_rays;
+    DevPtr d_group_offsets;
+    DevPtr d_group_indices;
+    DevPtr d_group_flags;
+
+    PreparedGroupedSegmentQuery3D(
+            const RtdlSegment3D* segments,
+            size_t segment_count_arg,
+            const uint32_t* group_offsets,
+            size_t group_count_arg)
+        : segment_count(segment_count_arg),
+          group_count(group_count_arg),
+          d_rays(sizeof(GpuRay3DHost) * segment_count_arg),
+          d_group_offsets(group_count_arg == 0 ? 0 : sizeof(uint32_t) * (group_count_arg + 1)),
+          d_group_indices(sizeof(uint32_t) * segment_count_arg),
+          d_group_flags(sizeof(uint32_t) * group_count_arg)
+    {
+        validate_grouped_segment_query_3d_inputs(
+            segments,
+            segment_count,
+            group_offsets,
+            group_count);
+        if (segment_count != 0) {
+            std::vector<GpuRay3DHost> gpu_rays(segment_count);
+            for (size_t i = 0; i < segment_count; ++i)
+                gpu_rays[i] = pack_segment_3d_as_gpu_ray(segments[i]);
+            upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+        }
+        if (group_count != 0) {
+            upload(d_group_offsets.ptr, group_offsets, group_count + 1);
+            std::vector<uint32_t> group_indices(segment_count, 0u);
+            for (size_t group_index = 0; group_index < group_count; ++group_index) {
+                const uint32_t begin = group_offsets[group_index];
+                const uint32_t end = group_offsets[group_index + 1];
+                for (uint32_t segment_index = begin; segment_index < end; ++segment_index)
+                    group_indices[segment_index] = static_cast<uint32_t>(group_index);
+            }
+            upload(d_group_indices.ptr, group_indices.data(), group_indices.size());
+        }
+    }
+};
+
 struct PreparedGroupIndices2D {
     size_t count;
     DevPtr d_group_indices;
@@ -6290,6 +7451,16 @@ struct RayHitCount3DLaunchParams {
     uint32_t                 ray_count;
 };
 
+struct RayAnyHitGroupFlags3DLaunchParams {
+    OptixTraversableHandle   traversable;
+    const GpuRay3DHost*      rays;
+    const GpuTriangle3DHost* triangles;
+    const uint32_t*          group_indices;
+    uint32_t*                group_flags;
+    uint32_t                 ray_count;
+    uint32_t                 group_count;
+};
+
 static void run_ray_hitcount_3d_optix(
         const RtdlRay3D*      rays,      size_t ray_count,
         const RtdlTriangle3D* triangles, size_t triangle_count,
@@ -6429,10 +7600,7 @@ static std::string ray_anyhit_kernel_source_3d()
     return src;
 }
 
-static void run_ray_anyhit_3d_optix(
-        const RtdlRay3D*      rays,      size_t ray_count,
-        const RtdlTriangle3D* triangles, size_t triangle_count,
-        RtdlRayAnyHitRow**  rows_out,  size_t* row_count_out)
+static void ensure_ray_anyhit_3d_pipeline()
 {
     std::call_once(g_rayanyhit3d.init, [&]() {
         std::string src = ray_anyhit_kernel_source_3d();
@@ -6445,6 +7613,323 @@ static void run_ray_anyhit_3d_optix(
             "__anyhit__rayhit3d_anyhit",
             nullptr, 2).release();
     });
+}
+
+static std::string ray_anyhit_group_flags_kernel_source_3d()
+{
+    std::string src = ray_anyhit_kernel_source_3d();
+    const std::string old_output_field =
+        "    RayHitCount3DRecord*     output;\n"
+        "    uint32_t                 ray_count;\n";
+    const std::string new_output_field =
+        "    const uint32_t*          group_indices;\n"
+        "    uint32_t*                group_flags;\n"
+        "    uint32_t                 ray_count;\n"
+        "    uint32_t                 group_count;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D any-hit group-flags params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D any-hit group-flags zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    if (p1 != 0u) {\n"
+        "        const uint32_t group_index = params.group_indices[idx];\n"
+        "        if (group_index < params.group_count) {\n"
+        "            atomicExch(&params.group_flags[group_index], 1u);\n"
+        "        }\n"
+        "    }\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D any-hit group-flags output path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+    return src;
+}
+
+static void ensure_ray_anyhit_group_flags_3d_pipeline()
+{
+    std::call_once(g_rayanyhit_group_flags3d.init, [&]() {
+        std::string src = ray_anyhit_group_flags_kernel_source_3d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_group_flags3d_kernel.cu");
+        g_rayanyhit_group_flags3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit3d_probe",
+            "__miss__rayhit3d_miss",
+            "__intersection__rayhit3d_isect",
+            "__anyhit__rayhit3d_anyhit",
+            nullptr, 2).release();
+    });
+}
+
+static PreparedStaticTriangleScene3D* prepare_static_triangle_scene_3d_optix(
+        const RtdlTriangle3D* triangles,
+        size_t triangle_count)
+{
+    return new PreparedStaticTriangleScene3D(triangles, triangle_count);
+}
+
+static PreparedGroupedSegmentQuery3D* prepare_static_triangle_scene_3d_grouped_segment_query_optix(
+        const RtdlSegment3D* segments,
+        size_t segment_count,
+        const uint32_t* group_offsets,
+        size_t group_count)
+{
+    return new PreparedGroupedSegmentQuery3D(
+        segments,
+        segment_count,
+        group_offsets,
+        group_count);
+}
+
+static void run_prepared_static_triangle_scene_3d_grouped_segment_any_hit_flags_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlSegment3D* segments,
+        size_t segment_count,
+        const uint32_t* group_offsets,
+        size_t group_count,
+        uint8_t* flags_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!segments && segment_count != 0)
+        throw std::runtime_error("segment pointer must not be null when segment_count is nonzero");
+    if (!group_offsets && group_count != 0)
+        throw std::runtime_error("group offsets pointer must not be null when group_count is nonzero");
+    if (!flags_out && group_count != 0)
+        throw std::runtime_error("flags output pointer must not be null when group_count is nonzero");
+    if (segment_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment_count exceeds uint32 launch limit");
+    if (group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 limit");
+
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    for (size_t group_index = 0; group_index < group_count; ++group_index)
+        flags_out[group_index] = 0u;
+    if (group_count == 0) {
+        if (segment_count != 0)
+            throw std::runtime_error("segment_count must be zero when group_count is zero");
+        return;
+    }
+    if (group_offsets[0] != 0u)
+        throw std::runtime_error("first group offset must be zero");
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+        const uint32_t begin = group_offsets[group_index];
+        const uint32_t end = group_offsets[group_index + 1];
+        if (end < begin)
+            throw std::runtime_error("group offsets must be monotonic");
+        if (static_cast<size_t>(end) > segment_count)
+            throw std::runtime_error("group offsets exceed segment_count");
+    }
+    if (static_cast<size_t>(group_offsets[group_count]) != segment_count)
+        throw std::runtime_error("final group offset must equal segment_count");
+    if (segment_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    std::vector<GpuRay3DHost> gpu_rays(segment_count);
+    for (size_t i = 0; i < segment_count; ++i) {
+        const double values[6] = {
+            segments[i].x0, segments[i].y0, segments[i].z0,
+            segments[i].x1, segments[i].y1, segments[i].z1,
+        };
+        for (double value : values) {
+            if (!std::isfinite(value))
+                throw std::runtime_error("segment coordinates must be finite");
+        }
+        const double ddx = segments[i].x1 - segments[i].x0;
+        const double ddy = segments[i].y1 - segments[i].y0;
+        const double ddz = segments[i].z1 - segments[i].z0;
+        const double dlen = std::sqrt(ddx * ddx + ddy * ddy + ddz * ddz);
+        if (dlen == 0.0)
+            throw std::runtime_error("zero-length segments are invalid");
+        const float dx = static_cast<float>(ddx);
+        const float dy = static_cast<float>(ddy);
+        const float dz = static_cast<float>(ddz);
+        const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (!(len > 0.0f))
+            throw std::runtime_error("segment length is not representable as float32");
+        gpu_rays[i] = {
+            static_cast<float>(segments[i].x0),
+            static_cast<float>(segments[i].y0),
+            static_cast<float>(segments[i].z0),
+            dx / len, dy / len, dz / len,
+            len,
+            segments[i].id
+        };
+    }
+
+    ensure_ray_anyhit_3d_pipeline();
+
+    DevPtr d_rays(sizeof(GpuRay3DHost) * segment_count);
+    DevPtr d_output(sizeof(GpuRayAnyHitRecord) * segment_count);
+    upload(d_rays.ptr, gpu_rays.data(), segment_count);
+
+    RayHitCount3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays        = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles   = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.output      = reinterpret_cast<GpuRayHitRecord*>(d_output.ptr);
+    lp.ray_count   = static_cast<uint32_t>(segment_count);
+
+    DevPtr d_params(sizeof(RayHitCount3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayHitCount3DLaunchParams),
+                             &g_rayanyhit3d.pipe->sbt,
+                             static_cast<unsigned>(segment_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<GpuRayAnyHitRecord> gpu_rows(segment_count);
+    download(gpu_rows.data(), d_output.ptr, segment_count);
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+        const uint32_t begin = group_offsets[group_index];
+        const uint32_t end = group_offsets[group_index + 1];
+        for (uint32_t segment_index = begin; segment_index < end; ++segment_index) {
+            if (gpu_rows[segment_index].any_hit != 0u) {
+                flags_out[group_index] = 1u;
+                break;
+            }
+        }
+    }
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_grouped_segment_query_any_hit_flags_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedGroupedSegmentQuery3D* query,
+        uint8_t* flags_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!query)
+        throw std::runtime_error("prepared query handle must not be null");
+    if (!flags_out && query->group_count != 0)
+        throw std::runtime_error("flags output pointer must not be null when group_count is nonzero");
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (query->group_count == 0)
+        return;
+
+    CUstream stream = 0;
+    CU_CHECK(cuMemsetD32(query->d_group_flags.ptr, 0u, query->group_count));
+    if (query->segment_count == 0 || prepared->triangle_count == 0) {
+        CU_CHECK(cuStreamSynchronize(stream));
+        for (size_t group_index = 0; group_index < query->group_count; ++group_index)
+            flags_out[group_index] = 0u;
+        return;
+    }
+
+    ensure_ray_anyhit_group_flags_3d_pipeline();
+
+    RayAnyHitGroupFlags3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays        = reinterpret_cast<const GpuRay3DHost*>(query->d_rays.ptr);
+    lp.triangles   = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.group_indices = reinterpret_cast<const uint32_t*>(query->d_group_indices.ptr);
+    lp.group_flags = reinterpret_cast<uint32_t*>(query->d_group_flags.ptr);
+    lp.ray_count   = static_cast<uint32_t>(query->segment_count);
+    lp.group_count = static_cast<uint32_t>(query->group_count);
+
+    DevPtr d_params(sizeof(RayAnyHitGroupFlags3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_group_flags3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayAnyHitGroupFlags3DLaunchParams),
+                             &g_rayanyhit_group_flags3d.pipe->sbt,
+                             static_cast<unsigned>(query->segment_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    std::vector<uint32_t> group_flags(query->group_count, 0u);
+    download(group_flags.data(), query->d_group_flags.ptr, query->group_count);
+    for (size_t group_index = 0; group_index < query->group_count; ++group_index)
+        flags_out[group_index] = group_flags[group_index] != 0u ? 1u : 0u;
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_grouped_segment_query_any_hit_count_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedGroupedSegmentQuery3D* query,
+        uint32_t* flagged_group_count_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!query)
+        throw std::runtime_error("prepared query handle must not be null");
+    if (!flagged_group_count_out)
+        throw std::runtime_error("flagged group count output pointer must not be null");
+    *flagged_group_count_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (query->group_count == 0)
+        return;
+
+    CUstream stream = 0;
+    CU_CHECK(cuMemsetD32(query->d_group_flags.ptr, 0u, query->group_count));
+    if (query->segment_count == 0 || prepared->triangle_count == 0) {
+        CU_CHECK(cuStreamSynchronize(stream));
+        return;
+    }
+
+    ensure_ray_anyhit_group_flags_3d_pipeline();
+
+    RayAnyHitGroupFlags3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays        = reinterpret_cast<const GpuRay3DHost*>(query->d_rays.ptr);
+    lp.triangles   = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.group_indices = reinterpret_cast<const uint32_t*>(query->d_group_indices.ptr);
+    lp.group_flags = reinterpret_cast<uint32_t*>(query->d_group_flags.ptr);
+    lp.ray_count   = static_cast<uint32_t>(query->segment_count);
+    lp.group_count = static_cast<uint32_t>(query->group_count);
+
+    DevPtr d_params(sizeof(RayAnyHitGroupFlags3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_group_flags3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayAnyHitGroupFlags3DLaunchParams),
+                             &g_rayanyhit_group_flags3d.pipe->sbt,
+                             static_cast<unsigned>(query->segment_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    std::vector<uint32_t> group_flags(query->group_count, 0u);
+    download(group_flags.data(), query->d_group_flags.ptr, query->group_count);
+    uint32_t flagged_group_count = 0u;
+    for (uint32_t flag : group_flags) {
+        if (flag != 0u)
+            ++flagged_group_count;
+    }
+    *flagged_group_count_out = flagged_group_count;
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_ray_anyhit_3d_optix(
+        const RtdlRay3D*      rays,      size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayAnyHitRow**  rows_out,  size_t* row_count_out)
+{
+    ensure_ray_anyhit_3d_pipeline();
 
     std::vector<GpuRay3DHost> gpu_rays(ray_count);
     for (size_t i = 0; i < ray_count; ++i) {
@@ -7235,10 +8720,13 @@ struct FixedRadiusGroupedUnion3DRtLaunchParams {
     const uint32_t* predicate_flags;
     int32_t* parent_out;
     int32_t* fallback_candidate_out;
+    uint64_t* telemetry_out;
     uint32_t query_count;
     uint32_t query_index_offset;
     uint32_t item_count;
     uint32_t all_predicate;
+    uint32_t same_root_culling;
+    uint32_t direct_side_effect;
     float radius;
     float trace_tmax;
 };
@@ -10226,6 +11714,9 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         const uint32_t* predicate_flags,
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        bool same_root_culling,
+        bool direct_side_effect,
         size_t item_count);
 
 static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
@@ -10237,6 +11728,9 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         const uint32_t* predicate_flags,
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        bool same_root_culling,
+        bool direct_side_effect,
         size_t item_count)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius grouped-union 3D handle must not be null");
@@ -10285,6 +11779,66 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         predicate_flags,
         parent_out,
         fallback_candidate_out,
+        telemetry_out,
+        same_root_culling,
+        direct_side_effect,
+        item_count);
+}
+
+static void apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        size_t query_start,
+        size_t query_count,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        bool same_root_culling,
+        bool direct_side_effect,
+        size_t item_count)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius grouped-union 3D handle must not be null");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_grouped_union_3d_self_range radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range radius exceeds prepared max_radius");
+    }
+    const size_t search_count = prepared->search_points.size();
+    if (query_start > search_count || query_count > search_count - query_start)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range query range must be inside prepared search items");
+    if (query_start > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range query_start exceeds uint32 limit");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range query_count exceeds uint32 limit");
+    if (item_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range item_count exceeds uint32 limit");
+    if (item_count < search_count)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range workspaces must cover every prepared search item");
+    if (query_count == 0) return;
+    if (!parent_out)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range parent pointer must not be null when query_count is nonzero");
+    const bool all_predicate = predicate_flags == nullptr && fallback_candidate_out == nullptr;
+    if (!all_predicate && (!predicate_flags || !fallback_candidate_out))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range predicate and fallback pointers must both be null only for all-items mode");
+    if (!prepared->d_search)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_range prepared search device buffer is missing");
+    if (!prepared->accel.handle || prepared->search_points.empty()) {
+        return;
+    }
+
+    const GpuPoint3DHost* device_search = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
+    launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+        prepared,
+        device_search + query_start,
+        query_count,
+        query_start,
+        radius,
+        predicate_flags,
+        parent_out,
+        fallback_candidate_out,
+        telemetry_out,
+        same_root_culling,
+        direct_side_effect,
         item_count);
 }
 
@@ -10297,6 +11851,9 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         const uint32_t* predicate_flags,
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        bool same_root_culling,
+        bool direct_side_effect,
         size_t item_count)
 {
     std::call_once(g_frn3d_grouped_union_rt.init, [&]() {
@@ -10321,10 +11878,13 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     lp.predicate_flags = predicate_flags;
     lp.parent_out = parent_out;
     lp.fallback_candidate_out = fallback_candidate_out;
+    lp.telemetry_out = telemetry_out;
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.query_index_offset = static_cast<uint32_t>(query_index_offset);
     lp.item_count = static_cast<uint32_t>(item_count);
     lp.all_predicate = (predicate_flags == nullptr) ? 1u : 0u;
+    lp.same_root_culling = same_root_culling ? 1u : 0u;
+    lp.direct_side_effect = direct_side_effect ? 1u : 0u;
     lp.radius = radius_f;
     lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
 
@@ -10350,6 +11910,9 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_opt
         const uint32_t* predicate_flags,
         int32_t* parent_out,
         int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        bool same_root_culling,
+        bool direct_side_effect,
         size_t item_count)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius grouped-union 3D handle must not be null");
@@ -10385,6 +11948,9 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_opt
         predicate_flags,
         parent_out,
         fallback_candidate_out,
+        telemetry_out,
+        same_root_culling,
+        direct_side_effect,
         item_count);
 }
 

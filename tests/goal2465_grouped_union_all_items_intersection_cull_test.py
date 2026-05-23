@@ -19,7 +19,8 @@ class Goal2465GroupedUnionAllItemsIntersectionCullTest(unittest.TestCase):
         intersection = core[start:end]
 
         self.assertIn("const uint32_t source = params.query_index_offset + qidx", intersection)
-        self.assertIn("params.all_predicate != 0u && prim <= source", intersection)
+        self.assertIn("params.all_predicate != 0u", intersection)
+        self.assertIn("if (prim <= source)", intersection)
         self.assertIn("return;", intersection)
         self.assertNotIn("dbscan", intersection.lower())
 

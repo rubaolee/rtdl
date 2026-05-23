@@ -1,0 +1,278 @@
+{
+  "all_available_results_match_expected": true,
+  "all_external_results_match_expected": true,
+  "all_rtdl_results_match_expected": true,
+  "app": "raydb_style_columnar_aggregate",
+  "claim_boundary": "Merged large same-contract diagnostic matrix for PostgreSQL, DuckDB, cuDF, and RTDL. Only same-row-count internal timing ratios are reported. This artifact does not authorize public speedup, whole-DBMS, authors-code, RayDB reproduction, or true-zero-copy claims.",
+  "external_artifact_goal": "goal2527_large_same_contract_external_baselines",
+  "goal": "goal2527_large_same_contract_performance_matrix",
+  "group_capacity": 1024,
+  "input_contract": "deterministic generated i64 columns matching the RTDL Goal2518 large partner-resident fixture",
+  "performance_claim_authorized": false,
+  "performance_matrix": [
+    {
+      "matches_expected": true,
+      "max_ms": 6.314292,
+      "mean_ms": 6.2306112,
+      "median_ms": 6.24195,
+      "min_ms": 6.108875,
+      "result_group_count": 512,
+      "row_count": 1000000,
+      "system": "postgresql",
+      "timing_boundary": "PostgreSQL indexed-table SQL query plus fetchall of compact grouped rows; setup/index excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 4.1676,
+      "mean_ms": 4.0048492,
+      "median_ms": 4.087197,
+      "min_ms": 3.799079,
+      "result_group_count": 512,
+      "row_count": 1000000,
+      "system": "duckdb",
+      "timing_boundary": "DuckDB indexed-table SQL query plus fetchall of compact grouped rows; setup/index excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 44.072758,
+      "mean_ms": 42.7116388,
+      "median_ms": 42.533734,
+      "min_ms": 41.915386,
+      "result_group_count": 512,
+      "row_count": 1000000,
+      "system": "cudf",
+      "timing_boundary": "cuDF GPU dataframe filter/groupby aggregate, stream sync, and compact host-row materialization; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 50.948776,
+      "mean_ms": 45.537558000000004,
+      "median_ms": 43.007387,
+      "min_ms": 41.468423,
+      "result_group_count": 512,
+      "row_count": 5000000,
+      "system": "postgresql",
+      "timing_boundary": "PostgreSQL indexed-table SQL query plus fetchall of compact grouped rows; setup/index excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 12.632933,
+      "mean_ms": 11.8542968,
+      "median_ms": 11.630014,
+      "min_ms": 11.590544,
+      "result_group_count": 512,
+      "row_count": 5000000,
+      "system": "duckdb",
+      "timing_boundary": "DuckDB indexed-table SQL query plus fetchall of compact grouped rows; setup/index excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 52.544142,
+      "mean_ms": 51.2413782,
+      "median_ms": 51.043358,
+      "min_ms": 50.37976,
+      "result_group_count": 512,
+      "row_count": 5000000,
+      "system": "cudf",
+      "timing_boundary": "cuDF GPU dataframe filter/groupby aggregate, stream sync, and compact host-row materialization; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 73.093873,
+      "mean_ms": 65.50297040000001,
+      "median_ms": 66.663138,
+      "min_ms": 58.951296,
+      "result_group_count": 512,
+      "row_count": 10000000,
+      "system": "postgresql",
+      "timing_boundary": "PostgreSQL indexed-table SQL query plus fetchall of compact grouped rows; setup/index excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 19.571132,
+      "mean_ms": 18.9201018,
+      "median_ms": 19.248983,
+      "min_ms": 17.796492,
+      "result_group_count": 512,
+      "row_count": 10000000,
+      "system": "duckdb",
+      "timing_boundary": "DuckDB indexed-table SQL query plus fetchall of compact grouped rows; setup/index excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 52.535691,
+      "mean_ms": 52.144282,
+      "median_ms": 52.286274,
+      "min_ms": 51.734838,
+      "result_group_count": 512,
+      "row_count": 10000000,
+      "system": "cudf",
+      "timing_boundary": "cuDF GPU dataframe filter/groupby aggregate, stream sync, and compact host-row materialization; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 1.05313,
+      "mean_ms": 1.025639,
+      "median_ms": 1.02778,
+      "min_ms": 1.002858,
+      "native_launch_count": 1,
+      "result_group_count": 512,
+      "row_count": 1000000,
+      "system": "rtdl_optix_partner_resident_sum_count_only",
+      "timing_boundary": "one fused RTDL sum_count launch only; not the full count/sum/min/max contract"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 1.603156,
+      "mean_ms": 1.5979497999999999,
+      "median_ms": 1.601686,
+      "min_ms": 1.588625,
+      "native_launch_count": 1,
+      "result_group_count": 512,
+      "row_count": 1000000,
+      "system": "rtdl_optix_partner_resident_full_contract",
+      "timing_boundary": "RTDL OptiX partner-resident fused count/sum/min/max native launch over preconstructed CUDA tensors plus compact grouped host-row materialization; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 3.773177,
+      "mean_ms": 3.7511128,
+      "median_ms": 3.763097,
+      "min_ms": 3.705446,
+      "native_launch_count": 3,
+      "result_group_count": 512,
+      "row_count": 1000000,
+      "system": "rtdl_optix_partner_resident_full_contract_three_launch",
+      "timing_boundary": "Legacy comparison path: fused sum_count, min, and max as three native launches; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 1.39938,
+      "mean_ms": 1.3803036,
+      "median_ms": 1.38204,
+      "min_ms": 1.363099,
+      "native_launch_count": 1,
+      "result_group_count": 512,
+      "row_count": 5000000,
+      "system": "rtdl_optix_partner_resident_sum_count_only",
+      "timing_boundary": "one fused RTDL sum_count launch only; not the full count/sum/min/max contract"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 2.032208,
+      "mean_ms": 2.0010592,
+      "median_ms": 1.986026,
+      "min_ms": 1.974347,
+      "native_launch_count": 1,
+      "result_group_count": 512,
+      "row_count": 5000000,
+      "system": "rtdl_optix_partner_resident_full_contract",
+      "timing_boundary": "RTDL OptiX partner-resident fused count/sum/min/max native launch over preconstructed CUDA tensors plus compact grouped host-row materialization; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 4.878719,
+      "mean_ms": 4.8325493999999996,
+      "median_ms": 4.831247,
+      "min_ms": 4.804177,
+      "native_launch_count": 3,
+      "result_group_count": 512,
+      "row_count": 5000000,
+      "system": "rtdl_optix_partner_resident_full_contract_three_launch",
+      "timing_boundary": "Legacy comparison path: fused sum_count, min, and max as three native launches; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 1.828192,
+      "mean_ms": 1.819714,
+      "median_ms": 1.819912,
+      "min_ms": 1.809962,
+      "native_launch_count": 1,
+      "result_group_count": 512,
+      "row_count": 10000000,
+      "system": "rtdl_optix_partner_resident_sum_count_only",
+      "timing_boundary": "one fused RTDL sum_count launch only; not the full count/sum/min/max contract"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 2.4364,
+      "mean_ms": 2.4260272,
+      "median_ms": 2.425149,
+      "min_ms": 2.408329,
+      "native_launch_count": 1,
+      "result_group_count": 512,
+      "row_count": 10000000,
+      "system": "rtdl_optix_partner_resident_full_contract",
+      "timing_boundary": "RTDL OptiX partner-resident fused count/sum/min/max native launch over preconstructed CUDA tensors plus compact grouped host-row materialization; setup excluded"
+    },
+    {
+      "matches_expected": true,
+      "max_ms": 6.150855,
+      "mean_ms": 6.1385689999999995,
+      "median_ms": 6.138255,
+      "min_ms": 6.122095,
+      "native_launch_count": 3,
+      "result_group_count": 512,
+      "row_count": 10000000,
+      "system": "rtdl_optix_partner_resident_full_contract_three_launch",
+      "timing_boundary": "Legacy comparison path: fused sum_count, min, and max as three native launches; setup excluded"
+    }
+  ],
+  "query_contract": "filter ship_year/discount/quantity; group by region_id; count/sum/min/max; derive avg_as_sum_count as sum+count",
+  "repeats": 5,
+  "row_count_matrix": [
+    {
+      "cudf_ms": 42.533734,
+      "duckdb_ms": 4.087197,
+      "full_contract_ratios_vs_rtdl": {
+        "cudf": 26.5556007856721,
+        "duckdb": 2.5518091561017577,
+        "postgresql": 3.8971121680529146
+      },
+      "postgresql_ms": 6.24195,
+      "row_count": 1000000,
+      "rtdl_full_contract_ms": 1.601686,
+      "rtdl_fused_vs_three_launch_speedup": 2.349459881649712,
+      "rtdl_sum_count_only_ms": 1.02778,
+      "rtdl_three_launch_full_contract_ms": 3.763097
+    },
+    {
+      "cudf_ms": 51.043358,
+      "duckdb_ms": 11.630014,
+      "full_contract_ratios_vs_rtdl": {
+        "cudf": 25.70125365931765,
+        "duckdb": 5.8559223293149225,
+        "postgresql": 21.654996963785972
+      },
+      "postgresql_ms": 43.007387,
+      "row_count": 5000000,
+      "rtdl_full_contract_ms": 1.986026,
+      "rtdl_fused_vs_three_launch_speedup": 2.4326202174593887,
+      "rtdl_sum_count_only_ms": 1.38204,
+      "rtdl_three_launch_full_contract_ms": 4.831247
+    },
+    {
+      "cudf_ms": 52.286274,
+      "duckdb_ms": 19.248983,
+      "full_contract_ratios_vs_rtdl": {
+        "cudf": 21.560025384007332,
+        "duckdb": 7.93723725841175,
+        "postgresql": 27.488264844757992
+      },
+      "postgresql_ms": 66.663138,
+      "row_count": 10000000,
+      "rtdl_full_contract_ms": 2.425149,
+      "rtdl_fused_vs_three_launch_speedup": 2.531083657127871,
+      "rtdl_sum_count_only_ms": 1.819912,
+      "rtdl_three_launch_full_contract_ms": 6.138255
+    }
+  ],
+  "row_counts": [
+    1000000,
+    5000000,
+    10000000
+  ],
+  "rtdl_artifact_goal": "goal2527_large_same_contract_rtdl_optix",
+  "status": "ok",
+  "warmup": 2
+}

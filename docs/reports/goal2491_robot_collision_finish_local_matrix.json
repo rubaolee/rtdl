@@ -1,0 +1,242 @@
+{
+  "app": "robot_collision_benchmark",
+  "case_shape": {
+    "link_count": 3,
+    "obstacle_count": 16,
+    "pose_count": 64,
+    "static_obstacle_triangle_count": 32
+  },
+  "claim_boundary": {
+    "authors_code_comparison_claim_authorized": false,
+    "continuous_collision_supported": false,
+    "exact_solid_collision_claim_authorized": false,
+    "internal_evidence_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  },
+  "dataset": "scaled",
+  "goal": "Goal2491",
+  "matrix_scope": "final_canonical_robot_collision_modes",
+  "rows": [
+    {
+      "backend": "python",
+      "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+      "mode": "cpu_reference",
+      "parity_reference": "exact_2d_cpu_reference",
+      "runs": [
+        {
+          "elapsed_sec": 0.14065562500036322,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": true,
+          "iteration": 0
+        },
+        {
+          "elapsed_sec": 0.12380258399934974,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": true,
+          "iteration": 1
+        },
+        {
+          "elapsed_sec": 0.12291325000114739,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 2
+        },
+        {
+          "elapsed_sec": 0.1249237499996525,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 3
+        },
+        {
+          "elapsed_sec": 0.12322095799936506,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 4
+        },
+        {
+          "elapsed_sec": 0.12318500000037602,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 5
+        },
+        {
+          "elapsed_sec": 0.12302341700160468,
+          "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+          "is_warmup": false,
+          "iteration": 6
+        }
+      ],
+      "status": "ok",
+      "tail_median_total_run_seconds": 0.12318500000037602
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "embree",
+      "case_shape": {
+        "group_count": 192,
+        "link_count": 3,
+        "pose_count": 64,
+        "probe_points_per_group": 9,
+        "segment_count": 1728,
+        "static_obstacle_triangle_count": 32
+      },
+      "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+      "goal": "Goal2484",
+      "mode": "embree_prepared",
+      "parity_reference": "goal2481_probe_reference",
+      "reuse_metadata": {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "all_run_signatures_identical": true,
+        "host_query_output_buffers_reused": false,
+        "measured_run_count": 5,
+        "native_query_output_buffer_reuse_note": "current Python ABI reuses prepared scene and Python input sequences; native query/output buffers are repacked per run",
+        "native_query_output_buffers_reused": false,
+        "prepare_build_seconds_constant": true,
+        "prepared_query_descriptor": null,
+        "prepared_query_run_indices": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "prepared_query_run_indices_strictly_increase": false,
+        "prepared_run_indices": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "prepared_run_indices_strictly_increase": true,
+        "prepared_scene_reused": true,
+        "probe_reference_flagged_group_count": 70,
+        "query_input_sequences_reused": true,
+        "repeat_count": 7,
+        "warmup_rows_dropped": 2
+      },
+      "status": "ok",
+      "tail_median_phase_timing_seconds": {
+        "output_postprocess": 6.000000212225132e-06,
+        "prepare_build": 0.0001819160006562015,
+        "query_pack": 0.002369166999415029,
+        "traversal": 1.4291e-05
+      },
+      "tail_median_total_run_seconds": 0.0024144580002030125
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "embree",
+      "case_shape": {
+        "group_count": 192,
+        "link_count": 3,
+        "pose_count": 64,
+        "probe_points_per_group": 9,
+        "segment_count": 1728,
+        "static_obstacle_triangle_count": 32
+      },
+      "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+      "goal": "Goal2488",
+      "mode": "embree_prepared_buffers",
+      "parity_reference": "goal2481_probe_reference",
+      "reuse_metadata": {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "all_run_signatures_identical": true,
+        "host_query_output_buffers_reused": true,
+        "measured_run_count": 5,
+        "native_query_output_buffer_reuse_note": "prepared_buffers mode reuses Python-owned ctypes query/output buffers; the backend consumes reusable host buffers and no native device buffer reuse is claimed",
+        "native_query_output_buffers_reused": false,
+        "prepare_build_seconds_constant": true,
+        "prepared_query_descriptor": {
+          "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+          "copy_boundary": "python_ctypes_host_buffer",
+          "device": "host",
+          "group_count": 192,
+          "group_offsets_buffer_kind": "ctypes_host_uint32_offsets",
+          "host_output_buffer_reused": true,
+          "host_query_buffers_reused": true,
+          "native_device_query_buffers_reused": false,
+          "output_buffer_kind": "ctypes_host_uint8_group_flags",
+          "owner": "python_runtime_wrapper",
+          "public_speedup_claim_authorized": false,
+          "query_buffer_kind": "ctypes_host_rtdl_segment3d_array",
+          "segment_count": 1728,
+          "true_zero_copy_authorized": false
+        },
+        "prepared_query_run_indices": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "prepared_query_run_indices_strictly_increase": true,
+        "prepared_run_indices": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "prepared_run_indices_strictly_increase": true,
+        "prepared_scene_reused": true,
+        "probe_reference_flagged_group_count": 70,
+        "query_input_sequences_reused": true,
+        "repeat_count": 7,
+        "warmup_rows_dropped": 2
+      },
+      "status": "ok",
+      "tail_median_phase_timing_seconds": {
+        "output_clear": 4.958999852533452e-06,
+        "output_postprocess": 6.125001164036803e-06,
+        "prepare_build": 3.7542000427492894e-05,
+        "prepared_query_build": 0.0024144170001818566,
+        "query_pack": 0.0,
+        "traversal": 1.5e-05
+      },
+      "tail_median_total_run_seconds": 3.295799979241565e-05
+    },
+    {
+      "backend": "optix",
+      "mode": "optix_prepared",
+      "reason": "optix_disabled",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "mode": "optix_prepared_buffers",
+      "reason": "optix_disabled",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "mode": "optix_prepared_device_buffers",
+      "reason": "optix_disabled",
+      "status": "skipped"
+    },
+    {
+      "backend": "optix",
+      "mode": "optix_prepared_device_count",
+      "reason": "optix_disabled",
+      "status": "skipped"
+    }
+  ],
+  "warmup_protocol": {
+    "repeat_count": 7,
+    "rule": "drop warmup rows and report tail medians",
+    "warmup_count": 2
+  }
+}

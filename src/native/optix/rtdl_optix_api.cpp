@@ -467,8 +467,103 @@ extern "C" int rtdl_optix_run_ray_anyhit_3d(
         *rows_out = nullptr; *row_count_out = 0;
         if (ray_count == 0) return;
         run_ray_anyhit_3d_optix(rays, ray_count, triangles, triangle_count,
-                                rows_out, row_count_out);
+                                 rows_out, row_count_out);
     }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_create(
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        void** handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!handle_out)
+            throw std::runtime_error("handle output pointer must not be null");
+        if (!triangles && triangle_count != 0)
+            throw std::runtime_error("triangle pointer must not be null when triangle_count is nonzero");
+        *handle_out = nullptr;
+        *handle_out = prepare_static_triangle_scene_3d_optix(triangles, triangle_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags(
+        void* handle,
+        const RtdlSegment3D* segments, size_t segment_count,
+        const uint32_t* group_offsets, size_t group_count,
+        uint8_t* flags_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_grouped_segment_any_hit_flags_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(handle),
+            segments,
+            segment_count,
+            group_offsets,
+            group_count,
+            flags_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_grouped_segment_query_create(
+        const RtdlSegment3D* segments, size_t segment_count,
+        const uint32_t* group_offsets, size_t group_count,
+        void** query_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!query_handle_out)
+            throw std::runtime_error("query handle output pointer must not be null");
+        *query_handle_out = nullptr;
+        *query_handle_out = prepare_static_triangle_scene_3d_grouped_segment_query_optix(
+            segments,
+            segment_count,
+            group_offsets,
+            group_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_flags(
+        void* scene_handle,
+        void* query_handle,
+        uint8_t* flags_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_grouped_segment_query_any_hit_flags_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedGroupedSegmentQuery3D*>(query_handle),
+            flags_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit_count(
+        void* scene_handle,
+        void* query_handle,
+        uint32_t* flagged_group_count_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_grouped_segment_query_any_hit_count_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedGroupedSegmentQuery3D*>(query_handle),
+            flagged_group_count_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_static_triangle_scene_3d_grouped_segment_query_destroy(void* query_handle)
+{
+    delete reinterpret_cast<PreparedGroupedSegmentQuery3D*>(query_handle);
+}
+
+extern "C" void rtdl_optix_static_triangle_scene_3d_destroy(void* handle)
+{
+    delete reinterpret_cast<PreparedStaticTriangleScene3D*>(handle);
 }
 
 extern "C" int rtdl_optix_run_ray_segment_group_count_2d(
@@ -3221,7 +3316,50 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_ou
         apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
             query_points, query_count, query_index_offset, radius,
-            predicate_flags, parent_out, fallback_candidate_out, item_count);
+            predicate_flags, parent_out, fallback_candidate_out, nullptr, true, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs_with_options(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        size_t query_index_offset,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint32_t same_root_culling,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_points, query_count, query_index_offset, radius,
+            predicate_flags, parent_out, fallback_candidate_out, nullptr,
+            same_root_culling != 0u, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_device_outputs_with_execution_options(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        size_t query_index_offset,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint32_t same_root_culling,
+        uint32_t direct_side_effect,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_points, query_count, query_index_offset, radius,
+            predicate_flags, parent_out, fallback_candidate_out, nullptr,
+            same_root_culling != 0u, direct_side_effect != 0u, item_count);
     }, error_out, error_size);
 }
 
@@ -3237,7 +3375,164 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
     return handle_native_call([&]() {
         apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
             reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
-            radius, predicate_flags, parent_out, fallback_candidate_out, item_count);
+            radius, predicate_flags, parent_out, fallback_candidate_out, nullptr, true, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_options(
+        void* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint32_t same_root_culling,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            radius, predicate_flags, parent_out, fallback_candidate_out, nullptr,
+            same_root_culling != 0u, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_execution_options(
+        void* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint32_t same_root_culling,
+        uint32_t direct_side_effect,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            radius, predicate_flags, parent_out, fallback_candidate_out, nullptr,
+            same_root_culling != 0u, direct_side_effect != 0u, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry(
+        void* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out, true, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry_and_options(
+        void* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        uint32_t same_root_culling,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out,
+            same_root_culling != 0u, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry_and_execution_options(
+        void* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        uint32_t same_root_culling,
+        uint32_t direct_side_effect,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out,
+            same_root_culling != 0u, direct_side_effect != 0u, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs(
+        void* prepared,
+        size_t query_start,
+        size_t query_count,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_start, query_count, radius, predicate_flags, parent_out,
+            fallback_candidate_out, telemetry_out, true, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_with_options(
+        void* prepared,
+        size_t query_start,
+        size_t query_count,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        uint32_t same_root_culling,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_start, query_count, radius, predicate_flags, parent_out,
+            fallback_candidate_out, telemetry_out, same_root_culling != 0u, false, item_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_with_execution_options(
+        void* prepared,
+        size_t query_start,
+        size_t query_count,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        uint32_t same_root_culling,
+        uint32_t direct_side_effect,
+        size_t item_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_start, query_count, radius, predicate_flags, parent_out,
+            fallback_candidate_out, telemetry_out,
+            same_root_culling != 0u, direct_side_effect != 0u, item_count);
     }, error_out, error_size);
 }
 
@@ -3711,6 +4006,283 @@ extern "C" int rtdl_optix_columnar_payload_create_from_columns(
             row_count,
             primary_fields, primary_field_count);
         *dataset_out = reinterpret_cast<RtdlOptixDbDataset*>(dataset);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_payload_create_from_device_columns(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const char* const* primary_fields, size_t primary_field_count,
+        RtdlOptixDbDataset** dataset_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!dataset_out) {
+            throw std::runtime_error("dataset output pointer must not be null");
+        }
+        *dataset_out = nullptr;
+        if (!fields || field_count == 0) {
+            throw std::runtime_error("device-column payload requires at least one field");
+        }
+        if (row_count == 0) {
+            throw std::runtime_error("device-column payload requires at least one row");
+        }
+        uint32_t expected_device_id = 0;
+        bool expected_device_id_set = false;
+        bool has_row_id = false;
+        for (size_t index = 0; index < field_count; ++index) {
+            const RtdlDevicePayloadField& field = fields[index];
+            if (!field.name || field.name[0] == '\0') {
+                throw std::runtime_error("device-column payload field names must be non-empty");
+            }
+            if (field.device_type != kRtdlDevicePayloadDeviceCuda) {
+                throw std::runtime_error("device-column payload fields must use CUDA device pointers");
+            }
+            if (field.device_ptr == 0) {
+                throw std::runtime_error("device-column payload fields require non-zero device_ptr");
+            }
+            if (field.element_count != row_count) {
+                throw std::runtime_error("device-column payload field length must match row_count");
+            }
+            if (!expected_device_id_set) {
+                expected_device_id = field.device_id;
+                expected_device_id_set = true;
+            } else if (field.device_id != expected_device_id) {
+                throw std::runtime_error("device-column payload fields must live on the same CUDA device");
+            }
+            size_t expected_stride = 0;
+            if (field.dtype == kRtdlDevicePayloadDtypeInt64) {
+                expected_stride = sizeof(int64_t);
+                if (field.kind != kRtdlDbKindInt64) {
+                    throw std::runtime_error("int64 device columns must use int64 logical kind");
+                }
+            } else if (field.dtype == kRtdlDevicePayloadDtypeUint32) {
+                expected_stride = sizeof(uint32_t);
+                if (field.kind != kRtdlDbKindInt64) {
+                    throw std::runtime_error("uint32 device columns must use int64-compatible logical kind");
+                }
+            } else if (field.dtype == kRtdlDevicePayloadDtypeFloat64) {
+                expected_stride = sizeof(double);
+                if (field.kind != kRtdlDbKindFloat64) {
+                    throw std::runtime_error("float64 device columns must use float64 logical kind");
+                }
+            } else {
+                throw std::runtime_error("unsupported device-column payload dtype");
+            }
+            if (field.stride_bytes != expected_stride) {
+                throw std::runtime_error("device-column payload fields must be contiguous");
+            }
+            if (std::strcmp(field.name, "row_id") == 0) {
+                if (has_row_id) {
+                    throw std::runtime_error("device-column payload must contain exactly one row_id field");
+                }
+                if (field.kind != kRtdlDbKindInt64) {
+                    throw std::runtime_error("device-column row_id must use int64-compatible logical kind");
+                }
+                has_row_id = true;
+            }
+        }
+        if (!has_row_id) {
+            throw std::runtime_error("device-column payload requires a row_id field");
+        }
+        (void)primary_fields;
+        (void)primary_field_count;
+        throw std::runtime_error(
+            "rtdl_optix_columnar_payload_create_from_device_columns is a fail-closed ABI scaffold; "
+            "device-column descriptors validated; "
+            "partner-resident columnar native execution is not implemented");
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_count_i64_optix(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_count_i64_with_capacity(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        size_t group_capacity,
+        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_count_i64_optix_with_capacity(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            group_capacity,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_sum_i64_optix(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            value_field,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_sum_i64_optix_with_capacity(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            value_field,
+            group_capacity,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_min_i64_with_capacity(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_min_i64_optix_with_capacity(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            value_field,
+            group_capacity,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_max_i64_with_capacity(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_max_i64_optix_with_capacity(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            value_field,
+            group_capacity,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_sum_count_i64_with_capacity(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedSumCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_sum_count_i64_optix_with_capacity(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            value_field,
+            group_capacity,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity(
+        const RtdlDevicePayloadField* fields, size_t field_count,
+        size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        size_t group_capacity,
+        RtdlDbGroupedStatsRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_device_column_grouped_stats_i64_optix_with_capacity(
+            fields,
+            field_count,
+            row_count,
+            clauses,
+            clause_count,
+            group_key_field,
+            value_field,
+            group_capacity,
+            rows_out,
+            row_count_out);
     }, error_out, error_size);
 }
 

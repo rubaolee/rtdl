@@ -1,0 +1,166 @@
+{
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "body_count": 8192,
+  "bucket_size": 32,
+  "claim_boundary": "Mac Python-level timing only; not paper-code comparison and not public speedup wording.",
+  "runs": [
+    {
+      "body_count": 8192,
+      "elapsed_ms": 43.880999997782055,
+      "force_row_count": null,
+      "max_relative_error": null,
+      "metadata": {
+        "authors_code_comparison": false,
+        "benchmark": "barnes_hut_ppopp2025_style",
+        "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+        "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+        "contract": "generic_bucketized_aggregate_tree_2d_v1",
+        "mode": "bucketized_tree_cpu",
+        "native_engine_app_specific": false,
+        "paper_reference": {
+          "authors": [
+            "Vani Nagarajan",
+            "Rohan Gangaraju",
+            "Kirshanthan Sundararajah",
+            "Artem Pelenitsyn",
+            "Milind Kulkarni"
+          ],
+          "authors_code_comparison": false,
+          "doi": "10.1145/3710848.3710885",
+          "paper_reproduction": false,
+          "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+          "venue": "PPoPP 2025"
+        },
+        "paper_reproduction": false,
+        "public_speedup_claim_authorized": false,
+        "reconstruction_instrument": true,
+        "research_benchmark": true,
+        "rt_core_accelerated": false
+      },
+      "mode": "bucketized_tree_cpu",
+      "opening_summary": null,
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 813
+      },
+      "validation_skipped": null
+    },
+    {
+      "body_count": 8192,
+      "elapsed_ms": 1523.0970000047819,
+      "force_row_count": null,
+      "max_relative_error": null,
+      "metadata": {
+        "authors_code_comparison": false,
+        "benchmark": "barnes_hut_ppopp2025_style",
+        "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+        "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+        "contract": "generic_aggregate_tree_opening_frontier_2d_v1",
+        "mode": "opening_frontier_bucketized_cpu",
+        "native_engine_app_specific": false,
+        "paper_reference": {
+          "authors": [
+            "Vani Nagarajan",
+            "Rohan Gangaraju",
+            "Kirshanthan Sundararajah",
+            "Artem Pelenitsyn",
+            "Milind Kulkarni"
+          ],
+          "authors_code_comparison": false,
+          "doi": "10.1145/3710848.3710885",
+          "paper_reproduction": false,
+          "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+          "venue": "PPoPP 2025"
+        },
+        "paper_reproduction": false,
+        "public_speedup_claim_authorized": false,
+        "reconstruction_instrument": true,
+        "research_benchmark": true,
+        "rt_core_accelerated": false
+      },
+      "mode": "opening_frontier_bucketized_cpu",
+      "opening_summary": {
+        "accepted_aggregate_row_count": 341095,
+        "fallback_exact_row_count": 847868,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "root_count": 1,
+        "source_count": 8192,
+        "sources_with_any_output": 8192,
+        "tree_node_count": 813,
+        "visited_node_total": 509600
+      },
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 813
+      },
+      "validation_skipped": null
+    },
+    {
+      "body_count": 8192,
+      "elapsed_ms": 1816.5642919993843,
+      "force_row_count": 8192,
+      "max_relative_error": null,
+      "metadata": {
+        "authors_code_comparison": false,
+        "benchmark": "barnes_hut_ppopp2025_style",
+        "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+        "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+        "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_opening_frontier_2d_v1+python_force_interpretation",
+        "mode": "bucketized_force_cpu",
+        "native_engine_app_specific": false,
+        "paper_reference": {
+          "authors": [
+            "Vani Nagarajan",
+            "Rohan Gangaraju",
+            "Kirshanthan Sundararajah",
+            "Artem Pelenitsyn",
+            "Milind Kulkarni"
+          ],
+          "authors_code_comparison": false,
+          "doi": "10.1145/3710848.3710885",
+          "paper_reproduction": false,
+          "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+          "venue": "PPoPP 2025"
+        },
+        "paper_reproduction": false,
+        "public_speedup_claim_authorized": false,
+        "reconstruction_instrument": true,
+        "research_benchmark": true,
+        "rt_core_accelerated": false
+      },
+      "mode": "bucketized_force_cpu",
+      "opening_summary": {
+        "accepted_aggregate_row_count": 341095,
+        "fallback_exact_row_count": 847868,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "root_count": 1,
+        "source_count": 8192,
+        "sources_with_any_output": 8192,
+        "tree_node_count": 813,
+        "visited_node_total": 509600
+      },
+      "tree_summary": {
+        "bucket_size": 32,
+        "leaf_node_count": 610,
+        "max_depth": 5,
+        "max_leaf_member_count": 32,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 813
+      },
+      "validation_skipped": true
+    }
+  ]
+}

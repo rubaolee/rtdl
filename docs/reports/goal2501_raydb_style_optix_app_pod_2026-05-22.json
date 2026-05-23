@@ -1,0 +1,108 @@
+{
+  "all_match_cpu_reference": true,
+  "app": "raydb_style_columnar_aggregate",
+  "backend": "optix",
+  "claim_boundary": "OptiX count/sum parity for the synthetic RayDB-style contract. No authors-code, SQL engine, DBMS, or speedup claim.",
+  "modes": {
+    "count": {
+      "app": "raydb_style_columnar_aggregate",
+      "backend": "optix",
+      "matches_cpu_reference": true,
+      "metadata": {
+        "authors_code_comparison": false,
+        "claim_boundary": "OptiX parity for count/sum over the synthetic RayDB-style columnar aggregate contract. This uses existing generic columnar payload capability through a compatibility wrapper; it does not add native RayDB ABI, reproduce RayDB, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_optix_columnar_payload",
+        "fixture": "tiny_denormalized_columnar",
+        "lowering_plan": {
+          "backend": "optix",
+          "claim_boundary": "Native count/sum parity only. The current path uses a compatibility wrapper and does not authorize min/max support, true zero-copy, public speedup, or whole-app wording.",
+          "direct_columnar_record_set_api": false,
+          "materializes_input_rows_for_wrapper": true,
+          "next_engine_target": "direct_columnar_record_set_preparation_without_row_mapping",
+          "requires_runtime_validation": true,
+          "supported_aggregates": [
+            "count",
+            "sum"
+          ],
+          "transfer_path": "columnar_payload_via_row_mapping_compatibility_wrapper",
+          "true_zero_copy_authorized": false,
+          "unsupported_aggregates": [
+            "min",
+            "max",
+            "avg_as_sum_count"
+          ],
+          "uses_compatibility_wrapper": true
+        },
+        "native_abi_added": false,
+        "paper_reproduction": false,
+        "rt_core_accelerated": true,
+        "uses_existing_compatibility_wrapper": true
+      },
+      "mode": "count",
+      "rows": [
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 1,
+          "region_id": 1
+        },
+        {
+          "count": 1,
+          "region_id": 2
+        }
+      ]
+    },
+    "sum": {
+      "app": "raydb_style_columnar_aggregate",
+      "backend": "optix",
+      "matches_cpu_reference": true,
+      "metadata": {
+        "authors_code_comparison": false,
+        "claim_boundary": "OptiX parity for count/sum over the synthetic RayDB-style columnar aggregate contract. This uses existing generic columnar payload capability through a compatibility wrapper; it does not add native RayDB ABI, reproduce RayDB, or authorize performance wording.",
+        "contract": "columnar_grouped_aggregate_optix_columnar_payload",
+        "fixture": "tiny_denormalized_columnar",
+        "lowering_plan": {
+          "backend": "optix",
+          "claim_boundary": "Native count/sum parity only. The current path uses a compatibility wrapper and does not authorize min/max support, true zero-copy, public speedup, or whole-app wording.",
+          "direct_columnar_record_set_api": false,
+          "materializes_input_rows_for_wrapper": true,
+          "next_engine_target": "direct_columnar_record_set_preparation_without_row_mapping",
+          "requires_runtime_validation": true,
+          "supported_aggregates": [
+            "count",
+            "sum"
+          ],
+          "transfer_path": "columnar_payload_via_row_mapping_compatibility_wrapper",
+          "true_zero_copy_authorized": false,
+          "unsupported_aggregates": [
+            "min",
+            "max",
+            "avg_as_sum_count"
+          ],
+          "uses_compatibility_wrapper": true
+        },
+        "native_abi_added": false,
+        "paper_reproduction": false,
+        "rt_core_accelerated": true,
+        "uses_existing_compatibility_wrapper": true
+      },
+      "mode": "sum",
+      "rows": [
+        {
+          "region_id": 0,
+          "sum": 190
+        },
+        {
+          "region_id": 1,
+          "sum": 200
+        },
+        {
+          "region_id": 2,
+          "sum": 80
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "buffers_all_match": true,
+  "buffers_host_query_output_buffers_reused": true,
+  "buffers_native_query_output_buffers_reused": false,
+  "build_command": "make build-optix OPTIX_PREFIX=/workspace/vendor/optix-dev CUDA_PREFIX=/usr/local/cuda NVCC=/usr/local/cuda/bin/nvcc",
+  "cuda_prefix": "/usr/local/cuda",
+  "dataset_shape": "scaled, 64 poses, 16 obstacles, 3 links, 11 repeats, 3 warmup",
+  "driver": "570.133.07",
+  "goal": "Goal2488",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "nvcc_version_tail": "Build cuda_13.0.r13.0/compiler.36424714_0",
+  "optix_dev_head": "f60c1e44f18426f426a2ed948f28515b3cf67b8a",
+  "optix_prefix": "/workspace/vendor/optix-dev",
+  "optix_prepared_buffers_query_pack_median": 0.0,
+  "optix_prepared_buffers_total_median": 0.00012390315532684326,
+  "optix_prepared_buffers_traversal_median": 3.57475e-05,
+  "optix_prepared_query_pack_median": 0.006091654300689697,
+  "optix_prepared_total_median": 0.006281394511461258,
+  "optix_prepared_traversal_median": 4.20195e-05,
+  "pod_ssh": "ssh root@157.157.221.29 -p 23792 -i ~/.ssh/id_ed25519_rtdl_codex",
+  "prepared_all_match": true,
+  "total_median_ratio_prepared_over_buffers": 50.69600120264582
+}

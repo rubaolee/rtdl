@@ -1,0 +1,66 @@
+{
+  "backend": "torch_cuda_extension_rope",
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "body_count": 8192,
+  "bucket_size": 32,
+  "contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+  "deltas": {
+    "checksum_force_x_abs": 8.094502845779061e-11,
+    "checksum_force_y_abs": 2.546585164964199e-11,
+    "contribution_row_count": 0,
+    "visited_node_total": 0
+  },
+  "device": "NVIDIA RTX A5000",
+  "metadata": {
+    "authors_code_comparison": false,
+    "claim_boundary": "Torch/CUDA resume-index rope prototype for the generic fused vector-sum contract. Not OptiX, not authors-code timing, and not public speedup evidence.",
+    "native_engine_app_specific": false,
+    "paper_reproduction": false,
+    "partner_resident_kernel": true,
+    "public_speedup_claim_authorized": false
+  },
+  "reference": {
+    "checksum_force_x": -6690.977008212632,
+    "checksum_force_y": 17887.56175876883,
+    "summary": {
+      "aggregate_contribution_row_count": 341095,
+      "contribution_row_count": 1188963,
+      "exact_contribution_row_count": 847868,
+      "leaf_node_count": 610,
+      "materialized_contribution_rows": false,
+      "materialized_frontier_rows": false,
+      "root_count": 1,
+      "source_count": 8192,
+      "sources_with_contributions": 8192,
+      "target_count": 8192,
+      "tree_node_count": 813,
+      "visited_node_total": 509600
+    }
+  },
+  "repeats": 5,
+  "result": {
+    "aggregate_contribution_row_count": 341095,
+    "checksum_force_x": -6690.9770082125515,
+    "checksum_force_y": 17887.561758768803,
+    "contribution_row_count": 1188963,
+    "exact_contribution_row_count": 847868,
+    "visited_node_total": 509600
+  },
+  "softening": 0.05,
+  "theta": 0.75,
+  "timing_ms": {
+    "extension_compile": 43904.411382973194,
+    "resident_kernel_mean": 7.049939250946045,
+    "resident_kernel_min": 7.034560203552246,
+    "resident_kernel_runs": [
+      7.078144073486328,
+      7.048160076141357,
+      7.034560203552246,
+      7.043871879577637,
+      7.044960021972656
+    ],
+    "tensor_prepare_host_to_device": 157.69540518522263,
+    "tree_prepare_cpu": 94.45012360811234
+  },
+  "traversal": "dfs_resume_index_rope"
+}

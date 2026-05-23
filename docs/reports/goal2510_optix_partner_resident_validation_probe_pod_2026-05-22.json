@@ -1,0 +1,109 @@
+{
+  "cuda_available": true,
+  "descriptor": {
+    "backend": "optix",
+    "claim_boundary": "Descriptor-only partner-resident columnar handoff. Native OptiX execution, row-id uniqueness validation, true zero-copy, speedup, SQL, DBMS, and whole-app claims are not authorized.",
+    "device": "cuda:0",
+    "field_names": [
+      "row_id",
+      "region_id",
+      "ship_year",
+      "revenue"
+    ],
+    "fields": [
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 140176514875392,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "row_id",
+        "name": "row_id",
+        "shape": [
+          4
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 140176514875904,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "int64",
+        "name": "region_id",
+        "shape": [
+          4
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 140176514876416,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.int64",
+        "logical_kind": "int64",
+        "name": "ship_year",
+        "shape": [
+          4
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      },
+      {
+        "access_mode": "read",
+        "byte_offset": 0,
+        "data_ptr": 140176514876928,
+        "device": "cuda:0",
+        "direct_device_handoff_authorized": false,
+        "direct_device_pointer_observed": true,
+        "dtype": "torch.float64",
+        "logical_kind": "float64",
+        "name": "revenue",
+        "shape": [
+          4
+        ],
+        "source_protocol": "torch",
+        "stream_handle": 0,
+        "strides": null,
+        "transfer_mode": "device_descriptor_only",
+        "true_zero_copy_authorized": false
+      }
+    ],
+    "native_execution_authorized": false,
+    "row_count": 4,
+    "row_id_uniqueness_validated": false,
+    "source_protocols": [
+      "torch"
+    ],
+    "transfer_mode": "partner_resident_column_descriptor_only",
+    "true_zero_copy_authorized": false
+  },
+  "error": "rtdl_optix_columnar_payload_create_from_device_columns is a fail-closed ABI scaffold; device-column descriptors validated; partner-resident columnar native execution is not implemented",
+  "git_head": "a9193856547bf692069955a3dbaf6c3e00c09b1b",
+  "goal": "Goal2509 OptiX partner-resident scaffold pod probe",
+  "native_symbol": "rtdl_optix_columnar_payload_create_from_device_columns",
+  "platform": "Linux-5.15.0-107-generic-x86_64-with-glibc2.39",
+  "probe_status": "expected_fail_closed",
+  "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "rtdl_optix_lib": "/root/rtdl_python_only_goal2501/build/librtdl_optix.so",
+  "torch_version": "2.8.0+cu128"
+}

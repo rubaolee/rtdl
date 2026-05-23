@@ -1,0 +1,87 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "cases": {
+    "optix": {
+      "all_match_cpu_reference": true,
+      "backend": "optix",
+      "claim_boundary": "Backend matrix for the generic columnar grouped aggregate contract only. Timings are diagnostic and do not authorize public speedup, whole-app, authors-code, true zero-copy, SQL-engine, or DBMS claims.",
+      "median_elapsed_sec": 0.0004378911107778549,
+      "modes": {
+        "count": {
+          "lowering_plan": {
+            "backend": "optix",
+            "claim_boundary": "Native count/sum parity only. The path avoids Python row-mapping materialization and can reuse matching typed host buffers, but it still may stage unsupported columns and does not authorize min/max support, true zero-copy, public speedup, or whole-app wording.",
+            "direct_columnar_record_set_api": true,
+            "materializes_input_rows_for_wrapper": false,
+            "next_engine_target": "partner_resident_column_handoff",
+            "requires_runtime_validation": true,
+            "supported_aggregates": [
+              "count",
+              "sum"
+            ],
+            "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+            "true_zero_copy_authorized": false,
+            "unsupported_aggregates": [
+              "min",
+              "max",
+              "avg_as_sum_count"
+            ],
+            "uses_compatibility_wrapper": false
+          },
+          "matches_cpu_reference": true,
+          "max_elapsed_sec": 0.6088002175092697,
+          "median_elapsed_sec": 0.0004657413810491562,
+          "min_elapsed_sec": 0.00043785013258457184,
+          "row_count": 3,
+          "samples_elapsed_sec": [
+            0.6088002175092697,
+            0.0007331129163503647,
+            0.0004657413810491562,
+            0.000437932088971138,
+            0.00043785013258457184
+          ],
+          "status": "ok"
+        },
+        "sum": {
+          "lowering_plan": {
+            "backend": "optix",
+            "claim_boundary": "Native count/sum parity only. The path avoids Python row-mapping materialization and can reuse matching typed host buffers, but it still may stage unsupported columns and does not authorize min/max support, true zero-copy, public speedup, or whole-app wording.",
+            "direct_columnar_record_set_api": true,
+            "materializes_input_rows_for_wrapper": false,
+            "next_engine_target": "partner_resident_column_handoff",
+            "requires_runtime_validation": true,
+            "supported_aggregates": [
+              "count",
+              "sum"
+            ],
+            "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+            "true_zero_copy_authorized": false,
+            "unsupported_aggregates": [
+              "min",
+              "max",
+              "avg_as_sum_count"
+            ],
+            "uses_compatibility_wrapper": false
+          },
+          "matches_cpu_reference": true,
+          "max_elapsed_sec": 0.0004634670913219452,
+          "median_elapsed_sec": 0.0004053190350532532,
+          "min_elapsed_sec": 0.0003974568098783493,
+          "row_count": 3,
+          "samples_elapsed_sec": [
+            0.0004634670913219452,
+            0.0004191529005765915,
+            0.0004053190350532532,
+            0.0003974568098783493,
+            0.00039913877844810486
+          ],
+          "status": "ok"
+        }
+      },
+      "status": "ok"
+    }
+  },
+  "claim_boundary": "Backend matrix for the generic columnar grouped aggregate contract only. Timings are diagnostic and do not authorize public speedup, whole-app, authors-code, true zero-copy, SQL-engine, or DBMS claims.",
+  "goal": "goal2500_raydb_style_backend_matrix",
+  "repeats": 5
+}

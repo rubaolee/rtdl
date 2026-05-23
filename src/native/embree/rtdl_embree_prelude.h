@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <cstdint>
@@ -148,6 +149,16 @@ struct RtdlRay3D {
   double dy;
   double dz;
   double tmax;
+};
+
+struct RtdlSegment3D {
+  uint32_t id;
+  double x0;
+  double y0;
+  double z0;
+  double x1;
+  double y1;
+  double z1;
 };
 #pragma pack(pop)
 
@@ -378,6 +389,23 @@ int rtdl_embree_run_ray_closest_hit_3d(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_static_triangle_scene_3d_create(
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    void** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags(
+    void* handle,
+    const RtdlSegment3D* segments,
+    size_t segment_count,
+    const uint32_t* group_offsets,
+    size_t group_count,
+    uint8_t* flags_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_static_triangle_scene_3d_destroy(void* handle);
 int rtdl_embree_run_segment_shape_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,

@@ -3911,17 +3911,31 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
         *,
         radius: float,
         partner: str = "cupy",
+        grouped_union_query_block_size: int | None = None,
+        grouped_union_same_root_culling: bool = True,
+        grouped_union_direct_side_effect: bool = False,
     ):
         if partner != "cupy":
             raise ValueError("PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D currently requires partner='cupy'")
         radius = float(radius)
         if radius <= 0.0:
             raise ValueError("radius must be positive")
+        if not isinstance(grouped_union_same_root_culling, bool):
+            raise TypeError("grouped_union_same_root_culling must be a bool")
+        if not isinstance(grouped_union_direct_side_effect, bool):
+            raise TypeError("grouped_union_direct_side_effect must be a bool")
+        if grouped_union_query_block_size is not None:
+            grouped_union_query_block_size = int(grouped_union_query_block_size)
+            if grouped_union_query_block_size <= 0:
+                raise ValueError("grouped_union_query_block_size must be positive when provided")
         self.point_rows = tuple(point_rows)
         if not self.point_rows:
             raise ValueError("prepared OptiX+CuPy grouped stream radius graph requires non-empty point rows")
         self.radius = radius
         self.partner = partner
+        self.grouped_union_query_block_size = grouped_union_query_block_size
+        self.grouped_union_same_root_culling = grouped_union_same_root_culling
+        self.grouped_union_direct_side_effect = grouped_union_direct_side_effect
         self.point_count = len(self.point_rows)
         self.runtime = _partner_module(partner)
         self.cupy = self.runtime["module"]
@@ -3976,10 +3990,66 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
         neighbor_counts = self._cached_neighbor_counts
         all_core_flags_true = bool(self._cached_all_core_flags_true)
         self.parent_workspace[...] = self.parent_initial
-        if all_core_flags_true:
+        query_block_size = self.grouped_union_query_block_size
+        use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+        continuation_pass_count = 1
+        if use_query_blocks:
+            native_range_metadata = []
+            if all_core_flags_true:
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        parent_out=self.parent_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_all_items_grouped_union_without_predicate_or_fallback_workspace"
+                fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+            else:
+                self.border_core_candidate_workspace.fill(self.point_count)
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        predicate_flags=core_flags,
+                        parent_out=self.parent_workspace,
+                        fallback_candidate_out=self.border_core_candidate_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_predicated_union_and_border_candidate_during_traversal"
+                fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
+            continuation_pass_count = len(native_range_metadata)
+            native_elapsed_total = sum(float(row.get("native_elapsed_sec", 0.0)) for row in native_range_metadata)
+            native_metadata = dict(native_range_metadata[-1]) if native_range_metadata else {}
+            native_metadata.update(
+                {
+                    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+                    "query_source": "prepared_search_points_self_query_device_range",
+                    "query_block_size": query_block_size,
+                    "query_block_count": continuation_pass_count,
+                    "query_block_policy": "explicit_contiguous_prepared_search_ranges",
+                    "native_elapsed_sec": native_elapsed_total,
+                    "range_native_metadata_sample": native_range_metadata[:1] + native_range_metadata[-1:],
+                    "grouped_union_query_blocked": True,
+                    "grouped_union_blocked_candidate": True,
+                    "performance_claim_authorized": False,
+                }
+            )
+            native_result = {"metadata": native_metadata}
+        elif all_core_flags_true:
             native_result = self.prepared_native.apply_device_grouped_union_all_self(
                 radius=self.radius,
                 parent_out=self.parent_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
             )
             grouped_stream_policy = "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace"
             fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
@@ -3990,6 +4060,8 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
                 predicate_flags=core_flags,
                 parent_out=self.parent_workspace,
                 fallback_candidate_out=self.border_core_candidate_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
             )
             grouped_stream_policy = "optix_applies_predicated_union_and_border_candidate_during_traversal"
             fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
@@ -4044,6 +4116,11 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "core_flag_threshold": min_neighbors,
             "core_flag_cache_reused": core_flag_cache_reused,
             "all_core_flags_true": all_core_flags_true,
+            "grouped_union_query_block_size": query_block_size,
+            "grouped_union_query_block_count": continuation_pass_count,
+            "grouped_union_query_blocked_candidate": bool(use_query_blocks),
+            "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
+            "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
             "optix_backend_used": True,
             "rt_core_accelerated": True,
             "materializes_neighbor_summaries": False,
@@ -4051,7 +4128,7 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "materializes_directed_adjacency_stream": False,
             "materializes_bounded_directed_adjacency_chunks": False,
             "adjacency_write_pass_count": 0,
-            "grouped_stream_continuation_pass_count": 1,
+            "grouped_stream_continuation_pass_count": continuation_pass_count,
             "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
@@ -4165,11 +4242,17 @@ def prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
     *,
     radius: float,
     partner: str = "cupy",
+    grouped_union_query_block_size: int | None = None,
+    grouped_union_same_root_culling: bool = True,
+    grouped_union_direct_side_effect: bool = False,
 ) -> PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
     return PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D(
         point_rows,
         radius=radius,
         partner=partner,
+        grouped_union_query_block_size=grouped_union_query_block_size,
+        grouped_union_same_root_culling=grouped_union_same_root_culling,
+        grouped_union_direct_side_effect=grouped_union_direct_side_effect,
     )
 
 

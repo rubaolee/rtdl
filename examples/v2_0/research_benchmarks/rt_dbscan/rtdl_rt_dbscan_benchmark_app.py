@@ -24,6 +24,9 @@ DEFAULT_DATASET_CONFIG = {
     "ngsim_dense": {"point_count": 512, "radius": 0.012, "min_neighbors": 20},
 }
 DEFAULT_DIRECTED_ADJACENCY_EDGE_BUDGET = 160_000_000
+DEFAULT_BLOCKED_GROUPED_SEGMENT_TARGET_HITS = 8_000_000
+DEFAULT_GROUPED_UNION_QUERY_BLOCK_SIZE = 8192
+RT_DBSCAN_GROUPED_STREAM_TIMING_BREAKDOWN_SCHEMA = "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
 DIRECTED_ADJACENCY_INDEX_BYTES = 4
 DIRECTED_ADJACENCY_OFFSET_BYTES = 8
 
@@ -112,15 +115,29 @@ def plan_rt_dbscan_continuation_execution(
         selected_mode = "optix_rt_core_grouped_stream_cupy_components_3d"
         reason = (
             "estimated directed adjacency stream exceeds the explicit budget; "
-            "Goal2457 and Goal2461 evidence says the grouped stream avoids the giant neighbor-index table, "
-            "reuses the prepared self-query device buffer, and beats chunked continuation"
+            "Goal2457/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant "
+            "neighbor-index table, reuses prepared device search points, reduces avoidable anyhit work, "
+            "and beats chunked continuation for the measured dense branch"
         )
     return {
         "adapter": "plan_rt_dbscan_continuation_execution",
         "selected_mode": selected_mode,
         "reason": reason,
-        "policy": "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_adjacency_evidence",
-        "evidence_goals": ["Goal2431", "Goal2433", "Goal2435", "Goal2452", "Goal2457", "Goal2461"],
+        "policy": (
+            "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_2463_2465_2475_2476_evidence"
+        ),
+        "evidence_goals": [
+            "Goal2431",
+            "Goal2433",
+            "Goal2435",
+            "Goal2452",
+            "Goal2457",
+            "Goal2461",
+            "Goal2463",
+            "Goal2465",
+            "Goal2475",
+            "Goal2476",
+        ],
         "estimated_directed_edge_count": estimated_edges,
         "directed_edge_budget": edge_budget,
         "estimated_full_adjacency_bytes": estimated_bytes,
@@ -129,6 +146,56 @@ def plan_rt_dbscan_continuation_execution(
         "not_hidden_dispatcher": True,
         "release_claim_authorized": False,
         "paper_reproduction_claim_authorized": False,
+    }
+
+
+def plan_rt_dbscan_blocked_grouped_continuation_design(
+    dataset: str,
+    point_count: int,
+    *,
+    segment_target_hits: int = DEFAULT_BLOCKED_GROUPED_SEGMENT_TARGET_HITS,
+) -> dict[str, object]:
+    """Return the Goal2467 non-executable design plan for blocked grouped union.
+
+    This is deliberately not a runtime dispatcher. It records the next generic
+    primitive shape and a sizing estimate so native work can be reviewed before
+    implementation and pod timing.
+    """
+    point_count = int(point_count)
+    segment_target_hits = int(segment_target_hits)
+    if segment_target_hits < 1:
+        raise ValueError("segment_target_hits must be positive")
+    estimated_edges = estimate_rt_dbscan_directed_adjacency_edges(dataset, point_count)
+    estimated_segments = max(1, math.ceil(estimated_edges / segment_target_hits))
+    return {
+        "adapter": "plan_rt_dbscan_blocked_grouped_continuation_design",
+        "design_status": "needs-more-evidence",
+        "runtime_executable": False,
+        "selected_mode": "design_only_generic_blocked_grouped_stream_candidate",
+        "target_primitive": "generic_fixed_radius_blocked_grouped_component_continuation_3d",
+        "candidate_native_contract": "fixed_radius_hit_stream_to_segmented_grouped_union_workspaces",
+        "reason": (
+            "Goal2461/2463/2465 removed transfer and all-items avoidable anyhit overhead; "
+            "the remaining target is generic grouped-union global atomic pressure"
+        ),
+        "policy": "goal2467_design_only_no_hidden_dispatch_no_native_abi_until_review",
+        "evidence_goals": [
+            "Goal2457",
+            "Goal2459",
+            "Goal2461",
+            "Goal2463",
+            "Goal2465",
+        ],
+        "estimated_directed_edge_count": estimated_edges,
+        "segment_target_hits": segment_target_hits,
+        "estimated_segment_count": estimated_segments,
+        "app_independent_engine_required": True,
+        "forbidden_native_vocabulary": ["dbscan", "cluster", "min_neighbors"],
+        "planner_surface": "benchmark_app_design_explain_not_engine_dispatch",
+        "not_hidden_dispatcher": True,
+        "release_claim_authorized": False,
+        "performance_claim_authorized": False,
+        "pod_validation_required": True,
     }
 
 
@@ -203,14 +270,42 @@ def make_rt_dbscan_points(dataset: str, *, point_count: int, seed: int) -> tuple
     return tuple(points)
 
 
-def _component_rows_from_pairs(
+def fixed_radius_pairs_and_neighbor_counts_3d(
+    points: tuple[rt.Point3D, ...],
+    *,
+    radius: float,
+) -> tuple[tuple[tuple[int, int], ...], tuple[int, ...]]:
+    """Return undirected fixed-radius pairs and inclusive neighbor counts."""
+    radius = float(radius)
+    if radius < 0.0:
+        raise ValueError("radius must be non-negative")
+    radius_sq = radius * radius
+    neighbor_counts = [1 for _ in points]
+    pairs: list[tuple[int, int]] = []
+    for left, left_point in enumerate(points):
+        for right in range(left + 1, len(points)):
+            right_point = points[right]
+            dx = left_point.x - right_point.x
+            dy = left_point.y - right_point.y
+            dz = left_point.z - right_point.z
+            if dx * dx + dy * dy + dz * dz <= radius_sq:
+                neighbor_counts[left] += 1
+                neighbor_counts[right] += 1
+                pairs.append((left, right))
+    return tuple(pairs), tuple(neighbor_counts)
+
+
+def _component_rows_from_pairs_and_flags(
     points: tuple[rt.Point3D, ...],
     within_pairs: Iterable[tuple[int, int]],
-    neighbor_counts: list[int],
+    neighbor_counts: Iterable[int],
     *,
-    min_neighbors: int,
+    predicate_flags: Iterable[bool],
 ) -> tuple[dict[str, object], ...]:
-    is_core = [count >= min_neighbors for count in neighbor_counts]
+    counts = [int(count) for count in neighbor_counts]
+    is_core = [bool(flag) for flag in predicate_flags]
+    if len(counts) != len(points) or len(is_core) != len(points):
+        raise ValueError("neighbor_counts and predicate_flags must match points")
     parent = list(range(len(points)))
 
     def find(item: int) -> int:
@@ -261,10 +356,239 @@ def _component_rows_from_pairs(
                 "point_id": point.id,
                 "cluster_id": cluster_id,
                 "is_core": bool(is_core[index]),
-                "neighbor_count": int(neighbor_counts[index]),
+                "neighbor_count": int(counts[index]),
             }
         )
     return tuple(rows)
+
+
+def _component_rows_from_pairs(
+    points: tuple[rt.Point3D, ...],
+    within_pairs: Iterable[tuple[int, int]],
+    neighbor_counts: list[int],
+    *,
+    min_neighbors: int,
+) -> tuple[dict[str, object], ...]:
+    return _component_rows_from_pairs_and_flags(
+        points,
+        within_pairs,
+        neighbor_counts,
+        predicate_flags=(count >= min_neighbors for count in neighbor_counts),
+    )
+
+
+def _component_rows_from_parent_and_pairs(
+    points: tuple[rt.Point3D, ...],
+    within_pairs: Iterable[tuple[int, int]],
+    neighbor_counts: Iterable[int],
+    *,
+    predicate_flags: Iterable[bool],
+    parent: Iterable[int],
+) -> tuple[dict[str, object], ...]:
+    counts = [int(count) for count in neighbor_counts]
+    is_core = [bool(flag) for flag in predicate_flags]
+    parent_copy = [int(item) for item in parent]
+    if len(counts) != len(points) or len(is_core) != len(points) or len(parent_copy) != len(points):
+        raise ValueError("neighbor_counts, predicate_flags, and parent must match points")
+
+    def find(item: int) -> int:
+        while parent_copy[item] != item:
+            parent_copy[item] = parent_copy[parent_copy[item]]
+            item = parent_copy[item]
+        return item
+
+    roots = [-1 for _ in points]
+    for index, core in enumerate(is_core):
+        if core:
+            roots[index] = find(index)
+    for left, right in within_pairs:
+        if roots[left] == -1 and is_core[right]:
+            roots[left] = find(right)
+        if roots[right] == -1 and is_core[left]:
+            roots[right] = find(left)
+
+    dense_by_root: dict[int, int] = {}
+    next_label = 1
+    rows: list[dict[str, object]] = []
+    for index, point in enumerate(points):
+        root = roots[index]
+        if root < 0:
+            cluster_id = NOISE_CLUSTER_ID
+        else:
+            if root not in dense_by_root:
+                dense_by_root[root] = next_label
+                next_label += 1
+            cluster_id = dense_by_root[root]
+        rows.append(
+            {
+                "point_id": point.id,
+                "cluster_id": cluster_id,
+                "is_core": bool(is_core[index]),
+                "neighbor_count": int(counts[index]),
+            }
+        )
+    return tuple(rows)
+
+
+def _deduplicate_segment_union_proposals(
+    segment_pairs: Iterable[tuple[int, int]],
+) -> tuple[tuple[int, int], ...]:
+    local_parent: dict[int, int] = {}
+
+    def ensure(item: int) -> None:
+        if item not in local_parent:
+            local_parent[item] = item
+
+    def find(item: int) -> int:
+        ensure(item)
+        while local_parent[item] != item:
+            local_parent[item] = local_parent[local_parent[item]]
+            item = local_parent[item]
+        return item
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return
+        if left_root < right_root:
+            local_parent[right_root] = left_root
+        else:
+            local_parent[left_root] = right_root
+
+    for left, right in segment_pairs:
+        union(left, right)
+
+    components: dict[int, list[int]] = {}
+    for item in local_parent:
+        components.setdefault(find(item), []).append(item)
+
+    proposals: list[tuple[int, int]] = []
+    for members in components.values():
+        if len(members) < 2:
+            continue
+        ordered = sorted(members)
+        anchor = ordered[0]
+        proposals.extend((anchor, item) for item in ordered[1:])
+    return tuple(proposals)
+
+
+def simulate_fixed_radius_blocked_grouped_component_continuation_3d(
+    points: tuple[rt.Point3D, ...],
+    *,
+    radius: float,
+    predicate_flags: Iterable[bool],
+    neighbor_counts: Iterable[int] | None = None,
+    segment_target_hits: int = DEFAULT_BLOCKED_GROUPED_SEGMENT_TARGET_HITS,
+    segment_capacity_hits: int | None = None,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    """Local oracle for the Goal2467 blocked grouped-continuation contract."""
+    segment_target_hits = int(segment_target_hits)
+    if segment_target_hits < 1:
+        raise ValueError("segment_target_hits must be positive")
+    segment_capacity = segment_target_hits if segment_capacity_hits is None else int(segment_capacity_hits)
+    if segment_capacity < 1:
+        raise ValueError("segment_capacity_hits must be positive")
+
+    flags = tuple(bool(flag) for flag in predicate_flags)
+    if len(flags) != len(points):
+        raise ValueError("predicate_flags must match points")
+
+    pairs, computed_counts = fixed_radius_pairs_and_neighbor_counts_3d(points, radius=radius)
+    counts = computed_counts if neighbor_counts is None else tuple(int(count) for count in neighbor_counts)
+    if len(counts) != len(points):
+        raise ValueError("neighbor_counts must match points")
+
+    segments = tuple(pairs[index : index + segment_target_hits] for index in range(0, len(pairs), segment_target_hits))
+    max_segment_hits = max((len(segment) for segment in segments), default=0)
+    overflow_segment_count = sum(1 for segment in segments if len(segment) > segment_capacity)
+    fallback_to_unblocked = overflow_segment_count > 0
+
+    local_or_segment_union_proposals = 0
+    deduplicated_union_proposals = 0
+    global_parent_atomic_successes = 0
+    parent = list(range(len(points)))
+
+    def find(item: int) -> int:
+        while parent[item] != item:
+            parent[item] = parent[parent[item]]
+            item = parent[item]
+        return item
+
+    def union(left: int, right: int) -> bool:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return False
+        if left_root < right_root:
+            parent[right_root] = left_root
+        else:
+            parent[left_root] = right_root
+        return True
+
+    if not fallback_to_unblocked:
+        for segment in segments:
+            core_pairs = tuple((left, right) for left, right in segment if flags[left] and flags[right])
+            local_or_segment_union_proposals += len(core_pairs)
+            deduplicated = _deduplicate_segment_union_proposals(core_pairs)
+            deduplicated_union_proposals += len(deduplicated)
+            for left, right in deduplicated:
+                if union(left, right):
+                    global_parent_atomic_successes += 1
+    else:
+        local_or_segment_union_proposals = sum(1 for left, right in pairs if flags[left] and flags[right])
+
+    global_parent_atomic_attempts = 0 if fallback_to_unblocked else deduplicated_union_proposals
+    proposal_rejection_rate = 0.0
+    if local_or_segment_union_proposals > 0 and not fallback_to_unblocked:
+        proposal_rejection_rate = 1.0 - (
+            deduplicated_union_proposals / max(1, local_or_segment_union_proposals)
+        )
+
+    if fallback_to_unblocked:
+        rows = _component_rows_from_pairs_and_flags(
+            points,
+            pairs,
+            counts,
+            predicate_flags=flags,
+        )
+    else:
+        rows = _component_rows_from_parent_and_pairs(
+            points,
+            pairs,
+            counts,
+            predicate_flags=flags,
+            parent=parent,
+        )
+    metadata = {
+        "adapter": "simulate_fixed_radius_blocked_grouped_component_continuation_3d",
+        "reference_only": True,
+        "target_primitive": "generic_fixed_radius_blocked_grouped_component_continuation_3d",
+        "candidate_native_contract": "fixed_radius_hit_stream_to_segmented_grouped_union_workspaces",
+        "input_contract": "host_point_rows_fixed_radius_3d_with_predicate_flags",
+        "hit_stream_pair_count": len(pairs),
+        "predicate_true_count": sum(1 for flag in flags if flag),
+        "segment_count": len(segments),
+        "segment_target_hits": segment_target_hits,
+        "segment_capacity_hits": segment_capacity,
+        "max_segment_hits": max_segment_hits,
+        "overflow_segment_count": overflow_segment_count,
+        "fallback_to_unblocked_grouped_union": fallback_to_unblocked,
+        "baseline_global_parent_atomic_attempts": local_or_segment_union_proposals,
+        "global_parent_atomic_attempts": global_parent_atomic_attempts,
+        "global_parent_atomic_successes": global_parent_atomic_successes,
+        "local_or_segment_union_proposals": local_or_segment_union_proposals,
+        "deduplicated_union_proposals": deduplicated_union_proposals,
+        "proposal_rejection_rate": proposal_rejection_rate,
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "app_independent_engine_required": True,
+        "native_abi_added": False,
+        "runtime_route_authorized": False,
+        "rt_core_accelerated": False,
+        "performance_claim_authorized": False,
+        "release_claim_authorized": False,
+    }
+    return rows, metadata
 
 
 def cpu_spatial_bucket_dbscan(
@@ -330,6 +654,54 @@ def _rows_from_partner_columns(columns: dict[str, object], *, partner: str) -> t
         }
         for point_id, label, core, count in zip(point_ids, labels, core_flags, counts)
     )
+
+
+def _cluster_signature_from_host_columns(
+    point_ids: Iterable[int],
+    component_labels: Iterable[int],
+    core_flags: Iterable[object],
+) -> dict[str, object]:
+    dense_by_original: dict[int, int] = {}
+    cluster_sizes: dict[int, int] = {}
+    next_label = 1
+    core_count = 0
+    noise_count = 0
+    for _point_id, label_value, core_value in sorted(
+        zip(point_ids, component_labels, core_flags),
+        key=lambda item: int(item[0]),
+    ):
+        if bool(core_value):
+            core_count += 1
+        label = int(label_value)
+        if label == NOISE_CLUSTER_ID:
+            noise_count += 1
+            continue
+        if label not in dense_by_original:
+            dense_by_original[label] = next_label
+            next_label += 1
+        dense_label = dense_by_original[label]
+        cluster_sizes[dense_label] = cluster_sizes.get(dense_label, 0) + 1
+    return {
+        "cluster_sizes": dict(sorted(cluster_sizes.items())),
+        "core_count": core_count,
+        "noise_count": noise_count,
+    }
+
+
+def _cluster_signature_from_partner_columns(columns: dict[str, object], *, partner: str) -> dict[str, object]:
+    if partner == "torch":
+        point_ids = columns["point_ids"].detach().cpu().tolist()
+        labels = columns["component_labels"].detach().cpu().tolist()
+        core_flags = columns["is_core"].detach().cpu().tolist()
+    elif partner == "cupy":
+        import cupy
+
+        point_ids = cupy.asnumpy(columns["point_ids"]).tolist()
+        labels = cupy.asnumpy(columns["component_labels"]).tolist()
+        core_flags = cupy.asnumpy(columns["is_core"]).tolist()
+    else:
+        raise ValueError("partner must be torch or cupy")
+    return _cluster_signature_from_host_columns(point_ids, labels, core_flags)
 
 
 def _optix_ranked_summaries_to_cupy_core_columns(
@@ -412,6 +784,64 @@ def _densify_cluster_labels(rows: Iterable[dict[str, object]]) -> tuple[dict[str
     return tuple(normalized)
 
 
+def _optional_float(value: object) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _build_grouped_stream_timing_breakdown(
+    timing_sec: dict[str, float],
+    metadata: dict[str, object],
+    *,
+    elapsed_sec: float,
+) -> dict[str, object]:
+    """Build a host-observed grouped-stream timing packet without changing runtime semantics."""
+    sec = {key: float(value) for key, value in timing_sec.items()}
+    native_metadata = metadata.get("native_grouped_stream_metadata", {})
+    if not isinstance(native_metadata, dict):
+        native_metadata = {}
+    count_metadata = metadata.get("count_metadata", {})
+    if not isinstance(count_metadata, dict):
+        count_metadata = {}
+    count_native_metadata = count_metadata.get("native_metadata", {})
+    if not isinstance(count_native_metadata, dict):
+        count_native_metadata = {}
+
+    grouped_native_sec = _optional_float(native_metadata.get("native_elapsed_sec")) or 0.0
+    count_native_sec = _optional_float(count_native_metadata.get("native_elapsed_sec")) or 0.0
+    count_native_current_run_sec = 0.0 if metadata.get("core_flag_cache_reused") else count_native_sec
+    adapter_run_sec = sec.get("adapter_run_sec", 0.0)
+    known_host_phase_sec = sum(sec.values())
+
+    derived_sec = {
+        "elapsed_sec": float(elapsed_sec),
+        "known_host_phase_sec": known_host_phase_sec,
+        "unattributed_elapsed_sec": max(0.0, float(elapsed_sec) - known_host_phase_sec),
+        "grouped_native_sec": grouped_native_sec,
+        "count_native_current_run_sec": count_native_current_run_sec,
+        "known_native_current_run_sec": grouped_native_sec + count_native_current_run_sec,
+        "adapter_non_native_estimated_sec": max(
+            0.0,
+            adapter_run_sec - grouped_native_sec - count_native_current_run_sec,
+        ),
+    }
+    return {
+        "schema": RT_DBSCAN_GROUPED_STREAM_TIMING_BREAKDOWN_SCHEMA,
+        "host_observed_sec": sec,
+        "derived_sec": derived_sec,
+        "notes": [
+            "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+            "Native elapsed fields come from RTDL native metadata where available.",
+            "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim.",
+        ],
+        "performance_claim_authorized": False,
+    }
+
+
 def run_rt_dbscan_benchmark(
     *,
     mode: str,
@@ -427,11 +857,19 @@ def run_rt_dbscan_benchmark(
     chunk_adjacency_edge_budget: int | None = None,
     reuse_chunk_neighbor_index_workspace: bool = False,
     chunk_neighbor_index_workspace_pool_size: int = 0,
+    grouped_union_query_block_size: int | None = None,
+    grouped_union_same_root_culling: bool = True,
+    grouped_union_direct_side_effect: bool = False,
 ) -> dict[str, object]:
     config = DEFAULT_DATASET_CONFIG[dataset]
     resolved_point_count = int(point_count if point_count is not None else config["point_count"])
     resolved_radius = float(radius if radius is not None else config["radius"])
     resolved_min_neighbors = int(min_neighbors if min_neighbors is not None else config["min_neighbors"])
+    if include_rows and mode in {
+        "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+    }:
+        raise ValueError("column-signature mode does not materialize Python rows")
     if mode == "planned_rt_dbscan":
         plan = plan_rt_dbscan_execution(dataset, resolved_point_count)
         selected_mode = str(plan["selected_mode"])
@@ -449,6 +887,9 @@ def run_rt_dbscan_benchmark(
             chunk_adjacency_edge_budget=chunk_adjacency_edge_budget,
             reuse_chunk_neighbor_index_workspace=reuse_chunk_neighbor_index_workspace,
             chunk_neighbor_index_workspace_pool_size=chunk_neighbor_index_workspace_pool_size,
+            grouped_union_query_block_size=grouped_union_query_block_size,
+            grouped_union_same_root_culling=grouped_union_same_root_culling,
+            grouped_union_direct_side_effect=grouped_union_direct_side_effect,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -482,6 +923,9 @@ def run_rt_dbscan_benchmark(
             chunk_adjacency_edge_budget=chunk_adjacency_edge_budget,
             reuse_chunk_neighbor_index_workspace=reuse_chunk_neighbor_index_workspace,
             chunk_neighbor_index_workspace_pool_size=chunk_neighbor_index_workspace_pool_size,
+            grouped_union_query_block_size=grouped_union_query_block_size,
+            grouped_union_same_root_culling=grouped_union_same_root_culling,
+            grouped_union_direct_side_effect=grouped_union_direct_side_effect,
         )
         payload["mode"] = mode
         payload["selected_mode"] = selected_mode
@@ -498,6 +942,8 @@ def run_rt_dbscan_benchmark(
     points = make_rt_dbscan_points(dataset, point_count=resolved_point_count, seed=seed)
 
     start = time.perf_counter()
+    timing_breakdown_sec: dict[str, float] | None = None
+    signature_override: dict[str, object] | None = None
     metadata: dict[str, object]
     if mode == "cpu_reference":
         rows, metadata = cpu_spatial_bucket_dbscan(points, radius=resolved_radius, min_neighbors=resolved_min_neighbors)
@@ -753,31 +1199,94 @@ def run_rt_dbscan_benchmark(
                 "neighbor_count_policy": "exact_full_degree_from_prepared_rt_chunked_adjacency_stream",
             }
         )
-    elif mode == "optix_rt_core_grouped_stream_cupy_components_3d":
+    elif mode == "optix_rt_core_grouped_stream_cupy_components_3d" or mode in {
+        "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
+        "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+    }:
+        blocked_grouped_stream = mode.startswith("optix_rt_core_grouped_stream_blocked")
+        resolved_query_block_size = (
+            int(grouped_union_query_block_size)
+            if grouped_union_query_block_size is not None
+            else DEFAULT_GROUPED_UNION_QUERY_BLOCK_SIZE
+        )
+        timing_breakdown_sec = {}
+        prepare_start = time.perf_counter()
         with rt.prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
             points,
             radius=resolved_radius,
             partner="cupy",
+            grouped_union_query_block_size=resolved_query_block_size if blocked_grouped_stream else None,
+            grouped_union_same_root_culling=grouped_union_same_root_culling,
+            grouped_union_direct_side_effect=grouped_union_direct_side_effect,
         ) as prepared:
+            timing_breakdown_sec["prepare_sec"] = time.perf_counter() - prepare_start
+            adapter_start = time.perf_counter()
             result = rt.radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
                 prepared,
                 min_neighbors=resolved_min_neighbors,
                 return_metadata=True,
             )
-        rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+            timing_breakdown_sec["adapter_run_sec"] = time.perf_counter() - adapter_start
+        column_signature_mode = mode in {
+            "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+            "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+        }
+        if column_signature_mode:
+            signature_start = time.perf_counter()
+            signature_override = _cluster_signature_from_partner_columns(result["columns"], partner="cupy")
+            timing_breakdown_sec["column_signature_sec"] = time.perf_counter() - signature_start
+            rows = ()
+        else:
+            rows_start = time.perf_counter()
+            rows = _rows_from_partner_columns(result["columns"], partner="cupy")
+            timing_breakdown_sec["rows_materialization_sec"] = time.perf_counter() - rows_start
         metadata = dict(result["metadata"])
         metadata.update(
             {
-                "path": "optix_rt_grouped_stream_cupy_radius_graph_components_3d",
-                "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
-                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
-                "query_source": "prepared_search_points_self_query_device",
+                "path": (
+                    "optix_rt_grouped_stream_blocked_cupy_radius_graph_column_signature_3d"
+                    if mode == "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d"
+                    else "optix_rt_grouped_stream_blocked_cupy_radius_graph_components_3d"
+                    if mode == "optix_rt_core_grouped_stream_blocked_cupy_components_3d"
+                    else "optix_rt_grouped_stream_cupy_radius_graph_column_signature_3d"
+                    if mode == "optix_rt_core_grouped_stream_cupy_column_signature_3d"
+                    else "optix_rt_grouped_stream_cupy_radius_graph_components_3d"
+                ),
+                "native_engine_summary_contract": (
+                    "generic_prepared_fixed_radius_grouped_union_3d_self_range_device_workspaces"
+                    if blocked_grouped_stream
+                    else "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces"
+                ),
+                "native_execution_path": (
+                    "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges"
+                    if blocked_grouped_stream
+                    else "prepared_rt_core_grouped_union_3d_self_query"
+                ),
+                "query_source": (
+                    "prepared_search_points_self_query_device_range"
+                    if blocked_grouped_stream
+                    else "prepared_search_points_self_query_device"
+                ),
+                "grouped_union_query_blocked_candidate": blocked_grouped_stream,
+                "grouped_union_query_block_size": resolved_query_block_size if blocked_grouped_stream else None,
+                "grouped_union_same_root_culling_enabled": grouped_union_same_root_culling,
+                "grouped_union_direct_side_effect_enabled": grouped_union_direct_side_effect,
                 "optix_backend_used": True,
                 "rt_core_accelerated": True,
                 "materializes_neighbor_summaries": False,
                 "materializes_neighbor_rows": False,
                 "materializes_directed_adjacency_stream": False,
                 "materializes_bounded_directed_adjacency_chunks": False,
+                "materializes_python_rows": mode in {
+                    "optix_rt_core_grouped_stream_cupy_components_3d",
+                    "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
+                },
+                "signature_source": (
+                    "partner_column_arrays_no_python_row_dicts"
+                    if column_signature_mode
+                    else "python_row_dicts_after_label_densification"
+                ),
                 "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             }
         )
@@ -875,10 +1384,20 @@ def run_rt_dbscan_benchmark(
         }
     else:
         raise ValueError("unsupported mode")
-    rows = _densify_cluster_labels(rows)
+    if signature_override is None:
+        densify_start = time.perf_counter()
+        rows = _densify_cluster_labels(rows)
+        if timing_breakdown_sec is not None:
+            timing_breakdown_sec["densify_cluster_labels_sec"] = time.perf_counter() - densify_start
     elapsed = time.perf_counter() - start
+    if timing_breakdown_sec is not None:
+        metadata["benchmark_timing_breakdown"] = _build_grouped_stream_timing_breakdown(
+            timing_breakdown_sec,
+            metadata,
+            elapsed_sec=elapsed,
+        )
 
-    signature = cluster_signature(rows)
+    signature = signature_override if signature_override is not None else cluster_signature(rows)
     reference_signature = None
     matches_reference = None
     if validate and mode != "cpu_reference":
@@ -941,6 +1460,9 @@ def main(argv: list[str] | None = None) -> int:
             "optix_rt_core_adjacency_cupy_components_3d",
             "optix_rt_core_chunked_adjacency_cupy_components_3d",
             "optix_rt_core_grouped_stream_cupy_components_3d",
+            "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+            "optix_rt_core_grouped_stream_blocked_cupy_components_3d",
+            "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
             "optix_rt_core_flags_cupy_microcell_graph_components_3d",
             "partner_core_flags_3d",
             "optix_prepared_rows",
@@ -959,6 +1481,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--chunk-adjacency-edge-budget", type=int, default=None)
     parser.add_argument("--reuse-chunk-neighbor-index-workspace", action="store_true")
     parser.add_argument("--chunk-neighbor-index-workspace-pool-size", type=int, default=0)
+    parser.add_argument("--grouped-union-query-block-size", type=int, default=None)
+    parser.add_argument("--disable-grouped-union-same-root-culling", action="store_true")
+    parser.add_argument("--enable-grouped-union-direct-side-effect", action="store_true")
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -976,6 +1501,9 @@ def main(argv: list[str] | None = None) -> int:
                 chunk_adjacency_edge_budget=args.chunk_adjacency_edge_budget,
                 reuse_chunk_neighbor_index_workspace=args.reuse_chunk_neighbor_index_workspace,
                 chunk_neighbor_index_workspace_pool_size=args.chunk_neighbor_index_workspace_pool_size,
+                grouped_union_query_block_size=args.grouped_union_query_block_size,
+                grouped_union_same_root_culling=not args.disable_grouped_union_same_root_culling,
+                grouped_union_direct_side_effect=args.enable_grouped_union_direct_side_effect,
             ),
             indent=2,
             sort_keys=True,

@@ -1,0 +1,63 @@
+{
+  "backend": "torch_cuda_extension",
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "body_count": 32768,
+  "bucket_size": 32,
+  "contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+  "deltas": {
+    "checksum_force_x_abs": 6.039044819772243e-10,
+    "checksum_force_y_abs": 3.7834979593753815e-10,
+    "contribution_row_count": 0,
+    "visited_node_total": 0
+  },
+  "device": "NVIDIA RTX A5000",
+  "metadata": {
+    "authors_code_comparison": false,
+    "claim_boundary": "Torch/CUDA extension prototype for the generic fused vector-sum contract. Not OptiX, not authors-code timing, and not public speedup evidence.",
+    "native_engine_app_specific": false,
+    "paper_reproduction": false,
+    "partner_resident_kernel": true,
+    "public_speedup_claim_authorized": false
+  },
+  "reference": {
+    "checksum_force_x": -52016.80966526497,
+    "checksum_force_y": 105365.71026316533,
+    "summary": {
+      "aggregate_contribution_row_count": 1864577,
+      "contribution_row_count": 5695980,
+      "exact_contribution_row_count": 3831403,
+      "leaf_node_count": 2260,
+      "materialized_contribution_rows": false,
+      "materialized_frontier_rows": false,
+      "root_count": 1,
+      "source_count": 32768,
+      "sources_with_contributions": 32768,
+      "target_count": 32768,
+      "tree_node_count": 3013,
+      "visited_node_total": 2711968
+    }
+  },
+  "repeats": 3,
+  "result": {
+    "aggregate_contribution_row_count": 1864577,
+    "checksum_force_x": -52016.80966526557,
+    "checksum_force_y": 105365.71026316495,
+    "contribution_row_count": 5695980,
+    "exact_contribution_row_count": 3831403,
+    "visited_node_total": 2711968
+  },
+  "softening": 0.05,
+  "theta": 0.75,
+  "timing_ms": {
+    "extension_compile": 70.55196911096573,
+    "resident_kernel_mean": 37.515838623046875,
+    "resident_kernel_min": 37.34620666503906,
+    "resident_kernel_runs": [
+      37.34620666503906,
+      37.436126708984375,
+      37.76518249511719
+    ],
+    "tensor_prepare_host_to_device": 310.6055110692978,
+    "tree_prepare_cpu": 463.4365886449814
+  }
+}

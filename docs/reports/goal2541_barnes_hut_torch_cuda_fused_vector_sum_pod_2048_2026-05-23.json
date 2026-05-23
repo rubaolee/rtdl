@@ -1,0 +1,63 @@
+{
+  "backend": "torch_cuda_extension",
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "body_count": 2048,
+  "bucket_size": 32,
+  "contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+  "deltas": {
+    "checksum_force_x_abs": 3.069544618483633e-12,
+    "checksum_force_y_abs": 1.318767317570746e-11,
+    "contribution_row_count": 0,
+    "visited_node_total": 0
+  },
+  "device": "NVIDIA RTX A5000",
+  "metadata": {
+    "authors_code_comparison": false,
+    "claim_boundary": "Torch/CUDA extension prototype for the generic fused vector-sum contract. Not OptiX, not authors-code timing, and not public speedup evidence.",
+    "native_engine_app_specific": false,
+    "paper_reproduction": false,
+    "partner_resident_kernel": true,
+    "public_speedup_claim_authorized": false
+  },
+  "reference": {
+    "checksum_force_x": 194.75168638650337,
+    "checksum_force_y": 1299.2558708885786,
+    "summary": {
+      "aggregate_contribution_row_count": 54264,
+      "contribution_row_count": 258495,
+      "exact_contribution_row_count": 204231,
+      "leaf_node_count": 151,
+      "materialized_contribution_rows": false,
+      "materialized_frontier_rows": false,
+      "root_count": 1,
+      "source_count": 2048,
+      "sources_with_contributions": 2048,
+      "target_count": 2048,
+      "tree_node_count": 201,
+      "visited_node_total": 85512
+    }
+  },
+  "repeats": 3,
+  "result": {
+    "aggregate_contribution_row_count": 54264,
+    "checksum_force_x": 194.7516863865003,
+    "checksum_force_y": 1299.2558708885917,
+    "contribution_row_count": 258495,
+    "exact_contribution_row_count": 204231,
+    "visited_node_total": 85512
+  },
+  "softening": 0.05,
+  "theta": 0.75,
+  "timing_ms": {
+    "extension_compile": 44773.40717613697,
+    "resident_kernel_mean": 1.6817173560460408,
+    "resident_kernel_min": 1.6738560199737549,
+    "resident_kernel_runs": [
+      1.6874560117721558,
+      1.683840036392212,
+      1.6738560199737549
+    ],
+    "tensor_prepare_host_to_device": 245.7743063569069,
+    "tree_prepare_cpu": 26.6476571559906
+  }
+}

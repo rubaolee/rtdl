@@ -1,0 +1,619 @@
+{
+  "claim_boundary": {
+    "authors_code_comparison_claim_authorized": false,
+    "continuous_collision_supported": false,
+    "exact_solid_collision_claim_authorized": false,
+    "internal_evidence_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  },
+  "cuda_for_build_and_run": "13.0 (/usr/local/cuda)",
+  "driver": "570.133.07",
+  "goal": "Goal2491",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "matrix": {
+    "app": "robot_collision_benchmark",
+    "case_shape": {
+      "link_count": 3,
+      "obstacle_count": 16,
+      "pose_count": 64,
+      "static_obstacle_triangle_count": 32
+    },
+    "claim_boundary": {
+      "authors_code_comparison_claim_authorized": false,
+      "continuous_collision_supported": false,
+      "exact_solid_collision_claim_authorized": false,
+      "internal_evidence_only": true,
+      "paper_reproduction_claim_authorized": false,
+      "public_speedup_claim_authorized": false
+    },
+    "dataset": "scaled",
+    "goal": "Goal2491",
+    "matrix_scope": "final_canonical_robot_collision_modes",
+    "rows": [
+      {
+        "backend": "python",
+        "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+        "mode": "cpu_reference",
+        "parity_reference": "exact_2d_cpu_reference",
+        "runs": [
+          {
+            "elapsed_sec": 0.3418717235326767,
+            "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+            "is_warmup": true,
+            "iteration": 0
+          },
+          {
+            "elapsed_sec": 0.3335753306746483,
+            "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+            "is_warmup": true,
+            "iteration": 1
+          },
+          {
+            "elapsed_sec": 0.3339872658252716,
+            "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+            "is_warmup": false,
+            "iteration": 2
+          },
+          {
+            "elapsed_sec": 0.3367391601204872,
+            "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+            "is_warmup": false,
+            "iteration": 3
+          },
+          {
+            "elapsed_sec": 0.3340289294719696,
+            "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+            "is_warmup": false,
+            "iteration": 4
+          },
+          {
+            "elapsed_sec": 0.33038976043462753,
+            "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+            "is_warmup": false,
+            "iteration": 5
+          },
+          {
+            "elapsed_sec": 0.33121631294488907,
+            "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+            "is_warmup": false,
+            "iteration": 6
+          }
+        ],
+        "status": "ok",
+        "tail_median_total_run_seconds": 0.3339872658252716
+      },
+      {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "backend": "embree",
+        "case_shape": {
+          "group_count": 192,
+          "link_count": 3,
+          "pose_count": 64,
+          "probe_points_per_group": 9,
+          "segment_count": 1728,
+          "static_obstacle_triangle_count": 32
+        },
+        "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+        "goal": "Goal2484",
+        "mode": "embree_prepared",
+        "parity_reference": "goal2481_probe_reference",
+        "reuse_metadata": {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "all_run_signatures_identical": true,
+          "host_query_output_buffers_reused": false,
+          "measured_run_count": 5,
+          "native_query_output_buffer_reuse_note": "current Python ABI reuses prepared scene and Python input sequences; native query/output buffers are repacked per run",
+          "native_query_output_buffers_reused": false,
+          "prepare_build_seconds_constant": true,
+          "prepared_query_descriptor": null,
+          "prepared_query_run_indices": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "prepared_query_run_indices_strictly_increase": false,
+          "prepared_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_run_indices_strictly_increase": true,
+          "prepared_scene_reused": true,
+          "probe_reference_flagged_group_count": 70,
+          "query_input_sequences_reused": true,
+          "repeat_count": 7,
+          "warmup_rows_dropped": 2
+        },
+        "status": "ok",
+        "tail_median_phase_timing_seconds": {
+          "output_postprocess": 1.8693506717681885e-05,
+          "prepare_build": 0.006460890173912048,
+          "query_pack": 0.00844043493270874,
+          "traversal": 4.4775e-05
+        },
+        "tail_median_total_run_seconds": 0.008597038686275482
+      },
+      {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "backend": "embree",
+        "case_shape": {
+          "group_count": 192,
+          "link_count": 3,
+          "pose_count": 64,
+          "probe_points_per_group": 9,
+          "segment_count": 1728,
+          "static_obstacle_triangle_count": 32
+        },
+        "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+        "goal": "Goal2488",
+        "mode": "embree_prepared_buffers",
+        "parity_reference": "goal2481_probe_reference",
+        "reuse_metadata": {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "all_run_signatures_identical": true,
+          "host_query_output_buffers_reused": true,
+          "measured_run_count": 5,
+          "native_query_output_buffer_reuse_note": "prepared_buffers mode reuses Python-owned ctypes query/output buffers; the backend consumes reusable host buffers and no native device buffer reuse is claimed",
+          "native_query_output_buffers_reused": false,
+          "prepare_build_seconds_constant": true,
+          "prepared_query_descriptor": {
+            "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+            "copy_boundary": "python_ctypes_host_buffer",
+            "device": "host",
+            "group_count": 192,
+            "group_offsets_buffer_kind": "ctypes_host_uint32_offsets",
+            "host_output_buffer_reused": true,
+            "host_query_buffers_reused": true,
+            "native_device_query_buffers_reused": false,
+            "output_buffer_kind": "ctypes_host_uint8_group_flags",
+            "owner": "python_runtime_wrapper",
+            "public_speedup_claim_authorized": false,
+            "query_buffer_kind": "ctypes_host_rtdl_segment3d_array",
+            "segment_count": 1728,
+            "true_zero_copy_authorized": false
+          },
+          "prepared_query_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_query_run_indices_strictly_increase": true,
+          "prepared_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_run_indices_strictly_increase": true,
+          "prepared_scene_reused": true,
+          "probe_reference_flagged_group_count": 70,
+          "query_input_sequences_reused": true,
+          "repeat_count": 7,
+          "warmup_rows_dropped": 2
+        },
+        "status": "ok",
+        "tail_median_phase_timing_seconds": {
+          "output_clear": 1.1913478374481201e-05,
+          "output_postprocess": 2.2545456886291504e-05,
+          "prepare_build": 0.0001971796154975891,
+          "prepared_query_build": 0.006308704614639282,
+          "query_pack": 0.0,
+          "traversal": 4.4494e-05
+        },
+        "tail_median_total_run_seconds": 0.00010654330253601074
+      },
+      {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "backend": "optix",
+        "case_shape": {
+          "group_count": 192,
+          "link_count": 3,
+          "pose_count": 64,
+          "probe_points_per_group": 9,
+          "segment_count": 1728,
+          "static_obstacle_triangle_count": 32
+        },
+        "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+        "goal": "Goal2484",
+        "mode": "optix_prepared",
+        "parity_reference": "goal2481_probe_reference",
+        "reuse_metadata": {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "all_run_signatures_identical": true,
+          "host_query_output_buffers_reused": false,
+          "measured_run_count": 5,
+          "native_query_output_buffer_reuse_note": "current Python ABI reuses prepared scene and Python input sequences; native query/output buffers are repacked per run",
+          "native_query_output_buffers_reused": false,
+          "prepare_build_seconds_constant": true,
+          "prepared_query_descriptor": null,
+          "prepared_query_run_indices": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "prepared_query_run_indices_strictly_increase": false,
+          "prepared_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_run_indices_strictly_increase": true,
+          "prepared_scene_reused": true,
+          "probe_reference_flagged_group_count": 70,
+          "query_input_sequences_reused": true,
+          "repeat_count": 7,
+          "warmup_rows_dropped": 2
+        },
+        "status": "ok",
+        "tail_median_phase_timing_seconds": {
+          "output_postprocess": 1.9595026969909668e-05,
+          "prepare_build": 0.1259041652083397,
+          "query_pack": 0.006095536053180695,
+          "traversal": 3.9615e-05
+        },
+        "tail_median_total_run_seconds": 0.006283417344093323
+      },
+      {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "backend": "optix",
+        "case_shape": {
+          "group_count": 192,
+          "link_count": 3,
+          "pose_count": 64,
+          "probe_points_per_group": 9,
+          "segment_count": 1728,
+          "static_obstacle_triangle_count": 32
+        },
+        "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+        "goal": "Goal2488",
+        "mode": "optix_prepared_buffers",
+        "parity_reference": "goal2481_probe_reference",
+        "reuse_metadata": {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "all_run_signatures_identical": true,
+          "host_query_output_buffers_reused": true,
+          "measured_run_count": 5,
+          "native_query_output_buffer_reuse_note": "prepared_buffers mode reuses Python-owned ctypes query/output buffers; OptiX still uploads query segments per run and no native device buffer reuse is claimed",
+          "native_query_output_buffers_reused": false,
+          "prepare_build_seconds_constant": true,
+          "prepared_query_descriptor": {
+            "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+            "copy_boundary": "python_ctypes_host_buffer",
+            "device": "host",
+            "group_count": 192,
+            "group_offsets_buffer_kind": "ctypes_host_uint32_offsets",
+            "host_output_buffer_reused": true,
+            "host_query_buffers_reused": true,
+            "native_device_query_buffers_reused": false,
+            "output_buffer_kind": "ctypes_host_uint8_group_flags",
+            "owner": "python_runtime_wrapper",
+            "public_speedup_claim_authorized": false,
+            "query_buffer_kind": "ctypes_host_rtdl_segment3d_array",
+            "segment_count": 1728,
+            "true_zero_copy_authorized": false
+          },
+          "prepared_query_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_query_run_indices_strictly_increase": true,
+          "prepared_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_run_indices_strictly_increase": true,
+          "prepared_scene_reused": true,
+          "probe_reference_flagged_group_count": 70,
+          "query_input_sequences_reused": true,
+          "repeat_count": 7,
+          "warmup_rows_dropped": 2
+        },
+        "status": "ok",
+        "tail_median_phase_timing_seconds": {
+          "output_clear": 1.2390315532684326e-05,
+          "output_postprocess": 2.3573637008666992e-05,
+          "prepare_build": 0.00017533451318740845,
+          "prepared_query_build": 0.0062945932149887085,
+          "query_pack": 0.0,
+          "traversal": 3.4726e-05
+        },
+        "tail_median_total_run_seconds": 0.0001258254051208496
+      },
+      {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "backend": "optix",
+        "case_shape": {
+          "group_count": 192,
+          "link_count": 3,
+          "pose_count": 64,
+          "probe_points_per_group": 9,
+          "segment_count": 1728,
+          "static_obstacle_triangle_count": 32
+        },
+        "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+        "goal": "Goal2489",
+        "mode": "optix_prepared_device_buffers",
+        "parity_reference": "goal2481_probe_reference",
+        "reuse_metadata": {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "all_run_signatures_identical": true,
+          "host_query_output_buffers_reused": true,
+          "measured_run_count": 5,
+          "native_query_output_buffer_reuse_note": "prepared_device_buffers mode reuses native OptiX device query/output buffers; the current Python API still downloads compact group flags and does not claim true zero-copy",
+          "native_query_output_buffers_reused": true,
+          "prepare_build_seconds_constant": true,
+          "prepared_query_descriptor": {
+            "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+            "copy_boundary": "compact_group_flags_device_to_host",
+            "device": "cuda_device",
+            "group_count": 192,
+            "group_flags_downloaded_to_host": true,
+            "group_indices_buffer_kind": "native_optix_device_uint32_group_indices",
+            "group_offsets_buffer_kind": "native_optix_device_uint32_offsets",
+            "host_output_buffer_kind": "ctypes_host_uint8_group_flags",
+            "host_output_buffer_reused": true,
+            "host_query_buffers_reused": true,
+            "native_device_output_buffer_reused": true,
+            "native_device_query_buffers_reused": true,
+            "output_buffer_kind": "native_optix_device_uint32_group_flags",
+            "owner": "optix_native_runtime",
+            "per_segment_records_downloaded_to_host": false,
+            "per_segment_records_materialized": false,
+            "public_speedup_claim_authorized": false,
+            "query_buffer_kind": "native_optix_device_rtdl_segment3d_as_ray_array",
+            "query_segments_uploaded_each_run": false,
+            "segment_count": 1728,
+            "segment_output_buffer_kind": "not_materialized",
+            "true_zero_copy_authorized": false
+          },
+          "prepared_query_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_query_run_indices_strictly_increase": true,
+          "prepared_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_run_indices_strictly_increase": true,
+          "prepared_scene_reused": true,
+          "probe_reference_flagged_group_count": 70,
+          "query_input_sequences_reused": true,
+          "repeat_count": 7,
+          "warmup_rows_dropped": 2
+        },
+        "status": "ok",
+        "tail_median_phase_timing_seconds": {
+          "output_postprocess": 2.088397741317749e-05,
+          "prepare_build": 0.00013152509927749634,
+          "prepared_query_build": 0.006272323429584503,
+          "query_pack": 0.0,
+          "traversal": 3.8393e-05
+        },
+        "tail_median_total_run_seconds": 8.090585470199585e-05
+      },
+      {
+        "all_measured_counts_match_probe_reference": true,
+        "all_measured_runs_match_probe_reference": true,
+        "backend": "optix",
+        "case_shape": {
+          "group_count": 192,
+          "link_count": 3,
+          "pose_count": 64,
+          "probe_points_per_group": 9,
+          "segment_count": 1728,
+          "static_obstacle_triangle_count": 32
+        },
+        "flags_signature": "000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011000011000011000011000011000011010011",
+        "goal": "Goal2490",
+        "mode": "optix_prepared_device_count",
+        "parity_reference": "goal2481_probe_reference",
+        "reuse_metadata": {
+          "all_measured_counts_match_probe_reference": true,
+          "all_measured_runs_match_probe_reference": true,
+          "all_run_signatures_identical": true,
+          "host_query_output_buffers_reused": true,
+          "measured_run_count": 5,
+          "native_query_output_buffer_reuse_note": "prepared_device_count mode reuses native OptiX device query/output buffers and returns only a scalar flagged-group count to Python; native host code still downloads compact group flags internally, so no true zero-copy claim is made",
+          "native_query_output_buffers_reused": true,
+          "prepare_build_seconds_constant": true,
+          "prepared_query_descriptor": {
+            "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+            "copy_boundary": "group_flags_device_to_native_host_then_scalar_to_python",
+            "device": "cuda_device",
+            "flagged_group_count_returned_to_python": true,
+            "group_count": 192,
+            "group_flags_downloaded_to_host": true,
+            "group_flags_downloaded_to_python": false,
+            "group_indices_buffer_kind": "native_optix_device_uint32_group_indices",
+            "group_offsets_buffer_kind": "native_optix_device_uint32_offsets",
+            "host_output_buffer_kind": "ctypes_host_uint8_group_flags",
+            "host_output_buffer_reused": true,
+            "host_query_buffers_reused": true,
+            "native_device_output_buffer_reused": true,
+            "native_device_query_buffers_reused": true,
+            "output_buffer_kind": "native_optix_device_uint32_group_flags",
+            "owner": "optix_native_runtime",
+            "per_segment_records_downloaded_to_host": false,
+            "per_segment_records_materialized": false,
+            "public_speedup_claim_authorized": false,
+            "python_group_flags_materialized": false,
+            "query_buffer_kind": "native_optix_device_rtdl_segment3d_as_ray_array",
+            "query_segments_uploaded_each_run": false,
+            "result_kind": "uint32_flagged_group_count",
+            "segment_count": 1728,
+            "segment_output_buffer_kind": "not_materialized",
+            "true_zero_copy_authorized": false
+          },
+          "prepared_query_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_query_run_indices_strictly_increase": true,
+          "prepared_run_indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prepared_run_indices_strictly_increase": true,
+          "prepared_scene_reused": true,
+          "probe_reference_flagged_group_count": 70,
+          "query_input_sequences_reused": true,
+          "repeat_count": 7,
+          "warmup_rows_dropped": 2
+        },
+        "status": "ok",
+        "tail_median_phase_timing_seconds": {
+          "output_postprocess": 3.650784492492676e-07,
+          "prepare_build": 0.0001568719744682312,
+          "prepared_query_build": 0.006394438445568085,
+          "query_pack": 0.0,
+          "traversal": 3.1169e-05
+        },
+        "tail_median_total_run_seconds": 5.284696817398071e-05
+      }
+    ],
+    "warmup_protocol": {
+      "repeat_count": 7,
+      "rule": "drop warmup rows and report tail medians",
+      "warmup_count": 2
+    }
+  },
+  "optix_prefix": "/workspace/vendor/optix-dev",
+  "pod": "ssh root@157.157.221.29 -p 23792 -i ~/.ssh/id_ed25519_rtdl_codex",
+  "rows": [
+    {
+      "all_measured_counts_match_probe_reference": null,
+      "all_measured_runs_match_probe_reference": null,
+      "backend": "python",
+      "error": null,
+      "mode": "cpu_reference",
+      "reason": null,
+      "status": "ok",
+      "tail_median_total_run_seconds": 0.3339872658252716
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "embree",
+      "error": null,
+      "mode": "embree_prepared",
+      "reason": null,
+      "status": "ok",
+      "tail_median_total_run_seconds": 0.008597038686275482
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "embree",
+      "error": null,
+      "mode": "embree_prepared_buffers",
+      "reason": null,
+      "status": "ok",
+      "tail_median_total_run_seconds": 0.00010654330253601074
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "optix",
+      "error": null,
+      "mode": "optix_prepared",
+      "reason": null,
+      "status": "ok",
+      "tail_median_total_run_seconds": 0.006283417344093323
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "optix",
+      "error": null,
+      "mode": "optix_prepared_buffers",
+      "reason": null,
+      "status": "ok",
+      "tail_median_total_run_seconds": 0.0001258254051208496
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "optix",
+      "error": null,
+      "mode": "optix_prepared_device_buffers",
+      "reason": null,
+      "status": "ok",
+      "tail_median_total_run_seconds": 8.090585470199585e-05
+    },
+    {
+      "all_measured_counts_match_probe_reference": true,
+      "all_measured_runs_match_probe_reference": true,
+      "backend": "optix",
+      "error": null,
+      "mode": "optix_prepared_device_count",
+      "reason": null,
+      "status": "ok",
+      "tail_median_total_run_seconds": 5.284696817398071e-05
+    }
+  ]
+}

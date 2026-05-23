@@ -1,0 +1,70 @@
+{
+  "backend": "torch_cuda_extension_subtree_containment_float32_scalar_3d",
+  "benchmark": "barnes_hut_ppopp2025_style",
+  "body_count": 32768,
+  "bucket_size": 32,
+  "contract": "generic_aggregate_frontier_inverse_square_scalar_sum_3d_v1",
+  "deltas": {
+    "checksum_scalar_force_abs": 3849913.09375,
+    "contribution_row_count": 0,
+    "max_scalar_abs_error": 1408253.3531570435,
+    "max_scalar_relative_error": 4.328820442898778e-05,
+    "mean_scalar_abs_error": 501.33537452222066,
+    "mean_scalar_relative_error": 1.7409955686533162e-07,
+    "visited_node_total": 0
+  },
+  "device": "NVIDIA RTX A5000",
+  "input_file": "/root/rtbarneshut_32768_repeat_1.txt",
+  "metadata": {
+    "authors_code_comparison": true,
+    "claim_boundary": "3-D scalar inverse-square subtree-containment prototype. Same dimensionality and force shape as authors' sample, but not yet the exact same tree construction or RT traversal contract.",
+    "native_engine_app_specific": false,
+    "paper_reproduction": false,
+    "partner_resident_kernel": true,
+    "public_speedup_claim_authorized": false,
+    "same_dimension_as_authors": true,
+    "same_scalar_inverse_square_force_shape_as_authors": true,
+    "same_tree_contract_as_authors": false
+  },
+  "reference": {
+    "checksum_scalar_force": 58155894662798.09,
+    "summary": {
+      "aggregate_contribution_row_count": 2275450,
+      "contribution_row_count": 3304634,
+      "exact_contribution_row_count": 1029184,
+      "leaf_node_count": 4096,
+      "root_count": 1,
+      "source_count": 32768,
+      "tree_node_count": 4681,
+      "visited_node_total": 2742752
+    }
+  },
+  "repeats": 5,
+  "result": {
+    "aggregate_contribution_row_count": 2275450,
+    "checksum_scalar_force": 58155890812885.0,
+    "contribution_row_count": 3304634,
+    "exact_contribution_row_count": 1029184,
+    "visited_node_total": 2742752
+  },
+  "softening": 0.0,
+  "theta": 0.5,
+  "timing_ms": {
+    "extension_compile": 55.19379675388336,
+    "resident_kernel_mean": 0.5671552062034607,
+    "resident_kernel_min": 0.508575975894928,
+    "resident_kernel_runs": [
+      0.5288640260696411,
+      0.7785919904708862,
+      0.5107520222663879,
+      0.5089920163154602,
+      0.508575975894928
+    ],
+    "tensor_prepare_host_to_device": 199.4221806526184,
+    "tree_prepare_cpu": 330.8437764644623
+  },
+  "tree_summary": {
+    "leaf_node_count": 4096,
+    "tree_node_count": 4681
+  }
+}

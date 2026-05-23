@@ -4,6 +4,12 @@ This directory is for serious application studies, not first-run examples. Each
 subdirectory shows how a user can write a real RTDL v2.x program, compare it
 with external baselines, and keep the performance claim boundary precise.
 
+The benchmark apps are reconstruction instruments. A study can intentionally
+cover only part of a paper or application when that slice is enough to expose a
+missing RTDL primitive, memory contract, partner boundary, prepared execution
+model, or result contract. The success condition is the language/runtime design
+pressure extracted from the app, not full paper-system reproduction.
+
 Run commands from the repository root with source-tree usage:
 
 ```bash
@@ -23,6 +29,9 @@ $env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\<study>\<script
 | `hausdorff_xhd/` | Exact and RT-assisted Hausdorff distance study informed by X-HD techniques; includes v2.1 scale-aware grouped traversal defaults | `hausdorff_xhd/README.md` |
 | `spatial_rayjoin/` | RayJoin-style spatial join workloads; includes v2.1 first-hit/nearest-boundary evidence | `spatial_rayjoin/README.md` |
 | `rt_dbscan/` | RT-DBSCAN-style 3-D density clustering study over generic fixed-radius/component contracts | `rt_dbscan/README.md` |
+| `robot_collision/` | Robot-collision-style static-scene plus batched transformed query-geometry study; CPU reference only in Goal2480 | `robot_collision/README.md` |
+| `raydb_style/` | RayDB-style columnar grouped aggregate contract study; CPU reference plus Embree/OptiX count-sum parity over existing generic columnar payloads | `raydb_style/README.md` |
+| `barnes_hut/` | RT-BarnesHut-style hierarchical N-body reconstruction study; includes bucketized Morton/DFS aggregate tree rows, hierarchical opening frontier, local exact CPU baseline, and guarded OptiX/paper-code boundaries | `barnes_hut/README.md` |
 
 ## How To Read Results
 
@@ -50,3 +59,7 @@ into historical performance debates.
 
 For the all-app v2.1 rethink and v2.0 comparison boundary, see
 [`Goal2342 v2.1 All-App Rethink`](../../../docs/reports/goal2342_v2_1_all_app_rethink_and_comparison_2026-05-18.md).
+
+For the post-robot-collision benchmark-app selection rule and RayDB scoping
+boundary, see
+[`Goal2492 Benchmark-App Reconstruction Principle`](../../../docs/reports/goal2492_benchmark_app_reconstruction_principle_and_raydb_scope_2026-05-22.md).

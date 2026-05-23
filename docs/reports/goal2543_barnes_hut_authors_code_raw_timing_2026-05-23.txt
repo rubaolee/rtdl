@@ -1,0 +1,64 @@
+Authors OWL/RT-BarnesHut raw timing output excerpts
+Date: 2026-05-23
+Pod: ssh root@203.57.40.169 -p 10297 -i ~/.ssh/id_ed25519_rtdl_codex
+Build: OptiX SDK 8.1.0, CUDA 12.6 nvcc, RTX A5000, driver 565.57.01
+
+8192 repeat 1:
+#owl.sample(main): Starting run!
+#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 8192
+--------------------------------------------------------------
+Preprocessing Time: 0.019648 seconds.
+RT Cores Force Calculations time: 0.005462 seconds.
+Execution time: 0.027247 seconds.
+--------------------------------------------------------------
+#owl.sample(main): destroying devicegroup ...
+
+8192 repeat 2:
+#owl.sample(main): Starting run!
+#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 8192
+--------------------------------------------------------------
+Preprocessing Time: 0.018759 seconds.
+RT Cores Force Calculations time: 0.00553 seconds.
+Execution time: 0.027408 seconds.
+--------------------------------------------------------------
+#owl.sample(main): destroying devicegroup ...
+
+8192 repeat 3:
+#owl.sample(main): Starting run!
+#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 8192
+--------------------------------------------------------------
+Preprocessing Time: 0.018894 seconds.
+RT Cores Force Calculations time: 0.005346 seconds.
+Execution time: 0.027496 seconds.
+--------------------------------------------------------------
+#owl.sample(main): destroying devicegroup ...
+
+32768 repeat 1:
+#owl.sample(main): Starting run!
+#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 32768
+--------------------------------------------------------------
+Preprocessing Time: 0.019354 seconds.
+RT Cores Force Calculations time: 0.006616 seconds.
+Execution time: 0.029294 seconds.
+--------------------------------------------------------------
+#owl.sample(main): destroying devicegroup ...
+
+32768 repeat 2:
+#owl.sample(main): Starting run!
+#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 32768
+--------------------------------------------------------------
+Preprocessing Time: 0.019638 seconds.
+RT Cores Force Calculations time: 0.006634 seconds.
+Execution time: 0.029592 seconds.
+--------------------------------------------------------------
+#owl.sample(main): destroying devicegroup ...
+
+32768 repeat 3:
+#owl.sample(main): Starting run!
+#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 32768
+--------------------------------------------------------------
+Preprocessing Time: 0.020609 seconds.
+RT Cores Force Calculations time: 0.006677 seconds.
+Execution time: 0.029489 seconds.
+--------------------------------------------------------------
+#owl.sample(main): destroying devicegroup ...

@@ -1,0 +1,472 @@
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import sys
+import time
+from typing import Any
+
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+import rtdsl as rt
+from examples.v2_0.apps.simulation import rtdl_barnes_hut_force_app as app
+
+
+CPP_SOURCE = r"""
+#include <torch/extension.h>
+
+std::vector<torch::Tensor> fused_frontier_vector_sum_cuda(
+    torch::Tensor point_x,
+    torch::Tensor point_y,
+    torch::Tensor point_mass,
+    torch::Tensor node_cx,
+    torch::Tensor node_cy,
+    torch::Tensor node_half_size,
+    torch::Tensor node_mass,
+    torch::Tensor member_offsets,
+    torch::Tensor member_indices,
+    torch::Tensor child_offsets,
+    torch::Tensor child_indices,
+    double theta,
+    double softening,
+    int64_t max_stack
+);
+"""
+
+
+CUDA_SOURCE = r"""
+#include <torch/extension.h>
+#include <ATen/cuda/CUDAContext.h>
+#include <cuda_runtime.h>
+
+namespace {
+
+constexpr int kThreadsPerBlock = 128;
+constexpr int kStaticMaxStack = 4096;
+
+__global__ void fused_frontier_vector_sum_kernel(
+    int64_t source_count,
+    const double* __restrict__ point_x,
+    const double* __restrict__ point_y,
+    const double* __restrict__ point_mass,
+    int64_t node_count,
+    const double* __restrict__ node_cx,
+    const double* __restrict__ node_cy,
+    const double* __restrict__ node_half_size,
+    const double* __restrict__ node_mass,
+    const int64_t* __restrict__ member_offsets,
+    const int64_t* __restrict__ member_indices,
+    const int64_t* __restrict__ child_offsets,
+    const int64_t* __restrict__ child_indices,
+    double theta,
+    double softening,
+    int64_t max_stack,
+    double* __restrict__ out_x,
+    double* __restrict__ out_y,
+    int64_t* __restrict__ out_visited,
+    int64_t* __restrict__ out_aggregate_count,
+    int64_t* __restrict__ out_exact_count,
+    int32_t* __restrict__ status
+) {
+    const int64_t source_index = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (source_index >= source_count) {
+        return;
+    }
+    if (node_count < 1 || max_stack < 1 || max_stack > kStaticMaxStack) {
+        status[0] = 1;
+        return;
+    }
+
+    const double sx = point_x[source_index];
+    const double sy = point_y[source_index];
+    const double smass = point_mass[source_index];
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    int64_t visited = 0;
+    int64_t aggregate_count = 0;
+    int64_t exact_count = 0;
+
+    int stack[kStaticMaxStack];
+    int stack_size = 0;
+    stack[stack_size++] = 0;
+
+    while (stack_size > 0) {
+        const int node_index = stack[--stack_size];
+        if (node_index < 0 || static_cast<int64_t>(node_index) >= node_count) {
+            status[0] = 2;
+            return;
+        }
+        visited += 1;
+        const double dx = node_cx[node_index] - sx;
+        const double dy = node_cy[node_index] - sy;
+        const double distance = sqrt(dx * dx + dy * dy);
+        const double opening_ratio = distance == 0.0
+            ? 1.0e300
+            : (2.0 * node_half_size[node_index]) / distance;
+
+        bool contains_source = false;
+        const int64_t member_begin = member_offsets[node_index];
+        const int64_t member_end = member_offsets[node_index + 1];
+        for (int64_t offset = member_begin; offset < member_end; ++offset) {
+            if (member_indices[offset] == source_index) {
+                contains_source = true;
+                break;
+            }
+        }
+
+        if (!contains_source && opening_ratio < theta) {
+            const double dist_sq = dx * dx + dy * dy + softening * softening;
+            if (dist_sq != 0.0) {
+                const double inv_dist = rsqrt(dist_sq);
+                const double scale = smass * node_mass[node_index] * inv_dist * inv_dist * inv_dist;
+                sum_x += dx * scale;
+                sum_y += dy * scale;
+            }
+            aggregate_count += 1;
+            continue;
+        }
+
+        const int64_t child_begin = child_offsets[node_index];
+        const int64_t child_end = child_offsets[node_index + 1];
+        if (child_begin < child_end) {
+            for (int64_t offset = child_end - 1; offset >= child_begin; --offset) {
+                if (stack_size >= max_stack) {
+                    status[0] = 3;
+                    return;
+                }
+                stack[stack_size++] = static_cast<int>(child_indices[offset]);
+                if (offset == child_begin) {
+                    break;
+                }
+            }
+            continue;
+        }
+
+        for (int64_t offset = member_begin; offset < member_end; ++offset) {
+            const int64_t target_index = member_indices[offset];
+            if (target_index == source_index) {
+                continue;
+            }
+            const double ex = point_x[target_index] - sx;
+            const double ey = point_y[target_index] - sy;
+            const double dist_sq = ex * ex + ey * ey + softening * softening;
+            if (dist_sq != 0.0) {
+                const double inv_dist = rsqrt(dist_sq);
+                const double scale = smass * point_mass[target_index] * inv_dist * inv_dist * inv_dist;
+                sum_x += ex * scale;
+                sum_y += ey * scale;
+            }
+            exact_count += 1;
+        }
+    }
+
+    out_x[source_index] = sum_x;
+    out_y[source_index] = sum_y;
+    out_visited[source_index] = visited;
+    out_aggregate_count[source_index] = aggregate_count;
+    out_exact_count[source_index] = exact_count;
+}
+
+}  // namespace
+
+std::vector<torch::Tensor> fused_frontier_vector_sum_cuda(
+    torch::Tensor point_x,
+    torch::Tensor point_y,
+    torch::Tensor point_mass,
+    torch::Tensor node_cx,
+    torch::Tensor node_cy,
+    torch::Tensor node_half_size,
+    torch::Tensor node_mass,
+    torch::Tensor member_offsets,
+    torch::Tensor member_indices,
+    torch::Tensor child_offsets,
+    torch::Tensor child_indices,
+    double theta,
+    double softening,
+    int64_t max_stack
+) {
+    TORCH_CHECK(point_x.is_cuda(), "point_x must be CUDA");
+    TORCH_CHECK(point_x.scalar_type() == torch::kFloat64, "point_x must be float64");
+    TORCH_CHECK(point_y.scalar_type() == torch::kFloat64, "point_y must be float64");
+    TORCH_CHECK(point_mass.scalar_type() == torch::kFloat64, "point_mass must be float64");
+    TORCH_CHECK(node_cx.scalar_type() == torch::kFloat64, "node_cx must be float64");
+    TORCH_CHECK(member_offsets.scalar_type() == torch::kInt64, "member_offsets must be int64");
+    TORCH_CHECK(member_indices.scalar_type() == torch::kInt64, "member_indices must be int64");
+    TORCH_CHECK(child_offsets.scalar_type() == torch::kInt64, "child_offsets must be int64");
+    TORCH_CHECK(child_indices.scalar_type() == torch::kInt64, "child_indices must be int64");
+    TORCH_CHECK(point_x.is_contiguous(), "point_x must be contiguous");
+    TORCH_CHECK(member_offsets.is_contiguous(), "member_offsets must be contiguous");
+
+    const auto source_count = point_x.size(0);
+    const auto node_count = node_cx.size(0);
+    auto double_options = point_x.options();
+    auto int64_options = torch::TensorOptions().dtype(torch::kInt64).device(point_x.device());
+    auto status_options = torch::TensorOptions().dtype(torch::kInt32).device(point_x.device());
+    auto out_x = torch::empty({source_count}, double_options);
+    auto out_y = torch::empty({source_count}, double_options);
+    auto out_visited = torch::empty({source_count}, int64_options);
+    auto out_aggregate = torch::empty({source_count}, int64_options);
+    auto out_exact = torch::empty({source_count}, int64_options);
+    auto status = torch::zeros({1}, status_options);
+
+    const int blocks = static_cast<int>((source_count + kThreadsPerBlock - 1) / kThreadsPerBlock);
+    fused_frontier_vector_sum_kernel<<<blocks, kThreadsPerBlock, 0, at::cuda::getCurrentCUDAStream()>>>(
+        source_count,
+        point_x.data_ptr<double>(),
+        point_y.data_ptr<double>(),
+        point_mass.data_ptr<double>(),
+        node_count,
+        node_cx.data_ptr<double>(),
+        node_cy.data_ptr<double>(),
+        node_half_size.data_ptr<double>(),
+        node_mass.data_ptr<double>(),
+        member_offsets.data_ptr<int64_t>(),
+        member_indices.data_ptr<int64_t>(),
+        child_offsets.data_ptr<int64_t>(),
+        child_indices.data_ptr<int64_t>(),
+        theta,
+        softening,
+        max_stack,
+        out_x.data_ptr<double>(),
+        out_y.data_ptr<double>(),
+        out_visited.data_ptr<int64_t>(),
+        out_aggregate.data_ptr<int64_t>(),
+        out_exact.data_ptr<int64_t>(),
+        status.data_ptr<int32_t>()
+    );
+    C10_CUDA_KERNEL_LAUNCH_CHECK();
+
+    return {out_x, out_y, out_visited, out_aggregate, out_exact, status};
+}
+"""
+
+
+def _prepare_arrays(body_count: int, bucket_size: int, max_depth: int) -> dict[str, Any]:
+    bodies = app.make_generated_bodies(body_count)
+    tree = rt.build_bucketized_aggregate_tree_2d(bodies, bucket_size=bucket_size, max_depth=max_depth)
+    nodes = tuple(tree["nodes"])
+    id_to_index = {body.id: index for index, body in enumerate(bodies)}
+    node_id_to_index = {node.id: index for index, node in enumerate(nodes)}
+
+    member_offsets = [0]
+    member_indices: list[int] = []
+    child_offsets = [0]
+    child_indices: list[int] = []
+    for node in nodes:
+        member_indices.extend(id_to_index[int(member_id)] for member_id in node.member_ids)
+        member_offsets.append(len(member_indices))
+        child_indices.extend(node_id_to_index[int(child_id)] for child_id in node.child_ids)
+        child_offsets.append(len(child_indices))
+
+    return {
+        "bodies": bodies,
+        "tree": tree,
+        "point_x": [float(body.x) for body in bodies],
+        "point_y": [float(body.y) for body in bodies],
+        "point_mass": [float(body.mass) for body in bodies],
+        "node_cx": [float(node.cx) for node in nodes],
+        "node_cy": [float(node.cy) for node in nodes],
+        "node_half_size": [float(node.half_size) for node in nodes],
+        "node_mass": [float(node.mass) for node in nodes],
+        "node_resume_index": [-1 if node.resume_index is None else int(node.resume_index) for node in nodes],
+        "member_offsets": member_offsets,
+        "member_indices": member_indices,
+        "child_offsets": child_offsets,
+        "child_indices": child_indices,
+    }
+
+
+def run_partner_cuda(
+    *,
+    body_count: int,
+    bucket_size: int,
+    max_depth: int,
+    theta: float,
+    softening: float,
+    repeats: int,
+    max_stack: int,
+) -> dict[str, Any]:
+    import torch
+    from torch.utils.cpp_extension import load_inline
+
+    if not torch.cuda.is_available():
+        raise RuntimeError("Torch CUDA is required for this partner-resident prototype")
+    if repeats < 1:
+        raise ValueError("repeats must be positive")
+
+    os.environ.setdefault("MAX_JOBS", "2")
+
+    prepare_start = time.perf_counter()
+    prepared = _prepare_arrays(body_count, bucket_size, max_depth)
+    tree_prepare_ms = (time.perf_counter() - prepare_start) * 1000.0
+
+    compile_start = time.perf_counter()
+    module = load_inline(
+        name="rtdl_goal2541_fused_frontier_vector_sum",
+        cpp_sources=[CPP_SOURCE],
+        cuda_sources=[CUDA_SOURCE],
+        functions=["fused_frontier_vector_sum_cuda"],
+        extra_cuda_cflags=["--use_fast_math"],
+        verbose=False,
+    )
+    compile_ms = (time.perf_counter() - compile_start) * 1000.0
+
+    device = torch.device("cuda:0")
+    tensor_start = time.perf_counter()
+    tensors = {
+        "point_x": torch.tensor(prepared["point_x"], dtype=torch.float64, device=device).contiguous(),
+        "point_y": torch.tensor(prepared["point_y"], dtype=torch.float64, device=device).contiguous(),
+        "point_mass": torch.tensor(prepared["point_mass"], dtype=torch.float64, device=device).contiguous(),
+        "node_cx": torch.tensor(prepared["node_cx"], dtype=torch.float64, device=device).contiguous(),
+        "node_cy": torch.tensor(prepared["node_cy"], dtype=torch.float64, device=device).contiguous(),
+        "node_half_size": torch.tensor(prepared["node_half_size"], dtype=torch.float64, device=device).contiguous(),
+        "node_mass": torch.tensor(prepared["node_mass"], dtype=torch.float64, device=device).contiguous(),
+        "member_offsets": torch.tensor(prepared["member_offsets"], dtype=torch.int64, device=device).contiguous(),
+        "member_indices": torch.tensor(prepared["member_indices"], dtype=torch.int64, device=device).contiguous(),
+        "child_offsets": torch.tensor(prepared["child_offsets"], dtype=torch.int64, device=device).contiguous(),
+        "child_indices": torch.tensor(prepared["child_indices"], dtype=torch.int64, device=device).contiguous(),
+    }
+    torch.cuda.synchronize()
+    tensor_prepare_ms = (time.perf_counter() - tensor_start) * 1000.0
+
+    def launch():
+        return module.fused_frontier_vector_sum_cuda(
+            tensors["point_x"],
+            tensors["point_y"],
+            tensors["point_mass"],
+            tensors["node_cx"],
+            tensors["node_cy"],
+            tensors["node_half_size"],
+            tensors["node_mass"],
+            tensors["member_offsets"],
+            tensors["member_indices"],
+            tensors["child_offsets"],
+            tensors["child_indices"],
+            float(theta),
+            float(softening),
+            int(max_stack),
+        )
+
+    launch()
+    torch.cuda.synchronize()
+
+    kernel_times: list[float] = []
+    output = None
+    for _ in range(repeats):
+        start_event = torch.cuda.Event(enable_timing=True)
+        end_event = torch.cuda.Event(enable_timing=True)
+        start_event.record()
+        output = launch()
+        end_event.record()
+        torch.cuda.synchronize()
+        kernel_times.append(float(start_event.elapsed_time(end_event)))
+    assert output is not None
+    out_x, out_y, out_visited, out_aggregate, out_exact, status = output
+    status_value = int(status.cpu().item())
+    if status_value != 0:
+        raise RuntimeError(f"CUDA fused kernel returned status {status_value}")
+
+    checksum_force_x = float(out_x.sum().cpu().item())
+    checksum_force_y = float(out_y.sum().cpu().item())
+    visited_total = int(out_visited.sum().cpu().item())
+    aggregate_total = int(out_aggregate.sum().cpu().item())
+    exact_total = int(out_exact.sum().cpu().item())
+
+    reference = rt.sum_aggregate_frontier_weighted_vectors_2d(
+        prepared["bodies"],
+        prepared["bodies"],
+        prepared["tree"]["nodes"],
+        theta=theta,
+        softening=softening,
+    )
+    reference_rows = reference["vector_sum_rows"]
+    reference_checksum_x = sum(float(row["vector_x"]) for row in reference_rows)
+    reference_checksum_y = sum(float(row["vector_y"]) for row in reference_rows)
+
+    return {
+        "benchmark": "barnes_hut_ppopp2025_style",
+        "backend": "torch_cuda_extension",
+        "contract": rt.AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+        "body_count": body_count,
+        "bucket_size": bucket_size,
+        "theta": theta,
+        "softening": softening,
+        "repeats": repeats,
+        "device": torch.cuda.get_device_name(0),
+        "timing_ms": {
+            "tree_prepare_cpu": tree_prepare_ms,
+            "extension_compile": compile_ms,
+            "tensor_prepare_host_to_device": tensor_prepare_ms,
+            "resident_kernel_min": min(kernel_times),
+            "resident_kernel_mean": sum(kernel_times) / len(kernel_times),
+            "resident_kernel_runs": kernel_times,
+        },
+        "result": {
+            "checksum_force_x": checksum_force_x,
+            "checksum_force_y": checksum_force_y,
+            "visited_node_total": visited_total,
+            "aggregate_contribution_row_count": aggregate_total,
+            "exact_contribution_row_count": exact_total,
+            "contribution_row_count": aggregate_total + exact_total,
+        },
+        "reference": {
+            "checksum_force_x": reference_checksum_x,
+            "checksum_force_y": reference_checksum_y,
+            "summary": reference["summary"],
+        },
+        "deltas": {
+            "checksum_force_x_abs": abs(checksum_force_x - reference_checksum_x),
+            "checksum_force_y_abs": abs(checksum_force_y - reference_checksum_y),
+            "visited_node_total": visited_total - int(reference["summary"]["visited_node_total"]),
+            "contribution_row_count": (aggregate_total + exact_total) - int(reference["summary"]["contribution_row_count"]),
+        },
+        "metadata": {
+            "partner_resident_kernel": True,
+            "native_engine_app_specific": False,
+            "authors_code_comparison": False,
+            "paper_reproduction": False,
+            "public_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "Torch/CUDA extension prototype for the generic fused vector-sum contract. "
+                "Not OptiX, not authors-code timing, and not public speedup evidence."
+            ),
+        },
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Torch/CUDA fused aggregate-frontier vector-sum prototype.")
+    parser.add_argument("--body-count", type=int, default=8192)
+    parser.add_argument("--bucket-size", type=int, default=32)
+    parser.add_argument("--max-depth", type=int, default=32)
+    parser.add_argument("--theta", type=float, default=app.THETA)
+    parser.add_argument("--softening", type=float, default=app.SOFTENING)
+    parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--max-stack", type=int, default=4096)
+    parser.add_argument("--json-out", type=Path, default=None)
+    args = parser.parse_args()
+
+    payload = run_partner_cuda(
+        body_count=args.body_count,
+        bucket_size=args.bucket_size,
+        max_depth=args.max_depth,
+        theta=args.theta,
+        softening=args.softening,
+        repeats=args.repeats,
+        max_stack=args.max_stack,
+    )
+    text = json.dumps(payload, indent=2, sort_keys=True)
+    if args.json_out is not None:
+        args.json_out.parent.mkdir(parents=True, exist_ok=True)
+        args.json_out.write_text(text + "\n")
+    print(text)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

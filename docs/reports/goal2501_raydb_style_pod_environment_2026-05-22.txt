@@ -1,0 +1,94 @@
+ssh=root@69.30.85.198 -p 22017 -i ~/.ssh/id_ed25519_rtdl_codex
+host=dff6b1986efe
+git_head=a9193856547bf692069955a3dbaf6c3e00c09b1b
+git_status_start
+ M docs/reports/goal1660_v1_6_11_vs_v1_0_perf_matrix_2026-05-10.json
+ M docs/reports/goal1746_v1_0_embree_baseline_adapter_manifest_2026-05-12.json
+ M docs/reports/goal1746_v1_0_embree_baseline_adapter_manifest_2026-05-12.md
+ M docs/reports/goal1748_v1_0_embree_schema_mapping_2026-05-12.json
+ M docs/reports/goal1756_embree_same_surface_wall_clock_2026-05-12.json
+ M docs/research/future_version_to_do_list.md
+ M examples/v2_0/research_benchmarks/README.md
+ M examples/v2_0/research_benchmarks/rt_dbscan/README.md
+ M examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py
+ M src/native/embree/rtdl_embree_api.cpp
+ M src/native/embree/rtdl_embree_prelude.h
+ M src/native/optix/rtdl_optix_api.cpp
+ M src/native/optix/rtdl_optix_core.cpp
+ M src/native/optix/rtdl_optix_prelude.h
+ M src/native/optix/rtdl_optix_workloads.cpp
+ M src/rtdsl/__init__.py
+ M src/rtdsl/embree_runtime.py
+ M src/rtdsl/optix_runtime.py
+ M src/rtdsl/partner_adapters.py
+ M tests/goal2437_rt_dbscan_explicit_continuation_planner_test.py
+ M tests/goal2465_grouped_union_all_items_intersection_cull_test.py
+?? docs/reports/goal2492_benchmark_app_reconstruction_principle_and_raydb_scope_2026-05-22.md
+?? docs/reports/goal2493_raydb_local_external_code_intake_2026-05-22.md
+?? docs/reports/goal2494_raydb_style_contract_design_2026-05-22.md
+?? docs/reports/goal2495_raydb_style_cpu_reference_fixture_2026-05-22.md
+?? docs/reports/goal2496_raydb_style_embree_lowering_decision_2026-05-22.md
+?? docs/reports/goal2497_raydb_style_embree_count_sum_parity_2026-05-22.md
+?? docs/reports/goal2498_raydb_style_optix_count_sum_parity_2026-05-22.md
+?? docs/reports/goal2499_raydb_style_lowering_gap_and_next_engine_target_2026-05-22.md
+?? docs/reports/goal2500_raydb_style_backend_matrix_local_2026-05-22.json
+?? docs/reports/goal2500_raydb_style_backend_matrix_runner_2026-05-22.md
+?? docs/reports/goal2501_make_build_optix_2026-05-22.txt
+?? docs/reports/goal2501_raydb_style_backend_matrix_pod_2026-05-22.json
+?? docs/reports/goal2501_raydb_style_focused_suite_pod_2026-05-22.txt
+?? docs/reports/goal2501_raydb_style_optix_app_pod_2026-05-22.json
+?? docs/reports/goal2501_raydb_style_optix_pod_validation_packet_2026-05-22.md
+?? docs/reports/goal2501_raydb_style_pod_environment_2026-05-22.txt
+?? docs/reports/goal2502_raydb_style_benchmark_slice_closeout_2026-05-22.md
+?? docs/reviews/goal2492_claude_review_benchmark_app_reconstruction_principle_2026-05-22.md
+?? docs/reviews/goal2492_codex_claude_consensus_benchmark_app_reconstruction_principle_2026-05-22.md
+?? docs/reviews/goal2502_claude_review_raydb_style_closeout_2026-05-22.md
+?? docs/reviews/goal2502_codex_claude_consensus_raydb_style_closeout_2026-05-22.md
+?? examples/v2_0/research_benchmarks/raydb_style/
+?? scripts/goal2500_raydb_style_backend_matrix.py
+?? src/rtdsl/columnar_aggregate_reference.py
+?? tests/goal2492_benchmark_app_reconstruction_principle_test.py
+?? tests/goal2493_raydb_code_intake_test.py
+?? tests/goal2494_raydb_style_contract_design_test.py
+?? tests/goal2495_raydb_style_cpu_reference_fixture_test.py
+?? tests/goal2496_raydb_style_embree_lowering_decision_test.py
+?? tests/goal2497_raydb_style_embree_count_sum_parity_test.py
+?? tests/goal2498_raydb_style_optix_count_sum_parity_test.py
+?? tests/goal2499_raydb_style_lowering_plan_test.py
+?? tests/goal2500_raydb_style_backend_matrix_runner_test.py
+?? tests/goal2501_raydb_style_optix_pod_packet_test.py
+?? tests/goal2502_raydb_style_benchmark_slice_closeout_test.py
+git_status_end
+python=Python 3.12.3
+nvidia_smi_start
+Sat May 23 00:24:35 2026
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA RTX A5000               On  |   00000000:D1:00.0 Off |                  Off |
+| 30%   22C    P8             24W /  230W |       1MiB /  24564MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+nvidia_smi_end
+nvcc_start
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Fri_Feb_21_20:23:50_PST_2025
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+nvcc_end
+optix_header=/root/vendor/optix-dev-9.0.0/include/optix.h
+28:#define OPTIX_VERSION 90000
+build_command=make build-optix OPTIX_PREFIX=/root/vendor/optix-dev-9.0.0 CUDA_PREFIX=/usr/local/cuda-12.8

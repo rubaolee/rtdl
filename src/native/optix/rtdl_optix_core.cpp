@@ -3830,10 +3830,13 @@ struct FixedRadiusGroupedUnion3DRtParams {
     const uint32_t* predicate_flags;
     int* parent_out;
     int* fallback_candidate_out;
+    unsigned long long* telemetry_out;
     uint32_t query_count;
     uint32_t query_index_offset;
     uint32_t item_count;
     uint32_t all_predicate;
+    uint32_t same_root_culling;
+    uint32_t direct_side_effect;
     float radius;
     float trace_tmax;
 };
@@ -3870,6 +3873,57 @@ void union_grouped_min_root(int* parent, int left, int right) {
     }
 }
 
+extern "C" __device__
+void union_grouped_min_root_with_telemetry(
+        int* parent,
+        int left,
+        int right,
+        unsigned long long* telemetry_out) {
+    while (true) {
+        int left_root = find_grouped_union_root_readonly(parent, left);
+        int right_root = find_grouped_union_root_readonly(parent, right);
+        if (left_root == right_root) {
+            return;
+        }
+        const int high = left_root > right_root ? left_root : right_root;
+        const int low = left_root > right_root ? right_root : left_root;
+        if (telemetry_out) {
+            atomicAdd(telemetry_out + 0, 1ull);
+        }
+        const int old = atomicMin(parent + high, low);
+        if (old == high) {
+            if (telemetry_out) {
+                atomicAdd(telemetry_out + 1, 1ull);
+            }
+            return;
+        }
+    }
+}
+
+extern "C" __device__
+void apply_grouped_union_side_effect(uint32_t source, uint32_t target, bool parent_union_candidate) {
+    if (source >= params.item_count || target >= params.item_count) {
+        return;
+    }
+
+    if (parent_union_candidate) {
+        if (params.telemetry_out) {
+            union_grouped_min_root_with_telemetry(
+                params.parent_out, (int)source, (int)target, params.telemetry_out);
+        } else {
+            union_grouped_min_root(params.parent_out, (int)source, (int)target);
+        }
+    } else if (params.all_predicate == 0u && params.fallback_candidate_out) {
+        if (params.telemetry_out) {
+            atomicAdd(params.telemetry_out + 2, 1ull);
+        }
+        const int old = atomicMin(params.fallback_candidate_out + source, (int)target);
+        if (params.telemetry_out && (int)target < old) {
+            atomicAdd(params.telemetry_out + 3, 1ull);
+        }
+    }
+}
+
 extern "C" __global__ void __raygen__frn3d_grouped_union_probe() {
     const uint32_t qidx = optixGetLaunchIndex().x;
     if (qidx >= params.query_count) return;
@@ -3892,8 +3946,23 @@ extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t qidx = optixGetPayload_0();
     const uint32_t source = params.query_index_offset + qidx;
-    if (params.all_predicate != 0u && prim <= source) {
-        return;
+    bool parent_union_candidate = false;
+    if (params.all_predicate != 0u) {
+        if (prim <= source) {
+            return;
+        }
+        parent_union_candidate = true;
+    } else {
+        const bool source_predicate = params.predicate_flags[source] != 0u;
+        const bool target_predicate = params.predicate_flags[prim] != 0u;
+        if (source_predicate) {
+            if (prim <= source || !target_predicate) {
+                return;
+            }
+            parent_union_candidate = true;
+        } else if (!target_predicate) {
+            return;
+        }
     }
     const GpuPoint3D q = params.query_points[qidx];
     const GpuPoint3D t = params.search_points[prim];
@@ -3903,6 +3972,17 @@ extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
     const float d2 = dx * dx + dy * dy + dz * dz;
     const float radius_sq = params.radius * params.radius;
     if (d2 <= radius_sq) {
+        if (parent_union_candidate && params.same_root_culling != 0u) {
+            const int source_root = find_grouped_union_root_readonly(params.parent_out, (int)source);
+            const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)prim);
+            if (source_root == target_root) {
+                return;
+            }
+        }
+        if (params.direct_side_effect != 0u) {
+            apply_grouped_union_side_effect(source, prim, parent_union_candidate);
+            return;
+        }
         optixReportIntersection(params.radius, 0u);
     }
 }
@@ -3918,7 +3998,12 @@ extern "C" __global__ void __anyhit__frn3d_grouped_union_anyhit() {
 
     if (params.all_predicate != 0u) {
         if (target > source) {
-            union_grouped_min_root(params.parent_out, (int)source, (int)target);
+            if (params.telemetry_out) {
+                union_grouped_min_root_with_telemetry(
+                    params.parent_out, (int)source, (int)target, params.telemetry_out);
+            } else {
+                union_grouped_min_root(params.parent_out, (int)source, (int)target);
+            }
         }
         optixIgnoreIntersection();
         return;
@@ -3928,10 +4013,21 @@ extern "C" __global__ void __anyhit__frn3d_grouped_union_anyhit() {
     const bool target_predicate = params.predicate_flags[target] != 0u;
     if (source_predicate) {
         if (target > source && target_predicate) {
-            union_grouped_min_root(params.parent_out, (int)source, (int)target);
+            if (params.telemetry_out) {
+                union_grouped_min_root_with_telemetry(
+                    params.parent_out, (int)source, (int)target, params.telemetry_out);
+            } else {
+                union_grouped_min_root(params.parent_out, (int)source, (int)target);
+            }
         }
     } else if (target_predicate) {
-        atomicMin(params.fallback_candidate_out + source, (int)target);
+        if (params.telemetry_out) {
+            atomicAdd(params.telemetry_out + 2, 1ull);
+        }
+        const int old = atomicMin(params.fallback_candidate_out + source, (int)target);
+        if (params.telemetry_out && (int)target < old) {
+            atomicAdd(params.telemetry_out + 3, 1ull);
+        }
     }
     optixIgnoreIntersection();
 }
@@ -5693,6 +5789,7 @@ static RayAnyHitPipeline    g_rayanyhit_flags_device_columns;
 static RayAnyHitPipeline    g_rayanyhit_witness_device_columns;
 static RayAnyHitPipeline    g_rayanyhit_all_witnesses_device_columns;
 static RayAnyHitPipeline    g_rayanyhit_group_flags;
+static RayAnyHitPipeline    g_rayanyhit_group_flags3d;
 static RayAnyHitPipeline    g_frn_count_rt;
 static RayAnyHitPipeline    g_frn_count_host_rt;
 static RayAnyHitPipeline    g_frn_nearest_rt;

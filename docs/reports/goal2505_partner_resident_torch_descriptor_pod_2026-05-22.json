@@ -1,0 +1,100 @@
+{
+  "backend": "optix",
+  "claim_boundary": "Descriptor-only partner-resident columnar handoff. Native OptiX execution, row-id uniqueness validation, true zero-copy, speedup, SQL, DBMS, and whole-app claims are not authorized.",
+  "device": "cuda:0",
+  "field_names": [
+    "row_id",
+    "region_id",
+    "ship_year",
+    "revenue"
+  ],
+  "fields": [
+    {
+      "access_mode": "read",
+      "byte_offset": 0,
+      "data_ptr": 140607488000000,
+      "device": "cuda:0",
+      "direct_device_handoff_authorized": false,
+      "direct_device_pointer_observed": true,
+      "dtype": "torch.int64",
+      "logical_kind": "row_id",
+      "name": "row_id",
+      "shape": [
+        4
+      ],
+      "source_protocol": "torch",
+      "stream_handle": 0,
+      "strides": null,
+      "transfer_mode": "device_descriptor_only",
+      "true_zero_copy_authorized": false
+    },
+    {
+      "access_mode": "read",
+      "byte_offset": 0,
+      "data_ptr": 140607488000512,
+      "device": "cuda:0",
+      "direct_device_handoff_authorized": false,
+      "direct_device_pointer_observed": true,
+      "dtype": "torch.int64",
+      "logical_kind": "int64",
+      "name": "region_id",
+      "shape": [
+        4
+      ],
+      "source_protocol": "torch",
+      "stream_handle": 0,
+      "strides": null,
+      "transfer_mode": "device_descriptor_only",
+      "true_zero_copy_authorized": false
+    },
+    {
+      "access_mode": "read",
+      "byte_offset": 0,
+      "data_ptr": 140607488001024,
+      "device": "cuda:0",
+      "direct_device_handoff_authorized": false,
+      "direct_device_pointer_observed": true,
+      "dtype": "torch.int64",
+      "logical_kind": "int64",
+      "name": "ship_year",
+      "shape": [
+        4
+      ],
+      "source_protocol": "torch",
+      "stream_handle": 0,
+      "strides": null,
+      "transfer_mode": "device_descriptor_only",
+      "true_zero_copy_authorized": false
+    },
+    {
+      "access_mode": "read",
+      "byte_offset": 0,
+      "data_ptr": 140607488001536,
+      "device": "cuda:0",
+      "direct_device_handoff_authorized": false,
+      "direct_device_pointer_observed": true,
+      "dtype": "torch.float64",
+      "logical_kind": "float64",
+      "name": "revenue",
+      "shape": [
+        4
+      ],
+      "source_protocol": "torch",
+      "stream_handle": 0,
+      "strides": null,
+      "transfer_mode": "device_descriptor_only",
+      "true_zero_copy_authorized": false
+    }
+  ],
+  "native_execution_authorized": false,
+  "row_count": 4,
+  "row_id_uniqueness_validated": false,
+  "source_protocols": [
+    "torch"
+  ],
+  "torch_cuda_device_count": 1,
+  "torch_cuda_device_name": "NVIDIA RTX A5000",
+  "torch_version": "2.8.0+cu128",
+  "transfer_mode": "partner_resident_column_descriptor_only",
+  "true_zero_copy_authorized": false
+}

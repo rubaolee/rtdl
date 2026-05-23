@@ -1,0 +1,136 @@
+{
+  "claim_boundary": {
+    "dbscan_native_abi_added": false,
+    "performance_claim_authorized": false,
+    "telemetry_is_instrumentation": true
+  },
+  "goal": "Goal2471",
+  "gpu": "NVIDIA RTX A5000, 570.211.01",
+  "host": "dd76e004260f",
+  "platform": "Linux-6.8.0-85-generic-x86_64-with-glibc2.39",
+  "smoke": {
+    "all_items_telemetry": {
+      "elapsed_sec": 0.0012616909807547927,
+      "fallback_counters_zero": true,
+      "metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "grouped_union_telemetry_contract": "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes",
+        "grouped_union_telemetry_requested": true,
+        "item_count": 512,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.0009298350196331739,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "predicate_mode": "all_items_true_no_fallback_candidates",
+        "query_count": 512,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.5,
+        "rt_core_accelerated": true,
+        "search_count": 512,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "parent_attempts_positive": true,
+      "parent_successes_positive": true,
+      "telemetry": [
+        1120,
+        511,
+        0,
+        0
+      ]
+    },
+    "default": {
+      "elapsed_sec": 0.36527238693088293,
+      "metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "grouped_union_telemetry_contract": null,
+        "grouped_union_telemetry_requested": false,
+        "item_count": 512,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.3648804349359125,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "predicate_mode": "all_items_true_no_fallback_candidates",
+        "query_count": 512,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.5,
+        "rt_core_accelerated": true,
+        "search_count": 512,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      }
+    },
+    "point_count": 512,
+    "predicate_telemetry": {
+      "elapsed_sec": 0.001238764962181449,
+      "fallback_attempts_positive": true,
+      "metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "grouped_union_telemetry_contract": "uint64[0]=parent_atomic_attempts,uint64[1]=parent_atomic_successes,uint64[2]=fallback_atomic_attempts,uint64[3]=fallback_atomic_successes",
+        "grouped_union_telemetry_requested": true,
+        "item_count": 512,
+        "materializes_directed_adjacency_stream": false,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.0010164149571210146,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+        "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+        "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_telemetry",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "query_count": 512,
+        "query_index_offset": 0,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 0.5,
+        "rt_core_accelerated": true,
+        "search_count": 512,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "telemetry": [
+        768,
+        254,
+        21763,
+        1217
+      ]
+    },
+    "radius": 0.5,
+    "seed": 20260520,
+    "telemetry_overhead_ratio": 0.003454109935207149
+  },
+  "source_commit": "",
+  "status": "pass"
+}

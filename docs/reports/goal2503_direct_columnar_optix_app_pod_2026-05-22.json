@@ -1,0 +1,150 @@
+{
+  "all_match_cpu_reference": true,
+  "app": "raydb_style_columnar_aggregate",
+  "backend": "optix",
+  "claim_boundary": "OptiX count/sum parity for the synthetic RayDB-style contract. No authors-code, SQL engine, DBMS, or speedup claim.",
+  "modes": {
+    "count": {
+      "app": "raydb_style_columnar_aggregate",
+      "backend": "optix",
+      "matches_cpu_reference": true,
+      "metadata": {
+        "authors_code_comparison": false,
+        "claim_boundary": "OptiX parity for count/sum over the synthetic RayDB-style columnar aggregate contract. This uses existing generic columnar payload capability through direct record-set preparation; it does not add native RayDB ABI, reproduce RayDB, or authorize performance wording.",
+        "columnar_preparation": {
+          "all_numeric_columns_use_typed_host_buffers": false,
+          "copied_column_count": 6,
+          "copied_columns": [
+            "row_id",
+            "region_id",
+            "ship_year",
+            "discount",
+            "quantity",
+            "revenue"
+          ],
+          "native_abi_added": false,
+          "text_encoded_column_count": 0,
+          "text_encoded_columns": [],
+          "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+          "true_zero_copy_authorized": false,
+          "typed_host_buffer_column_count": 0,
+          "typed_host_buffer_columns": []
+        },
+        "contract": "columnar_grouped_aggregate_optix_columnar_payload",
+        "direct_columnar_record_set_api": true,
+        "fixture": "tiny_denormalized_columnar",
+        "lowering_plan": {
+          "backend": "optix",
+          "claim_boundary": "Native count/sum parity only. The path avoids Python row-mapping materialization and can reuse matching typed host buffers, but it still may stage unsupported columns and does not authorize min/max support, true zero-copy, public speedup, or whole-app wording.",
+          "direct_columnar_record_set_api": true,
+          "materializes_input_rows_for_wrapper": false,
+          "next_engine_target": "partner_resident_column_handoff",
+          "requires_runtime_validation": true,
+          "supported_aggregates": [
+            "count",
+            "sum"
+          ],
+          "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+          "true_zero_copy_authorized": false,
+          "unsupported_aggregates": [
+            "min",
+            "max",
+            "avg_as_sum_count"
+          ],
+          "uses_compatibility_wrapper": false
+        },
+        "materializes_input_rows_for_wrapper": false,
+        "native_abi_added": false,
+        "paper_reproduction": false,
+        "rt_core_accelerated": true,
+        "uses_existing_compatibility_wrapper": false
+      },
+      "mode": "count",
+      "rows": [
+        {
+          "count": 2,
+          "region_id": 0
+        },
+        {
+          "count": 1,
+          "region_id": 1
+        },
+        {
+          "count": 1,
+          "region_id": 2
+        }
+      ]
+    },
+    "sum": {
+      "app": "raydb_style_columnar_aggregate",
+      "backend": "optix",
+      "matches_cpu_reference": true,
+      "metadata": {
+        "authors_code_comparison": false,
+        "claim_boundary": "OptiX parity for count/sum over the synthetic RayDB-style columnar aggregate contract. This uses existing generic columnar payload capability through direct record-set preparation; it does not add native RayDB ABI, reproduce RayDB, or authorize performance wording.",
+        "columnar_preparation": {
+          "all_numeric_columns_use_typed_host_buffers": false,
+          "copied_column_count": 6,
+          "copied_columns": [
+            "row_id",
+            "region_id",
+            "ship_year",
+            "discount",
+            "quantity",
+            "revenue"
+          ],
+          "native_abi_added": false,
+          "text_encoded_column_count": 0,
+          "text_encoded_columns": [],
+          "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+          "true_zero_copy_authorized": false,
+          "typed_host_buffer_column_count": 0,
+          "typed_host_buffer_columns": []
+        },
+        "contract": "columnar_grouped_aggregate_optix_columnar_payload",
+        "direct_columnar_record_set_api": true,
+        "fixture": "tiny_denormalized_columnar",
+        "lowering_plan": {
+          "backend": "optix",
+          "claim_boundary": "Native count/sum parity only. The path avoids Python row-mapping materialization and can reuse matching typed host buffers, but it still may stage unsupported columns and does not authorize min/max support, true zero-copy, public speedup, or whole-app wording.",
+          "direct_columnar_record_set_api": true,
+          "materializes_input_rows_for_wrapper": false,
+          "next_engine_target": "partner_resident_column_handoff",
+          "requires_runtime_validation": true,
+          "supported_aggregates": [
+            "count",
+            "sum"
+          ],
+          "transfer_path": "direct_columnar_record_set_to_columnar_payload",
+          "true_zero_copy_authorized": false,
+          "unsupported_aggregates": [
+            "min",
+            "max",
+            "avg_as_sum_count"
+          ],
+          "uses_compatibility_wrapper": false
+        },
+        "materializes_input_rows_for_wrapper": false,
+        "native_abi_added": false,
+        "paper_reproduction": false,
+        "rt_core_accelerated": true,
+        "uses_existing_compatibility_wrapper": false
+      },
+      "mode": "sum",
+      "rows": [
+        {
+          "region_id": 0,
+          "sum": 190
+        },
+        {
+          "region_id": 1,
+          "sum": 200
+        },
+        {
+          "region_id": 2,
+          "sum": 80
+        }
+      ]
+    }
+  }
+}

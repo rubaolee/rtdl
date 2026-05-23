@@ -14,7 +14,7 @@
   "blocked_or_excluded_row_count": 20,
   "boundary": "This manifest prepares the v1.6.11 versus v1.0 performance comparison. It does not publish v1.6.11, authorize a tag, or authorize public speedup wording. Final evidence needs a pod because OptiX/NVIDIA RT rows require real NVIDIA RT hardware.",
   "comparison": "v1.6.11_vs_v1.0_by_app_and_engine",
-  "current_head": "aee364d677442994958d87dacf3f814360c20ffa",
+  "current_head": "a9193856547bf692069955a3dbaf6c3e00c09b1b",
   "current_version": "v1.6.11",
   "engines": [
     "embree",

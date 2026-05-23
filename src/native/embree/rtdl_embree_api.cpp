@@ -77,6 +77,28 @@ struct PreparedKnnRows2DImpl {
   }
 };
 
+struct PreparedTriangleScene3DImpl {
+  std::vector<Triangle3D> triangle_values;
+  TriangleSceneData3D scene_data;
+  EmbreeDevice device;
+  SceneHolder holder;
+
+  explicit PreparedTriangleScene3DImpl(std::vector<Triangle3D> triangles)
+      : triangle_values(std::move(triangles)),
+        scene_data {&triangle_values},
+        device(),
+        holder(device.device) {
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(triangle_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &scene_data);
+    rtcSetGeometryBoundsFunction(holder.geometry, triangle_bounds_3d, nullptr);
+    rtcSetGeometryOccludedFunction(holder.geometry, triangle_occluded_3d);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+  }
+};
+
 struct SegmentEndpointKey {
   double x;
   double y;
@@ -1238,6 +1260,130 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_closest_hit_3d(
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_static_triangle_scene_3d_create(
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    void** handle_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle_out == nullptr) {
+      throw std::runtime_error("handle output pointer must not be null");
+    }
+    if (triangle_count != 0 && triangles == nullptr) {
+      throw std::runtime_error("triangle pointer must not be null when triangle_count is nonzero");
+    }
+    *handle_out = nullptr;
+    std::vector<Triangle3D> triangle_values;
+    triangle_values.reserve(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+      triangle_values.push_back({
+          triangles[i].id,
+          {triangles[i].x0, triangles[i].y0, triangles[i].z0},
+          {triangles[i].x1, triangles[i].y1, triangles[i].z1},
+          {triangles[i].x2, triangles[i].y2, triangles[i].z2},
+      });
+    }
+    *handle_out = new PreparedTriangleScene3DImpl(std::move(triangle_values));
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags(
+    void* handle,
+    const RtdlSegment3D* segments,
+    size_t segment_count,
+    const uint32_t* group_offsets,
+    size_t group_count,
+    uint8_t* flags_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr) {
+      throw std::runtime_error("prepared scene handle must not be null");
+    }
+    if (segment_count != 0 && segments == nullptr) {
+      throw std::runtime_error("segment pointer must not be null when segment_count is nonzero");
+    }
+    if (group_count != 0 && (group_offsets == nullptr || flags_out == nullptr)) {
+      throw std::runtime_error("group offsets and flags output must not be null when group_count is nonzero");
+    }
+    auto* prepared = reinterpret_cast<PreparedTriangleScene3DImpl*>(handle);
+    if (traversal_seconds_out != nullptr) {
+      *traversal_seconds_out = 0.0;
+    }
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+      flags_out[group_index] = 0u;
+    }
+    if (group_count == 0) {
+      return;
+    }
+    if (group_offsets[0] != 0u) {
+      throw std::runtime_error("first group offset must be zero");
+    }
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+      const uint32_t begin = group_offsets[group_index];
+      const uint32_t end = group_offsets[group_index + 1];
+      if (end < begin) {
+        throw std::runtime_error("group offsets must be monotonic");
+      }
+      if (static_cast<size_t>(end) > segment_count) {
+        throw std::runtime_error("group offsets exceed segment_count");
+      }
+    }
+    std::vector<RayQuery3D> segment_values;
+    segment_values.reserve(segment_count);
+    for (size_t i = 0; i < segment_count; ++i) {
+      const double dx = segments[i].x1 - segments[i].x0;
+      const double dy = segments[i].y1 - segments[i].y0;
+      const double dz = segments[i].z1 - segments[i].z0;
+      if (!std::isfinite(segments[i].x0) || !std::isfinite(segments[i].y0) ||
+          !std::isfinite(segments[i].z0) || !std::isfinite(segments[i].x1) ||
+          !std::isfinite(segments[i].y1) || !std::isfinite(segments[i].z1)) {
+        throw std::runtime_error("segment coordinates must be finite");
+      }
+      if (dx == 0.0 && dy == 0.0 && dz == 0.0) {
+        throw std::runtime_error("zero-length segments are invalid");
+      }
+      segment_values.push_back({segments[i].id, {segments[i].x0, segments[i].y0, segments[i].z0}, {dx, dy, dz}, 1.0});
+    }
+    const auto traversal_start = std::chrono::steady_clock::now();
+    for (size_t group_index = 0; group_index < group_count; ++group_index) {
+      const uint32_t begin = group_offsets[group_index];
+      const uint32_t end = group_offsets[group_index + 1];
+      for (uint32_t segment_index = begin; segment_index < end; ++segment_index) {
+        const RayQuery3D& segment = segment_values[segment_index];
+        uint32_t any_hit = 0u;
+        RayAnyHitState3D state {&segment, &any_hit};
+        g_query_kind = QueryKind::kRayAnyHit;
+        g_query_state = &state;
+        RTCRay embree_ray;
+        set_ray_occluded_3d(&embree_ray, segment.o, segment.d, segment.tmax);
+        RTCOccludedArguments args;
+        rtcInitOccludedArguments(&args);
+        rtdlRtcOccluded1(prepared->holder.scene, &embree_ray, &args);
+        g_query_kind = QueryKind::kNone;
+        g_query_state = nullptr;
+        if (any_hit != 0u) {
+          flags_out[group_index] = 1u;
+          break;
+        }
+      }
+    }
+    g_query_kind = QueryKind::kNone;
+    g_query_state = nullptr;
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out != nullptr) {
+      *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+    }
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT void rtdl_embree_static_triangle_scene_3d_destroy(void* handle) {
+  auto* prepared = reinterpret_cast<PreparedTriangleScene3DImpl*>(handle);
+  delete prepared;
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_shape_hitcount(

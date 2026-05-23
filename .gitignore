@@ -6,5 +6,8 @@ deck_status/
 *.log
 *.tmp.py
 /HANDOFF_*.md
+scratch/
+docs/reports/*_source_*.tar.gz
+!docs/reports/goal2550_barnes_hut_authors_new_mode_pod_logs/*.log
 scratch/public_hausdorff/
 docs/reports/goal155_external_review_gemini_2026-04-07.md
