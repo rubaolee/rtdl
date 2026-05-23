@@ -1,0 +1,169 @@
+{
+  "schema": "rtdl.benchmark_app_evidence_manifest.v1",
+  "date": "2026-05-23",
+  "snapshot_label": "internal-benchmark-apps-2026-05-23",
+  "source_tree_policy": "source-tree execution only: PYTHONPATH=src:. python ...",
+  "release_status": "internal snapshot evidence only",
+  "claim_boundary": "This manifest supports internal and external review of benchmark-app evidence. It does not authorize public release wording, public speedup claims, whole-app acceleration claims, authors-code reproduction claims, SQL/DBMS claims, robot-solver claims, or native app-specific ABI claims.",
+  "consensus_sources": [
+    "docs/reports/goal2529_finished_benchmark_apps_consensus_packet_2026-05-23.md",
+    "docs/reports/goal2529_claude_review_finished_benchmark_apps_2026-05-23.md",
+    "docs/reports/goal2551_codex_gemini_claude_consensus_benchmark_app_wave_2026-05-23.md"
+  ],
+  "apps": [
+    {
+      "app_id": "rt_dbscan",
+      "app_name": "RT-DBSCAN",
+      "status": "closed_internal_benchmark",
+      "example_path": "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+      "closeout_report": "docs/reports/goal2478_rt_dbscan_project_completion_2026-05-21.md",
+      "primary_primitives": [
+        "fixed-radius 3-D neighbor search",
+        "threshold-capped count columns",
+        "adjacency stream",
+        "grouped union stream",
+        "partner continuation"
+      ],
+      "backends": {
+        "cpu_reference": "complete",
+        "cupy_partner_grid": "complete",
+        "optix_rt_count_bridge": "complete",
+        "optix_grouped_stream": "complete",
+        "embree": "fallback/reference-oriented"
+      },
+      "correctness_oracle": "CPU tiny reference plus signature-matching pod probes",
+      "performance_artifacts": [
+        "docs/reports/goal2478_rt_dbscan_project_close_pod/summary.json",
+        "docs/reports/goal2425_rt_dbscan_prepared_cupy_fairness_pod_evidence_2026-05-19.md",
+        "docs/reports/goal2422_rt_dbscan_explicit_plan_mode_pod_smoke/goal2422_clustered3d_32768.json"
+      ],
+      "language_runtime_contributions": [
+        "generic fixed-radius continuation planning",
+        "prepared device search points",
+        "grouped stream continuation",
+        "device-side threshold count bridge",
+        "planner evidence policy outside native engine"
+      ],
+      "native_engine_app_specific_abi": false,
+      "authors_code_reproduction_authorized": false,
+      "public_speedup_authorized": false,
+      "claim_boundary": "Not a paper reproduction, not a broad DBSCAN acceleration claim, and no DBSCAN-specific native ABI."
+    },
+    {
+      "app_id": "robot_collision",
+      "app_name": "Robot Collision Screening",
+      "status": "closed_internal_benchmark",
+      "example_path": "examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+      "closeout_report": "docs/reports/goal2491_robot_collision_benchmark_app_closeout_2026-05-22.md",
+      "primary_primitives": [
+        "prepared static triangle scene",
+        "grouped finite 3-D segment probes",
+        "any-hit flags",
+        "group flag compaction",
+        "count-only screening result"
+      ],
+      "backends": {
+        "cpu_reference": "complete",
+        "embree_prepared": "complete",
+        "optix_prepared": "complete",
+        "optix_device_buffers": "complete",
+        "optix_count_only": "complete"
+      },
+      "correctness_oracle": "deterministic sampled finite-segment probe reference",
+      "performance_artifacts": [
+        "docs/reports/goal2491_robot_collision_finish_pod/summary.json",
+        "docs/reports/goal2491_robot_collision_finish_pod/pod_final_matrix.json",
+        "docs/reports/goal2491_robot_collision_finish_local_matrix.json"
+      ],
+      "language_runtime_contributions": [
+        "prepared scene reuse",
+        "host query/output buffer reuse",
+        "device-resident query buffers",
+        "compact grouped any-hit result",
+        "scalar count-only consumption"
+      ],
+      "native_engine_app_specific_abi": false,
+      "authors_code_reproduction_authorized": false,
+      "public_speedup_authorized": false,
+      "claim_boundary": "Not continuous collision detection, not a general robot-collision solver, and no robot/link/pose/planner native ABI."
+    },
+    {
+      "app_id": "raydb_style",
+      "app_name": "RayDB-Style Columnar Aggregate",
+      "status": "closed_internal_benchmark",
+      "example_path": "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+      "closeout_report": "docs/reports/goal2520_raydb_style_partner_resident_closeout_2026-05-23.md",
+      "primary_primitives": [
+        "columnar aggregate plan",
+        "partner-resident device column descriptors",
+        "grouped i64 count/sum/min/max",
+        "fused sum_count",
+        "dense group-capacity contract"
+      ],
+      "backends": {
+        "cpu_reference": "complete",
+        "embree_columnar_count_sum": "complete",
+        "optix_columnar_count_sum": "complete",
+        "optix_partner_resident_grouped_i64": "complete for benchmark slice",
+        "postgresql_oracle": "correctness-only diagnostic",
+        "duckdb_baseline": "diagnostic",
+        "cudf_baseline": "diagnostic"
+      },
+      "correctness_oracle": "CPU grouped aggregate reference plus PostgreSQL same-fixture oracle",
+      "performance_artifacts": [
+        "docs/reports/goal2519_partner_resident_grouped_i64_dispatch_boundary_pod_2026-05-23.json",
+        "docs/reports/goal2527_large_same_contract_performance_matrix_pod_2026-05-23.json",
+        "docs/reports/goal2527_large_same_contract_external_pod_2026-05-23.json"
+      ],
+      "language_runtime_contributions": [
+        "columnar predicate/reduction vocabulary",
+        "partner-resident descriptor boundary",
+        "compact grouped output materialization",
+        "fail-closed group capacity overflow reporting",
+        "uniform grouped i64 dispatcher"
+      ],
+      "native_engine_app_specific_abi": false,
+      "authors_code_reproduction_authorized": false,
+      "public_speedup_authorized": false,
+      "claim_boundary": "Not a RayDB reproduction, not SQL/DBMS, not authors-code comparison, and no true zero-copy public claim."
+    },
+    {
+      "app_id": "barnes_hut",
+      "app_name": "Barnes-Hut / RT-BarnesHut-Style",
+      "status": "closed_internal_benchmark",
+      "example_path": "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+      "closeout_report": "docs/reports/goal2550_barnes_hut_final_performance_and_closeout_2026-05-23.md",
+      "primary_primitives": [
+        "aggregate tree rows",
+        "opening-frontier traversal contract",
+        "subtree containment diagnostics",
+        "partner-resident fused accumulation",
+        "app-side inverse-square interpretation"
+      ],
+      "backends": {
+        "python_reference": "complete",
+        "multithreaded_cpu_baseline": "diagnostic",
+        "torch_cuda_partner": "complete for benchmark slice",
+        "authors_artifact_new_mode": "orientation-only",
+        "native_optix_force_primitive": "rejected"
+      },
+      "correctness_oracle": "RTDL Python reference structural-count and scalar-error checks",
+      "performance_artifacts": [
+        "docs/reports/goal2550_barnes_hut_final_3d_scalar_subtree_pod_32768_2026-05-23.json",
+        "docs/reports/goal2550_barnes_hut_authors_new_mode_pod_logs/rtbarneshut_final_new_32768_repeat_1_2026-05-23.log",
+        "docs/reports/goal2532_barnes_hut_multithreaded_cpu_baseline_local_8192_2026-05-23.json"
+      ],
+      "language_runtime_contributions": [
+        "aggregate-frontier contract pressure",
+        "materialization-pressure accounting",
+        "partner-resident fused accumulation diagnostics",
+        "native-engine rejection of app-specific inverse-square force math",
+        "future operator plug-in requirement"
+      ],
+      "native_engine_app_specific_abi": false,
+      "authors_code_reproduction_authorized": false,
+      "public_speedup_authorized": false,
+      "claim_boundary": "Not a same-contract RT-BarnesHut paper reproduction, not a native OptiX force primitive, and no public speedup ratio is authorized."
+    }
+  ]
+}
