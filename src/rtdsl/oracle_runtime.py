@@ -339,6 +339,14 @@ class _RtdlDbGroupedSumRow(ctypes.Structure):
     ]
 
 
+_RtdlColumnField = _RtdlDbField
+_RtdlColumnScalar = _RtdlDbScalar
+_RtdlColumnClause = _RtdlDbClause
+_RtdlColumnRowIdRow = _RtdlDbRowIdRow
+_RtdlGroupedCountRow = _RtdlDbGroupedCountRow
+_RtdlGroupedSumRow = _RtdlDbGroupedSumRow
+
+
 def oracle_version() -> tuple[int, int, int]:
     library = _load_oracle_library()
     major = ctypes.c_int()
@@ -535,6 +543,18 @@ _DB_OP_GT = 4
 _DB_OP_GE = 5
 _DB_OP_BETWEEN = 6
 
+_COLUMN_KIND_INT64 = _DB_KIND_INT64
+_COLUMN_KIND_FLOAT64 = _DB_KIND_FLOAT64
+_COLUMN_KIND_BOOL = _DB_KIND_BOOL
+_COLUMN_KIND_TEXT = _DB_KIND_TEXT
+
+_COLUMN_OP_EQ = _DB_OP_EQ
+_COLUMN_OP_LT = _DB_OP_LT
+_COLUMN_OP_LE = _DB_OP_LE
+_COLUMN_OP_GT = _DB_OP_GT
+_COLUMN_OP_GE = _DB_OP_GE
+_COLUMN_OP_BETWEEN = _DB_OP_BETWEEN
+
 
 def _encode_db_scalar(value) -> _RtdlDbScalar:
     if value is None:
@@ -671,6 +691,16 @@ def _encode_db_clause(clause) -> _RtdlDbClause:
 def _encode_db_clauses(clauses) -> object:
     records = [_encode_db_clause(clause) for clause in clauses]
     return (_RtdlDbClause * len(records))(*records)
+
+
+_encode_columnar_scalar = _encode_db_scalar
+_encode_columnar_field_kind = _encode_db_field_kind
+_encode_columnar_table = _encode_db_table
+_encode_columnar_text_fields = _encode_db_text_fields
+_encode_columnar_text_clause_values = _encode_db_text_clause_values
+_decode_columnar_group_key = _decode_db_group_key
+_encode_columnar_clause = _encode_db_clause
+_encode_columnar_clauses = _encode_db_clauses
 
 
 def _run_bfs_expand_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
