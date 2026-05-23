@@ -1,30 +1,30 @@
-constexpr uint32_t kDbKindInt64 = 1u;
-constexpr uint32_t kDbKindFloat64 = 2u;
-constexpr uint32_t kDbKindBool = 3u;
-constexpr uint32_t kDbKindText = 4u;
+constexpr uint32_t kColumnKindInt64 = 1u;
+constexpr uint32_t kColumnKindFloat64 = 2u;
+constexpr uint32_t kColumnKindBool = 3u;
+constexpr uint32_t kColumnKindText = 4u;
 
-constexpr uint32_t kDbOpEq = 1u;
-constexpr uint32_t kDbOpLt = 2u;
-constexpr uint32_t kDbOpLe = 3u;
-constexpr uint32_t kDbOpGt = 4u;
-constexpr uint32_t kDbOpGe = 5u;
-constexpr uint32_t kDbOpBetween = 6u;
+constexpr uint32_t kColumnOpEq = 1u;
+constexpr uint32_t kColumnOpLt = 2u;
+constexpr uint32_t kColumnOpLe = 3u;
+constexpr uint32_t kColumnOpGt = 4u;
+constexpr uint32_t kColumnOpGe = 5u;
+constexpr uint32_t kColumnOpBetween = 6u;
 
-constexpr size_t kDbMaxRowsPerJob = 1000000;
-constexpr size_t kDbMaxCandidateRowsPerJob = 1000000;
-constexpr size_t kDbMaxGroupsPerJob = 65536;
+constexpr size_t kColumnarMaxRowsPerJob = 1000000;
+constexpr size_t kColumnarMaxCandidateRowsPerJob = 1000000;
+constexpr size_t kColumnarMaxGroupsPerJob = 65536;
 constexpr size_t kDeviceColumnGroupedMaxRowsPerJob = 100000000;
-constexpr float kDbBoxPad = 1.0e-3f;
+constexpr float kColumnarBoxPad = 1.0e-3f;
 constexpr float kGraphEdgeBoxPad = 1.0e-3f;
 
-struct DbPrimaryAxis {
+struct ColumnarPrimaryAxis {
     size_t field_index;
     std::vector<double> sorted_values;
     int64_t encoded_lo;
     int64_t encoded_hi;
 };
 
-struct DbRowMeta {
+struct ColumnarRowMeta {
     size_t row_index;
     uint32_t row_id;
 };
@@ -41,14 +41,14 @@ struct ColumnarPredicateScanLaunchParams {
     uint32_t y_count;
 };
 
-struct OptixDbDatasetImpl {
+struct OptixColumnarPayloadImpl {
     std::vector<std::string> field_names;
     std::vector<RtdlColumnField> fields;
     std::vector<std::string> scalar_strings;
     std::vector<RtdlColumnScalar> row_values;
     size_t row_count = 0;
-    std::vector<DbPrimaryAxis> primary_axes;
-    std::vector<DbRowMeta> row_metas;
+    std::vector<ColumnarPrimaryAxis> primary_axes;
+    std::vector<ColumnarRowMeta> row_metas;
     std::vector<OptixAabb> aabbs;
     AccelHolder accel;
 };
@@ -64,12 +64,12 @@ struct GpuGraphTriangleCandidate {
     uint32_t dst_vertex;
 };
 
-thread_local double g_optix_last_db_traversal_s = 0.0;
-thread_local double g_optix_last_db_bitset_copy_s = 0.0;
-thread_local double g_optix_last_db_exact_filter_s = 0.0;
-thread_local double g_optix_last_db_output_pack_s = 0.0;
-thread_local size_t g_optix_last_db_raw_candidate_count = 0;
-thread_local size_t g_optix_last_db_emitted_count = 0;
+thread_local double g_optix_last_columnar_traversal_s = 0.0;
+thread_local double g_optix_last_columnar_bitset_copy_s = 0.0;
+thread_local double g_optix_last_columnar_exact_filter_s = 0.0;
+thread_local double g_optix_last_columnar_output_pack_s = 0.0;
+thread_local size_t g_optix_last_columnar_raw_candidate_count = 0;
+thread_local size_t g_optix_last_columnar_emitted_count = 0;
 
 thread_local double g_optix_last_segment_pair_left_upload_s = 0.0;
 thread_local double g_optix_last_segment_pair_candidate_count_s = 0.0;
@@ -110,12 +110,12 @@ extern "C" int rtdl_optix_columnar_payload_get_last_phase_timings(
         size_t* raw_candidate_count,
         size_t* emitted_count)
 {
-    if (traversal) *traversal = g_optix_last_db_traversal_s;
-    if (bitset_copy) *bitset_copy = g_optix_last_db_bitset_copy_s;
-    if (exact_filter) *exact_filter = g_optix_last_db_exact_filter_s;
-    if (output_pack) *output_pack = g_optix_last_db_output_pack_s;
-    if (raw_candidate_count) *raw_candidate_count = g_optix_last_db_raw_candidate_count;
-    if (emitted_count) *emitted_count = g_optix_last_db_emitted_count;
+    if (traversal) *traversal = g_optix_last_columnar_traversal_s;
+    if (bitset_copy) *bitset_copy = g_optix_last_columnar_bitset_copy_s;
+    if (exact_filter) *exact_filter = g_optix_last_columnar_exact_filter_s;
+    if (output_pack) *output_pack = g_optix_last_columnar_output_pack_s;
+    if (raw_candidate_count) *raw_candidate_count = g_optix_last_columnar_raw_candidate_count;
+    if (emitted_count) *emitted_count = g_optix_last_columnar_emitted_count;
     return 0;
 }
 
@@ -237,23 +237,23 @@ static double seconds_between(
     return std::chrono::duration<double>(end - start).count();
 }
 
-static size_t db_find_field_index_or_throw(
+static size_t columnar_find_field_index_or_throw(
         const RtdlColumnField* fields,
         size_t field_count,
         const char* name)
 {
     if (!name) {
-        throw std::runtime_error("DB field name must not be null");
+        throw std::runtime_error("columnar field name must not be null");
     }
     for (size_t index = 0; index < field_count; ++index) {
         if (fields[index].name && std::strcmp(fields[index].name, name) == 0) {
             return index;
         }
     }
-    throw std::runtime_error(std::string("unknown DB field: ") + name);
+    throw std::runtime_error(std::string("unknown columnar field: ") + name);
 }
 
-static const RtdlColumnScalar& db_row_value(
+static const RtdlColumnScalar& columnar_row_value(
         const RtdlColumnScalar* row_values,
         size_t row_index,
         size_t field_count,
@@ -262,47 +262,47 @@ static const RtdlColumnScalar& db_row_value(
     return row_values[row_index * field_count + field_index];
 }
 
-static bool db_scalar_is_numeric(const RtdlColumnScalar& value)
+static bool columnar_scalar_is_numeric(const RtdlColumnScalar& value)
 {
-    return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
+    return value.kind == kColumnKindInt64 || value.kind == kColumnKindFloat64 || value.kind == kColumnKindBool;
 }
 
-static bool db_field_kind_is_numeric(uint32_t kind)
+static bool columnar_field_kind_is_numeric(uint32_t kind)
 {
-    return kind == kDbKindInt64 || kind == kDbKindFloat64 || kind == kDbKindBool;
+    return kind == kColumnKindInt64 || kind == kColumnKindFloat64 || kind == kColumnKindBool;
 }
 
-static double db_scalar_as_double(const RtdlColumnScalar& value)
+static double columnar_scalar_as_double(const RtdlColumnScalar& value)
 {
-    if (value.kind == kDbKindInt64 || value.kind == kDbKindBool) {
+    if (value.kind == kColumnKindInt64 || value.kind == kColumnKindBool) {
         return static_cast<double>(value.int_value);
     }
-    if (value.kind == kDbKindFloat64) {
+    if (value.kind == kColumnKindFloat64) {
         return value.double_value;
     }
-    throw std::runtime_error("DB scalar is not numeric");
+    throw std::runtime_error("columnar scalar is not numeric");
 }
 
-static int db_compare_scalar(const RtdlColumnScalar& left, const RtdlColumnScalar& right)
+static int columnar_compare_scalar(const RtdlColumnScalar& left, const RtdlColumnScalar& right)
 {
     if (left.kind != right.kind) {
-        const double lhs = db_scalar_as_double(left);
-        const double rhs = db_scalar_as_double(right);
+        const double lhs = columnar_scalar_as_double(left);
+        const double rhs = columnar_scalar_as_double(right);
         if (lhs < rhs) return -1;
         if (lhs > rhs) return 1;
         return 0;
     }
     switch (left.kind) {
-        case kDbKindInt64:
-        case kDbKindBool:
+        case kColumnKindInt64:
+        case kColumnKindBool:
             if (left.int_value < right.int_value) return -1;
             if (left.int_value > right.int_value) return 1;
             return 0;
-        case kDbKindFloat64:
+        case kColumnKindFloat64:
             if (left.double_value < right.double_value) return -1;
             if (left.double_value > right.double_value) return 1;
             return 0;
-        case kDbKindText: {
+        case kColumnKindText: {
             const char* lhs = left.string_value ? left.string_value : "";
             const char* rhs = right.string_value ? right.string_value : "";
             const int cmp = std::strcmp(lhs, rhs);
@@ -311,32 +311,32 @@ static int db_compare_scalar(const RtdlColumnScalar& left, const RtdlColumnScala
             return 0;
         }
         default:
-            throw std::runtime_error("unsupported DB scalar kind");
+            throw std::runtime_error("unsupported columnar scalar kind");
     }
 }
 
-static bool db_clause_matches_scalar(const RtdlColumnClause& clause, const RtdlColumnScalar& candidate)
+static bool columnar_clause_matches_scalar(const RtdlColumnClause& clause, const RtdlColumnScalar& candidate)
 {
-    const int cmp_lo = db_compare_scalar(candidate, clause.value);
+    const int cmp_lo = columnar_compare_scalar(candidate, clause.value);
     switch (clause.op) {
-        case kDbOpEq:
+        case kColumnOpEq:
             return cmp_lo == 0;
-        case kDbOpLt:
+        case kColumnOpLt:
             return cmp_lo < 0;
-        case kDbOpLe:
+        case kColumnOpLe:
             return cmp_lo <= 0;
-        case kDbOpGt:
+        case kColumnOpGt:
             return cmp_lo > 0;
-        case kDbOpGe:
+        case kColumnOpGe:
             return cmp_lo >= 0;
-        case kDbOpBetween:
-            return cmp_lo >= 0 && db_compare_scalar(candidate, clause.value_hi) <= 0;
+        case kColumnOpBetween:
+            return cmp_lo >= 0 && columnar_compare_scalar(candidate, clause.value_hi) <= 0;
         default:
-            throw std::runtime_error("unsupported DB clause op");
+            throw std::runtime_error("unsupported columnar clause op");
     }
 }
 
-static bool db_row_matches_all_clauses(
+static bool columnar_row_matches_all_clauses(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -345,16 +345,16 @@ static bool db_row_matches_all_clauses(
         size_t clause_count)
 {
     for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
-        const size_t field_index = db_find_field_index_or_throw(fields, field_count, clauses[clause_index].field);
-        const RtdlColumnScalar& candidate = db_row_value(row_values, row_index, field_count, field_index);
-        if (!db_clause_matches_scalar(clauses[clause_index], candidate)) {
+        const size_t field_index = columnar_find_field_index_or_throw(fields, field_count, clauses[clause_index].field);
+        const RtdlColumnScalar& candidate = columnar_row_value(row_values, row_index, field_count, field_index);
+        if (!columnar_clause_matches_scalar(clauses[clause_index], candidate)) {
             return false;
         }
     }
     return true;
 }
 
-static std::vector<double> db_sorted_distinct_numeric_values(
+static std::vector<double> columnar_sorted_distinct_numeric_values(
         const RtdlColumnScalar* row_values,
         size_t row_count,
         size_t field_count,
@@ -363,52 +363,52 @@ static std::vector<double> db_sorted_distinct_numeric_values(
     std::vector<double> values;
     values.reserve(row_count);
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
-        const RtdlColumnScalar& value = db_row_value(row_values, row_index, field_count, field_index);
-        if (!db_scalar_is_numeric(value)) {
-            throw std::runtime_error("first-wave OptiX DB lowering requires numeric primary scan clauses");
+        const RtdlColumnScalar& value = columnar_row_value(row_values, row_index, field_count, field_index);
+        if (!columnar_scalar_is_numeric(value)) {
+            throw std::runtime_error("first-wave OptiX columnar lowering requires numeric primary scan clauses");
         }
-        values.push_back(db_scalar_as_double(value));
+        values.push_back(columnar_scalar_as_double(value));
     }
     std::sort(values.begin(), values.end());
     values.erase(std::unique(values.begin(), values.end()), values.end());
     return values;
 }
 
-static bool db_clause_matches_numeric_value(const RtdlColumnClause& clause, double value)
+static bool columnar_clause_matches_numeric_value(const RtdlColumnClause& clause, double value)
 {
-    const double lo = db_scalar_as_double(clause.value);
+    const double lo = columnar_scalar_as_double(clause.value);
     switch (clause.op) {
-        case kDbOpEq:
+        case kColumnOpEq:
             return value == lo;
-        case kDbOpLt:
+        case kColumnOpLt:
             return value < lo;
-        case kDbOpLe:
+        case kColumnOpLe:
             return value <= lo;
-        case kDbOpGt:
+        case kColumnOpGt:
             return value > lo;
-        case kDbOpGe:
+        case kColumnOpGe:
             return value >= lo;
-        case kDbOpBetween:
-            return value >= lo && value <= db_scalar_as_double(clause.value_hi);
+        case kColumnOpBetween:
+            return value >= lo && value <= columnar_scalar_as_double(clause.value_hi);
         default:
-            throw std::runtime_error("unsupported DB clause op");
+            throw std::runtime_error("unsupported columnar clause op");
     }
 }
 
-static DbPrimaryAxis db_make_primary_axis(
+static ColumnarPrimaryAxis columnar_make_primary_axis(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
         size_t row_count,
         const RtdlColumnClause& clause)
 {
-    const size_t field_index = db_find_field_index_or_throw(fields, field_count, clause.field);
+    const size_t field_index = columnar_find_field_index_or_throw(fields, field_count, clause.field);
     const std::vector<double> sorted_values =
-        db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
+        columnar_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
     int64_t encoded_lo = -1;
     int64_t encoded_hi = -1;
     for (size_t index = 0; index < sorted_values.size(); ++index) {
-        if (!db_clause_matches_numeric_value(clause, sorted_values[index])) {
+        if (!columnar_clause_matches_numeric_value(clause, sorted_values[index])) {
             continue;
         }
         const int64_t encoded = static_cast<int64_t>(index + 1);
@@ -423,19 +423,19 @@ static DbPrimaryAxis db_make_primary_axis(
     return {field_index, sorted_values, encoded_lo, encoded_hi};
 }
 
-static DbPrimaryAxis db_make_full_primary_axis(
+static ColumnarPrimaryAxis columnar_make_full_primary_axis(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
         size_t row_count,
         const char* field_name)
 {
-    const size_t field_index = db_find_field_index_or_throw(fields, field_count, field_name);
-    if (!db_field_kind_is_numeric(fields[field_index].kind)) {
-        throw std::runtime_error("first-wave OptiX prepared DB datasets require numeric primary RT axes");
+    const size_t field_index = columnar_find_field_index_or_throw(fields, field_count, field_name);
+    if (!columnar_field_kind_is_numeric(fields[field_index].kind)) {
+        throw std::runtime_error("first-wave OptiX prepared columnar payloads require numeric primary RT axes");
     }
     const std::vector<double> sorted_values =
-        db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
+        columnar_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
     return {
         field_index,
         sorted_values,
@@ -443,13 +443,13 @@ static DbPrimaryAxis db_make_full_primary_axis(
         sorted_values.empty() ? 0 : static_cast<int64_t>(sorted_values.size())};
 }
 
-static DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlColumnClause& clause)
+static ColumnarPrimaryAxis columnar_axis_with_clause_range(const ColumnarPrimaryAxis& axis, const RtdlColumnClause& clause)
 {
-    DbPrimaryAxis ranged = axis;
+    ColumnarPrimaryAxis ranged = axis;
     int64_t encoded_lo = -1;
     int64_t encoded_hi = -1;
     for (size_t index = 0; index < axis.sorted_values.size(); ++index) {
-        if (!db_clause_matches_numeric_value(clause, axis.sorted_values[index])) {
+        if (!columnar_clause_matches_numeric_value(clause, axis.sorted_values[index])) {
             continue;
         }
         const int64_t encoded = static_cast<int64_t>(index + 1);
@@ -463,109 +463,109 @@ static DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const 
     return ranged;
 }
 
-static int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlColumnScalar& value)
+static int64_t columnar_encode_axis_value(const ColumnarPrimaryAxis& axis, const RtdlColumnScalar& value)
 {
-    const double needle = db_scalar_as_double(value);
+    const double needle = columnar_scalar_as_double(value);
     const auto it = std::lower_bound(axis.sorted_values.begin(), axis.sorted_values.end(), needle);
     if (it == axis.sorted_values.end() || *it != needle) {
-        throw std::runtime_error("failed to encode OptiX DB primary-axis value");
+        throw std::runtime_error("failed to encode OptiX columnar primary-axis value");
     }
     return static_cast<int64_t>(std::distance(axis.sorted_values.begin(), it) + 1);
 }
 
-static std::vector<DbRowMeta> db_build_row_metas(
+static std::vector<ColumnarRowMeta> columnar_build_row_metas(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
         size_t row_count)
 {
-    const size_t row_id_index = db_find_field_index_or_throw(fields, field_count, "row_id");
-    std::vector<DbRowMeta> metas;
+    const size_t row_id_index = columnar_find_field_index_or_throw(fields, field_count, "row_id");
+    std::vector<ColumnarRowMeta> metas;
     metas.reserve(row_count);
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
-        const RtdlColumnScalar& row_id_value = db_row_value(row_values, row_index, field_count, row_id_index);
+        const RtdlColumnScalar& row_id_value = columnar_row_value(row_values, row_index, field_count, row_id_index);
         metas.push_back({row_index, static_cast<uint32_t>(row_id_value.int_value)});
     }
     return metas;
 }
 
-static std::vector<OptixAabb> db_build_row_aabbs(
+static std::vector<OptixAabb> columnar_build_row_aabbs(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
         size_t row_count,
-        const std::vector<DbPrimaryAxis>& axes)
+        const std::vector<ColumnarPrimaryAxis>& axes)
 {
     std::vector<OptixAabb> aabbs;
     aabbs.reserve(row_count);
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
         const float x = axes.size() >= 1
-            ? static_cast<float>(db_encode_axis_value(axes[0], db_row_value(row_values, row_index, field_count, axes[0].field_index)))
+            ? static_cast<float>(columnar_encode_axis_value(axes[0], columnar_row_value(row_values, row_index, field_count, axes[0].field_index)))
             : 1.0f;
         const float y = axes.size() >= 2
-            ? static_cast<float>(db_encode_axis_value(axes[1], db_row_value(row_values, row_index, field_count, axes[1].field_index)))
+            ? static_cast<float>(columnar_encode_axis_value(axes[1], columnar_row_value(row_values, row_index, field_count, axes[1].field_index)))
             : 1.0f;
         const float z = axes.size() >= 3
-            ? static_cast<float>(db_encode_axis_value(axes[2], db_row_value(row_values, row_index, field_count, axes[2].field_index)))
+            ? static_cast<float>(columnar_encode_axis_value(axes[2], columnar_row_value(row_values, row_index, field_count, axes[2].field_index)))
             : 1.0f;
         OptixAabb aabb;
-        aabb.minX = x - kDbBoxPad;
-        aabb.minY = y - kDbBoxPad;
-        aabb.minZ = z - kDbBoxPad;
-        aabb.maxX = x + kDbBoxPad;
-        aabb.maxY = y + kDbBoxPad;
-        aabb.maxZ = z + kDbBoxPad;
+        aabb.minX = x - kColumnarBoxPad;
+        aabb.minY = y - kColumnarBoxPad;
+        aabb.minZ = z - kColumnarBoxPad;
+        aabb.maxX = x + kColumnarBoxPad;
+        aabb.maxY = y + kColumnarBoxPad;
+        aabb.maxZ = z + kColumnarBoxPad;
         aabbs.push_back(aabb);
     }
     return aabbs;
 }
 
-static std::vector<DbPrimaryAxis> db_dataset_query_axes(
-        const OptixDbDatasetImpl& dataset,
+static std::vector<ColumnarPrimaryAxis> columnar_dataset_query_axes(
+        const OptixColumnarPayloadImpl& dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count)
 {
-    std::vector<DbPrimaryAxis> axes = dataset.primary_axes;
-    for (DbPrimaryAxis& axis : axes) {
+    std::vector<ColumnarPrimaryAxis> axes = dataset.primary_axes;
+    for (ColumnarPrimaryAxis& axis : axes) {
         const char* axis_field = dataset.fields[axis.field_index].name;
         for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
             if (std::strcmp(axis_field, clauses[clause_index].field) != 0) {
                 continue;
             }
-            axis = db_axis_with_clause_range(axis, clauses[clause_index]);
+            axis = columnar_axis_with_clause_range(axis, clauses[clause_index]);
             break;
         }
     }
     return axes;
 }
 
-static std::vector<const char*> db_default_primary_fields(const RtdlColumnField* fields, size_t field_count)
+static std::vector<const char*> columnar_default_primary_fields(const RtdlColumnField* fields, size_t field_count)
 {
     std::vector<const char*> names;
     for (size_t index = 0; index < field_count && names.size() < 3; ++index) {
         if (std::strcmp(fields[index].name, "row_id") == 0) {
             continue;
         }
-        if (db_field_kind_is_numeric(fields[index].kind)) {
+        if (columnar_field_kind_is_numeric(fields[index].kind)) {
             names.push_back(fields[index].name);
         }
     }
     return names;
 }
 
-static size_t db_count_scalar_strings(const RtdlColumnScalar* row_values, size_t scalar_count)
+static size_t columnar_count_scalar_strings(const RtdlColumnScalar* row_values, size_t scalar_count)
 {
     size_t count = 0;
     for (size_t index = 0; index < scalar_count; ++index) {
-        if (row_values[index].kind == kDbKindText && row_values[index].string_value) {
+        if (row_values[index].kind == kColumnKindText && row_values[index].string_value) {
             ++count;
         }
     }
     return count;
 }
 
-static void db_copy_dataset_payload(
-        OptixDbDatasetImpl& dataset,
+static void columnar_copy_dataset_payload(
+        OptixColumnarPayloadImpl& dataset,
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -581,11 +581,11 @@ static void db_copy_dataset_payload(
     }
 
     const size_t scalar_count = row_count * field_count;
-    dataset.scalar_strings.reserve(db_count_scalar_strings(row_values, scalar_count));
+    dataset.scalar_strings.reserve(columnar_count_scalar_strings(row_values, scalar_count));
     dataset.row_values.reserve(scalar_count);
     for (size_t index = 0; index < scalar_count; ++index) {
         RtdlColumnScalar copied = row_values[index];
-        if (copied.kind == kDbKindText && copied.string_value) {
+        if (copied.kind == kColumnKindText && copied.string_value) {
             dataset.scalar_strings.emplace_back(copied.string_value);
             copied.string_value = dataset.scalar_strings.back().c_str();
         }
@@ -594,7 +594,7 @@ static void db_copy_dataset_payload(
     dataset.row_count = row_count;
 }
 
-static void db_validate_columnar_inputs(
+static void columnar_validate_payload_fields(
         const RtdlPayloadField* fields,
         size_t field_count,
         size_t row_count)
@@ -602,21 +602,21 @@ static void db_validate_columnar_inputs(
     if (!fields || field_count == 0) {
         throw std::runtime_error("payload fields must not be null");
     }
-    if (row_count > kDbMaxRowsPerJob) {
-        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    if (row_count > kColumnarMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX columnar lowering supports at most 1000000 rows per RT job");
     }
     for (size_t field_index = 0; field_index < field_count; ++field_index) {
         const RtdlPayloadField& field = fields[field_index];
         if (!field.name) {
             throw std::runtime_error("field name must not be null");
         }
-        if ((field.kind == kDbKindInt64 || field.kind == kDbKindBool) && !field.int_values) {
+        if ((field.kind == kColumnKindInt64 || field.kind == kColumnKindBool) && !field.int_values) {
             throw std::runtime_error("field integer/bool values must not be null");
         }
-        if (field.kind == kDbKindFloat64 && !field.double_values) {
+        if (field.kind == kColumnKindFloat64 && !field.double_values) {
             throw std::runtime_error("field float values must not be null");
         }
-        if (field.kind == kDbKindText && !field.string_values) {
+        if (field.kind == kColumnKindText && !field.string_values) {
             throw std::runtime_error("field text values must not be null");
         }
     }
@@ -753,17 +753,17 @@ struct DeviceColumnGroupedStatsRow {
 };
 
 enum {
-    RTDL_DB_KIND_INT64 = 1u,
-    RTDL_DB_KIND_FLOAT64 = 2u,
+    RTDL_COLUMN_KIND_INT64 = 1u,
+    RTDL_COLUMN_KIND_FLOAT64 = 2u,
     RTDL_DEVICE_DTYPE_INT64 = 1u,
     RTDL_DEVICE_DTYPE_UINT32 = 2u,
     RTDL_DEVICE_DTYPE_FLOAT64 = 3u,
-    RTDL_DB_OP_EQ = 1u,
-    RTDL_DB_OP_LT = 2u,
-    RTDL_DB_OP_LE = 3u,
-    RTDL_DB_OP_GT = 4u,
-    RTDL_DB_OP_GE = 5u,
-    RTDL_DB_OP_BETWEEN = 6u,
+    RTDL_COLUMN_OP_EQ = 1u,
+    RTDL_COLUMN_OP_LT = 2u,
+    RTDL_COLUMN_OP_LE = 3u,
+    RTDL_COLUMN_OP_GT = 4u,
+    RTDL_COLUMN_OP_GE = 5u,
+    RTDL_COLUMN_OP_BETWEEN = 6u,
     RTDL_GROUPED_OP_COUNT = 1u,
     RTDL_GROUPED_OP_SUM = 2u,
     RTDL_GROUPED_OP_MIN = 3u,
@@ -793,18 +793,18 @@ __device__ long long device_column_read_i64_compatible(const DeviceColumnRuntime
 
 __device__ double device_clause_value_as_double(uint32_t kind, int64_t int_value, double double_value)
 {
-    return kind == RTDL_DB_KIND_FLOAT64 ? double_value : static_cast<double>(int_value);
+    return kind == RTDL_COLUMN_KIND_FLOAT64 ? double_value : static_cast<double>(int_value);
 }
 
 __device__ bool device_clause_matches(double candidate, const DeviceColumnRuntimeClause& clause)
 {
     const double lo = device_clause_value_as_double(clause.value_kind, clause.int_value, clause.double_value);
-    if (clause.op == RTDL_DB_OP_EQ) return candidate == lo;
-    if (clause.op == RTDL_DB_OP_LT) return candidate < lo;
-    if (clause.op == RTDL_DB_OP_LE) return candidate <= lo;
-    if (clause.op == RTDL_DB_OP_GT) return candidate > lo;
-    if (clause.op == RTDL_DB_OP_GE) return candidate >= lo;
-    if (clause.op == RTDL_DB_OP_BETWEEN) {
+    if (clause.op == RTDL_COLUMN_OP_EQ) return candidate == lo;
+    if (clause.op == RTDL_COLUMN_OP_LT) return candidate < lo;
+    if (clause.op == RTDL_COLUMN_OP_LE) return candidate <= lo;
+    if (clause.op == RTDL_COLUMN_OP_GT) return candidate > lo;
+    if (clause.op == RTDL_COLUMN_OP_GE) return candidate >= lo;
+    if (clause.op == RTDL_COLUMN_OP_BETWEEN) {
         const double hi = device_clause_value_as_double(clause.value_kind, clause.int_value_hi, clause.double_value_hi);
         return candidate >= lo && candidate <= hi;
     }
@@ -959,7 +959,7 @@ extern "C" __global__ void device_column_grouped_i64_compact_stats_kernel(
 }
 )CUDA";
 
-static size_t db_device_payload_field_index_or_throw(
+static size_t columnar_device_payload_field_index_or_throw(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         const char* name)
@@ -975,7 +975,7 @@ static size_t db_device_payload_field_index_or_throw(
     throw std::runtime_error(std::string("unknown device-column payload field: ") + name);
 }
 
-static bool db_device_payload_dtype_is_i64_compatible(uint32_t dtype)
+static bool columnar_device_payload_dtype_is_i64_compatible(uint32_t dtype)
 {
     return dtype == kRtdlDevicePayloadDtypeInt64 || dtype == kRtdlDevicePayloadDtypeUint32;
 }
@@ -987,7 +987,7 @@ constexpr uint32_t kDeviceColumnGroupedOpMax = 4u;
 constexpr uint32_t kDeviceColumnGroupedOpSumCount = 5u;
 constexpr uint32_t kDeviceColumnGroupedOpStats = 6u;
 
-static void db_validate_device_payload_grouped_i64_inputs(
+static void columnar_validate_device_payload_grouped_i64_inputs(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
@@ -1003,7 +1003,7 @@ static void db_validate_device_payload_grouped_i64_inputs(
     if (row_count == 0 || row_count > kDeviceColumnGroupedMaxRowsPerJob) {
         throw std::runtime_error("device-column grouped execution row_count must be in 1..100000000");
     }
-    if (group_capacity == 0 || group_capacity > kDbMaxRowsPerJob) {
+    if (group_capacity == 0 || group_capacity > kColumnarMaxRowsPerJob) {
         throw std::runtime_error("device-column grouped execution group_capacity must be in 1..1000000");
     }
     if (clause_count > 0 && !clauses) {
@@ -1052,35 +1052,35 @@ static void db_validate_device_payload_grouped_i64_inputs(
         }
     }
 
-    const size_t group_index = db_device_payload_field_index_or_throw(fields, field_count, group_key_field);
-    if (!db_device_payload_dtype_is_i64_compatible(fields[group_index].dtype)) {
+    const size_t group_index = columnar_device_payload_field_index_or_throw(fields, field_count, group_key_field);
+    if (!columnar_device_payload_dtype_is_i64_compatible(fields[group_index].dtype)) {
         throw std::runtime_error("device-column grouped execution requires an int64-compatible group key");
     }
     if (value_field) {
-        const size_t value_index = db_device_payload_field_index_or_throw(fields, field_count, value_field);
-        if (!db_device_payload_dtype_is_i64_compatible(fields[value_index].dtype)) {
+        const size_t value_index = columnar_device_payload_field_index_or_throw(fields, field_count, value_field);
+        if (!columnar_device_payload_dtype_is_i64_compatible(fields[value_index].dtype)) {
             throw std::runtime_error("device-column grouped value reduction requires an int64-compatible value field");
         }
     }
     for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
         const RtdlColumnClause& clause = clauses[clause_index];
-        const size_t field_index = db_device_payload_field_index_or_throw(fields, field_count, clause.field);
-        if (!db_field_kind_is_numeric(fields[field_index].kind)) {
+        const size_t field_index = columnar_device_payload_field_index_or_throw(fields, field_count, clause.field);
+        if (!columnar_field_kind_is_numeric(fields[field_index].kind)) {
             throw std::runtime_error("device-column grouped execution supports numeric predicates only");
         }
-        if (clause.op < kDbOpEq || clause.op > kDbOpBetween) {
+        if (clause.op < kColumnOpEq || clause.op > kColumnOpBetween) {
             throw std::runtime_error("device-column grouped execution encountered unsupported predicate op");
         }
-        if (!db_scalar_is_numeric(clause.value)) {
+        if (!columnar_scalar_is_numeric(clause.value)) {
             throw std::runtime_error("device-column grouped execution supports numeric predicate values only");
         }
-        if (clause.op == kDbOpBetween && !db_scalar_is_numeric(clause.value_hi)) {
+        if (clause.op == kColumnOpBetween && !columnar_scalar_is_numeric(clause.value_hi)) {
             throw std::runtime_error("device-column grouped execution supports numeric between upper bounds only");
         }
     }
 }
 
-static std::vector<DeviceColumnRuntimeField> db_make_device_runtime_fields(
+static std::vector<DeviceColumnRuntimeField> columnar_make_device_runtime_fields(
         const RtdlDevicePayloadField* fields,
         size_t field_count)
 {
@@ -1092,7 +1092,7 @@ static std::vector<DeviceColumnRuntimeField> db_make_device_runtime_fields(
     return runtime_fields;
 }
 
-static std::vector<DeviceColumnRuntimeClause> db_make_device_runtime_clauses(
+static std::vector<DeviceColumnRuntimeClause> columnar_make_device_runtime_clauses(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         const RtdlColumnClause* clauses,
@@ -1104,7 +1104,7 @@ static std::vector<DeviceColumnRuntimeClause> db_make_device_runtime_clauses(
         const RtdlColumnClause& clause = clauses[index];
         DeviceColumnRuntimeClause encoded{};
         encoded.field_index = static_cast<uint32_t>(
-            db_device_payload_field_index_or_throw(fields, field_count, clause.field));
+            columnar_device_payload_field_index_or_throw(fields, field_count, clause.field));
         encoded.op = clause.op;
         encoded.value_kind = clause.value.kind;
         encoded.int_value = clause.value.int_value;
@@ -1116,7 +1116,7 @@ static std::vector<DeviceColumnRuntimeClause> db_make_device_runtime_clauses(
     return runtime_clauses;
 }
 
-static void db_launch_device_column_grouped_i64(
+static void columnar_launch_device_column_grouped_i64(
         const RtdlDevicePayloadField* fields,
         size_t field_count,
         size_t row_count,
@@ -1135,16 +1135,16 @@ static void db_launch_device_column_grouped_i64(
     if (overflowed_out) {
         *overflowed_out = 0u;
     }
-    db_validate_device_payload_grouped_i64_inputs(
+    columnar_validate_device_payload_grouped_i64_inputs(
         fields, field_count, row_count, clauses, clause_count, group_key_field, value_field, group_capacity);
 
     const std::vector<DeviceColumnRuntimeField> runtime_fields =
-        db_make_device_runtime_fields(fields, field_count);
+        columnar_make_device_runtime_fields(fields, field_count);
     const std::vector<DeviceColumnRuntimeClause> runtime_clauses =
-        db_make_device_runtime_clauses(fields, field_count, clauses, clause_count);
-    const size_t group_index = db_device_payload_field_index_or_throw(fields, field_count, group_key_field);
+        columnar_make_device_runtime_clauses(fields, field_count, clauses, clause_count);
+    const size_t group_index = columnar_device_payload_field_index_or_throw(fields, field_count, group_key_field);
     const size_t value_index = value_field
-        ? db_device_payload_field_index_or_throw(fields, field_count, value_field)
+        ? columnar_device_payload_field_index_or_throw(fields, field_count, value_field)
         : group_index;
 
     std::call_once(g_device_column_grouped_i64.init, [&]() {
@@ -1398,7 +1398,7 @@ static void run_device_column_grouped_count_i64_optix_with_capacity(
     std::vector<RtdlGroupedSumRow> unused_sum_rows;
     std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
     std::vector<RtdlGroupedStatsRow> unused_stats_rows;
-    db_launch_device_column_grouped_i64(
+    columnar_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         nullptr, group_capacity, kDeviceColumnGroupedOpCount,
         rows, unused_sum_rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
@@ -1429,7 +1429,7 @@ static void run_device_column_grouped_count_i64_optix(
     uint32_t overflowed = 0u;
     run_device_column_grouped_count_i64_optix_with_capacity(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
-        kDbMaxGroupsPerJob, rows_out, row_count_out, &overflowed);
+        kColumnarMaxGroupsPerJob, rows_out, row_count_out, &overflowed);
     if (overflowed != 0u) {
         throw std::runtime_error("device-column grouped execution requires dense non-negative group keys below group_capacity");
     }
@@ -1459,7 +1459,7 @@ static void run_device_column_grouped_sum_i64_optix_with_capacity(
     std::vector<RtdlGroupedSumRow> rows;
     std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
     std::vector<RtdlGroupedStatsRow> unused_stats_rows;
-    db_launch_device_column_grouped_i64(
+    columnar_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpSum,
         unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
@@ -1491,7 +1491,7 @@ static void run_device_column_grouped_sum_i64_optix(
     uint32_t overflowed = 0u;
     run_device_column_grouped_sum_i64_optix_with_capacity(
         fields, field_count, row_count, clauses, clause_count, group_key_field, value_field,
-        kDbMaxGroupsPerJob, rows_out, row_count_out, &overflowed);
+        kColumnarMaxGroupsPerJob, rows_out, row_count_out, &overflowed);
     if (overflowed != 0u) {
         throw std::runtime_error("device-column grouped execution requires dense non-negative group keys below group_capacity");
     }
@@ -1521,7 +1521,7 @@ static void run_device_column_grouped_min_i64_optix_with_capacity(
     std::vector<RtdlGroupedSumRow> rows;
     std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
     std::vector<RtdlGroupedStatsRow> unused_stats_rows;
-    db_launch_device_column_grouped_i64(
+    columnar_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpMin,
         unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
@@ -1563,7 +1563,7 @@ static void run_device_column_grouped_max_i64_optix_with_capacity(
     std::vector<RtdlGroupedSumRow> rows;
     std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
     std::vector<RtdlGroupedStatsRow> unused_stats_rows;
-    db_launch_device_column_grouped_i64(
+    columnar_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpMax,
         unused_count_rows, rows, unused_sum_count_rows, unused_stats_rows, overflowed_out);
@@ -1605,7 +1605,7 @@ static void run_device_column_grouped_sum_count_i64_optix_with_capacity(
     std::vector<RtdlGroupedSumRow> unused_sum_rows;
     std::vector<RtdlGroupedSumCountRow> rows;
     std::vector<RtdlGroupedStatsRow> unused_stats_rows;
-    db_launch_device_column_grouped_i64(
+    columnar_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpSumCount,
         unused_count_rows, unused_sum_rows, rows, unused_stats_rows, overflowed_out);
@@ -1648,7 +1648,7 @@ static void run_device_column_grouped_stats_i64_optix_with_capacity(
     std::vector<RtdlGroupedSumRow> unused_sum_rows;
     std::vector<RtdlGroupedSumCountRow> unused_sum_count_rows;
     std::vector<RtdlGroupedStatsRow> rows;
-    db_launch_device_column_grouped_i64(
+    columnar_launch_device_column_grouped_i64(
         fields, field_count, row_count, clauses, clause_count, group_key_field,
         value_field, group_capacity, kDeviceColumnGroupedOpStats,
         unused_count_rows, unused_sum_rows, unused_sum_count_rows, rows, overflowed_out);
@@ -1667,8 +1667,8 @@ static void run_device_column_grouped_stats_i64_optix_with_capacity(
     *row_count_out = rows.size();
 }
 
-static void db_copy_dataset_columnar_payload(
-        OptixDbDatasetImpl& dataset,
+static void columnar_copy_dataset_from_payload_fields(
+        OptixColumnarPayloadImpl& dataset,
         const RtdlPayloadField* fields,
         size_t field_count,
         size_t row_count)
@@ -1684,7 +1684,7 @@ static void db_copy_dataset_columnar_payload(
 
     size_t string_count = 0;
     for (size_t field_index = 0; field_index < field_count; ++field_index) {
-        if (fields[field_index].kind == kDbKindText) {
+        if (fields[field_index].kind == kColumnKindText) {
             string_count += row_count;
         }
     }
@@ -1695,9 +1695,9 @@ static void db_copy_dataset_columnar_payload(
             const RtdlPayloadField& field = fields[field_index];
             RtdlColumnScalar value{};
             value.kind = field.kind;
-            if (field.kind == kDbKindFloat64) {
+            if (field.kind == kColumnKindFloat64) {
                 value.double_value = field.double_values[row_index];
-            } else if (field.kind == kDbKindText) {
+            } else if (field.kind == kColumnKindText) {
                 const char* text = field.string_values[row_index];
                 dataset.scalar_strings.emplace_back(text ? text : "");
                 value.string_value = dataset.scalar_strings.back().c_str();
@@ -1710,7 +1710,7 @@ static void db_copy_dataset_columnar_payload(
     dataset.row_count = row_count;
 }
 
-static void db_validate_db_inputs(
+static void columnar_validate_row_payload_inputs(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -1719,17 +1719,17 @@ static void db_validate_db_inputs(
         size_t clause_count)
 {
     if (!fields || field_count == 0 || !row_values) {
-        throw std::runtime_error("DB table inputs must not be null");
+        throw std::runtime_error("columnar table inputs must not be null");
     }
     if (clause_count > 0 && !clauses) {
-        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+        throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
-    if (row_count > kDbMaxRowsPerJob) {
-        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    if (row_count > kColumnarMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX columnar lowering supports at most 1000000 rows per RT job");
     }
 }
 
-static std::vector<size_t> db_collect_candidate_row_indices_optix(
+static std::vector<size_t> columnar_collect_candidate_row_indices_optix(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -1737,12 +1737,12 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
         const RtdlColumnClause* clauses,
         size_t clause_count)
 {
-    std::vector<DbPrimaryAxis> axes;
+    std::vector<ColumnarPrimaryAxis> axes;
     axes.reserve(std::min<size_t>(clause_count, 3));
     for (size_t i = 0; i < clause_count && i < 3; ++i) {
-        axes.push_back(db_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
+        axes.push_back(columnar_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
     }
-    const std::vector<OptixAabb> aabbs = db_build_row_aabbs(fields, field_count, row_values, row_count, axes);
+    const std::vector<OptixAabb> aabbs = columnar_build_row_aabbs(fields, field_count, row_values, row_count, axes);
 
     const uint32_t x_lo = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_lo) : 1u;
     const uint32_t x_hi = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_hi) : 1u;
@@ -1810,17 +1810,17 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
     }
 
     std::vector<size_t> row_indices;
-    row_indices.reserve(std::min(row_count, kDbMaxCandidateRowsPerJob));
+    row_indices.reserve(std::min(row_count, kColumnarMaxCandidateRowsPerJob));
     for (size_t row_index = 0; row_index < row_count; ++row_index) {
         const uint32_t word = static_cast<uint32_t>(row_index >> 5);
         const uint32_t bit = 1u << (row_index & 31u);
         if ((hit_words[word] & bit) == 0u) {
             continue;
         }
-        if (row_indices.size() >= kDbMaxCandidateRowsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB lowering exceeded the 1000000-candidate ceiling");
+        if (row_indices.size() >= kColumnarMaxCandidateRowsPerJob) {
+            throw std::runtime_error("first-wave OptiX columnar lowering exceeded the 1000000-candidate ceiling");
         }
-        if (!db_row_matches_all_clauses(fields, field_count, row_values, row_index, clauses, clause_count)) {
+        if (!columnar_row_matches_all_clauses(fields, field_count, row_values, row_index, clauses, clause_count)) {
             continue;
         }
         row_indices.push_back(row_index);
@@ -1828,12 +1828,12 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
     return row_indices;
 }
 
-static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
-        const OptixDbDatasetImpl& dataset,
+static std::vector<size_t> columnar_collect_candidate_row_indices_optix_prepared(
+        const OptixColumnarPayloadImpl& dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count)
 {
-    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(dataset, clauses, clause_count);
+    const std::vector<ColumnarPrimaryAxis> axes = columnar_dataset_query_axes(dataset, clauses, clause_count);
     const uint32_t x_lo = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_lo) : 1u;
     const uint32_t x_hi = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_hi) : 1u;
     const uint32_t y_lo = axes.size() >= 2 ? static_cast<uint32_t>(axes[1].encoded_lo) : 1u;
@@ -1892,7 +1892,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         1));
     CU_CHECK(cuStreamSynchronize(stream));
     auto t_end_trav = std::chrono::steady_clock::now();
-    g_optix_last_db_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_columnar_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
 
     auto t_start_copy = std::chrono::steady_clock::now();
     std::vector<uint32_t> hit_words(hit_word_count, 0u);
@@ -1900,12 +1900,12 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         download(hit_words.data(), d_hit_words.ptr, hit_word_count);
     }
     auto t_end_copy = std::chrono::steady_clock::now();
-    g_optix_last_db_bitset_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
+    g_optix_last_columnar_bitset_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
 
     auto t_start_filter = std::chrono::steady_clock::now();
     size_t raw_candidate_count = 0;
     std::vector<size_t> row_indices;
-    row_indices.reserve(std::min(dataset.row_count, kDbMaxCandidateRowsPerJob));
+    row_indices.reserve(std::min(dataset.row_count, kColumnarMaxCandidateRowsPerJob));
     for (size_t row_index = 0; row_index < dataset.row_count; ++row_index) {
         const uint32_t word = static_cast<uint32_t>(row_index >> 5);
         const uint32_t bit = 1u << (row_index & 31u);
@@ -1913,10 +1913,10 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
             continue;
         }
         raw_candidate_count += 1;
-        if (row_indices.size() >= kDbMaxCandidateRowsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB lowering exceeded the 1000000-candidate ceiling");
+        if (row_indices.size() >= kColumnarMaxCandidateRowsPerJob) {
+            throw std::runtime_error("first-wave OptiX columnar lowering exceeded the 1000000-candidate ceiling");
         }
-        if (!db_row_matches_all_clauses(
+        if (!columnar_row_matches_all_clauses(
                 dataset.fields.data(),
                 dataset.fields.size(),
                 dataset.row_values.data(),
@@ -1928,9 +1928,9 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         row_indices.push_back(row_index);
     }
     auto t_end_filter = std::chrono::steady_clock::now();
-    g_optix_last_db_exact_filter_s = std::chrono::duration<double>(t_end_filter - t_start_filter).count();
-    g_optix_last_db_raw_candidate_count = raw_candidate_count;
-    g_optix_last_db_emitted_count = row_indices.size();
+    g_optix_last_columnar_exact_filter_s = std::chrono::duration<double>(t_end_filter - t_start_filter).count();
+    g_optix_last_columnar_raw_candidate_count = raw_candidate_count;
+    g_optix_last_columnar_emitted_count = row_indices.size();
     return row_indices;
 }
 
@@ -1950,17 +1950,17 @@ static void run_db_conjunctive_scan_optix(
     *rows_out = nullptr;
     *row_count_out = 0;
     if (!fields || field_count == 0 || !row_values) {
-        throw std::runtime_error("DB table inputs must not be null");
+        throw std::runtime_error("columnar table inputs must not be null");
     }
     if (clause_count > 0 && !clauses) {
-        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+        throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
-    if (row_count > kDbMaxRowsPerJob) {
-        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    if (row_count > kColumnarMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX columnar lowering supports at most 1000000 rows per RT job");
     }
-    const std::vector<DbRowMeta> row_metas = db_build_row_metas(fields, field_count, row_values, row_count);
+    const std::vector<ColumnarRowMeta> row_metas = columnar_build_row_metas(fields, field_count, row_values, row_count);
     const std::vector<size_t> candidate_row_indices =
-        db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
+        columnar_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
     std::vector<RtdlColumnRowIdRow> rows;
     rows.reserve(candidate_row_indices.size());
     for (size_t row_index : candidate_row_indices) {
@@ -1999,20 +1999,20 @@ static void run_db_grouped_count_optix(
     *rows_out = nullptr;
     *row_count_out = 0;
     if (!fields || field_count == 0 || !row_values || !group_key_field) {
-        throw std::runtime_error("DB grouped_count inputs must not be null");
+        throw std::runtime_error("columnar grouped_count inputs must not be null");
     }
-    if (row_count > kDbMaxRowsPerJob) {
-        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    if (row_count > kColumnarMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX columnar lowering supports at most 1000000 rows per RT job");
     }
-    const size_t group_field_index = db_find_field_index_or_throw(fields, field_count, group_key_field);
+    const size_t group_field_index = columnar_find_field_index_or_throw(fields, field_count, group_key_field);
     const std::vector<size_t> candidate_row_indices =
-        db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
+        columnar_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
     std::unordered_map<int64_t, int64_t> counts;
     for (size_t row_index : candidate_row_indices) {
-        const RtdlColumnScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
+        const RtdlColumnScalar& group_value = columnar_row_value(row_values, row_index, field_count, group_field_index);
         counts[group_value.int_value] += 1;
-        if (counts.size() > kDbMaxGroupsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
+        if (counts.size() > kColumnarMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave OptiX columnar grouped kernels exceeded the 65536-group ceiling");
         }
     }
     std::vector<RtdlGroupedCountRow> rows;
@@ -2052,25 +2052,25 @@ static void run_db_grouped_sum_optix(
     *rows_out = nullptr;
     *row_count_out = 0;
     if (!fields || field_count == 0 || !row_values || !group_key_field || !value_field) {
-        throw std::runtime_error("DB grouped_sum inputs must not be null");
+        throw std::runtime_error("columnar grouped_sum inputs must not be null");
     }
-    if (row_count > kDbMaxRowsPerJob) {
-        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    if (row_count > kColumnarMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX columnar lowering supports at most 1000000 rows per RT job");
     }
-    const size_t group_field_index = db_find_field_index_or_throw(fields, field_count, group_key_field);
-    const size_t value_field_index = db_find_field_index_or_throw(fields, field_count, value_field);
-    if (fields[value_field_index].kind != kDbKindInt64 && fields[value_field_index].kind != kDbKindBool) {
+    const size_t group_field_index = columnar_find_field_index_or_throw(fields, field_count, group_key_field);
+    const size_t value_field_index = columnar_find_field_index_or_throw(fields, field_count, value_field);
+    if (fields[value_field_index].kind != kColumnKindInt64 && fields[value_field_index].kind != kColumnKindBool) {
         throw std::runtime_error("first-wave OptiX grouped_sum supports integer-compatible value fields only");
     }
     const std::vector<size_t> candidate_row_indices =
-        db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
+        columnar_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
     std::unordered_map<int64_t, int64_t> sums;
     for (size_t row_index : candidate_row_indices) {
-        const RtdlColumnScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
-        const RtdlColumnScalar& sum_value = db_row_value(row_values, row_index, field_count, value_field_index);
+        const RtdlColumnScalar& group_value = columnar_row_value(row_values, row_index, field_count, group_field_index);
+        const RtdlColumnScalar& sum_value = columnar_row_value(row_values, row_index, field_count, value_field_index);
         sums[group_value.int_value] += sum_value.int_value;
-        if (sums.size() > kDbMaxGroupsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
+        if (sums.size() > kColumnarMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave OptiX columnar grouped kernels exceeded the 65536-group ceiling");
         }
     }
     std::vector<RtdlGroupedSumRow> rows;
@@ -2092,7 +2092,7 @@ static void run_db_grouped_sum_optix(
     *row_count_out = rows.size();
 }
 
-static OptixDbDatasetImpl* create_db_dataset_optix(
+static OptixColumnarPayloadImpl* create_db_dataset_optix(
         const RtdlColumnField* fields,
         size_t field_count,
         const RtdlColumnScalar* row_values,
@@ -2100,9 +2100,9 @@ static OptixDbDatasetImpl* create_db_dataset_optix(
         const char* const* primary_fields,
         size_t primary_field_count)
 {
-    db_validate_db_inputs(fields, field_count, row_values, row_count, nullptr, 0);
-    std::unique_ptr<OptixDbDatasetImpl> dataset(new OptixDbDatasetImpl());
-    db_copy_dataset_payload(*dataset, fields, field_count, row_values, row_count);
+    columnar_validate_row_payload_inputs(fields, field_count, row_values, row_count, nullptr, 0);
+    std::unique_ptr<OptixColumnarPayloadImpl> dataset(new OptixColumnarPayloadImpl());
+    columnar_copy_dataset_payload(*dataset, fields, field_count, row_values, row_count);
 
     std::vector<const char*> primary_names;
     if (primary_field_count > 0) {
@@ -2114,28 +2114,28 @@ static OptixDbDatasetImpl* create_db_dataset_optix(
             primary_names.push_back(primary_fields[index]);
         }
     } else {
-        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+        primary_names = columnar_default_primary_fields(dataset->fields.data(), dataset->fields.size());
     }
     if (primary_names.empty()) {
-        throw std::runtime_error("OptiX prepared DB dataset requires at least one numeric primary RT axis");
+        throw std::runtime_error("OptiX prepared columnar payload requires at least one numeric primary RT axis");
     }
 
     dataset->primary_axes.reserve(primary_names.size());
     for (const char* field_name : primary_names) {
         dataset->primary_axes.push_back(
-            db_make_full_primary_axis(
+            columnar_make_full_primary_axis(
                 dataset->fields.data(),
                 dataset->fields.size(),
                 dataset->row_values.data(),
                 dataset->row_count,
                 field_name));
     }
-    dataset->row_metas = db_build_row_metas(
+    dataset->row_metas = columnar_build_row_metas(
         dataset->fields.data(),
         dataset->fields.size(),
         dataset->row_values.data(),
         dataset->row_count);
-    dataset->aabbs = db_build_row_aabbs(
+    dataset->aabbs = columnar_build_row_aabbs(
         dataset->fields.data(),
         dataset->fields.size(),
         dataset->row_values.data(),
@@ -2145,16 +2145,16 @@ static OptixDbDatasetImpl* create_db_dataset_optix(
     return dataset.release();
 }
 
-static OptixDbDatasetImpl* create_db_dataset_optix_columnar(
+static OptixColumnarPayloadImpl* create_db_dataset_optix_columnar(
         const RtdlPayloadField* fields,
         size_t field_count,
         size_t row_count,
         const char* const* primary_fields,
         size_t primary_field_count)
 {
-    db_validate_columnar_inputs(fields, field_count, row_count);
-    std::unique_ptr<OptixDbDatasetImpl> dataset(new OptixDbDatasetImpl());
-    db_copy_dataset_columnar_payload(*dataset, fields, field_count, row_count);
+    columnar_validate_payload_fields(fields, field_count, row_count);
+    std::unique_ptr<OptixColumnarPayloadImpl> dataset(new OptixColumnarPayloadImpl());
+    columnar_copy_dataset_from_payload_fields(*dataset, fields, field_count, row_count);
 
     std::vector<const char*> primary_names;
     if (primary_field_count > 0) {
@@ -2166,28 +2166,28 @@ static OptixDbDatasetImpl* create_db_dataset_optix_columnar(
             primary_names.push_back(primary_fields[index]);
         }
     } else {
-        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+        primary_names = columnar_default_primary_fields(dataset->fields.data(), dataset->fields.size());
     }
     if (primary_names.empty()) {
-        throw std::runtime_error("OptiX prepared DB dataset requires at least one numeric primary RT axis");
+        throw std::runtime_error("OptiX prepared columnar payload requires at least one numeric primary RT axis");
     }
 
     dataset->primary_axes.reserve(primary_names.size());
     for (const char* field_name : primary_names) {
         dataset->primary_axes.push_back(
-            db_make_full_primary_axis(
+            columnar_make_full_primary_axis(
                 dataset->fields.data(),
                 dataset->fields.size(),
                 dataset->row_values.data(),
                 dataset->row_count,
                 field_name));
     }
-    dataset->row_metas = db_build_row_metas(
+    dataset->row_metas = columnar_build_row_metas(
         dataset->fields.data(),
         dataset->fields.size(),
         dataset->row_values.data(),
         dataset->row_count);
-    dataset->aabbs = db_build_row_aabbs(
+    dataset->aabbs = columnar_build_row_aabbs(
         dataset->fields.data(),
         dataset->fields.size(),
         dataset->row_values.data(),
@@ -2198,26 +2198,26 @@ static OptixDbDatasetImpl* create_db_dataset_optix_columnar(
 }
 
 static void run_db_conjunctive_scan_optix_prepared(
-        OptixDbDatasetImpl* dataset,
+        OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,
         RtdlColumnRowIdRow** rows_out,
         size_t* row_count_out)
 {
     if (!dataset) {
-        throw std::runtime_error("OptiX prepared DB dataset must not be null");
+        throw std::runtime_error("OptiX prepared columnar payload must not be null");
     }
     if (!rows_out || !row_count_out) {
         throw std::runtime_error("output pointers must not be null");
     }
     if (clause_count > 0 && !clauses) {
-        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+        throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
 
     const std::vector<size_t> candidate_row_indices =
-        db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+        columnar_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
     auto t_start_output = std::chrono::steady_clock::now();
     std::vector<RtdlColumnRowIdRow> rows;
     rows.reserve(candidate_row_indices.size());
@@ -2237,38 +2237,38 @@ static void run_db_conjunctive_scan_optix_prepared(
     *rows_out = out;
     *row_count_out = rows.size();
     auto t_end_output = std::chrono::steady_clock::now();
-    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
-    g_optix_last_db_emitted_count = rows.size();
+    g_optix_last_columnar_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_columnar_emitted_count = rows.size();
 }
 
 static void run_db_conjunctive_scan_count_optix_prepared(
-        OptixDbDatasetImpl* dataset,
+        OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,
         size_t* row_count_out)
 {
     if (!dataset) {
-        throw std::runtime_error("OptiX prepared DB dataset must not be null");
+        throw std::runtime_error("OptiX prepared columnar payload must not be null");
     }
     if (!row_count_out) {
         throw std::runtime_error("row_count_out pointer must not be null");
     }
     if (clause_count > 0 && !clauses) {
-        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+        throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
     *row_count_out = 0;
 
     const std::vector<size_t> candidate_row_indices =
-        db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+        columnar_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
     auto t_start_output = std::chrono::steady_clock::now();
     *row_count_out = candidate_row_indices.size();
     auto t_end_output = std::chrono::steady_clock::now();
-    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
-    g_optix_last_db_emitted_count = candidate_row_indices.size();
+    g_optix_last_columnar_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_columnar_emitted_count = candidate_row_indices.size();
 }
 
 static void run_db_grouped_count_optix_prepared(
-        OptixDbDatasetImpl* dataset,
+        OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
@@ -2276,7 +2276,7 @@ static void run_db_grouped_count_optix_prepared(
         size_t* row_count_out)
 {
     if (!dataset) {
-        throw std::runtime_error("OptiX prepared DB dataset must not be null");
+        throw std::runtime_error("OptiX prepared columnar payload must not be null");
     }
     if (!rows_out || !row_count_out) {
         throw std::runtime_error("output pointers must not be null");
@@ -2285,23 +2285,23 @@ static void run_db_grouped_count_optix_prepared(
         throw std::runtime_error("group_key_field must not be null");
     }
     if (clause_count > 0 && !clauses) {
-        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+        throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
 
     const size_t group_field_index =
-        db_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), group_key_field);
+        columnar_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), group_key_field);
     const std::vector<size_t> candidate_row_indices =
-        db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+        columnar_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
     auto t_start_output = std::chrono::steady_clock::now();
     std::unordered_map<int64_t, int64_t> counts;
     for (size_t row_index : candidate_row_indices) {
         const RtdlColumnScalar& group_value =
-            db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
+            columnar_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
         counts[group_value.int_value] += 1;
-        if (counts.size() > kDbMaxGroupsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
+        if (counts.size() > kColumnarMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave OptiX columnar grouped kernels exceeded the 65536-group ceiling");
         }
     }
     std::vector<RtdlGroupedCountRow> rows;
@@ -2322,12 +2322,12 @@ static void run_db_grouped_count_optix_prepared(
     *rows_out = out;
     *row_count_out = rows.size();
     auto t_end_output = std::chrono::steady_clock::now();
-    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
-    g_optix_last_db_emitted_count = rows.size();
+    g_optix_last_columnar_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_columnar_emitted_count = rows.size();
 }
 
 static void run_db_grouped_sum_optix_prepared(
-        OptixDbDatasetImpl* dataset,
+        OptixColumnarPayloadImpl* dataset,
         const RtdlColumnClause* clauses,
         size_t clause_count,
         const char* group_key_field,
@@ -2336,7 +2336,7 @@ static void run_db_grouped_sum_optix_prepared(
         size_t* row_count_out)
 {
     if (!dataset) {
-        throw std::runtime_error("OptiX prepared DB dataset must not be null");
+        throw std::runtime_error("OptiX prepared columnar payload must not be null");
     }
     if (!rows_out || !row_count_out) {
         throw std::runtime_error("output pointers must not be null");
@@ -2345,31 +2345,31 @@ static void run_db_grouped_sum_optix_prepared(
         throw std::runtime_error("group_key_field and value_field must not be null");
     }
     if (clause_count > 0 && !clauses) {
-        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+        throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
 
     const size_t group_field_index =
-        db_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), group_key_field);
+        columnar_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), group_key_field);
     const size_t value_field_index =
-        db_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), value_field);
-    if (dataset->fields[value_field_index].kind != kDbKindInt64
-            && dataset->fields[value_field_index].kind != kDbKindBool) {
+        columnar_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), value_field);
+    if (dataset->fields[value_field_index].kind != kColumnKindInt64
+            && dataset->fields[value_field_index].kind != kColumnKindBool) {
         throw std::runtime_error("first-wave OptiX grouped_sum supports integer-compatible value fields only");
     }
     const std::vector<size_t> candidate_row_indices =
-        db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+        columnar_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
     auto t_start_output = std::chrono::steady_clock::now();
     std::unordered_map<int64_t, int64_t> sums;
     for (size_t row_index : candidate_row_indices) {
         const RtdlColumnScalar& group_value =
-            db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
+            columnar_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
         const RtdlColumnScalar& sum_value =
-            db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), value_field_index);
+            columnar_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), value_field_index);
         sums[group_value.int_value] += sum_value.int_value;
-        if (sums.size() > kDbMaxGroupsPerJob) {
-            throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
+        if (sums.size() > kColumnarMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave OptiX columnar grouped kernels exceeded the 65536-group ceiling");
         }
     }
     std::vector<RtdlGroupedSumRow> rows;
@@ -2390,8 +2390,8 @@ static void run_db_grouped_sum_optix_prepared(
     *rows_out = out;
     *row_count_out = rows.size();
     auto t_end_output = std::chrono::steady_clock::now();
-    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
-    g_optix_last_db_emitted_count = rows.size();
+    g_optix_last_columnar_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_columnar_emitted_count = rows.size();
 }
 
 static void run_seg_poly_hitcount_optix_host_indexed(

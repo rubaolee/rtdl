@@ -54,8 +54,8 @@ enum class QueryKind {
   kKnnRows,
   kKnnRows3D,
   kColumnarPredicateScanRay,
-  kDbGroupedCountRay,
-  kDbGroupedSumRay,
+  kColumnarGroupedCountRay,
+  kColumnarGroupedSumRay,
 };
 
 struct SegmentSceneData {
@@ -84,7 +84,7 @@ struct GraphEdgePointSceneData {
   const std::vector<GraphEdgePoint>* points;
 };
 
-struct DbRowBox {
+struct ColumnarRowBox {
   size_t row_index;
   uint32_t row_id;
   double x;
@@ -92,8 +92,8 @@ struct DbRowBox {
   double z;
 };
 
-struct DbRowBoxSceneData {
-  const std::vector<DbRowBox>* boxes;
+struct ColumnarRowBoxSceneData {
+  const std::vector<ColumnarRowBox>* boxes;
 };
 
 struct TriangleSceneData {
@@ -237,7 +237,7 @@ struct ColumnarPredicateScanRayQueryState {
   std::vector<RtdlColumnRowIdRow>* rows;
 };
 
-struct DbGroupedCountRayQueryState {
+struct ColumnarGroupedCountRayQueryState {
   const RtdlColumnField* fields;
   size_t field_count;
   const RtdlColumnScalar* row_values;
@@ -251,7 +251,7 @@ struct DbGroupedCountRayQueryState {
   std::unordered_map<int64_t, int64_t>* counts;
 };
 
-struct DbGroupedSumRayQueryState {
+struct ColumnarGroupedSumRayQueryState {
   const RtdlColumnField* fields;
   size_t field_count;
   const RtdlColumnScalar* row_values;
@@ -268,29 +268,29 @@ struct DbGroupedSumRayQueryState {
 
 thread_local QueryKind g_query_kind = QueryKind::kNone;
 thread_local void* g_query_state = nullptr;
-thread_local bool g_db_limit_error = false;
-thread_local std::string g_db_limit_error_message;
+thread_local bool g_columnar_limit_error = false;
+thread_local std::string g_columnar_limit_error_message;
 
-constexpr uint32_t kDbKindInt64 = 1u;
-constexpr uint32_t kDbKindFloat64 = 2u;
-constexpr uint32_t kDbKindBool = 3u;
-constexpr uint32_t kDbKindText = 4u;
+constexpr uint32_t kColumnKindInt64 = 1u;
+constexpr uint32_t kColumnKindFloat64 = 2u;
+constexpr uint32_t kColumnKindBool = 3u;
+constexpr uint32_t kColumnKindText = 4u;
 
-constexpr uint32_t kDbOpEq = 1u;
-constexpr uint32_t kDbOpLt = 2u;
-constexpr uint32_t kDbOpLe = 3u;
-constexpr uint32_t kDbOpGt = 4u;
-constexpr uint32_t kDbOpGe = 5u;
-constexpr uint32_t kDbOpBetween = 6u;
+constexpr uint32_t kColumnOpEq = 1u;
+constexpr uint32_t kColumnOpLt = 2u;
+constexpr uint32_t kColumnOpLe = 3u;
+constexpr uint32_t kColumnOpGt = 4u;
+constexpr uint32_t kColumnOpGe = 5u;
+constexpr uint32_t kColumnOpBetween = 6u;
 
-void db_set_limit_error(const char* message) {
-  g_db_limit_error = true;
-  g_db_limit_error_message = message;
+void columnar_set_limit_error(const char* message) {
+  g_columnar_limit_error = true;
+  g_columnar_limit_error_message = message;
 }
 
-void db_clear_limit_error() {
-  g_db_limit_error = false;
-  g_db_limit_error_message.clear();
+void columnar_clear_limit_error() {
+  g_columnar_limit_error = false;
+  g_columnar_limit_error_message.clear();
 }
 
 bool knn_row_is_better(const RtdlKnnNeighborRow& candidate, const RtdlKnnNeighborRow& current) {
@@ -427,22 +427,22 @@ void set_ray_occluded_3d(RTCRay* ray, const Vec3& origin, const Vec3& direction,
   ray->flags = 0;
 }
 
-bool db_scalar_is_numeric(const RtdlColumnScalar& value) {
-  return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
+bool columnar_scalar_is_numeric(const RtdlColumnScalar& value) {
+  return value.kind == kColumnKindInt64 || value.kind == kColumnKindFloat64 || value.kind == kColumnKindBool;
 }
 
-double db_scalar_as_double(const RtdlColumnScalar& value) {
-  if (value.kind == kDbKindInt64 || value.kind == kDbKindBool) {
+double columnar_scalar_as_double(const RtdlColumnScalar& value) {
+  if (value.kind == kColumnKindInt64 || value.kind == kColumnKindBool) {
     return static_cast<double>(value.int_value);
   }
-  if (value.kind == kDbKindFloat64) {
+  if (value.kind == kColumnKindFloat64) {
     return value.double_value;
   }
-  throw std::runtime_error("DB scalar is not numeric");
+  throw std::runtime_error("columnar scalar is not numeric");
 }
 
-int db_scalar_compare(const RtdlColumnScalar& left, const RtdlColumnScalar& right) {
-  if (left.kind == kDbKindText || right.kind == kDbKindText) {
+int columnar_scalar_compare(const RtdlColumnScalar& left, const RtdlColumnScalar& right) {
+  if (left.kind == kColumnKindText || right.kind == kColumnKindText) {
     const char* left_text = left.string_value == nullptr ? "" : left.string_value;
     const char* right_text = right.string_value == nullptr ? "" : right.string_value;
     const int cmp = std::strcmp(left_text, right_text);
@@ -454,8 +454,8 @@ int db_scalar_compare(const RtdlColumnScalar& left, const RtdlColumnScalar& righ
     }
     return 0;
   }
-  const double left_value = db_scalar_as_double(left);
-  const double right_value = db_scalar_as_double(right);
+  const double left_value = columnar_scalar_as_double(left);
+  const double right_value = columnar_scalar_as_double(right);
   if (left_value < right_value) {
     return -1;
   }
@@ -465,16 +465,16 @@ int db_scalar_compare(const RtdlColumnScalar& left, const RtdlColumnScalar& righ
   return 0;
 }
 
-size_t db_find_field_index(const RtdlColumnField* fields, size_t field_count, const char* name) {
+size_t columnar_find_field_index(const RtdlColumnField* fields, size_t field_count, const char* name) {
   for (size_t index = 0; index < field_count; ++index) {
     if (std::strcmp(fields[index].name, name) == 0) {
       return index;
     }
   }
-  throw std::runtime_error(std::string("unknown DB field: ") + name);
+  throw std::runtime_error(std::string("unknown columnar field: ") + name);
 }
 
-const RtdlColumnScalar& db_row_value(
+const RtdlColumnScalar& columnar_row_value(
     const RtdlColumnScalar* row_values,
     size_t row_index,
     size_t field_count,
@@ -482,34 +482,34 @@ const RtdlColumnScalar& db_row_value(
   return row_values[row_index * field_count + field_index];
 }
 
-bool db_row_matches_clause(
+bool columnar_row_matches_clause(
     const RtdlColumnField* fields,
     size_t field_count,
     const RtdlColumnScalar* row_values,
     size_t row_index,
     const RtdlColumnClause& clause) {
-  const size_t field_index = db_find_field_index(fields, field_count, clause.field);
-  const RtdlColumnScalar& row_value = db_row_value(row_values, row_index, field_count, field_index);
-  const int cmp_lo = db_scalar_compare(row_value, clause.value);
+  const size_t field_index = columnar_find_field_index(fields, field_count, clause.field);
+  const RtdlColumnScalar& row_value = columnar_row_value(row_values, row_index, field_count, field_index);
+  const int cmp_lo = columnar_scalar_compare(row_value, clause.value);
   switch (clause.op) {
-    case kDbOpEq:
+    case kColumnOpEq:
       return cmp_lo == 0;
-    case kDbOpLt:
+    case kColumnOpLt:
       return cmp_lo < 0;
-    case kDbOpLe:
+    case kColumnOpLe:
       return cmp_lo <= 0;
-    case kDbOpGt:
+    case kColumnOpGt:
       return cmp_lo > 0;
-    case kDbOpGe:
+    case kColumnOpGe:
       return cmp_lo >= 0;
-    case kDbOpBetween:
-      return cmp_lo >= 0 && db_scalar_compare(row_value, clause.value_hi) <= 0;
+    case kColumnOpBetween:
+      return cmp_lo >= 0 && columnar_scalar_compare(row_value, clause.value_hi) <= 0;
     default:
-      throw std::runtime_error("unsupported DB clause op");
+      throw std::runtime_error("unsupported columnar clause op");
   }
 }
 
-bool db_row_matches_all_clauses(
+bool columnar_row_matches_all_clauses(
     const RtdlColumnField* fields,
     size_t field_count,
     const RtdlColumnScalar* row_values,
@@ -517,14 +517,14 @@ bool db_row_matches_all_clauses(
     const RtdlColumnClause* clauses,
     size_t clause_count) {
   for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
-    if (!db_row_matches_clause(fields, field_count, row_values, row_index, clauses[clause_index])) {
+    if (!columnar_row_matches_clause(fields, field_count, row_values, row_index, clauses[clause_index])) {
       return false;
     }
   }
   return true;
 }
 
-bool ray_hits_db_box(const RTCRay& ray, const DbRowBox& box) {
+bool ray_hits_columnar_box(const RTCRay& ray, const ColumnarRowBox& box) {
   const double half = 0.45;
   const double min_x = box.x - half;
   const double max_x = box.x + half;
@@ -617,9 +617,9 @@ void graph_edge_point_bounds(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_z = kBvhCandidatePad;
 }
 
-void db_row_box_bounds(const RTCBoundsFunctionArguments* args) {
-  auto* data = static_cast<DbRowBoxSceneData*>(args->geometryUserPtr);
-  const DbRowBox& box = (*data->boxes)[args->primID];
+void columnar_row_box_bounds(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<ColumnarRowBoxSceneData*>(args->geometryUserPtr);
+  const ColumnarRowBox& box = (*data->boxes)[args->primID];
   const float half = 0.45f;
   args->bounds_o->lower_x = static_cast<float>(box.x) - half;
   args->bounds_o->lower_y = static_cast<float>(box.y) - half;
@@ -1030,22 +1030,22 @@ void triangle_occluded_3d(const RTCOccludedFunctionNArguments* args) {
   }
 }
 
-void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
+void columnar_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
   if (args->N != 1 || args->valid[0] != -1 || g_query_state == nullptr) {
     return;
   }
-  if (g_db_limit_error) {
+  if (g_columnar_limit_error) {
     return;
   }
   if (g_query_kind != QueryKind::kColumnarPredicateScanRay
-      && g_query_kind != QueryKind::kDbGroupedCountRay
-      && g_query_kind != QueryKind::kDbGroupedSumRay) {
+      && g_query_kind != QueryKind::kColumnarGroupedCountRay
+      && g_query_kind != QueryKind::kColumnarGroupedSumRay) {
     return;
   }
-  auto* data = static_cast<DbRowBoxSceneData*>(args->geometryUserPtr);
-  const DbRowBox& box = (*data->boxes)[args->primID];
+  auto* data = static_cast<ColumnarRowBoxSceneData*>(args->geometryUserPtr);
+  const ColumnarRowBox& box = (*data->boxes)[args->primID];
   const auto* rayhit = reinterpret_cast<const RTCRayHit*>(args->rayhit);
-  if (!ray_hits_db_box(rayhit->ray, box)) {
+  if (!ray_hits_columnar_box(rayhit->ray, box)) {
     return;
   }
   if (g_query_kind == QueryKind::kColumnarPredicateScanRay) {
@@ -1053,7 +1053,7 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
     if (state->seen_row_ids->find(box.row_id) != state->seen_row_ids->end()) {
       return;
     }
-    if (!db_row_matches_all_clauses(
+    if (!columnar_row_matches_all_clauses(
             state->fields,
             state->field_count,
             state->row_values,
@@ -1064,18 +1064,18 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
     }
     state->seen_row_ids->insert(box.row_id);
     if (state->seen_row_ids->size() > state->max_candidate_rows) {
-      db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
+      columnar_set_limit_error("first-wave Embree columnar lowering exceeded the 1000000-candidate ceiling");
       return;
     }
     state->rows->push_back({box.row_id});
     return;
   }
-  if (g_query_kind == QueryKind::kDbGroupedCountRay) {
-    auto* state = static_cast<DbGroupedCountRayQueryState*>(g_query_state);
+  if (g_query_kind == QueryKind::kColumnarGroupedCountRay) {
+    auto* state = static_cast<ColumnarGroupedCountRayQueryState*>(g_query_state);
     if (state->seen_row_ids->find(box.row_id) != state->seen_row_ids->end()) {
       return;
     }
-    if (!db_row_matches_all_clauses(
+    if (!columnar_row_matches_all_clauses(
             state->fields,
             state->field_count,
             state->row_values,
@@ -1086,25 +1086,25 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
     }
     state->seen_row_ids->insert(box.row_id);
     if (state->seen_row_ids->size() > state->max_candidate_rows) {
-      db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
+      columnar_set_limit_error("first-wave Embree columnar lowering exceeded the 1000000-candidate ceiling");
       return;
     }
-    const RtdlColumnScalar& group_value = db_row_value(
+    const RtdlColumnScalar& group_value = columnar_row_value(
         state->row_values,
         box.row_index,
         state->field_count,
         state->group_field_index);
     (*state->counts)[group_value.int_value] += 1;
     if (state->counts->size() > state->max_groups) {
-      db_set_limit_error("first-wave Embree DB grouped kernels exceeded the 65536-group ceiling");
+      columnar_set_limit_error("first-wave Embree columnar grouped kernels exceeded the 65536-group ceiling");
     }
     return;
   }
-  auto* state = static_cast<DbGroupedSumRayQueryState*>(g_query_state);
+  auto* state = static_cast<ColumnarGroupedSumRayQueryState*>(g_query_state);
   if (state->seen_row_ids->find(box.row_id) != state->seen_row_ids->end()) {
     return;
   }
-  if (!db_row_matches_all_clauses(
+  if (!columnar_row_matches_all_clauses(
           state->fields,
           state->field_count,
           state->row_values,
@@ -1115,26 +1115,26 @@ void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
   }
   state->seen_row_ids->insert(box.row_id);
   if (state->seen_row_ids->size() > state->max_candidate_rows) {
-    db_set_limit_error("first-wave Embree DB lowering exceeded the 1000000-candidate ceiling");
+    columnar_set_limit_error("first-wave Embree columnar lowering exceeded the 1000000-candidate ceiling");
     return;
   }
-  const RtdlColumnScalar& group_value = db_row_value(
+  const RtdlColumnScalar& group_value = columnar_row_value(
       state->row_values,
       box.row_index,
       state->field_count,
       state->group_field_index);
-  const RtdlColumnScalar& sum_value = db_row_value(
+  const RtdlColumnScalar& sum_value = columnar_row_value(
       state->row_values,
       box.row_index,
       state->field_count,
       state->value_field_index);
-  if (sum_value.kind != kDbKindInt64 && sum_value.kind != kDbKindBool) {
-    db_set_limit_error("first-wave Embree grouped_sum supports integer-compatible value fields only");
+  if (sum_value.kind != kColumnKindInt64 && sum_value.kind != kColumnKindBool) {
+    columnar_set_limit_error("first-wave Embree grouped_sum supports integer-compatible value fields only");
     return;
   }
   (*state->sums)[group_value.int_value] += sum_value.int_value;
   if (state->sums->size() > state->max_groups) {
-    db_set_limit_error("first-wave Embree DB grouped kernels exceeded the 65536-group ceiling");
+    columnar_set_limit_error("first-wave Embree columnar grouped kernels exceeded the 65536-group ceiling");
   }
 }
 

@@ -6,31 +6,31 @@
 
 namespace {
 
-constexpr size_t kDbMaxRowsPerJob = 1000000;
-constexpr size_t kDbMaxCandidateRowsPerJob = 1000000;
-constexpr size_t kDbMaxGroupsPerJob = 65536;
+constexpr size_t kColumnarMaxRowsPerJob = 1000000;
+constexpr size_t kColumnarMaxCandidateRowsPerJob = 1000000;
+constexpr size_t kColumnarMaxGroupsPerJob = 65536;
 std::atomic<size_t> g_embree_thread_override {0};
 
-struct DbPrimaryAxis {
+struct ColumnarPrimaryAxis {
   size_t field_index;
   std::vector<double> sorted_values;
   int64_t encoded_lo;
   int64_t encoded_hi;
 };
 
-struct EmbreeDbDatasetImpl {
+struct EmbreeColumnarPayloadImpl {
   std::vector<std::string> field_names;
   std::vector<RtdlColumnField> fields;
   std::vector<std::string> scalar_strings;
   std::vector<RtdlColumnScalar> row_values;
   size_t row_count;
-  std::vector<DbPrimaryAxis> primary_axes;
-  std::vector<DbRowBox> boxes;
-  DbRowBoxSceneData scene_data;
+  std::vector<ColumnarPrimaryAxis> primary_axes;
+  std::vector<ColumnarRowBox> boxes;
+  ColumnarRowBoxSceneData scene_data;
   EmbreeDevice device;
   SceneHolder holder;
 
-  EmbreeDbDatasetImpl() : row_count(0), scene_data {&boxes}, device(), holder(device.device) {}
+  EmbreeColumnarPayloadImpl() : row_count(0), scene_data {&boxes}, device(), holder(device.device) {}
 };
 
 struct PreparedFixedRadiusCountThreshold2DImpl {
@@ -292,15 +292,15 @@ void run_query_index_ranges(size_t query_count, WorkerFn worker_fn) {
   }
 }
 
-size_t db_find_field_index_or_throw(const RtdlColumnField* fields, size_t field_count, const char* name) {
-  return db_find_field_index(fields, field_count, name);
+size_t columnar_find_field_index_or_throw(const RtdlColumnField* fields, size_t field_count, const char* name) {
+  return columnar_find_field_index(fields, field_count, name);
 }
 
-bool db_field_kind_is_numeric(uint32_t kind) {
-  return kind == kDbKindInt64 || kind == kDbKindFloat64 || kind == kDbKindBool;
+bool columnar_field_kind_is_numeric(uint32_t kind) {
+  return kind == kColumnKindInt64 || kind == kColumnKindFloat64 || kind == kColumnKindBool;
 }
 
-std::vector<double> db_sorted_distinct_numeric_values(
+std::vector<double> columnar_sorted_distinct_numeric_values(
     const RtdlColumnScalar* row_values,
     size_t row_count,
     size_t field_count,
@@ -308,49 +308,49 @@ std::vector<double> db_sorted_distinct_numeric_values(
   std::vector<double> values;
   values.reserve(row_count);
   for (size_t row_index = 0; row_index < row_count; ++row_index) {
-    const RtdlColumnScalar& value = db_row_value(row_values, row_index, field_count, field_index);
-    if (!db_scalar_is_numeric(value)) {
-      throw std::runtime_error("first-wave Embree DB lowering requires numeric primary scan clauses");
+    const RtdlColumnScalar& value = columnar_row_value(row_values, row_index, field_count, field_index);
+    if (!columnar_scalar_is_numeric(value)) {
+      throw std::runtime_error("first-wave Embree columnar lowering requires numeric primary scan clauses");
     }
-    values.push_back(db_scalar_as_double(value));
+    values.push_back(columnar_scalar_as_double(value));
   }
   std::sort(values.begin(), values.end());
   values.erase(std::unique(values.begin(), values.end()), values.end());
   return values;
 }
 
-bool db_clause_matches_numeric_value(const RtdlColumnClause& clause, double value) {
-  const double lo = db_scalar_as_double(clause.value);
+bool columnar_clause_matches_numeric_value(const RtdlColumnClause& clause, double value) {
+  const double lo = columnar_scalar_as_double(clause.value);
   switch (clause.op) {
-    case kDbOpEq:
+    case kColumnOpEq:
       return value == lo;
-    case kDbOpLt:
+    case kColumnOpLt:
       return value < lo;
-    case kDbOpLe:
+    case kColumnOpLe:
       return value <= lo;
-    case kDbOpGt:
+    case kColumnOpGt:
       return value > lo;
-    case kDbOpGe:
+    case kColumnOpGe:
       return value >= lo;
-    case kDbOpBetween:
-      return value >= lo && value <= db_scalar_as_double(clause.value_hi);
+    case kColumnOpBetween:
+      return value >= lo && value <= columnar_scalar_as_double(clause.value_hi);
     default:
-      throw std::runtime_error("unsupported DB clause op");
+      throw std::runtime_error("unsupported columnar clause op");
   }
 }
 
-DbPrimaryAxis db_make_full_primary_axis(
+ColumnarPrimaryAxis columnar_make_full_primary_axis(
     const RtdlColumnField* fields,
     size_t field_count,
     const RtdlColumnScalar* row_values,
     size_t row_count,
     const char* field_name) {
-  const size_t field_index = db_find_field_index_or_throw(fields, field_count, field_name);
-  if (!db_field_kind_is_numeric(fields[field_index].kind)) {
-    throw std::runtime_error("first-wave Embree prepared DB datasets require numeric primary RT axes");
+  const size_t field_index = columnar_find_field_index_or_throw(fields, field_count, field_name);
+  if (!columnar_field_kind_is_numeric(fields[field_index].kind)) {
+    throw std::runtime_error("first-wave Embree prepared columnar payloads require numeric primary RT axes");
   }
   const std::vector<double> sorted_values =
-      db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
+      columnar_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
   return {
       field_index,
       sorted_values,
@@ -358,19 +358,19 @@ DbPrimaryAxis db_make_full_primary_axis(
       sorted_values.empty() ? 0 : static_cast<int64_t>(sorted_values.size())};
 }
 
-DbPrimaryAxis db_make_primary_axis(
+ColumnarPrimaryAxis columnar_make_primary_axis(
     const RtdlColumnField* fields,
     size_t field_count,
     const RtdlColumnScalar* row_values,
     size_t row_count,
     const RtdlColumnClause& clause) {
-  const size_t field_index = db_find_field_index_or_throw(fields, field_count, clause.field);
+  const size_t field_index = columnar_find_field_index_or_throw(fields, field_count, clause.field);
   const std::vector<double> sorted_values =
-      db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
+      columnar_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
   int64_t encoded_lo = -1;
   int64_t encoded_hi = -1;
   for (size_t index = 0; index < sorted_values.size(); ++index) {
-    if (!db_clause_matches_numeric_value(clause, sorted_values[index])) {
+    if (!columnar_clause_matches_numeric_value(clause, sorted_values[index])) {
       continue;
     }
     const int64_t encoded = static_cast<int64_t>(index + 1);
@@ -385,12 +385,12 @@ DbPrimaryAxis db_make_primary_axis(
   return {field_index, sorted_values, encoded_lo, encoded_hi};
 }
 
-DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlColumnClause& clause) {
-  DbPrimaryAxis ranged = axis;
+ColumnarPrimaryAxis columnar_axis_with_clause_range(const ColumnarPrimaryAxis& axis, const RtdlColumnClause& clause) {
+  ColumnarPrimaryAxis ranged = axis;
   int64_t encoded_lo = -1;
   int64_t encoded_hi = -1;
   for (size_t index = 0; index < axis.sorted_values.size(); ++index) {
-    if (!db_clause_matches_numeric_value(clause, axis.sorted_values[index])) {
+    if (!columnar_clause_matches_numeric_value(clause, axis.sorted_values[index])) {
       continue;
     }
     const int64_t encoded = static_cast<int64_t>(index + 1);
@@ -404,52 +404,52 @@ DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlCol
   return ranged;
 }
 
-int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlColumnScalar& value) {
-  const double needle = db_scalar_as_double(value);
+int64_t columnar_encode_axis_value(const ColumnarPrimaryAxis& axis, const RtdlColumnScalar& value) {
+  const double needle = columnar_scalar_as_double(value);
   const auto it = std::lower_bound(axis.sorted_values.begin(), axis.sorted_values.end(), needle);
   if (it == axis.sorted_values.end() || *it != needle) {
-    throw std::runtime_error("failed to encode DB primary-axis value");
+    throw std::runtime_error("failed to encode columnar primary-axis value");
   }
   return static_cast<int64_t>(std::distance(axis.sorted_values.begin(), it) + 1);
 }
 
-std::vector<DbRowBox> db_build_row_boxes(
+std::vector<ColumnarRowBox> columnar_build_row_boxes(
     const RtdlColumnField* fields,
     size_t field_count,
     const RtdlColumnScalar* row_values,
     size_t row_count,
-    const std::vector<DbPrimaryAxis>& axes) {
-  const size_t row_id_index = db_find_field_index_or_throw(fields, field_count, "row_id");
-  std::vector<DbRowBox> boxes;
+    const std::vector<ColumnarPrimaryAxis>& axes) {
+  const size_t row_id_index = columnar_find_field_index_or_throw(fields, field_count, "row_id");
+  std::vector<ColumnarRowBox> boxes;
   boxes.reserve(row_count);
   for (size_t row_index = 0; row_index < row_count; ++row_index) {
-    const RtdlColumnScalar& row_id_value = db_row_value(row_values, row_index, field_count, row_id_index);
+    const RtdlColumnScalar& row_id_value = columnar_row_value(row_values, row_index, field_count, row_id_index);
     const double x = axes.size() >= 1
-        ? static_cast<double>(db_encode_axis_value(axes[0], db_row_value(row_values, row_index, field_count, axes[0].field_index)))
+        ? static_cast<double>(columnar_encode_axis_value(axes[0], columnar_row_value(row_values, row_index, field_count, axes[0].field_index)))
         : 1.0;
     const double y = axes.size() >= 2
-        ? static_cast<double>(db_encode_axis_value(axes[1], db_row_value(row_values, row_index, field_count, axes[1].field_index)))
+        ? static_cast<double>(columnar_encode_axis_value(axes[1], columnar_row_value(row_values, row_index, field_count, axes[1].field_index)))
         : 1.0;
     const double z = axes.size() >= 3
-        ? static_cast<double>(db_encode_axis_value(axes[2], db_row_value(row_values, row_index, field_count, axes[2].field_index)))
+        ? static_cast<double>(columnar_encode_axis_value(axes[2], columnar_row_value(row_values, row_index, field_count, axes[2].field_index)))
         : 1.0;
     boxes.push_back({row_index, static_cast<uint32_t>(row_id_value.int_value), x, y, z});
   }
   return boxes;
 }
 
-std::vector<DbPrimaryAxis> db_dataset_query_axes(
-    const EmbreeDbDatasetImpl& dataset,
+std::vector<ColumnarPrimaryAxis> columnar_dataset_query_axes(
+    const EmbreeColumnarPayloadImpl& dataset,
     const RtdlColumnClause* clauses,
     size_t clause_count) {
-  std::vector<DbPrimaryAxis> axes = dataset.primary_axes;
-  for (DbPrimaryAxis& axis : axes) {
+  std::vector<ColumnarPrimaryAxis> axes = dataset.primary_axes;
+  for (ColumnarPrimaryAxis& axis : axes) {
     const char* axis_field = dataset.fields[axis.field_index].name;
     for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
       if (std::strcmp(axis_field, clauses[clause_index].field) != 0) {
         continue;
       }
-      axis = db_axis_with_clause_range(axis, clauses[clause_index]);
+      axis = columnar_axis_with_clause_range(axis, clauses[clause_index]);
       break;
     }
   }
@@ -457,8 +457,8 @@ std::vector<DbPrimaryAxis> db_dataset_query_axes(
 }
 
 template <typename LaunchFn>
-void db_launch_primary_matrix_rays(
-    const std::vector<DbPrimaryAxis>& axes,
+void columnar_launch_primary_matrix_rays(
+    const std::vector<ColumnarPrimaryAxis>& axes,
     LaunchFn&& launch_fn) {
   const int64_t x_lo = axes.size() >= 1 ? axes[0].encoded_lo : 1;
   const int64_t x_hi = axes.size() >= 1 ? axes[0].encoded_hi : 1;
@@ -476,22 +476,22 @@ void db_launch_primary_matrix_rays(
   }
 }
 
-void db_throw_if_row_count_exceeds_limit(size_t row_count) {
-  if (row_count > kDbMaxRowsPerJob) {
-    throw std::runtime_error("first-wave Embree DB lowering supports at most 1000000 rows per RT job");
+void columnar_throw_if_row_count_exceeds_limit(size_t row_count) {
+  if (row_count > kColumnarMaxRowsPerJob) {
+    throw std::runtime_error("first-wave Embree columnar lowering supports at most 1000000 rows per RT job");
   }
 }
 
-void db_throw_if_limit_error() {
-  if (!g_db_limit_error) {
+void columnar_throw_if_limit_error() {
+  if (!g_columnar_limit_error) {
     return;
   }
-  const std::string message = g_db_limit_error_message;
-  db_clear_limit_error();
+  const std::string message = g_columnar_limit_error_message;
+  columnar_clear_limit_error();
   throw std::runtime_error(message);
 }
 
-void db_validate_db_inputs(
+void columnar_validate_row_payload_inputs(
     const RtdlColumnField* fields,
     size_t field_count,
     const RtdlColumnScalar* row_values,
@@ -502,36 +502,36 @@ void db_validate_db_inputs(
     throw std::runtime_error("dataset inputs must not be null");
   }
   if (clause_count > 0 && clauses == nullptr) {
-    throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
   }
-  db_throw_if_row_count_exceeds_limit(row_count);
+  columnar_throw_if_row_count_exceeds_limit(row_count);
 }
 
-std::vector<const char*> db_default_primary_fields(const RtdlColumnField* fields, size_t field_count) {
+std::vector<const char*> columnar_default_primary_fields(const RtdlColumnField* fields, size_t field_count) {
   std::vector<const char*> names;
   for (size_t index = 0; index < field_count && names.size() < 3; ++index) {
     if (std::strcmp(fields[index].name, "row_id") == 0) {
       continue;
     }
-    if (db_field_kind_is_numeric(fields[index].kind)) {
+    if (columnar_field_kind_is_numeric(fields[index].kind)) {
       names.push_back(fields[index].name);
     }
   }
   return names;
 }
 
-size_t db_count_scalar_strings(const RtdlColumnScalar* row_values, size_t scalar_count) {
+size_t columnar_count_scalar_strings(const RtdlColumnScalar* row_values, size_t scalar_count) {
   size_t count = 0;
   for (size_t index = 0; index < scalar_count; ++index) {
-    if (row_values[index].kind == kDbKindText && row_values[index].string_value != nullptr) {
+    if (row_values[index].kind == kColumnKindText && row_values[index].string_value != nullptr) {
       ++count;
     }
   }
   return count;
 }
 
-void db_copy_dataset_payload(
-    EmbreeDbDatasetImpl& dataset,
+void columnar_copy_dataset_payload(
+    EmbreeColumnarPayloadImpl& dataset,
     const RtdlColumnField* fields,
     size_t field_count,
     const RtdlColumnScalar* row_values,
@@ -546,11 +546,11 @@ void db_copy_dataset_payload(
   }
 
   const size_t scalar_count = row_count * field_count;
-  dataset.scalar_strings.reserve(db_count_scalar_strings(row_values, scalar_count));
+  dataset.scalar_strings.reserve(columnar_count_scalar_strings(row_values, scalar_count));
   dataset.row_values.reserve(scalar_count);
   for (size_t index = 0; index < scalar_count; ++index) {
     RtdlColumnScalar copied = row_values[index];
-    if (copied.kind == kDbKindText && copied.string_value != nullptr) {
+    if (copied.kind == kColumnKindText && copied.string_value != nullptr) {
       dataset.scalar_strings.emplace_back(copied.string_value);
       copied.string_value = dataset.scalar_strings.back().c_str();
     }
@@ -559,33 +559,33 @@ void db_copy_dataset_payload(
   dataset.row_count = row_count;
 }
 
-void db_validate_columnar_inputs(
+void columnar_validate_payload_fields(
     const RtdlPayloadField* fields,
     size_t field_count,
     size_t row_count) {
   if (field_count == 0 || fields == nullptr) {
     throw std::runtime_error("payload fields must not be null");
   }
-  db_throw_if_row_count_exceeds_limit(row_count);
+  columnar_throw_if_row_count_exceeds_limit(row_count);
   for (size_t field_index = 0; field_index < field_count; ++field_index) {
     const RtdlPayloadField& field = fields[field_index];
     if (field.name == nullptr) {
       throw std::runtime_error("field name must not be null");
     }
-    if ((field.kind == kDbKindInt64 || field.kind == kDbKindBool) && field.int_values == nullptr) {
+    if ((field.kind == kColumnKindInt64 || field.kind == kColumnKindBool) && field.int_values == nullptr) {
       throw std::runtime_error("field integer/bool values must not be null");
     }
-    if (field.kind == kDbKindFloat64 && field.double_values == nullptr) {
+    if (field.kind == kColumnKindFloat64 && field.double_values == nullptr) {
       throw std::runtime_error("field float values must not be null");
     }
-    if (field.kind == kDbKindText && field.string_values == nullptr) {
+    if (field.kind == kColumnKindText && field.string_values == nullptr) {
       throw std::runtime_error("field text values must not be null");
     }
   }
 }
 
-void db_copy_dataset_columnar_payload(
-    EmbreeDbDatasetImpl& dataset,
+void columnar_copy_dataset_from_payload_fields(
+    EmbreeColumnarPayloadImpl& dataset,
     const RtdlPayloadField* fields,
     size_t field_count,
     size_t row_count) {
@@ -600,7 +600,7 @@ void db_copy_dataset_columnar_payload(
 
   size_t string_count = 0;
   for (size_t field_index = 0; field_index < field_count; ++field_index) {
-    if (fields[field_index].kind == kDbKindText) {
+    if (fields[field_index].kind == kColumnKindText) {
       string_count += row_count;
     }
   }
@@ -611,9 +611,9 @@ void db_copy_dataset_columnar_payload(
       const RtdlPayloadField& field = fields[field_index];
       RtdlColumnScalar value{};
       value.kind = field.kind;
-      if (field.kind == kDbKindFloat64) {
+      if (field.kind == kColumnKindFloat64) {
         value.double_value = field.double_values[row_index];
-      } else if (field.kind == kDbKindText) {
+      } else if (field.kind == kColumnKindText) {
         const char* text = field.string_values[row_index];
         dataset.scalar_strings.emplace_back(text == nullptr ? "" : text);
         value.string_value = dataset.scalar_strings.back().c_str();
@@ -626,21 +626,21 @@ void db_copy_dataset_columnar_payload(
   dataset.row_count = row_count;
 }
 
-void db_attach_dataset_scene(EmbreeDbDatasetImpl& dataset) {
+void columnar_attach_dataset_scene(EmbreeColumnarPayloadImpl& dataset) {
   dataset.holder.geometry = rtcNewGeometry(dataset.device.device, RTC_GEOMETRY_TYPE_USER);
   rtcSetGeometryUserPrimitiveCount(dataset.holder.geometry, static_cast<unsigned>(dataset.boxes.size()));
   rtcSetGeometryUserData(dataset.holder.geometry, &dataset.scene_data);
-  rtcSetGeometryBoundsFunction(dataset.holder.geometry, db_row_box_bounds, nullptr);
-  rtcSetGeometryIntersectFunction(dataset.holder.geometry, db_row_box_intersect);
+  rtcSetGeometryBoundsFunction(dataset.holder.geometry, columnar_row_box_bounds, nullptr);
+  rtcSetGeometryIntersectFunction(dataset.holder.geometry, columnar_row_box_intersect);
   rtcCommitGeometry(dataset.holder.geometry);
   rtcAttachGeometry(dataset.holder.scene, dataset.holder.geometry);
   rtcCommitScene(dataset.holder.scene);
 }
 
 template <typename LaunchFn>
-void db_run_dataset_rays(const EmbreeDbDatasetImpl& dataset, const std::vector<DbPrimaryAxis>& axes, LaunchFn&& launch_fn) {
-  db_clear_limit_error();
-  db_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
+void columnar_run_dataset_rays(const EmbreeColumnarPayloadImpl& dataset, const std::vector<ColumnarPrimaryAxis>& axes, LaunchFn&& launch_fn) {
+  columnar_clear_limit_error();
+  columnar_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
     RTCRayHit rayhit;
     set_ray_3d(
         &rayhit,
@@ -650,7 +650,7 @@ void db_run_dataset_rays(const EmbreeDbDatasetImpl& dataset, const std::vector<D
     RTCIntersectArguments args;
     rtcInitIntersectArguments(&args);
     launch_fn(rayhit, args);
-    db_throw_if_limit_error();
+    columnar_throw_if_limit_error();
   });
 }
 
@@ -2769,24 +2769,24 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
       throw std::runtime_error("dataset inputs must not be null");
     }
     if (clause_count > 0 && clauses == nullptr) {
-      throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+      throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
-    db_throw_if_row_count_exceeds_limit(row_count);
-    std::vector<DbPrimaryAxis> axes;
+    columnar_throw_if_row_count_exceeds_limit(row_count);
+    std::vector<ColumnarPrimaryAxis> axes;
     axes.reserve(std::min<size_t>(clause_count, 3));
     for (size_t i = 0; i < clause_count && i < 3; ++i) {
-      axes.push_back(db_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
+      axes.push_back(columnar_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
     }
-    const std::vector<DbRowBox> boxes = db_build_row_boxes(fields, field_count, row_values, row_count, axes);
+    const std::vector<ColumnarRowBox> boxes = columnar_build_row_boxes(fields, field_count, row_values, row_count, axes);
 
     EmbreeDevice device;
-    DbRowBoxSceneData data {&boxes};
+    ColumnarRowBoxSceneData data {&boxes};
     SceneHolder holder(device.device);
     holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
     rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(boxes.size()));
     rtcSetGeometryUserData(holder.geometry, &data);
-    rtcSetGeometryBoundsFunction(holder.geometry, db_row_box_bounds, nullptr);
-    rtcSetGeometryIntersectFunction(holder.geometry, db_row_box_intersect);
+    rtcSetGeometryBoundsFunction(holder.geometry, columnar_row_box_bounds, nullptr);
+    rtcSetGeometryIntersectFunction(holder.geometry, columnar_row_box_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
@@ -2800,11 +2800,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
         row_count,
         clauses,
         clause_count,
-        kDbMaxCandidateRowsPerJob,
+        kColumnarMaxCandidateRowsPerJob,
         &seen_row_ids,
         &rows};
-    db_clear_limit_error();
-    db_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
+    columnar_clear_limit_error();
+    columnar_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
       RTCRayHit rayhit;
       set_ray_3d(
           &rayhit,
@@ -2818,7 +2818,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_conjunctive_scan(
       rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
-      db_throw_if_limit_error();
+      columnar_throw_if_limit_error();
     });
     std::sort(rows.begin(), rows.end(), [](const RtdlColumnRowIdRow& left, const RtdlColumnRowIdRow& right) {
       return left.row_id < right.row_id;
@@ -2847,32 +2847,32 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_count(
     *rows_out = nullptr;
     *row_count_out = 0;
     if (field_count == 0 || fields == nullptr || row_values == nullptr || group_key_field == nullptr) {
-      throw std::runtime_error("DB grouped_count inputs must not be null");
+      throw std::runtime_error("columnar grouped_count inputs must not be null");
     }
-    db_throw_if_row_count_exceeds_limit(row_count);
-    std::vector<DbPrimaryAxis> axes;
+    columnar_throw_if_row_count_exceeds_limit(row_count);
+    std::vector<ColumnarPrimaryAxis> axes;
     axes.reserve(std::min<size_t>(clause_count, 3));
     for (size_t i = 0; i < clause_count && i < 3; ++i) {
-      axes.push_back(db_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
+      axes.push_back(columnar_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
     }
-    const std::vector<DbRowBox> boxes = db_build_row_boxes(fields, field_count, row_values, row_count, axes);
-    const size_t group_field_index = db_find_field_index_or_throw(fields, field_count, group_key_field);
+    const std::vector<ColumnarRowBox> boxes = columnar_build_row_boxes(fields, field_count, row_values, row_count, axes);
+    const size_t group_field_index = columnar_find_field_index_or_throw(fields, field_count, group_key_field);
 
     EmbreeDevice device;
-    DbRowBoxSceneData data {&boxes};
+    ColumnarRowBoxSceneData data {&boxes};
     SceneHolder holder(device.device);
     holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
     rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(boxes.size()));
     rtcSetGeometryUserData(holder.geometry, &data);
-    rtcSetGeometryBoundsFunction(holder.geometry, db_row_box_bounds, nullptr);
-    rtcSetGeometryIntersectFunction(holder.geometry, db_row_box_intersect);
+    rtcSetGeometryBoundsFunction(holder.geometry, columnar_row_box_bounds, nullptr);
+    rtcSetGeometryIntersectFunction(holder.geometry, columnar_row_box_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
 
     std::unordered_set<uint32_t> seen_row_ids;
     std::unordered_map<int64_t, int64_t> counts;
-    DbGroupedCountRayQueryState state {
+    ColumnarGroupedCountRayQueryState state {
         fields,
         field_count,
         row_values,
@@ -2880,12 +2880,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_count(
         clauses,
         clause_count,
         group_field_index,
-        kDbMaxCandidateRowsPerJob,
-        kDbMaxGroupsPerJob,
+        kColumnarMaxCandidateRowsPerJob,
+        kColumnarMaxGroupsPerJob,
         &seen_row_ids,
         &counts};
-    db_clear_limit_error();
-    db_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
+    columnar_clear_limit_error();
+    columnar_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
       RTCRayHit rayhit;
       set_ray_3d(
           &rayhit,
@@ -2894,12 +2894,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_count(
           static_cast<float>((z_hi - z_lo) + 2));
       RTCIntersectArguments args;
       rtcInitIntersectArguments(&args);
-      g_query_kind = QueryKind::kDbGroupedCountRay;
+      g_query_kind = QueryKind::kColumnarGroupedCountRay;
       g_query_state = &state;
       rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
-      db_throw_if_limit_error();
+      columnar_throw_if_limit_error();
     });
     std::vector<RtdlGroupedCountRow> rows;
     rows.reserve(counts.size());
@@ -2934,36 +2934,36 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
     *rows_out = nullptr;
     *row_count_out = 0;
     if (field_count == 0 || fields == nullptr || row_values == nullptr || group_key_field == nullptr || value_field == nullptr) {
-      throw std::runtime_error("DB grouped_sum inputs must not be null");
+      throw std::runtime_error("columnar grouped_sum inputs must not be null");
     }
-    db_throw_if_row_count_exceeds_limit(row_count);
-    std::vector<DbPrimaryAxis> axes;
+    columnar_throw_if_row_count_exceeds_limit(row_count);
+    std::vector<ColumnarPrimaryAxis> axes;
     axes.reserve(std::min<size_t>(clause_count, 3));
     for (size_t i = 0; i < clause_count && i < 3; ++i) {
-      axes.push_back(db_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
+      axes.push_back(columnar_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
     }
-    const std::vector<DbRowBox> boxes = db_build_row_boxes(fields, field_count, row_values, row_count, axes);
-    const size_t group_field_index = db_find_field_index_or_throw(fields, field_count, group_key_field);
-    const size_t value_field_index = db_find_field_index_or_throw(fields, field_count, value_field);
-    if (fields[value_field_index].kind != kDbKindInt64 && fields[value_field_index].kind != kDbKindBool) {
+    const std::vector<ColumnarRowBox> boxes = columnar_build_row_boxes(fields, field_count, row_values, row_count, axes);
+    const size_t group_field_index = columnar_find_field_index_or_throw(fields, field_count, group_key_field);
+    const size_t value_field_index = columnar_find_field_index_or_throw(fields, field_count, value_field);
+    if (fields[value_field_index].kind != kColumnKindInt64 && fields[value_field_index].kind != kColumnKindBool) {
       throw std::runtime_error("first-wave Embree grouped_sum supports integer-compatible value fields only");
     }
 
     EmbreeDevice device;
-    DbRowBoxSceneData data {&boxes};
+    ColumnarRowBoxSceneData data {&boxes};
     SceneHolder holder(device.device);
     holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
     rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(boxes.size()));
     rtcSetGeometryUserData(holder.geometry, &data);
-    rtcSetGeometryBoundsFunction(holder.geometry, db_row_box_bounds, nullptr);
-    rtcSetGeometryIntersectFunction(holder.geometry, db_row_box_intersect);
+    rtcSetGeometryBoundsFunction(holder.geometry, columnar_row_box_bounds, nullptr);
+    rtcSetGeometryIntersectFunction(holder.geometry, columnar_row_box_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
 
     std::unordered_set<uint32_t> seen_row_ids;
     std::unordered_map<int64_t, int64_t> sums;
-    DbGroupedSumRayQueryState state {
+    ColumnarGroupedSumRayQueryState state {
         fields,
         field_count,
         row_values,
@@ -2972,12 +2972,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
         clause_count,
         group_field_index,
         value_field_index,
-        kDbMaxCandidateRowsPerJob,
-        kDbMaxGroupsPerJob,
+        kColumnarMaxCandidateRowsPerJob,
+        kColumnarMaxGroupsPerJob,
         &seen_row_ids,
         &sums};
-    db_clear_limit_error();
-    db_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
+    columnar_clear_limit_error();
+    columnar_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
       RTCRayHit rayhit;
       set_ray_3d(
           &rayhit,
@@ -2986,12 +2986,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
           static_cast<float>((z_hi - z_lo) + 2));
       RTCIntersectArguments args;
       rtcInitIntersectArguments(&args);
-      g_query_kind = QueryKind::kDbGroupedSumRay;
+      g_query_kind = QueryKind::kColumnarGroupedSumRay;
       g_query_state = &state;
       rtdlRtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
-      db_throw_if_limit_error();
+      columnar_throw_if_limit_error();
     });
     std::vector<RtdlGroupedSumRow> rows;
     rows.reserve(sums.size());
@@ -3021,11 +3021,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create(
       throw std::runtime_error("dataset output pointer must not be null");
     }
     *dataset_out = nullptr;
-    db_validate_db_inputs(fields, field_count, row_values, row_count, nullptr, 0);
+    columnar_validate_row_payload_inputs(fields, field_count, row_values, row_count, nullptr, 0);
 
-    EmbreeDbDatasetImpl* dataset = new EmbreeDbDatasetImpl();
+    EmbreeColumnarPayloadImpl* dataset = new EmbreeColumnarPayloadImpl();
     try {
-      db_copy_dataset_payload(*dataset, fields, field_count, row_values, row_count);
+      columnar_copy_dataset_payload(*dataset, fields, field_count, row_values, row_count);
 
       std::vector<const char*> primary_names;
       if (primary_field_count > 0) {
@@ -3037,29 +3037,29 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create(
           primary_names.push_back(primary_fields[index]);
         }
       } else {
-        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+        primary_names = columnar_default_primary_fields(dataset->fields.data(), dataset->fields.size());
       }
       if (primary_names.empty()) {
-        throw std::runtime_error("Embree prepared DB dataset requires at least one numeric primary RT axis");
+        throw std::runtime_error("Embree prepared columnar payload requires at least one numeric primary RT axis");
       }
 
       dataset->primary_axes.reserve(primary_names.size());
       for (const char* field_name : primary_names) {
         dataset->primary_axes.push_back(
-            db_make_full_primary_axis(
+            columnar_make_full_primary_axis(
                 dataset->fields.data(),
                 dataset->fields.size(),
                 dataset->row_values.data(),
                 dataset->row_count,
                 field_name));
       }
-      dataset->boxes = db_build_row_boxes(
+      dataset->boxes = columnar_build_row_boxes(
           dataset->fields.data(),
           dataset->fields.size(),
           dataset->row_values.data(),
           dataset->row_count,
           dataset->primary_axes);
-      db_attach_dataset_scene(*dataset);
+      columnar_attach_dataset_scene(*dataset);
       *dataset_out = reinterpret_cast<RtdlEmbreeColumnarPayload*>(dataset);
     } catch (...) {
       delete dataset;
@@ -3082,11 +3082,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create_from_columns(
       throw std::runtime_error("dataset output pointer must not be null");
     }
     *dataset_out = nullptr;
-    db_validate_columnar_inputs(fields, field_count, row_count);
+    columnar_validate_payload_fields(fields, field_count, row_count);
 
-    EmbreeDbDatasetImpl* dataset = new EmbreeDbDatasetImpl();
+    EmbreeColumnarPayloadImpl* dataset = new EmbreeColumnarPayloadImpl();
     try {
-      db_copy_dataset_columnar_payload(*dataset, fields, field_count, row_count);
+      columnar_copy_dataset_from_payload_fields(*dataset, fields, field_count, row_count);
 
       std::vector<const char*> primary_names;
       if (primary_field_count > 0) {
@@ -3098,29 +3098,29 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create_from_columns(
           primary_names.push_back(primary_fields[index]);
         }
       } else {
-        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+        primary_names = columnar_default_primary_fields(dataset->fields.data(), dataset->fields.size());
       }
       if (primary_names.empty()) {
-        throw std::runtime_error("Embree prepared DB dataset requires at least one numeric primary RT axis");
+        throw std::runtime_error("Embree prepared columnar payload requires at least one numeric primary RT axis");
       }
 
       dataset->primary_axes.reserve(primary_names.size());
       for (const char* field_name : primary_names) {
         dataset->primary_axes.push_back(
-            db_make_full_primary_axis(
+            columnar_make_full_primary_axis(
                 dataset->fields.data(),
                 dataset->fields.size(),
                 dataset->row_values.data(),
                 dataset->row_count,
                 field_name));
       }
-      dataset->boxes = db_build_row_boxes(
+      dataset->boxes = columnar_build_row_boxes(
           dataset->fields.data(),
           dataset->fields.size(),
           dataset->row_values.data(),
           dataset->row_count,
           dataset->primary_axes);
-      db_attach_dataset_scene(*dataset);
+      columnar_attach_dataset_scene(*dataset);
       *dataset_out = reinterpret_cast<RtdlEmbreeColumnarPayload*>(dataset);
     } catch (...) {
       delete dataset;
@@ -3130,7 +3130,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_create_from_columns(
 }
 
 RTDL_EMBREE_EXPORT void rtdl_embree_columnar_payload_destroy(RtdlEmbreeColumnarPayload* dataset) {
-  delete reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+  delete reinterpret_cast<EmbreeColumnarPayloadImpl*>(dataset);
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
@@ -3143,19 +3143,19 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
     size_t error_size) {
   return handle_native_call([&]() {
     if (dataset == nullptr) {
-      throw std::runtime_error("Embree prepared DB dataset must not be null");
+      throw std::runtime_error("Embree prepared columnar payload must not be null");
     }
     if (rows_out == nullptr || row_count_out == nullptr) {
       throw std::runtime_error("output pointers must not be null");
     }
     if (clause_count > 0 && clauses == nullptr) {
-      throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+      throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
-    auto* impl = reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+    auto* impl = reinterpret_cast<EmbreeColumnarPayloadImpl*>(dataset);
 
-    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
+    const std::vector<ColumnarPrimaryAxis> axes = columnar_dataset_query_axes(*impl, clauses, clause_count);
     std::unordered_set<uint32_t> seen_row_ids;
     std::vector<RtdlColumnRowIdRow> rows;
     ColumnarPredicateScanRayQueryState state {
@@ -3165,10 +3165,10 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_multi_predicate_scan(
         impl->row_count,
         clauses,
         clause_count,
-        kDbMaxCandidateRowsPerJob,
+        kColumnarMaxCandidateRowsPerJob,
         &seen_row_ids,
         &rows};
-    db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
+    columnar_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
       g_query_kind = QueryKind::kColumnarPredicateScanRay;
       g_query_state = &state;
       rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
@@ -3194,7 +3194,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_count(
     size_t error_size) {
   return handle_native_call([&]() {
     if (dataset == nullptr) {
-      throw std::runtime_error("Embree prepared DB dataset must not be null");
+      throw std::runtime_error("Embree prepared columnar payload must not be null");
     }
     if (rows_out == nullptr || row_count_out == nullptr) {
       throw std::runtime_error("output pointers must not be null");
@@ -3203,18 +3203,18 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_count(
       throw std::runtime_error("group_key_field must not be null");
     }
     if (clause_count > 0 && clauses == nullptr) {
-      throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+      throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
-    auto* impl = reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+    auto* impl = reinterpret_cast<EmbreeColumnarPayloadImpl*>(dataset);
 
     const size_t group_field_index =
-        db_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), group_key_field);
-    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
+        columnar_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), group_key_field);
+    const std::vector<ColumnarPrimaryAxis> axes = columnar_dataset_query_axes(*impl, clauses, clause_count);
     std::unordered_set<uint32_t> seen_row_ids;
     std::unordered_map<int64_t, int64_t> counts;
-    DbGroupedCountRayQueryState state {
+    ColumnarGroupedCountRayQueryState state {
         impl->fields.data(),
         impl->fields.size(),
         impl->row_values.data(),
@@ -3222,12 +3222,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_count(
         clauses,
         clause_count,
         group_field_index,
-        kDbMaxCandidateRowsPerJob,
-        kDbMaxGroupsPerJob,
+        kColumnarMaxCandidateRowsPerJob,
+        kColumnarMaxGroupsPerJob,
         &seen_row_ids,
         &counts};
-    db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
-      g_query_kind = QueryKind::kDbGroupedCountRay;
+    columnar_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
+      g_query_kind = QueryKind::kColumnarGroupedCountRay;
       g_query_state = &state;
       rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
@@ -3258,7 +3258,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_sum(
     size_t error_size) {
   return handle_native_call([&]() {
     if (dataset == nullptr) {
-      throw std::runtime_error("Embree prepared DB dataset must not be null");
+      throw std::runtime_error("Embree prepared columnar payload must not be null");
     }
     if (rows_out == nullptr || row_count_out == nullptr) {
       throw std::runtime_error("output pointers must not be null");
@@ -3267,25 +3267,25 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_sum(
       throw std::runtime_error("group_key_field and value_field must not be null");
     }
     if (clause_count > 0 && clauses == nullptr) {
-      throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+      throw std::runtime_error("columnar clause pointer must not be null when clause_count > 0");
     }
     *rows_out = nullptr;
     *row_count_out = 0;
-    auto* impl = reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+    auto* impl = reinterpret_cast<EmbreeColumnarPayloadImpl*>(dataset);
 
     const size_t group_field_index =
-        db_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), group_key_field);
+        columnar_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), group_key_field);
     const size_t value_field_index =
-        db_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), value_field);
-    if (impl->fields[value_field_index].kind != kDbKindInt64
-        && impl->fields[value_field_index].kind != kDbKindBool) {
+        columnar_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), value_field);
+    if (impl->fields[value_field_index].kind != kColumnKindInt64
+        && impl->fields[value_field_index].kind != kColumnKindBool) {
       throw std::runtime_error("first-wave Embree grouped_sum supports integer-compatible value fields only");
     }
 
-    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
+    const std::vector<ColumnarPrimaryAxis> axes = columnar_dataset_query_axes(*impl, clauses, clause_count);
     std::unordered_set<uint32_t> seen_row_ids;
     std::unordered_map<int64_t, int64_t> sums;
-    DbGroupedSumRayQueryState state {
+    ColumnarGroupedSumRayQueryState state {
         impl->fields.data(),
         impl->fields.size(),
         impl->row_values.data(),
@@ -3294,12 +3294,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_columnar_payload_grouped_reduction_sum(
         clause_count,
         group_field_index,
         value_field_index,
-        kDbMaxCandidateRowsPerJob,
-        kDbMaxGroupsPerJob,
+        kColumnarMaxCandidateRowsPerJob,
+        kColumnarMaxGroupsPerJob,
         &seen_row_ids,
         &sums};
-    db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
-      g_query_kind = QueryKind::kDbGroupedSumRay;
+    columnar_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
+      g_query_kind = QueryKind::kColumnarGroupedSumRay;
       g_query_state = &state;
       rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;

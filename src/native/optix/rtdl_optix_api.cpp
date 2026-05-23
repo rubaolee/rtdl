@@ -4300,7 +4300,7 @@ extern "C" int rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacit
 
 extern "C" void rtdl_optix_columnar_payload_destroy(RtdlOptixColumnarPayload* dataset)
 {
-    delete reinterpret_cast<OptixDbDatasetImpl*>(dataset);
+    delete reinterpret_cast<OptixColumnarPayloadImpl*>(dataset);
 }
 
 extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan(
@@ -4316,7 +4316,7 @@ extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan(
         *rows_out = nullptr;
         *row_count_out = 0;
         run_db_conjunctive_scan_optix_prepared(
-            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             rows_out, row_count_out);
     }, error_out, error_size);
@@ -4334,7 +4334,7 @@ extern "C" int rtdl_optix_columnar_payload_multi_predicate_scan_count(
         }
         *row_count_out = 0;
         run_db_conjunctive_scan_count_optix_prepared(
-            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             row_count_out);
     }, error_out, error_size);
@@ -4354,7 +4354,7 @@ extern "C" int rtdl_optix_columnar_payload_grouped_reduction_count(
         *rows_out = nullptr;
         *row_count_out = 0;
         run_db_grouped_count_optix_prepared(
-            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             group_key_field,
             rows_out, row_count_out);
@@ -4376,7 +4376,7 @@ extern "C" int rtdl_optix_columnar_payload_grouped_reduction_sum(
         *rows_out = nullptr;
         *row_count_out = 0;
         run_db_grouped_sum_optix_prepared(
-            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            reinterpret_cast<OptixColumnarPayloadImpl*>(dataset),
             clauses, clause_count,
             group_key_field,
             value_field,
@@ -4386,12 +4386,12 @@ extern "C" int rtdl_optix_columnar_payload_grouped_reduction_sum(
 
 static void rtdl_optix_fill_columnar_compact_summary_phase(RtdlColumnCompactSummaryResult& result)
 {
-    result.traversal = g_optix_last_db_traversal_s;
-    result.bitset_copyback = g_optix_last_db_bitset_copy_s;
-    result.exact_filter = g_optix_last_db_exact_filter_s;
-    result.output_pack = g_optix_last_db_output_pack_s;
-    result.raw_candidate_count = g_optix_last_db_raw_candidate_count;
-    result.emitted_count = g_optix_last_db_emitted_count;
+    result.traversal = g_optix_last_columnar_traversal_s;
+    result.bitset_copyback = g_optix_last_columnar_bitset_copy_s;
+    result.exact_filter = g_optix_last_columnar_exact_filter_s;
+    result.output_pack = g_optix_last_columnar_output_pack_s;
+    result.raw_candidate_count = g_optix_last_columnar_raw_candidate_count;
+    result.emitted_count = g_optix_last_columnar_emitted_count;
 }
 
 extern "C" void rtdl_optix_columnar_compact_summary_results_destroy(
@@ -4418,7 +4418,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
 {
     return handle_native_call([&]() {
         if (!dataset) {
-            throw std::runtime_error("OptiX prepared DB dataset must not be null");
+            throw std::runtime_error("OptiX prepared columnar payload must not be null");
         }
         if (!results_out || !result_count_out) {
             throw std::runtime_error("output pointers must not be null");
@@ -4429,7 +4429,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
         *results_out = nullptr;
         *result_count_out = 0;
 
-        auto* impl = reinterpret_cast<OptixDbDatasetImpl*>(dataset);
+        auto* impl = reinterpret_cast<OptixColumnarPayloadImpl*>(dataset);
         std::vector<RtdlColumnCompactSummaryResult> results(request_count);
         try {
             for (size_t index = 0; index < request_count; ++index) {
@@ -4469,7 +4469,7 @@ extern "C" int rtdl_optix_columnar_payload_compact_summary_batch(
                         &result.sum_row_count);
                     rtdl_optix_fill_columnar_compact_summary_phase(result);
                 } else {
-                    throw std::runtime_error("unsupported DB compact-summary batch operation");
+                    throw std::runtime_error("unsupported columnar compact-summary batch operation");
                 }
             }
         } catch (...) {
