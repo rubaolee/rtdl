@@ -1,0 +1,41 @@
+{
+  "cpu_counts_available": false,
+  "load_factor": 0.1,
+  "manifest": {
+    "box_count": 1000000,
+    "box_query_count": 1000,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 1000,
+    "seed": 2025
+  },
+  "rtspatial": {
+    "point_contains": {
+      "load_ms": 7.352,
+      "loaded_box_queries": null,
+      "loaded_boxes": 1000000,
+      "loaded_point_queries": 1000,
+      "query_ms": 218.04,
+      "results": 43567831,
+      "wall_sec": 7.854210719466209
+    },
+    "range_contains": {
+      "load_ms": 6.477,
+      "loaded_box_queries": 1000,
+      "loaded_boxes": 1000000,
+      "loaded_point_queries": null,
+      "query_ms": 216.012,
+      "results": 30000217,
+      "wall_sec": 7.987121075391769
+    },
+    "range_intersects": {
+      "load_ms": 13.505,
+      "loaded_box_queries": 1000,
+      "loaded_boxes": 1000000,
+      "loaded_point_queries": null,
+      "query_ms": 423.462,
+      "results": 65773097,
+      "wall_sec": 8.504044093191624
+    }
+  }
+}

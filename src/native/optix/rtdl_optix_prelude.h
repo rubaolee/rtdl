@@ -93,6 +93,11 @@ struct RtdlPoint {
     double x, y;
 };
 
+struct RtdlAabb2D {
+    uint32_t id;
+    double min_x, min_y, max_x, max_y;
+};
+
 struct RtdlPoint3D {
     uint32_t id;
     double x, y, z;
@@ -599,6 +604,33 @@ int  rtdl_optix_count_prepared_ray_anyhit_2d(
          size_t* hit_count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_ray_anyhit_2d(void* prepared);
+int  rtdl_optix_prepare_aabb_index_2d(
+         const RtdlAabb2D* boxes, size_t box_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_aabb_index_2d(
+         void* prepared,
+         const RtdlPoint* point_queries, size_t point_query_count,
+         const RtdlAabb2D* box_queries, size_t box_query_count,
+         uint32_t operation,
+         size_t* hit_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepare_aabb_point_queries_2d(
+         const RtdlPoint* point_queries, size_t point_query_count,
+         void** queries_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepare_aabb_box_queries_2d(
+         const RtdlAabb2D* box_queries, size_t box_query_count,
+         void** queries_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
+         void* prepared,
+         void* prepared_queries,
+         uint32_t operation,
+         size_t* hit_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_aabb_queries_2d(void* prepared_queries);
+void rtdl_optix_destroy_prepared_aabb_index_2d(void* prepared);
 int  rtdl_optix_prepare_rays_2d(
          const RtdlRay2D* rays, size_t ray_count,
          void** rays_out,

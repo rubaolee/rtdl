@@ -1,0 +1,169 @@
+{
+  "goal": "Goal2580 improve RTDL LibRTS solution toward NVIDIA RT-core authors-code performance",
+  "date": "2026-05-24",
+  "source_state": {
+    "base_commit": "802b4940c682a5cf38fff29f12630274db5a70e5",
+    "state": "local uncommitted overlay synced to pod for validation"
+  },
+  "pod": {
+    "ssh": "root@203.57.40.169 -p 10212 -i ~/.ssh/id_ed25519_rtdl_codex",
+    "host": "2f2405dbb885",
+    "gpu": "NVIDIA RTX A5000",
+    "driver": "565.57.01"
+  },
+  "toolchain": {
+    "cuda_prefix": "/usr/local/cuda-12.6",
+    "optix_prefix": "/opt/optix/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+    "rtdl_nvcc": "/usr/local/cuda-12.6/bin/nvcc",
+    "rtdl_optix_ptx_arch": "compute_86"
+  },
+  "implementation": {
+    "primitive": "AABB_INDEX_QUERY_2D",
+    "native_symbols": [
+      "rtdl_optix_prepare_aabb_index_2d",
+      "rtdl_optix_count_prepared_aabb_index_2d",
+      "rtdl_optix_prepare_aabb_point_queries_2d",
+      "rtdl_optix_prepare_aabb_box_queries_2d",
+      "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",
+      "rtdl_optix_destroy_prepared_aabb_queries_2d",
+      "rtdl_optix_destroy_prepared_aabb_index_2d"
+    ],
+    "supported_operations": [
+      "point_contains",
+      "range_contains"
+    ],
+    "unsupported_operations": [
+      "range_intersects"
+    ],
+    "app_specific_native_code": false,
+    "range_intersects_reason": "Correct LibRTS-style range_intersects needs forward and backward traversal; a single-ray shortcut is intentionally rejected."
+  },
+  "authors_code_reference": {
+    "source_report": "docs/reports/goal2578_librts_paperlike_uniform_authors_pod_evidence_2026-05-24.json",
+    "rtspatial_head": "52509e8022abeab722f5a9a89d1917e8b481defe",
+    "paperlike_parameters": {
+      "distribution": "uniform",
+      "query_count": 1000,
+      "seed": 2025,
+      "max_box_width": 0.005,
+      "max_box_height": 0.005,
+      "max_query_width": 0.005,
+      "max_query_height": 0.005
+    },
+    "rtspatial_query_ms": {
+      "uniform_10k_1k_paperlike": {
+        "point_contains": 0.064,
+        "range_contains": 0.068
+      },
+      "uniform_100k_1k_paperlike": {
+        "point_contains": 0.074,
+        "range_contains": 0.069
+      },
+      "uniform_1m_1k_paperlike": {
+        "point_contains": 0.099,
+        "range_contains": 0.106
+      }
+    }
+  },
+  "rtdl_optix_prepared_query_results": {
+    "uniform_10k_1k_paperlike": {
+      "counts": {
+        "point_contains": 54,
+        "range_contains": 4
+      },
+      "scene_prepare_ms": 1238.0752563476562,
+      "point_query_prepare_ms": 0.572502613067627,
+      "box_query_prepare_ms": 1.230977475643158,
+      "first_query_ms": {
+        "point_contains": 74.16848093271255,
+        "range_contains": 0.058002769947052
+      },
+      "warm_query_ms": {
+        "point_contains": {
+          "min": 0.053279101848602295,
+          "median": 0.05560740828514099
+        },
+        "range_contains": {
+          "min": 0.051684677600860596,
+          "median": 0.052969902753829956
+        }
+      }
+    },
+    "uniform_100k_1k_paperlike": {
+      "counts": {
+        "point_contains": 613,
+        "range_contains": 66
+      },
+      "scene_prepare_ms": 280.753418803215,
+      "point_query_prepare_ms": 1.2872740626335144,
+      "box_query_prepare_ms": 1.2250542640686035,
+      "first_query_ms": {
+        "point_contains": 0.10704994201660156,
+        "range_contains": 0.057928264141082764
+      },
+      "warm_query_ms": {
+        "point_contains": {
+          "min": 0.0545307993888855,
+          "median": 0.05698949098587036
+        },
+        "range_contains": {
+          "min": 0.053904950618743896,
+          "median": 0.05550310015678406
+        }
+      }
+    },
+    "uniform_1m_1k_paperlike": {
+      "counts": {
+        "point_contains": 6251,
+        "range_contains": 693
+      },
+      "scene_prepare_ms": 2277.9328525066376,
+      "point_query_prepare_ms": 8.91159474849701,
+      "box_query_prepare_ms": 1.265883445739746,
+      "first_query_ms": {
+        "point_contains": 0.15322864055633545,
+        "range_contains": 0.09053945541381836
+      },
+      "warm_query_ms": {
+        "point_contains": {
+          "min": 0.08621811866760254,
+          "median": 0.09062513709068298
+        },
+        "range_contains": {
+          "min": 0.07860362529754639,
+          "median": 0.07910281419754028
+        }
+      }
+    }
+  },
+  "comparison_summary": {
+    "uniform_10k_1k_paperlike": {
+      "point_contains_median_vs_authors_ratio": 0.8688657544662655,
+      "range_contains_median_vs_authors_ratio": 0.7789691581447052
+    },
+    "uniform_100k_1k_paperlike": {
+      "point_contains_median_vs_authors_ratio": 0.7701282565658157,
+      "range_contains_median_vs_authors_ratio": 0.8043927561997689
+    },
+    "uniform_1m_1k_paperlike": {
+      "point_contains_median_vs_authors_ratio": 0.915405425158414,
+      "range_contains_median_vs_authors_ratio": 0.7462530018635875
+    }
+  },
+  "validation": {
+    "native_build": "CUDA_PREFIX=/usr/local/cuda-12.6 OPTIX_PREFIX=/opt/optix/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64 make build-optix",
+    "local_tests": [
+      "PYTHONPATH=src:. python3 -m unittest tests.goal2574_librts_spatial_index_benchmark_app_test tests.goal2576_generic_aabb_index_primitive_test tests.goal2580_optix_aabb_index_native_symbol_test"
+    ],
+    "pod_tests": [
+      "PYTHONPATH=src:. python3 -m unittest tests.goal2580_optix_aabb_index_native_symbol_test",
+      "prepared-query smoke matched CPU counts for point_contains and range_contains"
+    ]
+  },
+  "claim_boundary": [
+    "These timings are for RTDL-generated paper-like uniform fixtures, not exact paper artifact fixtures.",
+    "The comparison is count-only and limited to point_contains and range_contains.",
+    "range_intersects is not implemented in RTDL OptiX native path yet.",
+    "Prepared-query timings assume query buffers are already resident on the GPU."
+  ]
+}

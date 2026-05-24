@@ -6798,6 +6798,640 @@ struct PreparedGroupIndices2D {
     }
 };
 
+constexpr uint32_t kAabbIndexOpPointContains = 1u;
+constexpr uint32_t kAabbIndexOpRangeContains = 2u;
+constexpr uint32_t kAabbIndexOpRangeIntersects = 3u;
+constexpr uint32_t kAabbIndexIntersectForwardPass = 0u;
+constexpr uint32_t kAabbIndexIntersectBackwardPass = 1u;
+constexpr float kAabbIndexZMin = -1.0e-4f;
+constexpr float kAabbIndexZMax = 1.0e-4f;
+constexpr float kAabbIndexPad = 1.0e-6f;
+
+struct GpuAabb2D {
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+    uint32_t id;
+};
+
+struct AabbIndexQueryLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* point_queries;
+    const GpuAabb2D* box_queries;
+    const GpuAabb2D* indexed_boxes;
+    unsigned long long* hit_count;
+    uint32_t point_query_count;
+    uint32_t box_query_count;
+    uint32_t indexed_box_count;
+    uint32_t operation;
+    uint32_t intersect_pass;
+};
+
+static void validate_aabb2d_bounds(double min_x, double min_y, double max_x, double max_y)
+{
+    const double values[4] = {min_x, min_y, max_x, max_y};
+    for (double value : values) {
+        if (!std::isfinite(value))
+            throw std::runtime_error("AABB coordinates must be finite");
+    }
+    if (max_x < min_x || max_y < min_y)
+        throw std::runtime_error("AABB max bounds must be greater than or equal to min bounds");
+}
+
+static GpuAabb2D pack_aabb2d_for_gpu(const RtdlAabb2D& box)
+{
+    validate_aabb2d_bounds(box.min_x, box.min_y, box.max_x, box.max_y);
+    GpuAabb2D packed = {
+        static_cast<float>(box.min_x),
+        static_cast<float>(box.min_y),
+        static_cast<float>(box.max_x),
+        static_cast<float>(box.max_y),
+        box.id,
+    };
+    if (!std::isfinite(packed.min_x) || !std::isfinite(packed.min_y)
+            || !std::isfinite(packed.max_x) || !std::isfinite(packed.max_y))
+        throw std::runtime_error("AABB coordinates are outside float32 OptiX execution range");
+    return packed;
+}
+
+static OptixAabb optix_aabb_for_gpu_box(const GpuAabb2D& box)
+{
+    OptixAabb a = {};
+    a.minX = std::min(box.min_x, box.max_x) - kAabbIndexPad;
+    a.minY = std::min(box.min_y, box.max_y) - kAabbIndexPad;
+    a.minZ = kAabbIndexZMin;
+    a.maxX = std::max(box.min_x, box.max_x) + kAabbIndexPad;
+    a.maxY = std::max(box.min_y, box.max_y) + kAabbIndexPad;
+    a.maxZ = kAabbIndexZMax;
+    return a;
+}
+
+static const char* kAabbIndexCountKernelSrc = R"CUDA(
+#include <optix_device.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint {
+    float x;
+    float y;
+    uint32_t id;
+    uint32_t pad;
+};
+
+struct GpuAabb2D {
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+    uint32_t id;
+};
+
+struct AabbIndexQueryLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* point_queries;
+    const GpuAabb2D* box_queries;
+    const GpuAabb2D* indexed_boxes;
+    unsigned long long* hit_count;
+    uint32_t point_query_count;
+    uint32_t box_query_count;
+    uint32_t indexed_box_count;
+    uint32_t operation;
+    uint32_t intersect_pass;
+};
+
+extern "C" __constant__ AabbIndexQueryLaunchParams params;
+
+static __forceinline__ __device__ bool box_contains_point(const GpuAabb2D& box, float x, float y) {
+    return box.min_x <= x && x <= box.max_x && box.min_y <= y && y <= box.max_y;
+}
+
+static __forceinline__ __device__ bool box_contains_box(const GpuAabb2D& box, const GpuAabb2D& query) {
+    return box.min_x <= query.min_x
+        && box.min_y <= query.min_y
+        && box.max_x >= query.max_x
+        && box.max_y >= query.max_y;
+}
+
+static __forceinline__ __device__ bool segment_intersects_box(
+        float ax, float ay, float bx, float by, const GpuAabb2D& box) {
+    const float eps = 1.0e-7f;
+    float tmin = 0.0f;
+    float tmax = 1.0f;
+    const float dx = bx - ax;
+    const float dy = by - ay;
+    if (fabsf(dx) < eps) {
+        if (ax < box.min_x || ax > box.max_x) return false;
+    } else {
+        const float inv = 1.0f / dx;
+        float t0 = (box.min_x - ax) * inv;
+        float t1 = (box.max_x - ax) * inv;
+        if (t0 > t1) {
+            const float tmp = t0;
+            t0 = t1;
+            t1 = tmp;
+        }
+        tmin = fmaxf(tmin, t0);
+        tmax = fminf(tmax, t1);
+        if (tmin > tmax) return false;
+    }
+    if (fabsf(dy) < eps) {
+        if (ay < box.min_y || ay > box.max_y) return false;
+    } else {
+        const float inv = 1.0f / dy;
+        float t0 = (box.min_y - ay) * inv;
+        float t1 = (box.max_y - ay) * inv;
+        if (t0 > t1) {
+            const float tmp = t0;
+            t0 = t1;
+            t1 = tmp;
+        }
+        tmin = fmaxf(tmin, t0);
+        tmax = fminf(tmax, t1);
+        if (tmin > tmax) return false;
+    }
+    return true;
+}
+
+static __forceinline__ __device__ void trace_aabb_index_segment(
+        float ax, float ay, float bx, float by, uint32_t payload_idx) {
+    float dx = bx - ax;
+    float dy = by - ay;
+    const float len = sqrtf(dx * dx + dy * dy);
+    float3 origin = make_float3(ax, ay, 0.0f);
+    float3 direction = make_float3(0.0f, 0.0f, 1.0f);
+    float tmax = 2.0f;
+    if (len > 1.0e-10f) {
+        direction = make_float3(dx / len, dy / len, 0.0f);
+        tmax = len;
+    } else {
+        origin = make_float3(ax, ay, -1.0f);
+    }
+    unsigned int p0 = payload_idx;
+    optixTrace(params.traversable,
+               origin,
+               direction,
+               0.0f, tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __raygen__aabb_index_query() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    float x = 0.0f;
+    float y = 0.0f;
+    if (params.operation == 1u) {
+        if (idx >= params.point_query_count) return;
+        const GpuPoint q = params.point_queries[idx];
+        x = q.x;
+        y = q.y;
+    } else if (params.operation == 2u) {
+        if (idx >= params.box_query_count) return;
+        const GpuAabb2D q = params.box_queries[idx];
+        x = 0.5f * (q.min_x + q.max_x);
+        y = 0.5f * (q.min_y + q.max_y);
+    } else if (params.operation == 3u) {
+        if (params.intersect_pass == 0u) {
+            if (idx >= params.box_query_count) return;
+            const GpuAabb2D q = params.box_queries[idx];
+            trace_aabb_index_segment(q.min_x, q.min_y, q.max_x, q.max_y, idx);
+        } else {
+            if (idx >= params.indexed_box_count) return;
+            const GpuAabb2D indexed = params.indexed_boxes[idx];
+            trace_aabb_index_segment(indexed.max_x, indexed.min_y, indexed.min_x, indexed.max_y, idx);
+        }
+        return;
+    } else {
+        return;
+    }
+    unsigned int p0 = idx;
+    optixTrace(params.traversable,
+               make_float3(x, y, -1.0f),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, 2.0f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__aabb_index_miss() {}
+
+extern "C" __global__ void __intersection__aabb_index_exact() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    bool accept = false;
+    if (params.operation == 1u) {
+        const GpuAabb2D indexed = params.indexed_boxes[prim];
+        const GpuPoint query = params.point_queries[qidx];
+        accept = box_contains_point(indexed, query.x, query.y);
+    } else if (params.operation == 2u) {
+        const GpuAabb2D indexed = params.indexed_boxes[prim];
+        const GpuAabb2D query = params.box_queries[qidx];
+        accept = box_contains_box(indexed, query);
+    } else if (params.operation == 3u) {
+        if (params.intersect_pass == 0u) {
+            const GpuAabb2D indexed = params.indexed_boxes[prim];
+            const GpuAabb2D query = params.box_queries[qidx];
+            accept = segment_intersects_box(query.min_x, query.min_y, query.max_x, query.max_y, indexed);
+        } else {
+            const GpuAabb2D source = params.indexed_boxes[qidx];
+            const GpuAabb2D query = params.box_queries[prim];
+            const bool source_antidiagonal_hits_query =
+                segment_intersects_box(source.max_x, source.min_y, source.min_x, source.max_y, query);
+            const bool query_diagonal_hits_source =
+                segment_intersects_box(query.min_x, query.min_y, query.max_x, query.max_y, source);
+            accept = source_antidiagonal_hits_query && !query_diagonal_hits_source;
+        }
+    }
+    if (!accept) return;
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__aabb_index_count() {
+    atomicAdd(params.hit_count, 1ULL);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static void ensure_aabb_index_count_2d_pipeline()
+{
+    std::call_once(g_aabb_index_count.init, [&]() {
+        std::string ptx = compile_to_ptx(kAabbIndexCountKernelSrc, "aabb_index_count_kernel.cu");
+        g_aabb_index_count.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__aabb_index_query",
+            "__miss__aabb_index_miss",
+            "__intersection__aabb_index_exact",
+            "__anyhit__aabb_index_count",
+            nullptr, 1).release();
+    });
+}
+
+struct PreparedAabbIndex2DOptix {
+    size_t box_count = 0;
+    DevPtr d_boxes;
+    AccelHolder accel;
+
+    PreparedAabbIndex2DOptix(const RtdlAabb2D* boxes, size_t count)
+        : box_count(count), d_boxes(sizeof(GpuAabb2D) * count)
+    {
+        if (!boxes && count != 0)
+            throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("AABB index box_count exceeds uint32 launch limit");
+        if (count == 0) return;
+
+        std::vector<GpuAabb2D> gpu_boxes(count);
+        std::vector<OptixAabb> aabbs(count);
+        for (size_t i = 0; i < count; ++i) {
+            gpu_boxes[i] = pack_aabb2d_for_gpu(boxes[i]);
+            aabbs[i] = optix_aabb_for_gpu_box(gpu_boxes[i]);
+        }
+        upload(d_boxes.ptr, gpu_boxes.data(), gpu_boxes.size());
+        accel = build_custom_accel(get_optix_context(), aabbs);
+    }
+};
+
+static PreparedAabbIndex2DOptix* prepare_aabb_index_2d_optix(
+        const RtdlAabb2D* boxes,
+        size_t box_count)
+{
+    return new PreparedAabbIndex2DOptix(boxes, box_count);
+}
+
+static GpuPoint pack_aabb_index_point_query_for_gpu(const RtdlPoint& point)
+{
+    const double values[2] = {point.x, point.y};
+    for (double value : values) {
+        if (!std::isfinite(value))
+            throw std::runtime_error("point query coordinates must be finite");
+    }
+    GpuPoint packed = {
+        static_cast<float>(point.x),
+        static_cast<float>(point.y),
+        point.id,
+        0u,
+    };
+    if (!std::isfinite(packed.x) || !std::isfinite(packed.y))
+        throw std::runtime_error("point query coordinates are outside float32 OptiX execution range");
+    return packed;
+}
+
+struct PreparedAabbIndexQueries2DOptix {
+    uint32_t operation = 0;
+    size_t query_count = 0;
+    DevPtr d_point_queries;
+    DevPtr d_box_queries;
+    AccelHolder accel;
+
+    PreparedAabbIndexQueries2DOptix(
+            const RtdlPoint* point_queries,
+            size_t point_query_count)
+        : operation(kAabbIndexOpPointContains),
+          query_count(point_query_count),
+          d_point_queries(sizeof(GpuPoint) * point_query_count),
+          d_box_queries(0),
+          accel()
+    {
+        if (!point_queries && point_query_count != 0)
+            throw std::runtime_error("point_queries pointer must not be null when point_query_count is nonzero");
+        if (point_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("point_query_count exceeds uint32 launch limit");
+        if (point_query_count == 0) return;
+        std::vector<GpuPoint> gpu_points(point_query_count);
+        for (size_t i = 0; i < point_query_count; ++i)
+            gpu_points[i] = pack_aabb_index_point_query_for_gpu(point_queries[i]);
+        upload(d_point_queries.ptr, gpu_points.data(), gpu_points.size());
+    }
+
+    PreparedAabbIndexQueries2DOptix(
+            const RtdlAabb2D* box_queries,
+            size_t box_query_count)
+        : operation(kAabbIndexOpRangeContains),
+          query_count(box_query_count),
+          d_point_queries(0),
+          d_box_queries(sizeof(GpuAabb2D) * box_query_count),
+          accel()
+    {
+        if (!box_queries && box_query_count != 0)
+            throw std::runtime_error("box_queries pointer must not be null when box_query_count is nonzero");
+        if (box_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("box_query_count exceeds uint32 launch limit");
+        if (box_query_count == 0) return;
+        std::vector<GpuAabb2D> gpu_boxes(box_query_count);
+        std::vector<OptixAabb> aabbs(box_query_count);
+        for (size_t i = 0; i < box_query_count; ++i) {
+            gpu_boxes[i] = pack_aabb2d_for_gpu(box_queries[i]);
+            aabbs[i] = optix_aabb_for_gpu_box(gpu_boxes[i]);
+        }
+        upload(d_box_queries.ptr, gpu_boxes.data(), gpu_boxes.size());
+        accel = build_custom_accel(get_optix_context(), aabbs);
+    }
+};
+
+static PreparedAabbIndexQueries2DOptix* prepare_aabb_index_point_queries_2d_optix(
+        const RtdlPoint* point_queries,
+        size_t point_query_count)
+{
+    return new PreparedAabbIndexQueries2DOptix(point_queries, point_query_count);
+}
+
+static PreparedAabbIndexQueries2DOptix* prepare_aabb_index_box_queries_2d_optix(
+        const RtdlAabb2D* box_queries,
+        size_t box_query_count)
+{
+    return new PreparedAabbIndexQueries2DOptix(box_queries, box_query_count);
+}
+
+static uint32_t validate_aabb_index_operation(uint32_t operation)
+{
+    if (operation == kAabbIndexOpPointContains
+            || operation == kAabbIndexOpRangeContains
+            || operation == kAabbIndexOpRangeIntersects)
+        return operation;
+    throw std::runtime_error(
+        "unsupported OptiX AABB_INDEX_QUERY_2D operation");
+}
+
+static void launch_aabb_index_count_pass_optix(
+        OptixTraversableHandle traversable,
+        CUdeviceptr d_point_queries,
+        size_t point_query_count,
+        CUdeviceptr d_box_queries,
+        size_t box_query_count,
+        CUdeviceptr d_indexed_boxes,
+        size_t indexed_box_count,
+        uint32_t operation,
+        uint32_t intersect_pass,
+        size_t launch_count,
+        CUdeviceptr d_hit_count)
+{
+    ensure_aabb_index_count_2d_pipeline();
+
+    AabbIndexQueryLaunchParams lp = {};
+    lp.traversable = traversable;
+    lp.point_queries = reinterpret_cast<const GpuPoint*>(d_point_queries);
+    lp.box_queries = reinterpret_cast<const GpuAabb2D*>(d_box_queries);
+    lp.indexed_boxes = reinterpret_cast<const GpuAabb2D*>(d_indexed_boxes);
+    lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count);
+    lp.point_query_count = static_cast<uint32_t>(point_query_count);
+    lp.box_query_count = static_cast<uint32_t>(box_query_count);
+    lp.indexed_box_count = static_cast<uint32_t>(indexed_box_count);
+    lp.operation = operation;
+    lp.intersect_pass = intersect_pass;
+
+    DevPtr d_params(sizeof(AabbIndexQueryLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_aabb_index_count.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(AabbIndexQueryLaunchParams),
+                            &g_aabb_index_count.pipe->sbt,
+                            static_cast<unsigned>(launch_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+}
+
+static void count_prepared_aabb_index_2d_device_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        CUdeviceptr d_point_queries,
+        size_t point_query_count,
+        CUdeviceptr d_box_queries,
+        size_t box_query_count,
+        uint32_t operation,
+        size_t* hit_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
+    *hit_count_out = 0;
+    operation = validate_aabb_index_operation(operation);
+    if (operation == kAabbIndexOpRangeIntersects)
+        throw std::runtime_error("range_intersects requires prepared box queries with a query GAS");
+    if (prepared->box_count == 0) return;
+    if (operation == kAabbIndexOpPointContains) {
+        if (!d_point_queries && point_query_count != 0)
+            throw std::runtime_error("device point query buffer must not be null when point_query_count is nonzero");
+        if (point_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("point_query_count exceeds uint32 launch limit");
+        if (point_query_count == 0) return;
+    }
+    if (operation == kAabbIndexOpRangeContains) {
+        if (!d_box_queries && box_query_count != 0)
+            throw std::runtime_error("device box query buffer must not be null when box_query_count is nonzero");
+        if (box_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("box_query_count exceeds uint32 launch limit");
+        if (box_query_count == 0) return;
+    }
+
+    const size_t launch_count =
+        operation == kAabbIndexOpPointContains ? point_query_count : box_query_count;
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
+
+    launch_aabb_index_count_pass_optix(
+        prepared->accel.handle,
+        d_point_queries,
+        point_query_count,
+        d_box_queries,
+        box_query_count,
+        prepared->d_boxes.ptr,
+        prepared->box_count,
+        operation,
+        0u,
+        launch_count,
+        d_hit_count.ptr);
+
+    unsigned long long count = 0ULL;
+    download(&count, d_hit_count.ptr, 1);
+    *hit_count_out = static_cast<size_t>(count);
+}
+
+static void count_prepared_aabb_index_2d_range_intersects_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        PreparedAabbIndexQueries2DOptix* prepared_queries,
+        size_t* hit_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!prepared_queries) throw std::runtime_error("prepared OptiX AABB query handle must not be null");
+    if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
+    *hit_count_out = 0;
+    if (prepared_queries->operation != kAabbIndexOpRangeContains)
+        throw std::runtime_error("range_intersects requires prepared box queries");
+    if (prepared->box_count == 0 || prepared_queries->query_count == 0) return;
+    if (prepared->box_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("indexed box count exceeds uint32 launch limit");
+    if (prepared_queries->query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("box query count exceeds uint32 launch limit");
+
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
+
+    launch_aabb_index_count_pass_optix(
+        prepared->accel.handle,
+        0,
+        0,
+        prepared_queries->d_box_queries.ptr,
+        prepared_queries->query_count,
+        prepared->d_boxes.ptr,
+        prepared->box_count,
+        kAabbIndexOpRangeIntersects,
+        kAabbIndexIntersectForwardPass,
+        prepared_queries->query_count,
+        d_hit_count.ptr);
+    launch_aabb_index_count_pass_optix(
+        prepared_queries->accel.handle,
+        0,
+        0,
+        prepared_queries->d_box_queries.ptr,
+        prepared_queries->query_count,
+        prepared->d_boxes.ptr,
+        prepared->box_count,
+        kAabbIndexOpRangeIntersects,
+        kAabbIndexIntersectBackwardPass,
+        prepared->box_count,
+        d_hit_count.ptr);
+
+    unsigned long long count = 0ULL;
+    download(&count, d_hit_count.ptr, 1);
+    *hit_count_out = static_cast<size_t>(count);
+}
+
+static void count_prepared_aabb_index_2d_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        const RtdlPoint* point_queries,
+        size_t point_query_count,
+        const RtdlAabb2D* box_queries,
+        size_t box_query_count,
+        uint32_t operation,
+        size_t* hit_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
+    *hit_count_out = 0;
+    operation = validate_aabb_index_operation(operation);
+    if (operation == kAabbIndexOpPointContains) {
+        if (!point_queries && point_query_count != 0)
+            throw std::runtime_error("point_queries pointer must not be null when point_query_count is nonzero");
+        if (point_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("point_query_count exceeds uint32 launch limit");
+        if (point_query_count == 0) return;
+    }
+    if (operation == kAabbIndexOpRangeContains || operation == kAabbIndexOpRangeIntersects) {
+        if (!box_queries && box_query_count != 0)
+            throw std::runtime_error("box_queries pointer must not be null when box_query_count is nonzero");
+        if (box_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("box_query_count exceeds uint32 launch limit");
+        if (box_query_count == 0) return;
+    }
+
+    if (operation == kAabbIndexOpRangeIntersects) {
+        PreparedAabbIndexQueries2DOptix prepared_box_queries(box_queries, box_query_count);
+        count_prepared_aabb_index_2d_range_intersects_optix(prepared, &prepared_box_queries, hit_count_out);
+        return;
+    }
+
+    std::vector<GpuPoint> gpu_points;
+    std::vector<GpuAabb2D> gpu_query_boxes;
+    DevPtr d_point_queries(operation == kAabbIndexOpPointContains ? sizeof(GpuPoint) * point_query_count : 0);
+    DevPtr d_box_queries(operation == kAabbIndexOpRangeContains ? sizeof(GpuAabb2D) * box_query_count : 0);
+
+    if (operation == kAabbIndexOpPointContains) {
+        gpu_points.resize(point_query_count);
+        for (size_t i = 0; i < point_query_count; ++i) {
+            gpu_points[i] = pack_aabb_index_point_query_for_gpu(point_queries[i]);
+        }
+        upload(d_point_queries.ptr, gpu_points.data(), gpu_points.size());
+    } else if (operation == kAabbIndexOpRangeContains) {
+        gpu_query_boxes.resize(box_query_count);
+        for (size_t i = 0; i < box_query_count; ++i)
+            gpu_query_boxes[i] = pack_aabb2d_for_gpu(box_queries[i]);
+        upload(d_box_queries.ptr, gpu_query_boxes.data(), gpu_query_boxes.size());
+    }
+
+    count_prepared_aabb_index_2d_device_optix(
+        prepared,
+        d_point_queries.ptr,
+        point_query_count,
+        d_box_queries.ptr,
+        box_query_count,
+        operation,
+        hit_count_out);
+}
+
+static void count_prepared_aabb_index_2d_packed_queries_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        PreparedAabbIndexQueries2DOptix* prepared_queries,
+        uint32_t operation,
+        size_t* hit_count_out)
+{
+    if (!prepared_queries)
+        throw std::runtime_error("prepared OptiX AABB query handle must not be null");
+    operation = validate_aabb_index_operation(operation);
+    if (operation == kAabbIndexOpPointContains && prepared_queries->operation != kAabbIndexOpPointContains)
+        throw std::runtime_error("point_contains requires prepared point queries");
+    if ((operation == kAabbIndexOpRangeContains || operation == kAabbIndexOpRangeIntersects)
+            && prepared_queries->operation != kAabbIndexOpRangeContains)
+        throw std::runtime_error("box query operation requires prepared box queries");
+    if (operation == kAabbIndexOpRangeIntersects) {
+        count_prepared_aabb_index_2d_range_intersects_optix(prepared, prepared_queries, hit_count_out);
+        return;
+    }
+    count_prepared_aabb_index_2d_device_optix(
+        prepared,
+        prepared_queries->d_point_queries.ptr,
+        operation == kAabbIndexOpPointContains ? prepared_queries->query_count : 0,
+        prepared_queries->d_box_queries.ptr,
+        operation == kAabbIndexOpRangeContains ? prepared_queries->query_count : 0,
+        operation,
+        hit_count_out);
+}
+
 static void ensure_pack_triangle2d_device_columns_kernel()
 {
     (void)get_optix_context();

@@ -734,6 +734,101 @@ extern "C" void rtdl_optix_destroy_prepared_ray_anyhit_2d(void* prepared)
     delete reinterpret_cast<PreparedRayAnyHit2D*>(prepared);
 }
 
+extern "C" int rtdl_optix_prepare_aabb_index_2d(
+        const RtdlAabb2D* boxes, size_t box_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!boxes && box_count != 0)
+            throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_aabb_index_2d_optix(boxes, box_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_aabb_index_2d(
+        void* prepared,
+        const RtdlPoint* point_queries, size_t point_query_count,
+        const RtdlAabb2D* box_queries, size_t box_query_count,
+        uint32_t operation,
+        size_t* hit_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!hit_count_out)
+            throw std::runtime_error("hit_count_out must not be null");
+        count_prepared_aabb_index_2d_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            point_queries,
+            point_query_count,
+            box_queries,
+            box_query_count,
+            operation,
+            hit_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_aabb_point_queries_2d(
+        const RtdlPoint* point_queries, size_t point_query_count,
+        void** queries_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!queries_out)
+            throw std::runtime_error("queries_out must not be null");
+        if (!point_queries && point_query_count != 0)
+            throw std::runtime_error("point_queries pointer must not be null when point_query_count is nonzero");
+        *queries_out = nullptr;
+        *queries_out = prepare_aabb_index_point_queries_2d_optix(point_queries, point_query_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_aabb_box_queries_2d(
+        const RtdlAabb2D* box_queries, size_t box_query_count,
+        void** queries_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!queries_out)
+            throw std::runtime_error("queries_out must not be null");
+        if (!box_queries && box_query_count != 0)
+            throw std::runtime_error("box_queries pointer must not be null when box_query_count is nonzero");
+        *queries_out = nullptr;
+        *queries_out = prepare_aabb_index_box_queries_2d_optix(box_queries, box_query_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
+        void* prepared,
+        void* prepared_queries,
+        uint32_t operation,
+        size_t* hit_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!hit_count_out)
+            throw std::runtime_error("hit_count_out must not be null");
+        count_prepared_aabb_index_2d_packed_queries_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            reinterpret_cast<PreparedAabbIndexQueries2DOptix*>(prepared_queries),
+            operation,
+            hit_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_aabb_queries_2d(void* prepared_queries)
+{
+    delete reinterpret_cast<PreparedAabbIndexQueries2DOptix*>(prepared_queries);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_aabb_index_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared);
+}
+
 extern "C" int rtdl_optix_prepare_rays_2d(
         const RtdlRay2D* rays, size_t ray_count,
         void** rays_out,

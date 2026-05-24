@@ -1,0 +1,60 @@
+{
+  "cpu_counts": {
+    "point_contains": 54,
+    "range_contains": 4,
+    "range_intersects": 250
+  },
+  "fixture": {
+    "box_count": 10000,
+    "box_query_count": 1000,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 1000,
+    "seed": 2025
+  },
+  "name": "uniform_10k_1k_paperlike",
+  "paperlike_parameters": {
+    "max_box_height": 0.005,
+    "max_box_width": 0.005,
+    "max_query_height": 0.005,
+    "max_query_width": 0.005
+  },
+  "rtspatial": {
+    "point_contains": {
+      "cpu_reference": 54,
+      "load_ms": 4.591,
+      "loaded_box_queries": null,
+      "loaded_boxes": 10000,
+      "loaded_point_queries": 1000,
+      "matches_cpu_reference": true,
+      "query_ms": 0.064,
+      "results": 54,
+      "stdout": "Loaded boxes 10000\nLoaded point queries 1000\nRT, load 4.591 ms, query 0.064 ms, results: 54\n",
+      "wall_sec": 0.7964988797903061
+    },
+    "range_contains": {
+      "cpu_reference": 4,
+      "load_ms": 5.484,
+      "loaded_box_queries": 1000,
+      "loaded_boxes": 10000,
+      "loaded_point_queries": null,
+      "matches_cpu_reference": true,
+      "query_ms": 0.068,
+      "results": 4,
+      "stdout": "Loaded boxes 10000\nLoaded box queries 1000\nRT, load 5.484 ms, query 0.068 ms, results: 4\n",
+      "wall_sec": 0.6704598292708397
+    },
+    "range_intersects": {
+      "cpu_reference": 250,
+      "load_ms": 6.873,
+      "loaded_box_queries": 1000,
+      "loaded_boxes": 10000,
+      "loaded_point_queries": null,
+      "matches_cpu_reference": true,
+      "query_ms": 0.38,
+      "results": 250,
+      "stdout": "Loaded boxes 10000\nLoaded box queries 1000\nRT, load 6.873 ms, query 0.38 ms, results: 250\n",
+      "wall_sec": 0.6569946706295013
+    }
+  }
+}

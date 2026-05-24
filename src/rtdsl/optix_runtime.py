@@ -174,6 +174,31 @@ _OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTION_SYMBOLS = {
 }
 OPTIX_COLLECT_K_BOUNDED_I64_DEVICE_SYMBOL = "rtdl_optix_collect_k_bounded_i64_device"
 OPTIX_COLLECT_K_BOUNDED_I64_HOST_SYMBOL = "rtdl_optix_collect_k_bounded_i64"
+OPTIX_AABB_INDEX_POINT_CONTAINS = 1
+OPTIX_AABB_INDEX_RANGE_CONTAINS = 2
+OPTIX_AABB_INDEX_RANGE_INTERSECTS = 3
+OPTIX_AABB_INDEX_SUPPORTED_OPERATIONS = ("point_contains", "range_contains", "range_intersects")
+_OPTIX_AABB_INDEX_OPERATION_CODES = {
+    "point_contains": OPTIX_AABB_INDEX_POINT_CONTAINS,
+    "range_contains": OPTIX_AABB_INDEX_RANGE_CONTAINS,
+    "range_intersects": OPTIX_AABB_INDEX_RANGE_INTERSECTS,
+}
+
+
+class _RtdlAabb2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("min_x", ctypes.c_double),
+        ("min_y", ctypes.c_double),
+        ("max_x", ctypes.c_double),
+        ("max_y", ctypes.c_double),
+    ]
+
+
+@dataclass(frozen=True)
+class PackedAabbs2D:
+    records: object
+    count: int
 
 
 def collect_k_bounded_i64_device_optix(
@@ -7430,6 +7455,290 @@ def prepare_ray_segment_group_count_2d_optix(segments, segment_group_ids) -> Pre
     return PreparedOptixRaySegmentGroupCount2D(segments, segment_group_ids)
 
 
+def _normalize_aabb2d_record(box, fallback_id: int) -> tuple[int, float, float, float, float]:
+    try:
+        box_id = int(getattr(box, "id", fallback_id))
+        min_x = float(box.min_x)
+        min_y = float(box.min_y)
+        max_x = float(box.max_x)
+        max_y = float(box.max_y)
+    except AttributeError:
+        try:
+            if len(box) >= 4:
+                box_id = int(getattr(box, "id", fallback_id))
+                min_x = float(box[0])
+                min_y = float(box[1])
+                max_x = float(box[2])
+                max_y = float(box[3])
+            else:
+                raise TypeError
+        except TypeError as exc:
+            raise TypeError(
+                "AABB_INDEX_QUERY_2D requires boxes with min_x/min_y/max_x/max_y or 4-tuples"
+            ) from exc
+    if max_x < min_x or max_y < min_y:
+        raise ValueError("AABB max bounds must be greater than or equal to min bounds")
+    return box_id, min_x, min_y, max_x, max_y
+
+
+def pack_aabbs_2d(boxes) -> PackedAabbs2D:
+    if isinstance(boxes, PackedAabbs2D):
+        return boxes
+    normalized = tuple(_normalize_aabb2d_record(box, index) for index, box in enumerate(boxes))
+    arr = (_RtdlAabb2D * len(normalized))(
+        *[
+            _RtdlAabb2D(box_id, min_x, min_y, max_x, max_y)
+            for box_id, min_x, min_y, max_x, max_y in normalized
+        ]
+    )
+    return PackedAabbs2D(records=arr, count=len(normalized))
+
+
+def _normalize_point2d_xy(point) -> tuple[float, float]:
+    try:
+        return float(point.x), float(point.y)
+    except AttributeError:
+        try:
+            if len(point) >= 2:
+                return float(point[0]), float(point[1])
+        except TypeError:
+            pass
+    raise TypeError("AABB_INDEX_QUERY_2D requires point-like inputs with x/y attributes or 2-tuples")
+
+
+class PreparedOptixAabbQueries2D:
+    """Prepared OptiX device query buffer for generic AABB index count queries."""
+
+    def __init__(self, *, point_queries=None, box_queries=None):
+        if (point_queries is None) == (box_queries is None):
+            raise ValueError("prepare exactly one of point_queries or box_queries")
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        if point_queries is not None:
+            point_tuple = tuple(point_queries)
+            point_xy = tuple(_normalize_point2d_xy(point) for point in point_tuple)
+            packed = pack_points(
+                ids=range(len(point_xy)),
+                x=[xy[0] for xy in point_xy],
+                y=[xy[1] for xy in point_xy],
+                dimension=2,
+            )
+            self.operation = "point_contains"
+            self.count = packed.count
+            symbol_name = "rtdl_optix_prepare_aabb_point_queries_2d"
+            args = (packed.records, packed.count)
+        else:
+            packed = pack_aabbs_2d(box_queries)
+            self.operation = "range_contains"
+            self.count = packed.count
+            symbol_name = "rtdl_optix_prepare_aabb_box_queries_2d"
+            args = (packed.records, packed.count)
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if prepare_symbol is None:
+            raise RuntimeError(
+                f"Loaded OptiX backend library does not export {symbol_name}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(*args, ctypes.byref(self._handle), error, len(error))
+        _check_status(status, error)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_aabb_queries_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixAabbQueries2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_aabb_point_queries_2d(point_queries) -> PreparedOptixAabbQueries2D:
+    return PreparedOptixAabbQueries2D(point_queries=point_queries)
+
+
+def prepare_optix_aabb_box_queries_2d(box_queries) -> PreparedOptixAabbQueries2D:
+    return PreparedOptixAabbQueries2D(box_queries=box_queries)
+
+
+class PreparedOptixAabbIndex2D:
+    """Prepared generic 2-D AABB index using OptiX RT traversal for count-only queries."""
+
+    supported_operations = OPTIX_AABB_INDEX_SUPPORTED_OPERATIONS
+
+    def __init__(self, boxes):
+        packed = pack_aabbs_2d(boxes)
+        if packed.count == 0:
+            raise ValueError("prepare_optix_aabb_index_2d requires at least one indexed box")
+        self._packed_boxes = packed
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_aabb_index_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_prepare_aabb_index_2d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    def count(
+        self,
+        *,
+        point_queries=(),
+        box_queries=(),
+        operation: str,
+    ) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX AABB index handle is closed")
+        normalized = operation.lower().replace("-", "_")
+        if normalized not in _OPTIX_AABB_INDEX_OPERATION_CODES:
+            raise ValueError(
+                "unsupported OptiX AABB_INDEX_QUERY_2D operation: "
+                f"{operation}"
+            )
+
+        point_count = 0
+        box_count = 0
+        point_ptr = None
+        box_ptr = None
+        if normalized == "point_contains":
+            point_tuple = tuple(point_queries)
+            point_xy = tuple(_normalize_point2d_xy(point) for point in point_tuple)
+            packed_points = pack_points(
+                ids=range(len(point_xy)),
+                x=[xy[0] for xy in point_xy],
+                y=[xy[1] for xy in point_xy],
+                dimension=2,
+            )
+            point_count = packed_points.count
+            point_ptr = packed_points.records
+            if point_count == 0:
+                return 0
+        elif normalized in {"range_contains", "range_intersects"}:
+            packed_boxes = pack_aabbs_2d(box_queries)
+            box_count = packed_boxes.count
+            box_ptr = packed_boxes.records
+            if box_count == 0:
+                return 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_aabb_index_2d")
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_count_prepared_aabb_index_2d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        hit_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            point_ptr,
+            point_count,
+            box_ptr,
+            box_count,
+            _OPTIX_AABB_INDEX_OPERATION_CODES[normalized],
+            ctypes.byref(hit_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(hit_count.value)
+
+    def count_prepared_queries(self, queries: PreparedOptixAabbQueries2D, *, operation: str | None = None) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX AABB index handle is closed")
+        if not isinstance(queries, PreparedOptixAabbQueries2D):
+            raise ValueError("count_prepared_queries requires a PreparedOptixAabbQueries2D")
+        if queries._closed:
+            raise RuntimeError("prepared OptiX AABB query handle is closed")
+        if queries.count == 0:
+            return 0
+        normalized = (operation if operation is not None else queries.operation).lower().replace("-", "_")
+        if normalized not in _OPTIX_AABB_INDEX_OPERATION_CODES:
+            raise ValueError(
+                "unsupported OptiX AABB_INDEX_QUERY_2D operation: "
+                f"{operation}"
+            )
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_aabb_index_2d_packed_queries. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        hit_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            queries._handle,
+            _OPTIX_AABB_INDEX_OPERATION_CODES[normalized],
+            ctypes.byref(hit_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(hit_count.value)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_aabb_index_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixAabbIndex2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_aabb_index_2d(boxes) -> PreparedOptixAabbIndex2D:
+    return PreparedOptixAabbIndex2D(boxes)
+
+
 @dataclass(frozen=True)
 class _DeviceTriangleScene2D:
     count: int
@@ -9844,6 +10153,81 @@ def _register_argtypes(lib) -> None:
     if optional_destroy_anyhit2d is not None:
         optional_destroy_anyhit2d.argtypes = [ctypes.c_void_p]
         optional_destroy_anyhit2d.restype = None
+    optional_prepare_aabb_index2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_aabb_index_2d")
+    if optional_prepare_aabb_index2d is not None:
+        optional_prepare_aabb_index2d.argtypes = [
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_aabb_index2d.restype = ctypes.c_int
+    optional_count_aabb_index2d = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_aabb_index_2d")
+    if optional_count_aabb_index2d is not None:
+        optional_count_aabb_index2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_aabb_index2d.restype = ctypes.c_int
+    optional_prepare_aabb_point_queries2d = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_aabb_point_queries_2d",
+    )
+    if optional_prepare_aabb_point_queries2d is not None:
+        optional_prepare_aabb_point_queries2d.argtypes = [
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_aabb_point_queries2d.restype = ctypes.c_int
+    optional_prepare_aabb_box_queries2d = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_aabb_box_queries_2d",
+    )
+    if optional_prepare_aabb_box_queries2d is not None:
+        optional_prepare_aabb_box_queries2d.argtypes = [
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_aabb_box_queries2d.restype = ctypes.c_int
+    optional_count_aabb_index2d_packed_queries = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",
+    )
+    if optional_count_aabb_index2d_packed_queries is not None:
+        optional_count_aabb_index2d_packed_queries.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_aabb_index2d_packed_queries.restype = ctypes.c_int
+    optional_destroy_aabb_queries2d = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_destroy_prepared_aabb_queries_2d",
+    )
+    if optional_destroy_aabb_queries2d is not None:
+        optional_destroy_aabb_queries2d.argtypes = [ctypes.c_void_p]
+        optional_destroy_aabb_queries2d.restype = None
+    optional_destroy_aabb_index2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_aabb_index_2d")
+    if optional_destroy_aabb_index2d is not None:
+        optional_destroy_aabb_index2d.argtypes = [ctypes.c_void_p]
+        optional_destroy_aabb_index2d.restype = None
     optional_prepare_rays2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_rays_2d")
     if optional_prepare_rays2d is not None:
         optional_prepare_rays2d.argtypes = [

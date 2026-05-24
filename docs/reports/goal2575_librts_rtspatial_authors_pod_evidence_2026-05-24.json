@@ -1,0 +1,82 @@
+{
+  "goal": "Goal2575",
+  "date": "2026-05-24",
+  "scope": "LibRTS authors RTSpatial executable pod evidence",
+  "pod": {
+    "ssh": "root@203.57.40.169 -p 10212 -i ~/.ssh/id_ed25519_rtdl_codex",
+    "host": "2f2405dbb885",
+    "kernel": "Linux 6.8.0-48-generic x86_64",
+    "gpu": "NVIDIA RTX A5000",
+    "gpu_memory_mib": 24564,
+    "driver": "565.57.01",
+    "cmake": "3.28.3",
+    "optix_sdk": "8.1.0"
+  },
+  "source": {
+    "rtdl_head": "802b4940c682a5cf38fff29f12630274db5a70e5",
+    "rtspatial_head": "52509e8022abeab722f5a9a89d1917e8b481defe",
+    "rtspatial_repo": "https://github.com/RTSpatial/RTSpatial"
+  },
+  "toolchain": {
+    "failed_cuda": {
+      "version": "12.8.93",
+      "failure": "cudaErrorUnsupportedPtxVersion",
+      "reason": "CUDA 12.8 PTX is newer than the installed 565.57.01 driver advertises through CUDA 12.7"
+    },
+    "successful_cuda": {
+      "version": "12.6.85",
+      "build": "cuda_12.6.r12.6/compiler.35059454_0"
+    }
+  },
+  "raw_summaries": {
+    "uniform_10k_1k": "docs/reports/librts_pod_raw/goal2575_uniform_10k_1k_cuda126_comparison_summary.json",
+    "uniform_100k_1k": "docs/reports/librts_pod_raw/goal2575_uniform_100k_1k_cuda126_comparison_summary.json",
+    "uniform_1m_1k": "docs/reports/librts_pod_raw/goal2575_uniform_1m_1k_cuda126_comparison_summary.json"
+  },
+  "results": {
+    "uniform_10k_1k": {
+      "cpu_reference_counts_available": true,
+      "all_counts_match_cpu_reference": true,
+      "rtspatial_query_ms": {
+        "point_contains": 1.576,
+        "range_contains": 1.617,
+        "range_intersects": 3.519
+      }
+    },
+    "uniform_100k_1k": {
+      "cpu_reference_counts_available": false,
+      "rtspatial_query_ms": {
+        "point_contains": 17.304,
+        "range_contains": 17.331,
+        "range_intersects": 35.149
+      },
+      "results": {
+        "point_contains": 4343366,
+        "range_contains": 2992246,
+        "range_intersects": 6567568
+      }
+    },
+    "uniform_1m_1k": {
+      "cpu_reference_counts_available": false,
+      "load_factor": 0.1,
+      "rtspatial_query_ms": {
+        "point_contains": 218.04,
+        "range_contains": 216.012,
+        "range_intersects": 423.462
+      },
+      "results": {
+        "point_contains": 43567831,
+        "range_contains": 30000217,
+        "range_intersects": 65773097
+      }
+    }
+  },
+  "claim_boundary": {
+    "authors_code_timed": true,
+    "same_fixture_correctness_checked_at_10k": true,
+    "paper_dataset": false,
+    "paper_speedup_reproduced": false,
+    "rtdl_speedup_claim_authorized": false,
+    "native_engine_customization": false
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "tests": 3,
+  "failures": 0,
+  "disabled": 0,
+  "errors": 0,
+  "timestamp": "2026-05-24T05:23:05Z",
+  "time": "0.881s",
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "EnvelopeQueries",
+      "tests": 3,
+      "failures": 0,
+      "disabled": 0,
+      "errors": 0,
+      "timestamp": "2026-05-24T05:23:05Z",
+      "time": "0.881s",
+      "testsuite": [
+        {
+          "name": "fp32_intersects_envelope_batch_update",
+          "file": "\/workspace\/RTSpatial\/test\/test_envelope_queries.h",
+          "line": 93,
+          "status": "RUN",
+          "result": "COMPLETED",
+          "timestamp": "2026-05-24T05:23:05Z",
+          "time": "0.658s",
+          "classname": "EnvelopeQueries"
+        },
+        {
+          "name": "fp32_test_delete",
+          "file": "\/workspace\/RTSpatial\/test\/test_envelope_queries.h",
+          "line": 166,
+          "status": "RUN",
+          "result": "COMPLETED",
+          "timestamp": "2026-05-24T05:23:06Z",
+          "time": "0.115s",
+          "classname": "EnvelopeQueries"
+        },
+        {
+          "name": "fp32_test_delete_compact",
+          "file": "\/workspace\/RTSpatial\/test\/test_envelope_queries.h",
+          "line": 206,
+          "status": "RUN",
+          "result": "COMPLETED",
+          "timestamp": "2026-05-24T05:23:06Z",
+          "time": "0.107s",
+          "classname": "EnvelopeQueries"
+        }
+      ]
+    }
+  ]
+}

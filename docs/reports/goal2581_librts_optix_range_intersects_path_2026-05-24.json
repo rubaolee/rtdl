@@ -1,0 +1,241 @@
+{
+  "goal": "Goal2581 complete RTDL LibRTS OptiX range_intersects native path",
+  "date": "2026-05-24",
+  "source_state": {
+    "base_commit": "802b4940c682a5cf38fff29f12630274db5a70e5",
+    "state": "local uncommitted overlay synced to pod for validation"
+  },
+  "pod": {
+    "ssh": "root@203.57.40.169 -p 10212 -i ~/.ssh/id_ed25519_rtdl_codex",
+    "host": "2f2405dbb885",
+    "gpu": "NVIDIA RTX A5000",
+    "driver": "565.57.01"
+  },
+  "toolchain": {
+    "cuda_prefix": "/usr/local/cuda-12.6",
+    "optix_prefix": "/opt/optix/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+    "rtdl_nvcc": "/usr/local/cuda-12.6/bin/nvcc",
+    "rtdl_optix_ptx_arch": "compute_86"
+  },
+  "implementation": {
+    "primitive": "AABB_INDEX_QUERY_2D",
+    "supported_operations": [
+      "point_contains",
+      "range_contains",
+      "range_intersects"
+    ],
+    "range_intersects_algorithm": "generic two-pass diagonal/anti-diagonal AABB traversal with exact segment-box refinement and duplicate suppression",
+    "app_specific_native_code": false,
+    "packed_query_abi_accepts_operation_code": true,
+    "box_query_buffers_build_query_gas": true
+  },
+  "correctness": {
+    "pod_smoke_cases": [
+      {
+        "case": "tiny",
+        "cpu": {
+          "point_contains": 6,
+          "range_contains": 2,
+          "range_intersects": 6
+        },
+        "optix_prepared": {
+          "point_contains": 6,
+          "range_contains": 2,
+          "range_intersects": 6
+        },
+        "optix_host": {
+          "point_contains": 6,
+          "range_contains": 2,
+          "range_intersects": 6
+        }
+      },
+      {
+        "case": "uniform_64_32",
+        "cpu": {
+          "point_contains": 80,
+          "range_contains": 64,
+          "range_intersects": 148
+        },
+        "optix_prepared": {
+          "point_contains": 80,
+          "range_contains": 64,
+          "range_intersects": 148
+        },
+        "optix_host": {
+          "point_contains": 80,
+          "range_contains": 64,
+          "range_intersects": 148
+        }
+      },
+      {
+        "case": "uniform_256_128",
+        "cpu": {
+          "point_contains": 1551,
+          "range_contains": 1006,
+          "range_intersects": 2230
+        },
+        "optix_prepared": {
+          "point_contains": 1551,
+          "range_contains": 1006,
+          "range_intersects": 2230
+        },
+        "optix_host": {
+          "point_contains": 1551,
+          "range_contains": 1006,
+          "range_intersects": 2230
+        }
+      }
+    ],
+    "paperlike_counts_match_authors_code": true
+  },
+  "authors_code_reference": {
+    "source_report": "docs/reports/goal2578_librts_paperlike_uniform_authors_pod_evidence_2026-05-24.json",
+    "rtspatial_head": "52509e8022abeab722f5a9a89d1917e8b481defe",
+    "paperlike_parameters": {
+      "distribution": "uniform",
+      "query_count": 1000,
+      "seed": 2025,
+      "max_box_width": 0.005,
+      "max_box_height": 0.005,
+      "max_query_width": 0.005,
+      "max_query_height": 0.005
+    }
+  },
+  "rtdl_optix_prepared_query_results": {
+    "uniform_10k_1k_paperlike": {
+      "counts": {
+        "point_contains": 54,
+        "range_contains": 4,
+        "range_intersects": 250
+      },
+      "scene_prepare_ms": 553.3226504921913,
+      "point_query_prepare_ms": 0.6597936153411865,
+      "box_query_prepare_ms": 1.5196651220321655,
+      "authors_query_ms": {
+        "point_contains": 0.064,
+        "range_contains": 0.068,
+        "range_intersects": 0.38
+      },
+      "first_query_ms": {
+        "point_contains": 87.3410627245903,
+        "range_contains": 0.05526095628738403,
+        "range_intersects": 0.09118020534515381
+      },
+      "warm_query_ms": {
+        "point_contains": {
+          "min": 0.0505298376083374,
+          "median": 0.051081180572509766
+        },
+        "range_contains": {
+          "min": 0.049814581871032715,
+          "median": 0.051468610763549805
+        },
+        "range_intersects": {
+          "min": 0.082358717918396,
+          "median": 0.08727610111236572
+        }
+      },
+      "median_vs_authors_ratio": {
+        "point_contains": 0.7981434464454651,
+        "range_contains": 0.7568913347580853,
+        "range_intersects": 0.22967395029569926
+      }
+    },
+    "uniform_100k_1k_paperlike": {
+      "counts": {
+        "point_contains": 613,
+        "range_contains": 66,
+        "range_intersects": 2477
+      },
+      "scene_prepare_ms": 197.8817880153656,
+      "point_query_prepare_ms": 1.1599361896514893,
+      "box_query_prepare_ms": 1.328103244304657,
+      "authors_query_ms": {
+        "point_contains": 0.074,
+        "range_contains": 0.069,
+        "range_intersects": 0.441
+      },
+      "first_query_ms": {
+        "point_contains": 0.09834021329879761,
+        "range_contains": 0.06897002458572388,
+        "range_intersects": 0.13545900583267212
+      },
+      "warm_query_ms": {
+        "point_contains": {
+          "min": 0.051237642765045166,
+          "median": 0.0527799129486084
+        },
+        "range_contains": {
+          "min": 0.056453049182891846,
+          "median": 0.05712360143661499
+        },
+        "range_intersects": {
+          "min": 0.12245774269104004,
+          "median": 0.12437254190444946
+        }
+      },
+      "median_vs_authors_ratio": {
+        "point_contains": 0.7132420668730866,
+        "range_contains": 0.8278782816900723,
+        "range_intersects": 0.28202390454523685
+      }
+    },
+    "uniform_1m_1k_paperlike": {
+      "counts": {
+        "point_contains": 6251,
+        "range_contains": 693,
+        "range_intersects": 25079
+      },
+      "scene_prepare_ms": 2269.078142940998,
+      "point_query_prepare_ms": 8.908458054065704,
+      "box_query_prepare_ms": 1.392275094985962,
+      "authors_query_ms": {
+        "point_contains": 0.099,
+        "range_contains": 0.106,
+        "range_intersects": 0.62
+      },
+      "first_query_ms": {
+        "point_contains": 0.15830248594284058,
+        "range_contains": 0.10453164577484131,
+        "range_intersects": 0.4082024097442627
+      },
+      "warm_query_ms": {
+        "point_contains": {
+          "min": 0.0955238938331604,
+          "median": 0.09833276271820068
+        },
+        "range_contains": {
+          "min": 0.08822977542877197,
+          "median": 0.08890777826309204
+        },
+        "range_intersects": {
+          "min": 0.39261579513549805,
+          "median": 0.404946506023407
+        }
+      },
+      "median_vs_authors_ratio": {
+        "point_contains": 0.9932602294767745,
+        "range_contains": 0.8387526251235099,
+        "range_intersects": 0.6531395258442048
+      }
+    }
+  },
+  "validation": {
+    "native_build": "CUDA_PREFIX=/usr/local/cuda-12.6 OPTIX_PREFIX=/opt/optix/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64 make build-optix",
+    "local_tests": [
+      "PYTHONPATH=src:. python3 -m unittest tests.goal2574_librts_spatial_index_benchmark_app_test tests.goal2575_librts_rtspatial_pod_evidence_test tests.goal2576_generic_aabb_index_primitive_test tests.goal2577_librts_rtspatial_mutation_pod_evidence_test tests.goal2578_librts_paperlike_authors_pod_evidence_test tests.goal2579_librts_status_matrix_test tests.goal2580_optix_aabb_index_native_symbol_test tests.goal2581_librts_optix_range_intersects_pod_evidence_test"
+    ],
+    "pod_tests": [
+      "PYTHONPATH=src:. python3 -m unittest tests.goal2580_optix_aabb_index_native_symbol_test",
+      "python3 examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py --mode optix_aabb_index --dataset tiny --operation all",
+      "prepared-query and host-staged smoke matched CPU for all three AABB_INDEX_QUERY_2D operations"
+    ]
+  },
+  "claim_boundary": [
+    "These timings are for RTDL-generated paper-like uniform fixtures, not exact paper artifact fixtures.",
+    "The comparison is count-only and limited to prepared query buffers already resident on the GPU.",
+    "The native engine adds a generic AABB_INDEX_QUERY_2D operation, not LibRTS-specific code.",
+    "Mutation operations remain authors-code evidence plus CPU reference in RTDL, not native RTDL OptiX update support.",
+    "Public speedup wording still requires final review/consensus if used outside internal benchmark notes."
+  ]
+}

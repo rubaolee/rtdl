@@ -1,0 +1,59 @@
+{
+  "goal": "Goal2577 LibRTS authors-code mutation evidence",
+  "date": "2026-05-24",
+  "pod": {
+    "ssh": "root@203.57.40.169 -p 10212 -i ~/.ssh/id_ed25519_rtdl_codex",
+    "host": "2f2405dbb885",
+    "gpu": "NVIDIA RTX A5000",
+    "driver": "565.57.01"
+  },
+  "source": {
+    "rtspatial_repo": "https://github.com/RTSpatial/RTSpatial",
+    "rtspatial_head": "52509e8022abeab722f5a9a89d1917e8b481defe"
+  },
+  "toolchain": {
+    "optix_sdk": "8.1.0",
+    "cuda": "12.6.85",
+    "cmake": "3.28.3",
+    "test_dependency": "libgtest-dev"
+  },
+  "build": {
+    "build_dir": "/workspace/RTSpatial/build_tests",
+    "cmake": "cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=ON -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.6/bin/nvcc -DCUDAToolkit_ROOT=/usr/local/cuda-12.6 -DCMAKE_CUDA_ARCHITECTURES=86 -DOptiX_INSTALL_DIR=/opt/optix/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64 ..",
+    "build": "cmake --build . -j$(nproc)"
+  },
+  "test_command": "./bin/rtspatial_tests --gtest_filter=EnvelopeQueries.fp32_intersects_envelope_batch_update:EnvelopeQueries.fp32_test_delete:EnvelopeQueries.fp32_test_delete_compact --gtest_output=json:/workspace/rtspatial_mutation_tests_goal2577.json",
+  "raw_outputs": {
+    "gtest_json": "docs/reports/librts_pod_raw/goal2577_rtspatial_mutation_tests.json",
+    "gtest_text": "docs/reports/librts_pod_raw/goal2577_rtspatial_mutation_tests.txt"
+  },
+  "results": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "total_time_sec": 0.881,
+    "cases": {
+      "fp32_intersects_envelope_batch_update": {
+        "status": "passed",
+        "time_sec": 0.658,
+        "meaning": "100k indexed boxes inserted in 10 batches, 5% update batch, range-intersects result matches rebuild oracle"
+      },
+      "fp32_test_delete": {
+        "status": "passed",
+        "time_sec": 0.115,
+        "meaning": "delete one indexed envelope and re-query range-intersects"
+      },
+      "fp32_test_delete_compact": {
+        "status": "passed",
+        "time_sec": 0.107,
+        "meaning": "delete one indexed envelope with compact=true and re-query range-intersects"
+      }
+    }
+  },
+  "claim_boundary": [
+    "Authors-code mutation correctness evidence only.",
+    "Not an RTDL native mutation primitive.",
+    "Not an RTDL performance claim.",
+    "Not full LibRTS paper reproduction."
+  ]
+}

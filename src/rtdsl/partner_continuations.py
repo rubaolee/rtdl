@@ -3,7 +3,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Mapping
 
-import numpy as np
+try:
+    import numpy as np
+except ModuleNotFoundError:
+    class _MissingNumpy:
+        def __getattr__(self, name: str):
+            raise ModuleNotFoundError(
+                "numpy is required for RTDL partner continuation helpers; "
+                "use a Python environment with project dependencies installed"
+            )
+
+    np = _MissingNumpy()
 
 
 @dataclass(frozen=True)

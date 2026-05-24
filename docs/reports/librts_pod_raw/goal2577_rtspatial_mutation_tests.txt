@@ -1,0 +1,17 @@
+Note: Google Test filter = EnvelopeQueries.fp32_intersects_envelope_batch_update:EnvelopeQueries.fp32_test_delete:EnvelopeQueries.fp32_test_delete_compact
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from EnvelopeQueries
+[ RUN      ] EnvelopeQueries.fp32_intersects_envelope_batch_update
+Before update
+After update
+[       OK ] EnvelopeQueries.fp32_intersects_envelope_batch_update (658 ms)
+[ RUN      ] EnvelopeQueries.fp32_test_delete
+[       OK ] EnvelopeQueries.fp32_test_delete (115 ms)
+[ RUN      ] EnvelopeQueries.fp32_test_delete_compact
+[       OK ] EnvelopeQueries.fp32_test_delete_compact (107 ms)
+[----------] 3 tests from EnvelopeQueries (881 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 1 test suite ran. (881 ms total)
+[  PASSED  ] 3 tests.

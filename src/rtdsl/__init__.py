@@ -454,6 +454,9 @@ from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
 from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
 from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
+from .optix_runtime import prepare_optix_aabb_index_2d
+from .optix_runtime import prepare_optix_aabb_point_queries_2d
+from .optix_runtime import prepare_optix_aabb_box_queries_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangles
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
@@ -471,6 +474,8 @@ from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixFixedRadiusNeighbors3D
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold3D
 from .optix_runtime import PreparedOptixKernel
+from .optix_runtime import PreparedOptixAabbIndex2D
+from .optix_runtime import PreparedOptixAabbQueries2D
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixStaticTriangleScene3D
 from .optix_runtime import PreparedOptixGroupedSegmentQuery3D
@@ -846,6 +851,13 @@ from .primitive_contract_schema import validate_primitive_contract
 from .primitive_contract_registry import FROZEN_BEFORE_V2_1_BACKENDS
 from .primitive_contract_registry import v1_4_primitive_contract_inventory
 from .primitive_contract_registry import validate_v1_4_primitive_contract_inventory
+from .aabb_index import AABB_INDEX_2D_CONTRACT
+from .aabb_index import AABB_INDEX_2D_OPERATIONS
+from .aabb_index import Aabb2D
+from .aabb_index import AabbIndex2D
+from .aabb_index import OptixAabbIndex2D
+from .aabb_index import prepare_aabb_index_2d
+from .aabb_index import query_aabb_index_2d
 from .generic_primitives import ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS
 from .generic_primitives import FROZEN_BEFORE_V2_1_GENERIC_BACKENDS
 from .generic_primitives import GenericPreparedFixedRadiusCountThreshold2D
@@ -1275,6 +1287,13 @@ __all__ = [
     "FROZEN_BEFORE_V2_1_BACKENDS",
     "v1_4_primitive_contract_inventory",
     "validate_v1_4_primitive_contract_inventory",
+    "AABB_INDEX_2D_CONTRACT",
+    "AABB_INDEX_2D_OPERATIONS",
+    "Aabb2D",
+    "AabbIndex2D",
+    "OptixAabbIndex2D",
+    "prepare_aabb_index_2d",
+    "query_aabb_index_2d",
     "ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS",
     "FROZEN_BEFORE_V2_1_GENERIC_BACKENDS",
     "GenericPreparedFixedRadiusCountThreshold2D",
@@ -1526,6 +1545,9 @@ __all__ = [
     "prepare_optix_fixed_radius_count_threshold_2d_device_search_columns",
     "prepare_optix_segment_polygon_anyhit_rows_2d",
     "prepare_optix_segment_polygon_hitcount_2d",
+    "prepare_optix_aabb_index_2d",
+    "prepare_optix_aabb_point_queries_2d",
+    "prepare_optix_aabb_box_queries_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangles",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene",
@@ -1551,6 +1573,8 @@ __all__ = [
     "PreparedOptixFixedRadiusNeighbors3D",
     "PreparedOptixFixedRadiusCountThreshold3D",
     "PreparedOptixKernel",
+    "PreparedOptixAabbIndex2D",
+    "PreparedOptixAabbQueries2D",
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixStaticTriangleScene3D",
     "PreparedOptixGroupedSegmentQuery3D",
