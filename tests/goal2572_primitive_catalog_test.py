@@ -15,11 +15,38 @@ REPORT = ROOT / "docs" / "reports" / "goal2572_primitive_catalog_and_promotion_r
 CLAUDE = ROOT / "docs" / "reports" / "goal2572_claude_primitive_catalog_review_2026-05-23.md"
 GEMINI = ROOT / "docs" / "reports" / "goal2572_gemini_primitive_catalog_review_2026-05-23.md"
 CONSENSUS = ROOT / "docs" / "reports" / "goal2572_3ai_consensus_primitive_catalog_2026-05-23.md"
+BEHAVIOR_FIRST_CLAUDE = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2573_claude_behavior_first_primitive_taxonomy_review_2026-05-23.md"
+)
+BEHAVIOR_FIRST_GEMINI = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2573_gemini_behavior_first_primitive_taxonomy_review_2026-05-23.md"
+)
+BEHAVIOR_FIRST_CONSENSUS = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal2573_3ai_consensus_behavior_first_primitive_taxonomy_2026-05-23.md"
+)
 
 
 class Goal2572PrimitiveCatalogTest(unittest.TestCase):
     def test_catalog_and_report_exist(self) -> None:
-        for path in (CATALOG, REPORT, CLAUDE, GEMINI, CONSENSUS):
+        for path in (
+            CATALOG,
+            REPORT,
+            CLAUDE,
+            GEMINI,
+            CONSENSUS,
+            BEHAVIOR_FIRST_CLAUDE,
+            BEHAVIOR_FIRST_GEMINI,
+            BEHAVIOR_FIRST_CONSENSUS,
+        ):
             with self.subTest(path=path):
                 self.assertTrue(path.exists(), f"missing {path}")
                 self.assertGreater(path.stat().st_size, 1000, f"truncated {path}")
@@ -38,6 +65,34 @@ class Goal2572PrimitiveCatalogTest(unittest.TestCase):
         for operation in GROUPED_REDUCTION_OPERATIONS:
             with self.subTest(operation=operation):
                 self.assertIn(operation, text)
+
+    def test_catalog_is_behavior_first_not_layer_first(self) -> None:
+        text = CATALOG.read_text()
+        for phrase in [
+            "Behavior-First Primitive Taxonomy",
+            "The top-level organization is behavior",
+            "Status metadata used below",
+            "Hit And Traversal Predicates",
+            "Spatial Neighborhood Predicates",
+            "Exact Geometry Summaries",
+            "Scalar Reductions",
+            "Grouped And Keyed Reductions",
+            "Columnar Compact Summaries",
+            "Collection And Row Materialization",
+            "Aggregate Frontier And Tree Traversal",
+        ]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+        for rejected_heading in [
+            "Current Primitive Layers",
+            "Layer 1:",
+            "Layer 2:",
+            "Layer 3:",
+            "Layer 4:",
+            "Layer 5:",
+        ]:
+            with self.subTest(rejected_heading=rejected_heading):
+                self.assertNotIn(rejected_heading, text)
 
     def test_catalog_separates_primitives_from_app_code(self) -> None:
         text = CATALOG.read_text()
@@ -97,6 +152,20 @@ class Goal2572PrimitiveCatalogTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
+    def test_report_records_behavior_first_correction(self) -> None:
+        text = REPORT.read_text()
+        for phrase in [
+            "them first by stability/maturity is also wrong",
+            "behavior the primary taxonomy",
+            "Status is metadata, not the organizing axis",
+            "hit/traversal predicate",
+            "spatial neighborhood predicate",
+            "grouped/keyed reduction",
+            "aggregate-frontier candidate",
+        ]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
     def test_external_reviews_and_consensus_are_recorded(self) -> None:
         claude = CLAUDE.read_text()
         gemini = GEMINI.read_text()
@@ -110,6 +179,24 @@ class Goal2572PrimitiveCatalogTest(unittest.TestCase):
             "Accepted Claude Fix",
             "claiming Barnes-Hut native aggregate-frontier support",
             "not for public release or external ABI stability claims",
+        ]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, consensus)
+
+    def test_behavior_first_external_reviews_and_consensus_are_recorded(self) -> None:
+        claude = BEHAVIOR_FIRST_CLAUDE.read_text()
+        gemini = BEHAVIOR_FIRST_GEMINI.read_text()
+        consensus = BEHAVIOR_FIRST_CONSENSUS.read_text()
+        self.assertIn("Verdict: ACCEPT", claude)
+        self.assertIn("Verdict: **ACCEPT**", gemini)
+        for phrase in [
+            "Final verdict: `ACCEPT`",
+            "organized by behavior first",
+            "Status is metadata",
+            "supersedes any layer-first or maturity-first reading",
+            "stable primitive | experimental primitive | internal substrate",
+            "hit/traversal predicate",
+            "App-specific semantics remain outside the engine",
         ]:
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, consensus)

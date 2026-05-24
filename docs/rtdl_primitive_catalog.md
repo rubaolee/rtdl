@@ -37,90 +37,167 @@ Examples:
 | Robot pose/link sampling | App code | It is robotics domain lowering. |
 | Barnes-Hut inverse-square force law | App/partner code | It is workload math, even if given a generic-looking name. |
 
-## Current Primitive Layers
+## Behavior-First Primitive Taxonomy
 
-RTDL currently has five layers. They should not be collapsed into one flat
-list.
+The top-level organization is behavior. Stability, maturity, backend coverage,
+and implementation owner are metadata on a behavior family; they are not the
+primary taxonomy. A user should first ask "what runtime behavior do I need?",
+then check whether that behavior is stable, experimental, internal substrate,
+candidate, or app-owned.
 
-### Layer 1: Stable Core Execution Primitives
+Status metadata used below:
 
-These are the current stable generic execution primitive tokens recorded in
-`src/rtdsl/v1_5_migration_inventory.py`.
-
-| Primitive | Behavior | Main use |
-| --- | --- | --- |
-| `ANY_HIT` | Existence of a hit between query geometry and prepared/build geometry | visibility, robot screening, ray/segment screening |
-| `FIXED_RADIUS_COUNT_THRESHOLD_2D` | Count nearby points within a radius, optionally threshold-capped | density, coverage, hotspot/core predicates |
-| `DB_COMPACT_SUMMARY` | Compatibility token for generic columnar compact summary | columnar predicate plus count/sum summaries |
-| `POLYGON_PAIR_EXACT_AREA_SUMMARY` | Candidate discovery plus exact pair-area summary | polygon overlap and Jaccard-style summaries |
-
-Naming note: `DB_COMPACT_SUMMARY` remains a compatibility token. The preferred
-conceptual name is columnar compact summary.
-
-### Layer 2: Stable Scalar Reduction Primitives
-
-These are summary operations over primitive rows or hit streams.
-
-| Primitive | Behavior |
+| Status | Meaning |
 | --- | --- |
-| `COUNT_HITS` | Count positive hit rows. |
-| `REDUCE_FLOAT(MIN)` | Floating minimum reduction. |
-| `REDUCE_FLOAT(MAX)` | Floating maximum reduction. |
-| `REDUCE_FLOAT(SUM)` | Floating sum reduction with tolerance policy. |
-| `REDUCE_INT(COUNT)` | Integer count reduction. |
-| `REDUCE_INT(SUM)` | Integer sum reduction. |
+| Stable primitive | RTDL owns the app-independent behavior under stated backend and evidence boundaries. |
+| Experimental primitive | A contract exists, but promotion requires additional parity, safety, benchmark, or review gates. |
+| Internal substrate | Shared implementation contract used by RTDL paths, but not yet an externally stable primitive. |
+| Candidate behavior | Reusable pressure exists, but the primitive contract is not accepted yet. |
+| App or partner code | Domain semantics, custom math, or partner-specific implementation that RTDL does not own as a primitive. |
+| Rejected candidate | A proposed primitive violated app-independence or safety rules and must stay out of the engine. |
 
-### Layer 3: Experimental Collection Primitive
+### Hit And Traversal Predicates
 
-| Primitive | Status | Boundary |
+These behaviors answer whether prepared/query geometry intersects or hits.
+
+| Primitive or operation | Status | Behavior | Typical outputs |
+| --- | --- | --- | --- |
+| `ANY_HIT` | Stable primitive | Existence of a hit between query geometry and prepared/build geometry | boolean flag, countable hit flag |
+
+Common composition:
+
+```text
+ANY_HIT -> COUNT_HITS
+ANY_HIT -> group_any
+ANY_HIT -> app-owned postprocessing
+```
+
+### Spatial Neighborhood Predicates
+
+These behaviors evaluate fixed-radius spatial relationships without requiring
+full neighbor-row materialization.
+
+| Primitive or operation | Status | Behavior | Typical outputs |
+| --- | --- | --- | --- |
+| `FIXED_RADIUS_COUNT_THRESHOLD_2D` | Stable primitive | Count nearby 2-D points within a radius, optionally threshold-capped | scalar count, threshold predicate, density/core flag |
+
+Examples that compose this behavior: service coverage, hotspot screening,
+DBSCAN core predicate counts, and fixed-radius candidate filtering. DBSCAN
+cluster expansion and connected components remain app code.
+
+### Exact Geometry Summaries
+
+These behaviors combine geometric candidate discovery with exact compact
+summaries.
+
+| Primitive or operation | Status | Behavior | Typical outputs |
+| --- | --- | --- | --- |
+| `POLYGON_PAIR_EXACT_AREA_SUMMARY` | Stable primitive | Discover candidate polygon pairs and summarize exact integer-grid overlap area | compact area summary |
+
+The stable behavior is not a broad GIS overlay engine. Full overlay semantics,
+domain-specific score interpretation, and row-level app workflows remain
+outside the primitive.
+
+### Scalar Reductions
+
+These behaviors reduce a stream of primitive outputs to scalar summaries.
+
+| Primitive or operation | Status | Behavior |
 | --- | --- | --- |
-| `COLLECT_K_BOUNDED` | Experimental | Requires fail-closed overflow, native Embree/OptiX parity, benchmarks, and external review before stable promotion. |
+| `COUNT_HITS` | Stable primitive | Count positive hit rows. |
+| `REDUCE_FLOAT(MIN)` | Stable primitive | Floating minimum reduction. |
+| `REDUCE_FLOAT(MAX)` | Stable primitive | Floating maximum reduction. |
+| `REDUCE_FLOAT(SUM)` | Stable primitive | Floating sum reduction with tolerance policy. |
+| `REDUCE_INT(COUNT)` | Stable primitive | Integer count reduction. |
+| `REDUCE_INT(SUM)` | Stable primitive | Integer sum reduction. |
 
-### Layer 4: Shared Grouped-Reduction Substrate
+### Grouped And Keyed Reductions
 
-These operations are recorded in `src/rtdsl/grouped_reduction.py` as
-`rtdl.grouped_reduction.v1`.
+These behaviors reduce rows by group key. They are recorded in
+`src/rtdsl/grouped_reduction.py` as `rtdl.grouped_reduction.v1`.
 
-| Operation | Behavior |
-| --- | --- |
-| `group_any` | Per-group boolean existence. |
-| `group_count` | Per-group row/count aggregation. |
-| `group_sum_i64` | Per-group signed integer sum. |
-| `group_sum_f64` | Per-group floating sum. |
-| `group_min_i64` | Per-group signed integer minimum. |
-| `group_max_i64` | Per-group signed integer maximum. |
-| `group_sum_count_i64` | Fused per-group sum and count. |
-| `group_stats_i64` | Fused per-group count, sum, min, and max. |
+| Primitive or operation | Status | Behavior |
+| --- | --- | --- |
+| `group_any` | Internal substrate | Per-group boolean existence. |
+| `group_count` | Internal substrate | Per-group row/count aggregation. |
+| `group_sum_i64` | Internal substrate | Per-group signed integer sum. |
+| `group_sum_f64` | Internal substrate | Per-group floating sum. |
+| `group_min_i64` | Internal substrate | Per-group signed integer minimum. |
+| `group_max_i64` | Internal substrate | Per-group signed integer maximum. |
+| `group_sum_count_i64` | Internal substrate | Fused per-group sum and count. |
+| `group_stats_i64` | Internal substrate | Fused per-group count, sum, min, and max. |
 
-Status: internal shared substrate. Backend support and performance claims are
-separate from the contract. Full native migration is still future work.
+Grouped-reduction operations are reusable behavior, but backend support and
+external stability are separate decisions. Do not call them stable external
+primitives until promotion explicitly says so.
 
-### Layer 5: App Adapters And Partner Operators
+### Columnar Compact Summaries
 
-App adapters compose primitives and partner operations for one domain. They are
-allowed to contain domain vocabulary, but they must not become engine
-primitives without promotion.
+These behaviors produce compact columnar aggregate summaries without claiming
+SQL or DBMS semantics.
+
+| Primitive or operation | Status | Behavior | Naming boundary |
+| --- | --- | --- | --- |
+| columnar compact summary | Stable compatibility path | Conjunctive scan count, grouped integer count, and grouped integer sum over app-owned columnar/denormalized input | `DB_COMPACT_SUMMARY` is a legacy compatibility token; columnar compact summary is the preferred conceptual name. |
+
+This behavior is not SQL, a DBMS, a query planner, joins, indexes,
+transactions, or row-output materialization.
+
+### Collection And Row Materialization
+
+These behaviors return bounded rows or witness/candidate rows rather than only
+compact summaries.
+
+| Primitive or operation | Status | Behavior | Boundary |
+| --- | --- | --- | --- |
+| `COLLECT_K_BOUNDED` | Experimental primitive | Bounded row collection with exact fail-closed overflow policy | Requires native Embree/OptiX parity, benchmarks, and external review before stable promotion. |
+| witness/candidate row paths | App or partner code unless promoted | App-facing row materialization for a specific workflow | Must not silently truncate exact outputs. |
+
+### Aggregate Frontier And Tree Traversal
+
+These behaviors are candidate areas exposed by Barnes-Hut-style workloads, but
+the accepted generic contract is not finished.
+
+| Primitive or operation | Status | Behavior | Boundary |
+| --- | --- | --- | --- |
+| aggregate-frontier traversal | Candidate behavior | Select aggregate/tree nodes according to an app-independent opening predicate and emit a bounded frontier or summary input | Needs a generic contract before native promotion. |
+| Barnes-Hut inverse-square force accumulation | App or partner code | Workload math over selected points/nodes | Not an RTDL engine primitive. |
+
+Rejected candidate:
+
+```text
+generic_aggregate_frontier_inverse_square_scalar_sum_3d_v1
+```
+
+Reason: it hardcoded `source_weight * target_or_aggregate_weight / distance^2`.
+That is app/workload math, not generic engine behavior.
+
+### App Adapters And Partner Operators
+
+App adapters compose behavior families for one domain. They are allowed to
+contain domain vocabulary, but they must not become engine primitives without
+promotion.
 
 Examples:
 
-| Adapter or operation | Owner | Boundary |
+| Adapter or operation | Status | Boundary |
 | --- | --- | --- |
-| robot pose flags over grouped any-hit rows | `rtdsl.app_adapters.robot_collision` | App adapter over generic any-hit/group-any behavior. |
-| Barnes-Hut pairwise inverse-square partner force | `rtdsl.app_adapters.barnes_hut` | App/partner math, not native RTDL engine primitive. |
-| RayDB-style query/schema names | benchmark app | App semantics over generic columnar grouped reductions. |
+| robot pose flags over grouped any-hit rows | App adapter | App adapter over generic any-hit/group-any behavior. |
+| Barnes-Hut pairwise inverse-square partner force | App or partner code | App/partner math, not native RTDL engine primitive. |
+| RayDB-style query/schema names | App code | App semantics over generic columnar grouped reductions. |
 
 ## How Users Select Primitives
 
 Start from the behavior needed, not the benchmark app name.
 
-| User need | Use this layer | Candidate primitive path |
+| User need | Use this behavior family | Candidate primitive path |
 | --- | --- | --- |
 | I need to know whether anything is hit. | traversal/existence | `ANY_HIT` |
 | I need a scalar hit count. | traversal + scalar reduction | `ANY_HIT` + `COUNT_HITS` |
 | I need nearby-point counts or threshold flags. | fixed-radius count | `FIXED_RADIUS_COUNT_THRESHOLD_2D` or a prepared fixed-radius variant |
-| I need grouped flags, counts, sums, min/max, or stats. | grouped reduction | `rtdl.grouped_reduction.v1` operation over app-provided group keys |
-| I need compact columnar aggregate summaries. | columnar compact summary | columnar compact summary compatibility path |
-| I need candidate rows/witness rows. | collection | existing row/witness path if available; otherwise candidate for `COLLECT_K_BOUNDED`-style promotion |
+| I need grouped flags, counts, sums, min/max, or stats. | grouped/keyed reductions | `rtdl.grouped_reduction.v1` operation over app-provided group keys |
+| I need compact columnar aggregate summaries. | columnar compact summaries | columnar compact summary compatibility path |
+| I need candidate rows/witness rows. | collection and row materialization | existing row/witness path if available; otherwise candidate for `COLLECT_K_BOUNDED`-style promotion |
 | I need custom force/scoring/math. | app/partner operator | keep math in app/partner code until a regulated operator mechanism exists |
 | I need a full domain solver. | app code | compose primitives; RTDL does not own the solver semantics |
 
@@ -146,15 +223,6 @@ substrates.
 | Robot collision | Prepared static scene reuse, grouped finite segment probes, group-any pose flags, count-only result | Generic prepared any-hit/group-any and buffer-reuse pressure; robot pose/link semantics stayed app code. |
 | RayDB-style | Columnar grouped count/sum/min/max/stats, device column handoff, group capacity | `DeviceColumnDescriptor` and `rtdl.grouped_reduction.v1`; SQL/DBMS semantics stayed app code. |
 | Barnes-Hut | Aggregate frontier traversal and fused force accumulation pressure | Aggregate-frontier primitive remains future work; app-specific inverse-square native primitive was rejected. |
-
-Rejected candidate:
-
-```text
-generic_aggregate_frontier_inverse_square_scalar_sum_3d_v1
-```
-
-Reason: it hardcoded `source_weight * target_or_aggregate_weight / distance^2`.
-That is app/workload math, not generic engine behavior.
 
 ## Primitive Promotion Pipeline
 
