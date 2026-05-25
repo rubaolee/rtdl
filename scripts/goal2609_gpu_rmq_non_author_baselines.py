@@ -14,7 +14,7 @@ from typing import Any
 
 import numpy as np
 
-from examples.v2_0.research_benchmarks.gpu_rmq import rtdl_gpu_rmq_benchmark_app as app
+from examples.v2_0.learner_apps.gpu_rmq import rtdl_gpu_rmq_learner_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]

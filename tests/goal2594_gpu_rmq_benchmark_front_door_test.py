@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.gpu_rmq import rtdl_gpu_rmq_benchmark_app as app
+from examples.v2_0.learner_apps.gpu_rmq import rtdl_gpu_rmq_learner_app as app
 from rtdsl.reference import ray_triangle_closest_hit_cpu
 
 
@@ -69,7 +69,7 @@ class Goal2594GpuRmqBenchmarkFrontDoorTest(unittest.TestCase):
         self.assertFalse(payload["claim_boundary"]["benchmark_app"])
         self.assertTrue(payload["claim_boundary"]["demoted_from_benchmark_candidate"])
         self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
-        self.assertIn("hybrid", payload["why_benchmark"])
+        self.assertIn("hybrid", payload["why_not_benchmark_but_still_useful"])
         self.assertIn("cupy_author_style_hierarchical", payload["current_local_modes"])
 
     def test_paper_rt_lowering_matches_cpu_reference_with_ties(self) -> None:
@@ -155,7 +155,7 @@ class Goal2594GpuRmqBenchmarkFrontDoorTest(unittest.TestCase):
         self.assertIn("must not contain GPU-RMQ-specific app logic", payload["native_engine_rule"])
 
     def test_prepared_reuse_uses_generic_grouped_argmin_boundary(self) -> None:
-        source = (ROOT / "examples" / "v2_0" / "research_benchmarks" / "gpu_rmq" / "rtdl_gpu_rmq_benchmark_app.py").read_text()
+        source = (ROOT / "examples" / "v2_0" / "learner_apps" / "gpu_rmq" / "rtdl_gpu_rmq_learner_app.py").read_text()
         self.assertIn("ray_closest_hit_grouped_argmin", source)
         self.assertIn("_query_prepared_batch_grouped_argmin", source)
         self.assertIn("runtime_grouped_argmin_used", source)

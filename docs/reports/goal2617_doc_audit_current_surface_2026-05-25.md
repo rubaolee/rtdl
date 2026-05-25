@@ -9,16 +9,16 @@ enforces no stale version wording on the current public surface.
 | State | Count |
 | --- | ---: |
 | `classified_non_current` | 6863 |
-| `current_ok` | 72 |
+| `current_ok` | 73 |
 | `link_debt_in_non_current_artifact` | 103 |
 
 ## Per-File Audit
 
 | File | Category | State | Stale Version Hits | Dead Local Links | Action |
 | --- | --- | --- | --- | --- | --- |
-| `README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/app_engine_support_matrix.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/app_engine_support_matrix.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/app_example_quickstart.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/application_catalog.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
 | `docs/audit/README.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
@@ -31,17 +31,17 @@ enforces no stale version wording on the current public surface.
 | `docs/audit/process/gemini_cli_notes.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/audit/runbooks/README.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/audit/runbooks/rtx_cloud_single_session_runbook.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
-| `docs/backend_maturity.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/capability_boundaries.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/current_architecture.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/current_main_support_matrix.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `docs/backend_maturity.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/capability_boundaries.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/current_architecture.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/current_main_support_matrix.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/directives/goal1668_antigravity_directive_app_agnostic_engine_2026-05-10.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/engineering/handoffs/V0_4_FINAL_RELEASE_HANDOFF_HUB.md` | `historical_audit` | `link_debt_in_non_current_artifact` | - | `../../workloads_and_research_foundations.md` | classified_historical_or_audit; not rewritten |
-| `docs/features/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/features/db_workloads/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/features/engine_support_matrix.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/features/fixed_radius_neighbors/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/features/knn_rows/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `docs/features/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/features/db_workloads/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/features/engine_support_matrix.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/features/fixed_radius_neighbors/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/features/knn_rows/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/features/lsi/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/features/overlay/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/features/pip/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
@@ -1500,10 +1500,10 @@ enforces no stale version wording on the current public surface.
 | `docs/history/tutorial_archive/v0_8_app_building.md` | `historical_audit` | `link_debt_in_non_current_artifact` | - | `../release_facing_examples.md`<br>`../reports/goal507_hausdorff_linux_perf_report_2026-04-17.md`<br>`../reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md`<br>`../reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md`<br>`../rtdl/itre_app_model.md`<br>`feature_quickstart_cookbook.md`<br>`nearest_neighbor_workloads.md` | classified_historical_or_audit; not rewritten |
 | `docs/history/version_archive_notes.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/learn/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
-| `docs/partner_acceleration_boundaries.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/performance_model.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/public_documentation_map.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/quick_tutorial.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `docs/partner_acceleration_boundaries.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/performance_model.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/public_documentation_map.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/quick_tutorial.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/release_facing_examples.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/release_reports/v0_1/README.md` | `historical_release_package` | `link_debt_in_non_current_artifact` | - | `../../v0_1_release_notes.md`<br>`../../v0_1_reproduction_and_verification.md`<br>`../../v0_1_support_matrix.md` | classified_historical_or_audit; not rewritten |
 | `docs/release_reports/v0_1/audit_report.md` | `historical_release_package` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
@@ -4436,7 +4436,7 @@ enforces no stale version wording on the current public surface.
 | `docs/reports/goal2614_claude_v2_3_app_portfolio_release_review_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/reports/goal2615_gemini_v2_3_app_portfolio_release_review_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/reports/goal2616_v2_3_app_portfolio_release_3ai_consensus_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
-| `docs/reports/goal2617_doc_audit_current_surface_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
+| `docs/reports/goal2617_doc_audit_current_surface_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | modified_or_reclassified_this_goal |
 | `docs/reports/goal2617_pod_surface_smoke_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/reports/goal2618_claude_doc_clean_audit_review_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/reports/goal2619_gemini_doc_clean_audit_review_2026-05-25.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
@@ -7002,29 +7002,29 @@ enforces no stale version wording on the current public surface.
 | `docs/reviews/v3_0_frechet_lab_lessons_claude_review_2026-05-12.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/reviews/v3_0_frechet_lab_lessons_consensus_2026-05-12.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
 | `docs/reviews/v3_0_frechet_lab_lessons_gemini_review_2026-05-12.md` | `historical_audit` | `classified_non_current` | - | - | classified_historical_or_audit; not rewritten |
-| `docs/rtdl/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/rtdl/dsl_reference.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/rtdl/ir_and_lowering.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/rtdl/itre_app_model.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `docs/rtdl/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/rtdl/dsl_reference.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/rtdl/ir_and_lowering.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/rtdl/itre_app_model.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/rtdl/llm_authoring_guide.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/rtdl/programming_guide.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/rtdl/workload_cookbook.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
-| `docs/rtdl_feature_guide.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `docs/rtdl_feature_guide.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `docs/rtdl_primitive_catalog.md` | `support_artifact` | `classified_non_current` | - | - | classified_support_artifact; not first-run doc |
-| `docs/runtime_overhead_architecture.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/db_workloads.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/feature_quickstart_cookbook.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/graph_workloads.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/hello_world.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/nearest_neighbor_workloads.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/partner_anyhit.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/partner_optix_zero_copy_anyhit.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/rendering_and_visual_demos.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/segment_polygon_workloads.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/sorting_demo.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/tutorials/v2_app_building.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `docs/vision.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `docs/runtime_overhead_architecture.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/db_workloads.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/feature_quickstart_cookbook.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/graph_workloads.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/hello_world.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/nearest_neighbor_workloads.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/partner_anyhit.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/partner_optix_zero_copy_anyhit.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/rendering_and_visual_demos.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/segment_polygon_workloads.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/sorting_demo.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/tutorials/v2_app_building.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `docs/vision.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
 | `examples/generated/README.md` | `support_artifact` | `classified_non_current` | - | - | classified_support_artifact; not first-run doc |
 | `examples/generated/plan_bundles/central_ray_triangle_stats/README.md` | `support_artifact` | `classified_non_current` | - | - | classified_support_artifact; not first-run doc |
@@ -7039,18 +7039,19 @@ enforces no stale version wording on the current public surface.
 | `examples/legacy_or_backend_proofs/README.md` | `support_artifact` | `classified_non_current` | - | - | classified_support_artifact; not first-run doc |
 | `examples/reference/README.md` | `support_artifact` | `classified_non_current` | - | - | classified_support_artifact; not first-run doc |
 | `examples/v2_0/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `examples/v2_0/apps/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `examples/v2_0/apps/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/features/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
-| `examples/v2_0/getting_started/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `examples/v2_0/getting_started/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `examples/v2_0/learner_apps/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `examples/v2_0/learner_apps/gpu_rmq/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
 | `examples/v2_0/partners/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/research_benchmarks/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `examples/v2_0/research_benchmarks/barnes_hut/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
-| `examples/v2_0/research_benchmarks/gpu_rmq/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
-| `examples/v2_0/research_benchmarks/hausdorff_xhd/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `examples/v2_0/research_benchmarks/barnes_hut/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
+| `examples/v2_0/research_benchmarks/hausdorff_xhd/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/research_benchmarks/librts_spatial_index/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/research_benchmarks/raydb_style/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/research_benchmarks/robot_collision/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/research_benchmarks/rt_dbscan/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/research_benchmarks/rtnn/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
-| `examples/v2_0/research_benchmarks/spatial_rayjoin/README.md` | `current_public` | `current_ok` | - | - | modified_or_reclassified_this_goal |
+| `examples/v2_0/research_benchmarks/spatial_rayjoin/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |
 | `examples/v2_0/research_benchmarks/triangle_counting/README.md` | `current_public` | `current_ok` | - | - | reviewed_current_surface_no_change |

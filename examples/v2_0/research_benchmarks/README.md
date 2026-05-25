@@ -35,7 +35,6 @@ $env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\<study>\<script
 | `librts_spatial_index/` | LibRTS-style mutable spatial-index study for PPoPP 2025 point/range query semantics, WKT fixture interchange, and first authors-code OptiX evidence | `librts_spatial_index/README.md` |
 | `rtnn/` | RTNN-style neighbor-search study over candidate quality, prepared fixed-radius ranked summaries, CuPy baseline rows, and optional public RTNN diagnostics | `rtnn/README.md` |
 | `triangle_counting/` | Closed bounded RT-Graph/SIGMETRICS 2025 triangle-counting benchmark; paper-dataset evidence exists, with largest-dataset scalability accepted as a segmented/streamed-lowering follow-up | `triangle_counting/README.md` |
-| `gpu_rmq/` | Demoted GPU-RMQ-style RMQ research/learner app over exact CPU oracle, hierarchy-style local contract, paper-style generic closest-hit RT lowering, and generic grouped candidate argmin; Goal2612 shows the current RTDL design is not benchmark-competitive against direct CUDA sparse-query code | `gpu_rmq/README.md` |
 
 ## How To Read Results
 
@@ -59,7 +58,8 @@ $env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\<study>\<script
 
 The benchmark directories intentionally keep paper-inspired work separate from
 the ordinary learner examples so new users can learn RTDL without being pulled
-into historical performance debates.
+into historical performance debates. Demoted design-pressure apps, including
+GPU-RMQ, live under `../learner_apps/` instead of this benchmark directory.
 
 For the post-robot-collision benchmark-app selection rule and RayDB scoping
 boundary, see

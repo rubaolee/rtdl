@@ -32,6 +32,7 @@ the same `pip` command inside it.
 | Individual feature examples | `v2_0/features/` | `PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py` |
 | Complete v2.x applications | `v2_0/apps/` | `PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference` |
 | Partner continuation examples | `v2_0/partners/` | `PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` |
+| Demoted or design-pressure learner apps | `v2_0/learner_apps/` | read the learner-app README before treating any result as performance evidence |
 | Paper-facing performance studies | `v2_0/research_benchmarks/` | read the benchmark README before running |
 
 ## Directory Map
@@ -42,6 +43,7 @@ the same `pip` command inside it.
 | `v2_0/features/` | User learning one RTDL primitive family | Ray queries, neighbors, database reductions, graph traversal, spatial rows |
 | `v2_0/apps/` | User building an application | Analytics, geospatial, ML, robotics, simulation, trajectory examples |
 | `v2_0/partners/` | Advanced user | NumPy/CuPy/user-owned continuation examples around RTDL outputs |
+| `v2_0/learner_apps/` | Learner/research reader | Demoted or design-pressure app-scale examples that are not benchmark claims |
 | `v2_0/research_benchmarks/hausdorff_xhd/` | Research/performance reader | Hausdorff/X-HD-inspired RTDL study and benchmark harnesses |
 | `v2_0/research_benchmarks/spatial_rayjoin/` | Research/performance reader | RayJoin-inspired spatial join study |
 | `legacy_or_backend_proofs/` | Backend maintainer | Backend proof demos that are not the first learner path |
@@ -73,7 +75,12 @@ the same `pip` command inside it.
 | LibRTS-style spatial index | `v2_0/research_benchmarks/librts_spatial_index/` | Generic AABB point/range count study, not full mutable LibRTS reproduction |
 | RTNN neighbor search | `v2_0/research_benchmarks/rtnn/` | Serious neighbor-search study over generic prepared fixed-radius and partner top-k contracts, not a full RTNN paper reproduction or ANN-index claim |
 | Triangle counting | `v2_0/research_benchmarks/triangle_counting/` | RT-Graph/SIGMETRICS 2025 target; single-contract graph benchmark with accepted segmented/streamed-lowering limitation |
-| GPU-RMQ | `v2_0/research_benchmarks/gpu_rmq/` | Demoted research/learner app after Goal2612; useful for primitive design pressure, not benchmark claims |
+
+## Demoted Research/Learner Apps
+
+| App | Directory | Boundary |
+| --- | --- | --- |
+| GPU-RMQ | `v2_0/learner_apps/gpu_rmq/` | Demoted after Goal2612; useful for primitive design pressure, not a benchmark app or speedup claim |
 
 ## Compatibility
 

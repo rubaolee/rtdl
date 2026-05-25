@@ -229,7 +229,7 @@ SMOKE_CASES: tuple[SmokeCase, ...] = (
     SmokeCase(
         "gpu_rmq_learner",
         "learner",
-        "examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py",
+        "examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py",
         ("--mode", "cpu_reference", "--value-count", "64", "--query-count", "16", "--max-width", "16"),
     ),
     SmokeCase(

@@ -14,7 +14,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.gpu_rmq import rtdl_gpu_rmq_benchmark_app as app  # noqa: E402
+from examples.v2_0.learner_apps.gpu_rmq import rtdl_gpu_rmq_learner_app as app  # noqa: E402
 
 
 AUTHOR_REPO = "https://github.com/lakreis/GPU-RMQ.git"

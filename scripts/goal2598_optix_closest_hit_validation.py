@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.gpu_rmq import rtdl_gpu_rmq_benchmark_app as gpu_rmq
+from examples.v2_0.learner_apps.gpu_rmq import rtdl_gpu_rmq_learner_app as gpu_rmq
 from rtdsl.generic_primitives import run_generic_ray_triangle_closest_hit
 from rtdsl.reference import Ray3D
 from rtdsl.reference import Triangle3D

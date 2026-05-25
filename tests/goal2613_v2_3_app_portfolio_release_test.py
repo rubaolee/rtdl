@@ -48,7 +48,7 @@ class Goal2613V23AppPortfolioReleaseTest(unittest.TestCase):
             "ML apps",
             "Analytics apps",
             "Trajectory app",
-            "GPU-RMQ research app",
+            "GPU-RMQ learner app",
             "Visual demos",
         ):
             with self.subTest(name=name):
@@ -58,9 +58,10 @@ class Goal2613V23AppPortfolioReleaseTest(unittest.TestCase):
         text = CATALOG.read_text(encoding="utf-8")
         self.assertIn("## v2.3 Portfolio Snapshot", text)
         self.assertIn("Goal2612 rejects benchmark promotion", text)
-        self.assertIn("Explicitly demoted research/learner app after Goal2612", text)
+        self.assertIn("Explicitly demoted learner/design-pressure app after Goal2612", text)
         self.assertIn("Explicitly demoted learner/demo app", text)
-        self.assertNotIn("GPU-RMQ range minimum query | `examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py` | candidate benchmark", text)
+        old_gpu_rmq_path = "/".join(("examples", "v2_0", "research_benchmarks", "gpu_rmq"))
+        self.assertNotIn(old_gpu_rmq_path, text)
 
     def test_release_blocks_overclaims(self) -> None:
         text = RELEASE.read_text(encoding="utf-8")

@@ -1,14 +1,14 @@
 {
   "counts": {
     "current_needs_fix": 0,
-    "current_public": 72,
+    "current_public": 73,
     "dead_local_link_files": 103,
-    "total_markdown_files": 7038
+    "total_markdown_files": 7039
   },
   "goal": "Goal2617",
   "rows": [
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "README.md",
@@ -16,7 +16,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/README.md",
@@ -24,7 +24,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/app_engine_support_matrix.md",
@@ -140,7 +140,7 @@
       "state": "classified_non_current"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/backend_maturity.md",
@@ -148,7 +148,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/capability_boundaries.md",
@@ -156,7 +156,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/current_architecture.md",
@@ -164,7 +164,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/current_main_support_matrix.md",
@@ -190,7 +190,7 @@
       "state": "link_debt_in_non_current_artifact"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/features/README.md",
@@ -198,7 +198,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/features/db_workloads/README.md",
@@ -206,7 +206,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/features/engine_support_matrix.md",
@@ -214,7 +214,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/features/fixed_radius_neighbors/README.md",
@@ -222,7 +222,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/features/knn_rows/README.md",
@@ -12065,7 +12065,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/partner_acceleration_boundaries.md",
@@ -12073,7 +12073,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/performance_model.md",
@@ -12081,7 +12081,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/public_documentation_map.md",
@@ -12089,7 +12089,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/quick_tutorial.md",
@@ -35686,7 +35686,7 @@
       "state": "classified_non_current"
     },
     {
-      "action": "classified_historical_or_audit; not rewritten",
+      "action": "modified_or_reclassified_this_goal",
       "category": "historical_audit",
       "dead_local_links": [],
       "path": "docs/reports/goal2617_doc_audit_current_surface_2026-05-25.md",
@@ -56275,7 +56275,7 @@
       "state": "classified_non_current"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/rtdl/README.md",
@@ -56283,7 +56283,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/rtdl/dsl_reference.md",
@@ -56291,7 +56291,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/rtdl/ir_and_lowering.md",
@@ -56299,7 +56299,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/rtdl/itre_app_model.md",
@@ -56331,7 +56331,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/rtdl_feature_guide.md",
@@ -56347,7 +56347,7 @@
       "state": "classified_non_current"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/runtime_overhead_architecture.md",
@@ -56355,7 +56355,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/README.md",
@@ -56363,7 +56363,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/db_workloads.md",
@@ -56371,7 +56371,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
@@ -56379,7 +56379,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/graph_workloads.md",
@@ -56387,7 +56387,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/hello_world.md",
@@ -56395,7 +56395,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
@@ -56403,7 +56403,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/partner_anyhit.md",
@@ -56411,7 +56411,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/partner_optix_zero_copy_anyhit.md",
@@ -56419,7 +56419,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/rendering_and_visual_demos.md",
@@ -56427,7 +56427,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/segment_polygon_workloads.md",
@@ -56435,7 +56435,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/sorting_demo.md",
@@ -56443,7 +56443,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/tutorials/v2_app_building.md",
@@ -56451,7 +56451,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "docs/vision.md",
@@ -56571,7 +56571,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "examples/v2_0/apps/README.md",
@@ -56587,10 +56587,26 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "examples/v2_0/getting_started/README.md",
+      "stale_version_hits": [],
+      "state": "current_ok"
+    },
+    {
+      "action": "modified_or_reclassified_this_goal",
+      "category": "current_public",
+      "dead_local_links": [],
+      "path": "examples/v2_0/learner_apps/README.md",
+      "stale_version_hits": [],
+      "state": "current_ok"
+    },
+    {
+      "action": "modified_or_reclassified_this_goal",
+      "category": "current_public",
+      "dead_local_links": [],
+      "path": "examples/v2_0/learner_apps/gpu_rmq/README.md",
       "stale_version_hits": [],
       "state": "current_ok"
     },
@@ -56611,7 +56627,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "examples/v2_0/research_benchmarks/barnes_hut/README.md",
@@ -56620,14 +56636,6 @@
     },
     {
       "action": "reviewed_current_surface_no_change",
-      "category": "current_public",
-      "dead_local_links": [],
-      "path": "examples/v2_0/research_benchmarks/gpu_rmq/README.md",
-      "stale_version_hits": [],
-      "state": "current_ok"
-    },
-    {
-      "action": "modified_or_reclassified_this_goal",
       "category": "current_public",
       "dead_local_links": [],
       "path": "examples/v2_0/research_benchmarks/hausdorff_xhd/README.md",
@@ -56675,7 +56683,7 @@
       "state": "current_ok"
     },
     {
-      "action": "modified_or_reclassified_this_goal",
+      "action": "reviewed_current_surface_no_change",
       "category": "current_public",
       "dead_local_links": [],
       "path": "examples/v2_0/research_benchmarks/spatial_rayjoin/README.md",

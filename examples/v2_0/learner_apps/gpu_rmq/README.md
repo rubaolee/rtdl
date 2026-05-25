@@ -1,6 +1,6 @@
-# GPU-RMQ-Style Range Minimum Query Research App
+# GPU-RMQ-Style Range Minimum Query Learner App
 
-This directory starts the RTDL benchmark-app track for:
+This learner-app directory records the RTDL study for:
 
 - Lara Kreis, Justus Henneberg, Valentin Henkys, Felix Schuhknecht, and Bertil
   Schmidt, **GPU-RMQ: Accelerating Range Minimum Queries on Modern GPUs**,
@@ -52,24 +52,24 @@ That made it useful for testing RTDL's Python+partner+RTDL architecture:
 Run from the repository root:
 
 ```bash
-PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py --mode scope
-PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py --mode compare_local --dataset random --value-count 4096 --query-count 1024 --max-width 256
-PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py --mode paper_rt_lowering_reference --dataset repeated --value-count 4096 --query-count 1024 --max-width 256 --block-size 64
-PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py --mode author_style_compare_local --value-count 4096 --query-count 1024 --author-lr -6 --no-sample
-PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py --mode local_hierarchical --dataset sawtooth --value-count 262144 --query-count 65536 --max-width 4096 --block-size 64 --no-sample
+PYTHONPATH=src:. python3 examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py --mode scope
+PYTHONPATH=src:. python3 examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py --mode compare_local --dataset random --value-count 4096 --query-count 1024 --max-width 256
+PYTHONPATH=src:. python3 examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py --mode paper_rt_lowering_reference --dataset repeated --value-count 4096 --query-count 1024 --max-width 256 --block-size 64
+PYTHONPATH=src:. python3 examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py --mode author_style_compare_local --value-count 4096 --query-count 1024 --author-lr -6 --no-sample
+PYTHONPATH=src:. python3 examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py --mode local_hierarchical --dataset sawtooth --value-count 262144 --query-count 65536 --max-width 4096 --block-size 64 --no-sample
 ```
 
 On Windows PowerShell:
 
 ```powershell
-$env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\gpu_rmq\rtdl_gpu_rmq_benchmark_app.py --mode compare_local
+$env:PYTHONPATH='src;.'; py -3 examples\v2_0\learner_apps\gpu_rmq\rtdl_gpu_rmq_learner_app.py --mode compare_local
 ```
 
 ## Current Modes
 
 | Mode | Purpose |
 | --- | --- |
-| `scope` | Emit benchmark boundary and paper relationship. |
+| `scope` | Emit learner-app boundary and paper relationship. |
 | `command_plan` | Emit local and future pod command plan. |
 | `author_code_plan` | Emit the lakreis/GPU-RMQ build/run/comparison plan. |
 | `author_time_csv` | Parse a `--save-time` CSV emitted by the authors' binary. |
@@ -130,7 +130,7 @@ use the authors' `--save-input-data` option after patching their hardcoded
 run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py \
+PYTHONPATH=src:. python3 examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py \
   --mode author_input_cpu_reference \
   --author-array-bin /path/to/array_n-..._seed-....bin \
   --author-query-bin /path/to/queries_n-..._q-..._lr-..._seed-..._trivCheck-..._randTrivCheck-....bin \

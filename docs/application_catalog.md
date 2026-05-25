@@ -62,7 +62,7 @@ benchmark claims.
 | Robotics app | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | Pose/link any-hit screening shape | Learner app; promoted benchmark is under `research_benchmarks/robot_collision/` |
 | Simulation app | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | Barnes-Hut node candidate and coverage ideas | Learner app; promoted benchmark is under `research_benchmarks/barnes_hut/` |
 | Trajectory app | `examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py` | Continuous Frechet broadphase plus learner-owned continuation | Explicitly demoted learner/demo app |
-| GPU-RMQ research app | `examples/v2_0/research_benchmarks/gpu_rmq/` | RMQ hierarchy/RT lowering pressure and generic grouped candidate argmin | Explicitly demoted research/learner app after Goal2612 |
+| GPU-RMQ learner app | `examples/v2_0/learner_apps/gpu_rmq/` | RMQ hierarchy/RT lowering pressure and generic grouped candidate argmin | Explicitly demoted learner/design-pressure app after Goal2612 |
 | Visual demos | `examples/visual_demo/` | Visual explanation of RT-shaped query work | Demos, not renderer claims |
 
 ## Beginner Examples
@@ -103,7 +103,7 @@ benchmark claims.
 | --- | --- | --- | --- |
 | Database analytics | `examples/v2_0/apps/analytics/rtdl_database_analytics_app.py` | bounded columnar scan/group summaries | not SQL or a DBMS |
 | Graph analytics | `examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py` | learner/demo graph app for frontier rows, triangle-style rows/summaries, and visibility edges | not a graph database; the closed research benchmark scope is RT-Graph-style triangle counting only, with Goal2593 documenting the accepted large-paper-dataset segmented/streamed-lowering limitation |
-| GPU-RMQ range minimum query | `examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py` | research/learner app for exact compact RMQ rows, hierarchy-style local contracts, paper-style generic closest-hit RT lowering, and the generic grouped candidate argmin primitive | Goal2612 rejects benchmark promotion for the current design: RTDL remains much slower than direct CUDA sparse-query code; keep it as a design-pressure case, not a speedup benchmark |
+| GPU-RMQ range minimum query | `examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py` | learner/design-pressure app for exact compact RMQ rows, hierarchy-style local contracts, paper-style generic closest-hit RT lowering, and the generic grouped candidate argmin primitive | Goal2612 rejects benchmark promotion for the current design: RTDL remains much slower than direct CUDA sparse-query code; keep it outside the benchmark app set |
 | Robot collision screening | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | any-hit pose flags/counts | not a planner or physics simulator |
 | Barnes-Hut force approximation | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | node/body candidate discovery and coverage summaries | force-vector reduction remains app/partner work unless documented |
 

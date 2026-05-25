@@ -9,6 +9,7 @@ Python+partner+RTDL source-tree release.
 | `features/` | examples grouped by primitive or workload feature |
 | `apps/` | complete application-level examples |
 | `partners/` | examples that continue RTDL outputs with NumPy, CuPy, or user-owned native code |
+| `learner_apps/` | app-scale learner and design-pressure cases that are not promoted benchmarks |
 | `research_benchmarks/` | serious performance studies such as Hausdorff/X-HD and spatial/RayJoin |
 
 Use source-tree execution from the repository root:

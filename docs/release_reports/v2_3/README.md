@@ -24,7 +24,7 @@ optimizes arbitrary PyTorch or CuPy programs.
   tables.
 - Nine promoted benchmark apps used as RTDL language/runtime reconstruction
   instruments.
-- Explicit demotion of Continuous Frechet and GPU-RMQ to learner/research
+- Explicit demotion of Continuous Frechet and GPU-RMQ to learner/design-pressure
   status after performance evidence did not support benchmark promotion.
 - Generic OptiX grouped candidate argmin/finalize support extracted from the
   GPU-RMQ study without adding RMQ-specific native-engine logic.
@@ -62,7 +62,7 @@ optimizes arbitrary PyTorch or CuPy programs.
 | Robotics app | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | Pose/link any-hit screening shape | Learner app |
 | Simulation app | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | Barnes-Hut candidate and coverage ideas | Learner app |
 | Trajectory app | `examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py` | Continuous Frechet broadphase plus learner-owned continuation | Demoted learner/demo app |
-| GPU-RMQ research app | `examples/v2_0/research_benchmarks/gpu_rmq/` | RMQ hierarchy/RT lowering pressure and generic grouped candidate argmin | Demoted research/learner app |
+| GPU-RMQ learner app | `examples/v2_0/learner_apps/gpu_rmq/` | RMQ hierarchy/RT lowering pressure and generic grouped candidate argmin | Demoted learner/design-pressure app |
 | Visual demos | `examples/visual_demo/` | Visual explanation of RT-shaped query work | Demos, not renderer claims |
 
 ## What v2.3 Does Not Claim
@@ -90,7 +90,7 @@ optimizes arbitrary PyTorch or CuPy programs.
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py --mode scope
+PYTHONPATH=src:. python examples/v2_0/learner_apps/gpu_rmq/rtdl_gpu_rmq_learner_app.py --mode scope
 PYTHONPATH=src:. python -m unittest tests.goal2613_v2_3_app_portfolio_release_test
 ```
 

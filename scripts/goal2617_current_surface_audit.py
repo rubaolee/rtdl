@@ -94,9 +94,16 @@ def _git_changed_files() -> set[str]:
         check=False,
         capture_output=True,
     )
+    untracked = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard"],
+        cwd=ROOT,
+        text=True,
+        check=False,
+        capture_output=True,
+    )
     return {
         line.strip()
-        for line in (result.stdout + "\n" + staged.stdout).splitlines()
+        for line in (result.stdout + "\n" + staged.stdout + "\n" + untracked.stdout).splitlines()
         if line.strip()
     }
 
