@@ -1,6 +1,6 @@
 # Release-Facing Example Command Archive
 
-Status: current v2.0 source-tree command archive.
+Status: current v2.3 source-tree command archive.
 
 This page is for reviewers who need a compact command list for the public
 example surface. If you are learning RTDL for the first time, start with:
@@ -71,7 +71,7 @@ PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner 
 PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy --backend optix
 ```
 
-Partner commands are part of the v2.0 release surface. They do not imply
+Partner commands are part of the v2.3 release surface. They do not imply
 arbitrary PyTorch/CuPy acceleration, package-install support, or whole-program
 speedup.
 

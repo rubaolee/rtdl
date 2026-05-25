@@ -1,0 +1,24 @@
+{
+  "methods": [
+    "rtdl_2a1"
+  ],
+  "repeats": 2,
+  "results": {
+    "com_lj": {
+      "expected_triangles": 177820130,
+      "input_edges": 34681189,
+      "input_file": "build/goal2593_snap_edges/com-lj.edge",
+      "methods": {
+        "rtdl_2a1": {
+          "completed_measured_runs": 0,
+          "elapsed_ms": 2605.254203081131,
+          "error": "std::bad_alloc: out_of_memory: CUDA error (failed to allocate 7429851776 bytes) at: /tmp/pip-build-env-dgiyosea/normal/lib/python3.11/site-packages/librmm/include/rmm/mr/cuda_memory_resource.hpp:51: cudaErrorMemoryAllocation out of memory",
+          "error_type": "MemoryError",
+          "runs": [],
+          "status": "failed"
+        }
+      }
+    }
+  },
+  "warmup": 0
+}

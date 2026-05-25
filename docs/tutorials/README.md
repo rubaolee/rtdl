@@ -1,6 +1,6 @@
-# RTDL v2.0 Tutorials
+# RTDL v2.x Tutorials
 
-Start here if you want to write RTDL programs with the current v2.0-facing
+Start here if you want to write RTDL programs with the current v2.x-facing
 Python+partner+RTDL surface.
 
 RTDL is a Python eDSL. You write the surrounding Python application, describe
@@ -8,7 +8,7 @@ the traversal-heavy kernel in RTDL, and choose a backend such as the portable
 CPU reference path, Embree, or OptiX. In the v2.0 track, partner frameworks such
 as NumPy, PyTorch, and CuPy can own columns around supported RTDL primitives.
 
-This page is intentionally single-version. It teaches the current v2.0 release
+This page is intentionally single-version. It teaches the current v2.3 release
 surface and links old tutorial history only from the final archive section.
 
 ## Start Here
@@ -58,7 +58,7 @@ Use it from the source tree with `PYTHONPATH=src:.`.
 Allowed tutorial wording:
 
 - RTDL can run the documented Python+RTDL examples from source.
-- The v2.0 release has partner-column paths for documented primitives.
+- The v2.3 release has partner-column paths for documented primitives.
 - OptiX evidence exists for specific measured contracts.
 - Python or partner frameworks own app continuation outside the RTDL primitive.
 
@@ -72,7 +72,7 @@ Not allowed:
 
 For the exact boundary, read
 [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md) and
-[v2.0 Release Package](../release_reports/v2_0/README.md).
+[v2.3 Release Package](../release_reports/v2_3/README.md).
 
 ## More Navigation
 

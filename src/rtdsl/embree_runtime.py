@@ -515,6 +515,7 @@ class PackedTriangles:
     records: object
     count: int
     dimension: int = 2
+    owner: object | None = None
 
 
 @dataclass(frozen=True)
@@ -522,6 +523,7 @@ class PackedRays:
     records: object
     count: int
     dimension: int = 2
+    owner: object | None = None
 
 
 @dataclass(frozen=True)

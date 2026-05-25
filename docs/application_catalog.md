@@ -22,6 +22,49 @@ Each app below has two boundaries:
 Do not turn an app row into a broad speedup claim unless the exact backend,
 partner, hardware, command shape, output contract, and artifact are cited.
 
+## v2.3 Portfolio Snapshot
+
+### Promoted Benchmark Apps
+
+These are the current benchmark apps. They are reconstruction instruments for
+RTDL language/runtime design, not broad paper-reproduction claims.
+
+| Benchmark app | Directory | Benchmark contract | Current v2.3 status |
+| --- | --- | --- | --- |
+| Hausdorff / X-HD-style | `examples/v2_0/research_benchmarks/hausdorff_xhd/` | Exact Hausdorff distance with grouped threshold/witness and partner continuation paths | Promoted benchmark with bounded evidence; no claim that every Hausdorff input beats every CUDA implementation |
+| Spatial RayJoin-style | `examples/v2_0/research_benchmarks/spatial_rayjoin/` | PIP, LSI, and overlay-seed rows over generic prepared spatial primitives | Promoted benchmark for scoped spatial join contracts; not full RayJoin paper reproduction |
+| RT-DBSCAN-style | `examples/v2_0/research_benchmarks/rt_dbscan/` | 3-D fixed-radius neighbor search, core thresholding, and component continuation | Promoted benchmark for generic fixed-radius/component contracts; no DBSCAN-native ABI |
+| Robot collision | `examples/v2_0/research_benchmarks/robot_collision/` | Static scene plus batched transformed query geometry to compact any-hit flags/counts | Promoted benchmark for prepared static-scene screening; not a planner or exact swept collision solver |
+| RayDB-style grouped aggregate | `examples/v2_0/research_benchmarks/raydb_style/` | Predicate-filtered grouped count/sum/min/max/stats over partner-resident columns | Promoted benchmark for columnar grouped reductions; not SQL, SSB, or a DBMS |
+| Barnes-Hut / RT-BarnesHut-style | `examples/v2_0/research_benchmarks/barnes_hut/` | Aggregate tree rows, opening frontier, and partner-resident force diagnostics | Promoted benchmark for hierarchical aggregate-frontier pressure; no app-specific force ABI |
+| LibRTS-style spatial index | `examples/v2_0/research_benchmarks/librts_spatial_index/` | Generic 2-D AABB point/range contains/intersects count-only paths | Promoted internal benchmark slice; not full mutable LibRTS reproduction |
+| RTNN neighbor search | `examples/v2_0/research_benchmarks/rtnn/` | Prepared 3-D fixed-radius bounded ranked-summary rows and ANN candidate-quality helpers | Promoted benchmark front door with strict same-contract boundary; not a full RTNN paper reproduction |
+| Triangle counting | `examples/v2_0/research_benchmarks/triangle_counting/` | RT-Graph-style triangle witness rows or compact triangle summary | Promoted graph benchmark slice; larger paper datasets require future segmented/streamed lowering |
+
+### Learner And Example Apps
+
+These are runnable learner, feature, partner, demo, or demoted research apps.
+They are useful for teaching and design pressure, but they are not promoted
+benchmark claims.
+
+| Learner/example group | Files or directory | What it teaches | Benchmark status |
+| --- | --- | --- | --- |
+| Getting started | `examples/v2_0/getting_started/rtdl_hello_world.py`, `rtdl_hello_world_backends.py`, `rtdl_feature_quickstart_cookbook.py` | First import, backend choice, and feature recipes | Learner examples |
+| Ray query features | `examples/v2_0/features/ray_queries/` | Any-hit, visibility rows, and row reduction basics | Feature examples |
+| Neighbor features | `examples/v2_0/features/neighbors/` | Fixed-radius rows and KNN rows | Feature examples |
+| Database feature recipes | `examples/v2_0/features/database/` | Conjunctive scan, grouped count, grouped sum | Feature examples |
+| Graph feature recipes | `examples/v2_0/features/graph/` | BFS and simple triangle-count feature shapes | Feature examples; promoted graph benchmark is triangle-counting only |
+| Spatial feature recipes | `examples/v2_0/features/spatial/` | Segment/polygon hit count, any-hit rows, overlap rows, Jaccard | Feature examples |
+| Partner continuation examples | `examples/v2_0/partners/` | NumPy/CuPy/user-owned continuation around RTDL outputs | Partner examples |
+| Geospatial apps | `examples/v2_0/apps/geospatial/` | Road hazard, service coverage, hotspot, facility assignment, sales-risk screening | Learner apps |
+| ML apps | `examples/v2_0/apps/ml/` | ANN candidate quality, outlier detection, DBSCAN learner path | Learner apps; promoted DBSCAN benchmark is under `research_benchmarks/rt_dbscan/` |
+| Analytics apps | `examples/v2_0/apps/analytics/` | Database-style summaries and graph analytics examples | Learner apps; promoted RayDB and triangle-counting benchmarks live under `research_benchmarks/` |
+| Robotics app | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | Pose/link any-hit screening shape | Learner app; promoted benchmark is under `research_benchmarks/robot_collision/` |
+| Simulation app | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | Barnes-Hut node candidate and coverage ideas | Learner app; promoted benchmark is under `research_benchmarks/barnes_hut/` |
+| Trajectory app | `examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py` | Continuous Frechet broadphase plus learner-owned continuation | Explicitly demoted learner/demo app |
+| GPU-RMQ research app | `examples/v2_0/research_benchmarks/gpu_rmq/` | RMQ hierarchy/RT lowering pressure and generic grouped candidate argmin | Explicitly demoted research/learner app after Goal2612 |
+| Visual demos | `examples/visual_demo/` | Visual explanation of RT-shaped query work | Demos, not renderer claims |
+
 ## v2.1 App Rethink Rule
 
 Goal2342 rechecked the whole v2.0 app set against the v2.1 feature surface. The
@@ -59,7 +102,7 @@ same app contract.
 | Polygon pair overlap rows | `examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py` | bounded candidate discovery and summary contracts | not arbitrary polygon overlay |
 | Polygon set Jaccard | `examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py` | bounded candidate discovery and summary contracts | not a general GIS/Jaccard engine |
 | Road hazard screening | `examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py` | segment/polygon candidate and priority summaries | no routing or road-network system claim |
-| Continuous Frechet distance | `examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py` | broadphase free-space candidate discovery | Python owns the Frechet decision/search algorithm |
+| Continuous Frechet distance | `examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py` | broadphase free-space candidate discovery | Python or learner-owned C++ owns the Frechet decision/search algorithm; keep this as a learner/demo app, not a benchmark app |
 
 ## Proximity And Search Apps
 
@@ -69,7 +112,7 @@ same app contract.
 | Event hotspot screening | `examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py` | fixed-radius density counts/rows | not a full analytics pipeline |
 | Facility KNN assignment | `examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py` | KNN or threshold coverage rows | richer assignment policies remain app code |
 | Hausdorff distance | `examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py` | nearest-candidate rows or threshold summaries | exact rich witness extraction is app/partner work unless documented |
-| ANN candidate search | `examples/v2_0/apps/ml/rtdl_ann_candidate_app.py` | candidate-subset reranking and coverage summaries | not a general ANN index |
+| RTNN neighbor search | `examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py` | candidate-subset reranking, coverage summaries, and prepared 3-D ranked neighbor summaries | not a general ANN index or full RTNN paper reproduction |
 | Outlier detection | `examples/v2_0/apps/ml/rtdl_outlier_detection_app.py` | radius density rows/counts | final anomaly policy is Python/app code |
 | DBSCAN clustering | `examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py` | core-count/core-flag primitives | cluster expansion remains app/partner graph work |
 
@@ -78,7 +121,8 @@ same app contract.
 | App | File | RTDL role | Boundary |
 | --- | --- | --- | --- |
 | Database analytics | `examples/v2_0/apps/analytics/rtdl_database_analytics_app.py` | bounded columnar scan/group summaries | not SQL or a DBMS |
-| Graph analytics | `examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py` | frontier/edge and triangle-style rows/summaries | not a graph database |
+| Graph analytics | `examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py` | learner/demo graph app for frontier rows, triangle-style rows/summaries, and visibility edges | not a graph database; the closed research benchmark scope is RT-Graph-style triangle counting only, with Goal2593 documenting the accepted large-paper-dataset segmented/streamed-lowering limitation |
+| GPU-RMQ range minimum query | `examples/v2_0/research_benchmarks/gpu_rmq/rtdl_gpu_rmq_benchmark_app.py` | research/learner app for exact compact RMQ rows, hierarchy-style local contracts, paper-style generic closest-hit RT lowering, and the generic grouped candidate argmin primitive | Goal2612 rejects benchmark promotion for the current design: RTDL remains much slower than direct CUDA sparse-query code; keep it as a design-pressure case, not a speedup benchmark |
 | Robot collision screening | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | any-hit pose flags/counts | not a planner or physics simulator |
 | Barnes-Hut force approximation | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | node/body candidate discovery and coverage summaries | force-vector reduction remains app/partner work unless documented |
 
@@ -108,4 +152,5 @@ throughput.
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Goal2342 v2.1 All-App Rethink](reports/goal2342_v2_1_all_app_rethink_and_comparison_2026-05-18.md)
+- [v2.3 Release Package](release_reports/v2_3/README.md)
 - [v2.0 Release Package](release_reports/v2_0/README.md)

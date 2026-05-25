@@ -1,0 +1,45 @@
+{
+  "methods": [
+    "cugraph"
+  ],
+  "repeats": 1,
+  "results": {
+    "com_orkut": {
+      "expected_triangles": 627584181,
+      "input_edges": 117185083,
+      "input_file": "build/goal2593_snap_edges/com-orkut.edge",
+      "methods": {
+        "cugraph": {
+          "elapsed_ms": 7244.087360799313,
+          "matches_expected_triangles": true,
+          "measured_runs": 1,
+          "median_build_cudf_dataframe_ms": 403.3232554793358,
+          "median_build_cugraph_graph_ms": 1293.3417111635208,
+          "median_input_edges": 117185083.0,
+          "median_load_np_ms": 249.04809892177582,
+          "median_reduce_count_ms": 92.63588488101959,
+          "median_total_ms": 7229.10039126873,
+          "median_triangle_count": 627584181.0,
+          "median_triangle_count_ms": 5190.751440823078,
+          "repeats": 1,
+          "runs": [
+            {
+              "build_cudf_dataframe_ms": 403.3232554793358,
+              "build_cugraph_graph_ms": 1293.3417111635208,
+              "input_edges": 117185083,
+              "input_file": "build/goal2593_snap_edges/com-orkut.edge",
+              "load_np_ms": 249.04809892177582,
+              "reduce_count_ms": 92.63588488101959,
+              "total_ms": 7229.10039126873,
+              "triangle_count": 627584181,
+              "triangle_count_ms": 5190.751440823078
+            }
+          ],
+          "status": "ok",
+          "warmup": 0
+        }
+      }
+    }
+  },
+  "warmup": 0
+}

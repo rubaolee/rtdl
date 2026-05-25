@@ -1,0 +1,381 @@
+{
+  "author_code_excluded": true,
+  "baseline_scope": "Same generated fixtures; RTDL prepared RT query-only median versus OpenMP CPU sparse-table query and standalone CUDA sparse-table query. CUDA baseline uses a CPU-built sparse table uploaded to GPU, so it is a query-kernel baseline, not an end-to-end GPU construction baseline.",
+  "compile": {
+    "command": [
+      "/usr/local/cuda/bin/nvcc",
+      "-O3",
+      "-std=c++17",
+      "-gencode",
+      "arch=compute_120,code=sm_120",
+      "-Xcompiler",
+      "-fopenmp",
+      "/workspace/rtdl_goal2610/build/goal2609_gpu_rmq_baseline.cu",
+      "-o",
+      "/workspace/rtdl_goal2610/build/goal2609_gpu_rmq_baseline"
+    ],
+    "stderr": "",
+    "stdout": ""
+  },
+  "goal": "goal2609_gpu_rmq_non_author_baselines",
+  "paper_hybrid_parameters": {
+    "reduction_factor": 32,
+    "rt_top_block_size": 1,
+    "scan_threshold": 64
+  },
+  "repeats": 12,
+  "threads_requested": 16,
+  "workloads": [
+    {
+      "block_size": 64,
+      "cpu_openmp_sparse": {
+        "build_ms": 0.00916,
+        "exact_mismatches": 0,
+        "matches_exact_scan": true,
+        "query_median_ms": 0.01075,
+        "query_runs_ms": [
+          0.016561,
+          0.01148,
+          0.01103,
+          0.01068,
+          0.01066,
+          0.01059,
+          0.010461,
+          0.0106,
+          0.01088,
+          0.010701,
+          0.0108,
+          0.0112
+        ],
+        "threads": 16
+      },
+      "cuda_sparse_query": {
+        "matches_cpu_openmp_sparse": true,
+        "query_median_ms": 0.009024,
+        "query_runs_ms": [
+          0.011584,
+          0.0096,
+          0.009696,
+          0.008512,
+          0.008576,
+          0.009024,
+          0.008864,
+          0.009024,
+          0.008832,
+          0.008672,
+          0.009056,
+          0.009152
+        ],
+        "uses_cpu_built_sparse_table": true
+      },
+      "dataset": "repeated",
+      "query_count": 1000,
+      "rtdl": {
+        "combined_scene": true,
+        "matches_cpu_reference": true,
+        "mode": "paper_rt_prepared_reuse",
+        "prepare_ms": 307.8066419111565,
+        "query_batch_prepare_ms": 289.92896690033376,
+        "query_median_ms": 0.24697749176993966,
+        "query_runs_ms": [
+          374.95840003248304,
+          0.42963295709341764,
+          0.2794479951262474,
+          0.2486179582774639,
+          0.2453370252624154,
+          0.25173695757985115,
+          0.24381699040532112,
+          0.2355370670557022,
+          0.23578701075166464,
+          0.25739800184965134,
+          0.23600703570991755,
+          0.23254705592989922
+        ],
+        "row_format": "native_grouped_argmin"
+      },
+      "rtdl_paper_hybrid": {
+        "hierarchy": {
+          "level_count": 3,
+          "level_sizes": [
+            4096,
+            128,
+            4
+          ],
+          "paper_contract": "GPU-RMQ-style hierarchy: each level stores minima over fixed-size groups from the previous level; query scheduling scans edge fragments at lower levels and uses RTDL for the coarsest fully contained range.",
+          "reduction_factor": 32,
+          "scan_threshold": 64,
+          "top_group_span": 1024,
+          "top_level": 2
+        },
+        "matches_cpu_reference": true,
+        "mode": "paper_hybrid_rtdl_partner",
+        "partner_candidate_count": 3374,
+        "partner_mode": "numpy_level_sparse_table_batch_prepared",
+        "prepare_ms": 6.2142659444361925,
+        "query_batch_prepare_ms": 4.0987919783219695,
+        "query_median_ms": 0.8046440198086202,
+        "query_runs_ms": [
+          0.8905560243874788,
+          0.8211340755224228,
+          0.8097438840195537,
+          0.8080039406195283,
+          0.8072239579632878,
+          0.8028839947655797,
+          0.7954739267006516,
+          0.7864529034122825,
+          0.8034240454435349,
+          0.7915240712463856,
+          0.8018240332603455,
+          0.8058639941737056
+        ],
+        "rt_query_count": 605,
+        "rt_used": true
+      },
+      "seed": 123,
+      "speedups_query_median": {
+        "cuda_sparse_vs_hybrid": 89.1671121241822,
+        "cuda_sparse_vs_rtdl": 27.36895963762629,
+        "hybrid_vs_cpu_openmp_sparse": 0.01335994518738463,
+        "hybrid_vs_cuda_sparse": 0.011214897243810132,
+        "hybrid_vs_previous_rtdl": 0.30694007000596585,
+        "rtdl_vs_cpu_openmp_sparse": 0.04352623359708284,
+        "rtdl_vs_cuda_sparse": 0.03653774250977448
+      },
+      "value_count": 4096
+    },
+    {
+      "block_size": 256,
+      "cpu_openmp_sparse": {
+        "build_ms": 0.02489,
+        "exact_mismatches": 0,
+        "matches_exact_scan": true,
+        "query_median_ms": 0.080467,
+        "query_runs_ms": [
+          0.085613,
+          0.081902,
+          0.080443,
+          0.080592,
+          0.080113,
+          0.080113,
+          0.080132,
+          0.080443,
+          0.080492,
+          0.080433,
+          0.081242,
+          0.084703
+        ],
+        "threads": 16
+      },
+      "cuda_sparse_query": {
+        "matches_cpu_openmp_sparse": true,
+        "query_median_ms": 0.025216,
+        "query_runs_ms": [
+          0.027584,
+          0.025024,
+          0.025504,
+          0.025152,
+          0.025056,
+          0.025408,
+          0.02528,
+          0.023392,
+          0.025312,
+          0.024448,
+          0.0232,
+          0.025568
+        ],
+        "uses_cpu_built_sparse_table": true
+      },
+      "dataset": "random",
+      "query_count": 4000,
+      "rtdl": {
+        "combined_scene": true,
+        "matches_cpu_reference": true,
+        "mode": "paper_rt_prepared_reuse",
+        "prepare_ms": 122.8343719849363,
+        "query_batch_prepare_ms": 45.88327195961028,
+        "query_median_ms": 0.41653699008747935,
+        "query_runs_ms": [
+          0.5086050368845463,
+          0.43592299334704876,
+          0.42354303877800703,
+          0.4324729088693857,
+          0.41486206464469433,
+          0.42153289541602135,
+          0.4174719797447324,
+          0.40474196430295706,
+          0.41332305409014225,
+          0.4111219896003604,
+          0.41541201062500477,
+          0.4156020004302263
+        ],
+        "row_format": "native_grouped_argmin"
+      },
+      "rtdl_paper_hybrid": {
+        "hierarchy": {
+          "level_count": 3,
+          "level_sizes": [
+            16384,
+            512,
+            16
+          ],
+          "paper_contract": "GPU-RMQ-style hierarchy: each level stores minima over fixed-size groups from the previous level; query scheduling scans edge fragments at lower levels and uses RTDL for the coarsest fully contained range.",
+          "reduction_factor": 32,
+          "scan_threshold": 64,
+          "top_group_span": 1024,
+          "top_level": 2
+        },
+        "matches_cpu_reference": true,
+        "mode": "paper_hybrid_rtdl_partner",
+        "partner_candidate_count": 15021,
+        "partner_mode": "numpy_level_sparse_table_batch_prepared",
+        "prepare_ms": 20.605125930160284,
+        "query_batch_prepare_ms": 14.322528964839876,
+        "query_median_ms": 3.2135205110535026,
+        "query_runs_ms": [
+          3.1956450548022985,
+          3.172024036757648,
+          3.1343339942395687,
+          3.173545002937317,
+          3.1263239216059446,
+          3.445772919803858,
+          3.2313959673047066,
+          3.1192429596558213,
+          3.3371499739587307,
+          3.7071399856358767,
+          3.629008075222373,
+          3.62394901458174
+        ],
+        "rt_query_count": 3605,
+        "rt_used": true
+      },
+      "seed": 123,
+      "speedups_query_median": {
+        "cuda_sparse_vs_hybrid": 127.43974107921568,
+        "cuda_sparse_vs_rtdl": 16.518757538367677,
+        "hybrid_vs_cpu_openmp_sparse": 0.025040138914072203,
+        "hybrid_vs_cuda_sparse": 0.007846845823222497,
+        "hybrid_vs_previous_rtdl": 0.12962014359476554,
+        "rtdl_vs_cpu_openmp_sparse": 0.19318092249886537,
+        "rtdl_vs_cuda_sparse": 0.060537240629467845
+      },
+      "value_count": 16384
+    },
+    {
+      "block_size": 512,
+      "cpu_openmp_sparse": {
+        "build_ms": 0.087693,
+        "exact_mismatches": 0,
+        "matches_exact_scan": true,
+        "query_median_ms": 0.296594,
+        "query_runs_ms": [
+          0.303159,
+          0.303269,
+          0.287869,
+          0.296879,
+          0.300769,
+          0.290788,
+          0.296649,
+          0.296539,
+          0.292839,
+          0.288408,
+          0.29698,
+          0.293768
+        ],
+        "threads": 16
+      },
+      "cuda_sparse_query": {
+        "matches_cpu_openmp_sparse": true,
+        "query_median_ms": 0.047888,
+        "query_runs_ms": [
+          0.051424,
+          0.047584,
+          0.047936,
+          0.04848,
+          0.048512,
+          0.048736,
+          0.048704,
+          0.047808,
+          0.04784,
+          0.047456,
+          0.047776,
+          0.04784
+        ],
+        "uses_cpu_built_sparse_table": true
+      },
+      "dataset": "repeated",
+      "query_count": 8000,
+      "rtdl": {
+        "combined_scene": true,
+        "matches_cpu_reference": true,
+        "mode": "paper_rt_prepared_reuse",
+        "prepare_ms": 491.5685059968382,
+        "query_batch_prepare_ms": 180.52077700849622,
+        "query_median_ms": 0.8527904865331948,
+        "query_runs_ms": [
+          0.9579280158504844,
+          0.8661459432914853,
+          0.8591460064053535,
+          0.8528759935870767,
+          0.856266007758677,
+          0.8432749891653657,
+          0.8474659407511353,
+          0.8476050570607185,
+          0.8560559945181012,
+          0.8527049794793129,
+          0.8372449083253741,
+          0.8458960801362991
+        ],
+        "row_format": "native_grouped_argmin"
+      },
+      "rtdl_paper_hybrid": {
+        "hierarchy": {
+          "level_count": 3,
+          "level_sizes": [
+            65536,
+            2048,
+            64
+          ],
+          "paper_contract": "GPU-RMQ-style hierarchy: each level stores minima over fixed-size groups from the previous level; query scheduling scans edge fragments at lower levels and uses RTDL for the coarsest fully contained range.",
+          "reduction_factor": 32,
+          "scan_threshold": 64,
+          "top_group_span": 1024,
+          "top_level": 2
+        },
+        "matches_cpu_reference": true,
+        "mode": "paper_hybrid_rtdl_partner",
+        "partner_candidate_count": 30733,
+        "partner_mode": "numpy_level_sparse_table_batch_prepared",
+        "prepare_ms": 55.70539506152272,
+        "query_batch_prepare_ms": 29.77808006107807,
+        "query_median_ms": 7.484637957531959,
+        "query_runs_ms": [
+          6.87650591135025,
+          6.805013050325215,
+          6.79459294769913,
+          6.811674102209508,
+          7.191574899479747,
+          7.482082932256162,
+          7.4871929828077555,
+          7.706079981289804,
+          7.729830918833613,
+          7.712200982496142,
+          7.703409995883703,
+          7.699000998400152
+        ],
+        "rt_query_count": 7815,
+        "rt_used": true
+      },
+      "seed": 123,
+      "speedups_query_median": {
+        "cuda_sparse_vs_hybrid": 156.29464495347392,
+        "cuda_sparse_vs_rtdl": 17.808020517315295,
+        "hybrid_vs_cpu_openmp_sparse": 0.03962703362312012,
+        "hybrid_vs_cuda_sparse": 0.006398171865054506,
+        "hybrid_vs_previous_rtdl": 0.1139387758462001,
+        "rtdl_vs_cpu_openmp_sparse": 0.347792341358929,
+        "rtdl_vs_cuda_sparse": 0.056154472588779245
+      },
+      "value_count": 65536
+    }
+  ]
+}

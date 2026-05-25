@@ -1,6 +1,6 @@
 # RTDL Backend Maturity
 
-Status: current v2.0 release backend maturity guide.
+Status: current v2.3 release backend maturity guide.
 
 This page separates three claims that are easy to mix up:
 
@@ -18,14 +18,14 @@ machine-readable feature source is `rtdsl.engine_feature_support_matrix()`.
 
 ## Current Summary
 
-| Backend | v2.0 pre-release position | Public claim boundary |
+| Backend | v2.x release position | Public claim boundary |
 | --- | --- | --- |
 | CPU reference | Correctness oracle | Useful for parity and debugging, not a speed backend. |
 | Embree | Mature CPU RT backend | The default CPU acceleration baseline for all-thread local testing. |
 | OptiX | Primary NVIDIA RT backend | Supports RT-core-facing evidence only for reviewed bounded paths on RTX hardware. |
 | Vulkan | Proof/portability backend | Preserved support surface; not the main v2.0 performance target. |
 | HIPRT | Proof backend | Preserved support surface; no AMD performance claim without AMD evidence. |
-| Apple RT | Proof/native-assisted backend | Preserved support surface; not a v2.0 release performance target. |
+| Apple RT | Proof/native-assisted backend | Preserved support surface; not a v2.3 release performance target. |
 | PyTorch partner | Reference partner direction | Current v2.0 partner model for tensor-side work where PyTorch can express it. |
 | CuPy partner | Conformance and GPU escape-hatch partner | Current v2.0 partner model for device arrays and explicit user kernels where needed. |
 
@@ -68,4 +68,5 @@ returns candidates or witnesses.
 - [Current Support Matrix](current_main_support_matrix.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Performance Model](performance_model.md)
+- [v2.3 Release Package](release_reports/v2_3/README.md)
 - [v2.0 Release Package](release_reports/v2_0/README.md)

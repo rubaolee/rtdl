@@ -46,7 +46,38 @@ from .reference import Triangle
 from .reference import Triangle3D
 
 
-def _identity_cache_token(geometry_name: str, payload) -> tuple[object, ...] | None:
+class _PayloadIdentityCacheToken:
+    """Hashable identity token that keeps the referenced payload alive.
+
+    Backend prepared-execution caches use identity tokens for immutable tuple
+    payloads.  Storing only ``id(payload)`` is unsafe because Python can reuse
+    object ids after a temporary tuple is freed, causing stale prepared inputs
+    to be reused for a different call.  This token owns the tuple reference, so
+    an id cannot be recycled while the cache entry exists.
+    """
+
+    __slots__ = ("geometry_name", "payload", "payload_id", "length")
+
+    def __init__(self, geometry_name: str, payload: tuple[object, ...]) -> None:
+        self.geometry_name = geometry_name
+        self.payload = payload
+        self.payload_id = id(payload)
+        self.length = len(payload)
+
+    def __hash__(self) -> int:
+        return hash((self.geometry_name, self.payload_id, self.length))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, _PayloadIdentityCacheToken):
+            return False
+        return (
+            self.geometry_name == other.geometry_name
+            and self.length == other.length
+            and self.payload is other.payload
+        )
+
+
+def _identity_cache_token(geometry_name: str, payload) -> _PayloadIdentityCacheToken | None:
     if not isinstance(payload, tuple):
         return None
 
@@ -62,7 +93,7 @@ def _identity_cache_token(geometry_name: str, payload) -> tuple[object, ...] | N
 
     if any(not isinstance(item, expected_type) for item in payload):
         return None
-    return ("identity", geometry_name, id(payload), len(payload))
+    return _PayloadIdentityCacheToken(geometry_name, payload)
 
 
 def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:

@@ -1,0 +1,24 @@
+{
+  "methods": [
+    "postgres"
+  ],
+  "repeats": 1,
+  "results": {
+    "com_dblp": {
+      "expected_triangles": 2224385,
+      "input_edges": 1049866,
+      "input_file": "build/goal2593_snap_edges/com-dblp.edge",
+      "methods": {
+        "postgres": {
+          "completed_measured_runs": 0,
+          "elapsed_ms": 120102.48793661594,
+          "error": "Command '['/root/rtdl_cupy_venv/bin/python', '/root/rtdl_python_only/scripts/goal2591_rt_graph_postgres_baseline.py', '--input', 'com_dblp', 'build/goal2593_snap_edges/com-dblp.edge', '--tmp-dir', '/tmp']' timed out after 120 seconds",
+          "error_type": "TimeoutExpired",
+          "runs": [],
+          "status": "failed"
+        }
+      }
+    }
+  },
+  "warmup": 0
+}

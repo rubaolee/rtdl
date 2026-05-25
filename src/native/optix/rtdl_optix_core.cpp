@@ -212,6 +212,141 @@ static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
                        std::istreambuf_iterator<char>());
 }
 
+static std::string default_cuda_cubin_arch()
+{
+    if (const char* arch = std::getenv("RTDL_OPTIX_CUBIN_ARCH"); arch && arch[0] != '\0')
+        return arch;
+    if (const char* arch = std::getenv("RTDL_OPTIX_PTX_ARCH"); arch && arch[0] != '\0') {
+        std::string value(arch);
+        if (value.rfind("compute_", 0) == 0)
+            return "sm_" + value.substr(std::strlen("compute_"));
+        return value;
+    }
+    CU_CHECK(cuInit(0));
+    CUdevice device = 0;
+    CU_CHECK(cuDeviceGet(&device, 0));
+    int major = 0;
+    int minor = 0;
+    CU_CHECK(cuDeviceGetAttribute(&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, device));
+    CU_CHECK(cuDeviceGetAttribute(&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, device));
+    return "sm_" + std::to_string(major) + std::to_string(minor);
+}
+
+static std::string compile_to_cubin_with_nvcc(const char* cuda_src,
+                                              const char* name,
+                                              const std::vector<std::string>& include_opts,
+                                              const std::vector<const char*>& extra_opts)
+{
+    namespace fs = std::filesystem;
+    char dir_template[] = "/tmp/rtdl-optix-cubin-XXXXXX";
+    char* tmp_dir = mkdtemp(dir_template);
+    if (!tmp_dir) {
+        throw std::runtime_error("failed to create temporary directory for nvcc CUBIN compilation");
+    }
+    fs::path tmp_root(tmp_dir);
+    struct TempDirCleanup {
+        fs::path path;
+        ~TempDirCleanup() {
+            std::error_code ignored;
+            fs::remove_all(path, ignored);
+        }
+    } cleanup{tmp_root};
+
+    fs::path src_path = tmp_root / name;
+    fs::path cubin_path = src_path;
+    cubin_path += ".cubin";
+    fs::path log_path = src_path;
+    log_path += ".log";
+    {
+        std::ofstream src_file(src_path, std::ios::binary);
+        if (!src_file) {
+            throw std::runtime_error("failed to write temporary CUDA source for nvcc CUBIN compilation");
+        }
+        src_file.write(cuda_src, static_cast<std::streamsize>(std::strlen(cuda_src)));
+    }
+
+    std::string nvcc = std::getenv("RTDL_NVCC") ? std::getenv("RTDL_NVCC") : "/usr/bin/nvcc";
+    if (!std::getenv("RTDL_NVCC")) {
+        std::error_code ignored;
+        if (!std::filesystem::exists(nvcc, ignored)
+            && std::filesystem::exists("/usr/local/cuda/bin/nvcc", ignored)) {
+            nvcc = "/usr/local/cuda/bin/nvcc";
+        }
+    }
+    std::string arch = "-arch=" + default_cuda_cubin_arch();
+    std::vector<std::string> argv_storage = {
+        nvcc,
+        "-cubin",
+        "--std=c++14",
+        "-allow-unsupported-compiler",
+        "-O3",
+        arch,
+    };
+    for (const std::string& include_opt : include_opts) {
+        argv_storage.push_back(include_opt);
+    }
+    std::string ccbin;
+    if (const char* configured_ccbin = std::getenv("RTDL_NVCC_CCBIN")) {
+        ccbin = configured_ccbin;
+    } else {
+        std::error_code ignored;
+        if (std::filesystem::exists("/usr/bin/g++-12", ignored)) {
+            ccbin = "/usr/bin/g++-12";
+        }
+    }
+    if (!ccbin.empty()) {
+        argv_storage.push_back("-ccbin");
+        argv_storage.push_back(ccbin);
+    }
+    for (const char* opt : extra_opts) {
+        argv_storage.push_back(opt);
+    }
+    argv_storage.push_back(src_path.string());
+    argv_storage.push_back("-o");
+    argv_storage.push_back(cubin_path.string());
+
+    std::vector<char*> argv;
+    argv.reserve(argv_storage.size() + 1);
+    for (std::string& arg : argv_storage) {
+        argv.push_back(arg.data());
+    }
+    argv.push_back(nullptr);
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        throw std::runtime_error("failed to fork nvcc CUBIN compilation process");
+    }
+    if (pid == 0) {
+        FILE* log_file = std::fopen(log_path.c_str(), "wb");
+        if (!log_file) _exit(127);
+        int log_fd = fileno(log_file);
+        if (dup2(log_fd, STDOUT_FILENO) < 0 || dup2(log_fd, STDERR_FILENO) < 0) {
+            std::fclose(log_file);
+            _exit(127);
+        }
+        std::fclose(log_file);
+        execvp(nvcc.c_str(), argv.data());
+        _exit(127);
+    }
+
+    int status = 0;
+    if (waitpid(pid, &status, 0) < 0) {
+        throw std::runtime_error("failed to wait for nvcc CUBIN compilation process");
+    }
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+        std::ifstream log_file(log_path, std::ios::binary);
+        std::string log((std::istreambuf_iterator<char>(log_file)),
+                        std::istreambuf_iterator<char>());
+        throw std::runtime_error("nvcc CUBIN compile failed for " + std::string(name) + ":\n" + log);
+    }
+    std::ifstream cubin_file(cubin_path, std::ios::binary);
+    if (!cubin_file) {
+        throw std::runtime_error("nvcc CUBIN compile succeeded but CUBIN output was not found");
+    }
+    return std::string((std::istreambuf_iterator<char>(cubin_file)),
+                       std::istreambuf_iterator<char>());
+}
+
 static void append_include_arg(std::vector<std::string>& include_opts,
                                std::unordered_set<std::string>& seen,
                                const std::string& include_dir) {
@@ -222,6 +357,22 @@ static void append_include_arg(std::vector<std::string>& include_opts,
     if (seen.insert(include_arg).second) {
         include_opts.push_back(include_arg);
     }
+}
+
+static std::string compile_to_cubin(const char* cuda_src,
+                                    const char* name,
+                                    const std::vector<const char*>& extra_opts = {}) {
+#ifndef RTDL_OPTIX_INCLUDE_DIR
+#define RTDL_OPTIX_INCLUDE_DIR ""
+#endif
+#ifndef RTDL_CUDA_INCLUDE_DIR
+#define RTDL_CUDA_INCLUDE_DIR ""
+#endif
+    std::vector<std::string> nvcc_include_opts;
+    std::unordered_set<std::string> seen_nvcc_include_opts;
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_OPTIX_INCLUDE_DIR);
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_CUDA_INCLUDE_DIR);
+    return compile_to_cubin_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
 }
 
 std::string compile_to_ptx(const char* cuda_src,
@@ -1546,6 +1697,348 @@ extern "C" __global__ void __anyhit__rayhit3d_anyhit() {
     uint32_t count = optixGetPayload_1();
     optixSetPayload_1(count + 1u);
     optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kRayClosestHit3DKernelSrc = R"CUDA(
+#include <optix_device.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuRay3D {
+    float ox, oy, oz;
+    float dx, dy, dz;
+    float tmax;
+    uint32_t id;
+};
+
+struct GpuTriangle3D {
+    float x0, y0, z0;
+    float x1, y1, z1;
+    float x2, y2, z2;
+    uint32_t id;
+};
+
+struct RayClosestHit3DRecord {
+    uint32_t ray_id;
+    uint32_t triangle_id;
+    uint32_t has_hit;
+    float t;
+};
+
+struct RayClosestHit3DParams {
+    OptixTraversableHandle   traversable;
+    const GpuRay3D*          rays;
+    const GpuTriangle3D*     triangles;
+    RayClosestHit3DRecord*   output;
+    uint32_t                 ray_count;
+};
+
+extern "C" {
+__constant__ RayClosestHit3DParams params;
+}
+
+static __forceinline__ __device__ float ray_hits_triangle_3d(
+        float ox, float oy, float oz,
+        float dx, float dy, float dz,
+        float tmax,
+        float x0, float y0, float z0,
+        float x1, float y1, float z1,
+        float x2, float y2, float z2)
+{
+    const float edge1x = x1 - x0, edge1y = y1 - y0, edge1z = z1 - z0;
+    const float edge2x = x2 - x0, edge2y = y2 - y0, edge2z = z2 - z0;
+
+    const float pvx = dy * edge2z - dz * edge2y;
+    const float pvy = dz * edge2x - dx * edge2z;
+    const float pvz = dx * edge2y - dy * edge2x;
+
+    const float det = edge1x * pvx + edge1y * pvy + edge1z * pvz;
+    if (det > -1.0e-8f && det < 1.0e-8f) return -1.0f;
+    const float inv_det = 1.0f / det;
+
+    const float tvx = ox - x0, tvy = oy - y0, tvz = oz - z0;
+
+    const float u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det;
+    if (u < 0.0f || u > 1.0f) return -1.0f;
+
+    const float qvx = tvy * edge1z - tvz * edge1y;
+    const float qvy = tvz * edge1x - tvx * edge1z;
+    const float qvz = tvx * edge1y - tvy * edge1x;
+
+    const float v = (dx * qvx + dy * qvy + dz * qvz) * inv_det;
+    if (v < 0.0f || (u + v) > 1.0f) return -1.0f;
+
+    const float t = (edge2x * qvx + edge2y * qvy + edge2z * qvz) * inv_det;
+    if (t < 0.0f || t > tmax) return -1.0f;
+    return t;
+}
+
+extern "C" __global__ void __raygen__rayclosest3d_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.ray_count) return;
+    const GpuRay3D r = params.rays[idx];
+    params.output[idx] = {r.id, 0xffffffffu, 0u, 0.0f};
+    if ((r.dx == 0.0f && r.dy == 0.0f && r.dz == 0.0f) || !(r.tmax >= 0.0f)) {
+        return;
+    }
+    unsigned int p0 = idx;
+    optixTrace(params.traversable,
+               make_float3(r.ox, r.oy, r.oz),
+               make_float3(r.dx, r.dy, r.dz),
+               0.0f, r.tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_DISABLE_ANYHIT,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__rayclosest3d_miss() {}
+
+extern "C" __global__ void __intersection__rayclosest3d_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t ridx = optixGetPayload_0();
+    const GpuRay3D     r = params.rays[ridx];
+    const GpuTriangle3D t = params.triangles[prim];
+
+    const float hit_t = ray_hits_triangle_3d(
+            r.ox, r.oy, r.oz, r.dx, r.dy, r.dz, r.tmax,
+            t.x0, t.y0, t.z0, t.x1, t.y1, t.z1, t.x2, t.y2, t.z2);
+    if (hit_t < 0.0f) return;
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __closesthit__rayclosest3d_closesthit() {
+    const uint32_t ridx = optixGetPayload_0();
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const GpuRay3D r = params.rays[ridx];
+    const GpuTriangle3D t = params.triangles[prim];
+    params.output[ridx] = {r.id, t.id, 1u, optixGetRayTmax()};
+}
+)CUDA";
+
+static const char* kRayClosestHitGroupedArgminKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct RayClosestHit3DRecord {
+    uint32_t ray_id;
+    uint32_t triangle_id;
+    uint32_t has_hit;
+    float t;
+};
+
+static __forceinline__ __device__ unsigned long long encode_ordered_double(double value)
+{
+    const double ordered_value = (value == 0.0) ? 0.0 : value;
+    const unsigned long long bits = __double_as_longlong(ordered_value);
+    return (bits & 0x8000000000000000ULL)
+        ? ~bits
+        : (bits ^ 0x8000000000000000ULL);
+}
+
+static __forceinline__ __device__ double decode_ordered_double(unsigned long long key)
+{
+    const unsigned long long bits = (key & 0x8000000000000000ULL)
+        ? (key ^ 0x8000000000000000ULL)
+        : ~key;
+    return __longlong_as_double(bits);
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_init(
+        unsigned long long* group_best_keys,
+        uint8_t* group_has_value,
+        uint32_t* group_index,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= group_count) return;
+    group_best_keys[idx] = 0xffffffffffffffffULL;
+    group_has_value[idx] = 0u;
+    group_index[idx] = 0xffffffffu;
+    group_value[idx] = 0.0;
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_min_key(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* ray_group_ids,
+        uint32_t ray_group_id_count,
+        const double* candidate_values,
+        uint32_t candidate_count,
+        unsigned long long* group_best_keys,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.ray_id >= ray_group_id_count || row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = ray_group_ids[row.ray_id];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    atomicMin(&group_best_keys[group_id], encode_ordered_double(value));
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_scatter_unique(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* ray_group_ids,
+        uint32_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        uint32_t candidate_count,
+        uint8_t* group_has_value,
+        uint32_t* group_index,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.ray_id >= ray_group_id_count || row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = ray_group_ids[row.ray_id];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    group_has_value[group_id] = 1u;
+    group_index[group_id] = candidate_indices[row.triangle_id];
+    group_value[group_id] = value;
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_min_index(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* ray_group_ids,
+        uint32_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        uint32_t candidate_count,
+        const unsigned long long* group_best_keys,
+        uint32_t* group_index,
+        uint8_t* group_has_value,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.ray_id >= ray_group_id_count || row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = ray_group_ids[row.ray_id];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    const unsigned long long key = encode_ordered_double(value);
+    if (key == group_best_keys[group_id]) {
+        group_has_value[group_id] = 1u;
+        group_value[group_id] = value;
+        atomicMin(&group_index[group_id], candidate_indices[row.triangle_id]);
+    }
+}
+
+extern "C" __global__ void grouped_candidate_argmin_min_key(
+        const uint32_t* candidate_group_ids,
+        const double* candidate_values,
+        uint32_t candidate_count,
+        unsigned long long* group_best_keys,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= candidate_count) return;
+    const uint32_t group_id = candidate_group_ids[idx];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[idx];
+    if (isnan(value)) return;
+    atomicMin(&group_best_keys[group_id], encode_ordered_double(value));
+}
+
+extern "C" __global__ void grouped_candidate_argmin_min_index(
+        const uint32_t* candidate_group_ids,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        uint32_t candidate_count,
+        const unsigned long long* group_best_keys,
+        uint32_t* group_index,
+        uint8_t* group_has_value,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= candidate_count) return;
+    const uint32_t group_id = candidate_group_ids[idx];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[idx];
+    if (isnan(value)) return;
+    const unsigned long long key = encode_ordered_double(value);
+    if (key == group_best_keys[group_id]) {
+        group_has_value[group_id] = 1u;
+        group_value[group_id] = value;
+        atomicMin(&group_index[group_id], candidate_indices[idx]);
+    }
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_materialize(
+        const unsigned long long* group_best_keys,
+        uint8_t* group_has_value,
+        const uint32_t* group_index,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= group_count) return;
+    if (group_best_keys[idx] == 0xffffffffffffffffULL || group_index[idx] == 0xffffffffu)
+        return;
+    group_has_value[idx] = 1u;
+    group_value[idx] = decode_ordered_double(group_best_keys[idx]);
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_merge_two(
+        const uint8_t* group_has_value_a,
+        const uint32_t* group_index_a,
+        const double* group_value_a,
+        const uint8_t* group_has_value_b,
+        const uint32_t* group_index_b,
+        const double* group_value_b,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= group_count) return;
+
+    const bool has_a = group_has_value_a[idx] != 0u;
+    const bool has_b = group_has_value_b[idx] != 0u;
+    if (!has_a && !has_b) {
+        group_has_value_out[idx] = 0u;
+        group_index_out[idx] = 0xffffffffu;
+        group_value_out[idx] = 0.0;
+        return;
+    }
+
+    bool take_a = has_a;
+    if (has_a && has_b) {
+        const double value_a = group_value_a[idx];
+        const double value_b = group_value_b[idx];
+        const uint32_t index_a = group_index_a[idx];
+        const uint32_t index_b = group_index_b[idx];
+        take_a = (value_a < value_b) || (value_a == value_b && index_a <= index_b);
+    } else if (!has_a) {
+        take_a = false;
+    }
+
+    group_has_value_out[idx] = 1u;
+    if (take_a) {
+        group_index_out[idx] = group_index_a[idx];
+        group_value_out[idx] = group_value_a[idx];
+    } else {
+        group_index_out[idx] = group_index_b[idx];
+        group_value_out[idx] = group_value_b[idx];
+    }
 }
 )CUDA";
 
@@ -5389,6 +5882,108 @@ extern "C" __global__ void pack_triangle2d_device_columns(
 }
 )CUDA";
 
+static const char* kPackTriangle3DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct GpuTriangle3DHost {
+    float x0, y0, z0, x1, y1, z1, x2, y2, z2;
+    uint32_t id;
+};
+
+struct RtdlDeviceAabb {
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+};
+
+extern "C" __global__ void pack_triangle3d_device_columns(
+        const uint32_t* ids,
+        const double* x0,
+        const double* y0,
+        const double* z0,
+        const double* x1,
+        const double* y1,
+        const double* z1,
+        const double* x2,
+        const double* y2,
+        const double* z2,
+        GpuTriangle3DHost* triangles,
+        RtdlDeviceAabb* aabbs,
+        uint32_t triangle_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= triangle_count) return;
+    GpuTriangle3DHost tri;
+    tri.x0 = static_cast<float>(x0[idx]);
+    tri.y0 = static_cast<float>(y0[idx]);
+    tri.z0 = static_cast<float>(z0[idx]);
+    tri.x1 = static_cast<float>(x1[idx]);
+    tri.y1 = static_cast<float>(y1[idx]);
+    tri.z1 = static_cast<float>(z1[idx]);
+    tri.x2 = static_cast<float>(x2[idx]);
+    tri.y2 = static_cast<float>(y2[idx]);
+    tri.z2 = static_cast<float>(z2[idx]);
+    tri.id = ids[idx];
+    triangles[idx] = tri;
+
+    RtdlDeviceAabb aabb;
+    aabb.minX = fminf(fminf(tri.x0, tri.x1), tri.x2) - 1.0e-3f;
+    aabb.minY = fminf(fminf(tri.y0, tri.y1), tri.y2) - 1.0e-3f;
+    aabb.minZ = fminf(fminf(tri.z0, tri.z1), tri.z2) - 1.0e-3f;
+    aabb.maxX = fmaxf(fmaxf(tri.x0, tri.x1), tri.x2) + 1.0e-3f;
+    aabb.maxY = fmaxf(fmaxf(tri.y0, tri.y1), tri.y2) + 1.0e-3f;
+    aabb.maxZ = fmaxf(fmaxf(tri.z0, tri.z1), tri.z2) + 1.0e-3f;
+    aabbs[idx] = aabb;
+}
+)CUDA";
+
+static const char* kPackRay3DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct GpuRay3DHost {
+    float ox, oy, oz, dx, dy, dz, tmax;
+    uint32_t id;
+};
+
+extern "C" __global__ void pack_ray3d_device_columns(
+        const uint32_t* ids,
+        const double* ox,
+        const double* oy,
+        const double* oz,
+        const double* dx,
+        const double* dy,
+        const double* dz,
+        const double* tmax,
+        GpuRay3DHost* rays,
+        uint32_t ray_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const float fdx = static_cast<float>(dx[idx]);
+    const float fdy = static_cast<float>(dy[idx]);
+    const float fdz = static_cast<float>(dz[idx]);
+    const float len = sqrtf(fdx * fdx + fdy * fdy + fdz * fdz);
+    GpuRay3DHost ray;
+    ray.ox = static_cast<float>(ox[idx]);
+    ray.oy = static_cast<float>(oy[idx]);
+    ray.oz = static_cast<float>(oz[idx]);
+    if (len > 1.0e-10f) {
+        ray.dx = fdx / len;
+        ray.dy = fdy / len;
+        ray.dz = fdz / len;
+        ray.tmax = static_cast<float>(tmax[idx]) * len;
+    } else {
+        ray.dx = 0.0f;
+        ray.dy = 0.0f;
+        ray.dz = 0.0f;
+        ray.tmax = 0.0f;
+    }
+    ray.id = ids[idx];
+    rays[idx] = ray;
+}
+)CUDA";
+
 // ---------- Columnar predicate-scan kernel ----------------------------------
 
 static const char* kColumnarPredicateScanKernelSrc = R"CUDA(
@@ -5746,6 +6341,11 @@ struct RayHitCount3DPipeline {
     std::once_flag   init;
 };
 
+struct RayClosestHit3DPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
 struct ColumnarPredicateScanPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag init;
@@ -5774,14 +6374,31 @@ struct KnnCuFunction {
     std::once_flag init;
 };
 
+struct ClosestHitGroupedArgminCuFunctions {
+    CUmodule module = nullptr;
+    CUfunction init_fn = nullptr;
+    CUfunction min_key_fn = nullptr;
+    CUfunction scatter_unique_fn = nullptr;
+    CUfunction min_index_fn = nullptr;
+    CUfunction materialize_fn = nullptr;
+    CUfunction merge_two_fn = nullptr;
+    CUfunction candidate_min_key_fn = nullptr;
+    CUfunction candidate_min_index_fn = nullptr;
+    std::once_flag init;
+};
+
 static SegmentPairIntersectionPipeline         g_segment_pair_intersection;
 static SegmentFirstHitPipeline                 g_segment_first_hit;
 static PipPipeline         g_pip;
 static ShapePairRelationPipeline     g_shape_pair_relation;
 static RayHitCountPipeline  g_rayhit;
 static RayHitCount3DPipeline g_rayhit3d;
+static RayClosestHit3DPipeline g_rayclosest3d;
+static ClosestHitGroupedArgminCuFunctions g_rayclosest3d_grouped_argmin;
+static RayAnyHitPipeline    g_rayhit3d_sum;
 static RayAnyHitPipeline    g_rayanyhit;
 static RayAnyHitPipeline    g_rayanyhit3d;
+static RayAnyHitPipeline    g_rayanyhit_weighted_sum3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
 static RayAnyHitPipeline    g_aabb_index_count;
 static RayAnyHitPipeline    g_rayanyhit_count_device_ray_columns;
@@ -5820,6 +6437,8 @@ static FrnCuFunction      g_frn3d_grid_ranked_summary;
 static FrnCuFunction      g_frn3d_grid_compact;
 static KnnCuFunction      g_partner_ray2d_pack;
 static KnnCuFunction      g_partner_triangle2d_pack;
+static KnnCuFunction      g_partner_ray3d_pack;
+static KnnCuFunction      g_partner_triangle3d_pack;
 static KnnCuFunction      g_partner_point2d_aabb_pack;
 static KnnCuFunction      g_knn;
 static KnnCuFunction      g_knn3d;
@@ -5871,6 +6490,7 @@ struct GpuPipRecord  { uint32_t point_id, polygon_id, contains; };
 struct GpuShapePairRelationFlags { uint32_t requires_segment_intersection, requires_point_containment; };
 struct GpuRayHitRecord { uint32_t ray_id, hit_count; };
 struct GpuRayAnyHitRecord { uint32_t ray_id, any_hit; };
+struct GpuRayClosestHitRecord { uint32_t ray_id, triangle_id, has_hit; float t; };
 struct GpuFixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };
 struct GpuSegPolyRecord { uint32_t segment_id, hit_count; };
 struct GpuPnsRecord     { uint32_t point_id, segment_id; float distance; };

@@ -8,7 +8,7 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "examples" / "rtdl_ann_candidate_app.py"
+EXAMPLE = ROOT / "examples" / "v2_0" / "apps" / "ml" / "rtdl_ann_candidate_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal1983_exact_ann_candidate_quality_partner_reference_2026-05-14.md"
 POD_ARTIFACT = ROOT / "docs" / "reports" / "goal1983_pod_exact_ann_candidate_quality_cupy_perf.json"
 PREFLIGHT = ROOT / "scripts" / "goal1908_v2_local_preflight.py"

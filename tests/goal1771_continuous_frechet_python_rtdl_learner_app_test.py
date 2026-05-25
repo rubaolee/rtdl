@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "examples" / "rtdl_continuous_frechet_distance_app.py"
+EXAMPLE = ROOT / "examples" / "v2_0" / "apps" / "trajectory" / "rtdl_continuous_frechet_distance_app.py"
 
 
 def run_example(*args: str) -> dict[str, object]:

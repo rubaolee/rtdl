@@ -1,0 +1,574 @@
+{
+  "methods": [
+    "rtdl_2a1",
+    "rtdl_1a2",
+    "author_rt_tc",
+    "author_bs_tc",
+    "cugraph"
+  ],
+  "repeats": 3,
+  "results": {
+    "cit_patents": {
+      "expected_triangles": 7515023,
+      "input_edges": 16518948,
+      "input_file": "build/goal2593_snap_edges/cit-Patents.edge",
+      "methods": {
+        "author_bs_tc": {
+          "elapsed_ms": 17539.765052497387,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_counting_ms": 2.06464,
+          "median_csr_ms": 59.743449999999996,
+          "median_gpu_preprocessing_ms": 4142.709732,
+          "median_pipeline_excluding_file_read_ms": 5252.952821999999,
+          "median_subprocess_wall_ms": 5915.217228233814,
+          "median_tc_preprocessing_ms": 1048.435,
+          "median_triangle_count": 7515023.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "counting_ms": 2.06608,
+              "csr_ms": 57.656,
+              "gpu_preprocessing_ms": 4206.752316,
+              "pipeline_excluding_file_read_ms": 5321.604396,
+              "subprocess_wall_ms": 5969.842903316021,
+              "tc_preprocessing_ms": 1055.13,
+              "triangle_count": 7515023
+            },
+            {
+              "counting_ms": 2.0632,
+              "csr_ms": 61.8309,
+              "gpu_preprocessing_ms": 4078.667148,
+              "pipeline_excluding_file_read_ms": 5184.301248,
+              "subprocess_wall_ms": 5860.5915531516075,
+              "tc_preprocessing_ms": 1041.74,
+              "triangle_count": 7515023
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "author_rt_tc": {
+          "elapsed_ms": 19698.404856026173,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_bvh_build_ms": 0.13494099999999998,
+          "median_compute_rays_ms": 4075.65,
+          "median_convert_graph_to_rt_ms": 400.44849999999997,
+          "median_counting_ms": 12.4573,
+          "median_csr_ms": 69.87715,
+          "median_pipeline_excluding_file_read_ms": 5487.187391,
+          "median_subprocess_wall_ms": 6551.101814955473,
+          "median_tc_preprocessing_ms": 928.6195,
+          "median_triangle_count": 7515023.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "bvh_build_ms": 0.113921,
+              "compute_rays_ms": 4087.96,
+              "convert_graph_to_rt_ms": 404.959,
+              "counting_ms": 12.4715,
+              "csr_ms": 69.5329,
+              "pipeline_excluding_file_read_ms": 5549.843321,
+              "subprocess_wall_ms": 6663.571439683437,
+              "tc_preprocessing_ms": 974.806,
+              "triangle_count": 7515023
+            },
+            {
+              "bvh_build_ms": 0.155961,
+              "compute_rays_ms": 4063.34,
+              "convert_graph_to_rt_ms": 395.938,
+              "counting_ms": 12.4431,
+              "csr_ms": 70.2214,
+              "pipeline_excluding_file_read_ms": 5424.5314610000005,
+              "subprocess_wall_ms": 6438.6321902275085,
+              "tc_preprocessing_ms": 882.433,
+              "triangle_count": 7515023
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "cugraph": {
+          "elapsed_ms": 1636.6059184074402,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_cudf_dataframe_ms": 38.79715874791145,
+          "median_build_cugraph_graph_ms": 217.64244139194489,
+          "median_input_edges": 16518948.0,
+          "median_load_np_ms": 40.48939421772957,
+          "median_reduce_count_ms": 0.6834082305431366,
+          "median_total_ms": 528.4176357090473,
+          "median_triangle_count": 7515023.0,
+          "median_triangle_count_ms": 230.80523312091827,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_cudf_dataframe_ms": 39.06290978193283,
+              "build_cugraph_graph_ms": 215.1244729757309,
+              "input_edges": 16518948,
+              "input_file": "build/goal2593_snap_edges/cit-Patents.edge",
+              "load_np_ms": 44.87612098455429,
+              "reduce_count_ms": 0.7829293608665466,
+              "total_ms": 534.5480889081955,
+              "triangle_count": 7515023,
+              "triangle_count_ms": 234.70165580511093
+            },
+            {
+              "build_cudf_dataframe_ms": 38.531407713890076,
+              "build_cugraph_graph_ms": 220.16040980815887,
+              "input_edges": 16518948,
+              "input_file": "build/goal2593_snap_edges/cit-Patents.edge",
+              "load_np_ms": 36.102667450904846,
+              "reduce_count_ms": 0.5838871002197266,
+              "total_ms": 522.2871825098991,
+              "triangle_count": 7515023,
+              "triangle_count_ms": 226.90881043672562
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "rtdl_1a2": {
+          "completed_measured_runs": 0,
+          "elapsed_ms": 2017.9169699549675,
+          "error": "CUDA driver error: out of memory",
+          "error_type": "RuntimeError",
+          "runs": [],
+          "status": "failed"
+        },
+        "rtdl_2a1": {
+          "elapsed_ms": 5467.308260500431,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_contract_ms": 1564.7592023015022,
+          "median_build_geometry_ms": 41.97259619832039,
+          "median_matches_oracle": 1.0,
+          "median_native_traversal_ms": 35.383544,
+          "median_oracle_triangle_count": 7515023.0,
+          "median_primitive_count": 15853615.0,
+          "median_ray_count": 69850749.0,
+          "median_run_backend_ms": 109.27491262555122,
+          "median_total_ms": 1716.0105854272842,
+          "median_triangle_count": 7515023.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_contract_ms": 1574.470914900303,
+              "build_geometry_ms": 44.961392879486084,
+              "matches_oracle": true,
+              "native_traversal_ms": 35.964233,
+              "oracle_triangle_count": 7515023,
+              "primitive_count": 15853615,
+              "ray_count": 69850749,
+              "run_backend_ms": 108.94176363945007,
+              "total_ms": 1728.3782288432121,
+              "triangle_count": 7515023
+            },
+            {
+              "build_contract_ms": 1555.0474897027016,
+              "build_geometry_ms": 38.983799517154694,
+              "matches_oracle": true,
+              "native_traversal_ms": 34.802855,
+              "oracle_triangle_count": 7515023,
+              "primitive_count": 15853615,
+              "ray_count": 69850749,
+              "run_backend_ms": 109.60806161165237,
+              "total_ms": 1703.6429420113564,
+              "triangle_count": 7515023
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        }
+      }
+    },
+    "com_youtube": {
+      "expected_triangles": 3056386,
+      "input_edges": 2987624,
+      "input_file": "build/goal2593_snap_edges/com-youtube.edge",
+      "methods": {
+        "author_bs_tc": {
+          "elapsed_ms": 7904.349483549595,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_counting_ms": 0.7081120000000001,
+          "median_csr_ms": 9.36779,
+          "median_gpu_preprocessing_ms": 1770.5458765,
+          "median_pipeline_excluding_file_read_ms": 2342.0937785,
+          "median_subprocess_wall_ms": 2606.841776520014,
+          "median_tc_preprocessing_ms": 561.472,
+          "median_triangle_count": 3056386.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "counting_ms": 0.811968,
+              "csr_ms": 9.44907,
+              "gpu_preprocessing_ms": 1741.67323,
+              "pipeline_excluding_file_read_ms": 2316.3262680000003,
+              "subprocess_wall_ms": 2560.2403208613396,
+              "tc_preprocessing_ms": 564.392,
+              "triangle_count": 3056386
+            },
+            {
+              "counting_ms": 0.604256,
+              "csr_ms": 9.28651,
+              "gpu_preprocessing_ms": 1799.418523,
+              "pipeline_excluding_file_read_ms": 2367.861289,
+              "subprocess_wall_ms": 2653.443232178688,
+              "tc_preprocessing_ms": 558.552,
+              "triangle_count": 3056386
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "author_rt_tc": {
+          "elapsed_ms": 8485.48036813736,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_bvh_build_ms": 0.26848150000000004,
+          "median_compute_rays_ms": 1812.865,
+          "median_convert_graph_to_rt_ms": 60.3059,
+          "median_counting_ms": 4.6630400000000005,
+          "median_csr_ms": 7.130515,
+          "median_pipeline_excluding_file_read_ms": 2253.2419364999996,
+          "median_subprocess_wall_ms": 2802.287470549345,
+          "median_tc_preprocessing_ms": 368.009,
+          "median_triangle_count": 3056386.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "bvh_build_ms": 0.332892,
+              "compute_rays_ms": 1831.32,
+              "convert_graph_to_rt_ms": 59.7325,
+              "counting_ms": 4.65834,
+              "csr_ms": 9.44398,
+              "pipeline_excluding_file_read_ms": 2272.3297119999997,
+              "subprocess_wall_ms": 2838.718481361866,
+              "tc_preprocessing_ms": 366.842,
+              "triangle_count": 3056386
+            },
+            {
+              "bvh_build_ms": 0.204071,
+              "compute_rays_ms": 1794.41,
+              "convert_graph_to_rt_ms": 60.8793,
+              "counting_ms": 4.66774,
+              "csr_ms": 4.81705,
+              "pipeline_excluding_file_read_ms": 2234.154161,
+              "subprocess_wall_ms": 2765.856459736824,
+              "tc_preprocessing_ms": 369.176,
+              "triangle_count": 3056386
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "cugraph": {
+          "elapsed_ms": 576.2954726815224,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_cudf_dataframe_ms": 6.599754095077515,
+          "median_build_cugraph_graph_ms": 63.27983736991882,
+          "median_input_edges": 2987624.0,
+          "median_load_np_ms": 8.498501032590866,
+          "median_reduce_count_ms": 0.6126165390014648,
+          "median_total_ms": 134.36777889728546,
+          "median_triangle_count": 3056386.0,
+          "median_triangle_count_ms": 55.37706986069679,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_cudf_dataframe_ms": 7.552549242973328,
+              "build_cugraph_graph_ms": 60.70107966661453,
+              "input_edges": 2987624,
+              "input_file": "build/goal2593_snap_edges/com-youtube.edge",
+              "load_np_ms": 13.105019927024841,
+              "reduce_count_ms": 0.6577000021934509,
+              "total_ms": 140.62124490737915,
+              "triangle_count": 3056386,
+              "triangle_count_ms": 58.604896068573
+            },
+            {
+              "build_cudf_dataframe_ms": 5.646958947181702,
+              "build_cugraph_graph_ms": 65.85859507322311,
+              "input_edges": 2987624,
+              "input_file": "build/goal2593_snap_edges/com-youtube.edge",
+              "load_np_ms": 3.891982138156891,
+              "reduce_count_ms": 0.5675330758094788,
+              "total_ms": 128.11431288719177,
+              "triangle_count": 3056386,
+              "triangle_count_ms": 52.14924365282059
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "rtdl_1a2": {
+          "elapsed_ms": 3592.880494892597,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_contract_ms": 631.6089630126953,
+          "median_build_geometry_ms": 151.02294832468033,
+          "median_matches_oracle": 1.0,
+          "median_native_traversal_ms": 4.3977225,
+          "median_oracle_triangle_count": 3056386.0,
+          "median_primitive_count": 42696923.0,
+          "median_ray_count": 2385085.0,
+          "median_run_backend_ms": 165.12317210435867,
+          "median_total_ms": 947.7593898773193,
+          "median_triangle_count": 3056386.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_contract_ms": 636.494018137455,
+              "build_geometry_ms": 151.73767507076263,
+              "matches_oracle": true,
+              "native_traversal_ms": 4.371452,
+              "oracle_triangle_count": 3056386,
+              "primitive_count": 42696923,
+              "ray_count": 2385085,
+              "run_backend_ms": 163.0970537662506,
+              "total_ms": 951.3329416513443,
+              "triangle_count": 3056386
+            },
+            {
+              "build_contract_ms": 626.7239078879356,
+              "build_geometry_ms": 150.30822157859802,
+              "matches_oracle": true,
+              "native_traversal_ms": 4.423993,
+              "oracle_triangle_count": 3056386,
+              "primitive_count": 42696923,
+              "ray_count": 2385085,
+              "run_backend_ms": 167.14929044246674,
+              "total_ms": 944.1858381032944,
+              "triangle_count": 3056386
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "rtdl_2a1": {
+          "elapsed_ms": 3420.82816362381,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_contract_ms": 722.3245464265347,
+          "median_build_geometry_ms": 20.884353667497635,
+          "median_matches_oracle": 1.0,
+          "median_native_traversal_ms": 9.202727,
+          "median_oracle_triangle_count": 3056386.0,
+          "median_primitive_count": 2385085.0,
+          "median_ray_count": 28167151.0,
+          "median_run_backend_ms": 30.639436095952988,
+          "median_total_ms": 773.8537564873695,
+          "median_triangle_count": 3056386.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_contract_ms": 643.9318284392357,
+              "build_geometry_ms": 17.503276467323303,
+              "matches_oracle": true,
+              "native_traversal_ms": 9.202177,
+              "oracle_triangle_count": 3056386,
+              "primitive_count": 2385085,
+              "ray_count": 28167151,
+              "run_backend_ms": 29.774285852909088,
+              "total_ms": 691.2172436714172,
+              "triangle_count": 3056386
+            },
+            {
+              "build_contract_ms": 800.7172644138336,
+              "build_geometry_ms": 24.265430867671967,
+              "matches_oracle": true,
+              "native_traversal_ms": 9.203277,
+              "oracle_triangle_count": 3056386,
+              "primitive_count": 2385085,
+              "ray_count": 28167151,
+              "run_backend_ms": 31.504586338996887,
+              "total_ms": 856.4902693033218,
+              "triangle_count": 3056386
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        }
+      }
+    },
+    "wiki_talk": {
+      "expected_triangles": 9203519,
+      "input_edges": 5021410,
+      "input_file": "build/goal2593_snap_edges/wiki-Talk.edge",
+      "methods": {
+        "author_bs_tc": {
+          "elapsed_ms": 25347.1617102623,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_counting_ms": 2.067408,
+          "median_csr_ms": 12.66755,
+          "median_gpu_preprocessing_ms": 7264.138827999999,
+          "median_pipeline_excluding_file_read_ms": 7866.748786,
+          "median_subprocess_wall_ms": 8415.037386119366,
+          "median_tc_preprocessing_ms": 587.875,
+          "median_triangle_count": 9203519.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "counting_ms": 2.041984,
+              "csr_ms": 12.0481,
+              "gpu_preprocessing_ms": 7170.489562,
+              "pipeline_excluding_file_read_ms": 7775.795646,
+              "subprocess_wall_ms": 8336.042702198029,
+              "tc_preprocessing_ms": 591.216,
+              "triangle_count": 9203519
+            },
+            {
+              "counting_ms": 2.092832,
+              "csr_ms": 13.287,
+              "gpu_preprocessing_ms": 7357.788094,
+              "pipeline_excluding_file_read_ms": 7957.701926,
+              "subprocess_wall_ms": 8494.032070040703,
+              "tc_preprocessing_ms": 584.534,
+              "triangle_count": 9203519
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "author_rt_tc": {
+          "elapsed_ms": 25906.628161668777,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_bvh_build_ms": 0.13589099999999998,
+          "median_compute_rays_ms": 7273.355,
+          "median_convert_graph_to_rt_ms": 77.9479,
+          "median_counting_ms": 15.0177,
+          "median_csr_ms": 8.37361,
+          "median_pipeline_excluding_file_read_ms": 7871.0261009999995,
+          "median_subprocess_wall_ms": 8655.022460967302,
+          "median_tc_preprocessing_ms": 496.196,
+          "median_triangle_count": 9203519.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "bvh_build_ms": 0.1112,
+              "compute_rays_ms": 7329.15,
+              "convert_graph_to_rt_ms": 79.6879,
+              "counting_ms": 15.0229,
+              "csr_ms": 8.49633,
+              "pipeline_excluding_file_read_ms": 7937.46433,
+              "subprocess_wall_ms": 8668.020270764828,
+              "tc_preprocessing_ms": 504.996,
+              "triangle_count": 9203519
+            },
+            {
+              "bvh_build_ms": 0.160582,
+              "compute_rays_ms": 7217.56,
+              "convert_graph_to_rt_ms": 76.2079,
+              "counting_ms": 15.0125,
+              "csr_ms": 8.25089,
+              "pipeline_excluding_file_read_ms": 7804.587872,
+              "subprocess_wall_ms": 8642.024651169777,
+              "tc_preprocessing_ms": 487.396,
+              "triangle_count": 9203519
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "cugraph": {
+          "elapsed_ms": 599.5243415236473,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_cudf_dataframe_ms": 9.030848741531372,
+          "median_build_cugraph_graph_ms": 94.6321040391922,
+          "median_input_edges": 5021410.0,
+          "median_load_np_ms": 13.258934020996094,
+          "median_reduce_count_ms": 0.6477423012256622,
+          "median_total_ms": 194.56206634640694,
+          "median_triangle_count": 9203519.0,
+          "median_triangle_count_ms": 76.99243724346161,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_cudf_dataframe_ms": 9.006544947624207,
+              "build_cugraph_graph_ms": 94.99230980873108,
+              "input_edges": 5021410,
+              "input_file": "build/goal2593_snap_edges/wiki-Talk.edge",
+              "load_np_ms": 12.790918350219727,
+              "reduce_count_ms": 0.6873980164527893,
+              "total_ms": 185.43556332588196,
+              "triangle_count": 9203519,
+              "triangle_count_ms": 67.95839220285416
+            },
+            {
+              "build_cudf_dataframe_ms": 9.055152535438538,
+              "build_cugraph_graph_ms": 94.27189826965332,
+              "input_edges": 5021410,
+              "input_file": "build/goal2593_snap_edges/wiki-Talk.edge",
+              "load_np_ms": 13.726949691772461,
+              "reduce_count_ms": 0.6080865859985352,
+              "total_ms": 203.68856936693192,
+              "triangle_count": 9203519,
+              "triangle_count_ms": 86.02648228406906
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "rtdl_1a2": {
+          "completed_measured_runs": 0,
+          "elapsed_ms": 2731.9710105657578,
+          "error": "CUDA driver error: out of memory",
+          "error_type": "RuntimeError",
+          "runs": [],
+          "status": "failed"
+        },
+        "rtdl_2a1": {
+          "elapsed_ms": 6640.046939253807,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_contract_ms": 2081.4867354929447,
+          "median_build_geometry_ms": 36.74229234457016,
+          "median_matches_oracle": 1.0,
+          "median_native_traversal_ms": 31.808958500000003,
+          "median_oracle_triangle_count": 9203519.0,
+          "median_primitive_count": 2910164.0,
+          "median_ray_count": 105038602.0,
+          "median_run_backend_ms": 72.12642580270767,
+          "median_total_ms": 2190.359655767679,
+          "median_triangle_count": 9203519.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_contract_ms": 2090.7431095838547,
+              "build_geometry_ms": 34.05900299549103,
+              "matches_oracle": true,
+              "native_traversal_ms": 31.915974,
+              "oracle_triangle_count": 9203519,
+              "primitive_count": 2910164,
+              "ray_count": 105038602,
+              "run_backend_ms": 71.28054648637772,
+              "total_ms": 2196.0874423384666,
+              "triangle_count": 9203519
+            },
+            {
+              "build_contract_ms": 2072.2303614020348,
+              "build_geometry_ms": 39.42558169364929,
+              "matches_oracle": true,
+              "native_traversal_ms": 31.701943000000004,
+              "oracle_triangle_count": 9203519,
+              "primitive_count": 2910164,
+              "ray_count": 105038602,
+              "run_backend_ms": 72.97230511903763,
+              "total_ms": 2184.631869196892,
+              "triangle_count": 9203519
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        }
+      }
+    }
+  },
+  "warmup": 1
+}

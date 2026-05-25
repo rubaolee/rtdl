@@ -6624,6 +6624,89 @@ struct PreparedRays2D {
     }
 };
 
+static void ensure_pack_triangle3d_device_columns_kernel()
+{
+    (void)get_optix_context();
+    std::call_once(g_partner_triangle3d_pack.init, [&]() {
+        const std::string ptx = compile_to_ptx(
+            kPackTriangle3DDeviceColumnsKernelSrc,
+            "partner_triangle3d_device_columns_pack_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_partner_triangle3d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_partner_triangle3d_pack.fn,
+            g_partner_triangle3d_pack.module,
+            "pack_triangle3d_device_columns"));
+    });
+}
+
+static void ensure_pack_ray3d_device_columns_kernel()
+{
+    (void)get_optix_context();
+    std::call_once(g_partner_ray3d_pack.init, [&]() {
+        const std::string ptx = compile_to_ptx(
+            kPackRay3DDeviceColumnsKernelSrc,
+            "partner_ray3d_device_columns_pack_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_partner_ray3d_pack.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_partner_ray3d_pack.fn,
+            g_partner_ray3d_pack.module,
+            "pack_ray3d_device_columns"));
+    });
+}
+
+static void pack_ray3d_device_columns_to_buffer(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_oz,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_dz,
+        const double* ray_tmax,
+        size_t ray_count,
+        CUdeviceptr d_rays)
+{
+    if (ray_count == 0) return;
+    if (!ray_ids || !ray_ox || !ray_oy || !ray_oz || !ray_dx || !ray_dy || !ray_dz || !ray_tmax)
+        throw std::runtime_error("partner device 3-D ray column pointers must not be null when ray_count is nonzero");
+    if (!d_rays)
+        throw std::runtime_error("destination 3-D ray device buffer must not be null");
+    if (ray_count > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("partner device 3-D ray column count exceeds uint32_t launch limit");
+
+    ensure_pack_ray3d_device_columns_kernel();
+
+    CUdeviceptr d_ray_ids = reinterpret_cast<CUdeviceptr>(ray_ids);
+    CUdeviceptr d_ray_ox = reinterpret_cast<CUdeviceptr>(ray_ox);
+    CUdeviceptr d_ray_oy = reinterpret_cast<CUdeviceptr>(ray_oy);
+    CUdeviceptr d_ray_oz = reinterpret_cast<CUdeviceptr>(ray_oz);
+    CUdeviceptr d_ray_dx = reinterpret_cast<CUdeviceptr>(ray_dx);
+    CUdeviceptr d_ray_dy = reinterpret_cast<CUdeviceptr>(ray_dy);
+    CUdeviceptr d_ray_dz = reinterpret_cast<CUdeviceptr>(ray_dz);
+    CUdeviceptr d_ray_tmax = reinterpret_cast<CUdeviceptr>(ray_tmax);
+    uint32_t rc = static_cast<uint32_t>(ray_count);
+    void* args[] = {
+        &d_ray_ids,
+        &d_ray_ox,
+        &d_ray_oy,
+        &d_ray_oz,
+        &d_ray_dx,
+        &d_ray_dy,
+        &d_ray_dz,
+        &d_ray_tmax,
+        &d_rays,
+        &rc,
+    };
+    const unsigned block = 256;
+    const unsigned grid = (rc + block - 1u) / block;
+    CU_CHECK(cuLaunchKernel(
+        g_partner_ray3d_pack.fn,
+        grid, 1, 1,
+        block, 1, 1,
+        0, nullptr, args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+}
+
 struct PreparedStaticTriangleScene3D {
     size_t triangle_count = 0;
     DevPtr d_triangles;
@@ -6672,6 +6755,203 @@ struct PreparedStaticTriangleScene3D {
                 gpu_tris[i].x2, gpu_tris[i].y2, gpu_tris[i].z2);
         }
         accel = build_custom_accel(get_optix_context(), aabbs);
+    }
+
+    PreparedStaticTriangleScene3D(
+            const uint32_t* triangle_ids,
+            const double* triangle_x0,
+            const double* triangle_y0,
+            const double* triangle_z0,
+            const double* triangle_x1,
+            const double* triangle_y1,
+            const double* triangle_z1,
+            const double* triangle_x2,
+            const double* triangle_y2,
+            const double* triangle_z2,
+            size_t count)
+        : triangle_count(count), d_triangles(sizeof(GpuTriangle3DHost) * count)
+    {
+        if (count == 0) return;
+        if (!triangle_ids || !triangle_x0 || !triangle_y0 || !triangle_z0
+                || !triangle_x1 || !triangle_y1 || !triangle_z1
+                || !triangle_x2 || !triangle_y2 || !triangle_z2)
+            throw std::runtime_error("partner device 3-D triangle column pointers must not be null when triangle_count is nonzero");
+        if (count > std::numeric_limits<uint32_t>::max())
+            throw std::runtime_error("partner device 3-D triangle column count exceeds uint32_t launch limit");
+
+        ensure_pack_triangle3d_device_columns_kernel();
+
+        DevPtr d_aabbs(sizeof(OptixAabb) * count);
+        CUdeviceptr d_triangle_ids = reinterpret_cast<CUdeviceptr>(triangle_ids);
+        CUdeviceptr d_triangle_x0 = reinterpret_cast<CUdeviceptr>(triangle_x0);
+        CUdeviceptr d_triangle_y0 = reinterpret_cast<CUdeviceptr>(triangle_y0);
+        CUdeviceptr d_triangle_z0 = reinterpret_cast<CUdeviceptr>(triangle_z0);
+        CUdeviceptr d_triangle_x1 = reinterpret_cast<CUdeviceptr>(triangle_x1);
+        CUdeviceptr d_triangle_y1 = reinterpret_cast<CUdeviceptr>(triangle_y1);
+        CUdeviceptr d_triangle_z1 = reinterpret_cast<CUdeviceptr>(triangle_z1);
+        CUdeviceptr d_triangle_x2 = reinterpret_cast<CUdeviceptr>(triangle_x2);
+        CUdeviceptr d_triangle_y2 = reinterpret_cast<CUdeviceptr>(triangle_y2);
+        CUdeviceptr d_triangle_z2 = reinterpret_cast<CUdeviceptr>(triangle_z2);
+        uint32_t tc = static_cast<uint32_t>(count);
+        void* args[] = {
+            &d_triangle_ids,
+            &d_triangle_x0,
+            &d_triangle_y0,
+            &d_triangle_z0,
+            &d_triangle_x1,
+            &d_triangle_y1,
+            &d_triangle_z1,
+            &d_triangle_x2,
+            &d_triangle_y2,
+            &d_triangle_z2,
+            &d_triangles.ptr,
+            &d_aabbs.ptr,
+            &tc,
+        };
+        const unsigned block = 256;
+        const unsigned grid = (tc + block - 1u) / block;
+        CU_CHECK(cuLaunchKernel(
+            g_partner_triangle3d_pack.fn,
+            grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+
+        accel = build_custom_accel_from_device_aabbs(get_optix_context(), d_aabbs.ptr, count);
+    }
+};
+
+static GpuRay3DHost pack_ray_3d_as_raw_gpu_ray(const RtdlRay3D& ray);
+
+struct PreparedRayBatch3D {
+    size_t ray_count = 0;
+    std::vector<uint32_t> ray_ids;
+    DevPtr d_rays;
+    DevPtr d_closest_hit_output;
+
+    explicit PreparedRayBatch3D(const RtdlRay3D* rays, size_t count)
+        : ray_count(count),
+          ray_ids(count),
+          d_rays(sizeof(GpuRay3DHost) * count),
+          d_closest_hit_output(sizeof(GpuRayClosestHitRecord) * count)
+    {
+        if (!rays && count != 0)
+            throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("ray_count exceeds uint32 launch limit");
+        if (count == 0)
+            return;
+
+        std::vector<GpuRay3DHost> gpu_rays(count);
+        for (size_t i = 0; i < count; ++i) {
+            ray_ids[i] = rays[i].id;
+            gpu_rays[i] = pack_ray_3d_as_raw_gpu_ray(rays[i]);
+        }
+        upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    }
+};
+
+struct PreparedClosestHitGroupedArgmin3D {
+    size_t ray_group_id_count = 0;
+    size_t candidate_count = 0;
+    size_t group_count = 0;
+    std::vector<uint32_t> ray_group_ids;
+    DevPtr d_ray_group_ids;
+    DevPtr d_candidate_values;
+    DevPtr d_candidate_indices;
+    DevPtr d_group_has_value;
+    DevPtr d_group_index;
+    DevPtr d_group_value;
+    DevPtr d_group_best_keys;
+
+    PreparedClosestHitGroupedArgmin3D(
+            const uint32_t* ray_group_ids_in,
+            size_t ray_group_id_count_in,
+            const double* candidate_values,
+            const uint32_t* candidate_indices,
+            size_t candidate_count_in,
+            size_t group_count_in)
+        : ray_group_id_count(ray_group_id_count_in),
+          candidate_count(candidate_count_in),
+          group_count(group_count_in),
+          ray_group_ids(ray_group_id_count_in),
+          d_ray_group_ids(sizeof(uint32_t) * ray_group_id_count_in),
+          d_candidate_values(sizeof(double) * candidate_count_in),
+          d_candidate_indices(sizeof(uint32_t) * candidate_count_in),
+          d_group_has_value(sizeof(uint8_t) * group_count_in),
+          d_group_index(sizeof(uint32_t) * group_count_in),
+          d_group_value(sizeof(double) * group_count_in),
+          d_group_best_keys(sizeof(unsigned long long) * group_count_in)
+    {
+        if (!ray_group_ids_in && ray_group_id_count_in != 0)
+            throw std::runtime_error("ray group-id map must not be null when nonempty");
+        if (!candidate_values && candidate_count_in != 0)
+            throw std::runtime_error("candidate values must not be null when candidate_count is nonzero");
+        if (!candidate_indices && candidate_count_in != 0)
+            throw std::runtime_error("candidate indices must not be null when candidate_count is nonzero");
+        if (ray_group_id_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("ray_group_id_count exceeds uint32 launch limit");
+        if (candidate_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("candidate_count exceeds uint32 launch limit");
+        if (group_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("group_count exceeds uint32 launch limit");
+
+        for (size_t i = 0; i < ray_group_id_count_in; ++i) {
+            if (ray_group_ids_in[i] >= group_count_in)
+                throw std::runtime_error("ray group id is outside the grouped argmin output range");
+            ray_group_ids[i] = ray_group_ids_in[i];
+        }
+        upload(d_ray_group_ids.ptr, ray_group_ids_in, ray_group_id_count_in);
+        upload(d_candidate_values.ptr, candidate_values, candidate_count_in);
+        upload(d_candidate_indices.ptr, candidate_indices, candidate_count_in);
+    }
+};
+
+struct PreparedGroupedCandidateArgmin {
+    size_t candidate_count = 0;
+    size_t group_count = 0;
+    DevPtr d_candidate_group_ids;
+    DevPtr d_candidate_values;
+    DevPtr d_candidate_indices;
+    DevPtr d_group_has_value;
+    DevPtr d_group_index;
+    DevPtr d_group_value;
+    DevPtr d_group_best_keys;
+
+    PreparedGroupedCandidateArgmin(
+            const uint32_t* candidate_group_ids,
+            const double* candidate_values,
+            const uint32_t* candidate_indices,
+            size_t candidate_count_in,
+            size_t group_count_in)
+        : candidate_count(candidate_count_in),
+          group_count(group_count_in),
+          d_candidate_group_ids(sizeof(uint32_t) * candidate_count_in),
+          d_candidate_values(sizeof(double) * candidate_count_in),
+          d_candidate_indices(sizeof(uint32_t) * candidate_count_in),
+          d_group_has_value(sizeof(uint8_t) * group_count_in),
+          d_group_index(sizeof(uint32_t) * group_count_in),
+          d_group_value(sizeof(double) * group_count_in),
+          d_group_best_keys(sizeof(unsigned long long) * group_count_in)
+    {
+        if (!candidate_group_ids && candidate_count_in != 0)
+            throw std::runtime_error("candidate group ids must not be null when candidate_count is nonzero");
+        if (!candidate_values && candidate_count_in != 0)
+            throw std::runtime_error("candidate values must not be null when candidate_count is nonzero");
+        if (!candidate_indices && candidate_count_in != 0)
+            throw std::runtime_error("candidate indices must not be null when candidate_count is nonzero");
+        if (candidate_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("candidate_count exceeds uint32 launch limit");
+        if (group_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("group_count exceeds uint32 launch limit");
+        for (size_t i = 0; i < candidate_count_in; ++i) {
+            if (candidate_group_ids[i] >= group_count_in)
+                throw std::runtime_error("candidate group id is outside the grouped argmin output range");
+        }
+
+        upload(d_candidate_group_ids.ptr, candidate_group_ids, candidate_count_in);
+        upload(d_candidate_values.ptr, candidate_values, candidate_count_in);
+        upload(d_candidate_indices.ptr, candidate_indices, candidate_count_in);
     }
 };
 
@@ -6737,6 +7017,64 @@ static GpuRay3DHost pack_segment_3d_as_gpu_ray(const RtdlSegment3D& segment)
         dx / len, dy / len, dz / len,
         len,
         segment.id
+    };
+}
+
+static GpuRay3DHost pack_ray_3d_as_gpu_ray(const RtdlRay3D& ray)
+{
+    const double values[7] = {
+        ray.ox, ray.oy, ray.oz,
+        ray.dx, ray.dy, ray.dz,
+        ray.tmax,
+    };
+    for (double value : values) {
+        if (!std::isfinite(value))
+            throw std::runtime_error("ray coordinates and tmax must be finite");
+    }
+    const float dx = static_cast<float>(ray.dx);
+    const float dy = static_cast<float>(ray.dy);
+    const float dz = static_cast<float>(ray.dz);
+    const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+    if (len > 1.0e-10f) {
+        return {
+            static_cast<float>(ray.ox),
+            static_cast<float>(ray.oy),
+            static_cast<float>(ray.oz),
+            dx / len, dy / len, dz / len,
+            static_cast<float>(ray.tmax) * len,
+            ray.id
+        };
+    }
+    return {
+        static_cast<float>(ray.ox),
+        static_cast<float>(ray.oy),
+        static_cast<float>(ray.oz),
+        0.0f, 0.0f, 0.0f,
+        0.0f,
+        ray.id
+    };
+}
+
+static GpuRay3DHost pack_ray_3d_as_raw_gpu_ray(const RtdlRay3D& ray)
+{
+    const double values[7] = {
+        ray.ox, ray.oy, ray.oz,
+        ray.dx, ray.dy, ray.dz,
+        ray.tmax,
+    };
+    for (double value : values) {
+        if (!std::isfinite(value))
+            throw std::runtime_error("ray coordinates and tmax must be finite");
+    }
+    return {
+        static_cast<float>(ray.ox),
+        static_cast<float>(ray.oy),
+        static_cast<float>(ray.oz),
+        static_cast<float>(ray.dx),
+        static_cast<float>(ray.dy),
+        static_cast<float>(ray.dz),
+        static_cast<float>(ray.tmax),
+        ray.id
     };
 }
 
@@ -8135,6 +8473,31 @@ struct RayHitCount3DLaunchParams {
     uint32_t                 ray_count;
 };
 
+struct RayClosestHit3DLaunchParams {
+    OptixTraversableHandle   traversable;
+    const GpuRay3DHost*      rays;
+    const GpuTriangle3DHost* triangles;
+    GpuRayClosestHitRecord*  output;
+    uint32_t                 ray_count;
+};
+
+struct RayHitCount3DSumLaunchParams {
+    OptixTraversableHandle   traversable;
+    const GpuRay3DHost*      rays;
+    const GpuTriangle3DHost* triangles;
+    unsigned long long*      hit_count_sum;
+    uint32_t                 ray_count;
+};
+
+struct RayAnyHitWeightedSum3DLaunchParams {
+    OptixTraversableHandle    traversable;
+    const GpuRay3DHost*       rays;
+    const GpuTriangle3DHost*  triangles;
+    const unsigned long long* ray_weights;
+    unsigned long long*       weighted_hit_sum;
+    uint32_t                  ray_count;
+};
+
 struct RayAnyHitGroupFlags3DLaunchParams {
     OptixTraversableHandle   traversable;
     const GpuRay3DHost*      rays;
@@ -8262,6 +8625,188 @@ static void run_ray_hitcount_3d_optix(
     *row_count_out = ray_count;
 }
 
+static void ensure_ray_closest_hit_3d_pipeline()
+{
+    std::call_once(g_rayclosest3d.init, [&]() {
+        std::string ptx = compile_to_ptx(kRayClosestHit3DKernelSrc, "rayclosest3d_kernel.cu");
+        g_rayclosest3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayclosest3d_probe",
+            "__miss__rayclosest3d_miss",
+            "__intersection__rayclosest3d_isect",
+            nullptr,
+            "__closesthit__rayclosest3d_closesthit",
+            1).release();
+    });
+}
+
+static void ensure_ray_closest_hit_grouped_argmin_kernels()
+{
+    (void)get_optix_context();
+    std::call_once(g_rayclosest3d_grouped_argmin.init, [&]() {
+        const std::string cubin = compile_to_cubin(
+            kRayClosestHitGroupedArgminKernelSrc,
+            "rayclosest3d_grouped_argmin_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_rayclosest3d_grouped_argmin.module, cubin.data()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.init_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_init"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.min_key_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_min_key"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.scatter_unique_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_scatter_unique"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.min_index_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_min_index"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.materialize_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_materialize"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.merge_two_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_merge_two"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.candidate_min_key_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "grouped_candidate_argmin_min_key"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.candidate_min_index_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "grouped_candidate_argmin_min_index"));
+    });
+}
+
+static void run_ray_closest_hit_3d_optix(
+        const RtdlRay3D*      rays,      size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayClosestHitRow** rows_out, size_t* row_count_out)
+{
+    if (ray_count == 0 || triangle_count == 0) {
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        return;
+    }
+    if (!rays || !triangles)
+        throw std::runtime_error("ray and triangle pointers must not be null when counts are nonzero");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("3-D ray closest-hit ray count exceeds uint32_t launch capacity");
+    if (triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("3-D ray closest-hit triangle count exceeds uint32_t primitive capacity");
+
+    ensure_ray_closest_hit_3d_pipeline();
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        const double values[7] = {
+            rays[i].ox, rays[i].oy, rays[i].oz,
+            rays[i].dx, rays[i].dy, rays[i].dz,
+            rays[i].tmax,
+        };
+        for (double value : values) {
+            if (!std::isfinite(value))
+                throw std::runtime_error("3-D ray closest-hit inputs must be finite");
+        }
+        gpu_rays[i] = {
+            static_cast<float>(rays[i].ox),
+            static_cast<float>(rays[i].oy),
+            static_cast<float>(rays[i].oz),
+            static_cast<float>(rays[i].dx),
+            static_cast<float>(rays[i].dy),
+            static_cast<float>(rays[i].dz),
+            static_cast<float>(rays[i].tmax),
+            rays[i].id
+        };
+    }
+
+    std::vector<GpuTriangle3DHost> gpu_tris(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        const double values[9] = {
+            triangles[i].x0, triangles[i].y0, triangles[i].z0,
+            triangles[i].x1, triangles[i].y1, triangles[i].z1,
+            triangles[i].x2, triangles[i].y2, triangles[i].z2,
+        };
+        for (double value : values) {
+            if (!std::isfinite(value))
+                throw std::runtime_error("3-D triangle closest-hit inputs must be finite");
+        }
+        gpu_tris[i] = {
+            static_cast<float>(triangles[i].x0),
+            static_cast<float>(triangles[i].y0),
+            static_cast<float>(triangles[i].z0),
+            static_cast<float>(triangles[i].x1),
+            static_cast<float>(triangles[i].y1),
+            static_cast<float>(triangles[i].z1),
+            static_cast<float>(triangles[i].x2),
+            static_cast<float>(triangles[i].y2),
+            static_cast<float>(triangles[i].z2),
+            triangles[i].id
+        };
+    }
+
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    DevPtr d_tris(sizeof(GpuTriangle3DHost) * triangle_count);
+    upload(d_rays.ptr, gpu_rays.data(), ray_count);
+    upload(d_tris.ptr, gpu_tris.data(), triangle_count);
+
+    std::vector<OptixAabb> aabbs(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        aabbs[i] = aabb_for_triangle_3d(
+            gpu_tris[i].x0, gpu_tris[i].y0, gpu_tris[i].z0,
+            gpu_tris[i].x1, gpu_tris[i].y1, gpu_tris[i].z1,
+            gpu_tris[i].x2, gpu_tris[i].y2, gpu_tris[i].z2);
+    }
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+
+    DevPtr d_output(sizeof(GpuRayClosestHitRecord) * ray_count);
+
+    RayClosestHit3DLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.rays        = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles   = reinterpret_cast<const GpuTriangle3DHost*>(d_tris.ptr);
+    lp.output      = reinterpret_cast<GpuRayClosestHitRecord*>(d_output.ptr);
+    lp.ray_count   = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayClosestHit3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayclosest3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayClosestHit3DLaunchParams),
+                             &g_rayclosest3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<GpuRayClosestHitRecord> gpu_rows(ray_count);
+    download(gpu_rows.data(), d_output.ptr, ray_count);
+
+    size_t hit_count = 0;
+    for (const auto& row : gpu_rows) {
+        if (row.has_hit != 0u)
+            ++hit_count;
+    }
+    auto* out = static_cast<RtdlRayClosestHitRow*>(
+        std::malloc(sizeof(RtdlRayClosestHitRow) * hit_count));
+    if (!out && hit_count > 0) throw std::bad_alloc();
+    size_t out_index = 0;
+    for (const auto& row : gpu_rows) {
+        if (row.has_hit == 0u)
+            continue;
+        out[out_index].ray_id = row.ray_id;
+        out[out_index].triangle_id = row.triangle_id;
+        out[out_index].t = static_cast<double>(row.t);
+        ++out_index;
+    }
+    *rows_out = out;
+    *row_count_out = hit_count;
+}
+
 static std::string ray_anyhit_kernel_source_3d()
 {
     std::string src(kRayHitCount3DKernelSrc);
@@ -8290,6 +8835,107 @@ static void ensure_ray_anyhit_3d_pipeline()
         std::string src = ray_anyhit_kernel_source_3d();
         std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit3d_kernel.cu");
         g_rayanyhit3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit3d_probe",
+            "__miss__rayhit3d_miss",
+            "__intersection__rayhit3d_isect",
+            "__anyhit__rayhit3d_anyhit",
+            nullptr, 2).release();
+    });
+}
+
+static std::string ray_hitcount_sum_kernel_source_3d()
+{
+    std::string src(kRayHitCount3DKernelSrc);
+    const std::string old_output_field =
+        "    RayHitCount3DRecord*     output;\n"
+        "    uint32_t                 ray_count;\n";
+    const std::string new_output_field =
+        "    unsigned long long*      hit_count_sum;\n"
+        "    uint32_t                 ray_count;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D hit-count sum params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D hit-count sum zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    if (p1 != 0u) atomicAdd(params.hit_count_sum, static_cast<unsigned long long>(p1));\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D hit-count sum output path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+    return src;
+}
+
+static void ensure_ray_hitcount_sum_3d_pipeline()
+{
+    std::call_once(g_rayhit3d_sum.init, [&]() {
+        std::string src = ray_hitcount_sum_kernel_source_3d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayhitcount_sum3d_kernel.cu");
+        g_rayhit3d_sum.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit3d_probe",
+            "__miss__rayhit3d_miss",
+            "__intersection__rayhit3d_isect",
+            "__anyhit__rayhit3d_anyhit",
+            nullptr, 2).release();
+    });
+}
+
+static std::string ray_anyhit_weighted_sum_kernel_source_3d()
+{
+    std::string src = ray_anyhit_kernel_source_3d();
+    const std::string old_output_field =
+        "    RayHitCount3DRecord*     output;\n"
+        "    uint32_t                 ray_count;\n";
+    const std::string new_output_field =
+        "    const unsigned long long* ray_weights;\n"
+        "    unsigned long long*       weighted_hit_sum;\n"
+        "    uint32_t                  ray_count;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D weighted any-hit sum params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D weighted any-hit sum zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    if (p1 != 0u) atomicAdd(params.weighted_hit_sum, params.ray_weights[idx]);\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D weighted any-hit sum output path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+    return src;
+}
+
+static void ensure_ray_anyhit_weighted_sum_3d_pipeline()
+{
+    std::call_once(g_rayanyhit_weighted_sum3d.init, [&]() {
+        std::string src = ray_anyhit_weighted_sum_kernel_source_3d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_weighted_sum3d_kernel.cu");
+        g_rayanyhit_weighted_sum3d.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit3d_probe",
             "__miss__rayhit3d_miss",
@@ -8361,6 +9007,72 @@ static PreparedStaticTriangleScene3D* prepare_static_triangle_scene_3d_optix(
         size_t triangle_count)
 {
     return new PreparedStaticTriangleScene3D(triangles, triangle_count);
+}
+
+static PreparedStaticTriangleScene3D* prepare_static_triangle_scene_3d_device_triangles_optix(
+        const uint32_t* triangle_ids,
+        const double* triangle_x0,
+        const double* triangle_y0,
+        const double* triangle_z0,
+        const double* triangle_x1,
+        const double* triangle_y1,
+        const double* triangle_z1,
+        const double* triangle_x2,
+        const double* triangle_y2,
+        const double* triangle_z2,
+        size_t triangle_count)
+{
+    return new PreparedStaticTriangleScene3D(
+        triangle_ids,
+        triangle_x0,
+        triangle_y0,
+        triangle_z0,
+        triangle_x1,
+        triangle_y1,
+        triangle_z1,
+        triangle_x2,
+        triangle_y2,
+        triangle_z2,
+        triangle_count);
+}
+
+static PreparedRayBatch3D* prepare_ray_batch_3d_optix(
+        const RtdlRay3D* rays,
+        size_t ray_count)
+{
+    return new PreparedRayBatch3D(rays, ray_count);
+}
+
+static PreparedClosestHitGroupedArgmin3D* prepare_closest_hit_grouped_argmin_3d_optix(
+        const uint32_t* ray_group_ids,
+        size_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        size_t candidate_count,
+        size_t group_count)
+{
+    return new PreparedClosestHitGroupedArgmin3D(
+        ray_group_ids,
+        ray_group_id_count,
+        candidate_values,
+        candidate_indices,
+        candidate_count,
+        group_count);
+}
+
+static PreparedGroupedCandidateArgmin* prepare_grouped_candidate_argmin_optix(
+        const uint32_t* candidate_group_ids,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        size_t candidate_count,
+        size_t group_count)
+{
+    return new PreparedGroupedCandidateArgmin(
+        candidate_group_ids,
+        candidate_values,
+        candidate_indices,
+        candidate_count,
+        group_count);
 }
 
 static PreparedGroupedSegmentQuery3D* prepare_static_triangle_scene_3d_grouped_segment_query_optix(
@@ -8603,6 +9315,1198 @@ static void run_prepared_static_triangle_scene_3d_grouped_segment_query_any_hit_
             ++flagged_group_count;
     }
     *flagged_group_count_out = flagged_group_count;
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        const uint64_t* ray_weights,
+        uint64_t* weighted_hit_sum_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!rays && ray_count != 0)
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    if (!ray_weights && ray_count != 0)
+        throw std::runtime_error("ray_weights pointer must not be null when ray_count is nonzero");
+    if (!weighted_hit_sum_out)
+        throw std::runtime_error("weighted_hit_sum_out must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    *weighted_hit_sum_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    std::vector<unsigned long long> gpu_weights(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        gpu_rays[i] = pack_ray_3d_as_gpu_ray(rays[i]);
+        gpu_weights[i] = static_cast<unsigned long long>(ray_weights[i]);
+    }
+
+    ensure_ray_anyhit_weighted_sum_3d_pipeline();
+
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    DevPtr d_weights(sizeof(unsigned long long) * ray_count);
+    DevPtr d_sum(sizeof(unsigned long long));
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    upload(d_weights.ptr, gpu_weights.data(), gpu_weights.size());
+    unsigned long long zero = 0ull;
+    upload(d_sum.ptr, &zero, 1);
+
+    RayAnyHitWeightedSum3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.ray_weights = reinterpret_cast<const unsigned long long*>(d_weights.ptr);
+    lp.weighted_hit_sum = reinterpret_cast<unsigned long long*>(d_sum.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayAnyHitWeightedSum3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_weighted_sum3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayAnyHitWeightedSum3DLaunchParams),
+                             &g_rayanyhit_weighted_sum3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    unsigned long long sum = 0ull;
+    download(&sum, d_sum.ptr, 1);
+    *weighted_hit_sum_out = static_cast<uint64_t>(sum);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_hit_count_sum_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        uint64_t* hit_count_sum_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!rays && ray_count != 0)
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    if (!hit_count_sum_out)
+        throw std::runtime_error("hit_count_sum_out must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    *hit_count_sum_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = pack_ray_3d_as_gpu_ray(rays[i]);
+
+    ensure_ray_hitcount_sum_3d_pipeline();
+
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    DevPtr d_sum(sizeof(unsigned long long));
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    unsigned long long zero = 0ull;
+    upload(d_sum.ptr, &zero, 1);
+
+    RayHitCount3DSumLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.hit_count_sum = reinterpret_cast<unsigned long long*>(d_sum.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayHitCount3DSumLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayhit3d_sum.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayHitCount3DSumLaunchParams),
+                             &g_rayhit3d_sum.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    unsigned long long sum = 0ull;
+    download(&sum, d_sum.ptr, 1);
+    *hit_count_sum_out = static_cast<uint64_t>(sum);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void launch_prepared_static_triangle_scene_3d_ray_closest_hit_records_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        CUdeviceptr d_output,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!rays && ray_count != 0)
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    if (!d_output && ray_count != 0)
+        throw std::runtime_error("closest-hit output device buffer must not be null when ray_count is nonzero");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = pack_ray_3d_as_raw_gpu_ray(rays[i]);
+
+    ensure_ray_closest_hit_3d_pipeline();
+
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+
+    RayClosestHit3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.output = reinterpret_cast<GpuRayClosestHitRecord*>(d_output);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayClosestHit3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayclosest3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayClosestHit3DLaunchParams),
+                             &g_rayclosest3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void launch_prepared_static_triangle_scene_3d_device_ray_closest_hit_records_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        CUdeviceptr d_output,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (!d_output && ray_batch->ray_count != 0)
+        throw std::runtime_error("closest-hit output device buffer must not be null when ray_count is nonzero");
+
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_batch->ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    ensure_ray_closest_hit_3d_pipeline();
+
+    RayClosestHit3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(ray_batch->d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.output = reinterpret_cast<GpuRayClosestHitRecord*>(d_output);
+    lp.ray_count = static_cast<uint32_t>(ray_batch->ray_count);
+
+    DevPtr d_params(sizeof(RayClosestHit3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayclosest3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayClosestHit3DLaunchParams),
+                             &g_rayclosest3d.pipe->sbt,
+                             static_cast<unsigned>(ray_batch->ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static std::vector<GpuRayClosestHitRecord> run_prepared_static_triangle_scene_3d_ray_closest_hit_records_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        double* traversal_seconds_out)
+{
+    if (ray_count == 0 || !prepared || prepared->triangle_count == 0) {
+        if (traversal_seconds_out)
+            *traversal_seconds_out = 0.0;
+        if (!prepared)
+            throw std::runtime_error("prepared scene handle must not be null");
+        return {};
+    }
+
+    DevPtr d_output(sizeof(GpuRayClosestHitRecord) * ray_count);
+    launch_prepared_static_triangle_scene_3d_ray_closest_hit_records_optix(
+        prepared,
+        rays,
+        ray_count,
+        d_output.ptr,
+        traversal_seconds_out);
+    std::vector<GpuRayClosestHitRecord> gpu_rows(ray_count);
+    download(gpu_rows.data(), d_output.ptr, ray_count);
+    return gpu_rows;
+}
+
+static std::vector<GpuRayClosestHitRecord> run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_records_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        double* traversal_seconds_out)
+{
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (ray_batch->ray_count == 0 || !prepared || prepared->triangle_count == 0) {
+        if (traversal_seconds_out)
+            *traversal_seconds_out = 0.0;
+        if (!prepared)
+            throw std::runtime_error("prepared scene handle must not be null");
+        return {};
+    }
+
+    launch_prepared_static_triangle_scene_3d_device_ray_closest_hit_records_optix(
+        prepared,
+        ray_batch,
+        ray_batch->d_closest_hit_output.ptr,
+        traversal_seconds_out);
+    std::vector<GpuRayClosestHitRecord> gpu_rows(ray_batch->ray_count);
+    download(gpu_rows.data(), ray_batch->d_closest_hit_output.ptr, ray_batch->ray_count);
+    return gpu_rows;
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_closest_hit_rows_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        RtdlRayClosestHitRow** rows_out,
+        size_t* row_count_out,
+        double* traversal_seconds_out)
+{
+    if (!rows_out || !row_count_out)
+        throw std::runtime_error("closest-hit row outputs must not be null");
+
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    auto gpu_rows = run_prepared_static_triangle_scene_3d_ray_closest_hit_records_optix(
+        prepared,
+        rays,
+        ray_count,
+        traversal_seconds_out);
+
+    size_t hit_count = 0;
+    for (const auto& row : gpu_rows) {
+        if (row.has_hit != 0u)
+            ++hit_count;
+    }
+    auto* out = static_cast<RtdlRayClosestHitRow*>(
+        std::malloc(sizeof(RtdlRayClosestHitRow) * hit_count));
+    if (!out && hit_count > 0) throw std::bad_alloc();
+    size_t out_index = 0;
+    for (const auto& row : gpu_rows) {
+        if (row.has_hit == 0u)
+            continue;
+        out[out_index].ray_id = row.ray_id;
+        out[out_index].triangle_id = row.triangle_id;
+        out[out_index].t = static_cast<double>(row.t);
+        ++out_index;
+    }
+    *rows_out = out;
+    *row_count_out = hit_count;
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_rows_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        RtdlRayClosestHitRow** rows_out,
+        size_t* row_count_out,
+        double* traversal_seconds_out)
+{
+    if (!rows_out || !row_count_out)
+        throw std::runtime_error("closest-hit row outputs must not be null");
+
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    auto gpu_rows = run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_records_optix(
+        prepared,
+        ray_batch,
+        traversal_seconds_out);
+
+    size_t hit_count = 0;
+    for (const auto& row : gpu_rows) {
+        if (row.has_hit != 0u)
+            ++hit_count;
+    }
+    auto* out = static_cast<RtdlRayClosestHitRow*>(
+        std::malloc(sizeof(RtdlRayClosestHitRow) * hit_count));
+    if (!out && hit_count > 0) throw std::bad_alloc();
+    size_t out_index = 0;
+    for (const auto& row : gpu_rows) {
+        if (row.has_hit == 0u)
+            continue;
+        out[out_index].ray_id = row.ray_id;
+        out[out_index].triangle_id = row.triangle_id;
+        out[out_index].t = static_cast<double>(row.t);
+        ++out_index;
+    }
+    *rows_out = out;
+    *row_count_out = hit_count;
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_closest_hit_grouped_argmin_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const RtdlRay3D* rays,
+        size_t ray_count,
+        const uint32_t* ray_group_ids,
+        size_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        size_t candidate_count,
+        size_t group_count,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_seconds_out)
+{
+    if (!ray_group_ids && ray_group_id_count != 0)
+        throw std::runtime_error("ray group-id map must not be null when nonempty");
+    if (!candidate_values && candidate_count != 0)
+        throw std::runtime_error("candidate values must not be null when candidate_count is nonzero");
+    if (!candidate_indices && candidate_count != 0)
+        throw std::runtime_error("candidate indices must not be null when candidate_count is nonzero");
+    if (group_count != 0 && (!group_has_value_out || !group_index_out || !group_value_out))
+        throw std::runtime_error("grouped argmin outputs must not be null when group_count is nonzero");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    if (ray_group_id_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_group_id_count exceeds uint32 launch limit");
+    if (candidate_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("candidate_count exceeds uint32 launch limit");
+    if (group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 launch limit");
+
+    for (size_t i = 0; i < group_count; ++i) {
+        group_has_value_out[i] = 0u;
+        group_index_out[i] = std::numeric_limits<uint32_t>::max();
+        group_value_out[i] = 0.0;
+    }
+    if (group_count == 0 || ray_count == 0 || candidate_count == 0 || !prepared || prepared->triangle_count == 0) {
+        if (!prepared)
+            throw std::runtime_error("prepared scene handle must not be null");
+        if (traversal_seconds_out)
+            *traversal_seconds_out = 0.0;
+        return;
+    }
+
+    for (size_t i = 0; i < ray_group_id_count; ++i) {
+        if (ray_group_ids[i] >= group_count)
+            throw std::runtime_error("ray group id is outside the grouped argmin output range");
+    }
+    for (size_t i = 0; i < ray_count; ++i) {
+        if (rays[i].id >= ray_group_id_count)
+            throw std::runtime_error("ray id is outside the ray group-id map");
+    }
+    bool ray_groups_are_unique = true;
+    std::vector<uint8_t> seen_groups(group_count, 0u);
+    for (size_t i = 0; i < ray_count; ++i) {
+        const uint32_t group_id = ray_group_ids[rays[i].id];
+        if (seen_groups[group_id] != 0u) {
+            ray_groups_are_unique = false;
+            break;
+        }
+        seen_groups[group_id] = 1u;
+    }
+
+    DevPtr d_output(sizeof(GpuRayClosestHitRecord) * ray_count);
+    launch_prepared_static_triangle_scene_3d_ray_closest_hit_records_optix(
+        prepared,
+        rays,
+        ray_count,
+        d_output.ptr,
+        traversal_seconds_out);
+
+    DevPtr d_ray_group_ids(sizeof(uint32_t) * ray_group_id_count);
+    DevPtr d_candidate_values(sizeof(double) * candidate_count);
+    DevPtr d_candidate_indices(sizeof(uint32_t) * candidate_count);
+    DevPtr d_group_has_value(sizeof(uint8_t) * group_count);
+    DevPtr d_group_index(sizeof(uint32_t) * group_count);
+    DevPtr d_group_value(sizeof(double) * group_count);
+    upload(d_ray_group_ids.ptr, ray_group_ids, ray_group_id_count);
+    upload(d_candidate_values.ptr, candidate_values, candidate_count);
+    upload(d_candidate_indices.ptr, candidate_indices, candidate_count);
+
+    const unsigned block = 256;
+    const uint32_t ray_count_u = static_cast<uint32_t>(ray_count);
+    const uint32_t ray_group_id_count_u = static_cast<uint32_t>(ray_group_id_count);
+    const uint32_t candidate_count_u = static_cast<uint32_t>(candidate_count);
+    const uint32_t group_count_u = static_cast<uint32_t>(group_count);
+    const unsigned ray_grid = (ray_count_u + block - 1u) / block;
+    const unsigned group_grid = (group_count_u + block - 1u) / block;
+
+    ensure_ray_closest_hit_grouped_argmin_kernels();
+    CUdeviceptr d_has_ptr = d_group_has_value.ptr;
+    CUdeviceptr d_index_ptr = d_group_index.ptr;
+    CUdeviceptr d_value_ptr = d_group_value.ptr;
+    CUdeviceptr d_rows_ptr = d_output.ptr;
+    CUdeviceptr d_ray_group_ids_ptr = d_ray_group_ids.ptr;
+    CUdeviceptr d_candidate_values_ptr = d_candidate_values.ptr;
+    CUdeviceptr d_candidate_indices_ptr = d_candidate_indices.ptr;
+
+    if (ray_groups_are_unique) {
+        CU_CHECK(cuMemsetD8(d_group_has_value.ptr, 0, group_count * sizeof(uint8_t)));
+        CU_CHECK(cuMemsetD8(d_group_index.ptr, 0xff, group_count * sizeof(uint32_t)));
+        CU_CHECK(cuMemsetD8(d_group_value.ptr, 0, group_count * sizeof(double)));
+        void* scatter_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_has_ptr,
+            &d_index_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.scatter_unique_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, scatter_args, nullptr));
+    } else {
+        DevPtr d_group_best_keys(sizeof(unsigned long long) * group_count);
+        CUdeviceptr d_keys_ptr = d_group_best_keys.ptr;
+        void* init_args[] = {
+            &d_keys_ptr,
+            &d_has_ptr,
+            &d_index_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.init_fn,
+            group_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, init_args, nullptr));
+
+        void* min_key_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_key_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_key_args, nullptr));
+
+        void* min_index_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            &d_index_ptr,
+            &d_has_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_index_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_index_args, nullptr));
+    }
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    download(group_has_value_out, d_group_has_value.ptr, group_count);
+    download(group_index_out, d_group_index.ptr, group_count);
+    download(group_value_out, d_group_value.ptr, group_count);
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_grouped_argmin_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        const uint32_t* ray_group_ids,
+        size_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        size_t candidate_count,
+        size_t group_count,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_seconds_out)
+{
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (!ray_group_ids && ray_group_id_count != 0)
+        throw std::runtime_error("ray group-id map must not be null when nonempty");
+    if (!candidate_values && candidate_count != 0)
+        throw std::runtime_error("candidate values must not be null when candidate_count is nonzero");
+    if (!candidate_indices && candidate_count != 0)
+        throw std::runtime_error("candidate indices must not be null when candidate_count is nonzero");
+    if (group_count != 0 && (!group_has_value_out || !group_index_out || !group_value_out))
+        throw std::runtime_error("grouped argmin outputs must not be null when group_count is nonzero");
+    if (ray_group_id_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_group_id_count exceeds uint32 launch limit");
+    if (candidate_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("candidate_count exceeds uint32 launch limit");
+    if (group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 launch limit");
+
+    const size_t ray_count = ray_batch->ray_count;
+    for (size_t i = 0; i < group_count; ++i) {
+        group_has_value_out[i] = 0u;
+        group_index_out[i] = std::numeric_limits<uint32_t>::max();
+        group_value_out[i] = 0.0;
+    }
+    if (group_count == 0 || ray_count == 0 || candidate_count == 0 || !prepared || prepared->triangle_count == 0) {
+        if (!prepared)
+            throw std::runtime_error("prepared scene handle must not be null");
+        if (traversal_seconds_out)
+            *traversal_seconds_out = 0.0;
+        return;
+    }
+
+    for (size_t i = 0; i < ray_group_id_count; ++i) {
+        if (ray_group_ids[i] >= group_count)
+            throw std::runtime_error("ray group id is outside the grouped argmin output range");
+    }
+    for (size_t i = 0; i < ray_count; ++i) {
+        if (ray_batch->ray_ids[i] >= ray_group_id_count)
+            throw std::runtime_error("ray id is outside the ray group-id map");
+    }
+    bool ray_groups_are_unique = true;
+    std::vector<uint8_t> seen_groups(group_count, 0u);
+    for (size_t i = 0; i < ray_count; ++i) {
+        const uint32_t group_id = ray_group_ids[ray_batch->ray_ids[i]];
+        if (seen_groups[group_id] != 0u) {
+            ray_groups_are_unique = false;
+            break;
+        }
+        seen_groups[group_id] = 1u;
+    }
+
+    launch_prepared_static_triangle_scene_3d_device_ray_closest_hit_records_optix(
+        prepared,
+        ray_batch,
+        ray_batch->d_closest_hit_output.ptr,
+        traversal_seconds_out);
+
+    DevPtr d_ray_group_ids(sizeof(uint32_t) * ray_group_id_count);
+    DevPtr d_candidate_values(sizeof(double) * candidate_count);
+    DevPtr d_candidate_indices(sizeof(uint32_t) * candidate_count);
+    DevPtr d_group_has_value(sizeof(uint8_t) * group_count);
+    DevPtr d_group_index(sizeof(uint32_t) * group_count);
+    DevPtr d_group_value(sizeof(double) * group_count);
+    upload(d_ray_group_ids.ptr, ray_group_ids, ray_group_id_count);
+    upload(d_candidate_values.ptr, candidate_values, candidate_count);
+    upload(d_candidate_indices.ptr, candidate_indices, candidate_count);
+
+    const unsigned block = 256;
+    const uint32_t ray_count_u = static_cast<uint32_t>(ray_count);
+    const uint32_t ray_group_id_count_u = static_cast<uint32_t>(ray_group_id_count);
+    const uint32_t candidate_count_u = static_cast<uint32_t>(candidate_count);
+    const uint32_t group_count_u = static_cast<uint32_t>(group_count);
+    const unsigned ray_grid = (ray_count_u + block - 1u) / block;
+    const unsigned group_grid = (group_count_u + block - 1u) / block;
+
+    ensure_ray_closest_hit_grouped_argmin_kernels();
+    CUdeviceptr d_has_ptr = d_group_has_value.ptr;
+    CUdeviceptr d_index_ptr = d_group_index.ptr;
+    CUdeviceptr d_value_ptr = d_group_value.ptr;
+    CUdeviceptr d_rows_ptr = ray_batch->d_closest_hit_output.ptr;
+    CUdeviceptr d_ray_group_ids_ptr = d_ray_group_ids.ptr;
+    CUdeviceptr d_candidate_values_ptr = d_candidate_values.ptr;
+    CUdeviceptr d_candidate_indices_ptr = d_candidate_indices.ptr;
+
+    if (ray_groups_are_unique) {
+        CU_CHECK(cuMemsetD8(d_group_has_value.ptr, 0, group_count * sizeof(uint8_t)));
+        CU_CHECK(cuMemsetD8(d_group_index.ptr, 0xff, group_count * sizeof(uint32_t)));
+        CU_CHECK(cuMemsetD8(d_group_value.ptr, 0, group_count * sizeof(double)));
+        void* scatter_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_has_ptr,
+            &d_index_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.scatter_unique_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, scatter_args, nullptr));
+    } else {
+        DevPtr d_group_best_keys(sizeof(unsigned long long) * group_count);
+        CUdeviceptr d_keys_ptr = d_group_best_keys.ptr;
+        void* init_args[] = {
+            &d_keys_ptr,
+            &d_has_ptr,
+            &d_index_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.init_fn,
+            group_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, init_args, nullptr));
+
+        void* min_key_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_key_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_key_args, nullptr));
+
+        void* min_index_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            &d_index_ptr,
+            &d_has_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_index_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_index_args, nullptr));
+    }
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    download(group_has_value_out, d_group_has_value.ptr, group_count);
+    download(group_index_out, d_group_index.ptr, group_count);
+    download(group_value_out, d_group_value.ptr, group_count);
+}
+
+static void clear_prepared_grouped_argmin_device_outputs(PreparedClosestHitGroupedArgmin3D* grouped_inputs)
+{
+    const size_t group_count = grouped_inputs ? grouped_inputs->group_count : 0;
+    if (group_count == 0)
+        return;
+    CU_CHECK(cuMemsetD8(grouped_inputs->d_group_has_value.ptr, 0, group_count * sizeof(uint8_t)));
+    CU_CHECK(cuMemsetD8(grouped_inputs->d_group_index.ptr, 0xff, group_count * sizeof(uint32_t)));
+    CU_CHECK(cuMemsetD8(grouped_inputs->d_group_value.ptr, 0, group_count * sizeof(double)));
+}
+
+static void run_prepared_grouped_candidate_argmin_device_optix(
+        PreparedGroupedCandidateArgmin* grouped_inputs,
+        double* finalize_seconds_out)
+{
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared grouped candidate argmin handle must not be null");
+
+    const size_t candidate_count = grouped_inputs->candidate_count;
+    const size_t group_count = grouped_inputs->group_count;
+    if (finalize_seconds_out)
+        *finalize_seconds_out = 0.0;
+    if (group_count == 0)
+        return;
+
+    const auto finalize_start = std::chrono::steady_clock::now();
+    const unsigned block = 256;
+    const uint32_t candidate_count_u = static_cast<uint32_t>(candidate_count);
+    const uint32_t group_count_u = static_cast<uint32_t>(group_count);
+    const unsigned candidate_grid = (candidate_count_u + block - 1u) / block;
+    const unsigned group_grid = (group_count_u + block - 1u) / block;
+
+    ensure_ray_closest_hit_grouped_argmin_kernels();
+    CUdeviceptr d_keys_ptr = grouped_inputs->d_group_best_keys.ptr;
+    CUdeviceptr d_has_ptr = grouped_inputs->d_group_has_value.ptr;
+    CUdeviceptr d_index_ptr = grouped_inputs->d_group_index.ptr;
+    CUdeviceptr d_value_ptr = grouped_inputs->d_group_value.ptr;
+    CUdeviceptr d_candidate_group_ids_ptr = grouped_inputs->d_candidate_group_ids.ptr;
+    CUdeviceptr d_candidate_values_ptr = grouped_inputs->d_candidate_values.ptr;
+    CUdeviceptr d_candidate_indices_ptr = grouped_inputs->d_candidate_indices.ptr;
+
+    void* init_args[] = {
+        &d_keys_ptr,
+        &d_has_ptr,
+        &d_index_ptr,
+        &d_value_ptr,
+        const_cast<uint32_t*>(&group_count_u),
+    };
+    CU_CHECK(cuLaunchKernel(
+        g_rayclosest3d_grouped_argmin.init_fn,
+        group_grid, 1, 1,
+        block, 1, 1,
+        0, nullptr, init_args, nullptr));
+
+    if (candidate_count_u != 0u) {
+        void* min_key_args[] = {
+            &d_candidate_group_ids_ptr,
+            &d_candidate_values_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.candidate_min_key_fn,
+            candidate_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_key_args, nullptr));
+
+        void* min_index_args[] = {
+            &d_candidate_group_ids_ptr,
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            &d_index_ptr,
+            &d_has_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.candidate_min_index_fn,
+            candidate_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_index_args, nullptr));
+    }
+    CU_CHECK(cuStreamSynchronize(nullptr));
+    const auto finalize_end = std::chrono::steady_clock::now();
+    if (finalize_seconds_out)
+        *finalize_seconds_out = std::chrono::duration<double>(finalize_end - finalize_start).count();
+}
+
+static void run_prepared_grouped_candidate_argmin_optix(
+        PreparedGroupedCandidateArgmin* grouped_inputs,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* finalize_seconds_out)
+{
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared grouped candidate argmin handle must not be null");
+    const size_t group_count = grouped_inputs->group_count;
+    if (group_count != 0 && (!group_has_value_out || !group_index_out || !group_value_out))
+        throw std::runtime_error("grouped candidate argmin outputs must not be null when group_count is nonzero");
+
+    run_prepared_grouped_candidate_argmin_device_optix(grouped_inputs, finalize_seconds_out);
+    download(group_has_value_out, grouped_inputs->d_group_has_value.ptr, group_count);
+    download(group_index_out, grouped_inputs->d_group_index.ptr, group_count);
+    download(group_value_out, grouped_inputs->d_group_value.ptr, group_count);
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared grouped argmin inputs handle must not be null");
+
+    const size_t ray_count = ray_batch->ray_count;
+    const size_t ray_group_id_count = grouped_inputs->ray_group_id_count;
+    const size_t candidate_count = grouped_inputs->candidate_count;
+    const size_t group_count = grouped_inputs->group_count;
+
+    if (group_count == 0) {
+        if (traversal_seconds_out)
+            *traversal_seconds_out = 0.0;
+        return;
+    }
+    if (ray_count == 0 || candidate_count == 0 || prepared->triangle_count == 0) {
+        clear_prepared_grouped_argmin_device_outputs(grouped_inputs);
+        if (traversal_seconds_out)
+            *traversal_seconds_out = 0.0;
+        return;
+    }
+
+    for (size_t i = 0; i < ray_count; ++i) {
+        if (ray_batch->ray_ids[i] >= ray_group_id_count)
+            throw std::runtime_error("ray id is outside the prepared ray group-id map");
+    }
+    bool ray_groups_are_unique = true;
+    std::vector<uint8_t> seen_groups(group_count, 0u);
+    for (size_t i = 0; i < ray_count; ++i) {
+        const uint32_t group_id = grouped_inputs->ray_group_ids[ray_batch->ray_ids[i]];
+        if (seen_groups[group_id] != 0u) {
+            ray_groups_are_unique = false;
+            break;
+        }
+        seen_groups[group_id] = 1u;
+    }
+
+    launch_prepared_static_triangle_scene_3d_device_ray_closest_hit_records_optix(
+        prepared,
+        ray_batch,
+        ray_batch->d_closest_hit_output.ptr,
+        traversal_seconds_out);
+
+    const unsigned block = 256;
+    const uint32_t ray_count_u = static_cast<uint32_t>(ray_count);
+    const uint32_t ray_group_id_count_u = static_cast<uint32_t>(ray_group_id_count);
+    const uint32_t candidate_count_u = static_cast<uint32_t>(candidate_count);
+    const uint32_t group_count_u = static_cast<uint32_t>(group_count);
+    const unsigned ray_grid = (ray_count_u + block - 1u) / block;
+    const unsigned group_grid = (group_count_u + block - 1u) / block;
+
+    ensure_ray_closest_hit_grouped_argmin_kernels();
+    CUdeviceptr d_has_ptr = grouped_inputs->d_group_has_value.ptr;
+    CUdeviceptr d_index_ptr = grouped_inputs->d_group_index.ptr;
+    CUdeviceptr d_value_ptr = grouped_inputs->d_group_value.ptr;
+    CUdeviceptr d_rows_ptr = ray_batch->d_closest_hit_output.ptr;
+    CUdeviceptr d_ray_group_ids_ptr = grouped_inputs->d_ray_group_ids.ptr;
+    CUdeviceptr d_candidate_values_ptr = grouped_inputs->d_candidate_values.ptr;
+    CUdeviceptr d_candidate_indices_ptr = grouped_inputs->d_candidate_indices.ptr;
+
+    if (ray_groups_are_unique) {
+        clear_prepared_grouped_argmin_device_outputs(grouped_inputs);
+        void* scatter_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_has_ptr,
+            &d_index_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.scatter_unique_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, scatter_args, nullptr));
+    } else {
+        CUdeviceptr d_keys_ptr = grouped_inputs->d_group_best_keys.ptr;
+        void* init_args[] = {
+            &d_keys_ptr,
+            &d_has_ptr,
+            &d_index_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.init_fn,
+            group_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, init_args, nullptr));
+
+        void* min_key_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_key_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_key_args, nullptr));
+
+        void* min_index_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            &d_index_ptr,
+            &d_has_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_index_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_index_args, nullptr));
+    }
+    CU_CHECK(cuStreamSynchronize(nullptr));
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_seconds_out)
+{
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared grouped argmin inputs handle must not be null");
+    const size_t group_count = grouped_inputs->group_count;
+    if (group_count != 0 && (!group_has_value_out || !group_index_out || !group_value_out))
+        throw std::runtime_error("grouped argmin outputs must not be null when group_count is nonzero");
+
+    run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_optix(
+        prepared,
+        ray_batch,
+        grouped_inputs,
+        traversal_seconds_out);
+    download(group_has_value_out, grouped_inputs->d_group_has_value.ptr, group_count);
+    download(group_index_out, grouped_inputs->d_group_index.ptr, group_count);
+    download(group_value_out, grouped_inputs->d_group_value.ptr, group_count);
+}
+
+static void run_prepared_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin_optix(
+        PreparedStaticTriangleScene3D* scene_a,
+        PreparedRayBatch3D* ray_batch_a,
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs_a,
+        PreparedStaticTriangleScene3D* scene_b,
+        PreparedRayBatch3D* ray_batch_b,
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs_b,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_a_seconds_out,
+        double* traversal_b_seconds_out)
+{
+    if (!grouped_inputs_a || !grouped_inputs_b)
+        throw std::runtime_error("prepared grouped argmin inputs handles must not be null");
+    const size_t group_count = grouped_inputs_a->group_count;
+    if (grouped_inputs_b->group_count != group_count)
+        throw std::runtime_error("two-source grouped argmin inputs must have the same group_count");
+    if (group_count != 0 && (!group_has_value_out || !group_index_out || !group_value_out))
+        throw std::runtime_error("grouped argmin outputs must not be null when group_count is nonzero");
+
+    run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_optix(
+        scene_a,
+        ray_batch_a,
+        grouped_inputs_a,
+        traversal_a_seconds_out);
+    run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_optix(
+        scene_b,
+        ray_batch_b,
+        grouped_inputs_b,
+        traversal_b_seconds_out);
+
+    if (group_count != 0) {
+        const unsigned block = 256;
+        const uint32_t group_count_u = static_cast<uint32_t>(group_count);
+        const unsigned group_grid = (group_count_u + block - 1u) / block;
+        ensure_ray_closest_hit_grouped_argmin_kernels();
+        CUdeviceptr has_a_ptr = grouped_inputs_a->d_group_has_value.ptr;
+        CUdeviceptr index_a_ptr = grouped_inputs_a->d_group_index.ptr;
+        CUdeviceptr value_a_ptr = grouped_inputs_a->d_group_value.ptr;
+        CUdeviceptr has_b_ptr = grouped_inputs_b->d_group_has_value.ptr;
+        CUdeviceptr index_b_ptr = grouped_inputs_b->d_group_index.ptr;
+        CUdeviceptr value_b_ptr = grouped_inputs_b->d_group_value.ptr;
+        void* merge_args[] = {
+            &has_a_ptr,
+            &index_a_ptr,
+            &value_a_ptr,
+            &has_b_ptr,
+            &index_b_ptr,
+            &value_b_ptr,
+            &has_a_ptr,
+            &index_a_ptr,
+            &value_a_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.merge_two_fn,
+            group_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, merge_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+    }
+
+    download(group_has_value_out, grouped_inputs_a->d_group_has_value.ptr, group_count);
+    download(group_index_out, grouped_inputs_a->d_group_index.ptr, group_count);
+    download(group_value_out, grouped_inputs_a->d_group_value.ptr, group_count);
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_oz,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_dz,
+        const double* ray_tmax,
+        size_t ray_count,
+        const uint64_t* ray_weights,
+        uint64_t* weighted_hit_sum_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!ray_weights && ray_count != 0)
+        throw std::runtime_error("partner device ray_weights pointer must not be null when ray_count is nonzero");
+    if (!weighted_hit_sum_out)
+        throw std::runtime_error("weighted_hit_sum_out must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    *weighted_hit_sum_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    ensure_ray_anyhit_weighted_sum_3d_pipeline();
+
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    pack_ray3d_device_columns_to_buffer(
+        ray_ids,
+        ray_ox,
+        ray_oy,
+        ray_oz,
+        ray_dx,
+        ray_dy,
+        ray_dz,
+        ray_tmax,
+        ray_count,
+        d_rays.ptr);
+    DevPtr d_sum(sizeof(unsigned long long));
+    unsigned long long zero = 0ull;
+    upload(d_sum.ptr, &zero, 1);
+
+    RayAnyHitWeightedSum3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.ray_weights = reinterpret_cast<const unsigned long long*>(ray_weights);
+    lp.weighted_hit_sum = reinterpret_cast<unsigned long long*>(d_sum.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayAnyHitWeightedSum3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_weighted_sum3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayAnyHitWeightedSum3DLaunchParams),
+                             &g_rayanyhit_weighted_sum3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    unsigned long long sum = 0ull;
+    download(&sum, d_sum.ptr, 1);
+    *weighted_hit_sum_out = static_cast<uint64_t>(sum);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_hit_count_sum_device_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_oz,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_dz,
+        const double* ray_tmax,
+        size_t ray_count,
+        uint64_t* hit_count_sum_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!hit_count_sum_out)
+        throw std::runtime_error("hit_count_sum_out must not be null");
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    *hit_count_sum_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    ensure_ray_hitcount_sum_3d_pipeline();
+
+    DevPtr d_rays(sizeof(GpuRay3DHost) * ray_count);
+    pack_ray3d_device_columns_to_buffer(
+        ray_ids,
+        ray_ox,
+        ray_oy,
+        ray_oz,
+        ray_dx,
+        ray_dy,
+        ray_dz,
+        ray_tmax,
+        ray_count,
+        d_rays.ptr);
+    DevPtr d_sum(sizeof(unsigned long long));
+    unsigned long long zero = 0ull;
+    upload(d_sum.ptr, &zero, 1);
+
+    RayHitCount3DSumLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.hit_count_sum = reinterpret_cast<unsigned long long*>(d_sum.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayHitCount3DSumLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayhit3d_sum.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayHitCount3DSumLaunchParams),
+                             &g_rayhit3d_sum.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    unsigned long long sum = 0ull;
+    download(&sum, d_sum.ptr, 1);
+    *hit_count_sum_out = static_cast<uint64_t>(sum);
     const auto traversal_end = std::chrono::steady_clock::now();
     if (traversal_seconds_out)
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();

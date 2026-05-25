@@ -33,6 +33,9 @@ $env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\<study>\<script
 | `raydb_style/` | RayDB-style columnar grouped aggregate contract study; CPU reference plus Embree/OptiX count-sum parity over existing generic columnar payloads | `raydb_style/README.md` |
 | `barnes_hut/` | RT-BarnesHut-style hierarchical N-body reconstruction study; includes bucketized Morton/DFS aggregate tree rows, hierarchical opening frontier, local exact CPU baseline, and guarded OptiX/paper-code boundaries | `barnes_hut/README.md` |
 | `librts_spatial_index/` | LibRTS-style mutable spatial-index study for PPoPP 2025 point/range query semantics, WKT fixture interchange, and first authors-code OptiX evidence | `librts_spatial_index/README.md` |
+| `rtnn/` | RTNN-style neighbor-search study over candidate quality, prepared fixed-radius ranked summaries, CuPy baseline rows, and optional public RTNN diagnostics | `rtnn/README.md` |
+| `triangle_counting/` | Closed bounded RT-Graph/SIGMETRICS 2025 triangle-counting benchmark; paper-dataset evidence exists, with largest-dataset scalability accepted as a segmented/streamed-lowering follow-up | `triangle_counting/README.md` |
+| `gpu_rmq/` | Demoted GPU-RMQ-style RMQ research/learner app over exact CPU oracle, hierarchy-style local contract, paper-style generic closest-hit RT lowering, and generic grouped candidate argmin; Goal2612 shows the current RTDL design is not benchmark-competitive against direct CUDA sparse-query code | `gpu_rmq/README.md` |
 
 ## How To Read Results
 

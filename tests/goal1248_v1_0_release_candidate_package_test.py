@@ -26,9 +26,9 @@ class Goal1248V10ReleaseCandidatePackageTest(unittest.TestCase):
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
         docs_index = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         package_readme = (PACKAGE_DIR / "README.md").read_text(encoding="utf-8")
-        self.assertEqual(version, "v2.0")
+        self.assertEqual(version, "v2.3")
         self.assertIn("The current released version is `v1.0`", package_readme)
-        self.assertIn("current released version is `v2.0`", docs_index)
+        self.assertIn("current released version is `v2.3`", docs_index)
         self.assertIn("Release Reports", docs_index)
 
     def test_package_records_v1_0_scope_and_claim_boundaries(self) -> None:

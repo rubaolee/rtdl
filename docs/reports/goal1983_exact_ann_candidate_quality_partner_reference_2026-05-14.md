@@ -15,7 +15,7 @@ compare that result to exact full-set nearest-neighbor search.
 Goal1983 adds a v2 partner path to the ANN example:
 
 ```text
-examples/rtdl_ann_candidate_app.py --backend partner_exact_quality --partner torch|cupy
+examples/v2_0/apps/ml/rtdl_ann_candidate_app.py --backend partner_exact_quality --partner torch|cupy
 ```
 
 The implementation uses existing generic point-column partner algebra:

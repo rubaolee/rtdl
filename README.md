@@ -11,9 +11,7 @@ reference runner, Embree, or OptiX without rewriting the application.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the current v2.0 RTDL surface. The current released version is `v2.0`: the source-tree Python+partner+RTDL language
-release. Use RTDL from the repository source tree with `PYTHONPATH=src:.`; do
-not read the release as a package-install promise or broad speedup claim.
+This documentation is written for the current v2.x RTDL surface. The current released version is `v2.3`: the source-tree Python+partner+RTDL app-portfolio release. Use RTDL from the repository source tree with `PYTHONPATH=src:.`; do not read the release as a package-install promise or broad speedup claim.
 
 ## Start Fast
 
@@ -112,32 +110,23 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## v2.0 Release
+## v2.3 Release
 
-RTDL v2.0 is the Python+partner+RTDL source-tree release. It accepts
-partner-owned NumPy, PyTorch CUDA, and CuPy CUDA columns, then runs supported
-primitives through Embree or OptiX while keeping the native engine
-app-agnostic.
+RTDL v2.3 is the Python+partner+RTDL app-portfolio source-tree release. It keeps
+the v2.0 language boundary, adds the current promoted benchmark-app portfolio,
+demotes non-competitive candidates such as GPU-RMQ and Continuous Frechet to
+learner/research status, and documents the app-agnostic primitive lessons from
+the benchmark wave.
 
-The release packet has reviewed OptiX/RT evidence for documented
-Python+CuPy+RTDL contracts: all 16 current comparison rows are filled and below
-`1.0x` against the previous source-tree baseline under their exact measured
-contracts. The earlier `segment_polygon_anyhit_rows` weak spot is now covered
-by a streaming exact witness-column contract instead of full Python row-table
-materialization.
+The release packet separates promoted benchmark apps from learner/example apps.
+Promoted benchmarks are reconstruction instruments for RTDL language/runtime
+design, not broad paper-reproduction or whole-application speedup claims.
 
-The v2.0 release passed the project 3-AI consensus redline: Codex plus
-independent Claude and Gemini reviews. Do not read the v2.0 release as a
-package-install promise, broad RT-core
-claim, arbitrary PyTorch/CuPy acceleration claim, arbitrary polygon overlay
-claim, or proof that every user program is faster. For the exact positive and
-negative rule, read [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md)
-and [v2.0 Release Package](docs/release_reports/v2_0/README.md).
-
-Internal v2.1 work exists as an unreleased checkpoint for RayJoin-style
-first-hit support, Hausdorff benchmark tuning, and app/example readiness
-cleanup. It is not a public release or package promise; the public learner
-surface remains v2.0 until a separately reviewed release decision is made.
+Do not read v2.3 as a package-install promise, broad RT-core claim, arbitrary
+PyTorch/CuPy acceleration claim, arbitrary polygon overlay claim, or proof that
+every user program is faster. For the exact positive and negative rule, read
+[Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md) and
+[v2.3 Release Package](docs/release_reports/v2_3/README.md).
 
 ## Performance Boundary
 
@@ -168,6 +157,7 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Current Architecture](docs/current_architecture.md)
 - [Performance Model](docs/performance_model.md)
 - [IR And Lowering](docs/rtdl/ir_and_lowering.md)
+- [v2.3 Release Package](docs/release_reports/v2_3/README.md)
 - [v2.0 Release Package](docs/release_reports/v2_0/README.md)
 
 ## History And Audit Trail

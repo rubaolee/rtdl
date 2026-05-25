@@ -19,6 +19,7 @@ from .reference import Triangle
 from .reference import Triangle3D
 from .reference import _triangle_dimension
 from .reference import ray_triangle_any_hit_cpu
+from .reference import ray_triangle_closest_hit_cpu
 from .reduction_runtime import run_generic_scalar_reduction
 
 
@@ -42,6 +43,24 @@ def _generic_ray_triangle_any_hit_3d_kernel():
     candidates = rt.traverse(rays, triangles, accel="bvh")
     hits = rt.refine(candidates, predicate=rt.ray_triangle_any_hit(exact=False))
     return rt.emit(hits, fields=["ray_id", "any_hit"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def _generic_ray_triangle_closest_hit_2d_kernel():
+    rays = rt.input("rays", Rays, layout=Ray2DLayout, role="probe")
+    triangles = rt.input("triangles", Triangles, layout=Triangle2DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_closest_hit(exact=False))
+    return rt.emit(hits, fields=["ray_id", "triangle_id", "t"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def _generic_ray_triangle_closest_hit_3d_kernel():
+    rays = rt.input("rays", Rays3D, layout=Ray3DLayout, role="probe")
+    triangles = rt.input("triangles", Triangles3D, layout=Triangle3DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_closest_hit(exact=False))
+    return rt.emit(hits, fields=["ray_id", "triangle_id", "t"])
 
 
 def _normalize_backend(backend: str) -> str:
@@ -225,6 +244,61 @@ def run_generic_ray_triangle_any_hit_count(
     if include_rows:
         result["rows"] = rows
     return result
+
+
+def run_generic_ray_triangle_closest_hit(
+    rays: tuple[Ray2D | Ray3D, ...],
+    triangles: tuple[Triangle | Triangle3D, ...],
+    *,
+    backend: str = "cpu",
+) -> tuple[dict[str, float | int], ...]:
+    """Run app-name-free ray/triangle `CLOSEST_HIT` rows.
+
+    This is the generic primitive shape needed by RMQ-style RT lowerings: the
+    engine sees only rays and triangles and returns ray id, primitive id, and
+    hit distance. RMQ/domain interpretation stays outside the engine.
+    """
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend in FROZEN_BEFORE_V2_1_GENERIC_BACKENDS:
+        raise ValueError(
+            f"{normalized_backend} is frozen before v2.1; active generic primitives are Embree/OptiX focused"
+        )
+    if normalized_backend not in ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS:
+        raise ValueError("generic ray_triangle_closest_hit backend must be one of: cpu, embree, optix")
+
+    dimension = _ray_dimension(rays)
+    _validate_triangle_dimension(triangles, dimension)
+    if not rays or not triangles:
+        return ()
+    if normalized_backend == "cpu":
+        return ray_triangle_closest_hit_cpu(rays, triangles)
+    if dimension != 3:
+        raise ValueError(f"generic ray_triangle_closest_hit backend={normalized_backend!r} currently requires 3-D rays and triangles")
+
+    if normalized_backend == "embree":
+        from .embree_runtime import run_embree
+
+        rows = run_embree(
+            _generic_ray_triangle_closest_hit_3d_kernel,
+            rays=rays,
+            triangles=triangles,
+        )
+    else:
+        from .optix_runtime import run_optix
+
+        rows = run_optix(
+            _generic_ray_triangle_closest_hit_3d_kernel,
+            rays=rays,
+            triangles=triangles,
+        )
+    return tuple(
+        {
+            "ray_id": int(row["ray_id"]),
+            "triangle_id": int(row["triangle_id"]),
+            "t": float(row["t"]),
+        }
+        for row in rows
+    )
 
 
 def run_generic_fixed_radius_count_threshold_2d(

@@ -39,9 +39,9 @@ class Goal2344V21InternalClosureTest(unittest.TestCase):
         for text in (docs, examples, readme):
             self.assertIn("v2.1", text)
             self.assertIn("internal", text.lower())
-        self.assertIn("RTDL v2.0 is the released", docs)
-        self.assertIn("This directory is organized for RTDL v2.0 users first", examples)
-        self.assertIn("RTDL v2.0 is the Python+partner+RTDL source-tree release", readme)
+        self.assertIn("RTDL v2.3 is the released", docs)
+        self.assertIn("This directory is organized for RTDL v2.3 users first", examples)
+        self.assertIn("RTDL v2.3 is the Python+partner+RTDL app-portfolio source-tree release", readme)
 
     def test_gemini_review_accepts_internal_boundary(self) -> None:
         review = GEMINI_REVIEW.read_text(encoding="utf-8")

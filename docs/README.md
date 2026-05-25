@@ -12,16 +12,10 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.0 is the released source-tree Python+partner+RTDL
-surface. The current released version is `v2.0`. The release evidence includes
-streaming exact witness-column contracts for large outputs and 3-AI consensus
-from Codex, Claude, and Gemini.
-
-Internal status: v2.1 is an unreleased checkpoint for RayJoin-style first-hit,
-Hausdorff benchmark tuning, and app/example readiness cleanup. It is documented
-for researchers and auditors in
-[Goal2344 Internal v2.1 Closure](reports/goal2344_v2_1_internal_closure_2026-05-18.md),
-but it does not replace the v2.0 learner/release surface.
+Current status: RTDL v2.3 is the released source-tree Python+partner+RTDL
+app-portfolio surface. The current released version is `v2.3`. The release
+keeps source-tree usage, documents the benchmark-vs-learner app split, and
+preserves the no-broad-speedup/no-package-install boundary.
 
 Short model:
 
@@ -62,13 +56,16 @@ Read these in order:
 | Current support matrix | [Current Support Matrix](current_main_support_matrix.md) |
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
+| Release Reports | [Release Reports](release_reports/) |
+| History Index | [History Index](history/README.md) |
+| v2.1 internal checkpoint | [Goal2344 v2.1 internal closure](reports/goal2344_v2_1_internal_closure_2026-05-18.md) |
 
 ## Directory Map
 
 | Directory | What belongs there |
 | --- | --- |
 | `learn/` | Human learning route and curated current-doc links. |
-| `tutorials/` | Current v2.0 tutorials and runnable teaching docs. |
+| `tutorials/` | Current v2.x tutorials and runnable teaching docs. |
 | `features/` | Current feature homes and engine support contract. |
 | `rtdl/` | DSL, IR, programming model, and workload reference docs. |
 | `research/` | Advanced design, RayJoin/Embree context, technical app notes, proposals, and future research notes. |
@@ -81,6 +78,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one surface: the v2.0 release.
+Current learner docs should explain one surface: the v2.3 release.
 Older context is preserved for review, but it should not interrupt the normal
 learning path.

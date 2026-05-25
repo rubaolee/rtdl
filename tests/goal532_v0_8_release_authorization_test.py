@@ -13,8 +13,8 @@ class Goal532V08ReleaseAuthorizationTest(unittest.TestCase):
         front_page = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         docs_index = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("current released version is `v2.0`", front_page)
-        self.assertIn("current released version is `v2.0`", docs_index)
+        self.assertIn("current released version is `v2.3`", front_page)
+        self.assertIn("current released version is `v2.3`", docs_index)
         self.assertIn("History Index", docs_index)
         self.assertIn("Release Reports", docs_index)
 

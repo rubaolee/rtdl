@@ -1,0 +1,224 @@
+{
+  "methods": [
+    "rtdl_2a1",
+    "rtdl_1a2",
+    "author_rt_tc",
+    "author_bs_tc",
+    "cugraph"
+  ],
+  "repeats": 3,
+  "results": {
+    "com_dblp": {
+      "expected_triangles": 2224385,
+      "input_edges": 1049866,
+      "input_file": "build/goal2593_snap_edges/com-dblp.edge",
+      "methods": {
+        "author_bs_tc": {
+          "elapsed_ms": 3084.9359557032585,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_counting_ms": 0.204144,
+          "median_csr_ms": 5.379370000000001,
+          "median_gpu_preprocessing_ms": 269.39983700000005,
+          "median_pipeline_excluding_file_read_ms": 701.3283510000001,
+          "median_subprocess_wall_ms": 998.1078691780567,
+          "median_tc_preprocessing_ms": 426.345,
+          "median_triangle_count": 2224385.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "counting_ms": 0.203808,
+              "csr_ms": 2.04827,
+              "gpu_preprocessing_ms": 273.990875,
+              "pipeline_excluding_file_read_ms": 696.1029530000001,
+              "subprocess_wall_ms": 980.4579392075539,
+              "tc_preprocessing_ms": 419.86,
+              "triangle_count": 2224385
+            },
+            {
+              "counting_ms": 0.20448,
+              "csr_ms": 8.71047,
+              "gpu_preprocessing_ms": 264.808799,
+              "pipeline_excluding_file_read_ms": 706.553749,
+              "subprocess_wall_ms": 1015.7577991485596,
+              "tc_preprocessing_ms": 432.83,
+              "triangle_count": 2224385
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "author_rt_tc": {
+          "elapsed_ms": 3473.597012460232,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_bvh_build_ms": 0.108571,
+          "median_compute_rays_ms": 244.464,
+          "median_convert_graph_to_rt_ms": 32.6923,
+          "median_counting_ms": 0.710528,
+          "median_csr_ms": 2.0531699999999997,
+          "median_pipeline_excluding_file_read_ms": 703.128069,
+          "median_subprocess_wall_ms": 1196.5588852763176,
+          "median_tc_preprocessing_ms": 423.0995,
+          "median_triangle_count": 2224385.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "bvh_build_ms": 0.105521,
+              "compute_rays_ms": 244.596,
+              "convert_graph_to_rt_ms": 32.8245,
+              "counting_ms": 0.708128,
+              "csr_ms": 2.04127,
+              "pipeline_excluding_file_read_ms": 707.430419,
+              "subprocess_wall_ms": 1197.4458396434784,
+              "tc_preprocessing_ms": 427.155,
+              "triangle_count": 2224385
+            },
+            {
+              "bvh_build_ms": 0.111621,
+              "compute_rays_ms": 244.332,
+              "convert_graph_to_rt_ms": 32.5601,
+              "counting_ms": 0.712928,
+              "csr_ms": 2.06507,
+              "pipeline_excluding_file_read_ms": 698.8257189999999,
+              "subprocess_wall_ms": 1195.6719309091568,
+              "tc_preprocessing_ms": 419.044,
+              "triangle_count": 2224385
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "cugraph": {
+          "elapsed_ms": 376.63309276103973,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_cudf_dataframe_ms": 2.4348869919776917,
+          "median_build_cugraph_graph_ms": 43.493203818798065,
+          "median_input_edges": 1049866.0,
+          "median_load_np_ms": 2.2005178034305573,
+          "median_reduce_count_ms": 0.6853565573692322,
+          "median_total_ms": 81.0784250497818,
+          "median_triangle_count": 2224385.0,
+          "median_triangle_count_ms": 32.26445987820625,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_cudf_dataframe_ms": 2.4758949875831604,
+              "build_cugraph_graph_ms": 45.437753200531006,
+              "input_edges": 1049866,
+              "input_file": "build/goal2593_snap_edges/com-dblp.edge",
+              "load_np_ms": 2.9914528131484985,
+              "reduce_count_ms": 0.6061568856239319,
+              "total_ms": 82.94782787561417,
+              "triangle_count": 2224385,
+              "triangle_count_ms": 31.43656998872757
+            },
+            {
+              "build_cudf_dataframe_ms": 2.393878996372223,
+              "build_cugraph_graph_ms": 41.548654437065125,
+              "input_edges": 1049866,
+              "input_file": "build/goal2593_snap_edges/com-dblp.edge",
+              "load_np_ms": 1.409582793712616,
+              "reduce_count_ms": 0.7645562291145325,
+              "total_ms": 79.20902222394943,
+              "triangle_count": 2224385,
+              "triangle_count_ms": 33.09234976768494
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "rtdl_1a2": {
+          "elapsed_ms": 1244.2109063267708,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_contract_ms": 156.2584452331066,
+          "median_build_geometry_ms": 55.27849867939949,
+          "median_matches_oracle": 1.0,
+          "median_native_traversal_ms": 2.064635,
+          "median_oracle_triangle_count": 2224385.0,
+          "median_primitive_count": 5413528.0,
+          "median_ray_count": 1006685.0,
+          "median_run_backend_ms": 29.575370252132416,
+          "median_total_ms": 241.11592769622803,
+          "median_triangle_count": 2224385.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_contract_ms": 154.6359583735466,
+              "build_geometry_ms": 54.01504784822464,
+              "matches_oracle": true,
+              "native_traversal_ms": 2.063825,
+              "oracle_triangle_count": 2224385,
+              "primitive_count": 5413528,
+              "ray_count": 1006685,
+              "run_backend_ms": 29.574260115623474,
+              "total_ms": 238.2289469242096,
+              "triangle_count": 2224385
+            },
+            {
+              "build_contract_ms": 157.88093209266663,
+              "build_geometry_ms": 56.54194951057434,
+              "matches_oracle": true,
+              "native_traversal_ms": 2.065445,
+              "oracle_triangle_count": 2224385,
+              "primitive_count": 5413528,
+              "ray_count": 1006685,
+              "run_backend_ms": 29.576480388641357,
+              "total_ms": 244.00290846824646,
+              "triangle_count": 2224385
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        },
+        "rtdl_2a1": {
+          "elapsed_ms": 11967.78780221939,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_contract_ms": 187.86850944161415,
+          "median_build_geometry_ms": 8.986767381429672,
+          "median_matches_oracle": 1.0,
+          "median_native_traversal_ms": 1.5114505,
+          "median_oracle_triangle_count": 2224385.0,
+          "median_primitive_count": 1006685.0,
+          "median_ray_count": 3413500.0,
+          "median_run_backend_ms": 13.19863647222519,
+          "median_total_ms": 210.06006002426147,
+          "median_triangle_count": 2224385.0,
+          "repeats": 3,
+          "runs": [
+            {
+              "build_contract_ms": 196.8289464712143,
+              "build_geometry_ms": 9.312830865383148,
+              "matches_oracle": true,
+              "native_traversal_ms": 1.577781,
+              "oracle_triangle_count": 2224385,
+              "primitive_count": 1006685,
+              "ray_count": 3413500,
+              "run_backend_ms": 13.272605836391449,
+              "total_ms": 219.4238379597664,
+              "triangle_count": 2224385
+            },
+            {
+              "build_contract_ms": 178.908072412014,
+              "build_geometry_ms": 8.660703897476196,
+              "matches_oracle": true,
+              "native_traversal_ms": 1.44512,
+              "oracle_triangle_count": 2224385,
+              "primitive_count": 1006685,
+              "ray_count": 3413500,
+              "run_backend_ms": 13.12466710805893,
+              "total_ms": 200.69628208875656,
+              "triangle_count": 2224385
+            }
+          ],
+          "status": "ok",
+          "warmup": 1
+        }
+      }
+    }
+  },
+  "warmup": 1
+}

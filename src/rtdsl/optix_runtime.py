@@ -340,6 +340,14 @@ class _RtdlRayAnyHitRow(ctypes.Structure):
     ]
 
 
+class _RtdlRayClosestHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("triangle_id", ctypes.c_uint32),
+        ("t", ctypes.c_double),
+    ]
+
+
 class _RtdlRaySegmentGroupCountRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
@@ -588,6 +596,7 @@ class PreparedOptixKernel:
         "overlay_compose",
         "ray_triangle_any_hit",
         "ray_triangle_hit_count",
+        "ray_triangle_closest_hit",
         "segment_polygon_hitcount",
         "segment_polygon_anyhit_rows",
         "point_nearest_segment",
@@ -675,6 +684,7 @@ class PreparedOptixExecution:
             "point_in_polygon":       _call_pip_optix_packed,
             "overlay_compose":        _call_overlay_optix_packed,
             "ray_triangle_hit_count": _call_ray_hitcount_optix_packed,
+            "ray_triangle_closest_hit": _call_ray_closest_hit_optix_packed,
             "segment_polygon_hitcount": _call_segment_polygon_hitcount_optix_packed,
             "segment_polygon_anyhit_rows": _call_segment_polygon_anyhit_rows_optix_packed,
             "point_nearest_segment":  _call_point_nearest_segment_optix_packed,
@@ -5937,8 +5947,8 @@ def pack_rays_3d_from_arrays(
     buf["dx"]   = dx_a;  buf["dy"] = dy_a;  buf["dz"] = dz_a
     buf["tmax"] = tmax_a
 
-    arr = (_RtdlRay3D * n).from_buffer_copy(buf)
-    return PackedRays(records=arr, count=n, dimension=3)
+    arr = (_RtdlRay3D * n).from_buffer(buf)
+    return PackedRays(records=arr, count=n, dimension=3, owner=buf)
 
 
 def pack_rays_2d_from_arrays(
@@ -5985,8 +5995,8 @@ def pack_rays_2d_from_arrays(
     buf["dy"] = dy_a
     buf["tmax"] = tmax_a
 
-    arr = (_RtdlRay2D * n).from_buffer_copy(buf)
-    return PackedRays(records=arr, count=n, dimension=2)
+    arr = (_RtdlRay2D * n).from_buffer(buf)
+    return PackedRays(records=arr, count=n, dimension=2, owner=buf)
 
 
 def pack_triangles_2d_from_arrays(
@@ -6039,12 +6049,91 @@ def pack_triangles_2d_from_arrays(
     buf["x2"] = x2_a
     buf["y2"] = y2_a
 
-    arr = (_RtdlTriangle * n).from_buffer_copy(buf)
-    return PackedTriangles(records=arr, count=n, dimension=2)
+    arr = (_RtdlTriangle * n).from_buffer(buf)
+    return PackedTriangles(records=arr, count=n, dimension=2, owner=buf)
+
+
+def pack_triangles_3d_from_arrays(
+    ids,
+    x0,
+    y0,
+    z0,
+    x1,
+    y1,
+    z1,
+    x2,
+    y2,
+    z2,
+) -> PackedTriangles:
+    """Fast bulk packing of 3-D triangles from array-like inputs."""
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        raise RuntimeError("pack_triangles_3d_from_arrays requires numpy")
+
+    ids_a = _np.asarray(ids, dtype=_np.uint32)
+    x0_a = _np.asarray(x0, dtype=_np.float64)
+    y0_a = _np.asarray(y0, dtype=_np.float64)
+    z0_a = _np.asarray(z0, dtype=_np.float64)
+    x1_a = _np.asarray(x1, dtype=_np.float64)
+    y1_a = _np.asarray(y1, dtype=_np.float64)
+    z1_a = _np.asarray(z1, dtype=_np.float64)
+    x2_a = _np.asarray(x2, dtype=_np.float64)
+    y2_a = _np.asarray(y2, dtype=_np.float64)
+    z2_a = _np.asarray(z2, dtype=_np.float64)
+
+    n = len(ids_a)
+    if any(len(field) != n for field in (x0_a, y0_a, z0_a, x1_a, y1_a, z1_a, x2_a, y2_a, z2_a)):
+        raise ValueError("triangle arrays must have equal lengths")
+
+    _dtype = _np.dtype({
+        "names": ["id", "x0", "y0", "z0", "x1", "y1", "z1", "x2", "y2", "z2"],
+        "formats": [
+            _np.uint32,
+            _np.float64,
+            _np.float64,
+            _np.float64,
+            _np.float64,
+            _np.float64,
+            _np.float64,
+            _np.float64,
+            _np.float64,
+            _np.float64,
+        ],
+        "offsets": [
+            _RtdlTriangle3D.id.offset,
+            _RtdlTriangle3D.x0.offset,
+            _RtdlTriangle3D.y0.offset,
+            _RtdlTriangle3D.z0.offset,
+            _RtdlTriangle3D.x1.offset,
+            _RtdlTriangle3D.y1.offset,
+            _RtdlTriangle3D.z1.offset,
+            _RtdlTriangle3D.x2.offset,
+            _RtdlTriangle3D.y2.offset,
+            _RtdlTriangle3D.z2.offset,
+        ],
+        "itemsize": ctypes.sizeof(_RtdlTriangle3D),
+    })
+    buf = _np.empty(n, dtype=_dtype)
+    buf["id"] = ids_a
+    buf["x0"] = x0_a
+    buf["y0"] = y0_a
+    buf["z0"] = z0_a
+    buf["x1"] = x1_a
+    buf["y1"] = y1_a
+    buf["z1"] = z1_a
+    buf["x2"] = x2_a
+    buf["y2"] = y2_a
+    buf["z2"] = z2_a
+
+    arr = (_RtdlTriangle3D * n).from_buffer(buf)
+    return PackedTriangles(records=arr, count=n, dimension=3, owner=buf)
 
 
 _PARTNER_RAY_2D_COLUMNS = ("ids", "ox", "oy", "dx", "dy", "tmax")
 _PARTNER_TRIANGLE_2D_COLUMNS = ("ids", "x0", "y0", "x1", "y1", "x2", "y2")
+_PARTNER_RAY_3D_COLUMNS = ("ids", "ox", "oy", "oz", "dx", "dy", "dz", "tmax")
+_PARTNER_TRIANGLE_3D_COLUMNS = ("ids", "x0", "y0", "z0", "x1", "y1", "z1", "x2", "y2", "z2")
 _PARTNER_POINT_2D_COLUMNS = ("ids", "x", "y")
 _OPTIX_PARTNER_DEVICE_ANYHIT_SYMBOL = "rtdl_optix_count_ray_primitive_anyhit_2d_device_columns"
 _OPTIX_PARTNER_PREPARED_DEVICE_RAYS_SYMBOL = "rtdl_optix_count_prepared_ray_anyhit_2d_device_rays"
@@ -6052,6 +6141,15 @@ _OPTIX_PARTNER_PREPARED_DEVICE_OUTPUT_FLAGS_SYMBOL = "rtdl_optix_write_prepared_
 _OPTIX_PARTNER_PREPARED_DEVICE_WITNESSES_SYMBOL = "rtdl_optix_write_prepared_ray_anyhit_2d_device_witnesses"
 _OPTIX_PARTNER_PREPARED_DEVICE_ALL_WITNESSES_SYMBOL = (
     "rtdl_optix_write_prepared_ray_anyhit_2d_device_all_witnesses"
+)
+_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_create_device_triangles"
+)
+_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_WEIGHTED_SUM_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays"
+)
+_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_HIT_COUNT_SUM_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays"
 )
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLES_SYMBOL = "rtdl_optix_prepare_ray_anyhit_2d_device_triangles"
 _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL = (
@@ -6131,7 +6229,7 @@ def _partner_dtype_token(dtype) -> str:
 def _partner_dtype_itemsize(dtype_token: str) -> int:
     if dtype_token in {"uint32", "int32", "float32", "float"}:
         return 4
-    if dtype_token in {"int64", "float64", "double"}:
+    if dtype_token in {"int64", "uint64", "float64", "double"}:
         return 8
     raise ValueError(f"unsupported partner dtype for stride validation: {dtype_token!r}")
 
@@ -6178,6 +6276,42 @@ def _require_partner_device_ray_column_layout(handoffs: dict) -> None:
             raise ValueError("partner device ray columns must live on the same CUDA device")
 
 
+def _require_partner_device_ray3d_column_layout(handoffs: dict) -> None:
+    expected_dtypes = {
+        "ids": {"uint32"},
+        "ox": {"float64", "double"},
+        "oy": {"float64", "double"},
+        "oz": {"float64", "double"},
+        "dx": {"float64", "double"},
+        "dy": {"float64", "double"},
+        "dz": {"float64", "double"},
+        "tmax": {"float64", "double"},
+    }
+    expected_count = None
+    expected_device = None
+    for name in _PARTNER_RAY_3D_COLUMNS:
+        handoff = handoffs[name]
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype not in expected_dtypes[name]:
+            allowed = ", ".join(sorted(expected_dtypes[name]))
+            raise ValueError(f"partner device 3-D ray column {name!r} must use dtype {allowed}")
+        if not _partner_contiguous_column_strides(
+            handoff.strides,
+            itemsize=_partner_dtype_itemsize(dtype),
+        ):
+            raise ValueError(f"partner device 3-D ray column {name!r} must be contiguous")
+        count = int(handoff.shape[0])
+        if expected_count is None:
+            expected_count = count
+        elif count != expected_count:
+            raise ValueError("partner device 3-D ray columns must have matching lengths")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError("partner device 3-D ray columns must live on the same CUDA device")
+
+
 def _require_partner_device_triangle_column_layout(handoffs: dict) -> None:
     expected_dtypes = {
         "ids": {"uint32"},
@@ -6211,6 +6345,64 @@ def _require_partner_device_triangle_column_layout(handoffs: dict) -> None:
             expected_device = device
         elif device != expected_device:
             raise ValueError("partner device triangle columns must live on the same CUDA device")
+
+
+def _require_partner_device_triangle3d_column_layout(handoffs: dict) -> None:
+    expected_dtypes = {
+        "ids": {"uint32"},
+        "x0": {"float64", "double"},
+        "y0": {"float64", "double"},
+        "z0": {"float64", "double"},
+        "x1": {"float64", "double"},
+        "y1": {"float64", "double"},
+        "z1": {"float64", "double"},
+        "x2": {"float64", "double"},
+        "y2": {"float64", "double"},
+        "z2": {"float64", "double"},
+    }
+    expected_count = None
+    expected_device = None
+    for name in _PARTNER_TRIANGLE_3D_COLUMNS:
+        handoff = handoffs[name]
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype not in expected_dtypes[name]:
+            allowed = ", ".join(sorted(expected_dtypes[name]))
+            raise ValueError(f"partner device 3-D triangle column {name!r} must use dtype {allowed}")
+        if not _partner_contiguous_column_strides(
+            handoff.strides,
+            itemsize=_partner_dtype_itemsize(dtype),
+        ):
+            raise ValueError(f"partner device 3-D triangle column {name!r} must be contiguous")
+        count = int(handoff.shape[0])
+        if expected_count is None:
+            expected_count = count
+        elif count != expected_count:
+            raise ValueError("partner device 3-D triangle columns must have matching lengths")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError("partner device 3-D triangle columns must live on the same CUDA device")
+
+
+def _require_partner_device_uint64_weight_layout(
+    handoff,
+    *,
+    ray_count: int,
+    expected_device: tuple[str, int],
+) -> None:
+    dtype = _partner_dtype_token(handoff.dtype)
+    if dtype != "uint64":
+        raise ValueError("partner device ray weight column must use dtype uint64")
+    if tuple(handoff.shape) != (ray_count,):
+        raise ValueError("partner device ray weight column must have shape (ray_count,)")
+    if not _partner_contiguous_column_strides(
+        handoff.strides,
+        itemsize=_partner_dtype_itemsize(dtype),
+    ):
+        raise ValueError("partner device ray weight column must be contiguous")
+    if (handoff.device_type, handoff.device_id) != expected_device:
+        raise ValueError("partner device ray weight column must live on the same CUDA device as ray columns")
 
 
 def _require_partner_device_point_column_layout(handoffs: dict, *, label: str) -> None:
@@ -6476,6 +6668,104 @@ def pack_optix_ray_any_hit_2d_device_triangle_inputs(triangle_columns: dict) -> 
             "rt_core_speedup_claim_authorized": False,
             "partner_phase_timings_s": timings,
         },
+    }
+
+
+def pack_optix_static_triangle_scene_3d_device_triangle_inputs(triangle_columns: dict) -> dict[str, object]:
+    """Validate partner-owned CUDA 3-D triangle columns for generic OptiX summaries.
+
+    The native engine packs these generic columns on GPU into RTDL's internal
+    triangle/AABB layout before building the OptiX GAS. No graph or app
+    semantics are part of this ABI.
+    """
+    triangle_handoffs, timings = _partner_device_descriptor_columns(
+        triangle_columns,
+        _PARTNER_TRIANGLE_3D_COLUMNS,
+        label="triangle3d",
+    )
+    _require_partner_device_triangle3d_column_layout(triangle_handoffs)
+    descriptors = tuple(triangle_handoffs[name] for name in _PARTNER_TRIANGLE_3D_COLUMNS)
+    return {
+        "triangles": triangle_handoffs,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_triangle3d_columns_gpu_pack_gas_build",
+            "native_symbol": _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
+            "triangle_count": int(triangle_handoffs["ids"].shape[0]),
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": timings,
+        },
+    }
+
+
+def pack_optix_static_triangle_scene_3d_device_ray_inputs(ray_columns: dict) -> dict[str, object]:
+    """Validate partner-owned CUDA 3-D ray columns for generic OptiX summaries."""
+    ray_handoffs, timings = _partner_device_descriptor_columns(
+        ray_columns,
+        _PARTNER_RAY_3D_COLUMNS,
+        label="ray3d",
+    )
+    _require_partner_device_ray3d_column_layout(ray_handoffs)
+    descriptors = tuple(ray_handoffs[name] for name in _PARTNER_RAY_3D_COLUMNS)
+    return {
+        "rays": ray_handoffs,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_ray3d_columns_gpu_pack",
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
+            "ray_count": int(ray_handoffs["ids"].shape[0]),
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "ray_columns_true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "partner_phase_timings_s": timings,
+        },
+    }
+
+
+def pack_optix_static_triangle_scene_3d_device_weighted_ray_inputs(
+    ray_columns: dict,
+    ray_weights,
+) -> dict[str, object]:
+    packet = pack_optix_static_triangle_scene_3d_device_ray_inputs(ray_columns)
+    ray_count = int(packet["metadata"]["ray_count"])
+    rays = packet["rays"]
+    expected_device = (rays["ids"].device_type, rays["ids"].device_id)
+    validation_start = time.perf_counter()
+    weights_handoff = _partner.prepare_direct_device_pointer_handoff(ray_weights, access="read")
+    if len(weights_handoff.shape) != 1:
+        raise ValueError("partner device ray weight column must be one-dimensional")
+    _require_partner_device_uint64_weight_layout(
+        weights_handoff,
+        ray_count=ray_count,
+        expected_device=expected_device,
+    )
+    weight_validation_s = time.perf_counter() - validation_start
+    metadata = dict(packet["metadata"])
+    metadata["native_symbol"] = _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_WEIGHTED_SUM_SYMBOL
+    metadata["ray_weights_device_resident"] = True
+    metadata["partner_phase_timings_s"] = {
+        **metadata["partner_phase_timings_s"],
+        "weight_descriptor_validation_s": weight_validation_s,
+    }
+    metadata["source_protocols"] = tuple(
+        sorted(set(metadata["source_protocols"]) | {weights_handoff.source_protocol})
+    )
+    metadata["source_devices"] = tuple(
+        sorted(set(metadata["source_devices"]) | {f"{weights_handoff.device_type}:{weights_handoff.device_id}"})
+    )
+    return {
+        "rays": rays,
+        "ray_weights": weights_handoff,
+        "metadata": metadata,
     }
 
 
@@ -7264,6 +7554,40 @@ def _call_ray_anyhit_optix_packed(compiled: CompiledKernel, packed, lib) -> Opti
         library=lib, rows_ptr=rows_ptr,
         row_count=row_count.value, row_type=_RtdlRayAnyHitRow,
         field_names=("ray_id", "any_hit"))
+
+
+def _call_ray_closest_hit_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
+    rays = packed[compiled.candidates.left.name]
+    triangles = packed[compiled.candidates.right.name]
+    rows_ptr = ctypes.POINTER(_RtdlRayClosestHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    if rays.dimension != 3 or triangles.dimension != 3:
+        raise ValueError("OptiX ray_triangle_closest_hit currently requires 3-D rays and triangles")
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_closest_hit_3d")
+    if symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export rtdl_optix_run_ray_closest_hit_3d. "
+            "Rebuild it with 'make build-optix' from current main."
+        )
+    status = symbol(
+        rays.records,
+        rays.count,
+        triangles.records,
+        triangles.count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlRayClosestHitRow,
+        field_names=("ray_id", "triangle_id", "t"),
+    )
 
 
 def ray_segment_group_count_2d_optix(rays, segments, segment_group_ids) -> tuple[dict[str, int], ...]:
@@ -8381,6 +8705,491 @@ class PreparedOptixGroupedSegmentQuery3D:
         }
 
 
+def _pack_uint64_weights(weights, expected_count: int):
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        _np = None
+
+    if _np is not None:
+        raw = _np.asarray(weights)
+        if raw.ndim != 1:
+            raise ValueError("ray_weights must be one-dimensional")
+        if len(raw) != expected_count:
+            raise ValueError("ray_weights length must match ray count")
+        if raw.dtype.kind == "i" and raw.size and bool((raw < 0).any()):
+            raise ValueError("ray_weights entries must fit uint64")
+        if raw.dtype.kind in {"b", "i", "u"}:
+            try:
+                array = _np.ascontiguousarray(raw, dtype=_np.uint64)
+            except OverflowError as exc:
+                raise ValueError("ray_weights entries must fit uint64") from exc
+            return array.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)), array
+
+    normalized = tuple(int(weight) for weight in weights)
+    if len(normalized) != expected_count:
+        raise ValueError("ray_weights length must match ray count")
+    if any(weight < 0 or weight > 0xFFFFFFFFFFFFFFFF for weight in normalized):
+        raise ValueError("ray_weights entries must fit uint64")
+    WeightArray = ctypes.c_uint64 * len(normalized)
+    array = WeightArray(*normalized)
+    return array, array
+
+
+class PreparedOptixRayBatch3D:
+    """Reusable device-resident 3-D ray batch for prepared OptiX scenes."""
+
+    def __init__(self, lib, rays) -> None:
+        self._lib = lib
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("PreparedOptixRayBatch3D requires 3-D rays")
+        self.ray_count = int(packed_rays.count)
+        self._packed_rays_owner = packed_rays
+        create_symbol = _find_optional_backend_symbol(self._lib, "rtdl_optix_ray_batch_3d_create")
+        if create_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_ray_batch_3d_create. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = create_symbol(
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            destroy_symbol = _find_optional_backend_symbol(self._lib, "rtdl_optix_ray_batch_3d_destroy")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixRayBatch3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+class PreparedOptixClosestHitGroupedArgmin3D:
+    """Reusable device-resident grouped-argmin maps for closest-hit reductions."""
+
+    def __init__(self, lib, ray_group_ids, candidate_values, candidate_indices, *, group_count=None) -> None:
+        self._lib = lib
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        try:
+            import numpy as _np
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("PreparedOptixClosestHitGroupedArgmin3D requires numpy") from exc
+
+        raw_group_ids = _np.asarray(ray_group_ids)
+        if raw_group_ids.ndim != 1:
+            raise ValueError("ray_group_ids must be a one-dimensional ray-id-to-group map")
+        if raw_group_ids.size:
+            if bool((raw_group_ids < 0).any()):
+                raise ValueError("ray_group_ids must be nonnegative")
+            max_group_id = int(raw_group_ids.max())
+        else:
+            max_group_id = -1
+        if group_count is None:
+            group_count = max_group_id + 1 if max_group_id >= 0 else 0
+        self.group_count = int(group_count)
+        if self.group_count < 0:
+            raise ValueError("group_count must be nonnegative")
+        if max_group_id >= self.group_count:
+            raise ValueError("ray_group_ids contains a group outside group_count")
+
+        raw_candidate_indices = _np.asarray(candidate_indices)
+        if raw_candidate_indices.ndim != 1:
+            raise ValueError("candidate_indices must be one-dimensional")
+        if raw_candidate_indices.size and bool((raw_candidate_indices < 0).any()):
+            raise ValueError("candidate_indices must be nonnegative")
+        candidate_values_np = _np.ascontiguousarray(candidate_values, dtype=_np.float64)
+        candidate_indices_np = _np.ascontiguousarray(raw_candidate_indices, dtype=_np.uint32)
+        if candidate_values_np.ndim != 1:
+            raise ValueError("candidate_values must be one-dimensional")
+        if candidate_values_np.shape[0] != candidate_indices_np.shape[0]:
+            raise ValueError("candidate_values and candidate_indices must have the same length")
+        group_ids_np = _np.ascontiguousarray(raw_group_ids, dtype=_np.uint32)
+
+        self.ray_group_id_count = int(group_ids_np.shape[0])
+        self.candidate_count = int(candidate_values_np.shape[0])
+        self._group_ids_owner = group_ids_np
+        self._candidate_values_owner = candidate_values_np
+        self._candidate_indices_owner = candidate_indices_np
+        create_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create",
+        )
+        if create_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = create_symbol(
+            group_ids_np.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+            ctypes.c_size_t(group_ids_np.shape[0]),
+            candidate_values_np.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            candidate_indices_np.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+            ctypes.c_size_t(candidate_values_np.shape[0]),
+            ctypes.c_size_t(self.group_count),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_destroy",
+            )
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixClosestHitGroupedArgmin3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def _normalize_grouped_candidate_argmin_inputs(
+    candidate_group_ids,
+    candidate_values,
+    candidate_indices,
+    *,
+    group_count: int | None = None,
+):
+    try:
+        import numpy as _np
+    except ImportError as exc:  # pragma: no cover - optional dependency
+        raise RuntimeError("grouped candidate argmin requires numpy") from exc
+
+    raw_group_ids = _np.asarray(candidate_group_ids)
+    if raw_group_ids.ndim != 1:
+        raise ValueError("candidate_group_ids must be one-dimensional")
+    if raw_group_ids.size:
+        if bool((raw_group_ids < 0).any()):
+            raise ValueError("candidate_group_ids must be nonnegative")
+        max_group_id = int(raw_group_ids.max())
+    else:
+        max_group_id = -1
+    if max_group_id > int(_np.iinfo(_np.uint32).max):
+        raise ValueError("candidate_group_ids entries must fit uint32")
+    if group_count is None:
+        group_count = max_group_id + 1 if max_group_id >= 0 else 0
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be nonnegative")
+    if group_count > int(_np.iinfo(_np.uint32).max):
+        raise ValueError("group_count must fit uint32")
+    if max_group_id >= group_count:
+        raise ValueError("candidate_group_ids contains a group outside group_count")
+
+    values_np = _np.ascontiguousarray(candidate_values, dtype=_np.float64)
+    raw_indices = _np.asarray(candidate_indices)
+    if values_np.ndim != 1:
+        raise ValueError("candidate_values must be one-dimensional")
+    if raw_indices.ndim != 1:
+        raise ValueError("candidate_indices must be one-dimensional")
+    if values_np.shape[0] != raw_group_ids.shape[0] or values_np.shape[0] != raw_indices.shape[0]:
+        raise ValueError("candidate_group_ids, candidate_values, and candidate_indices must have the same length")
+    if raw_indices.size:
+        if bool((raw_indices < 0).any()):
+            raise ValueError("candidate_indices must be nonnegative")
+        if int(raw_indices.max()) > int(_np.iinfo(_np.uint32).max):
+            raise ValueError("candidate_indices entries must fit uint32")
+
+    return (
+        _np,
+        _np.ascontiguousarray(raw_group_ids, dtype=_np.uint32),
+        values_np,
+        _np.ascontiguousarray(raw_indices, dtype=_np.uint32),
+        group_count,
+    )
+
+
+def grouped_candidate_argmin_host_reference(
+    candidate_group_ids,
+    candidate_values,
+    candidate_indices,
+    *,
+    group_count: int | None = None,
+) -> dict[str, object]:
+    """Reference grouped argmin over generic ``(group_id, value, tie_index)`` candidates."""
+    _np, group_ids_np, values_np, indices_np, group_count = _normalize_grouped_candidate_argmin_inputs(
+        candidate_group_ids,
+        candidate_values,
+        candidate_indices,
+        group_count=group_count,
+    )
+    has_value = _np.zeros(group_count, dtype=_np.uint8)
+    group_index = _np.full(group_count, _np.iinfo(_np.uint32).max, dtype=_np.uint32)
+    group_value = _np.zeros(group_count, dtype=_np.float64)
+    if group_ids_np.size:
+        valid = ~_np.isnan(values_np)
+        if bool(valid.any()):
+            valid_group_ids = group_ids_np[valid]
+            valid_values = values_np[valid]
+            valid_indices = indices_np[valid]
+            order = _np.lexsort((valid_indices, valid_values, valid_group_ids))
+            sorted_group_ids = valid_group_ids[order]
+            sorted_values = valid_values[order]
+            sorted_indices = valid_indices[order]
+            first = _np.empty(sorted_group_ids.size, dtype=bool)
+            first[0] = True
+            first[1:] = sorted_group_ids[1:] != sorted_group_ids[:-1]
+            winners = sorted_group_ids[first]
+            has_value[winners] = 1
+            group_index[winners] = sorted_indices[first]
+            group_value[winners] = sorted_values[first]
+    return {
+        "has_value": has_value,
+        "index": group_index,
+        "value": group_value,
+        "metadata": {
+            "backend": "host_reference",
+            "contract": "GROUPED_CANDIDATE_ARGMIN_V1",
+            "result_kind": "grouped_argmin_from_candidate_arrays",
+            "candidate_count": int(group_ids_np.shape[0]),
+            "group_count": int(group_count),
+            "native_device_grouped_candidate_argmin": False,
+            "native_engine_customization": False,
+        },
+    }
+
+
+class PreparedOptixGroupedCandidateArgmin:
+    """Reusable generic device-resident grouped argmin over candidate arrays."""
+
+    contract = "OPTIX_GROUPED_CANDIDATE_ARGMIN_V1"
+
+    def __init__(
+        self,
+        candidate_group_ids,
+        candidate_values,
+        candidate_indices,
+        *,
+        group_count: int | None = None,
+        lib=None,
+        allow_numpy_fallback: bool = False,
+    ) -> None:
+        (
+            self._np,
+            self._candidate_group_ids_owner,
+            self._candidate_values_owner,
+            self._candidate_indices_owner,
+            self.group_count,
+        ) = _normalize_grouped_candidate_argmin_inputs(
+            candidate_group_ids,
+            candidate_values,
+            candidate_indices,
+            group_count=group_count,
+        )
+        self.candidate_count = int(self._candidate_group_ids_owner.shape[0])
+        self._lib = lib
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._fallback_reason: str | None = None
+        self._native = False
+
+        prepare_start = time.perf_counter()
+        try:
+            if self._lib is None:
+                self._lib = _load_optix_library()
+            create_symbol = _find_optional_backend_symbol(
+                self._lib,
+                "rtdl_optix_grouped_candidate_argmin_inputs_create",
+            )
+            if create_symbol is None:
+                raise RuntimeError(
+                    "Loaded OptiX backend library does not export "
+                    "rtdl_optix_grouped_candidate_argmin_inputs_create. "
+                    "Rebuild it with 'make build-optix' from current main."
+                )
+            error = ctypes.create_string_buffer(4096)
+            status = create_symbol(
+                self._candidate_group_ids_owner.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                self._candidate_values_owner.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                self._candidate_indices_owner.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                ctypes.c_size_t(self.candidate_count),
+                ctypes.c_size_t(self.group_count),
+                ctypes.byref(self._handle),
+                error,
+                len(error),
+            )
+            _check_status(status, error)
+            self._native = True
+        except (OSError, RuntimeError) as exc:
+            if not allow_numpy_fallback:
+                raise
+            self._fallback_reason = str(exc)
+        self.prepare_seconds = time.perf_counter() - prepare_start
+
+    def finalize(self) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared grouped candidate argmin handle is closed")
+        if not self._native:
+            result = grouped_candidate_argmin_host_reference(
+                self._candidate_group_ids_owner,
+                self._candidate_values_owner,
+                self._candidate_indices_owner,
+                group_count=self.group_count,
+            )
+            metadata = dict(result["metadata"])
+            metadata.update(
+                {
+                    "backend": "numpy_fallback",
+                    "prepared_reused": True,
+                    "prepare_seconds": float(self.prepare_seconds),
+                    "fallback_reason": self._fallback_reason,
+                }
+            )
+            result["metadata"] = metadata
+            return result
+
+        finalize_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_grouped_candidate_argmin_finalize",
+        )
+        if finalize_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_grouped_candidate_argmin_finalize. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        group_has_value = self._np.zeros(self.group_count, dtype=self._np.uint8)
+        group_index = self._np.full(self.group_count, self._np.iinfo(self._np.uint32).max, dtype=self._np.uint32)
+        group_value = self._np.zeros(self.group_count, dtype=self._np.float64)
+        finalize_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        query_start = time.perf_counter()
+        status = finalize_symbol(
+            self._handle,
+            group_has_value.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)),
+            group_index.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+            group_value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.byref(finalize_seconds),
+            error,
+            len(error),
+        )
+        query_total_seconds = time.perf_counter() - query_start
+        _check_status(status, error)
+        return {
+            "has_value": group_has_value,
+            "index": group_index,
+            "value": group_value,
+            "metadata": {
+                "backend": "optix",
+                "contract": self.contract,
+                "result_kind": "grouped_argmin_from_candidate_arrays",
+                "candidate_count": int(self.candidate_count),
+                "group_count": int(self.group_count),
+                "prepared_reused": True,
+                "prepare_seconds": float(self.prepare_seconds),
+                "phase_timing_seconds": {
+                    "finalize": float(finalize_seconds.value),
+                    "query_total": float(query_total_seconds),
+                },
+                "transfer_metadata": {
+                    "candidate_group_ids_uploaded_each_run": False,
+                    "candidate_values_uploaded_each_run": False,
+                    "candidate_indices_uploaded_each_run": False,
+                    "per_group_results_downloaded_to_host": True,
+                    "native_device_grouped_candidate_argmin": True,
+                    "true_zero_copy_authorized": False,
+                },
+                "native_engine_customization": False,
+                "claim_boundary": {
+                    "native_app_api": False,
+                    "public_speedup_claim": False,
+                    "true_zero_copy": False,
+                },
+            },
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if self._native and handle.value:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                "rtdl_optix_grouped_candidate_argmin_inputs_destroy",
+            )
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixGroupedCandidateArgmin":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_grouped_candidate_argmin(
+    candidate_group_ids,
+    candidate_values,
+    candidate_indices,
+    *,
+    group_count: int | None = None,
+    allow_numpy_fallback: bool = False,
+) -> PreparedOptixGroupedCandidateArgmin:
+    return PreparedOptixGroupedCandidateArgmin(
+        candidate_group_ids,
+        candidate_values,
+        candidate_indices,
+        group_count=group_count,
+        allow_numpy_fallback=allow_numpy_fallback,
+    )
+
+
 class PreparedOptixStaticTriangleScene3D:
     """Reusable OptiX handle for grouped finite 3D segment any-hit flags."""
 
@@ -8440,6 +9249,264 @@ class PreparedOptixStaticTriangleScene3D:
             self.close()
         except Exception:
             pass
+
+    def prepare_ray_batch(self, rays) -> PreparedOptixRayBatch3D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        return PreparedOptixRayBatch3D(self._lib, rays)
+
+    def prepare_closest_hit_grouped_argmin_inputs(
+        self,
+        ray_group_ids,
+        candidate_values,
+        candidate_indices,
+        *,
+        group_count: int | None = None,
+    ) -> PreparedOptixClosestHitGroupedArgmin3D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        return PreparedOptixClosestHitGroupedArgmin3D(
+            self._lib,
+            ray_group_ids,
+            candidate_values,
+            candidate_indices,
+            group_count=group_count,
+        )
+
+    def ray_closest_hit_prepared_grouped_argmin(
+        self,
+        rays: PreparedOptixRayBatch3D,
+        grouped_inputs: PreparedOptixClosestHitGroupedArgmin3D,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(rays, PreparedOptixRayBatch3D):
+            raise TypeError("ray_closest_hit_prepared_grouped_argmin requires PreparedOptixRayBatch3D")
+        if not isinstance(grouped_inputs, PreparedOptixClosestHitGroupedArgmin3D):
+            raise TypeError(
+                "ray_closest_hit_prepared_grouped_argmin requires "
+                "PreparedOptixClosestHitGroupedArgmin3D"
+            )
+        if rays._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        if grouped_inputs._closed:
+            raise RuntimeError("prepared grouped argmin inputs handle is closed")
+        try:
+            import numpy as _np
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("ray_closest_hit_prepared_grouped_argmin requires numpy") from exc
+
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        group_count = int(grouped_inputs.group_count)
+        group_has_value = _np.zeros(group_count, dtype=_np.uint8)
+        group_index = _np.full(group_count, _np.iinfo(_np.uint32).max, dtype=_np.uint32)
+        group_value = _np.zeros(group_count, dtype=_np.float64)
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        query_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            rays._handle,
+            grouped_inputs._handle,
+            group_has_value.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)),
+            group_index.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+            group_value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        query_total_seconds = time.perf_counter() - query_start
+        _check_status(status, error)
+
+        self._run_count += 1
+        self.last_closest_hit_metadata = {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_GROUPED_ARGMIN_V1",
+            "result_kind": "grouped_argmin_from_ray_triangle_closest_hit",
+            "ray_count": int(rays.ray_count),
+            "triangle_count": self.triangle_count,
+            "group_count": group_count,
+            "candidate_count": int(grouped_inputs.candidate_count),
+            "ray_group_id_count": int(grouped_inputs.ray_group_id_count),
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": True,
+            "prepared_grouped_argmin_inputs_used": True,
+            "prepared_ray_batch_seconds": float(rays.prepare_seconds),
+            "prepared_grouped_argmin_inputs_seconds": float(grouped_inputs.prepare_seconds),
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "row_arrays_materialized": False,
+            "native_grouped_argmin": True,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "traversal": float(traversal_seconds.value),
+                "query_total": float(query_total_seconds),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": False,
+                "prepared_rays_resident_on_device": True,
+                "group_ids_uploaded_each_run": False,
+                "candidate_values_uploaded_each_run": False,
+                "candidate_indices_uploaded_each_run": False,
+                "closest_hit_rows_downloaded_to_host": False,
+                "per_group_results_downloaded_to_host": True,
+                "python_dict_rows_materialized": False,
+                "native_host_grouped_argmin": False,
+                "native_device_grouped_argmin": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+        return {
+            "has_value": group_has_value,
+            "index": group_index,
+            "value": group_value,
+            "metadata": dict(self.last_closest_hit_metadata),
+        }
+
+    def two_scene_ray_closest_hit_prepared_grouped_argmin(
+        self,
+        rays_a: PreparedOptixRayBatch3D,
+        grouped_inputs_a: PreparedOptixClosestHitGroupedArgmin3D,
+        scene_b: "PreparedOptixStaticTriangleScene3D",
+        rays_b: PreparedOptixRayBatch3D,
+        grouped_inputs_b: PreparedOptixClosestHitGroupedArgmin3D,
+    ) -> dict[str, object]:
+        if self._closed or scene_b._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        for rays in (rays_a, rays_b):
+            if not isinstance(rays, PreparedOptixRayBatch3D):
+                raise TypeError("two_scene_ray_closest_hit_prepared_grouped_argmin requires prepared ray batches")
+            if rays._closed:
+                raise RuntimeError("prepared OptiX ray batch handle is closed")
+        for grouped_inputs in (grouped_inputs_a, grouped_inputs_b):
+            if not isinstance(grouped_inputs, PreparedOptixClosestHitGroupedArgmin3D):
+                raise TypeError(
+                    "two_scene_ray_closest_hit_prepared_grouped_argmin requires "
+                    "prepared grouped argmin inputs"
+                )
+            if grouped_inputs._closed:
+                raise RuntimeError("prepared grouped argmin inputs handle is closed")
+        if grouped_inputs_a.group_count != grouped_inputs_b.group_count:
+            raise ValueError("two-scene grouped argmin inputs must have the same group_count")
+        try:
+            import numpy as _np
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("two_scene_ray_closest_hit_prepared_grouped_argmin requires numpy") from exc
+
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        group_count = int(grouped_inputs_a.group_count)
+        group_has_value = _np.zeros(group_count, dtype=_np.uint8)
+        group_index = _np.full(group_count, _np.iinfo(_np.uint32).max, dtype=_np.uint32)
+        group_value = _np.zeros(group_count, dtype=_np.float64)
+        traversal_a_seconds = ctypes.c_double()
+        traversal_b_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        query_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            rays_a._handle,
+            grouped_inputs_a._handle,
+            scene_b._handle,
+            rays_b._handle,
+            grouped_inputs_b._handle,
+            group_has_value.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)),
+            group_index.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+            group_value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.byref(traversal_a_seconds),
+            ctypes.byref(traversal_b_seconds),
+            error,
+            len(error),
+        )
+        query_total_seconds = time.perf_counter() - query_start
+        _check_status(status, error)
+
+        self._run_count += 1
+        metadata = {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_TWO_PREPARED_RAY_BATCHES_PREPARED_GROUPED_ARGMIN_V1",
+            "result_kind": "two_source_grouped_argmin_from_ray_triangle_closest_hit",
+            "ray_count_a": int(rays_a.ray_count),
+            "ray_count_b": int(rays_b.ray_count),
+            "triangle_count_a": self.triangle_count,
+            "triangle_count_b": scene_b.triangle_count,
+            "group_count": group_count,
+            "candidate_count_a": int(grouped_inputs_a.candidate_count),
+            "candidate_count_b": int(grouped_inputs_b.candidate_count),
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": True,
+            "prepared_grouped_argmin_inputs_used": True,
+            "native_two_source_grouped_merge": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "row_arrays_materialized": False,
+            "native_grouped_argmin": True,
+            "phase_timing_seconds": {
+                "prepare_build_a": float(self.prepare_seconds),
+                "prepare_build_b": float(scene_b.prepare_seconds),
+                "query_pack": 0.0,
+                "traversal_a": float(traversal_a_seconds.value),
+                "traversal_b": float(traversal_b_seconds.value),
+                "query_total": float(query_total_seconds),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": False,
+                "prepared_rays_resident_on_device": True,
+                "group_ids_uploaded_each_run": False,
+                "candidate_values_uploaded_each_run": False,
+                "candidate_indices_uploaded_each_run": False,
+                "closest_hit_rows_downloaded_to_host": False,
+                "per_group_results_downloaded_to_host": True,
+                "python_cross_source_merge": False,
+                "native_device_two_source_merge": True,
+                "python_dict_rows_materialized": False,
+                "native_host_grouped_argmin": False,
+                "native_device_grouped_argmin": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+        self.last_closest_hit_metadata = dict(metadata)
+        scene_b.last_closest_hit_metadata = dict(metadata)
+        return {
+            "has_value": group_has_value,
+            "index": group_index,
+            "value": group_value,
+            "metadata": metadata,
+        }
 
     def run_grouped_segment_any_hit_flags(
         self,
@@ -8824,9 +9891,859 @@ class PreparedOptixStaticTriangleScene3D:
             },
         }
 
+    def ray_any_hit_weighted_sum(self, rays, ray_weights) -> dict[str, object]:
+        """Return sum(weights[i]) for 3-D rays that hit a prepared triangle scene.
+
+        This is a generic summary primitive: the native engine sees only rays,
+        triangles, and caller-supplied integer weights. Domain interpretation of
+        those weights remains in Python/app code.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_any_hit_weighted_sum requires 3-D rays")
+        weight_array, _weight_owner = _pack_uint64_weights(ray_weights, packed_rays.count)
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        weighted_sum = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            weight_array,
+            ctypes.byref(weighted_sum),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_V1",
+            "result_kind": "uint64_weighted_any_hit_sum",
+            "weighted_hit_sum": int(weighted_sum.value),
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": True,
+                "ray_weights_uploaded_each_run": True,
+                "per_ray_records_downloaded_to_host": False,
+                "scalar_sum_returned_to_python": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def ray_hit_count_sum(self, rays) -> dict[str, object]:
+        """Return the scalar sum of per-ray 3-D triangle hit counts."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_hit_count_sum requires 3-D rays")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        hit_count_sum = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.byref(hit_count_sum),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_HIT_COUNT_SUM_V1",
+            "result_kind": "uint64_ray_hit_count_sum",
+            "hit_count_sum": int(hit_count_sum.value),
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": True,
+                "per_ray_records_downloaded_to_host": False,
+                "scalar_sum_returned_to_python": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def ray_closest_hit_rows(self, rays) -> tuple[dict[str, float | int], ...]:
+        """Return generic closest-hit rows against this prepared 3-D scene."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_closest_hit_rows requires 3-D rays")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        rows_ptr = ctypes.POINTER(_RtdlRayClosestHitRow)()
+        row_count = ctypes.c_size_t()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=self._lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayClosestHitRow,
+            field_names=("ray_id", "triangle_id", "t"),
+        )
+        try:
+            rows = tuple(
+                {
+                    "ray_id": int(row["ray_id"]),
+                    "triangle_id": int(row["triangle_id"]),
+                    "t": float(row["t"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
+        self._run_count += 1
+        self.last_closest_hit_metadata = {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_CLOSEST_HIT_ROWS_V1",
+            "result_kind": "ray_triangle_closest_hit_rows",
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": True,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": True,
+                "closest_hit_rows_downloaded_to_host": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+        return rows
+
+    def ray_closest_hit_row_arrays(self, rays) -> dict[str, object]:
+        """Return generic closest-hit rows as NumPy arrays.
+
+        This keeps the primitive app-agnostic while avoiding per-row Python dict
+        materialization for benchmark paths that naturally consume columns.
+        """
+        if isinstance(rays, PreparedOptixRayBatch3D):
+            return self.ray_closest_hit_row_arrays_prepared_rays(rays)
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        try:
+            import numpy as _np
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("ray_closest_hit_row_arrays requires numpy") from exc
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        pack_start = time.perf_counter()
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+        if packed_rays.dimension != 3:
+            raise ValueError("ray_closest_hit_row_arrays requires 3-D rays")
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        rows_ptr = ctypes.POINTER(_RtdlRayClosestHitRow)()
+        row_count = ctypes.c_size_t()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=self._lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayClosestHitRow,
+            field_names=("ray_id", "triangle_id", "t"),
+        )
+        try:
+            row_array = _np.ctypeslib.as_array(rows_ptr, shape=(row_count.value,))
+            arrays = {
+                "ray_id": _np.array(row_array["ray_id"], dtype=_np.uint32, copy=True),
+                "triangle_id": _np.array(row_array["triangle_id"], dtype=_np.uint32, copy=True),
+                "t": _np.array(row_array["t"], dtype=_np.float64, copy=True),
+            }
+        finally:
+            view.close()
+
+        self._run_count += 1
+        self.last_closest_hit_metadata = {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_CLOSEST_HIT_ROW_ARRAYS_V1",
+            "result_kind": "ray_triangle_closest_hit_row_arrays",
+            "ray_count": int(packed_rays.count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "row_arrays_materialized": True,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": True,
+                "closest_hit_rows_downloaded_to_host": True,
+                "python_dict_rows_materialized": False,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+        return arrays
+
+    def ray_closest_hit_row_arrays_prepared_rays(self, ray_batch: PreparedOptixRayBatch3D) -> dict[str, object]:
+        """Return closest-hit row arrays using a reusable device-resident ray batch."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if ray_batch._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        try:
+            import numpy as _np
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("ray_closest_hit_row_arrays_prepared_rays requires numpy") from exc
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_rows",
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_rows. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        rows_ptr = ctypes.POINTER(_RtdlRayClosestHitRow)()
+        row_count = ctypes.c_size_t()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            ray_batch._handle,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=self._lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayClosestHitRow,
+            field_names=("ray_id", "triangle_id", "t"),
+        )
+        try:
+            row_array = _np.ctypeslib.as_array(rows_ptr, shape=(row_count.value,))
+            arrays = {
+                "ray_id": _np.array(row_array["ray_id"], dtype=_np.uint32, copy=True),
+                "triangle_id": _np.array(row_array["triangle_id"], dtype=_np.uint32, copy=True),
+                "t": _np.array(row_array["t"], dtype=_np.float64, copy=True),
+            }
+        finally:
+            view.close()
+
+        self._run_count += 1
+        self.last_closest_hit_metadata = {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_CLOSEST_HIT_ROW_ARRAYS_V1",
+            "result_kind": "ray_triangle_closest_hit_row_arrays",
+            "ray_count": int(ray_batch.ray_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": True,
+            "prepared_ray_batch_seconds": float(ray_batch.prepare_seconds),
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "row_arrays_materialized": True,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": False,
+                "prepared_rays_resident_on_device": True,
+                "closest_hit_rows_downloaded_to_host": True,
+                "python_dict_rows_materialized": False,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+        return arrays
+
+    def ray_closest_hit_grouped_argmin(
+        self,
+        rays,
+        ray_group_ids,
+        candidate_values,
+        candidate_indices,
+        *,
+        group_count: int | None = None,
+    ) -> dict[str, object]:
+        """Return grouped argmin over closest-hit triangle ids.
+
+        ``ray_group_ids`` maps RTDL ray ids to output groups. ``candidate_values``
+        and ``candidate_indices`` map closest-hit triangle ids to caller-owned
+        values and tie-break indices. The primitive stays app-agnostic: the
+        runtime only sees ray ids, triangle ids, groups, values, and argmin.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        try:
+            import numpy as _np
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("ray_closest_hit_grouped_argmin requires numpy") from exc
+
+        pack_start = time.perf_counter()
+        prepared_ray_batch = isinstance(rays, PreparedOptixRayBatch3D)
+        if prepared_ray_batch:
+            if rays._closed:
+                raise RuntimeError("prepared OptiX ray batch handle is closed")
+            packed_rays = None
+            ray_count = int(rays.ray_count)
+        else:
+            packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
+            if packed_rays.dimension != 3:
+                raise ValueError("ray_closest_hit_grouped_argmin requires 3-D rays")
+            ray_count = int(packed_rays.count)
+
+        raw_group_ids = _np.asarray(ray_group_ids)
+        if raw_group_ids.ndim != 1:
+            raise ValueError("ray_group_ids must be a one-dimensional ray-id-to-group map")
+        if raw_group_ids.size:
+            if bool((raw_group_ids < 0).any()):
+                raise ValueError("ray_group_ids must be nonnegative")
+            max_group_id = int(raw_group_ids.max())
+        else:
+            max_group_id = -1
+        if group_count is None:
+            group_count = max_group_id + 1 if max_group_id >= 0 else 0
+        group_count = int(group_count)
+        if group_count < 0:
+            raise ValueError("group_count must be nonnegative")
+        if max_group_id >= group_count:
+            raise ValueError("ray_group_ids contains a group outside group_count")
+        group_ids_np = _np.ascontiguousarray(raw_group_ids, dtype=_np.uint32)
+
+        candidate_values_np = _np.ascontiguousarray(candidate_values, dtype=_np.float64)
+        raw_candidate_indices = _np.asarray(candidate_indices)
+        if raw_candidate_indices.ndim != 1:
+            raise ValueError("candidate_indices must be one-dimensional")
+        if raw_candidate_indices.size:
+            if bool((raw_candidate_indices < 0).any()):
+                raise ValueError("candidate_indices must be nonnegative")
+        candidate_indices_np = _np.ascontiguousarray(raw_candidate_indices, dtype=_np.uint32)
+        if candidate_values_np.ndim != 1:
+            raise ValueError("candidate_values must be one-dimensional")
+        if candidate_values_np.shape[0] != candidate_indices_np.shape[0]:
+            raise ValueError("candidate_values and candidate_indices must have the same length")
+
+        group_has_value = _np.zeros(group_count, dtype=_np.uint8)
+        group_index = _np.full(group_count, _np.iinfo(_np.uint32).max, dtype=_np.uint32)
+        group_value = _np.zeros(group_count, dtype=_np.float64)
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        run_symbol_name = (
+            "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_grouped_argmin"
+            if prepared_ray_batch
+            else "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_grouped_argmin"
+        )
+        run_symbol = _find_optional_backend_symbol(self._lib, run_symbol_name)
+        if run_symbol is None:
+            fallback_arrays = self.ray_closest_hit_row_arrays(rays if prepared_ray_batch else packed_rays)
+            ray_ids = _np.asarray(fallback_arrays["ray_id"], dtype=_np.int64)
+            triangle_ids = _np.asarray(fallback_arrays["triangle_id"], dtype=_np.int64)
+            fallback_metadata = dict(getattr(self, "last_closest_hit_metadata", {}))
+            for ray_id, triangle_id in zip(ray_ids, triangle_ids):
+                if ray_id < 0 or ray_id >= group_ids_np.shape[0]:
+                    raise RuntimeError("hit ray_id is outside the ray group-id map")
+                if triangle_id < 0 or triangle_id >= candidate_values_np.shape[0]:
+                    continue
+                group_id = int(group_ids_np[ray_id])
+                candidate_value = float(candidate_values_np[triangle_id])
+                candidate_index = int(candidate_indices_np[triangle_id])
+                take = (
+                    group_has_value[group_id] == 0
+                    or candidate_value < float(group_value[group_id])
+                    or (
+                        candidate_value == float(group_value[group_id])
+                        and candidate_index < int(group_index[group_id])
+                    )
+                )
+                if take:
+                    group_has_value[group_id] = 1
+                    group_index[group_id] = candidate_index
+                    group_value[group_id] = candidate_value
+
+            self.last_closest_hit_metadata = {
+                "backend": "optix",
+                "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_CLOSEST_HIT_GROUPED_ARGMIN_V1",
+                "result_kind": "grouped_argmin_from_ray_triangle_closest_hit",
+                "ray_count": int(ray_count),
+                "triangle_count": self.triangle_count,
+                "group_count": int(group_count),
+                "prepared_reused": True,
+                "prepared_scene_used": True,
+                "prepared_run_index": int(self._run_count),
+                "native_grouped_argmin": False,
+                "fallback_row_arrays_metadata": fallback_metadata,
+                "phase_timing_seconds": {
+                    "prepare_build": float(self.prepare_seconds),
+                    "query_pack": float(query_pack_seconds),
+                    "traversal": fallback_metadata.get("phase_timing_seconds", {}).get("traversal", 0.0),
+                },
+                "transfer_metadata": {
+                    "static_scene_prepared_on_device": True,
+                    "query_rays_uploaded_each_run": not prepared_ray_batch,
+                    "prepared_rays_resident_on_device": bool(prepared_ray_batch),
+                    "closest_hit_rows_downloaded_to_host": True,
+                    "python_dict_rows_materialized": False,
+                    "native_host_grouped_argmin": False,
+                    "native_device_grouped_argmin": False,
+                    "true_zero_copy_authorized": False,
+                },
+                "claim_boundary": {
+                    "native_app_api": False,
+                    "public_speedup_claim": False,
+                    "true_zero_copy": False,
+                },
+            }
+            return {
+                "has_value": group_has_value,
+                "index": group_index,
+                "value": group_value,
+                "metadata": dict(self.last_closest_hit_metadata),
+            }
+
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        if prepared_ray_batch:
+            status = run_symbol(
+                self._handle,
+                rays._handle,
+                group_ids_np.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                ctypes.c_size_t(group_ids_np.shape[0]),
+                candidate_values_np.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                candidate_indices_np.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                ctypes.c_size_t(candidate_values_np.shape[0]),
+                ctypes.c_size_t(group_count),
+                group_has_value.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)),
+                group_index.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                group_value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                ctypes.byref(traversal_seconds),
+                error,
+                len(error),
+            )
+        else:
+            status = run_symbol(
+                self._handle,
+                packed_rays.records,
+                packed_rays.count,
+                group_ids_np.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                ctypes.c_size_t(group_ids_np.shape[0]),
+                candidate_values_np.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                candidate_indices_np.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                ctypes.c_size_t(candidate_values_np.shape[0]),
+                ctypes.c_size_t(group_count),
+                group_has_value.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)),
+                group_index.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                group_value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                ctypes.byref(traversal_seconds),
+                error,
+                len(error),
+            )
+        _check_status(status, error)
+
+        self._run_count += 1
+        self.last_closest_hit_metadata = {
+            "backend": "optix",
+            "contract": (
+                "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_CLOSEST_HIT_GROUPED_ARGMIN_V1"
+                if prepared_ray_batch
+                else "PREPARED_TRIANGLE_SCENE_3D_RAY_CLOSEST_HIT_GROUPED_ARGMIN_V1"
+            ),
+            "result_kind": "grouped_argmin_from_ray_triangle_closest_hit",
+            "ray_count": int(ray_count),
+            "triangle_count": self.triangle_count,
+            "group_count": int(group_count),
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": bool(prepared_ray_batch),
+            "prepared_ray_batch_seconds": (
+                float(rays.prepare_seconds)
+                if prepared_ray_batch
+                else 0.0
+            ),
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "row_arrays_materialized": False,
+            "native_grouped_argmin": True,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": not prepared_ray_batch,
+                "prepared_rays_resident_on_device": bool(prepared_ray_batch),
+                "closest_hit_rows_downloaded_to_host": False,
+                "per_group_results_downloaded_to_host": True,
+                "python_dict_rows_materialized": False,
+                "native_host_grouped_argmin": False,
+                "native_device_grouped_argmin": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+        return {
+            "has_value": group_has_value,
+            "index": group_index,
+            "value": group_value,
+            "metadata": dict(self.last_closest_hit_metadata),
+        }
+
+    def ray_any_hit_weighted_sum_device_columns(self, ray_columns: dict, ray_weights) -> dict[str, object]:
+        """Return weighted any-hit sum from partner-owned 3-D ray columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_WEIGHTED_SUM_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_WEIGHTED_SUM_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        pack_start = time.perf_counter()
+        packet = pack_optix_static_triangle_scene_3d_device_weighted_ray_inputs(ray_columns, ray_weights)
+        query_pack_seconds = time.perf_counter() - pack_start
+        rays = packet["rays"]
+
+        weighted_sum = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            ctypes.c_void_p(rays["ids"].data_ptr),
+            ctypes.c_void_p(rays["ox"].data_ptr),
+            ctypes.c_void_p(rays["oy"].data_ptr),
+            ctypes.c_void_p(rays["oz"].data_ptr),
+            ctypes.c_void_p(rays["dx"].data_ptr),
+            ctypes.c_void_p(rays["dy"].data_ptr),
+            ctypes.c_void_p(rays["dz"].data_ptr),
+            ctypes.c_void_p(rays["tmax"].data_ptr),
+            packet["metadata"]["ray_count"],
+            ctypes.c_void_p(packet["ray_weights"].data_ptr),
+            ctypes.byref(weighted_sum),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1",
+            "result_kind": "uint64_weighted_any_hit_sum",
+            "weighted_hit_sum": int(weighted_sum.value),
+            "ray_count": int(packet["metadata"]["ray_count"]),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                **packet["metadata"],
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": False,
+                "ray_weights_uploaded_each_run": False,
+                "query_rays_packed_on_device_each_run": True,
+                "per_ray_records_downloaded_to_host": False,
+                "scalar_sum_returned_to_python": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
+    def ray_hit_count_sum_device_columns(self, ray_columns: dict) -> dict[str, object]:
+        """Return hit-count sum from partner-owned 3-D ray columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_HIT_COUNT_SUM_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_HIT_COUNT_SUM_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        pack_start = time.perf_counter()
+        packet = pack_optix_static_triangle_scene_3d_device_ray_inputs(ray_columns)
+        query_pack_seconds = time.perf_counter() - pack_start
+        rays = packet["rays"]
+
+        hit_count_sum = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            ctypes.c_void_p(rays["ids"].data_ptr),
+            ctypes.c_void_p(rays["ox"].data_ptr),
+            ctypes.c_void_p(rays["oy"].data_ptr),
+            ctypes.c_void_p(rays["oz"].data_ptr),
+            ctypes.c_void_p(rays["dx"].data_ptr),
+            ctypes.c_void_p(rays["dy"].data_ptr),
+            ctypes.c_void_p(rays["dz"].data_ptr),
+            ctypes.c_void_p(rays["tmax"].data_ptr),
+            packet["metadata"]["ray_count"],
+            ctypes.byref(hit_count_sum),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        self._run_count += 1
+        return {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_HIT_COUNT_SUM_DEVICE_COLUMNS_V1",
+            "result_kind": "uint64_ray_hit_count_sum",
+            "hit_count_sum": int(hit_count_sum.value),
+            "ray_count": int(packet["metadata"]["ray_count"]),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                **packet["metadata"],
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": False,
+                "query_rays_packed_on_device_each_run": True,
+                "per_ray_records_downloaded_to_host": False,
+                "scalar_sum_returned_to_python": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
 
 def prepare_optix_static_triangle_scene_3d(triangles) -> PreparedOptixStaticTriangleScene3D:
     return PreparedOptixStaticTriangleScene3D(triangles)
+
+
+def prepare_optix_static_triangle_scene_3d_device_triangles(
+    triangle_columns: dict,
+) -> PreparedOptixStaticTriangleScene3D:
+    packet = pack_optix_static_triangle_scene_3d_device_triangle_inputs(triangle_columns)
+    prepared = PreparedOptixStaticTriangleScene3D.__new__(PreparedOptixStaticTriangleScene3D)
+    prepared._lib = _load_optix_library()
+    prepared._handle = ctypes.c_void_p()
+    prepared._closed = False
+    prepared._run_count = 0
+    prepared._packed_triangles = PackedTriangles(
+        records=None,
+        count=int(packet["metadata"]["triangle_count"]),
+        dimension=3,
+        owner=packet,
+    )
+    prepared.triangle_count = int(packet["metadata"]["triangle_count"])
+    prepared._device_triangle_packet = packet
+    create_symbol = _find_optional_backend_symbol(
+        prepared._lib,
+        _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL,
+    )
+    if create_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL}. "
+            "Rebuild it with 'make build-optix' from current main."
+        )
+    if prepared.triangle_count == 0:
+        prepared.prepare_seconds = 0.0
+        return prepared
+
+    triangles = packet["triangles"]
+    error = ctypes.create_string_buffer(4096)
+    prepare_start = time.perf_counter()
+    status = create_symbol(
+        ctypes.c_void_p(triangles["ids"].data_ptr),
+        ctypes.c_void_p(triangles["x0"].data_ptr),
+        ctypes.c_void_p(triangles["y0"].data_ptr),
+        ctypes.c_void_p(triangles["z0"].data_ptr),
+        ctypes.c_void_p(triangles["x1"].data_ptr),
+        ctypes.c_void_p(triangles["y1"].data_ptr),
+        ctypes.c_void_p(triangles["z1"].data_ptr),
+        ctypes.c_void_p(triangles["x2"].data_ptr),
+        ctypes.c_void_p(triangles["y2"].data_ptr),
+        ctypes.c_void_p(triangles["z2"].data_ptr),
+        prepared.triangle_count,
+        ctypes.byref(prepared._handle),
+        error,
+        len(error),
+    )
+    prepared.prepare_seconds = time.perf_counter() - prepare_start
+    _check_status(status, error)
+    return prepared
 
 
 def prepare_optix_grouped_segment_query_3d(
@@ -9862,6 +11779,16 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_anyhit3d.restype = ctypes.c_int
+    optional_closest_hit3d = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_closest_hit_3d")
+    if optional_closest_hit3d is not None:
+        optional_closest_hit3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayClosestHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_closest_hit3d.restype = ctypes.c_int
     optional_static_scene_3d_create = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_static_triangle_scene_3d_create",
@@ -9875,6 +11802,28 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_create.restype = ctypes.c_int
+    optional_static_scene_3d_device_create = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL,
+    )
+    if optional_static_scene_3d_device_create is not None:
+        optional_static_scene_3d_device_create.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_device_create.restype = ctypes.c_int
     optional_static_scene_3d_run = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_static_triangle_scene_3d_grouped_segment_any_hit_flags",
@@ -9935,6 +11884,257 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_query_count.restype = ctypes.c_int
+    optional_static_scene_3d_weighted_sum = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum",
+    )
+    if optional_static_scene_3d_weighted_sum is not None:
+        optional_static_scene_3d_weighted_sum.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_weighted_sum.restype = ctypes.c_int
+    optional_static_scene_3d_device_weighted_sum = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_WEIGHTED_SUM_SYMBOL,
+    )
+    if optional_static_scene_3d_device_weighted_sum is not None:
+        optional_static_scene_3d_device_weighted_sum.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_device_weighted_sum.restype = ctypes.c_int
+    optional_static_scene_3d_hit_count_sum = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum",
+    )
+    if optional_static_scene_3d_hit_count_sum is not None:
+        optional_static_scene_3d_hit_count_sum.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_hit_count_sum.restype = ctypes.c_int
+    optional_static_scene_3d_closest_hit_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows",
+    )
+    if optional_static_scene_3d_closest_hit_rows is not None:
+        optional_static_scene_3d_closest_hit_rows.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayClosestHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_closest_hit_rows.restype = ctypes.c_int
+    optional_ray_batch_3d_create = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_ray_batch_3d_create",
+    )
+    if optional_ray_batch_3d_create is not None:
+        optional_ray_batch_3d_create.argtypes = [
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_ray_batch_3d_create.restype = ctypes.c_int
+    optional_grouped_argmin_inputs_3d_create = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create",
+    )
+    if optional_grouped_argmin_inputs_3d_create is not None:
+        optional_grouped_argmin_inputs_3d_create.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_grouped_argmin_inputs_3d_create.restype = ctypes.c_int
+    optional_grouped_candidate_argmin_inputs_create = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_grouped_candidate_argmin_inputs_create",
+    )
+    if optional_grouped_candidate_argmin_inputs_create is not None:
+        optional_grouped_candidate_argmin_inputs_create.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_grouped_candidate_argmin_inputs_create.restype = ctypes.c_int
+    optional_grouped_candidate_argmin_finalize = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_grouped_candidate_argmin_finalize",
+    )
+    if optional_grouped_candidate_argmin_finalize is not None:
+        optional_grouped_candidate_argmin_finalize.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint8),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_grouped_candidate_argmin_finalize.restype = ctypes.c_int
+    optional_static_scene_3d_ray_batch_closest_hit_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_rows",
+    )
+    if optional_static_scene_3d_ray_batch_closest_hit_rows is not None:
+        optional_static_scene_3d_ray_batch_closest_hit_rows.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayClosestHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_ray_batch_closest_hit_rows.restype = ctypes.c_int
+    optional_static_scene_3d_closest_hit_grouped_argmin = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_ray_closest_hit_grouped_argmin",
+    )
+    if optional_static_scene_3d_closest_hit_grouped_argmin is not None:
+        optional_static_scene_3d_closest_hit_grouped_argmin.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint8),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_closest_hit_grouped_argmin.restype = ctypes.c_int
+    optional_static_scene_3d_ray_batch_closest_hit_grouped_argmin = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_grouped_argmin",
+    )
+    if optional_static_scene_3d_ray_batch_closest_hit_grouped_argmin is not None:
+        optional_static_scene_3d_ray_batch_closest_hit_grouped_argmin.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint8),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_ray_batch_closest_hit_grouped_argmin.restype = ctypes.c_int
+    optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin",
+    )
+    if optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin is not None:
+        optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint8),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin.restype = ctypes.c_int
+    optional_static_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin",
+    )
+    if optional_static_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin is not None:
+        optional_static_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint8),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin.restype = ctypes.c_int
+    optional_static_scene_3d_device_hit_count_sum = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_HIT_COUNT_SUM_SYMBOL,
+    )
+    if optional_static_scene_3d_device_hit_count_sum is not None:
+        optional_static_scene_3d_device_hit_count_sum.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_device_hit_count_sum.restype = ctypes.c_int
     optional_static_scene_3d_query_destroy = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_static_triangle_scene_3d_grouped_segment_query_destroy",
@@ -9942,6 +12142,27 @@ def _register_argtypes(lib) -> None:
     if optional_static_scene_3d_query_destroy is not None:
         optional_static_scene_3d_query_destroy.argtypes = [ctypes.c_void_p]
         optional_static_scene_3d_query_destroy.restype = None
+    optional_ray_batch_3d_destroy = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_ray_batch_3d_destroy",
+    )
+    if optional_ray_batch_3d_destroy is not None:
+        optional_ray_batch_3d_destroy.argtypes = [ctypes.c_void_p]
+        optional_ray_batch_3d_destroy.restype = None
+    optional_grouped_argmin_inputs_3d_destroy = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_destroy",
+    )
+    if optional_grouped_argmin_inputs_3d_destroy is not None:
+        optional_grouped_argmin_inputs_3d_destroy.argtypes = [ctypes.c_void_p]
+        optional_grouped_argmin_inputs_3d_destroy.restype = None
+    optional_grouped_candidate_argmin_inputs_destroy = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_grouped_candidate_argmin_inputs_destroy",
+    )
+    if optional_grouped_candidate_argmin_inputs_destroy is not None:
+        optional_grouped_candidate_argmin_inputs_destroy.argtypes = [ctypes.c_void_p]
+        optional_grouped_candidate_argmin_inputs_destroy.restype = None
     optional_static_scene_3d_destroy = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_static_triangle_scene_3d_destroy",

@@ -10,8 +10,8 @@ RELEASE_README = ROOT / "docs" / "release_reports" / "v2_0" / "README.md"
 
 
 class Goal2323V20ReleaseActionTest(unittest.TestCase):
-    def test_version_marker_is_v2_0(self) -> None:
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "v2.0")
+    def test_version_marker_has_moved_beyond_v2_0(self) -> None:
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "v2.3")
 
     def test_release_action_records_authorized_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -21,11 +21,11 @@ class Goal2323V20ReleaseActionTest(unittest.TestCase):
         self.assertIn("does not claim package-install support", text)
         self.assertIn("Goal2322", text)
 
-    def test_front_door_docs_now_name_v2_0_as_current_release(self) -> None:
+    def test_front_door_docs_now_name_current_release(self) -> None:
         for rel in ("README.md", "docs/README.md", "docs/current_architecture.md"):
             with self.subTest(rel=rel):
                 text = (ROOT / rel).read_text(encoding="utf-8")
-                self.assertIn("v2.0", text)
+                self.assertIn("v2.3", text)
                 self.assertIn("release", text)
                 self.assertIn("source-tree", text)
                 self.assertNotIn("fresh Claude-family review is still missing", text)

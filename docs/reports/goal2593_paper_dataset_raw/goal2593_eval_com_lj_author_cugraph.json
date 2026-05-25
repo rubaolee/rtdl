@@ -1,0 +1,134 @@
+{
+  "methods": [
+    "author_rt_tc",
+    "author_bs_tc",
+    "cugraph"
+  ],
+  "repeats": 2,
+  "results": {
+    "com_lj": {
+      "expected_triangles": 177820130,
+      "input_edges": 34681189,
+      "input_file": "build/goal2593_snap_edges/com-lj.edge",
+      "methods": {
+        "author_bs_tc": {
+          "elapsed_ms": 85342.45666116476,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_counting_ms": 10.614768,
+          "median_csr_ms": 134.78199999999998,
+          "median_gpu_preprocessing_ms": 38963.571003000005,
+          "median_pipeline_excluding_file_read_ms": 40758.952771,
+          "median_subprocess_wall_ms": 42670.99915072322,
+          "median_tc_preprocessing_ms": 1649.9850000000001,
+          "median_triangle_count": 177820130.0,
+          "repeats": 2,
+          "runs": [
+            {
+              "counting_ms": 10.626624,
+              "csr_ms": 133.539,
+              "gpu_preprocessing_ms": 38729.777966,
+              "pipeline_excluding_file_read_ms": 40514.78359,
+              "subprocess_wall_ms": 42388.899467885494,
+              "tc_preprocessing_ms": 1640.84,
+              "triangle_count": 177820130
+            },
+            {
+              "counting_ms": 10.602912,
+              "csr_ms": 136.025,
+              "gpu_preprocessing_ms": 39197.36404,
+              "pipeline_excluding_file_read_ms": 41003.121952,
+              "subprocess_wall_ms": 42953.09883356094,
+              "tc_preprocessing_ms": 1659.13,
+              "triangle_count": 177820130
+            }
+          ],
+          "status": "ok",
+          "warmup": 0
+        },
+        "author_rt_tc": {
+          "elapsed_ms": 86353.88737916946,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_bvh_build_ms": 2.5642060000000004,
+          "median_compute_rays_ms": 38321.45,
+          "median_convert_graph_to_rt_ms": 827.1800000000001,
+          "median_counting_ms": 72.9684,
+          "median_csr_ms": 147.9105,
+          "median_pipeline_excluding_file_read_ms": 40801.618105999994,
+          "median_subprocess_wall_ms": 43176.51651054621,
+          "median_tc_preprocessing_ms": 1429.545,
+          "median_triangle_count": 177820130.0,
+          "repeats": 2,
+          "runs": [
+            {
+              "bvh_build_ms": 0.150852,
+              "compute_rays_ms": 38299.7,
+              "convert_graph_to_rt_ms": 830.664,
+              "counting_ms": 72.5977,
+              "csr_ms": 148.788,
+              "pipeline_excluding_file_read_ms": 40766.470552,
+              "subprocess_wall_ms": 43105.364352464676,
+              "tc_preprocessing_ms": 1414.57,
+              "triangle_count": 177820130
+            },
+            {
+              "bvh_build_ms": 4.97756,
+              "compute_rays_ms": 38343.2,
+              "convert_graph_to_rt_ms": 823.696,
+              "counting_ms": 73.3391,
+              "csr_ms": 147.033,
+              "pipeline_excluding_file_read_ms": 40836.76566,
+              "subprocess_wall_ms": 43247.66866862774,
+              "tc_preprocessing_ms": 1444.52,
+              "triangle_count": 177820130
+            }
+          ],
+          "status": "ok",
+          "warmup": 0
+        },
+        "cugraph": {
+          "elapsed_ms": 3449.793018400669,
+          "matches_expected_triangles": true,
+          "measured_runs": 2,
+          "median_build_cudf_dataframe_ms": 154.50095012784004,
+          "median_build_cugraph_graph_ms": 563.3983127772808,
+          "median_input_edges": 34681189.0,
+          "median_load_np_ms": 84.50711891055107,
+          "median_reduce_count_ms": 49.609605222940445,
+          "median_total_ms": 1713.0286134779453,
+          "median_triangle_count": 177820130.0,
+          "median_triangle_count_ms": 861.012626439333,
+          "repeats": 2,
+          "runs": [
+            {
+              "build_cudf_dataframe_ms": 234.77833718061447,
+              "build_cugraph_graph_ms": 713.9453589916229,
+              "input_edges": 34681189,
+              "input_file": "build/goal2593_snap_edges/com-lj.edge",
+              "load_np_ms": 86.59560978412628,
+              "reduce_count_ms": 98.15555810928345,
+              "total_ms": 2003.7114918231964,
+              "triangle_count": 177820130,
+              "triangle_count_ms": 870.2366277575493
+            },
+            {
+              "build_cudf_dataframe_ms": 74.22356307506561,
+              "build_cugraph_graph_ms": 412.8512665629387,
+              "input_edges": 34681189,
+              "input_file": "build/goal2593_snap_edges/com-lj.edge",
+              "load_np_ms": 82.41862803697586,
+              "reduce_count_ms": 1.0636523365974426,
+              "total_ms": 1422.3457351326942,
+              "triangle_count": 177820130,
+              "triangle_count_ms": 851.7886251211166
+            }
+          ],
+          "status": "ok",
+          "warmup": 0
+        }
+      }
+    }
+  },
+  "warmup": 0
+}

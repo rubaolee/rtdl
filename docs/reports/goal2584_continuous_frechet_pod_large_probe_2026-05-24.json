@@ -1,0 +1,71 @@
+{
+  "app": "continuous_frechet_distance",
+  "benchmark": "goal2584_continuous_frechet_gpu_cpu_baselines",
+  "claim_boundary": "Internal same-contract benchmark evidence only. The Torch CUDA path is a locally written GPU baseline because no usable same-contract external continuous Frechet GPU implementation was available in this environment. The C++ path is the learner-owned exact all-cells CPU reference from the RTDL app.",
+  "environment": {
+    "cuda_available": true,
+    "gpu": "NVIDIA RTX A5000",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "rtdl_optix_library": "/root/rtdl_python_only/build/librtdl_optix.so",
+    "torch": "2.8.0+cu128",
+    "torch_cuda": "12.8"
+  },
+  "rows": [
+    {
+      "copies": 128,
+      "cpu_cpp_all_cells_median_sec": 0.10764675214886665,
+      "cpu_distance_estimate": 2.0,
+      "free_space_cell_count": 261121,
+      "iterations": 8,
+      "point_count_per_curve": 512,
+      "repeats": 1,
+      "rtdl_optix_broadphase_cpp_median_sec": 3.1609414350241423,
+      "rtdl_optix_broadphase_stats": {
+        "candidate_expansion": 1,
+        "fallback_reason": null,
+        "last_broadphase_row_count": 3311,
+        "last_candidate_cell_count": 5337,
+        "last_prune_ratio": 0.9795611995971216,
+        "last_raw_candidate_cell_count": 3311,
+        "used_as_filter": true
+      },
+      "rtdl_optix_distance_estimate": 2.000001375977999,
+      "rtdl_optix_error": null,
+      "rtdl_optix_matches_cpu_cpp": true,
+      "rtdl_optix_over_cpu_cpp_speed": 0.03405528206125859,
+      "rtdl_optix_over_torch_cuda_speed": 5.427154619384479,
+      "torch_cuda_distance_estimate": 2.000001375977999,
+      "torch_cuda_matches_cpu_cpp": true,
+      "torch_cuda_over_cpu_cpp_speed": 0.006274979146461276,
+      "torch_cuda_wavefront_all_cells_median_sec": 17.154917910695076
+    },
+    {
+      "copies": 256,
+      "cpu_cpp_all_cells_median_sec": 0.41824076510965824,
+      "cpu_distance_estimate": 4.0,
+      "free_space_cell_count": 1046529,
+      "iterations": 8,
+      "point_count_per_curve": 1024,
+      "repeats": 1,
+      "rtdl_optix_broadphase_cpp_median_sec": 12.26829163171351,
+      "rtdl_optix_broadphase_stats": {
+        "candidate_expansion": 1,
+        "fallback_reason": null,
+        "last_broadphase_row_count": 11223,
+        "last_candidate_cell_count": 15289,
+        "last_prune_ratio": 0.9853907536246009,
+        "last_raw_candidate_cell_count": 11223,
+        "used_as_filter": true
+      },
+      "rtdl_optix_distance_estimate": 4.000000687316657,
+      "rtdl_optix_error": null,
+      "rtdl_optix_matches_cpu_cpp": true,
+      "rtdl_optix_over_cpu_cpp_speed": 0.03409119848671568,
+      "rtdl_optix_over_torch_cuda_speed": 2.7472282744296614,
+      "torch_cuda_distance_estimate": 4.000000687316657,
+      "torch_cuda_matches_cpu_cpp": true,
+      "torch_cuda_over_cpu_cpp_speed": 0.012409306792604697,
+      "torch_cuda_wavefront_all_cells_median_sec": 33.70379764959216
+    }
+  ]
+}

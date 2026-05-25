@@ -9,7 +9,7 @@ REPORT = ROOT / "docs" / "reports" / "goal1740_v1_8_public_docs_boundary_alignme
 class Goal1740V18PublicDocsBoundaryAlignmentTest(unittest.TestCase):
     def test_current_architecture_states_current_v2_release_boundary(self) -> None:
         text = (ROOT / "docs" / "current_architecture.md").read_text(encoding="utf-8")
-        self.assertIn("RTDL v2.0 is the current source-tree", text)
+        self.assertIn("RTDL v2.3 is the current source-tree", text)
         self.assertIn("Python application", text)
         self.assertIn("Partner adapter", text)
         self.assertIn("Native engines must remain app-agnostic", text)
@@ -17,7 +17,7 @@ class Goal1740V18PublicDocsBoundaryAlignmentTest(unittest.TestCase):
 
     def test_current_support_matrix_preserves_release_boundary(self) -> None:
         text = (ROOT / "docs" / "current_main_support_matrix.md").read_text(encoding="utf-8")
-        self.assertIn("Current public docs target: v2.0 release", text)
+        self.assertIn("Current public docs target: v2.3 release", text)
         self.assertIn("Active release engines: Embree for CPU RT, OptiX for NVIDIA RT", text)
         self.assertIn("Engine ABI rule: native backends stay app-agnostic", text)
         self.assertIn("Performance rule: a backend flag is not a speedup claim", text)
@@ -40,16 +40,16 @@ class Goal1740V18PublicDocsBoundaryAlignmentTest(unittest.TestCase):
         self.assertIn("`docs/public_documentation_map.md`", text)
         self.assertIn("final documentation sweep should still cover any v1.8 release package files", text)
 
-    def test_front_door_docs_name_v2_0_released_boundary(self) -> None:
+    def test_front_door_docs_name_current_released_boundary(self) -> None:
         root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
         docs_readme = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         public_map = (ROOT / "docs" / "public_documentation_map.md").read_text(encoding="utf-8")
         for text in (root_readme, docs_readme, public_map):
-            self.assertIn("v2.0", text)
+            self.assertIn("v2.3", text)
             self.assertIn("Python+partner+RTDL", text)
-        self.assertIn("current released version is `v2.0`", root_readme)
-        self.assertIn("current released version is `v2.0`", docs_readme)
-        self.assertIn("completed 3-AI consensus boundary", public_map)
+        self.assertIn("current released version is `v2.3`", root_readme)
+        self.assertIn("current released version is `v2.3`", docs_readme)
+        self.assertIn("completed release-package boundary", public_map)
 
 
 if __name__ == "__main__":

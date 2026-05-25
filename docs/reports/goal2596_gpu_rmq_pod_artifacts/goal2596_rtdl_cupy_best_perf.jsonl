@@ -1,0 +1,192 @@
+{
+  "app": "gpu_rmq",
+  "author_style": {
+    "lr": -1,
+    "range_distributions": {
+      "-6": "mixed large, medium, and small ranges",
+      "-3": "lognormal / small ranges",
+      "-2": "lognormal / medium ranges",
+      "-1": "uniform / large ranges"
+    },
+    "semantic_match": "CuPy-generated approximation of the paper workload class, not bit-identical to the authors' C++ generator. Use saved-input replay for exact same-input checks."
+  },
+  "backend": "cupy",
+  "block_size": 16,
+  "claim_boundary": {
+    "author_code_available": true,
+    "author_generated_inputs_supported": true,
+    "author_static_datasets_available": false,
+    "benchmark_app": true,
+    "cupy_partner_path": true,
+    "front_door_only": false,
+    "full_gpu_rmq_reproduction": false,
+    "native_engine_customization": false,
+    "paper_code_evidence": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false
+  },
+  "contract": "exact leftmost argmin RMQ via CuPy-owned values, query columns, block summaries, and sparse-table query kernel",
+  "dataset": "cupy_author_style_lr_-1",
+  "hierarchy": {
+    "block_count": 65536,
+    "block_min_sec": 0.022324703216552735,
+    "build_sec": 0.026831519126892092,
+    "levels": 17,
+    "sparse_sec": 0.004506815910339355
+  },
+  "mode": "cupy_hierarchical",
+  "ns_per_query_query_only": 0.41775513182074064,
+  "qps_query_only": 2393746776.1116614,
+  "qps_total": 38452242.19821502,
+  "query_count": 1048576,
+  "query_sec": 0.0004380480051040649,
+  "sample_rows": [],
+  "seed": 27722,
+  "total_sec": 0.02726956713199616,
+  "value_count": 1048576,
+  "verification": "not_requested"
+}
+{
+  "app": "gpu_rmq",
+  "author_style": {
+    "lr": -1,
+    "range_distributions": {
+      "-6": "mixed large, medium, and small ranges",
+      "-3": "lognormal / small ranges",
+      "-2": "lognormal / medium ranges",
+      "-1": "uniform / large ranges"
+    },
+    "semantic_match": "CuPy-generated approximation of the paper workload class, not bit-identical to the authors' C++ generator. Use saved-input replay for exact same-input checks."
+  },
+  "backend": "cupy",
+  "block_size": 16,
+  "claim_boundary": {
+    "author_code_available": true,
+    "author_generated_inputs_supported": true,
+    "author_static_datasets_available": false,
+    "benchmark_app": true,
+    "cupy_partner_path": true,
+    "front_door_only": false,
+    "full_gpu_rmq_reproduction": false,
+    "native_engine_customization": false,
+    "paper_code_evidence": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false
+  },
+  "contract": "exact leftmost argmin RMQ via CuPy-owned values, query columns, block summaries, and sparse-table query kernel",
+  "dataset": "cupy_author_style_lr_-1",
+  "hierarchy": {
+    "block_count": 1048576,
+    "block_min_sec": 0.022184383392333983,
+    "build_sec": 0.02759065532684326,
+    "levels": 21,
+    "sparse_sec": 0.005406271934509277
+  },
+  "mode": "cupy_hierarchical",
+  "ns_per_query_query_only": 1.107053776649991,
+  "qps_query_only": 903298485.6671174,
+  "qps_total": 363426899.3676559,
+  "query_count": 16777216,
+  "query_sec": 0.018573280334472655,
+  "sample_rows": [],
+  "seed": 27722,
+  "total_sec": 0.046163935661315915,
+  "value_count": 16777216,
+  "verification": "not_requested"
+}
+{
+  "app": "gpu_rmq",
+  "author_style": {
+    "lr": -3,
+    "range_distributions": {
+      "-6": "mixed large, medium, and small ranges",
+      "-3": "lognormal / small ranges",
+      "-2": "lognormal / medium ranges",
+      "-1": "uniform / large ranges"
+    },
+    "semantic_match": "CuPy-generated approximation of the paper workload class, not bit-identical to the authors' C++ generator. Use saved-input replay for exact same-input checks."
+  },
+  "backend": "cupy",
+  "block_size": 16,
+  "claim_boundary": {
+    "author_code_available": true,
+    "author_generated_inputs_supported": true,
+    "author_static_datasets_available": false,
+    "benchmark_app": true,
+    "cupy_partner_path": true,
+    "front_door_only": false,
+    "full_gpu_rmq_reproduction": false,
+    "native_engine_customization": false,
+    "paper_code_evidence": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false
+  },
+  "contract": "exact leftmost argmin RMQ via CuPy-owned values, query columns, block summaries, and sparse-table query kernel",
+  "dataset": "cupy_author_style_lr_-3",
+  "hierarchy": {
+    "block_count": 65536,
+    "block_min_sec": 0.021262592315673828,
+    "build_sec": 0.025712640285491944,
+    "levels": 17,
+    "sparse_sec": 0.004450047969818115
+  },
+  "mode": "cupy_hierarchical",
+  "ns_per_query_query_only": 0.4034118603613024,
+  "qps_query_only": 2478856221.788778,
+  "qps_total": 40120527.66975282,
+  "query_count": 1048576,
+  "query_sec": 0.000423007994890213,
+  "sample_rows": [],
+  "seed": 27722,
+  "total_sec": 0.026135648280382156,
+  "value_count": 1048576,
+  "verification": "not_requested"
+}
+{
+  "app": "gpu_rmq",
+  "author_style": {
+    "lr": -3,
+    "range_distributions": {
+      "-6": "mixed large, medium, and small ranges",
+      "-3": "lognormal / small ranges",
+      "-2": "lognormal / medium ranges",
+      "-1": "uniform / large ranges"
+    },
+    "semantic_match": "CuPy-generated approximation of the paper workload class, not bit-identical to the authors' C++ generator. Use saved-input replay for exact same-input checks."
+  },
+  "backend": "cupy",
+  "block_size": 16,
+  "claim_boundary": {
+    "author_code_available": true,
+    "author_generated_inputs_supported": true,
+    "author_static_datasets_available": false,
+    "benchmark_app": true,
+    "cupy_partner_path": true,
+    "front_door_only": false,
+    "full_gpu_rmq_reproduction": false,
+    "native_engine_customization": false,
+    "paper_code_evidence": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false
+  },
+  "contract": "exact leftmost argmin RMQ via CuPy-owned values, query columns, block summaries, and sparse-table query kernel",
+  "dataset": "cupy_author_style_lr_-3",
+  "hierarchy": {
+    "block_count": 1048576,
+    "block_min_sec": 0.02221219253540039,
+    "build_sec": 0.02770080041885376,
+    "levels": 21,
+    "sparse_sec": 0.005488607883453369
+  },
+  "mode": "cupy_hierarchical",
+  "ns_per_query_query_only": 0.9184284408547683,
+  "qps_query_only": 1088816455.9334793,
+  "qps_total": 389177016.7699519,
+  "query_count": 16777216,
+  "query_sec": 0.015408672332763673,
+  "sample_rows": [],
+  "seed": 27722,
+  "total_sec": 0.04310947275161743,
+  "value_count": 16777216,
+  "verification": "not_requested"
+}

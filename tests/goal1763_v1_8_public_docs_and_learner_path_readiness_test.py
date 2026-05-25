@@ -12,7 +12,7 @@ class Goal1763V18PublicDocsAndLearnerPathReadinessTest(unittest.TestCase):
 
     def test_front_page_teaches_current_design_split(self) -> None:
         text = self._read("README.md")
-        self.assertIn("current released version is `v2.0`", text)
+        self.assertIn("current released version is `v2.3`", text)
         self.assertIn("Python app layer", text)
         self.assertIn("RTDL engine layer", text)
         self.assertIn("native engine must stay app-agnostic", text)
@@ -55,8 +55,8 @@ class Goal1763V18PublicDocsAndLearnerPathReadinessTest(unittest.TestCase):
             "its own release packet, packaging/install boundary choice",
         ):
             self.assertNotIn(stale, joined)
-        self.assertIn("RTDL v2.0 is the current source-tree", joined)
-        self.assertIn("current released version is `v2.0`", joined)
+        self.assertIn("RTDL v2.3 is the current source-tree", joined)
+        self.assertIn("current released version is `v2.3`", joined)
 
     def test_docs_keep_public_overclaims_blocked(self) -> None:
         joined = "\n".join(

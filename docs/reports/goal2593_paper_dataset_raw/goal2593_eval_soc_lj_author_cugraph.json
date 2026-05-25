@@ -1,0 +1,103 @@
+{
+  "methods": [
+    "author_rt_tc",
+    "author_bs_tc",
+    "cugraph"
+  ],
+  "repeats": 1,
+  "results": {
+    "soc_livejournal1": {
+      "expected_triangles": 285730264,
+      "input_edges": 68993773,
+      "input_file": "build/goal2593_snap_edges/soc-LiveJournal1.edge",
+      "methods": {
+        "author_bs_tc": {
+          "elapsed_ms": 65919.44850236177,
+          "matches_expected_triangles": true,
+          "measured_runs": 1,
+          "median_counting_ms": 13.68672,
+          "median_csr_ms": 266.565,
+          "median_gpu_preprocessing_ms": 60154.455179,
+          "median_pipeline_excluding_file_read_ms": 63205.346899,
+          "median_subprocess_wall_ms": 65919.02570426464,
+          "median_tc_preprocessing_ms": 2770.64,
+          "median_triangle_count": 285730264.0,
+          "repeats": 1,
+          "runs": [
+            {
+              "counting_ms": 13.68672,
+              "csr_ms": 266.565,
+              "gpu_preprocessing_ms": 60154.455179,
+              "pipeline_excluding_file_read_ms": 63205.346899,
+              "subprocess_wall_ms": 65919.02570426464,
+              "tc_preprocessing_ms": 2770.64,
+              "triangle_count": 285730264
+            }
+          ],
+          "status": "ok",
+          "warmup": 0
+        },
+        "author_rt_tc": {
+          "elapsed_ms": 69118.54800581932,
+          "matches_expected_triangles": true,
+          "measured_runs": 1,
+          "median_bvh_build_ms": 0.10792,
+          "median_compute_rays_ms": 61627.7,
+          "median_convert_graph_to_rt_ms": 1006.81,
+          "median_counting_ms": 103.401,
+          "median_csr_ms": 278.036,
+          "median_pipeline_excluding_file_read_ms": 65658.37492,
+          "median_subprocess_wall_ms": 69117.80151724815,
+          "median_tc_preprocessing_ms": 2642.32,
+          "median_triangle_count": 285730264.0,
+          "repeats": 1,
+          "runs": [
+            {
+              "bvh_build_ms": 0.10792,
+              "compute_rays_ms": 61627.7,
+              "convert_graph_to_rt_ms": 1006.81,
+              "counting_ms": 103.401,
+              "csr_ms": 278.036,
+              "pipeline_excluding_file_read_ms": 65658.37492,
+              "subprocess_wall_ms": 69117.80151724815,
+              "tc_preprocessing_ms": 2642.32,
+              "triangle_count": 285730264
+            }
+          ],
+          "status": "ok",
+          "warmup": 0
+        },
+        "cugraph": {
+          "elapsed_ms": 2392.3349007964134,
+          "matches_expected_triangles": true,
+          "measured_runs": 1,
+          "median_build_cudf_dataframe_ms": 295.76288908720016,
+          "median_build_cugraph_graph_ms": 689.2400681972504,
+          "median_input_edges": 68993773.0,
+          "median_load_np_ms": 156.4110368490219,
+          "median_reduce_count_ms": 99.19675439596176,
+          "median_total_ms": 2377.5344640016556,
+          "median_triangle_count": 285730264.0,
+          "median_triangle_count_ms": 1136.9237154722214,
+          "repeats": 1,
+          "runs": [
+            {
+              "build_cudf_dataframe_ms": 295.76288908720016,
+              "build_cugraph_graph_ms": 689.2400681972504,
+              "input_edges": 68993773,
+              "input_file": "build/goal2593_snap_edges/soc-LiveJournal1.edge",
+              "load_np_ms": 156.4110368490219,
+              "reduce_count_ms": 99.19675439596176,
+              "total_ms": 2377.5344640016556,
+              "triangle_count": 285730264,
+              "triangle_count_ms": 1136.9237154722214
+            }
+          ],
+          "status": "ok",
+          "warmup": 0
+        }
+      }
+    }
+  },
+  "warmup": 0
+}

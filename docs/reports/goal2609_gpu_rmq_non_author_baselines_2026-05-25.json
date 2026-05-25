@@ -1,0 +1,250 @@
+{
+  "author_code_excluded": true,
+  "baseline_scope": "Same generated fixtures; RTDL prepared RT query-only median versus OpenMP CPU sparse-table query and standalone CUDA sparse-table query. CUDA baseline uses a CPU-built sparse table uploaded to GPU, so it is a query-kernel baseline, not an end-to-end GPU construction baseline.",
+  "compile": {
+    "command": [
+      "/usr/local/cuda-12.8/bin/nvcc",
+      "-O3",
+      "-std=c++17",
+      "-gencode",
+      "arch=compute_86,code=sm_86",
+      "-Xcompiler",
+      "-fopenmp",
+      "/workspace/rtdl_goal2598/build/goal2609_gpu_rmq_baseline.cu",
+      "-o",
+      "/workspace/rtdl_goal2598/build/goal2609_gpu_rmq_baseline"
+    ],
+    "stderr": "",
+    "stdout": ""
+  },
+  "goal": "goal2609_gpu_rmq_non_author_baselines",
+  "repeats": 12,
+  "threads_requested": 16,
+  "workloads": [
+    {
+      "block_size": 64,
+      "cpu_openmp_sparse": {
+        "build_ms": 0.00901,
+        "exact_mismatches": 0,
+        "matches_exact_scan": true,
+        "query_median_ms": 0.010545,
+        "query_runs_ms": [
+          0.01336,
+          0.01117,
+          0.01071,
+          0.01067,
+          0.01055,
+          0.01042,
+          0.01012,
+          0.00999,
+          0.01025,
+          0.01054,
+          0.01022,
+          0.01064
+        ],
+        "threads": 16
+      },
+      "cuda_sparse_query": {
+        "matches_cpu_openmp_sparse": true,
+        "query_median_ms": 0.012128,
+        "query_runs_ms": [
+          0.013824,
+          0.01232,
+          0.012096,
+          0.012992,
+          0.011808,
+          0.012416,
+          0.012096,
+          0.01216,
+          0.011968,
+          0.012256,
+          0.011968,
+          0.012032
+        ],
+        "uses_cpu_built_sparse_table": true
+      },
+      "dataset": "repeated",
+      "query_count": 1000,
+      "rtdl": {
+        "combined_scene": true,
+        "matches_cpu_reference": true,
+        "mode": "paper_rt_prepared_reuse",
+        "prepare_ms": 536.1953731626272,
+        "query_batch_prepare_ms": 515.7434600405395,
+        "query_median_ms": 0.2556755207479,
+        "query_runs_ms": [
+          383.9809070341289,
+          0.4378710873425007,
+          0.2789210993796587,
+          0.2565700560808182,
+          0.25478098541498184,
+          0.26277010329067707,
+          0.24633086286485195,
+          0.24399999529123306,
+          0.2358010970056057,
+          0.3196799661964178,
+          0.2501800190657377,
+          0.2454610075801611
+        ],
+        "row_format": "native_grouped_argmin"
+      },
+      "seed": 123,
+      "speedups_query_median": {
+        "cuda_sparse_vs_rtdl": 21.081424863778036,
+        "rtdl_vs_cpu_openmp_sparse": 0.04124368249707226,
+        "rtdl_vs_cuda_sparse": 0.04743512388093811
+      },
+      "value_count": 4096
+    },
+    {
+      "block_size": 256,
+      "cpu_openmp_sparse": {
+        "build_ms": 0.02522,
+        "exact_mismatches": 0,
+        "matches_exact_scan": true,
+        "query_median_ms": 0.07883,
+        "query_runs_ms": [
+          0.10339,
+          0.08005,
+          0.07931,
+          0.078781,
+          0.078391,
+          0.07885,
+          0.07876,
+          0.0847,
+          0.07921,
+          0.078481,
+          0.07855,
+          0.07881
+        ],
+        "threads": 16
+      },
+      "cuda_sparse_query": {
+        "matches_cpu_openmp_sparse": true,
+        "query_median_ms": 0.034976,
+        "query_runs_ms": [
+          0.036832,
+          0.0352,
+          0.034944,
+          0.035072,
+          0.034784,
+          0.035712,
+          0.034976,
+          0.034688,
+          0.035744,
+          0.034976,
+          0.034784,
+          0.034752
+        ],
+        "uses_cpu_built_sparse_table": true
+      },
+      "dataset": "random",
+      "query_count": 4000,
+      "rtdl": {
+        "combined_scene": true,
+        "matches_cpu_reference": true,
+        "mode": "paper_rt_prepared_reuse",
+        "prepare_ms": 135.5760411825031,
+        "query_batch_prepare_ms": 42.7299989387393,
+        "query_median_ms": 0.4657510435208678,
+        "query_runs_ms": [
+          0.5846209824085236,
+          0.48229098320007324,
+          0.46729110181331635,
+          0.4652810748666525,
+          0.4627108573913574,
+          0.4585208371281624,
+          0.4634209908545017,
+          0.46081095933914185,
+          0.46622101217508316,
+          0.45616086572408676,
+          0.47101080417633057,
+          0.46680099330842495
+        ],
+        "row_format": "native_grouped_argmin"
+      },
+      "seed": 123,
+      "speedups_query_median": {
+        "cuda_sparse_vs_rtdl": 13.316303851808893,
+        "rtdl_vs_cpu_openmp_sparse": 0.16925351235733313,
+        "rtdl_vs_cuda_sparse": 0.07509591333515264
+      },
+      "value_count": 16384
+    },
+    {
+      "block_size": 512,
+      "cpu_openmp_sparse": {
+        "build_ms": 0.08084,
+        "exact_mismatches": 0,
+        "matches_exact_scan": true,
+        "query_median_ms": 0.261376,
+        "query_runs_ms": [
+          0.262671,
+          0.25829,
+          0.261711,
+          0.456151,
+          0.271341,
+          0.261041,
+          0.268961,
+          0.255711,
+          0.25509,
+          0.255561,
+          0.269761,
+          0.25509
+        ],
+        "threads": 16
+      },
+      "cuda_sparse_query": {
+        "matches_cpu_openmp_sparse": true,
+        "query_median_ms": 0.071536,
+        "query_runs_ms": [
+          0.073984,
+          0.07152,
+          0.071648,
+          0.07168,
+          0.072128,
+          0.07152,
+          0.071392,
+          0.071264,
+          0.071552,
+          0.071552,
+          0.0712,
+          0.070944
+        ],
+        "uses_cpu_built_sparse_table": true
+      },
+      "dataset": "repeated",
+      "query_count": 8000,
+      "rtdl": {
+        "combined_scene": true,
+        "matches_cpu_reference": true,
+        "mode": "paper_rt_prepared_reuse",
+        "prepare_ms": 527.241043979302,
+        "query_batch_prepare_ms": 170.17304291948676,
+        "query_median_ms": 1.0331969242542982,
+        "query_runs_ms": [
+          1.1657921131700277,
+          1.0560820810496807,
+          1.035821856930852,
+          1.030751969665289,
+          1.038532005622983,
+          1.0337219573557377,
+          1.0347629431635141,
+          1.026771031320095,
+          1.021882053464651,
+          1.0326718911528587,
+          1.027831807732582,
+          1.0225221049040556
+        ],
+        "row_format": "native_grouped_argmin"
+      },
+      "seed": 123,
+      "speedups_query_median": {
+        "cuda_sparse_vs_rtdl": 14.443034615498465,
+        "rtdl_vs_cpu_openmp_sparse": 0.252977911436047,
+        "rtdl_vs_cuda_sparse": 0.06923752705867814
+      },
+      "value_count": 65536
+    }
+  ]
+}

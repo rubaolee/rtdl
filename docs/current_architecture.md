@@ -1,16 +1,16 @@
 # RTDL Current Architecture
 
-This page describes the v2.0-facing architecture for learners and users. It
+This page describes the v2.x-facing architecture for learners and users. It
 does not retell older release history. For that, use
 [Version Archive Notes](history/version_archive_notes.md)
 and the release-report archive.
 
 ## Current Status
 
-RTDL v2.0 is the current source-tree Python+partner+RTDL release. The release
-packet has reviewed OptiX/RT evidence under documented contracts and passed the
-3-AI consensus redline with Codex, Claude, and Gemini.
-The current released version is `v2.0`.
+RTDL v2.3 is the current source-tree Python+partner+RTDL release. It preserves
+the v2.0 language boundary and adds the current benchmark-vs-learner app
+portfolio cleanup.
+The current released version is `v2.3`.
 
 ## The User Contract
 
@@ -90,5 +90,6 @@ is user application code unless RTDL ships and reviews that exact contract.
 - [RTDL Language Docs](rtdl/README.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [Capability Boundaries](capability_boundaries.md)
+- [v2.3 Release Package](release_reports/v2_3/README.md)
 - [v2.0 Release Package](release_reports/v2_0/README.md)
 - [Partner Roadmap Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md)

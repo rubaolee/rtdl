@@ -1,6 +1,6 @@
 # RTDL Performance Model
 
-This page explains how to read performance results for the current v2.0-facing
+This page explains how to read performance results for the current v2.x-facing
 RTDL surface. It is intentionally stricter than marketing language: selecting a
 backend, running native code, and publishing a speedup claim are different
 things.
@@ -56,6 +56,7 @@ Current public wording is governed by:
 
 - [Current Support Matrix](current_main_support_matrix.md)
 - [Backend Maturity](backend_maturity.md)
+- [v2.3 Release Package](release_reports/v2_3/README.md)
 - [v2.0 Release Package](release_reports/v2_0/README.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
@@ -97,7 +98,7 @@ Use slower-than-Embree results to decide the next architecture step:
 
 ## Partner Continuation Rule
 
-v2.0 treats partner compute as part of the user-visible programming model:
+v2.x treats partner compute as part of the user-visible programming model:
 
 ```text
 Python owns the app.
@@ -105,7 +106,7 @@ RTDL owns app-agnostic RT-shaped traversal.
 The partner owns tensor/vector/GPU continuation when the app asks for it.
 ```
 
-That means a v2.0 app may use NumPy, PyTorch, CuPy, or user-controlled extension
+That means a v2.x app may use NumPy, PyTorch, CuPy, or user-controlled extension
 code around RTDL. Those choices can be valid app implementations, but public
 claims must say exactly which layer produced the speedup.
 

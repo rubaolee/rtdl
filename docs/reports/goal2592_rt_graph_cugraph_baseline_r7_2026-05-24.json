@@ -1,0 +1,218 @@
+{
+  "baseline": "rapids_cugraph_triangle_count",
+  "cudf_version": "26.04.000",
+  "cugraph_version": "26.04.000",
+  "method": "Build undirected cugraph.Graph from cudf edge list, run cugraph.triangle_count, sum per-vertex counts / 3.",
+  "results": {
+    "k4_10000": {
+      "measured_runs": 5,
+      "median_build_cudf_dataframe_ms": 0.5954951047897339,
+      "median_build_cugraph_graph_ms": 5.699999630451202,
+      "median_input_edges": 60000.0,
+      "median_load_np_ms": 0.11445581912994385,
+      "median_reduce_count_ms": 0.40230900049209595,
+      "median_total_ms": 9.813971817493439,
+      "median_triangle_count": 40000.0,
+      "median_triangle_count_ms": 3.0086934566497803,
+      "repeats": 7,
+      "runs": [
+        {
+          "build_cudf_dataframe_ms": 0.5976185202598572,
+          "build_cugraph_graph_ms": 5.7115331292152405,
+          "input_edges": 60000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_10000.edge",
+          "load_np_ms": 0.09961426258087158,
+          "reduce_count_ms": 0.3965124487876892,
+          "total_ms": 9.813971817493439,
+          "triangle_count": 40000,
+          "triangle_count_ms": 3.0086934566497803
+        },
+        {
+          "build_cudf_dataframe_ms": 0.5849078297615051,
+          "build_cugraph_graph_ms": 5.699999630451202,
+          "input_edges": 60000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_10000.edge",
+          "load_np_ms": 0.12274086475372314,
+          "reduce_count_ms": 0.40230900049209595,
+          "total_ms": 9.799689054489136,
+          "triangle_count": 40000,
+          "triangle_count_ms": 2.989731729030609
+        },
+        {
+          "build_cudf_dataframe_ms": 0.5826205015182495,
+          "build_cugraph_graph_ms": 5.697384476661682,
+          "input_edges": 60000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_10000.edge",
+          "load_np_ms": 0.11445581912994385,
+          "reduce_count_ms": 0.3942921757698059,
+          "total_ms": 9.777158498764038,
+          "triangle_count": 40000,
+          "triangle_count_ms": 2.9884055256843567
+        },
+        {
+          "build_cudf_dataframe_ms": 0.5954951047897339,
+          "build_cugraph_graph_ms": 5.666472017765045,
+          "input_edges": 60000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_10000.edge",
+          "load_np_ms": 0.11231005191802979,
+          "reduce_count_ms": 0.9196922183036804,
+          "total_ms": 14.015816152095795,
+          "triangle_count": 40000,
+          "triangle_count_ms": 6.721846759319305
+        },
+        {
+          "build_cudf_dataframe_ms": 0.9601488709449768,
+          "build_cugraph_graph_ms": 8.488178253173828,
+          "input_edges": 60000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_10000.edge",
+          "load_np_ms": 0.36006420850753784,
+          "reduce_count_ms": 0.7431581616401672,
+          "total_ms": 14.145784080028534,
+          "triangle_count": 40000,
+          "triangle_count_ms": 3.594234585762024
+        }
+      ],
+      "warmup": 2
+    },
+    "k4_100000": {
+      "measured_runs": 5,
+      "median_build_cudf_dataframe_ms": 1.9446536898612976,
+      "median_build_cugraph_graph_ms": 45.349568128585815,
+      "median_input_edges": 600000.0,
+      "median_load_np_ms": 0.9365305304527283,
+      "median_reduce_count_ms": 0.5580037832260132,
+      "median_total_ms": 77.07294821739197,
+      "median_triangle_count": 400000.0,
+      "median_triangle_count_ms": 29.869966208934784,
+      "repeats": 7,
+      "runs": [
+        {
+          "build_cudf_dataframe_ms": 2.0161867141723633,
+          "build_cugraph_graph_ms": 36.94584220647812,
+          "input_edges": 600000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_100000.edge",
+          "load_np_ms": 1.0478794574737549,
+          "reduce_count_ms": 0.7079988718032837,
+          "total_ms": 74.02458041906357,
+          "triangle_count": 400000,
+          "triangle_count_ms": 33.30667316913605
+        },
+        {
+          "build_cudf_dataframe_ms": 1.9446536898612976,
+          "build_cugraph_graph_ms": 45.4879105091095,
+          "input_edges": 600000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_100000.edge",
+          "load_np_ms": 1.0106489062309265,
+          "reduce_count_ms": 0.4669502377510071,
+          "total_ms": 78.78012955188751,
+          "triangle_count": 400000,
+          "triangle_count_ms": 29.869966208934784
+        },
+        {
+          "build_cudf_dataframe_ms": 2.8734952211380005,
+          "build_cugraph_graph_ms": 44.800736010074615,
+          "input_edges": 600000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_100000.edge",
+          "load_np_ms": 0.8397698402404785,
+          "reduce_count_ms": 0.5239248275756836,
+          "total_ms": 76.29445940256119,
+          "triangle_count": 400000,
+          "triangle_count_ms": 27.25653350353241
+        },
+        {
+          "build_cudf_dataframe_ms": 1.6743168234825134,
+          "build_cugraph_graph_ms": 45.349568128585815,
+          "input_edges": 600000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_100000.edge",
+          "load_np_ms": 0.9130910038948059,
+          "reduce_count_ms": 0.5580037832260132,
+          "total_ms": 77.07294821739197,
+          "triangle_count": 400000,
+          "triangle_count_ms": 28.57796847820282
+        },
+        {
+          "build_cudf_dataframe_ms": 1.7712563276290894,
+          "build_cugraph_graph_ms": 69.23858076334,
+          "input_edges": 600000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_100000.edge",
+          "load_np_ms": 0.9365305304527283,
+          "reduce_count_ms": 0.905349850654602,
+          "total_ms": 109.406977891922,
+          "triangle_count": 400000,
+          "triangle_count_ms": 36.55526041984558
+        }
+      ],
+      "warmup": 2
+    },
+    "k4_50000": {
+      "measured_runs": 5,
+      "median_build_cudf_dataframe_ms": 1.3493523001670837,
+      "median_build_cugraph_graph_ms": 27.09805965423584,
+      "median_input_edges": 300000.0,
+      "median_load_np_ms": 0.4952177405357361,
+      "median_reduce_count_ms": 0.5689114332199097,
+      "median_total_ms": 48.733606934547424,
+      "median_triangle_count": 200000.0,
+      "median_triangle_count_ms": 21.28630131483078,
+      "repeats": 7,
+      "runs": [
+        {
+          "build_cudf_dataframe_ms": 1.4292001724243164,
+          "build_cugraph_graph_ms": 27.17321366071701,
+          "input_edges": 300000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_50000.edge",
+          "load_np_ms": 0.5312114953994751,
+          "reduce_count_ms": 0.5748942494392395,
+          "total_ms": 45.0470894575119,
+          "triangle_count": 200000,
+          "triangle_count_ms": 15.33856987953186
+        },
+        {
+          "build_cudf_dataframe_ms": 1.1929646134376526,
+          "build_cugraph_graph_ms": 24.896882474422455,
+          "input_edges": 300000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_50000.edge",
+          "load_np_ms": 0.4162415862083435,
+          "reduce_count_ms": 0.5689114332199097,
+          "total_ms": 48.733606934547424,
+          "triangle_count": 200000,
+          "triangle_count_ms": 21.658606827259064
+        },
+        {
+          "build_cudf_dataframe_ms": 1.3493523001670837,
+          "build_cugraph_graph_ms": 27.09805965423584,
+          "input_edges": 300000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_50000.edge",
+          "load_np_ms": 0.4952177405357361,
+          "reduce_count_ms": 0.41697919368743896,
+          "total_ms": 44.82384771108627,
+          "triangle_count": 200000,
+          "triangle_count_ms": 15.464238822460175
+        },
+        {
+          "build_cudf_dataframe_ms": 1.17570161819458,
+          "build_cugraph_graph_ms": 25.502927601337433,
+          "input_edges": 300000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_50000.edge",
+          "load_np_ms": 0.3432333469390869,
+          "reduce_count_ms": 0.6676614284515381,
+          "total_ms": 48.97582530975342,
+          "triangle_count": 200000,
+          "triangle_count_ms": 21.28630131483078
+        },
+        {
+          "build_cudf_dataframe_ms": 1.5096962451934814,
+          "build_cugraph_graph_ms": 28.94425392150879,
+          "input_edges": 300000,
+          "input_file": "build/goal2589_more_probes/k4_cliques_50000.edge",
+          "load_np_ms": 0.5076080560684204,
+          "reduce_count_ms": 0.46481937170028687,
+          "total_ms": 64.5914301276207,
+          "triangle_count": 200000,
+          "triangle_count_ms": 33.16505253314972
+        }
+      ],
+      "warmup": 2
+    }
+  }
+}

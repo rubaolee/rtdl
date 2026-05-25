@@ -422,13 +422,18 @@ from .optix_runtime import OptixRay2DBuffer
 from .optix_runtime import OptixPoseIndexBuffer
 from .optix_runtime import OptixRowView
 from .optix_runtime import pack_rays_2d_from_arrays
+from .optix_runtime import pack_rays_3d_from_arrays
 from .optix_runtime import pack_triangles_2d_from_arrays
+from .optix_runtime import pack_triangles_3d_from_arrays
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_ray_inputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_output_flags
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_witness_outputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_all_witness_outputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_inputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs
+from .optix_runtime import pack_optix_static_triangle_scene_3d_device_ray_inputs
+from .optix_runtime import pack_optix_static_triangle_scene_3d_device_triangle_inputs
+from .optix_runtime import pack_optix_static_triangle_scene_3d_device_weighted_ray_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_partner_inputs
 from .optix_runtime import pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs
 from .optix_runtime import run_optix_partner_ray_triangle_any_hit_2d
@@ -461,7 +466,10 @@ from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangles
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
 from .optix_runtime import prepare_optix_static_triangle_scene_3d
+from .optix_runtime import prepare_optix_static_triangle_scene_3d_device_triangles
 from .optix_runtime import prepare_optix_grouped_segment_query_3d
+from .optix_runtime import prepare_optix_grouped_candidate_argmin
+from .optix_runtime import grouped_candidate_argmin_host_reference
 from .optix_runtime import prepare_ray_segment_group_count_2d_optix
 from .optix_runtime import prepare_optix_group_indices_2d
 from .optix_runtime import prepare_optix_pose_indices_2d
@@ -479,6 +487,7 @@ from .optix_runtime import PreparedOptixAabbQueries2D
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixStaticTriangleScene3D
 from .optix_runtime import PreparedOptixGroupedSegmentQuery3D
+from .optix_runtime import PreparedOptixGroupedCandidateArgmin
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
 from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
 from .optix_runtime import PreparedOptixPointClosedShapeMembership2D
@@ -870,6 +879,7 @@ from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_groupe
 from .generic_primitives import run_generic_prepared_ray_triangle_any_hit_count
 from .generic_primitives import run_generic_ray_triangle_any_hit
 from .generic_primitives import run_generic_ray_triangle_any_hit_count
+from .generic_primitives import run_generic_ray_triangle_closest_hit
 from .generic_db_primitives import ACTIVE_V1_5_GENERIC_DB_BACKENDS
 from .generic_db_primitives import FROZEN_BEFORE_V2_1_DB_BACKENDS
 from .generic_db_primitives import run_generic_db_compact_summary_batch
@@ -1306,6 +1316,7 @@ __all__ = [
     "run_generic_prepared_ray_triangle_any_hit_count",
     "run_generic_ray_triangle_any_hit",
     "run_generic_ray_triangle_any_hit_count",
+    "run_generic_ray_triangle_closest_hit",
     "run_generic_scalar_reduction",
     "V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES",
     "ACTIVE_V1_5_GENERIC_DB_BACKENDS",
@@ -1513,13 +1524,18 @@ __all__ = [
     "OptixRay2DBuffer",
     "OptixPoseIndexBuffer",
     "pack_rays_2d_from_arrays",
+    "pack_rays_3d_from_arrays",
     "pack_triangles_2d_from_arrays",
+    "pack_triangles_3d_from_arrays",
     "pack_optix_ray_any_hit_2d_device_ray_inputs",
     "pack_optix_ray_any_hit_2d_device_output_flags",
     "pack_optix_ray_any_hit_2d_device_witness_outputs",
     "pack_optix_ray_any_hit_2d_device_all_witness_outputs",
     "pack_optix_ray_any_hit_2d_device_triangle_inputs",
     "pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs",
+    "pack_optix_static_triangle_scene_3d_device_ray_inputs",
+    "pack_optix_static_triangle_scene_3d_device_triangle_inputs",
+    "pack_optix_static_triangle_scene_3d_device_weighted_ray_inputs",
     "pack_optix_ray_triangle_any_hit_2d_partner_inputs",
     "pack_optix_ray_triangle_any_hit_2d_device_descriptor_inputs",
     "run_optix_partner_ray_triangle_any_hit_2d",
@@ -1552,7 +1568,10 @@ __all__ = [
     "prepare_optix_ray_triangle_any_hit_2d_device_triangles",
     "prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene",
     "prepare_optix_static_triangle_scene_3d",
+    "prepare_optix_static_triangle_scene_3d_device_triangles",
     "prepare_optix_grouped_segment_query_3d",
+    "prepare_optix_grouped_candidate_argmin",
+    "grouped_candidate_argmin_host_reference",
     "run_optix_partner_resident_columnar_grouped_count_i64",
     "run_optix_partner_resident_columnar_grouped_sum_i64",
     "run_optix_partner_resident_columnar_grouped_min_i64",
@@ -1578,6 +1597,7 @@ __all__ = [
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixStaticTriangleScene3D",
     "PreparedOptixGroupedSegmentQuery3D",
+    "PreparedOptixGroupedCandidateArgmin",
     "PreparedOptixSegmentPolygonAnyHitRows2D",
     "PreparedOptixSegmentPolygonHitcount2D",
     "PreparedOptixPointClosedShapeMembership2D",

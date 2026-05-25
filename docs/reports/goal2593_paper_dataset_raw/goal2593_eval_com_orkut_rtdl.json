@@ -1,0 +1,33 @@
+{
+  "methods": [
+    "rtdl_2a1",
+    "rtdl_1a2"
+  ],
+  "repeats": 1,
+  "results": {
+    "com_orkut": {
+      "expected_triangles": 627584181,
+      "input_edges": 117185083,
+      "input_file": "build/goal2593_snap_edges/com-orkut.edge",
+      "methods": {
+        "rtdl_1a2": {
+          "completed_measured_runs": 0,
+          "elapsed_ms": 1996.117651462555,
+          "error": "std::bad_alloc: out_of_memory: CUDA error (failed to allocate 68639445368 bytes) at: /tmp/pip-build-env-dgiyosea/normal/lib/python3.11/site-packages/librmm/include/rmm/mr/cuda_memory_resource.hpp:51: cudaErrorMemoryAllocation out of memory",
+          "error_type": "MemoryError",
+          "runs": [],
+          "status": "failed"
+        },
+        "rtdl_2a1": {
+          "completed_measured_runs": 0,
+          "elapsed_ms": 3726.717859506607,
+          "error": "std::bad_alloc: out_of_memory: CUDA error (failed to allocate 68639445368 bytes) at: /tmp/pip-build-env-dgiyosea/normal/lib/python3.11/site-packages/librmm/include/rmm/mr/cuda_memory_resource.hpp:51: cudaErrorMemoryAllocation out of memory",
+          "error_type": "MemoryError",
+          "runs": [],
+          "status": "failed"
+        }
+      }
+    }
+  },
+  "warmup": 0
+}

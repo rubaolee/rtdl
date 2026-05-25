@@ -1,0 +1,24 @@
+{
+  "methods": [
+    "author_bs_tc"
+  ],
+  "repeats": 1,
+  "results": {
+    "com_orkut": {
+      "expected_triangles": 627584181,
+      "input_edges": 117185083,
+      "input_file": "build/goal2593_snap_edges/com-orkut.edge",
+      "methods": {
+        "author_bs_tc": {
+          "completed_measured_runs": 0,
+          "elapsed_ms": 147387.18970119953,
+          "error": "Command '['/root/rtdl_python_only/scratch/external/RT-Graph/tc/bin/bs_tc', 'build/goal2593_snap_edges/com-orkut.edge', '0']' died with <Signals.SIGKILL: 9>.",
+          "error_type": "CalledProcessError",
+          "runs": [],
+          "status": "failed"
+        }
+      }
+    }
+  },
+  "warmup": 0
+}

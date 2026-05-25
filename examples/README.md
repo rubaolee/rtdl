@@ -1,12 +1,14 @@
 # RTDL Examples
 
-This directory is organized for RTDL v2.0 users first.  Start in
+This directory is organized for RTDL v2.3 users first.  Start in
 `v2_0/`, then choose by purpose: first run, feature, full app, partner
 continuation, or research benchmark.
 
-Internal v2.1 work does not create a new learner tree. The same examples remain
-the current source-tree examples; v2.1-specific RayJoin and Hausdorff evidence
-lives in the research benchmark reports and the internal closure report.
+The directory name `v2_0/` is stable for the current v2.x learner tree; v2.3
+does not create a duplicate example tree.
+
+Historical note: v2.1 was an internal checkpoint, not a public release, and
+these examples now document the v2.3 user-facing source-tree surface.
 
 Run examples from the repository root with source-tree usage:
 
@@ -20,7 +22,7 @@ PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
 | --- | --- | --- |
 | First runnable RTDL programs | `v2_0/getting_started/` | `PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py` |
 | Individual feature examples | `v2_0/features/` | `PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_ray_triangle_any_hit.py` |
-| Complete v2.0 applications | `v2_0/apps/` | `PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference` |
+| Complete v2.x applications | `v2_0/apps/` | `PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference` |
 | Partner continuation examples | `v2_0/partners/` | `PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` |
 | Paper-facing performance studies | `v2_0/research_benchmarks/` | read the benchmark README before running |
 
@@ -40,7 +42,7 @@ PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
 | `generated/` | Auditor | Preserved generated bundles |
 | `internal/` | Maintainer | Historical/internal development artifacts |
 
-## v2.0 Feature Families
+## v2.x Feature Families
 
 | Feature family | Directory |
 | --- | --- |
@@ -56,6 +58,14 @@ PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
 | --- | --- | --- |
 | Hausdorff vs X-HD-style baselines | `v2_0/research_benchmarks/hausdorff_xhd/` | Serious RTDL language/runtime study, not a claim that every Hausdorff input beats every CUDA implementation |
 | Spatial joins vs RayJoin-style baselines | `v2_0/research_benchmarks/spatial_rayjoin/` | Serious RTDL spatial-query study, not a claim that RTDL reproduces every RayJoin paper result |
+| RT-DBSCAN-style neighbor clustering | `v2_0/research_benchmarks/rt_dbscan/` | Serious fixed-radius/component study over generic primitives, not a DBSCAN-native engine ABI |
+| Robot collision screening | `v2_0/research_benchmarks/robot_collision/` | Prepared static-scene screening study, not a planner or swept-collision solver |
+| RayDB-style grouped aggregates | `v2_0/research_benchmarks/raydb_style/` | Columnar grouped-reduction study, not SQL, SSB, or a DBMS |
+| Barnes-Hut / RT-BarnesHut-style | `v2_0/research_benchmarks/barnes_hut/` | Hierarchical aggregate-frontier study, not an app-specific force primitive |
+| LibRTS-style spatial index | `v2_0/research_benchmarks/librts_spatial_index/` | Generic AABB point/range count study, not full mutable LibRTS reproduction |
+| RTNN neighbor search | `v2_0/research_benchmarks/rtnn/` | Serious neighbor-search study over generic prepared fixed-radius and partner top-k contracts, not a full RTNN paper reproduction or ANN-index claim |
+| Triangle counting | `v2_0/research_benchmarks/triangle_counting/` | RT-Graph/SIGMETRICS 2025 target; single-contract graph benchmark with accepted segmented/streamed-lowering limitation |
+| GPU-RMQ | `v2_0/research_benchmarks/gpu_rmq/` | Demoted research/learner app after Goal2612; useful for primitive design pressure, not benchmark claims |
 
 ## Compatibility
 
@@ -78,7 +88,7 @@ For guided learning and support boundaries, prefer:
 - [Tutorial Ladder](../docs/tutorials/README.md)
 - [App And Example Quickstart](../docs/app_example_quickstart.md)
 - [Application Catalog](../docs/application_catalog.md)
-- [Internal v2.1 Closure Report](../docs/reports/goal2344_v2_1_internal_closure_2026-05-18.md)
+- [v2.3 Release Package](../docs/release_reports/v2_3/README.md)
 - [App Engine Support Matrix](../docs/app_engine_support_matrix.md)
 - [Performance Model](../docs/performance_model.md)
 

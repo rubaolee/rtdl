@@ -1,0 +1,44 @@
+{
+  "k4_10000": {
+    "convert_tsv_ms": 18.724873661994934,
+    "distinct_edges": 60000,
+    "explain_wall_ms": 88.28248083591461,
+    "index_analyze_ms": 108.8578924536705,
+    "input_bytes": 480000,
+    "input_edges": 60000,
+    "input_file": "build/goal2589_more_probes/k4_cliques_10000.edge",
+    "load_dedup_ms": 100.02771019935608,
+    "postgres_execution_ms": 36.883,
+    "postgres_planning_ms": 1.08,
+    "query_recheck_wall_ms": 84.58250761032104,
+    "triangle_count": 40000
+  },
+  "k4_100000": {
+    "convert_tsv_ms": 204.2829766869545,
+    "distinct_edges": 600000,
+    "explain_wall_ms": 439.96861577033997,
+    "index_analyze_ms": 452.1828517317772,
+    "input_bytes": 4800000,
+    "input_edges": 600000,
+    "input_file": "build/goal2589_more_probes/k4_cliques_100000.edge",
+    "load_dedup_ms": 690.6654685735703,
+    "postgres_execution_ms": 388.329,
+    "postgres_planning_ms": 1.143,
+    "query_recheck_wall_ms": 409.84953939914703,
+    "triangle_count": 400000
+  },
+  "k4_50000": {
+    "convert_tsv_ms": 104.13843393325806,
+    "distinct_edges": 300000,
+    "explain_wall_ms": 282.7131301164627,
+    "index_analyze_ms": 261.65010035037994,
+    "input_bytes": 2400000,
+    "input_edges": 300000,
+    "input_file": "build/goal2589_more_probes/k4_cliques_50000.edge",
+    "load_dedup_ms": 356.63842409849167,
+    "postgres_execution_ms": 239.787,
+    "postgres_planning_ms": 0.972,
+    "query_recheck_wall_ms": 255.61967492103577,
+    "triangle_count": 200000
+  }
+}

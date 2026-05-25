@@ -471,6 +471,22 @@ extern "C" int rtdl_optix_run_ray_anyhit_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_ray_closest_hit_3d(
+        const RtdlRay3D*      rays,      size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayClosestHitRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (ray_count == 0 || triangle_count == 0) return;
+        run_ray_closest_hit_3d_optix(rays, ray_count, triangles, triangle_count,
+                                     rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_static_triangle_scene_3d_create(
         const RtdlTriangle3D* triangles, size_t triangle_count,
         void** handle_out,
@@ -483,6 +499,40 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_create(
             throw std::runtime_error("triangle pointer must not be null when triangle_count is nonzero");
         *handle_out = nullptr;
         *handle_out = prepare_static_triangle_scene_3d_optix(triangles, triangle_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_create_device_triangles(
+        const uint32_t* triangle_ids,
+        const double* triangle_x0,
+        const double* triangle_y0,
+        const double* triangle_z0,
+        const double* triangle_x1,
+        const double* triangle_y1,
+        const double* triangle_z1,
+        const double* triangle_x2,
+        const double* triangle_y2,
+        const double* triangle_z2,
+        size_t triangle_count,
+        void** handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!handle_out)
+            throw std::runtime_error("handle output pointer must not be null");
+        *handle_out = nullptr;
+        *handle_out = prepare_static_triangle_scene_3d_device_triangles_optix(
+            triangle_ids,
+            triangle_x0,
+            triangle_y0,
+            triangle_z0,
+            triangle_x1,
+            triangle_y1,
+            triangle_z1,
+            triangle_x2,
+            triangle_y2,
+            triangle_z2,
+            triangle_count);
     }, error_out, error_size);
 }
 
@@ -556,9 +606,349 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_grouped_segment_query_any_hit
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum(
+        void* scene_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        const uint64_t* ray_weights,
+        uint64_t* weighted_hit_sum_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            rays,
+            ray_count,
+            ray_weights,
+            weighted_hit_sum_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays(
+        void* scene_handle,
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_oz,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_dz,
+        const double* ray_tmax,
+        size_t ray_count,
+        const uint64_t* ray_weights,
+        uint64_t* weighted_hit_sum_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            ray_ids,
+            ray_ox,
+            ray_oy,
+            ray_oz,
+            ray_dx,
+            ray_dy,
+            ray_dz,
+            ray_tmax,
+            ray_count,
+            ray_weights,
+            weighted_hit_sum_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum(
+        void* scene_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        uint64_t* hit_count_sum_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_hit_count_sum_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            rays,
+            ray_count,
+            hit_count_sum_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_closest_hit_rows(
+        void* scene_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        RtdlRayClosestHitRow** rows_out, size_t* row_count_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_closest_hit_rows_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            rays,
+            ray_count,
+            rows_out,
+            row_count_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_ray_batch_3d_create(
+        const RtdlRay3D* rays, size_t ray_count,
+        void** ray_batch_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!ray_batch_handle_out)
+            throw std::runtime_error("ray batch handle output pointer must not be null");
+        *ray_batch_handle_out = nullptr;
+        *ray_batch_handle_out = prepare_ray_batch_3d_optix(rays, ray_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create(
+        const uint32_t* ray_group_ids,
+        size_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        size_t candidate_count,
+        size_t group_count,
+        void** grouped_inputs_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!grouped_inputs_handle_out)
+            throw std::runtime_error("grouped argmin inputs handle output pointer must not be null");
+        *grouped_inputs_handle_out = nullptr;
+        *grouped_inputs_handle_out = prepare_closest_hit_grouped_argmin_3d_optix(
+            ray_group_ids,
+            ray_group_id_count,
+            candidate_values,
+            candidate_indices,
+            candidate_count,
+            group_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_grouped_candidate_argmin_inputs_create(
+        const uint32_t* candidate_group_ids,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        size_t candidate_count,
+        size_t group_count,
+        void** grouped_inputs_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!grouped_inputs_handle_out)
+            throw std::runtime_error("grouped candidate argmin handle output pointer must not be null");
+        *grouped_inputs_handle_out = nullptr;
+        *grouped_inputs_handle_out = prepare_grouped_candidate_argmin_optix(
+            candidate_group_ids,
+            candidate_values,
+            candidate_indices,
+            candidate_count,
+            group_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_grouped_candidate_argmin_finalize(
+        void* grouped_inputs_handle,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* finalize_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_grouped_candidate_argmin_optix(
+            reinterpret_cast<PreparedGroupedCandidateArgmin*>(grouped_inputs_handle),
+            group_has_value_out,
+            group_index_out,
+            group_value_out,
+            finalize_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_rows(
+        void* scene_handle,
+        void* ray_batch_handle,
+        RtdlRayClosestHitRow** rows_out, size_t* row_count_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_rows_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            rows_out,
+            row_count_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_closest_hit_grouped_argmin(
+        void* scene_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        const uint32_t* ray_group_ids, size_t ray_group_id_count,
+        const double* candidate_values, const uint32_t* candidate_indices,
+        size_t candidate_count, size_t group_count,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_closest_hit_grouped_argmin_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            rays,
+            ray_count,
+            ray_group_ids,
+            ray_group_id_count,
+            candidate_values,
+            candidate_indices,
+            candidate_count,
+            group_count,
+            group_has_value_out,
+            group_index_out,
+            group_value_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_grouped_argmin(
+        void* scene_handle,
+        void* ray_batch_handle,
+        const uint32_t* ray_group_ids, size_t ray_group_id_count,
+        const double* candidate_values, const uint32_t* candidate_indices,
+        size_t candidate_count, size_t group_count,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_grouped_argmin_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            ray_group_ids,
+            ray_group_id_count,
+            candidate_values,
+            candidate_indices,
+            candidate_count,
+            group_count,
+            group_has_value_out,
+            group_index_out,
+            group_value_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin(
+        void* scene_handle,
+        void* ray_batch_handle,
+        void* grouped_inputs_handle,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            reinterpret_cast<PreparedClosestHitGroupedArgmin3D*>(grouped_inputs_handle),
+            group_has_value_out,
+            group_index_out,
+            group_value_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin(
+        void* scene_a_handle,
+        void* ray_batch_a_handle,
+        void* grouped_inputs_a_handle,
+        void* scene_b_handle,
+        void* ray_batch_b_handle,
+        void* grouped_inputs_b_handle,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        double* traversal_a_seconds_out,
+        double* traversal_b_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_a_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_a_handle),
+            reinterpret_cast<PreparedClosestHitGroupedArgmin3D*>(grouped_inputs_a_handle),
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_b_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_b_handle),
+            reinterpret_cast<PreparedClosestHitGroupedArgmin3D*>(grouped_inputs_b_handle),
+            group_has_value_out,
+            group_index_out,
+            group_value_out,
+            traversal_a_seconds_out,
+            traversal_b_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays(
+        void* scene_handle,
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oy,
+        const double* ray_oz,
+        const double* ray_dx,
+        const double* ray_dy,
+        const double* ray_dz,
+        const double* ray_tmax,
+        size_t ray_count,
+        uint64_t* hit_count_sum_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_hit_count_sum_device_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            ray_ids,
+            ray_ox,
+            ray_oy,
+            ray_oz,
+            ray_dx,
+            ray_dy,
+            ray_dz,
+            ray_tmax,
+            ray_count,
+            hit_count_sum_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_static_triangle_scene_3d_grouped_segment_query_destroy(void* query_handle)
 {
     delete reinterpret_cast<PreparedGroupedSegmentQuery3D*>(query_handle);
+}
+
+extern "C" void rtdl_optix_ray_batch_3d_destroy(void* ray_batch_handle)
+{
+    delete reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle);
+}
+
+extern "C" void rtdl_optix_closest_hit_grouped_argmin_inputs_3d_destroy(void* grouped_inputs_handle)
+{
+    delete reinterpret_cast<PreparedClosestHitGroupedArgmin3D*>(grouped_inputs_handle);
+}
+
+extern "C" void rtdl_optix_grouped_candidate_argmin_inputs_destroy(void* grouped_inputs_handle)
+{
+    delete reinterpret_cast<PreparedGroupedCandidateArgmin*>(grouped_inputs_handle);
 }
 
 extern "C" void rtdl_optix_static_triangle_scene_3d_destroy(void* handle)

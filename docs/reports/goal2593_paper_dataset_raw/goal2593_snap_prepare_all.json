@@ -1,0 +1,180 @@
+{
+  "datasets": {
+    "cit_patents": {
+      "binary_edge_path": "build/goal2593_snap_edges/cit-Patents.edge",
+      "convert": {
+        "bytes": 132151584,
+        "comment_count": 4,
+        "edge_count": 16518948,
+        "elapsed_ms": 22981.98278993368,
+        "max_vertex": 6009554,
+        "min_vertex": 1,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 85139832,
+        "elapsed_ms": 4804.879248142242,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 16518948,
+      "expected_nodes": 3774768,
+      "expected_triangles": 7515023,
+      "gzip_path": "build/goal2593_snap_raw/cit-Patents.txt.gz",
+      "name": "cit_patents",
+      "snap_name": "cit-Patents",
+      "source_url": "https://snap.stanford.edu/data/cit-Patents.txt.gz"
+    },
+    "com_dblp": {
+      "binary_edge_path": "build/goal2593_snap_edges/com-dblp.edge",
+      "convert": {
+        "bytes": 8398928,
+        "comment_count": 4,
+        "edge_count": 1049866,
+        "elapsed_ms": 1551.6166910529137,
+        "max_vertex": 425956,
+        "min_vertex": 0,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 4138463,
+        "elapsed_ms": 1854.0039956569672,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 1049866,
+      "expected_nodes": 317080,
+      "expected_triangles": 2224385,
+      "gzip_path": "build/goal2593_snap_raw/com-dblp.txt.gz",
+      "name": "com_dblp",
+      "snap_name": "com-dblp",
+      "source_url": "https://snap.stanford.edu/data/bigdata/communities/com-dblp.ungraph.txt.gz"
+    },
+    "com_lj": {
+      "binary_edge_path": "build/goal2593_snap_edges/com-lj.edge",
+      "convert": {
+        "bytes": 277449512,
+        "comment_count": 4,
+        "edge_count": 34681189,
+        "elapsed_ms": 46060.33007800579,
+        "max_vertex": 4036537,
+        "min_vertex": 0,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 124262769,
+        "elapsed_ms": 11799.35123771429,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 34681189,
+      "expected_nodes": 3997962,
+      "expected_triangles": 177820130,
+      "gzip_path": "build/goal2593_snap_raw/com-lj.txt.gz",
+      "name": "com_lj",
+      "snap_name": "com-lj",
+      "source_url": "https://snap.stanford.edu/data/bigdata/communities/com-lj.ungraph.txt.gz"
+    },
+    "com_orkut": {
+      "binary_edge_path": "build/goal2593_snap_edges/com-orkut.edge",
+      "convert": {
+        "bytes": 937480664,
+        "comment_count": 4,
+        "edge_count": 117185083,
+        "elapsed_ms": 155628.80854308605,
+        "max_vertex": 3072626,
+        "min_vertex": 1,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 447251958,
+        "elapsed_ms": 79285.63515096903,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 117185083,
+      "expected_nodes": 3072441,
+      "expected_triangles": 627584181,
+      "gzip_path": "build/goal2593_snap_raw/com-orkut.txt.gz",
+      "name": "com_orkut",
+      "snap_name": "com-orkut",
+      "source_url": "https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz"
+    },
+    "com_youtube": {
+      "binary_edge_path": "build/goal2593_snap_edges/com-youtube.edge",
+      "convert": {
+        "bytes": 23900992,
+        "comment_count": 4,
+        "edge_count": 2987624,
+        "elapsed_ms": 4173.212505877018,
+        "max_vertex": 1157827,
+        "min_vertex": 1,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 10590328,
+        "elapsed_ms": 2485.5423271656036,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 2987624,
+      "expected_nodes": 1134890,
+      "expected_triangles": 3056386,
+      "gzip_path": "build/goal2593_snap_raw/com-youtube.txt.gz",
+      "name": "com_youtube",
+      "snap_name": "com-youtube",
+      "source_url": "https://snap.stanford.edu/data/bigdata/communities/com-youtube.ungraph.txt.gz"
+    },
+    "soc_livejournal1": {
+      "binary_edge_path": "build/goal2593_snap_edges/soc-LiveJournal1.edge",
+      "convert": {
+        "bytes": 551950184,
+        "comment_count": 4,
+        "edge_count": 68993773,
+        "elapsed_ms": 93915.20293056965,
+        "max_vertex": 4847570,
+        "min_vertex": 0,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 259619239,
+        "elapsed_ms": 60840.02747386694,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 68993773,
+      "expected_nodes": 4847571,
+      "expected_triangles": 285730264,
+      "gzip_path": "build/goal2593_snap_raw/soc-LiveJournal1.txt.gz",
+      "name": "soc_livejournal1",
+      "snap_name": "soc-LiveJournal1",
+      "source_url": "https://snap.stanford.edu/data/soc-LiveJournal1.txt.gz"
+    },
+    "wiki_talk": {
+      "binary_edge_path": "build/goal2593_snap_edges/wiki-Talk.edge",
+      "convert": {
+        "bytes": 40171280,
+        "comment_count": 4,
+        "edge_count": 5021410,
+        "elapsed_ms": 7243.325345218182,
+        "max_vertex": 2394384,
+        "min_vertex": 0,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 16947922,
+        "elapsed_ms": 3025.7098227739334,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 5021410,
+      "expected_nodes": 2394385,
+      "expected_triangles": 9203519,
+      "gzip_path": "build/goal2593_snap_raw/wiki-Talk.txt.gz",
+      "name": "wiki_talk",
+      "snap_name": "wiki-Talk",
+      "source_url": "https://snap.stanford.edu/data/wiki-Talk.txt.gz"
+    }
+  },
+  "source": "SNAP datasets used by RT-Graph SIGMETRICS 2025 TC section"
+}
