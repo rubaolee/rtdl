@@ -1,6 +1,6 @@
 # OptiX Partner Column Any-Hit
 
-This tutorial explains the current v2.0 OptiX partner-column idea. It is not a
+This tutorial explains the current v2.x OptiX partner-column idea. It is not a
 broad GPU-speedup promise.
 
 Read [Python Partner Any-Hit](partner_anyhit.md) first if you have not already
@@ -47,7 +47,7 @@ Not allowed:
 - claims that every app phase is faster.
 
 For the current release status, read
-[v2.0 Release Package](../release_reports/v2_0/README.md).
+[v2.3 Release Package](../release_reports/v2_3/README.md).
 
 ## Practical Starting Point
 

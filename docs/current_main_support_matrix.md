@@ -41,7 +41,7 @@ cells and silent CPU fallback are not allowed.
 
 ## Current Performance Reading
 
-Use the v2.0 performance tables as app-level evidence, not as a universal
+Use the v2.3 performance tables as app-level evidence, not as a universal
 backend ranking. The useful reading is:
 
 - Embree measures the CPU RT path plus CPU partner continuation.

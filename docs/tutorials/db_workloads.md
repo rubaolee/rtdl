@@ -1,6 +1,6 @@
 # RTDL Database Workloads
 
-This tutorial covers the current v2.0-facing database-style workload shape:
+This tutorial covers the current v2.x-facing database-style workload shape:
 bounded columnar-payload scans and grouped numeric summaries inside a Python
 program.
 
@@ -157,7 +157,7 @@ than treating those older goal-named tests as the learner path.
 PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
 ```
 
-For current v2.0 learning, the unified example above is the public entry point.
+For current v2.3 learning, the unified example above is the public entry point.
 
 ## 6. Current Limits
 

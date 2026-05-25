@@ -84,7 +84,7 @@ def run_demo(*, partner: str, backend: str) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run the first v2.0 Python+partner RTDL any-hit example through explicit host staging."
+        description="Run a Python+partner RTDL any-hit example through explicit host staging."
     )
     parser.add_argument("--partner", choices=("numpy", "torch-cuda", "cupy-cuda"), default="numpy")
     parser.add_argument("--backend", choices=("embree", "optix"), default="embree")

@@ -3,7 +3,7 @@
 RTDL is not a rendering engine. But it can act as the accelerated compute/query core
 inside one:
 
-This page is part of the current v2.0-facing tutorial path. It shows the same
+This page is part of the current v2.x-facing tutorial path. It shows the same
 Python-app plus RTDL-kernel split in visual programs.
 
 - RTDL handles ray/triangle-style query work

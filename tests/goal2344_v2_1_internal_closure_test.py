@@ -32,16 +32,17 @@ class Goal2344V21InternalClosureTest(unittest.TestCase):
         groups = {row["group"] for row in payload["results"]}
         self.assertEqual(groups, {"embree", "optix"})
 
-    def test_public_docs_link_internal_checkpoint_without_replacing_v2_0(self) -> None:
+    def test_public_docs_keep_internal_checkpoint_out_of_current_surface(self) -> None:
         docs = DOCS_INDEX.read_text(encoding="utf-8")
         examples = EXAMPLES_INDEX.read_text(encoding="utf-8")
         readme = ROOT_README.read_text(encoding="utf-8")
         for text in (docs, examples, readme):
-            self.assertIn("v2.1", text)
-            self.assertIn("internal", text.lower())
+            self.assertNotIn("v2.1", text)
+            self.assertNotIn("internal v2.1", text.lower())
         self.assertIn("RTDL v2.3 is the released", docs)
         self.assertIn("This directory is organized for RTDL v2.3 users first", examples)
         self.assertIn("RTDL v2.3 is the Python+partner+RTDL app-portfolio source-tree release", readme)
+        self.assertIn("Internal v2.1", REPORT.read_text(encoding="utf-8"))
 
     def test_gemini_review_accepts_internal_boundary(self) -> None:
         review = GEMINI_REVIEW.read_text(encoding="utf-8")

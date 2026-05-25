@@ -1025,7 +1025,7 @@ def hausdorff_distance_2d_rt_threshold_search(
 ) -> HausdorffThresholdResult:
     """Compute a tolerance-bounded HD interval using RTDL fixed-radius decisions.
 
-    This is the v2.0 RT-core-facing HD path. It reduces directed HD to the
+    This is the v2.x RT-core-facing HD path. It reduces directed HD to the
     monotone question: "is every source point within radius r of some target?"
     With `backend="optix"`, RTDL/OptiX handles the fixed-radius BVH traversal.
     The current v2 primitive returns aggregate coverage counts, so this returns
@@ -1088,7 +1088,7 @@ def hausdorff_distance_2d(
 ) -> HausdorffResult:
     """Return the exact undirected 2D Hausdorff distance between two point sets.
 
-    This is the user-facing v2.0 shape:
+    This is the user-facing v2.x shape:
 
     - RTDL converts Python point rows to partner-owned columns;
     - user-owned CUDA/CuPy continuation computes exact directed HD;
@@ -1175,7 +1175,7 @@ def make_demo_points(n: int, *, seed: int, offset: tuple[float, float] = (0.0, 0
 
 
 def main(argv: Iterable[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Compute exact 2D Hausdorff distance using the v2.0 user API.")
+    parser = argparse.ArgumentParser(description="Compute exact 2D Hausdorff distance using the v2.x user API.")
     parser.add_argument("--points-a", type=int, default=8192)
     parser.add_argument("--points-b", type=int, default=8192)
     parser.add_argument(

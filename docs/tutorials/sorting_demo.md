@@ -3,7 +3,7 @@
 This demo shows how RTDL acts as a geometric engine inside an ordinary Python
 program. The final output is a sorted list. The ranking signal comes from RTDL.
 
-This page is part of the current v2.0-facing tutorial path. It is a small
+This page is part of the current v2.x-facing tutorial path. It is a small
 composition example before the partner-column tutorials.
 
 This is not a claim that RTDL should replace Python sorting. It is a compact

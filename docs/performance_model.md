@@ -57,7 +57,7 @@ Current public wording is governed by:
 - [Current Support Matrix](current_main_support_matrix.md)
 - [Backend Maturity](backend_maturity.md)
 - [v2.3 Release Package](release_reports/v2_3/README.md)
-- [v2.0 Release Package](release_reports/v2_0/README.md)
+- [v2.3 Release Package](release_reports/v2_3/README.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - `rtdsl.rtx_public_wording_matrix()`

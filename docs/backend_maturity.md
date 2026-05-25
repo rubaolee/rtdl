@@ -23,17 +23,17 @@ machine-readable feature source is `rtdsl.engine_feature_support_matrix()`.
 | CPU reference | Correctness oracle | Useful for parity and debugging, not a speed backend. |
 | Embree | Mature CPU RT backend | The default CPU acceleration baseline for all-thread local testing. |
 | OptiX | Primary NVIDIA RT backend | Supports RT-core-facing evidence only for reviewed bounded paths on RTX hardware. |
-| Vulkan | Proof/portability backend | Preserved support surface; not the main v2.0 performance target. |
+| Vulkan | Proof/portability backend | Preserved support surface; not the main v2.3 performance target. |
 | HIPRT | Proof backend | Preserved support surface; no AMD performance claim without AMD evidence. |
 | Apple RT | Proof/native-assisted backend | Preserved support surface; not a v2.3 release performance target. |
-| PyTorch partner | Reference partner direction | Current v2.0 partner model for tensor-side work where PyTorch can express it. |
-| CuPy partner | Conformance and GPU escape-hatch partner | Current v2.0 partner model for device arrays and explicit user kernels where needed. |
+| PyTorch partner | Reference partner direction | Current v2.x partner model for tensor-side work where PyTorch can express it. |
+| CuPy partner | Conformance and GPU escape-hatch partner | Current v2.x partner model for device arrays and explicit user kernels where needed. |
 
 ## How To Read This
 
 Embree and OptiX are the active release-performance engines. Embree gives the
 CPU all-thread baseline and OptiX gives the NVIDIA RT path. The other engines
-remain valuable for portability, proof coverage, and future work, but v2.0
+remain valuable for portability, proof coverage, and future work, but v2.3
 release-facing performance tables should not lean on them.
 
 The partner layer is separate from the engine ABI. RTDL owns traversal,
@@ -48,7 +48,7 @@ returns candidates or witnesses.
 - RT-core wording requires a measured OptiX traversal path on RTX hardware.
 - Whole-app speedup wording requires whole-app same-contract evidence.
 - True zero-copy wording requires measured device-resident handoff evidence.
-- CuPy RawKernel usage is allowed in v2.0 app code, but it is partner-side user
+- CuPy RawKernel usage is allowed in v2.x app code, but it is partner-side user
   code, not a new app-customized RTDL engine primitive.
 - Stale local backend libraries may reject current symbols until rebuilt from
   the current source tree.
@@ -69,4 +69,3 @@ returns candidates or witnesses.
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [Performance Model](performance_model.md)
 - [v2.3 Release Package](release_reports/v2_3/README.md)
-- [v2.0 Release Package](release_reports/v2_0/README.md)

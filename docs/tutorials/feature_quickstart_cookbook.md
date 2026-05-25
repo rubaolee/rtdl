@@ -134,7 +134,7 @@ PYTHONPATH=src:. python examples/v2_0/features/ray_queries/rtdl_reduce_rows.py
 - Standard-library helper: `rt.reduce_rows(any)` converts per-edge rows into pose-level collision flags.
 - Python output: colliding pose IDs plus witness edge/ray summaries.
 - Boundary: this is bounded 2D discrete-pose screening, not continuous collision detection, full robot kinematics, or a full mesh collision engine.
-- Performance wording must come from the current v2.0 evidence packet. This
+- Performance wording must come from the current v2.3 evidence packet. This
   app teaches any-hit rows plus `reduce_rows` without making a broad native
   early-exit speedup claim.
 - Run:
@@ -155,7 +155,7 @@ PYTHONPATH=src:. python examples/v2_0/apps/robotics/rtdl_robot_collision_screeni
 - RTDL output: body-to-node candidate rows using `fixed_radius_neighbors`.
 - Python output: accepted node IDs, exact fallback body IDs, approximate force vectors, and error against a brute-force oracle.
 - Boundary: this is a bounded one-level 2D approximation. RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions.
-- Performance wording must come from the current v2.0 evidence packet. This app
+- Performance wording must come from the current v2.3 evidence packet. This app
   teaches candidate generation; Python still owns opening-rule and
   force-reduction work.
 - Run:
@@ -270,7 +270,7 @@ PYTHONPATH=src:. python examples/v2_0/features/neighbors/rtdl_knn_rows.py --back
 - Python output: undirected distance selection plus witness IDs.
 - Boundary: exact distance remains an app pattern over `knn_rows`; the OptiX
   threshold mode is a decision sub-path, not an exact-distance speedup claim.
-- Performance wording must come from the current v2.0 evidence packet. This app
+- Performance wording must come from the current v2.3 evidence packet. This app
   teaches exact-distance composition and the threshold decision sub-path without
   claiming broad nearest-neighbor library replacement.
 - Run:
@@ -361,5 +361,5 @@ for learning and row-shape inspection, not performance claims.
 For backend status, use:
 
 - [Current Architecture](../current_architecture.md)
-- [v2.0 Release Package](../release_reports/v2_0/README.md)
+- [v2.3 Release Package](../release_reports/v2_3/README.md)
 - [Release-Facing Examples](../release_facing_examples.md)

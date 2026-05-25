@@ -65,25 +65,6 @@ benchmark claims.
 | GPU-RMQ research app | `examples/v2_0/research_benchmarks/gpu_rmq/` | RMQ hierarchy/RT lowering pressure and generic grouped candidate argmin | Explicitly demoted research/learner app after Goal2612 |
 | Visual demos | `examples/visual_demo/` | Visual explanation of RT-shaped query work | Demos, not renderer claims |
 
-## v2.1 App Rethink Rule
-
-Goal2342 rechecked the whole v2.0 app set against the v2.1 feature surface. The
-rule is deliberately simple: use a v2.1 path only when it preserves the app's
-public output contract. Do not rewrite a count, ranking, clustering, dynamic
-programming, or force-accumulation app into a first-hit app merely because
-first-hit is faster.
-
-The current v2.1 feature wins are:
-
-- RayJoin-style vertical-probe first-hit support, documented in the spatial
-  research benchmark reports.
-- Hausdorff grouped point traversal usability/tuning, documented in the
-  Hausdorff research benchmark reports.
-
-For the ordinary apps below, the existing v2.0 implementations remain the
-current learner-facing versions unless a future generic primitive preserves the
-same app contract.
-
 ## Beginner Examples
 
 | Example | File | What it teaches |
@@ -151,6 +132,4 @@ throughput.
 - [App And Example Quickstart](app_example_quickstart.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
-- [Goal2342 v2.1 All-App Rethink](reports/goal2342_v2_1_all_app_rethink_and_comparison_2026-05-18.md)
 - [v2.3 Release Package](release_reports/v2_3/README.md)
-- [v2.0 Release Package](release_reports/v2_0/README.md)

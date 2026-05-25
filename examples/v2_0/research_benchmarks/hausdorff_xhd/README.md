@@ -2,7 +2,7 @@
 
 This directory shows how a v2.x user can implement Hausdorff distance with
 RTDL plus partner code, then compare that program with CPU, CUDA, and CuPy
-baselines. The current v2.1-compatible RTDL/OptiX path is informed by
+baselines. The current RTDL/OptiX path is informed by
 X-HD-style ideas: threshold search, witness extraction, grouping, and reducing
 the amount of pairwise work that must survive to the continuation phase.
 

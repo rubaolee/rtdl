@@ -1,6 +1,6 @@
 # RTDL Runtime Overhead Architecture
 
-Status: current v2.0 release architecture note.
+Status: current v2.3 release architecture note.
 
 RTDL uses Python as the authoring and orchestration layer. That is the right
 shape for a learner-facing eDSL, but it also means performance depends on which
@@ -25,7 +25,7 @@ reductions.
 
 ## Where Time Goes
 
-| Cost center | Why it matters | Preferred v2.0 answer |
+| Cost center | Why it matters | Preferred v2.x answer |
 | --- | --- | --- |
 | Python object construction | Large row objects are expensive to build. | Use array inputs and compact output contracts. |
 | `ctypes` marshaling | Host copies and struct packing can dominate short kernels. | Reuse prepared buffers where possible. |
@@ -38,7 +38,7 @@ reductions.
 Python remains the control plane. The hot data plane should be RTDL engine work
 or partner-side array work.
 
-That rule is why v2.0 allows PyTorch/CuPy continuation and CuPy RawKernel app
+That rule is why v2.x allows PyTorch/CuPy continuation and CuPy RawKernel app
 code, while still keeping the native RTDL engine app-agnostic. User-authored
 partner kernels are allowed app code; app-customized native engine entry points
 are not.

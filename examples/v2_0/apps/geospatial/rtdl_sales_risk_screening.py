@@ -562,7 +562,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="App-style RTDL v0.7 demo: scan risky orders and summarize counts and revenue by region."
+        description="App-style RTDL demo: scan risky orders and summarize counts and revenue by region."
     )
     parser.add_argument(
         "--backend",

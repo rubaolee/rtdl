@@ -8,7 +8,7 @@ Release date: 2026-05-25
 
 ## Release Statement
 
-RTDL v2.3 is the app-portfolio cleanup release on top of the v2.0
+RTDL v2.3 is the app-portfolio cleanup release on top of the current v2.x
 Python+partner+RTDL language boundary. It publishes the current benchmark-app
 set, the learner/example app set, and the boundary decisions from the latest
 benchmark wave.
@@ -28,7 +28,7 @@ optimizes arbitrary PyTorch or CuPy programs.
   status after performance evidence did not support benchmark promotion.
 - Generic OptiX grouped candidate argmin/finalize support extracted from the
   GPU-RMQ study without adding RMQ-specific native-engine logic.
-- Current docs updated from v2.0-only release wording to the v2.3 app-portfolio
+- Current docs updated from stale release wording to the v2.3 app-portfolio
   release boundary.
 
 ## Promoted Benchmark Apps
@@ -85,7 +85,6 @@ optimizes arbitrary PyTorch or CuPy programs.
 - [Goal2593 triangle-counting paper-dataset evaluation](../../reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md)
 - [Goal2593 triangle-counting consensus](../../reports/goal2593_consensus_rt_graph_paper_dataset_2026-05-24.md)
 - [Goal2612 GPU-RMQ demotion evidence](../../reports/goal2612_gpu_rmq_grouped_candidate_argmin_vs_cuda_2026-05-25.md)
-- [v2.0 Release Package](../v2_0/README.md)
 
 ## Minimal Smoke Commands
 

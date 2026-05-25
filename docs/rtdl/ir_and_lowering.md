@@ -106,7 +106,7 @@ Stable current facts:
   notes.
 - The plan can serialize to a schema-tagged dictionary.
 - Some generated backend artifacts still use capacity/counter patterns and
-  should not be treated as the final v2.0 execution ABI.
+  should not be treated as the final execution ABI.
 
 ## What The Current Engine Boundary Tightens
 
@@ -124,9 +124,9 @@ semantics, not by app names:
 That distinction matters for ABI shape, determinism, grouping, numeric
 tolerance, output capacity, and cross-backend parity.
 
-## What v2.0 Adds
+## What v2.x Adds
 
-The v2.0-facing path makes RTDL a Python+partner runtime, not only a Python row
+The v2.x-facing path makes RTDL a Python+partner runtime, not only a Python row
 DSL. The expected direction is:
 
 - compile once into a stable execution plan

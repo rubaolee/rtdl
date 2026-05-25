@@ -1,6 +1,6 @@
 # Spatial / RayJoin-Style Study
 
-This directory shows how a v2.0 user can express RayJoin-style spatial
+This directory shows how a v2.x user can express RayJoin-style spatial
 workloads in RTDL without putting app-specific RayJoin logic inside the native
 engine. The engine sees generic point, segment, polygon, traversal, and row
 contracts. The application owns workload choice, positive-hit filtering,
@@ -129,7 +129,7 @@ three default workloads in one payload.
 
 ## How RTDL Maps The Paper Ideas
 
-| RayJoin-style idea | RTDL v2.0 expression |
+| RayJoin-style idea | RTDL v2.x expression |
 | --- | --- |
 | Point-in-polygon traversal | Generic point/polygon traversal plus inclusive positive-hit predicate |
 | Segment intersection | Generic segment/segment row contract |
@@ -144,14 +144,14 @@ Use the JSON payload conservatively:
 - `rt_core_accelerated` is true only for `--backend optix`.
 - `paper_scale_perf_claim_authorized` is false unless a separate reviewed run
   on representative hardware and datasets authorizes a specific claim.
-- `full_rayjoin_reproduction` is false because this program tests RTDL v2.0
+- `full_rayjoin_reproduction` is false because this program tests RTDL v2.x
   expression of RayJoin-style workloads, not a full clone of the paper system.
 - `requires_pod_for_optix_perf` tells you whether the current run still needs
   NVIDIA hardware evidence before it can support OptiX performance wording.
 
 ## Claim Boundary
 
-- This directory can demonstrate that RTDL v2.0 can express useful
+- This directory can demonstrate that RTDL v2.x can express useful
   RayJoin-style spatial workloads over generic engine primitives.
 - It should not be used to claim full RayJoin reproduction, universal speedup,
   or paper-scale superiority without a separate reviewed evidence report.

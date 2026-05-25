@@ -112,7 +112,7 @@ rows = rt.run_cpu_python_reference(my_kernel, probe_name=(...), build_name=(...)
 
 ## Step 2.5: Python App, Generic Engine
 
-The current v2.0-facing design is intentionally split:
+The current v2.x-facing design is intentionally split:
 
 | You write in Python | RTDL owns in the engine |
 | --- | --- |

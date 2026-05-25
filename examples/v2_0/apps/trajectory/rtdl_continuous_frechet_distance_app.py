@@ -867,7 +867,7 @@ def run_curves_app(
             "cell broadphase when librtdl_optix is available."
         ),
         "claim_boundary": (
-            "This is a v1.8 Python+RTDL learner app. It demonstrates how a new "
+            "This is a current Python+RTDL learner app. It demonstrates how a new "
             "continuous Frechet application can route RT-shaped broadphase work "
             "through RTDL/OptiX, but it is not a universal speedup claim and the "
             "exact free-space dynamic program remains outside the app-agnostic "

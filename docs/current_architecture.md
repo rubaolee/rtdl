@@ -8,7 +8,7 @@ and the release-report archive.
 ## Current Status
 
 RTDL v2.3 is the current source-tree Python+partner+RTDL release. It preserves
-the v2.0 language boundary and adds the current benchmark-vs-learner app
+the current v2.x language boundary and adds the current benchmark-vs-learner app
 portfolio cleanup.
 The current released version is `v2.3`.
 
@@ -55,7 +55,7 @@ the workload, backend, partner, hardware, command shape, and artifact.
 
 ## Partner Architecture
 
-The v2.0-facing partner design is protocol first:
+The v2.x-facing partner design is protocol first:
 
 ```text
 PyTorch reference first. CuPy conformance alongside it.
@@ -65,7 +65,7 @@ Engine absolutely app-agnostic throughout.
 Partners own tensor memory and normal framework continuations. RTDL owns only
 the supported RTDL primitive call and its documented result contract.
 
-Examples of valid v2.0-facing output contracts:
+Examples of valid v2.x-facing output contracts:
 
 - compact count columns;
 - boolean flag columns;
@@ -75,7 +75,7 @@ Examples of valid v2.0-facing output contracts:
 
 The streaming witness-column contract is important because it avoids turning
 large witness tables into Python dictionaries. The old full Python row-table
-contract remains available where documented, but it is not the fast v2.0 shape.
+contract remains available where documented, but it is not the fast v2.x shape.
 
 ## What Stays Outside RTDL
 
@@ -91,5 +91,3 @@ is user application code unless RTDL ships and reviews that exact contract.
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [Capability Boundaries](capability_boundaries.md)
 - [v2.3 Release Package](release_reports/v2_3/README.md)
-- [v2.0 Release Package](release_reports/v2_0/README.md)
-- [Partner Roadmap Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md)

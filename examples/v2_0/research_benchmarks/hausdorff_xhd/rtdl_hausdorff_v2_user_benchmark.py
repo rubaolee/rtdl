@@ -875,7 +875,7 @@ def compare_distance(a: float, b: float, *, tolerance: float) -> bool:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "User-level v2.0 Hausdorff benchmark: RTDL partner columns plus a "
+            "User-level v2.x Hausdorff benchmark: RTDL partner columns plus a "
             "learner-owned tiled CUDA continuation, checked against OpenMP CPU "
             "and independent CUDA baselines."
         )
@@ -952,7 +952,7 @@ def main(argv: list[str] | None = None) -> int:
             f"sec={cupy_cuda['elapsed_sec']:.6f}",
             flush=True,
         )
-        print("[hausdorff] running RTDL v2.0 user app path: partner columns + user CUDA continuation", flush=True)
+        print("[hausdorff] running RTDL v2.x user app path: partner columns + user CUDA continuation", flush=True)
         v2 = undirected(run_rtdl_v2_user_cuda, points_a, points_b, warmup=args.warmup)
         results["methods"]["rtdl_v2_partner_columns_user_cuda"] = v2
         if oracle_distance is None:

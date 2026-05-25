@@ -1,6 +1,6 @@
 # Tutorial: Graph Workloads
 
-This tutorial covers the current v2.0-facing graph workload shape:
+This tutorial covers the current v2.x-facing graph workload shape:
 frontier/edge traversal rows and bounded graph-summary continuation inside a
 Python program.
 

@@ -60,7 +60,7 @@ def run_backend(backend: str) -> dict[str, object]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Bounded RTDL v0.7 conjunctive-scan example.")
+    parser = argparse.ArgumentParser(description="Bounded RTDL conjunctive-scan example.")
     parser.add_argument(
         "--backend",
         default="cpu_python_reference",

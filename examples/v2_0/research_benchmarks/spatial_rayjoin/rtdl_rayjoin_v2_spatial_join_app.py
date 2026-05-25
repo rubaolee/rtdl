@@ -216,7 +216,7 @@ def run_rayjoin_prepared_optix_workload(
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
 
-    This is the serious v2.0 benchmark route for RayJoin-style PIP and LSI.
+    This is the serious v2.x benchmark route for RayJoin-style PIP and LSI.
     It keeps RayJoin policy in Python while using generic prepared RTDL
     primitives underneath.
     """

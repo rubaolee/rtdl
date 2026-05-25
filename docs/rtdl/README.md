@@ -30,7 +30,7 @@ The documents here have different roles and should not overlap heavily.
 5. [IR And Lowering](ir_and_lowering.md)
    - how `CompiledKernel` lowers to `RTExecutionPlan`
    - what is stable today and what current `main` has generalized for the
-     v2.0-facing Python+partner boundary
+     v2.x-facing Python+partner boundary
 
 6. [Feature Homes](../features/README.md)
    - workload-by-workload usage homes

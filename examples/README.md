@@ -7,14 +7,22 @@ continuation, or research benchmark.
 The directory name `v2_0/` is stable for the current v2.x learner tree; v2.3
 does not create a duplicate example tree.
 
-Historical note: v2.1 was an internal checkpoint, not a public release, and
-these examples now document the v2.3 user-facing source-tree surface.
-
 Run examples from the repository root with source-tree usage:
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
 ```
+
+For a full Linux/pod smoke run across tutorials, examples, demos, and benchmark
+front doors, install the native/runtime prerequisites first:
+
+```bash
+apt-get install -y libgeos-dev pkg-config libembree-dev
+python -m pip install numpy pillow imageio imageio-ffmpeg
+```
+
+If system Python is externally managed, create a virtual environment and run
+the same `pip` command inside it.
 
 ## Start Here
 

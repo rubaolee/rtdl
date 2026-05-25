@@ -19,7 +19,7 @@ state reuse.
 
 | File | Role |
 | --- | --- |
-| `rtdl_barnes_hut_benchmark_app.py` | Research benchmark wrapper around the existing v2.0 Barnes-Hut simulation app |
+| `rtdl_barnes_hut_benchmark_app.py` | Research benchmark wrapper around the current Barnes-Hut simulation app |
 
 ## First Scope Run
 

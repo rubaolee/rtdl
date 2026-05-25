@@ -41,7 +41,7 @@ CONTROL_APPS = (
 )
 
 FAIRNESS_NOTE = (
-    "Compared against v1.8 Python+RTDL without user C/C++ extension; "
+    "Compared against the legacy Python+RTDL path without user C/C++ extension; "
     "v2 uses Python+partner continuations+RTDL under the explicit user decision."
 )
 
@@ -1040,7 +1040,7 @@ def run_all_control_apps(
         "fairness_note": (
             "Per explicit user decision, these four former control rows count as v2 "
             "app versions when implemented with CuPy RawKernel continuations. The "
-            "comparison is not absolutely fair: v1.8 is Python+RTDL with no user "
+            "comparison is not absolutely fair: the legacy baseline is Python+RTDL with no user "
             "C/C++ extension, while v2 uses Python+CuPy RawKernel+RTDL."
         ),
         "claim_boundary": {

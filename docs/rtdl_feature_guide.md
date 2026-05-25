@@ -85,4 +85,3 @@ That list is a teaching catalog, not the fixed capacity of the language.
 - [RTDL Language Docs](rtdl/README.md)
 - [Partner Acceleration Boundaries](partner_acceleration_boundaries.md)
 - [v2.3 Release Package](release_reports/v2_3/README.md)
-- [v2.0 Release Package](release_reports/v2_0/README.md)

@@ -1,6 +1,6 @@
 # Python Partner Any-Hit
 
-This tutorial shows the first Python+partner+RTDL shape for the v2.0-facing
+This tutorial shows the first Python+partner+RTDL shape for the v2.x-facing
 track.
 
 Use this as the first partner tutorial before the OptiX-specific column path.
@@ -123,7 +123,7 @@ This bridge is deliberately conservative:
 - `true_zero_copy_authorized` remains `false`;
 - `rt_core_speedup_claim_authorized` remains `false`;
 - timing fields show phase shape, not benchmark evidence;
-- final v2.0 release still waits for the strict 3-AI consensus redline.
+- public speedup claims still require exact evidence and release-boundary review.
 
 That boundary is what lets RTDL support partner frameworks without turning the
 engine into a PyTorch-, CuPy-, or app-specific runtime.

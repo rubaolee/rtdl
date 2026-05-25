@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand v2.0 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand v2.3 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -52,13 +52,11 @@ Read these in order:
 | Backend maturity | [Backend Maturity](backend_maturity.md) |
 | Feature support | [Engine Feature Support Contract](features/engine_support_matrix.md) |
 | Partner acceleration | [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
-| Partner roadmap gate | [Partner Roadmap Gate](release_reports/v1_8_v2_0_python_partner_rtdl_gate.md) |
 | Current support matrix | [Current Support Matrix](current_main_support_matrix.md) |
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
 | History Index | [History Index](history/README.md) |
-| v2.1 internal checkpoint | [Goal2344 v2.1 internal closure](reports/goal2344_v2_1_internal_closure_2026-05-18.md) |
 
 ## Directory Map
 

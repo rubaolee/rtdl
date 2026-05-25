@@ -165,7 +165,7 @@ class PreparedDatabaseAnalyticsSession:
             "rt_core_claim_scope": (
                 "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim"
             ),
-            "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+            "honesty_boundary": "Unified app over bounded RTDL DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
         }
 
 
@@ -238,13 +238,13 @@ def run_app(
         "rt_core_claim_scope": (
             "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim"
         ),
-        "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+        "honesty_boundary": "Unified app over bounded RTDL DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
     }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Unified RTDL database analytics app over bounded v0.7 DB kernels."
+        description="Unified RTDL database analytics app over bounded DB kernels."
     )
     parser.add_argument(
         "--backend",

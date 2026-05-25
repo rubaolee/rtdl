@@ -1,6 +1,6 @@
 # Tutorial: Nearest-Neighbor Workloads
 
-This tutorial covers the current v2.0-facing nearest-neighbor workload shapes:
+This tutorial covers the current v2.x-facing nearest-neighbor workload shapes:
 fixed-radius rows, K-closest rows, and Python-level composition for
 Hausdorff-style applications.
 
@@ -211,7 +211,7 @@ running the two directed passes, reducing with `max(distance)`, and checking the
 small-case brute-force oracle. This app does not claim the paper's full X-HD
 performance optimizations such as grid-cell pruning or prepared point-set reuse.
 
-Current performance wording must come from the v2.0 evidence packet, not from a
+Current performance wording must come from the v2.3 evidence packet, not from a
 tutorial. The bounded readout is that RTDL can provide the RT-shaped candidate
 or neighbor rows while Python or a partner framework owns the final app answer.
 
@@ -261,7 +261,7 @@ python examples\rtdl_knn_rows.py --backend embree
 ```
 
 OptiX and Vulkan availability depends on the machine and local runtime setup.
-Use the current feature docs and v2.0 release-candidate packet for the exact
+Use the current feature docs and v2.3 release package for the exact
 platform story.
 
 ---

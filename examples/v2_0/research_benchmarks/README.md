@@ -26,8 +26,8 @@ $env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\<study>\<script
 
 | Directory | Purpose | Start here |
 | --- | --- | --- |
-| `hausdorff_xhd/` | Exact and RT-assisted Hausdorff distance study informed by X-HD techniques; includes v2.1 scale-aware grouped traversal defaults | `hausdorff_xhd/README.md` |
-| `spatial_rayjoin/` | RayJoin-style spatial join workloads; includes v2.1 first-hit/nearest-boundary evidence | `spatial_rayjoin/README.md` |
+| `hausdorff_xhd/` | Exact and RT-assisted Hausdorff distance study informed by X-HD techniques; includes current scale-aware grouped traversal defaults | `hausdorff_xhd/README.md` |
+| `spatial_rayjoin/` | RayJoin-style spatial join workloads with current first-hit/nearest-boundary evidence | `spatial_rayjoin/README.md` |
 | `rt_dbscan/` | RT-DBSCAN-style 3-D density clustering study over generic fixed-radius/component contracts | `rt_dbscan/README.md` |
 | `robot_collision/` | Robot-collision-style static-scene plus batched transformed query-geometry study; CPU reference only in Goal2480 | `robot_collision/README.md` |
 | `raydb_style/` | RayDB-style columnar grouped aggregate contract study; CPU reference plus Embree/OptiX count-sum parity over existing generic columnar payloads | `raydb_style/README.md` |
@@ -60,9 +60,6 @@ $env:PYTHONPATH='src;.'; py -3 examples\v2_0\research_benchmarks\<study>\<script
 The benchmark directories intentionally keep paper-inspired work separate from
 the ordinary learner examples so new users can learn RTDL without being pulled
 into historical performance debates.
-
-For the all-app v2.1 rethink and v2.0 comparison boundary, see
-[`Goal2342 v2.1 All-App Rethink`](../../../docs/reports/goal2342_v2_1_all_app_rethink_and_comparison_2026-05-18.md).
 
 For the post-robot-collision benchmark-app selection rule and RayDB scoping
 boundary, see

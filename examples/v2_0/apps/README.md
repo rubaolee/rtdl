@@ -1,6 +1,6 @@
 # Application Examples
 
-These are complete v2.0 examples that combine Python control logic, RTDL
+These are complete v2.x examples that combine Python control logic, RTDL
 primitive calls, and partner continuation where appropriate.
 
 | Directory | App family |

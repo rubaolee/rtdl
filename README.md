@@ -18,6 +18,18 @@ This documentation is written for the current v2.x RTDL surface. The current rel
 Run commands from the repository root. RTDL is used directly from the source
 tree, so set `PYTHONPATH` before examples and tests.
 
+Linux/pod native smoke prerequisites:
+
+```bash
+apt-get install -y libgeos-dev pkg-config libembree-dev
+python -m pip install numpy pillow imageio imageio-ffmpeg
+```
+
+Use a virtual environment if your Python distribution blocks system-wide
+`pip`. The portable `cpu_python_reference` examples need fewer native
+dependencies, but the current full runnable surface includes native CPU/Embree
+paths and visual demos.
+
 Bash or zsh:
 
 ```bash
@@ -113,7 +125,7 @@ native dependencies configured.
 ## v2.3 Release
 
 RTDL v2.3 is the Python+partner+RTDL app-portfolio source-tree release. It keeps
-the v2.0 language boundary, adds the current promoted benchmark-app portfolio,
+the current v2.x language boundary, adds the current promoted benchmark-app portfolio,
 demotes non-competitive candidates such as GPU-RMQ and Continuous Frechet to
 learner/research status, and documents the app-agnostic primitive lessons from
 the benchmark wave.
@@ -148,7 +160,6 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Tutorial Ladder](docs/tutorials/README.md)
 - [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Application Catalog](docs/application_catalog.md)
-- [Internal v2.1 Closure Report](docs/reports/goal2344_v2_1_internal_closure_2026-05-18.md)
 - [Feature Guide](docs/rtdl_feature_guide.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
 - [App Engine Support Matrix](docs/app_engine_support_matrix.md)
@@ -158,7 +169,6 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Performance Model](docs/performance_model.md)
 - [IR And Lowering](docs/rtdl/ir_and_lowering.md)
 - [v2.3 Release Package](docs/release_reports/v2_3/README.md)
-- [v2.0 Release Package](docs/release_reports/v2_0/README.md)
 
 ## History And Audit Trail
 

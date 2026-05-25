@@ -1,6 +1,6 @@
 # RTDL Engine Feature Support Contract
 
-Status: public API contract for the v2.0 release source tree.
+Status: public API contract for the v2.3 release source tree.
 
 Every public RTDL feature that a developer can intentionally choose should have
 a defined behavior on every RTDL engine. The behavior must be one of four

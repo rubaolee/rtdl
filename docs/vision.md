@@ -40,7 +40,7 @@ RTDL separates those concerns:
 ## Backend Ambition
 
 The project is multi-backend by design. The current public docs focus on the
-supported v2.0-facing surface, with Embree and OptiX as the primary engineering
+supported v2.x-facing surface, with Embree and OptiX as the primary engineering
 targets and other backend families preserved according to their documented
 maturity.
 

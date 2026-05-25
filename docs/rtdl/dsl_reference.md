@@ -40,7 +40,7 @@ Anything outside this surface is not part of the current language.
 
 ## Contract-First Public Surface
 
-RTDL v2.0 treats the language as a set of generic contracts, not as a fixed
+RTDL v2.x treats the language as a set of generic contracts, not as a fixed
 application library. Application policies such as Hausdorff, RayJoin, road
 hazard screening, DBSCAN, or facility assignment belong in examples, tutorials,
 recipes, and user code. The core RTDL surface should expose:

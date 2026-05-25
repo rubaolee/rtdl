@@ -8,7 +8,7 @@ they are not general-purpose program optimizers.
 
 RTDL accelerates the RTDL primitive call you explicitly make.
 
-For the current v2.0 work, the supported shape is:
+For the current v2.3 release, the supported shape is:
 
 1. You build columns in Python with NumPy, PyTorch, or CuPy.
 2. You call an RTDL partner API for a supported primitive.
@@ -52,7 +52,7 @@ contract, and evidence artifact.
 
 ## User-Owned Partner Continuations
 
-v2.0 does not restrict users from doing normal partner work after an RTDL
+RTDL does not restrict users from doing normal partner work after an RTDL
 primitive returns. If the partner is CuPy, users may continue with ordinary CuPy
 operations, including `cupy.RawKernel`. If the partner is PyTorch, users may
 continue with ordinary PyTorch tensor operations.
@@ -72,13 +72,13 @@ Python + CuPy + RTDL
 Blocked claim:
 
 ```text
-RTDL v2.0 accelerates arbitrary CuPy RawKernel programs.
+RTDL accelerates arbitrary CuPy RawKernel programs.
 ```
 
 Allowed claim:
 
 ```text
-RTDL v2.0 can interoperate with CuPy-owned device arrays, so users can continue
+RTDL v2.3 can interoperate with CuPy-owned device arrays, so users can continue
 with normal CuPy code, including RawKernel, subject to their own correctness and
 performance responsibility.
 ```
@@ -100,11 +100,10 @@ For the current four all-app control rows, the intended interpretation is:
 
 ## Current Release Boundary
 
-v2.0 is the current source-tree Python+partner+RTDL release. The evidence
-supports documented Python+partner+RTDL contracts, including a streaming exact
-witness-column contract that avoids full Python row-table materialization for
-the segment/polygon any-hit row. The release passed the strict 3-AI consensus
-redline with Codex, Claude, and Gemini.
+v2.3 is the current source-tree Python+partner+RTDL release. The evidence
+supports documented Python+partner+RTDL contracts and separates promoted
+benchmark apps from learner/example apps. The release passed the strict 3-AI
+consensus redline with Codex, Claude, and Gemini.
 
 Every public performance statement must stay inside the reviewed evidence:
 

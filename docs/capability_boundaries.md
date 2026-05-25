@@ -7,7 +7,7 @@ users. Older release history is kept separately in
 ## Current Status
 
 RTDL v2.3 is the current source-tree Python+partner+RTDL release. It preserves
-the v2.0 language boundary and adds the cleaned benchmark-vs-learner app
+the current v2.x language boundary and adds the cleaned benchmark-vs-learner app
 portfolio.
 
 ## Short Version
