@@ -69,8 +69,9 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
     robot_obstacles = _scale_value(scale, quick=16, standard=1024, large=2048)
     dbscan_points = _scale_value(scale, quick=512, standard=32768, large=65536)
     barnes_bodies = _scale_value(scale, quick=256, standard=8192, large=32768)
-    librts_boxes = _scale_value(scale, quick=256, standard=32768, large=262144)
-    librts_queries = _scale_value(scale, quick=128, standard=8192, large=65536)
+    librts_boxes = _scale_value(scale, quick=512, standard=1024, large=2048)
+    librts_queries = _scale_value(scale, quick=256, standard=512, large=1024)
+    raydb_copies = _scale_value(scale, quick=16384, standard=131072, large=524288)
     rtnn_points = _scale_value(scale, quick=4096, standard=65536, large=262144)
     triangle_copies = _scale_value(scale, quick=16, standard=5000, large=20000)
     contact_grid = _scale_value(scale, quick=64, standard=4096, large=8192)
@@ -261,8 +262,11 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                         mode,
                         "--backend",
                         "embree",
+                        "--copies",
+                        raydb_copies,
                     ),
-                    notes="This app currently exposes parity rows without internal timing, so process wall median is the fallback metric.",
+                    primary_metric_path=("metadata", "timings", "query_sec"),
+                    notes="Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
                 ),
                 BenchmarkCase(
                     case_id=f"raydb_optix_{mode}",
@@ -276,8 +280,11 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                         mode,
                         "--backend",
                         "optix",
+                        "--copies",
+                        raydb_copies,
                     ),
-                    notes="This app currently exposes parity rows without internal timing, so process wall median is the fallback metric.",
+                    primary_metric_path=("metadata", "timings", "query_sec"),
+                    notes="Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
                 ),
             ]
         )

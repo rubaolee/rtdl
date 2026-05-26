@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import time
 from typing import Any
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
@@ -26,8 +27,10 @@ BACKENDS = (
 RESULT_MODES = CPU_RESULT_MODES
 
 
-def make_fixture() -> dict[str, Any]:
-    return {
+def make_fixture(copies: int = 1) -> dict[str, Any]:
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    base = {
         "row_ids": (1, 2, 3, 4, 5, 6, 7, 8),
         "columns": {
             "region_id": (0, 1, 0, 1, 2, 2, 1, 0),
@@ -36,6 +39,20 @@ def make_fixture() -> dict[str, Any]:
             "quantity": (10, 20, 15, 9, 30, 18, 28, 12),
             "revenue": (100, 200, 150, 50, 300, 80, 120, 90),
         },
+    }
+    if copies == 1:
+        return base
+    row_count = len(base["row_ids"])
+    row_ids: list[int] = []
+    columns: dict[str, list[int]] = {name: [] for name in base["columns"]}
+    for copy_index in range(copies):
+        offset = copy_index * row_count
+        row_ids.extend(offset + int(row_id) for row_id in base["row_ids"])
+        for name, values in base["columns"].items():
+            columns[name].extend(int(value) for value in values)
+    return {
+        "row_ids": tuple(row_ids),
+        "columns": {name: tuple(values) for name, values in columns.items()},
     }
 
 
@@ -56,8 +73,13 @@ def make_plan(mode: str) -> dict[str, Any]:
     return plan
 
 
-def run_result_mode(mode: str, *, backend: str = "cpu_python_reference") -> dict[str, Any]:
-    fixture = make_fixture()
+def run_result_mode(
+    mode: str,
+    *,
+    backend: str = "cpu_python_reference",
+    copies: int = 1,
+) -> dict[str, Any]:
+    fixture = make_fixture(copies=copies)
     plan = make_plan(mode)
     if backend == "embree":
         return _run_native_result_mode(
@@ -69,6 +91,7 @@ def run_result_mode(mode: str, *, backend: str = "cpu_python_reference") -> dict
             result_modes=EMBREE_RESULT_MODES,
             contract="columnar_grouped_aggregate_embree_columnar_payload",
             rt_core_accelerated=False,
+            copies=copies,
         )
     if backend == "optix":
         return _run_native_result_mode(
@@ -80,24 +103,34 @@ def run_result_mode(mode: str, *, backend: str = "cpu_python_reference") -> dict
             result_modes=OPTIX_RESULT_MODES,
             contract="columnar_grouped_aggregate_optix_columnar_payload",
             rt_core_accelerated=True,
+            copies=copies,
         )
     if backend == OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND:
         return _run_optix_partner_resident_experimental_result_mode(
             fixture=fixture,
             plan=plan,
             mode=mode,
+            copies=copies,
         )
     if backend != "cpu_python_reference":
         raise ValueError(f"unsupported backend: {backend}")
+    started = time.perf_counter()
     result = rt.evaluate_columnar_grouped_aggregate(fixture, plan)
+    elapsed_sec = time.perf_counter() - started
     lowering_plan = rt.plan_columnar_aggregate_lowering(backend).to_dict()
     return {
         "app": "raydb_style_columnar_aggregate",
         "backend": backend,
         "mode": mode,
+        "copies": int(copies),
+        "row_count": len(fixture["row_ids"]),
+        "elapsed_sec": elapsed_sec,
         "rows": list(result.rows),
         "metadata": {
             **result.metadata,
+            "copies": int(copies),
+            "row_count": len(fixture["row_ids"]),
+            "timings": {"cpu_reference_sec": elapsed_sec},
             "fixture": "tiny_denormalized_columnar",
             "lowering_plan": lowering_plan,
             "paper_reproduction": False,
@@ -128,6 +161,7 @@ def _run_optix_partner_resident_experimental_result_mode(
     fixture: dict[str, Any],
     plan: dict[str, Any],
     mode: str,
+    copies: int = 1,
 ) -> dict[str, Any]:
     if mode not in OPTIX_PARTNER_RESIDENT_RESULT_MODES:
         raise ValueError(
@@ -142,7 +176,9 @@ def _run_optix_partner_resident_experimental_result_mode(
             for name, values in fixture["columns"].items()
         },
     }
+    prepare_started = time.perf_counter()
     descriptor = rt.prepare_partner_resident_columnar_record_set(record_set, backend="optix")
+    prepare_sec = time.perf_counter() - prepare_started
     query = rt.columnar_plan_to_grouped_query(plan)
     group_capacity = _infer_dense_group_capacity(fixture, plan)
     dispatch_query = query
@@ -153,6 +189,7 @@ def _run_optix_partner_resident_experimental_result_mode(
         composite_lowering = tuple(item.aggregate for item in decomposed_plans)
         dispatch_query = rt.columnar_plan_to_grouped_query(decomposed_plans[0])
         reduction = "sum_count"
+    query_started = time.perf_counter()
     dispatch_result = rt.run_optix_partner_resident_columnar_grouped_i64_reduction(
         descriptor,
         dispatch_query,
@@ -161,6 +198,7 @@ def _run_optix_partner_resident_experimental_result_mode(
         group_capacity=group_capacity,
         semantic_aggregate=mode,
     )
+    query_sec = time.perf_counter() - query_started
     result_rows = tuple(dispatch_result["rows"])
     dispatch_metadata = dict(dispatch_result["metadata"])
     cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
@@ -168,10 +206,20 @@ def _run_optix_partner_resident_experimental_result_mode(
         "app": "raydb_style_columnar_aggregate",
         "backend": OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND,
         "mode": mode,
+        "copies": int(copies),
+        "row_count": len(fixture["row_ids"]),
+        "elapsed_sec": prepare_sec + query_sec,
         "rows": list(result_rows),
         "matches_cpu_reference": tuple(result_rows) == tuple(cpu_rows),
         "metadata": {
             "contract": "columnar_grouped_aggregate_optix_partner_resident_experimental",
+            "copies": int(copies),
+            "row_count": len(fixture["row_ids"]),
+            "timings": {
+                "prepare_sec": prepare_sec,
+                "query_sec": query_sec,
+                "elapsed_sec": prepare_sec + query_sec,
+            },
             "fixture": "tiny_denormalized_columnar",
             "lowering_plan": rt.plan_columnar_aggregate_lowering(
                 OPTIX_PARTNER_RESIDENT_EXPERIMENTAL_BACKEND
@@ -216,19 +264,24 @@ def _run_native_result_mode(
     result_modes: tuple[str, ...],
     contract: str,
     rt_core_accelerated: bool,
+    copies: int = 1,
 ) -> dict[str, Any]:
     backend_label = "OptiX" if backend == "optix" else backend.title()
     if mode not in result_modes:
         raise ValueError(f"{backend_label} RayDB-style slice currently supports only count and sum")
     query = rt.columnar_plan_to_grouped_query(plan)
     lowering_plan = rt.plan_columnar_aggregate_lowering(backend).to_dict()
+    prepare_started = time.perf_counter()
     dataset = prepare_dataset(
         fixture,
         primary_fields=("ship_year", "discount", "quantity"),
     )
+    prepare_sec = time.perf_counter() - prepare_started
     try:
         preparation_metadata = dataset.columnar_preparation_metadata()
+        query_started = time.perf_counter()
         result_rows = dataset.grouped_count(query) if mode == "count" else dataset.grouped_sum(query)
+        query_sec = time.perf_counter() - query_started
     finally:
         dataset.close()
     cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
@@ -236,10 +289,20 @@ def _run_native_result_mode(
         "app": "raydb_style_columnar_aggregate",
         "backend": backend,
         "mode": mode,
+        "copies": int(copies),
+        "row_count": len(fixture["row_ids"]),
+        "elapsed_sec": prepare_sec + query_sec,
         "rows": list(result_rows),
         "matches_cpu_reference": tuple(result_rows) == tuple(cpu_rows),
         "metadata": {
             "contract": contract,
+            "copies": int(copies),
+            "row_count": len(fixture["row_ids"]),
+            "timings": {
+                "prepare_sec": prepare_sec,
+                "query_sec": query_sec,
+                "elapsed_sec": prepare_sec + query_sec,
+            },
             "fixture": "tiny_denormalized_columnar",
             "lowering_plan": lowering_plan,
             "uses_existing_compatibility_wrapper": False,
@@ -260,7 +323,7 @@ def _run_native_result_mode(
     }
 
 
-def run_suite(*, backend: str = "cpu_python_reference") -> dict[str, Any]:
+def run_suite(*, backend: str = "cpu_python_reference", copies: int = 1) -> dict[str, Any]:
     if backend == "cpu_python_reference":
         modes = CPU_RESULT_MODES
     elif backend == "embree":
@@ -271,10 +334,15 @@ def run_suite(*, backend: str = "cpu_python_reference") -> dict[str, Any]:
         modes = OPTIX_PARTNER_RESIDENT_RESULT_MODES
     else:
         raise ValueError(f"unsupported backend: {backend}")
-    results = {mode: run_result_mode(mode, backend=backend) for mode in modes}
+    results = {
+        mode: run_result_mode(mode, backend=backend, copies=copies)
+        for mode in modes
+    }
     return {
         "app": "raydb_style_columnar_aggregate",
         "backend": backend,
+        "copies": int(copies),
+        "row_count": len(make_fixture(copies=copies)["row_ids"]),
         "modes": results,
         "all_match_cpu_reference": all(payload.get("matches_cpu_reference", True) for payload in results.values()),
         "claim_boundary": (
@@ -297,8 +365,13 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the RayDB-style CPU reference benchmark slice.")
     parser.add_argument("--mode", choices=("all", *RESULT_MODES), default="all")
     parser.add_argument("--backend", choices=BACKENDS, default="cpu_python_reference")
+    parser.add_argument("--copies", type=int, default=1)
     args = parser.parse_args(argv)
-    payload = run_suite(backend=args.backend) if args.mode == "all" else run_result_mode(args.mode, backend=args.backend)
+    payload = (
+        run_suite(backend=args.backend, copies=args.copies)
+        if args.mode == "all"
+        else run_result_mode(args.mode, backend=args.backend, copies=args.copies)
+    )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 
