@@ -78,6 +78,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
     app = "examples/v2_0/research_benchmarks"
     rtnn_point_file = artifact_dir / f"rtnn_uniform_{rtnn_points}.csv"
     rtnn_gen_json = artifact_dir / f"rtnn_generate_{rtnn_points}.json"
+    rtnn_embree_json = artifact_dir / f"rtnn_embree_{rtnn_points}.json"
     rtnn_optix_json = artifact_dir / f"rtnn_optix_{rtnn_points}.json"
 
     cases: list[BenchmarkCase] = [
@@ -152,22 +153,31 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
             ),
         ),
         BenchmarkCase(
-            case_id="rt_dbscan_embree_grouped_stream",
+            case_id="rt_dbscan_embree_fixed_radius_rows",
             app_id="rt_dbscan",
             app_name="RT-DBSCAN-style",
-            comparison_group="dbscan_grouped_stream_blocked_column_signature",
+            comparison_group="dbscan_cluster_signature",
             backend="embree",
-            command=None,
-            unsupported_reason=(
-                "The promoted app front door has no Embree grouped fixed-radius continuation mode; "
-                "current comparable row is OptiX-only."
+            command=_py(
+                f"{app}/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+                "--mode",
+                "embree_prepared_rows",
+                "--dataset",
+                "clustered3d",
+                "--point-count",
+                dbscan_points,
+                "--no-validation",
+            ),
+            notes=(
+                "Same DBSCAN cluster-signature contract through generic Embree 3-D fixed-radius "
+                "neighbor rows; not the optimized OptiX grouped-stream continuation."
             ),
         ),
         BenchmarkCase(
             case_id="rt_dbscan_optix_grouped_stream",
             app_id="rt_dbscan",
             app_name="RT-DBSCAN-style",
-            comparison_group="dbscan_grouped_stream_blocked_column_signature",
+            comparison_group="dbscan_cluster_signature",
             backend="optix",
             command=_py(
                 f"{app}/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
@@ -311,11 +321,21 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                 app_name="LibRTS-style spatial index",
                 comparison_group="aabb_index_all_count_only",
                 backend="embree",
-                command=None,
-                unsupported_reason=(
-                    "AABB_INDEX_QUERY_2D is currently implemented as generic CPU reference and OptiX native paths; "
-                    "there is no Embree AABB index front door."
+                command=_py(
+                    f"{app}/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+                    "--mode",
+                    "embree_aabb_index",
+                    "--dataset",
+                    "uniform",
+                    "--operation",
+                    "all",
+                    "--box-count",
+                    librts_boxes,
+                    "--query-count",
+                    librts_queries,
                 ),
+                primary_metric_path=("elapsed_sec",),
+                notes="Embree path uses the generic columnar conjunctive-scan primitive for AABB predicates.",
             ),
             BenchmarkCase(
                 case_id="librts_optix_aabb_index",
@@ -344,11 +364,45 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                 app_name="RTNN neighbor search",
                 comparison_group="prepared_3d_ranked_summary",
                 backend="embree",
-                command=None,
-                unsupported_reason=(
-                    "The promoted RTNN benchmark path is a prepared 3-D OptiX fixed-radius ranked-summary row; "
-                    "no same-contract Embree front door exists."
+                setup_commands=(
+                    _py(
+                        "scripts/goal2348_rtnn_v2_2_external_runner.py",
+                        "generate",
+                        "--point-file",
+                        rtnn_point_file,
+                        "--point-count",
+                        rtnn_points,
+                        "--dimension",
+                        "3",
+                        "--distribution",
+                        "uniform",
+                        "--json-out",
+                        rtnn_gen_json,
+                    ),
                 ),
+                command=_py(
+                    "scripts/goal2348_rtnn_v2_2_external_runner.py",
+                    "run-rtdl-batched-3d-neighbors",
+                    "--point-file",
+                    rtnn_point_file,
+                    "--radius",
+                    "0.02",
+                    "--k-max",
+                    "50",
+                    "--backend",
+                    "embree",
+                    "--query-batch-size",
+                    min(rtnn_points, 65536),
+                    "--result-mode",
+                    "ranked-summary-raw",
+                    "--repeat",
+                    "3",
+                    "--json-out",
+                    rtnn_embree_json,
+                ),
+                json_out=rtnn_embree_json,
+                primary_metric_path=("elapsed_sec",),
+                notes="Same ranked-summary row schema, produced by generic Embree fixed-radius rows plus app-level summary folding.",
             ),
             BenchmarkCase(
                 case_id="rtnn_optix_prepared_3d_ranked_summary",

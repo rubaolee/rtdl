@@ -123,6 +123,8 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
         self.assertIn("rt.prepare_optix", text)
         self.assertIn('"execution_prepare_sec": execution_prepare_sec', text)
         self.assertIn("run-rtdl-batched-3d-neighbors", text)
+        self.assertIn("--backend", text)
+        self.assertIn("embree_ranked_summary_rows", text)
         self.assertIn("partitioned_or_batched_like_rtnn", text)
         self.assertIn("batched_queries", text)
         self.assertIn("run-cupy-3d-ranked-summary", text)

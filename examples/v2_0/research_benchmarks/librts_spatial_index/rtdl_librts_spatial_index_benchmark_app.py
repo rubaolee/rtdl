@@ -323,6 +323,54 @@ def run_grid_counts(fixture: LibRTSFixture, operation: str, *, resolution: int) 
     }
 
 
+def run_embree_aabb_counts(fixture: LibRTSFixture, operation: str) -> dict[str, object]:
+    prepared_start = time.perf_counter()
+    prepared = rt.prepare_aabb_index_2d(
+        fixture.boxes,
+        point_queries=fixture.point_queries,
+        box_queries=fixture.box_queries,
+        backend="embree",
+    )
+    prepare_sec = time.perf_counter() - prepared_start
+    try:
+        primitive_result = prepared.count(
+            point_queries=fixture.point_queries,
+            box_queries=fixture.box_queries,
+            operation=operation,
+        )
+    finally:
+        prepared.close()
+    cpu_counts = run_counts(fixture, operation)["counts"]
+    return {
+        "app": "librts_spatial_index",
+        "mode": "embree_aabb_index",
+        "operation": operation,
+        "generic_primitive": primitive_result["primitive"],
+        "primitive_contract": primitive_result["contract"],
+        "counts": primitive_result["counts"],
+        "matches_cpu_reference": primitive_result["counts"] == cpu_counts,
+        "candidate_checks": primitive_result["candidate_checks"],
+        "elapsed_sec": prepare_sec + primitive_result["run_phases"]["query_aabb_index_2d_sec"],
+        "fixture": fixture.metadata(),
+        "run_phases": {
+            "scene_prepare_sec": prepare_sec,
+            "query_sec": primitive_result["run_phases"]["query_aabb_index_2d_sec"],
+        },
+        "index": primitive_result["index"],
+        "paper": PAPER,
+        "claim_boundary": (
+            "LibRTS-style benchmark call into generic Embree AABB_INDEX_QUERY_2D "
+            "lowered through app-agnostic columnar conjunctive scan. This is not "
+            "authors-code timing, not NVIDIA RT-core accelerated, and does not "
+            "authorize public speedup wording."
+        ),
+        "native_engine_customization": False,
+        "rt_core_accelerated": False,
+        "authors_code_comparison": False,
+        "paper_reproduction": False,
+    }
+
+
 def run_optix_aabb_counts(
     fixture: LibRTSFixture,
     operation: str,
@@ -496,6 +544,7 @@ def run_scope() -> dict[str, object]:
             "cpu_reference",
             "cpu_reference_wkt",
             "partner_grid_reference",
+            "embree_aabb_index",
             "optix_aabb_index",
             "mutation_cpu_reference",
             "emit_wkt",
@@ -520,6 +569,7 @@ def main(argv: list[str] | None = None) -> int:
             "cpu_reference",
             "cpu_reference_wkt",
             "partner_grid_reference",
+            "embree_aabb_index",
             "optix_aabb_index",
             "mutation_cpu_reference",
             "emit_wkt",
@@ -572,6 +622,8 @@ def main(argv: list[str] | None = None) -> int:
             payload = run_counts(fixture, args.operation)
         elif args.mode == "partner_grid_reference":
             payload = run_grid_counts(fixture, args.operation, resolution=args.grid_resolution)
+        elif args.mode == "embree_aabb_index":
+            payload = run_embree_aabb_counts(fixture, args.operation)
         elif args.mode == "optix_aabb_index":
             payload = run_optix_aabb_counts(
                 fixture,

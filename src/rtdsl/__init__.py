@@ -892,6 +892,7 @@ from .aabb_index import AABB_INDEX_2D_CONTRACT
 from .aabb_index import AABB_INDEX_2D_OPERATIONS
 from .aabb_index import Aabb2D
 from .aabb_index import AabbIndex2D
+from .aabb_index import EmbreeAabbIndex2D
 from .aabb_index import OptixAabbIndex2D
 from .aabb_index import aabb_intersection_pair_rows_2d
 from .aabb_index import prepare_aabb_index_2d
@@ -1357,6 +1358,7 @@ __all__ = [
     "AABB_INDEX_2D_OPERATIONS",
     "Aabb2D",
     "AabbIndex2D",
+    "EmbreeAabbIndex2D",
     "OptixAabbIndex2D",
     "aabb_intersection_pair_rows_2d",
     "prepare_aabb_index_2d",

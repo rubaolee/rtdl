@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 import rtdsl as rt
+from tests._embree_support import embree_available
 
 
 APP = importlib.import_module(
@@ -58,12 +59,29 @@ class GenericAabbIndexPrimitiveTest(unittest.TestCase):
             "AABB_INDEX_2D_CONTRACT",
             "Aabb2D",
             "AabbIndex2D",
+            "EmbreeAabbIndex2D",
             "OptixAabbIndex2D",
             "prepare_aabb_index_2d",
             "query_aabb_index_2d",
         ):
             self.assertIn(name, rt.__all__)
             self.assertTrue(hasattr(rt, name))
+
+    @unittest.skipUnless(embree_available(), "Embree runtime is not available")
+    def test_embree_aabb_index_matches_tiny_cpu_oracle(self) -> None:
+        fixture = APP.make_tiny_fixture()
+        result = rt.query_aabb_index_2d(
+            fixture.boxes,
+            point_queries=fixture.point_queries,
+            box_queries=fixture.box_queries,
+            operation="all",
+            backend="embree",
+        )
+
+        self.assertEqual(result["backend"], "embree")
+        self.assertEqual(result["counts"], APP.run_counts(fixture, "all")["counts"])
+        self.assertFalse(result["native_engine_customization"])
+        self.assertIn("columnar conjunctive-scan", result["claim_boundary"])
 
     def test_report_records_app_agnostic_boundary(self) -> None:
         report = (

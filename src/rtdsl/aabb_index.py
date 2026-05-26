@@ -18,7 +18,9 @@ AABB_INDEX_2D_CONTRACT = {
     },
     "backend_status": {
         "cpu": "reference_uniform_grid_counts_and_intersection_pair_rows",
-        "embree": "not_implemented",
+        "embree": (
+            "generic_columnar_payload_conjunctive_scan_counts_and_range_intersection_pair_rows"
+        ),
         "optix": "native_count_point_contains_range_contains_range_intersects_and_range_intersection_rows",
     },
     "app_boundary": "app-name-free primitive; LibRTS, spatial joins, and collision broadphases may lower to it",
@@ -218,6 +220,89 @@ class OptixAabbIndex2D:
         }
 
 
+@dataclass(frozen=True)
+class EmbreeAabbIndex2D:
+    """Prepared Embree AABB query path via the generic columnar predicate primitive."""
+
+    boxes: tuple[Aabb2D, ...]
+    prepared: Any
+    row_ids: tuple[int, ...]
+    backend: str = "embree"
+
+    def count(
+        self,
+        *,
+        point_queries: Iterable[Any] = (),
+        box_queries: Iterable[Any] = (),
+        operation: str = "all",
+    ) -> dict[str, Any]:
+        operations = _normalize_requested_operations(operation)
+        points = tuple(_normalize_point2d(point) for point in point_queries)
+        query_boxes = tuple(_normalize_aabb2d(box) for box in box_queries)
+        counts: dict[str, int] = {}
+
+        query_start = time.perf_counter()
+        for name in operations:
+            count = 0
+            if name == "point_contains":
+                for point in points:
+                    count += self.prepared.conjunctive_scan_count(_point_contains_clauses(point))
+            elif name == "range_contains":
+                for query_box in query_boxes:
+                    count += self.prepared.conjunctive_scan_count(_range_contains_clauses(query_box))
+            elif name == "range_intersects":
+                for query_box in query_boxes:
+                    count += self.prepared.conjunctive_scan_count(_range_intersects_clauses(query_box))
+            counts[name] = count
+        query_sec = time.perf_counter() - query_start
+
+        return {
+            "primitive": AABB_INDEX_2D_CONTRACT["primitive"],
+            "contract": "generic_prepared_aabb_index_query_2d",
+            "backend": self.backend,
+            "prepared": True,
+            "operation": operation,
+            "counts": counts,
+            "candidate_checks": None,
+            "query_counts": {
+                "point_queries": len(points),
+                "box_queries": len(query_boxes),
+            },
+            "index": {
+                "indexed_boxes": len(self.boxes),
+                "native_index": "embree_generic_columnar_payload",
+                "primary_fields": ["min_x", "min_y", "max_x"],
+            },
+            "run_phases": {
+                "query_aabb_index_2d_sec": query_sec,
+            },
+            "rt_core_accelerated": False,
+            "native_engine_customization": False,
+            "claim_boundary": (
+                "Generic Embree AABB_INDEX_QUERY_2D count subpath lowered to the "
+                "app-agnostic columnar conjunctive-scan primitive; not LibRTS-specific "
+                "and not NVIDIA RT-core accelerated."
+            ),
+        }
+
+    def intersection_rows(
+        self,
+        query_boxes: tuple[Aabb2D, ...],
+        query_ids: tuple[int, ...],
+    ) -> tuple[tuple[int, int], ...]:
+        rows: set[tuple[int, int]] = set()
+        for query_index, query_box in enumerate(query_boxes):
+            query_id = int(query_ids[query_index])
+            matches = self.prepared.conjunctive_scan(_range_intersects_clauses(query_box))
+            rows.update((query_id, int(row["row_id"])) for row in matches)
+        return tuple(sorted(rows))
+
+    def close(self) -> None:
+        close = getattr(self.prepared, "close", None)
+        if callable(close):
+            close()
+
+
 def prepare_aabb_index_2d(
     indexed_boxes: Iterable[Any],
     *,
@@ -225,7 +310,7 @@ def prepare_aabb_index_2d(
     box_queries: Iterable[Any] = (),
     resolution: int = 32,
     backend: str = "cpu",
-) -> AabbIndex2D | OptixAabbIndex2D:
+) -> AabbIndex2D | OptixAabbIndex2D | EmbreeAabbIndex2D:
     """Prepare an app-name-free 2-D AABB index for point/box query predicates."""
 
     normalized_backend = _validate_backend(backend)
@@ -243,6 +328,12 @@ def prepare_aabb_index_2d(
         return OptixAabbIndex2D(
             boxes=box_tuple,
             prepared=prepare_optix_aabb_index_2d(box_tuple),
+        )
+
+    if normalized_backend == "embree":
+        return _prepare_embree_aabb_index_2d(
+            box_tuple,
+            row_ids=tuple(range(len(box_tuple))),
         )
 
     bounds = _compute_bounds(box_tuple, point_tuple, query_box_tuple)
@@ -285,7 +376,11 @@ def query_aabb_index_2d(
         resolution=resolution,
         backend=normalized_backend,
     )
-    return prepared.count(point_queries=point_queries, box_queries=box_queries, operation=operation)
+    try:
+        return prepared.count(point_queries=point_queries, box_queries=box_queries, operation=operation)
+    finally:
+        if isinstance(prepared, EmbreeAabbIndex2D):
+            prepared.close()
 
 
 def aabb_intersection_pair_rows_2d(
@@ -402,6 +497,57 @@ def aabb_intersection_pair_rows_2d(
             ),
         }
 
+    if normalized_backend == "embree":
+        _validate_u32_ids(indexed_id_tuple, label="indexed_ids")
+        _validate_u32_ids(query_id_tuple, label="query_ids")
+        prepare_start = time.perf_counter()
+        prepared_embree = _prepare_embree_aabb_index_2d(
+            indexed_tuple,
+            row_ids=indexed_id_tuple,
+        )
+        prepare_sec = time.perf_counter() - prepare_start
+        row_start = time.perf_counter()
+        try:
+            rows = prepared_embree.intersection_rows(query_tuple, query_id_tuple)
+        finally:
+            prepared_embree.close()
+        row_query_sec = time.perf_counter() - row_start
+
+        return {
+            "primitive": AABB_INDEX_2D_CONTRACT["primitive"],
+            "contract": "generic_aabb_intersection_pair_rows_2d",
+            "backend": normalized_backend,
+            "prepared": True,
+            "operation": "range_intersection_rows",
+            "row_schema": ("query_id", "indexed_id"),
+            "candidate_id_rows": rows,
+            "valid_count": len(rows),
+            "indexed_box_count": len(indexed_tuple),
+            "query_box_count": len(query_tuple),
+            "candidate_checks": None,
+            "all_pairs_count": all_pairs_count,
+            "candidate_checks_avoided": None,
+            "pruning_ratio": None,
+            "complete_candidate_coverage": True,
+            "index": {
+                "indexed_boxes": len(indexed_tuple),
+                "native_index": "embree_generic_columnar_payload",
+                "primary_fields": ["min_x", "min_y", "max_x"],
+            },
+            "run_phases": {
+                "prepare_aabb_index_2d_sec": prepare_sec,
+                "emit_aabb_intersection_pair_rows_2d_sec": row_query_sec,
+            },
+            "rt_core_accelerated": False,
+            "native_engine_customization": False,
+            "native_generic_symbol": "rtdl_embree_columnar_payload_multi_predicate_scan",
+            "claim_boundary": (
+                "Generic Embree AABB_INDEX_QUERY_2D broadphase row output lowered to "
+                "the app-agnostic columnar conjunctive-scan primitive; exact app "
+                "semantics and final witness interpretation remain outside the engine."
+            ),
+        }
+
     prepare_start = time.perf_counter()
     prepared = prepare_aabb_index_2d(
         indexed_tuple,
@@ -480,9 +626,62 @@ def _validate_backend(backend: str) -> str:
         normalized = "cpu"
     if normalized in {"nvidia_rt", "cuda_optix"}:
         normalized = "optix"
-    if normalized not in {"cpu", "optix"}:
-        raise ValueError("generic AABB_INDEX_QUERY_2D supports backend='cpu' or backend='optix'")
+    if normalized not in {"cpu", "embree", "optix"}:
+        raise ValueError("generic AABB_INDEX_QUERY_2D supports backend='cpu', backend='embree', or backend='optix'")
     return normalized
+
+
+def _prepare_embree_aabb_index_2d(
+    boxes: tuple[Aabb2D, ...],
+    *,
+    row_ids: tuple[int, ...],
+) -> EmbreeAabbIndex2D:
+    from .embree_runtime import prepare_embree_columnar_record_set
+
+    if len(row_ids) != len(boxes):
+        raise ValueError("row_ids length must match indexed_boxes length")
+    _validate_u32_ids(row_ids, label="row_ids")
+    record_set = {
+        "row_ids": row_ids,
+        "columns": {
+            "min_x": tuple(box.min_x for box in boxes),
+            "min_y": tuple(box.min_y for box in boxes),
+            "max_x": tuple(box.max_x for box in boxes),
+            "max_y": tuple(box.max_y for box in boxes),
+        },
+    }
+    prepared = prepare_embree_columnar_record_set(
+        record_set,
+        primary_fields=("min_x", "min_y", "max_x"),
+    )
+    return EmbreeAabbIndex2D(boxes=boxes, prepared=prepared, row_ids=row_ids)
+
+
+def _point_contains_clauses(point: Point2DLike) -> tuple[tuple[str, str, float], ...]:
+    return (
+        ("min_x", "le", point.x),
+        ("min_y", "le", point.y),
+        ("max_x", "ge", point.x),
+        ("max_y", "ge", point.y),
+    )
+
+
+def _range_contains_clauses(box: Aabb2D) -> tuple[tuple[str, str, float], ...]:
+    return (
+        ("min_x", "le", box.min_x),
+        ("min_y", "le", box.min_y),
+        ("max_x", "ge", box.max_x),
+        ("max_y", "ge", box.max_y),
+    )
+
+
+def _range_intersects_clauses(box: Aabb2D) -> tuple[tuple[str, str, float], ...]:
+    return (
+        ("min_x", "le", box.max_x),
+        ("min_y", "le", box.max_y),
+        ("max_x", "ge", box.min_x),
+        ("max_y", "ge", box.min_y),
+    )
 
 
 def _normalize_requested_operations(operation: str) -> tuple[str, ...]:

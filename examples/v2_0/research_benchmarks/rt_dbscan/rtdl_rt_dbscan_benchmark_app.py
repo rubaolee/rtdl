@@ -270,6 +270,23 @@ def make_rt_dbscan_points(dataset: str, *, point_count: int, seed: int) -> tuple
     return tuple(points)
 
 
+def make_fixed_radius_neighbors_3d_embree_kernel(*, radius: float, k_max: int):
+    """Build a generic Embree fixed-radius row kernel for the app's chosen radius."""
+
+    @rt.kernel(backend="rtdl", precision="float_approx")
+    def _rt_dbscan_fixed_radius_neighbors_3d_embree():
+        query_points = rt.input("query_points", rt.Points3D, role="probe")
+        search_points = rt.input("search_points", rt.Points3D, role="build")
+        candidates = rt.traverse(query_points, search_points, accel="bvh")
+        hits = rt.refine(
+            candidates,
+            predicate=rt.fixed_radius_neighbors(radius=radius, k_max=k_max),
+        )
+        return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+
+    return _rt_dbscan_fixed_radius_neighbors_3d_embree
+
+
 def fixed_radius_pairs_and_neighbor_counts_3d(
     points: tuple[rt.Point3D, ...],
     *,
@@ -960,6 +977,26 @@ def run_rt_dbscan_benchmark(
             "neighbor_row_count": len(neighbor_rows),
             "native_engine_row_contract": "generic_fixed_radius_neighbors_3d_rows",
         }
+    elif mode == "embree_prepared_rows":
+        kernel = make_fixed_radius_neighbors_3d_embree_kernel(
+            radius=resolved_radius,
+            k_max=len(points),
+        )
+        neighbor_rows = rt.run_embree(
+            kernel,
+            query_points=points,
+            search_points=points,
+        )
+        rows = _component_rows_from_neighbor_rows(points, neighbor_rows, min_neighbors=resolved_min_neighbors)
+        metadata = {
+            "path": "embree_fixed_radius_neighbor_rows_3d",
+            "neighbor_row_count": len(neighbor_rows),
+            "native_engine_row_contract": "generic_fixed_radius_neighbors_3d_rows",
+            "native_execution_path": "embree_point_query_fixed_radius_3d",
+            "embree_backend_used": True,
+            "rt_core_accelerated": False,
+            "materializes_neighbor_rows": True,
+        }
     elif mode == "partner_spatial_bucket_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner=partner)
         result = rt.radius_graph_components_3d_spatial_bucket_partner_columns(
@@ -1450,6 +1487,7 @@ def main(argv: list[str] | None = None) -> int:
             "planned_rt_dbscan",
             "planned_rt_dbscan_continuation",
             "rtdl_cpu_rows",
+            "embree_prepared_rows",
             "partner_spatial_bucket_3d",
             "partner_cupy_grid_components_3d",
             "partner_cupy_prepared_grid_components_3d",

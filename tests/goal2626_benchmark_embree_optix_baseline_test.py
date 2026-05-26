@@ -24,20 +24,23 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
             self.assertIn("embree", {case.backend for case in cases if case.app_id == app_id})
             self.assertIn("optix", {case.backend for case in cases if case.app_id == app_id})
 
-    def test_unsupported_rows_have_reasons_and_no_command(self) -> None:
+    def test_former_optix_only_rows_now_have_embree_commands(self) -> None:
         sys.path.insert(0, str(ROOT))
         from scripts import goal2626_benchmark_embree_optix_baseline as runner
 
-        unsupported = [
-            case
+        cases = {
+            case.case_id: case
             for case in runner.build_cases("quick", ROOT / "scratch" / "goal2626_test")
-            if not case.supported
-        ]
-        self.assertGreaterEqual(len(unsupported), 1)
-        for case in unsupported:
-            self.assertIsNone(case.command)
-            self.assertTrue(case.unsupported_reason)
-            self.assertIn(case.backend, {"embree", "optix"})
+        }
+        for case_id in (
+            "rt_dbscan_embree_fixed_radius_rows",
+            "librts_embree_aabb_index",
+            "rtnn_embree_prepared_3d_ranked_summary",
+        ):
+            self.assertIn(case_id, cases)
+            self.assertTrue(cases[case_id].supported)
+            self.assertIsNotNone(cases[case_id].command)
+            self.assertIsNone(cases[case_id].unsupported_reason)
 
     def test_ratios_only_for_same_app_and_comparison_group(self) -> None:
         sys.path.insert(0, str(ROOT))

@@ -744,12 +744,17 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     radius = float(args.radius)
     k_max = int(args.k_max)
     result_mode = str(args.result_mode)
+    backend = str(getattr(args, "backend", "optix"))
     batch_size = int(args.query_batch_size)
     repeat = int(args.repeat)
     if batch_size <= 0:
         raise ValueError("query_batch_size must be positive")
     if result_mode not in ("count", "summary", "ranked-summary-raw"):
         raise ValueError("batched RTDL path currently supports count, summary, and ranked-summary-raw")
+    if backend not in {"optix", "embree"}:
+        raise ValueError("batched RTDL path supports backend='optix' or backend='embree'")
+    if backend == "embree" and result_mode != "ranked-summary-raw":
+        raise ValueError("Embree batched RTNN path currently supports result_mode='ranked-summary-raw'")
 
     load_started = time.perf_counter()
     search_columns = _read_xyz_columns(args.point_file)
@@ -770,22 +775,30 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     for begin in range(0, query_count, batch_size):
         batch_columns = _slice_columns(query_columns, begin, min(query_count, begin + batch_size))
         query_batches.append(
-            rt.pack_points(
-                ids=batch_columns[0],
-                x=batch_columns[1],
-                y=batch_columns[2],
-                z=batch_columns[3],
-                dimension=3,
+            (
+                rt.pack_points(
+                    ids=batch_columns[0],
+                    x=batch_columns[1],
+                    y=batch_columns[2],
+                    z=batch_columns[3],
+                    dimension=3,
+                ),
+                tuple(int(value) for value in batch_columns[0]),
             )
         )
     pack_sec = time.perf_counter() - pack_started
 
     prepare_started = time.perf_counter()
-    prepared = rt.prepare_optix_fixed_radius_neighbors_3d(search, max_radius=radius)
+    if backend == "optix":
+        prepared = rt.prepare_optix_fixed_radius_neighbors_3d(search, max_radius=radius)
+        embree_kernel = None
+    else:
+        prepared = None
+        embree_kernel = _make_rtdl_fixed_radius_neighbors_3d_kernel(rt, radius=radius, k_max=k_max)
     prepare_sec = time.perf_counter() - prepare_started
 
     print(
-        f"[goal2348] RTDL batched 3D start queries={query_count} search={search_count} "
+        f"[goal2348] RTDL batched 3D start backend={backend} queries={query_count} search={search_count} "
         f"batch_size={batch_size} batches={len(query_batches)} result_mode={result_mode}",
         flush=True,
     )
@@ -800,7 +813,28 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             run_row_count = 0
             run_distance_summary = {"count": 0, "min_distance": 0.0, "max_distance": 0.0, "sum_distance": 0.0}
             run_phase_timings = []
-            for batch in query_batches:
+            for batch, batch_ids in query_batches:
+                if backend == "embree":
+                    rows = rt.run_embree(
+                        embree_kernel,
+                        result_mode="raw",
+                        query_points=batch,
+                        search_points=search,
+                    )
+                    try:
+                        summaries = _ranked_summary_rows_from_fixed_radius_row_view(rows, batch_ids)
+                        run_row_count += len(summaries)
+                    finally:
+                        rows.close()
+                    run_phase_timings.append(
+                        {
+                            "mode": "embree_fixed_radius_rows_to_ranked_summary_rows",
+                            "backend": "embree",
+                            "materializes_neighbor_rows": True,
+                        }
+                    )
+                    continue
+
                 if result_mode == "count":
                     run_row_count += int(prepared.count(batch, radius=radius, k_max=k_max))
                 elif result_mode == "summary":
@@ -832,15 +866,17 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         ok = False
         error = repr(exc)
     finally:
-        prepared.close()
+        if prepared is not None:
+            prepared.close()
 
     elapsed_sec = elapsed_runs[-1] if elapsed_runs else 0.0
     return {
         "runner": "goal2348_rtnn_v2_2_external_runner",
         "row": args.row_label,
         "external": "RTDL current",
-        "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+        "mode": f"current_3d_fixed_radius_neighbors_{backend}_batched",
         "ok": ok,
+        "backend": backend,
         "elapsed_sec": elapsed_sec,
         "elapsed_runs_sec": elapsed_runs,
         "query_count": query_count,
@@ -863,7 +899,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "exact": True,
             "approximate": False,
             "bounded_k": k_max,
-            "prepared_search_structure": True,
+            "prepared_search_structure": backend == "optix",
             "batched_queries": True,
         },
         "claim_boundary": {
@@ -872,9 +908,60 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "broad_rt_core_speedup_claim_authorized": False,
             "rt_core_neighbor_search_claim_authorized": False,
             "partitioned_or_batched_like_rtnn": True,
-            "device_ranked_summary_rows": result_mode == "ranked-summary-raw",
+            "device_ranked_summary_rows": backend == "optix" and result_mode == "ranked-summary-raw",
+            "embree_ranked_summary_rows": backend == "embree" and result_mode == "ranked-summary-raw",
+            "materializes_neighbor_rows": backend == "embree",
         },
     }
+
+
+def _make_rtdl_fixed_radius_neighbors_3d_kernel(rt_module, *, radius: float, k_max: int):
+    @rt_module.kernel(backend="rtdl", precision="float_approx")
+    def _goal2348_embree_fixed_radius_neighbors_3d():
+        query_points = rt_module.input("query_points", rt_module.Points3D, role="probe")
+        search_points = rt_module.input("search_points", rt_module.Points3D, role="build")
+        candidates = rt_module.traverse(query_points, search_points, accel="bvh")
+        hits = rt_module.refine(
+            candidates,
+            predicate=rt_module.fixed_radius_neighbors(radius=radius, k_max=k_max),
+        )
+        return rt_module.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+
+    return _goal2348_embree_fixed_radius_neighbors_3d
+
+
+def _ranked_summary_rows_from_fixed_radius_row_view(rows, query_ids: tuple[int, ...]) -> tuple[dict[str, object], ...]:
+    grouped: dict[int, list[tuple[int, float]]] = {int(query_id): [] for query_id in query_ids}
+    for index in range(len(rows)):
+        row = rows.rows_ptr[index]
+        grouped.setdefault(int(row.query_id), []).append((int(row.neighbor_id), float(row.distance)))
+
+    sentinel = 0xFFFFFFFF
+    summaries = []
+    for query_id in query_ids:
+        neighbors = sorted(grouped.get(int(query_id), ()), key=lambda item: (item[1], item[0]))
+        if neighbors:
+            nearest_id, nearest_distance = neighbors[0]
+            kth_id, kth_distance = neighbors[-1]
+            sum_distance = sum(distance for _neighbor_id, distance in neighbors)
+        else:
+            nearest_id = sentinel
+            kth_id = sentinel
+            nearest_distance = 0.0
+            kth_distance = 0.0
+            sum_distance = 0.0
+        summaries.append(
+            {
+                "query_id": int(query_id),
+                "neighbor_count": len(neighbors),
+                "nearest_neighbor_id": nearest_id,
+                "kth_neighbor_id": kth_id,
+                "nearest_distance": nearest_distance,
+                "kth_distance": kth_distance,
+                "sum_distance": sum_distance,
+            }
+        )
+    return tuple(summaries)
 
 
 def run_rtdl_adaptive_partitioned_3d_neighbors(args: argparse.Namespace) -> dict[str, object]:
@@ -1593,6 +1680,7 @@ def main(argv: list[str] | None = None) -> int:
     batched3d.add_argument("--query-file", type=Path)
     batched3d.add_argument("--radius", type=float, default=0.02)
     batched3d.add_argument("--k-max", type=int, default=50)
+    batched3d.add_argument("--backend", choices=("optix", "embree"), default="optix")
     batched3d.add_argument("--query-batch-size", type=int, default=65536)
     batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw"), default="ranked-summary-raw")
     batched3d.add_argument("--repeat", type=int, default=1)

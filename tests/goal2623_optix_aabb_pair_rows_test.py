@@ -8,6 +8,7 @@ import rtdsl as rt
 from examples.v2_0.research_benchmarks.contact_manifold import (
     rtdl_contact_manifold_benchmark_app as app,
 )
+from tests._embree_support import embree_available
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,6 +110,29 @@ class Goal2623OptixAabbPairRowsTest(unittest.TestCase):
                 query_boxes=((0.0, 0.0, 1.0, 1.0),),
                 backend="optix",
             )
+
+    @unittest.skipUnless(embree_available(), "Embree backend library not available locally")
+    def test_embree_pair_rows_match_cpu_for_tiny_fixture(self) -> None:
+        indexed = ((0.0, 0.0, 1.0, 1.0), (2.0, 0.0, 3.0, 1.0))
+        queries = ((0.5, 0.0, 0.75, 1.0), (1.5, 0.0, 2.5, 1.0))
+        cpu = rt.aabb_intersection_pair_rows_2d(
+            indexed,
+            queries,
+            indexed_ids=(100, 101),
+            query_ids=(200, 201),
+            resolution=8,
+        )
+        embree = rt.aabb_intersection_pair_rows_2d(
+            indexed,
+            queries,
+            indexed_ids=(100, 101),
+            query_ids=(200, 201),
+            backend="embree",
+        )
+
+        self.assertEqual(embree["candidate_id_rows"], cpu["candidate_id_rows"])
+        self.assertEqual(embree["backend"], "embree")
+        self.assertFalse(embree["native_engine_customization"])
 
     @unittest.skipUnless(_optix_library_available(), "OptiX backend library not available locally")
     def test_optix_pair_rows_match_cpu_for_tiny_fixture(self) -> None:
