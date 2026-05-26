@@ -1,0 +1,317 @@
+{
+  "case_repeat": 1,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "LD_LIBRARY_PATH": "/usr/local/cuda-12.6/lib64:",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "f37ed4bc2dbcfe262e70c5d3c5d5de043a3df748",
+    "git_status_short": "?? docs/reports/goal2627_embree_optix_all_benchmarks_quick_pod/\n?? docs/reports/goal2628_embree_optix_standard_no_librts_pod/\n?? docs/reports/goal2628_envfixed_rt_dbscan_rtnn_quick_pod/\n?? docs/reports/goal2628_librts_calibration_pod/\n?? docs/reports/goal2628_rt_dbscan_calibration_pod/\n?? docs/reports/goal2628_rtnn_large_envfixed_pod/",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2627/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-26T23:10:48+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "triangle_counting",
+      "comparison_group": "triangle_count_summary",
+      "embree_sec": 0.9116107400041074,
+      "embree_speedup_vs_optix": 2.003444686235243,
+      "metric_sources": {
+        "embree": "process_wall_median_sec",
+        "optix": "process_wall_median_sec"
+      },
+      "optix_sec": 1.8263616929762065,
+      "optix_speedup_vs_embree": 0.49914030912385304
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "embree",
+      "case_id": "triangle_counting_embree_summary",
+      "comparison_group": "triangle_count_summary",
+      "notes": "",
+      "payload": {
+        "backend": "embree",
+        "benchmark_app": "triangle_counting",
+        "claim_boundary": {
+          "benchmark_app": true,
+          "bfs_in_benchmark": false,
+          "distributed_graph_claim": false,
+          "full_graph_database_claim": false,
+          "native_engine_customization": false,
+          "paper_code_intake_complete": true,
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "rt_graph_1a2_generic_rt_mapping": true,
+          "rt_graph_2a1_generic_rt_mapping": true,
+          "rt_graph_id_ascending_adapter": true,
+          "rt_graph_preprocessing_oracle": true,
+          "triangle_count_rt_core_claim_authorized": false,
+          "visibility_edges_in_benchmark": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "contract": "triangle_count_only",
+        "copies": 20000,
+        "excluded_operations": [
+          "bfs",
+          "visibility_edges"
+        ],
+        "mode": "run",
+        "output_mode": "summary",
+        "section": {
+          "app": "graph_triangle_count",
+          "backend": "embree",
+          "copies": 20000,
+          "graph_edge_count": 120000,
+          "graph_vertex_count": 80000,
+          "native_continuation_active": true,
+          "native_continuation_backend": "native_graph_triangle_raw_summary",
+          "optix_graph_mode": "not_applicable",
+          "optix_performance": {
+            "class": "host_indexed_fallback",
+            "note": "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated."
+          },
+          "output_mode": "summary",
+          "ray_tracing_accelerated": true,
+          "ray_tracing_note": "Embree uses ray traversal over graph-edge primitives to collect candidate neighbor sets; CPU-side set intersection and uniqueness bookkeeping remain outside the RT traversal.",
+          "row_count": 20000,
+          "rows": [],
+          "rt_core_accelerated": false,
+          "run_phases": {
+            "input_construction_sec": 0.05005307495594025,
+            "native_summary_postprocess_sec": 1.4016404747962952e-07,
+            "query_and_materialize_sec": 0.38764902600087225,
+            "query_raw_view_sec": 0.38764902600087225,
+            "row_materialization_sec": 0.0
+          },
+          "seed_count": 60000,
+          "summary": {
+            "touched_vertex_count": 60000,
+            "triangle_count": 20000
+          }
+        },
+        "touched_vertex_count": 60000,
+        "triangle_count": 20000
+      },
+      "primary_metric_sec": 0.9116107400041074,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "--mode",
+            "run",
+            "--backend",
+            "embree",
+            "--copies",
+            "20000",
+            "--output-mode",
+            "summary"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"backend\": \"embree\",\n  \"benchmark_app\": \"triangle_counting\",\n  \"claim_boundary\": {\n    \"benchmark_app\": true,\n    \"bfs_in_benchmark\": false,\n    \"distributed_graph_claim\": false,\n    \"full_graph_database_claim\": false,\n    \"native_engine_customization\": false,\n    \"paper_code_intake_complete\": true,\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"rt_graph_1a2_generic_rt_mapping\": true,\n    \"rt_graph_2a1_generic_rt_mapping\": true,\n    \"rt_graph_id_ascending_adapter\": true,\n    \"rt_graph_preprocessing_oracle\": true,\n    \"triangle_count_rt_core_claim_authorized\": false,\n    \"visibility_edges_in_benchmark\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"triangle_count_only\",\n  \"copies\": 20000,\n  \"excluded_operations\": [\n    \"bfs\",\n    \"visibility_edges\"\n  ],\n  \"mode\": \"run\",\n  \"output_mode\": \"summary\",\n  \"section\": {\n    \"app\": \"graph_triangle_count\",\n    \"backend\": \"embree\",\n    \"copies\": 20000,\n    \"graph_edge_count\": 120000,\n    \"graph_vertex_count\": 80000,\n    \"native_continuation_active\": true,\n    \"native_continuation_backend\": \"native_graph_triangle_raw_summary\",\n    \"optix_graph_mode\": \"not_applicable\",\n    \"optix_performance\": {\n      \"class\": \"host_indexed_fallback\",\n      \"note\": \"OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n    },\n    \"output_mode\": \"summary\",\n    \"ray_tracing_accelerated\": true,\n    \"ray_tracing_note\": \"Embree uses ray traversal over graph-edge primitives to collect candidate neighbor sets; CPU-side set intersection and uniqueness bookkeeping remain outside the RT traversal.\",\n    \"row_count\": 20000,\n    \"rows\": [],\n    \"rt_core_accelerated\": false,\n    \"run_phases\": {\n      \"input_construction_sec\": 0.05005307495594025,\n      \"native_summary_postprocess_sec\": 1.4016404747962952e-07,\n      \"query_and_materialize_sec\": 0.38764902600087225,\n      \"query_raw_view_sec\": 0.38764902600087225,\n      \"row_materialization_sec\": 0.0\n    },\n    \"seed_count\": 60000,\n    \"summary\": {\n      \"touched_vertex_count\": 60000,\n      \"triangle_count\": 20000\n    }\n  },\n  \"touched_vertex_count\": 60000,\n  \"triangle_count\": 20000\n}\n",
+          "wall_elapsed_sec": 0.9116107400041074
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "section.run_phases.input_construction_sec",
+          0.05005307495594025
+        ],
+        [
+          "section.run_phases.native_summary_postprocess_sec",
+          1.4016404747962952e-07
+        ],
+        [
+          "section.run_phases.query_and_materialize_sec",
+          0.38764902600087225
+        ],
+        [
+          "section.run_phases.query_raw_view_sec",
+          0.38764902600087225
+        ],
+        [
+          "section.run_phases.row_materialization_sec",
+          0.0
+        ]
+      ],
+      "wall_median_sec": 0.9116107400041074
+    },
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "optix",
+      "case_id": "triangle_counting_optix_summary",
+      "comparison_group": "triangle_count_summary",
+      "notes": "",
+      "payload": {
+        "backend": "optix",
+        "benchmark_app": "triangle_counting",
+        "claim_boundary": {
+          "benchmark_app": true,
+          "bfs_in_benchmark": false,
+          "distributed_graph_claim": false,
+          "full_graph_database_claim": false,
+          "native_engine_customization": false,
+          "paper_code_intake_complete": true,
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "rt_graph_1a2_generic_rt_mapping": true,
+          "rt_graph_2a1_generic_rt_mapping": true,
+          "rt_graph_id_ascending_adapter": true,
+          "rt_graph_preprocessing_oracle": true,
+          "triangle_count_rt_core_claim_authorized": false,
+          "visibility_edges_in_benchmark": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "contract": "triangle_count_only",
+        "copies": 20000,
+        "excluded_operations": [
+          "bfs",
+          "visibility_edges"
+        ],
+        "mode": "run",
+        "output_mode": "summary",
+        "section": {
+          "app": "graph_triangle_count",
+          "backend": "optix",
+          "copies": 20000,
+          "graph_edge_count": 120000,
+          "graph_vertex_count": 80000,
+          "native_continuation_active": true,
+          "native_continuation_backend": "native_graph_triangle_raw_summary",
+          "optix_graph_mode": "native",
+          "optix_performance": {
+            "class": "host_indexed_fallback",
+            "note": "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated."
+          },
+          "output_mode": "summary",
+          "ray_tracing_accelerated": false,
+          "ray_tracing_note": "This backend is not currently classified as the graph triangle-count ray-tracing path.",
+          "row_count": 20000,
+          "rows": [],
+          "rt_core_accelerated": false,
+          "run_phases": {
+            "input_construction_sec": 0.05273826606571674,
+            "native_summary_postprocess_sec": 1.6996636986732483e-07,
+            "query_and_materialize_sec": 1.1801197689492255,
+            "query_raw_view_sec": 1.1801197689492255,
+            "row_materialization_sec": 0.0
+          },
+          "seed_count": 60000,
+          "summary": {
+            "touched_vertex_count": 60000,
+            "triangle_count": 20000
+          }
+        },
+        "touched_vertex_count": 60000,
+        "triangle_count": 20000
+      },
+      "primary_metric_sec": 1.8263616929762065,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "--mode",
+            "run",
+            "--backend",
+            "optix",
+            "--copies",
+            "20000",
+            "--output-mode",
+            "summary",
+            "--optix-graph-mode",
+            "native"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"backend\": \"optix\",\n  \"benchmark_app\": \"triangle_counting\",\n  \"claim_boundary\": {\n    \"benchmark_app\": true,\n    \"bfs_in_benchmark\": false,\n    \"distributed_graph_claim\": false,\n    \"full_graph_database_claim\": false,\n    \"native_engine_customization\": false,\n    \"paper_code_intake_complete\": true,\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"rt_graph_1a2_generic_rt_mapping\": true,\n    \"rt_graph_2a1_generic_rt_mapping\": true,\n    \"rt_graph_id_ascending_adapter\": true,\n    \"rt_graph_preprocessing_oracle\": true,\n    \"triangle_count_rt_core_claim_authorized\": false,\n    \"visibility_edges_in_benchmark\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"triangle_count_only\",\n  \"copies\": 20000,\n  \"excluded_operations\": [\n    \"bfs\",\n    \"visibility_edges\"\n  ],\n  \"mode\": \"run\",\n  \"output_mode\": \"summary\",\n  \"section\": {\n    \"app\": \"graph_triangle_count\",\n    \"backend\": \"optix\",\n    \"copies\": 20000,\n    \"graph_edge_count\": 120000,\n    \"graph_vertex_count\": 80000,\n    \"native_continuation_active\": true,\n    \"native_continuation_backend\": \"native_graph_triangle_raw_summary\",\n    \"optix_graph_mode\": \"native\",\n    \"optix_performance\": {\n      \"class\": \"host_indexed_fallback\",\n      \"note\": \"OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n    },\n    \"output_mode\": \"summary\",\n    \"ray_tracing_accelerated\": false,\n    \"ray_tracing_note\": \"This backend is not currently classified as the graph triangle-count ray-tracing path.\",\n    \"row_count\": 20000,\n    \"rows\": [],\n    \"rt_core_accelerated\": false,\n    \"run_phases\": {\n      \"input_construction_sec\": 0.05273826606571674,\n      \"native_summary_postprocess_sec\": 1.6996636986732483e-07,\n      \"query_and_materialize_sec\": 1.1801197689492255,\n      \"query_raw_view_sec\": 1.1801197689492255,\n      \"row_materialization_sec\": 0.0\n    },\n    \"seed_count\": 60000,\n    \"summary\": {\n      \"touched_vertex_count\": 60000,\n      \"triangle_count\": 20000\n    }\n  },\n  \"touched_vertex_count\": 60000,\n  \"triangle_count\": 20000\n}\n",
+          "wall_elapsed_sec": 1.8263616929762065
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "section.run_phases.input_construction_sec",
+          0.05273826606571674
+        ],
+        [
+          "section.run_phases.native_summary_postprocess_sec",
+          1.6996636986732483e-07
+        ],
+        [
+          "section.run_phases.query_and_materialize_sec",
+          1.1801197689492255
+        ],
+        [
+          "section.run_phases.query_raw_view_sec",
+          1.1801197689492255
+        ],
+        [
+          "section.run_phases.row_materialization_sec",
+          0.0
+        ]
+      ],
+      "wall_median_sec": 1.8263616929762065
+    }
+  ],
+  "scale": "large"
+}

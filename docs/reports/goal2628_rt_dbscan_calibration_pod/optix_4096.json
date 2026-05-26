@@ -1,0 +1,189 @@
+{
+  "app": "rt_dbscan_benchmark",
+  "claim_boundary": {
+    "full_dbscan": true,
+    "host_bucket_index_used": false,
+    "native_dbscan_abi_added": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "rt_core_accelerated": true
+  },
+  "dataset": "clustered3d",
+  "elapsed_sec": 1.2034350540488958,
+  "matches_reference": null,
+  "metadata": {
+    "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+    "adjacency_write_pass_count": 0,
+    "all_core_flags_true": false,
+    "automatic_hidden_dispatcher": false,
+    "benchmark_timing_breakdown": {
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.056986403884366155,
+        "count_native_current_run_sec": 0.00039253104478120804,
+        "elapsed_sec": 1.2034350540488958,
+        "grouped_native_sec": 0.30654070409946144,
+        "known_host_phase_sec": 1.2033600232098252,
+        "known_native_current_run_sec": 0.30693323514424264,
+        "unattributed_elapsed_sec": 7.503083907067776e-05
+      },
+      "host_observed_sec": {
+        "adapter_run_sec": 0.3639196390286088,
+        "column_signature_sec": 0.0017951070331037045,
+        "prepare_sec": 0.8376452771481127
+      },
+      "notes": [
+        "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+        "Native elapsed fields come from RTDL native metadata where available.",
+        "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+      ],
+      "performance_claim_authorized": false,
+      "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+    },
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+    "core_flag_cache_reused": false,
+    "core_flag_threshold": 12,
+    "count_metadata": {
+      "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+      "app_count_host_materialization": false,
+      "app_count_materialization": "native_optix_rt_device_columns",
+      "direct_device_handoff_authorized": true,
+      "input_contract": "host_query_points_prepared_native_search_scene",
+      "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+      "native_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.00039253104478120804,
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "native_execution_path": "prepared_rt_core_count_threshold_3d",
+        "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "query_count": 4096,
+        "radius": 0.055,
+        "rt_core_accelerated": true,
+        "search_count": 4096,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "threshold": 12,
+        "transfer_mode": "host_query_points_to_device_threshold_columns",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "output_columns_reused": true,
+      "paper_speedup_claim_authorized": false,
+      "partner": "cupy",
+      "query_count": 4096,
+      "radius": 0.055,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "threshold": 12,
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "direct_device_handoff_authorized": true,
+    "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+    "grouped_stream_continuation_pass_count": 1,
+    "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+    "grouped_union_direct_side_effect_enabled": false,
+    "grouped_union_query_block_count": 1,
+    "grouped_union_query_block_size": 4096,
+    "grouped_union_query_blocked_candidate": true,
+    "grouped_union_same_root_culling_enabled": true,
+    "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+    "materializes_bounded_directed_adjacency_chunks": false,
+    "materializes_directed_adjacency_stream": false,
+    "materializes_neighbor_rows": false,
+    "materializes_neighbor_summaries": false,
+    "materializes_python_rows": false,
+    "min_neighbors": 12,
+    "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+    "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_range_device_workspaces",
+    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+    "native_grouped_stream_metadata": {
+      "backend": "optix",
+      "direct_device_handoff_authorized": true,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+      "grouped_union_intersection_culling_policy": "predicate_aware_connectivity_and_fallback_before_anyhit",
+      "grouped_union_same_root_culling_enabled": true,
+      "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+      "grouped_union_telemetry_contract": null,
+      "grouped_union_telemetry_requested": false,
+      "item_count": 4096,
+      "materializes_directed_adjacency_stream": false,
+      "materializes_neighbor_rows": false,
+      "native_elapsed_sec": 0.30654070409946144,
+      "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "output_columns_true_zero_copy_authorized": true,
+      "paper_speedup_claim_authorized": false,
+      "query_count": 4096,
+      "query_index_offset": 0,
+      "query_source": "prepared_search_points_self_query_device",
+      "radius": 0.055,
+      "rt_core_accelerated": true,
+      "search_count": 4096,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cupy"
+      ],
+      "transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces",
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false
+    },
+    "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+    "optix_backend_used": true,
+    "output_columns_reused": true,
+    "output_columns_true_zero_copy_authorized": true,
+    "partner": "cupy",
+    "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+    "path": "optix_rt_grouped_stream_blocked_cupy_radius_graph_column_signature_3d",
+    "point_count": 4096,
+    "prepared_grouped_stream_reused": false,
+    "prepared_grouped_stream_run_count": 1,
+    "prepared_optix_scene_reused": true,
+    "query_source": "prepared_search_points_self_query_device_range",
+    "radius": 0.055,
+    "rt_core_accelerated": true,
+    "rt_core_speedup_claim_authorized": false,
+    "signature_source": "partner_column_arrays_no_python_row_dicts",
+    "true_zero_copy_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 12,
+  "mode": "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+  "paper": {
+    "authors": [
+      "Vani Nagarajan",
+      "Milind Kulkarni"
+    ],
+    "doi": "10.1109/IPDPS54959.2023.00100",
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023"
+  },
+  "point_count": 4096,
+  "radius": 0.055,
+  "reference_signature": null,
+  "seed": 20260519,
+  "signature": {
+    "cluster_sizes": {
+      "1": 1024,
+      "2": 1024,
+      "3": 1024,
+      "4": 1024
+    },
+    "core_count": 4094,
+    "noise_count": 0
+  }
+}

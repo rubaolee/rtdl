@@ -1,0 +1,277 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "backend": "optix_partner_resident_experimental",
+  "copies": 120000,
+  "elapsed_sec": 0.294620264088735,
+  "matches_cpu_reference": true,
+  "metadata": {
+    "allow_experimental_native_required": true,
+    "authors_code_comparison": false,
+    "claim_boundary": "Experimental OptiX partner-resident count/sum/min/max parity and composite avg_as_sum_count=sum+count lowering through a generic fused sum_count pass for the synthetic RayDB-style columnar aggregate contract. This demonstrates Python+partner+RTDL descriptor execution for CUDA tensors, but it does not reproduce RayDB, expose SQL/DBMS behavior, authorize true zero-copy wording, or authorize performance wording.",
+    "compact_grouped_output_materialized": true,
+    "composite_lowering": [],
+    "contract": "columnar_grouped_aggregate_optix_partner_resident_experimental",
+    "copies": 120000,
+    "experimental_native_execution": true,
+    "fixture": "tiny_denormalized_columnar",
+    "fused_native_reduction": false,
+    "fused_native_reduction_symbol": null,
+    "generic_stats_abi_used": false,
+    "generic_sum_count_abi_used": false,
+    "group_capacity": 3,
+    "group_capacity_explicit": true,
+    "group_key_field": "region_id",
+    "group_keys": [
+      "region_id"
+    ],
+    "grouped_reduction_capacity_status": {
+      "group_capacity": 3,
+      "overflow_policy": "fail_closed",
+      "overflowed": false,
+      "required_capacity": 3,
+      "row_count": 3
+    },
+    "grouped_reduction_contract": {
+      "claim_boundary": "Generic grouped-reduction contract metadata only. It does not authorize native backend support, public speedup wording, or app-specific engine semantics.",
+      "contract_version": "rtdl.grouped_reduction.v1",
+      "group_capacity": 3,
+      "group_keys": [
+        "region_id"
+      ],
+      "operation": "group_sum_i64",
+      "output_mode": "compact_rows",
+      "overflow_policy": "fail_closed",
+      "value_field": "revenue"
+    },
+    "input_table_copied_back_to_python_rows": false,
+    "lowering_plan": {
+      "backend": "optix_partner_resident_experimental",
+      "claim_boundary": "Experimental partner-resident OptiX int64 grouped count/sum/min/max plus composite avg_as_sum_count lowering over count+sum. The path accepts CUDA partner column descriptors and materializes compact grouped rows at the boundary, but it does not authorize true zero-copy, whole-app, or public speedup wording.",
+      "direct_columnar_record_set_api": true,
+      "materializes_input_rows_for_wrapper": false,
+      "next_engine_target": "stabilize_partner_resident_columnar_payload_native_execution",
+      "requires_runtime_validation": true,
+      "supported_aggregates": [
+        "count",
+        "sum",
+        "min",
+        "max",
+        "avg_as_sum_count"
+      ],
+      "transfer_path": "partner_resident_cuda_column_descriptors_to_experimental_optix_grouped_i64",
+      "true_zero_copy_authorized": false,
+      "unsupported_aggregates": [],
+      "uses_compatibility_wrapper": false
+    },
+    "native_abi_added": false,
+    "native_avg_abi_added": false,
+    "native_grouped_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity",
+    "native_launch_count": 1,
+    "native_reduction_symbol": "rtdl_optix_columnar_device_payload_grouped_sum_i64_with_capacity",
+    "operation": "sum",
+    "paper_reproduction": false,
+    "partner_input_constructed_by_fixture": true,
+    "partner_resident_descriptor": {
+      "backend": "optix",
+      "claim_boundary": "Descriptor-only partner-resident columnar handoff. Native OptiX execution, row-id uniqueness validation, true zero-copy, speedup, SQL, DBMS, and whole-app claims are not authorized.",
+      "device": "cuda:0",
+      "field_names": [
+        "row_id",
+        "region_id",
+        "ship_year",
+        "discount",
+        "quantity",
+        "revenue"
+      ],
+      "fields": [
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 130133012774912,
+          "device": "cuda:0",
+          "device_ptr": 130133012774912,
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "dtype_token": "int64",
+          "element_count": 960000,
+          "host_materialization_boundary": "explicit_host_materialization_at_api_boundary",
+          "logical_kind": "row_id",
+          "name": "row_id",
+          "shape": [
+            960000
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "stride_bytes": 8,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 130133020454912,
+          "device": "cuda:0",
+          "device_ptr": 130133020454912,
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "dtype_token": "int64",
+          "element_count": 960000,
+          "host_materialization_boundary": "explicit_host_materialization_at_api_boundary",
+          "logical_kind": "int64",
+          "name": "region_id",
+          "shape": [
+            960000
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "stride_bytes": 8,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 130132945666048,
+          "device": "cuda:0",
+          "device_ptr": 130132945666048,
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "dtype_token": "int64",
+          "element_count": 960000,
+          "host_materialization_boundary": "explicit_host_materialization_at_api_boundary",
+          "logical_kind": "int64",
+          "name": "ship_year",
+          "shape": [
+            960000
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "stride_bytes": 8,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 130132953346048,
+          "device": "cuda:0",
+          "device_ptr": 130132953346048,
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "dtype_token": "int64",
+          "element_count": 960000,
+          "host_materialization_boundary": "explicit_host_materialization_at_api_boundary",
+          "logical_kind": "int64",
+          "name": "discount",
+          "shape": [
+            960000
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "stride_bytes": 8,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 130132878557184,
+          "device": "cuda:0",
+          "device_ptr": 130132878557184,
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "dtype_token": "int64",
+          "element_count": 960000,
+          "host_materialization_boundary": "explicit_host_materialization_at_api_boundary",
+          "logical_kind": "int64",
+          "name": "quantity",
+          "shape": [
+            960000
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "stride_bytes": 8,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        },
+        {
+          "access_mode": "read",
+          "byte_offset": 0,
+          "data_ptr": 130132886237184,
+          "device": "cuda:0",
+          "device_ptr": 130132886237184,
+          "direct_device_handoff_authorized": false,
+          "direct_device_pointer_observed": true,
+          "dtype": "torch.int64",
+          "dtype_token": "int64",
+          "element_count": 960000,
+          "host_materialization_boundary": "explicit_host_materialization_at_api_boundary",
+          "logical_kind": "int64",
+          "name": "revenue",
+          "shape": [
+            960000
+          ],
+          "source_protocol": "torch",
+          "stream_handle": 0,
+          "stride_bytes": 8,
+          "strides": null,
+          "transfer_mode": "device_descriptor_only",
+          "true_zero_copy_authorized": false
+        }
+      ],
+      "native_execution_authorized": false,
+      "row_count": 960000,
+      "row_id_uniqueness_validated": false,
+      "source_protocols": [
+        "torch"
+      ],
+      "transfer_mode": "partner_resident_column_descriptor_only",
+      "true_zero_copy_authorized": false
+    },
+    "partner_resident_grouped_i64_dispatcher": true,
+    "partner_resident_grouped_i64_dispatcher_version": "goal2519",
+    "predicate_count": 3,
+    "public_speedup_claim_authorized": false,
+    "reduction": "sum",
+    "result_fields": [
+      "region_id",
+      "sum"
+    ],
+    "row_count": 960000,
+    "rt_core_accelerated": false,
+    "semantic_aggregate": "sum",
+    "timings": {
+      "elapsed_sec": 0.294620264088735,
+      "prepare_sec": 0.0003445618785917759,
+      "query_sec": 0.2942757022101432
+    },
+    "true_zero_copy_authorized": false,
+    "value_field": "revenue"
+  },
+  "mode": "sum",
+  "row_count": 960000,
+  "rows": [
+    {
+      "region_id": 0,
+      "sum": 22800000
+    },
+    {
+      "region_id": 1,
+      "sum": 24000000
+    },
+    {
+      "region_id": 2,
+      "sum": 9600000
+    }
+  ]
+}

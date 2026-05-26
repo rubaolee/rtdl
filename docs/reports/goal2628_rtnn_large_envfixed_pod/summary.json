@@ -1,0 +1,410 @@
+{
+  "case_repeat": 1,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "LD_LIBRARY_PATH": "/usr/local/cuda-12.6/lib64:",
+      "OPTIX_PREFIX": "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "f37ed4bc2dbcfe262e70c5d3c5d5de043a3df748",
+    "git_status_short": "?? docs/reports/goal2627_embree_optix_all_benchmarks_quick_pod/\n?? docs/reports/goal2628_embree_optix_standard_no_librts_pod/\n?? docs/reports/goal2628_envfixed_rt_dbscan_rtnn_quick_pod/\n?? docs/reports/goal2628_rtnn_large_envfixed_pod/",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [
+      "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64/include/optix.h"
+    ],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2627/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-26T23:05:23+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "rtnn",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "embree_sec": 3.0573296500369906,
+      "embree_speedup_vs_optix": 0.003188184204875101,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.009747330099344254,
+      "optix_speedup_vs_embree": 313.6581626842278
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "rtnn",
+      "app_name": "RTNN neighbor search",
+      "backend": "embree",
+      "case_id": "rtnn_embree_prepared_3d_ranked_summary",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "Same ranked-summary row schema, produced by generic Embree fixed-radius rows plus app-level summary folding.",
+      "payload": {
+        "backend": "embree",
+        "batch_count": 4,
+        "batch_phase_timings": [
+          {
+            "backend": "embree",
+            "materializes_neighbor_rows": true,
+            "mode": "embree_fixed_radius_rows_to_ranked_summary_rows"
+          },
+          {
+            "backend": "embree",
+            "materializes_neighbor_rows": true,
+            "mode": "embree_fixed_radius_rows_to_ranked_summary_rows"
+          },
+          {
+            "backend": "embree",
+            "materializes_neighbor_rows": true,
+            "mode": "embree_fixed_radius_rows_to_ranked_summary_rows"
+          },
+          {
+            "backend": "embree",
+            "materializes_neighbor_rows": true,
+            "mode": "embree_fixed_radius_rows_to_ranked_summary_rows"
+          }
+        ],
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "device_ranked_summary_rows": false,
+          "embree_ranked_summary_rows": true,
+          "materializes_neighbor_rows": true,
+          "paper_equivalent_rtnn_row": false,
+          "partitioned_or_batched_like_rtnn": true,
+          "rt_core_neighbor_search_claim_authorized": false,
+          "rtdl_speedup_claim_authorized": false
+        },
+        "contract": {
+          "approximate": false,
+          "batched_queries": true,
+          "bounded_k": 50,
+          "exact": true,
+          "family": "fixed_radius_neighbors_3d",
+          "mode": "ranked-summary-raw",
+          "prepared_search_structure": false
+        },
+        "elapsed_runs_sec": [
+          3.1831370759755373,
+          3.1548762200400233,
+          3.0573296500369906
+        ],
+        "elapsed_sec": 3.0573296500369906,
+        "error": "",
+        "execution_prepare_sec": 1.7279991880059242e-05,
+        "external": "RTDL current",
+        "input_load_sec": 0.3447956400923431,
+        "input_pack_sec": 0.11670922790654004,
+        "k_max": 50,
+        "mode": "current_3d_fixed_radius_neighbors_embree_batched",
+        "ok": true,
+        "query_batch_size": 65536,
+        "query_count": 262144,
+        "radius": 0.02,
+        "repeat": 3,
+        "result_mode": "ranked-summary-raw",
+        "row": "rtdl_batched_3d_neighbors",
+        "row_count": 262144,
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "search_count": 262144
+      },
+      "primary_metric_sec": 3.0573296500369906,
+      "primary_metric_source": "elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2348_rtnn_v2_2_external_runner.py",
+            "run-rtdl-batched-3d-neighbors",
+            "--point-file",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_uniform_262144.csv",
+            "--radius",
+            "0.02",
+            "--k-max",
+            "50",
+            "--backend",
+            "embree",
+            "--query-batch-size",
+            "65536",
+            "--result-mode",
+            "ranked-summary-raw",
+            "--repeat",
+            "3",
+            "--json-out",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_embree_262144.json"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "[goal2348] RTDL batched 3D start backend=embree queries=262144 search=262144 batch_size=65536 batches=4 result_mode=ranked-summary-raw\n[goal2348] RTDL batched 3D repeat 1/3 ok=True sec=3.183137\n[goal2348] RTDL batched 3D repeat 2/3 ok=True sec=3.154876\n[goal2348] RTDL batched 3D repeat 3/3 ok=True sec=3.057330\n{\n  \"backend\": \"embree\",\n  \"batch_count\": 4,\n  \"batch_phase_timings\": [\n    {\n      \"backend\": \"embree\",\n      \"materializes_neighbor_rows\": true,\n      \"mode\": \"embree_fixed_radius_rows_to_ranked_summary_rows\"\n    },\n    {\n      \"backend\": \"embree\",\n      \"materializes_neighbor_rows\": true,\n      \"mode\": \"embree_fixed_radius_rows_to_ranked_summary_rows\"\n    },\n    {\n      \"backend\": \"embree\",\n      \"materializes_neighbor_rows\": true,\n      \"mode\": \"embree_fixed_radius_rows_to_ranked_summary_rows\"\n    },\n    {\n      \"backend\": \"embree\",\n      \"materializes_neighbor_rows\": true,\n      \"mode\": \"embree_fixed_radius_rows_to_ranked_summary_rows\"\n    }\n  ],\n  \"claim_boundary\": {\n    \"broad_rt_core_speedup_claim_authorized\": false,\n    \"device_ranked_summary_rows\": false,\n    \"embree_ranked_summary_rows\": true,\n    \"materializes_neighbor_rows\": true,\n    \"paper_equivalent_rtnn_row\": false,\n    \"partitioned_or_batched_like_rtnn\": true,\n    \"rt_core_neighbor_search_claim_authorized\": false,\n    \"rtdl_speedup_claim_authorized\": false\n  },\n  \"contract\": {\n    \"approximate\": false,\n    \"batched_queries\": true,\n    \"bounded_k\": 50,\n    \"exact\": true,\n    \"family\": \"fixed_radius_neighbors_3d\",\n    \"mode\": \"ranked-summary-raw\",\n    \"prepared_search_structure\": false\n  },\n  \"elapsed_runs_sec\": [\n    3.1831370759755373,\n    3.1548762200400233,\n    3.0573296500369906\n  ],\n  \"elapsed_sec\": 3.0573296500369906,\n  \"error\": \"\",\n  \"execution_prepare_sec\": 1.7279991880059242e-05,\n  \"external\": \"RTDL current\",\n  \"input_load_sec\": 0.3447956400923431,\n  \"input_pack_sec\": 0.11670922790654004,\n  \"k_max\": 50,\n  \"mode\": \"current_3d_fixed_radius_neighbors_embree_batched\",\n  \"ok\": true,\n  \"query_batch_size\": 65536,\n  \"query_count\": 262144,\n  \"radius\": 0.02,\n  \"repeat\": 3,\n  \"result_mode\": \"ranked-summary-raw\",\n  \"row\": \"rtdl_batched_3d_neighbors\",\n  \"row_count\": 262144,\n  \"runner\": \"goal2348_rtnn_v2_2_external_runner\",\n  \"search_count\": 262144\n}\n",
+          "wall_elapsed_sec": 10.366302328184247
+        }
+      ],
+      "setup_results": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2348_rtnn_v2_2_external_runner.py",
+            "generate",
+            "--point-file",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_uniform_262144.csv",
+            "--point-count",
+            "262144",
+            "--dimension",
+            "3",
+            "--distribution",
+            "uniform",
+            "--json-out",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_generate_262144.json"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"claim_boundary\": {\n    \"paper_dataset\": false,\n    \"synthetic_input_only\": true\n  },\n  \"generated\": {\n    \"dimension\": 3,\n    \"format\": \"rtnn_csv_xyz\",\n    \"path\": \"docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_uniform_262144.csv\",\n    \"point_count\": 262144,\n    \"seed\": 2346\n  },\n  \"runner\": \"goal2348_rtnn_v2_2_external_runner\"\n}\n"
+        }
+      ],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "elapsed_sec",
+          3.0573296500369906
+        ],
+        [
+          "execution_prepare_sec",
+          1.7279991880059242e-05
+        ],
+        [
+          "input_load_sec",
+          0.3447956400923431
+        ],
+        [
+          "input_pack_sec",
+          0.11670922790654004
+        ]
+      ],
+      "wall_median_sec": 10.366302328184247
+    },
+    {
+      "app_id": "rtnn",
+      "app_name": "RTNN neighbor search",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "",
+      "payload": {
+        "backend": "optix",
+        "batch_count": 4,
+        "batch_phase_timings": [
+          {
+            "candidate_count_pass": 0.001333225,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 628275,
+            "row_download": 0.000244391,
+            "row_offset_upload": 0.0,
+            "upload": 0.000421251
+          },
+          {
+            "candidate_count_pass": 0.001306365,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 627669,
+            "row_download": 0.000242661,
+            "row_offset_upload": 0.0,
+            "upload": 0.000390581
+          },
+          {
+            "candidate_count_pass": 0.001326896,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 628790,
+            "row_download": 0.000244561,
+            "row_offset_upload": 0.0,
+            "upload": 0.000404661
+          },
+          {
+            "candidate_count_pass": 0.001327325,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 628088,
+            "row_download": 0.000242851,
+            "row_offset_upload": 0.0,
+            "upload": 0.000387021
+          }
+        ],
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "device_ranked_summary_rows": true,
+          "embree_ranked_summary_rows": false,
+          "materializes_neighbor_rows": false,
+          "paper_equivalent_rtnn_row": false,
+          "partitioned_or_batched_like_rtnn": true,
+          "rt_core_neighbor_search_claim_authorized": false,
+          "rtdl_speedup_claim_authorized": false
+        },
+        "contract": {
+          "approximate": false,
+          "batched_queries": true,
+          "bounded_k": 50,
+          "exact": true,
+          "family": "fixed_radius_neighbors_3d",
+          "mode": "ranked-summary-raw",
+          "prepared_search_structure": true
+        },
+        "elapsed_runs_sec": [
+          0.011784248054027557,
+          0.00988098094239831,
+          0.009747330099344254
+        ],
+        "elapsed_sec": 0.009747330099344254,
+        "error": "",
+        "execution_prepare_sec": 1.4027348801027983,
+        "external": "RTDL current",
+        "input_load_sec": 0.33499272097833455,
+        "input_pack_sec": 0.10406372579745948,
+        "k_max": 50,
+        "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+        "ok": true,
+        "query_batch_size": 65536,
+        "query_count": 262144,
+        "radius": 0.02,
+        "repeat": 3,
+        "result_mode": "ranked-summary-raw",
+        "row": "rtdl_batched_3d_neighbors",
+        "row_count": 262144,
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "search_count": 262144
+      },
+      "primary_metric_sec": 0.009747330099344254,
+      "primary_metric_source": "elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2348_rtnn_v2_2_external_runner.py",
+            "run-rtdl-batched-3d-neighbors",
+            "--point-file",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_uniform_262144.csv",
+            "--radius",
+            "0.02",
+            "--k-max",
+            "50",
+            "--query-batch-size",
+            "65536",
+            "--result-mode",
+            "ranked-summary-raw",
+            "--repeat",
+            "3",
+            "--json-out",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_optix_262144.json"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "[goal2348] RTDL batched 3D start backend=optix queries=262144 search=262144 batch_size=65536 batches=4 result_mode=ranked-summary-raw\n[goal2348] RTDL batched 3D repeat 1/3 ok=True sec=0.011784\n[goal2348] RTDL batched 3D repeat 2/3 ok=True sec=0.009881\n[goal2348] RTDL batched 3D repeat 3/3 ok=True sec=0.009747\n{\n  \"backend\": \"optix\",\n  \"batch_count\": 4,\n  \"batch_phase_timings\": [\n    {\n      \"candidate_count_pass\": 0.001333225,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 628275,\n      \"row_download\": 0.000244391,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000421251\n    },\n    {\n      \"candidate_count_pass\": 0.001306365,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 627669,\n      \"row_download\": 0.000242661,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000390581\n    },\n    {\n      \"candidate_count_pass\": 0.001326896,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 628790,\n      \"row_download\": 0.000244561,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000404661\n    },\n    {\n      \"candidate_count_pass\": 0.001327325,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 628088,\n      \"row_download\": 0.000242851,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000387021\n    }\n  ],\n  \"claim_boundary\": {\n    \"broad_rt_core_speedup_claim_authorized\": false,\n    \"device_ranked_summary_rows\": true,\n    \"embree_ranked_summary_rows\": false,\n    \"materializes_neighbor_rows\": false,\n    \"paper_equivalent_rtnn_row\": false,\n    \"partitioned_or_batched_like_rtnn\": true,\n    \"rt_core_neighbor_search_claim_authorized\": false,\n    \"rtdl_speedup_claim_authorized\": false\n  },\n  \"contract\": {\n    \"approximate\": false,\n    \"batched_queries\": true,\n    \"bounded_k\": 50,\n    \"exact\": true,\n    \"family\": \"fixed_radius_neighbors_3d\",\n    \"mode\": \"ranked-summary-raw\",\n    \"prepared_search_structure\": true\n  },\n  \"elapsed_runs_sec\": [\n    0.011784248054027557,\n    0.00988098094239831,\n    0.009747330099344254\n  ],\n  \"elapsed_sec\": 0.009747330099344254,\n  \"error\": \"\",\n  \"execution_prepare_sec\": 1.4027348801027983,\n  \"external\": \"RTDL current\",\n  \"input_load_sec\": 0.33499272097833455,\n  \"input_pack_sec\": 0.10406372579745948,\n  \"k_max\": 50,\n  \"mode\": \"current_3d_fixed_radius_neighbors_optix_batched\",\n  \"ok\": true,\n  \"query_batch_size\": 65536,\n  \"query_count\": 262144,\n  \"radius\": 0.02,\n  \"repeat\": 3,\n  \"result_mode\": \"ranked-summary-raw\",\n  \"row\": \"rtdl_batched_3d_neighbors\",\n  \"row_count\": 262144,\n  \"runner\": \"goal2348_rtnn_v2_2_external_runner\",\n  \"search_count\": 262144\n}\n",
+          "wall_elapsed_sec": 2.4155523939989507
+        }
+      ],
+      "setup_results": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2348_rtnn_v2_2_external_runner.py",
+            "generate",
+            "--point-file",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_uniform_262144.csv",
+            "--point-count",
+            "262144",
+            "--dimension",
+            "3",
+            "--distribution",
+            "uniform",
+            "--json-out",
+            "docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_generate_262144.json"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"claim_boundary\": {\n    \"paper_dataset\": false,\n    \"synthetic_input_only\": true\n  },\n  \"generated\": {\n    \"dimension\": 3,\n    \"format\": \"rtnn_csv_xyz\",\n    \"path\": \"docs/reports/goal2628_rtnn_large_envfixed_pod/rtnn_uniform_262144.csv\",\n    \"point_count\": 262144,\n    \"seed\": 2346\n  },\n  \"runner\": \"goal2348_rtnn_v2_2_external_runner\"\n}\n"
+        }
+      ],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "elapsed_sec",
+          0.009747330099344254
+        ],
+        [
+          "execution_prepare_sec",
+          1.4027348801027983
+        ],
+        [
+          "input_load_sec",
+          0.33499272097833455
+        ],
+        [
+          "input_pack_sec",
+          0.10406372579745948
+        ]
+      ],
+      "wall_median_sec": 2.4155523939989507
+    }
+  ],
+  "scale": "large"
+}

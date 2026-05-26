@@ -1,0 +1,53 @@
+{
+  "backend": "embree",
+  "batch_count": 1,
+  "batch_phase_timings": [
+    {
+      "backend": "embree",
+      "materializes_neighbor_rows": true,
+      "mode": "embree_fixed_radius_rows_to_ranked_summary_rows"
+    }
+  ],
+  "claim_boundary": {
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_ranked_summary_rows": false,
+    "embree_ranked_summary_rows": true,
+    "materializes_neighbor_rows": true,
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": true,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false
+  },
+  "contract": {
+    "approximate": false,
+    "batched_queries": true,
+    "bounded_k": 50,
+    "exact": true,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary-raw",
+    "prepared_search_structure": false
+  },
+  "elapsed_runs_sec": [
+    0.32509323419071734,
+    0.2968040721025318,
+    0.2791598830372095
+  ],
+  "elapsed_sec": 0.2791598830372095,
+  "error": "",
+  "execution_prepare_sec": 1.8530990928411484e-05,
+  "external": "RTDL current",
+  "input_load_sec": 0.10008055483922362,
+  "input_pack_sec": 0.032382888020947576,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_embree_batched",
+  "ok": true,
+  "query_batch_size": 65536,
+  "query_count": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "result_mode": "ranked-summary-raw",
+  "row": "rtdl_batched_3d_neighbors",
+  "row_count": 65536,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 65536
+}

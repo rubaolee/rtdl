@@ -1,0 +1,266 @@
+{
+  "case_repeat": 1,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "LD_LIBRARY_PATH": "/usr/local/cuda-12.6/lib64:",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "f37ed4bc2dbcfe262e70c5d3c5d5de043a3df748",
+    "git_status_short": "?? docs/reports/goal2627_embree_optix_all_benchmarks_quick_pod/\n?? docs/reports/goal2628_embree_optix_standard_no_librts_pod/\n?? docs/reports/goal2628_envfixed_rt_dbscan_rtnn_quick_pod/\n?? docs/reports/goal2628_librts_calibration_pod/\n?? docs/reports/goal2628_rt_dbscan_calibration_pod/\n?? docs/reports/goal2628_rtnn_large_envfixed_pod/\n?? docs/reports/goal2628_triangle_large_pod/",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2627/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-26T23:11:40+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "barnes_hut",
+      "comparison_group": "node_coverage_candidate_summary",
+      "embree_sec": 0.9556313010398299,
+      "embree_speedup_vs_optix": 1.9194667273085029,
+      "metric_sources": {
+        "embree": "process_wall_median_sec",
+        "optix": "process_wall_median_sec"
+      },
+      "optix_sec": 1.8343024859204888,
+      "optix_speedup_vs_embree": 0.5209780329988897
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "barnes_hut",
+      "app_name": "Barnes-Hut / RT-BarnesHut-style",
+      "backend": "embree",
+      "case_id": "barnes_hut_embree_node_coverage",
+      "comparison_group": "node_coverage_candidate_summary",
+      "notes": "",
+      "payload": {
+        "app": "barnes_hut_force_app",
+        "app_boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+        "backend": "embree",
+        "benchmark_metadata": {
+          "authors_code_comparison": false,
+          "benchmark": "barnes_hut_ppopp2025_style",
+          "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+          "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+          "contract": "generic_fixed_radius_candidate_rows_embree_backend",
+          "mode": "embree_rows",
+          "native_engine_app_specific": false,
+          "paper_reference": {
+            "authors": [
+              "Vani Nagarajan",
+              "Rohan Gangaraju",
+              "Kirshanthan Sundararajah",
+              "Artem Pelenitsyn",
+              "Milind Kulkarni"
+            ],
+            "authors_code_comparison": false,
+            "doi": "10.1145/3710848.3710885",
+            "paper_reproduction": false,
+            "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+            "venue": "PPoPP 2025"
+          },
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "reconstruction_instrument": true,
+          "research_benchmark": true,
+          "rt_core_accelerated": false
+        },
+        "body_count": 32768,
+        "body_count_with_candidates": 32768,
+        "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+        "candidate_row_count": 131072,
+        "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+        "native_continuation_active": true,
+        "native_continuation_backend": "native_fixed_radius_candidate_summary",
+        "node_count": 4,
+        "node_count_seen": 4,
+        "node_radius": null,
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+        },
+        "optix_summary_mode": null,
+        "output_mode": "candidate_summary",
+        "rt_core_accelerated": false,
+        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+        "theta": 0.75
+      },
+      "primary_metric_sec": 0.9556313010398299,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+            "--mode",
+            "embree_rows",
+            "--body-count",
+            "32768",
+            "--skip-validation"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"app_boundary\": \"Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.\",\n  \"backend\": \"embree\",\n  \"benchmark_metadata\": {\n    \"authors_code_comparison\": false,\n    \"benchmark\": \"barnes_hut_ppopp2025_style\",\n    \"benchmark_scope\": \"RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.\",\n    \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n    \"contract\": \"generic_fixed_radius_candidate_rows_embree_backend\",\n    \"mode\": \"embree_rows\",\n    \"native_engine_app_specific\": false,\n    \"paper_reference\": {\n      \"authors\": [\n        \"Vani Nagarajan\",\n        \"Rohan Gangaraju\",\n        \"Kirshanthan Sundararajah\",\n        \"Artem Pelenitsyn\",\n        \"Milind Kulkarni\"\n      ],\n      \"authors_code_comparison\": false,\n      \"doi\": \"10.1145/3710848.3710885\",\n      \"paper_reproduction\": false,\n      \"title\": \"RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware\",\n      \"venue\": \"PPoPP 2025\"\n    },\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"reconstruction_instrument\": true,\n    \"research_benchmark\": true,\n    \"rt_core_accelerated\": false\n  },\n  \"body_count\": 32768,\n  \"body_count_with_candidates\": 32768,\n  \"boundary\": \"Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.\",\n  \"candidate_row_count\": 131072,\n  \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_fixed_radius_candidate_summary\",\n  \"node_count\": 4,\n  \"node_count_seen\": 4,\n  \"node_radius\": null,\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"candidate_summary\",\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+          "wall_elapsed_sec": 0.9556313010398299
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [],
+      "wall_median_sec": 0.9556313010398299
+    },
+    {
+      "app_id": "barnes_hut",
+      "app_name": "Barnes-Hut / RT-BarnesHut-style",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "comparison_group": "node_coverage_candidate_summary",
+      "notes": "",
+      "payload": {
+        "app": "barnes_hut_force_app",
+        "app_boundary": "Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.",
+        "backend": "optix",
+        "benchmark_metadata": {
+          "authors_code_comparison": false,
+          "benchmark": "barnes_hut_ppopp2025_style",
+          "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+          "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+          "contract": "prepared_fixed_radius_node_coverage_threshold_decision_optix",
+          "mode": "optix_node_coverage_prepared",
+          "native_engine_app_specific": false,
+          "paper_reference": {
+            "authors": [
+              "Vani Nagarajan",
+              "Rohan Gangaraju",
+              "Kirshanthan Sundararajah",
+              "Artem Pelenitsyn",
+              "Milind Kulkarni"
+            ],
+            "authors_code_comparison": false,
+            "doi": "10.1145/3710848.3710885",
+            "paper_reproduction": false,
+            "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+            "venue": "PPoPP 2025"
+          },
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "reconstruction_instrument": true,
+          "research_benchmark": true,
+          "rt_core_accelerated": true
+        },
+        "body_count": 32768,
+        "boundary": "Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.",
+        "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+        "matches_oracle": true,
+        "node_count": 4,
+        "node_coverage": {
+          "all_bodies_have_node_candidate": true,
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "radius": 10.0,
+          "row_count": null,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "uncovered_body_ids": []
+        },
+        "node_radius": 10.0,
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+        },
+        "optix_summary_mode": "node_coverage_prepared",
+        "oracle_decision_matches": true,
+        "oracle_identity_matches": true,
+        "oracle_node_coverage": {
+          "all_bodies_have_node_candidate": true,
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "max_candidate_count": 4,
+          "min_candidate_count": 4,
+          "radius": 10.0,
+          "threshold": 1,
+          "uncovered_body_ids": []
+        },
+        "output_mode": "candidate_summary",
+        "rt_core_accelerated": true,
+        "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.",
+        "theta": 0.75
+      },
+      "primary_metric_sec": 1.8343024859204888,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+            "--mode",
+            "optix_node_coverage_prepared",
+            "--body-count",
+            "32768",
+            "--skip-validation",
+            "--require-rt-core"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"app_boundary\": \"Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.\",\n  \"backend\": \"optix\",\n  \"benchmark_metadata\": {\n    \"authors_code_comparison\": false,\n    \"benchmark\": \"barnes_hut_ppopp2025_style\",\n    \"benchmark_scope\": \"RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.\",\n    \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n    \"contract\": \"prepared_fixed_radius_node_coverage_threshold_decision_optix\",\n    \"mode\": \"optix_node_coverage_prepared\",\n    \"native_engine_app_specific\": false,\n    \"paper_reference\": {\n      \"authors\": [\n        \"Vani Nagarajan\",\n        \"Rohan Gangaraju\",\n        \"Kirshanthan Sundararajah\",\n        \"Artem Pelenitsyn\",\n        \"Milind Kulkarni\"\n      ],\n      \"authors_code_comparison\": false,\n      \"doi\": \"10.1145/3710848.3710885\",\n      \"paper_reproduction\": false,\n      \"title\": \"RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware\",\n      \"venue\": \"PPoPP 2025\"\n    },\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"reconstruction_instrument\": true,\n    \"research_benchmark\": true,\n    \"rt_core_accelerated\": true\n  },\n  \"body_count\": 32768,\n  \"boundary\": \"Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.\",\n  \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n  \"matches_oracle\": true,\n  \"node_count\": 4,\n  \"node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"body_count\": 32768,\n    \"covered_body_count\": 32768,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"radius\": 10.0,\n    \"row_count\": null,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"uncovered_body_ids\": []\n  },\n  \"node_radius\": 10.0,\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": \"node_coverage_prepared\",\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"body_count\": 32768,\n    \"covered_body_count\": 32768,\n    \"max_candidate_count\": 4,\n    \"min_candidate_count\": 4,\n    \"radius\": 10.0,\n    \"threshold\": 1,\n    \"uncovered_body_ids\": []\n  },\n  \"output_mode\": \"candidate_summary\",\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.\",\n  \"theta\": 0.75\n}\n",
+          "wall_elapsed_sec": 1.8343024859204888
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [],
+      "wall_median_sec": 1.8343024859204888
+    }
+  ],
+  "scale": "large"
+}

@@ -1,0 +1,91 @@
+{
+  "app": "hausdorff_distance",
+  "backend": "optix",
+  "copies": 262144,
+  "directed_a_to_b": {
+    "covered_source_count": 1048576,
+    "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "identity_parity_available": true,
+    "label": "a_to_b",
+    "radius": 0.4,
+    "row_count": null,
+    "run_phases": {
+      "query_fixed_radius_threshold_reached_count_sec": 2.526492005214095,
+      "scene_prepare_sec": 3.1411177120171487
+    },
+    "source_count": 1048576,
+    "summary_mode": "scalar_threshold_count",
+    "summary_primitive": "REDUCE_INT(COUNT)",
+    "violating_source_ids": [],
+    "within_threshold": true
+  },
+  "directed_b_to_a": {
+    "covered_source_count": 1048576,
+    "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "identity_parity_available": true,
+    "label": "b_to_a",
+    "radius": 0.4,
+    "row_count": null,
+    "run_phases": {
+      "query_fixed_radius_threshold_reached_count_sec": 2.4272406531963497,
+      "scene_prepare_sec": 1.7714636840391904
+    },
+    "source_count": 1048576,
+    "summary_mode": "scalar_threshold_count",
+    "summary_primitive": "REDUCE_INT(COUNT)",
+    "violating_source_ids": [],
+    "within_threshold": true
+  },
+  "embree_result_mode": null,
+  "hausdorff_distance": null,
+  "hausdorff_threshold": 0.4,
+  "matches_oracle": true,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_threshold_count",
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+  },
+  "optix_summary_mode": "directed_threshold_prepared",
+  "oracle": {
+    "directed_a_to_b": {
+      "distance": 0.30000000000000004,
+      "distance_reduction_rows": [
+        {
+          "directed_distance": 0.30000000000000004
+        }
+      ],
+      "row_count": 1048576,
+      "source_id": 3,
+      "target_id": 103
+    },
+    "directed_b_to_a": {
+      "distance": 0.30000000000000004,
+      "distance_reduction_rows": [
+        {
+          "directed_distance": 0.30000000000000004
+        }
+      ],
+      "row_count": 1048576,
+      "source_id": 103,
+      "target_id": 3
+    },
+    "hausdorff_distance": 0.30000000000000004,
+    "witness_direction": "b_to_a"
+  },
+  "oracle_decision_matches": true,
+  "oracle_identity_matches": true,
+  "oracle_within_threshold": true,
+  "point_count_a": 1048576,
+  "point_count_b": 1048576,
+  "rt_core_accelerated": true,
+  "rtdl_role": "RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.",
+  "run_phases": {
+    "input_construction_sec": 2.652650073869154,
+    "python_postprocess_sec": 1.149950549006462e-06,
+    "query_fixed_radius_threshold_reached_count_sec": 4.953732658410445,
+    "scene_prepare_sec": 4.912581396056339,
+    "validation_sec": 0.0001762800384312868
+  },
+  "within_threshold": true
+}

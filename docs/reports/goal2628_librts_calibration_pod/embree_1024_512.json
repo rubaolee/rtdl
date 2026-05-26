@@ -1,0 +1,47 @@
+{
+  "app": "librts_spatial_index",
+  "authors_code_comparison": false,
+  "candidate_checks": null,
+  "claim_boundary": "LibRTS-style benchmark call into generic Embree AABB_INDEX_QUERY_2D lowered through app-agnostic columnar conjunctive scan. This is not authors-code timing, not NVIDIA RT-core accelerated, and does not authorize public speedup wording.",
+  "counts": {
+    "point_contains": 21475,
+    "range_contains": 14675,
+    "range_intersects": 32531
+  },
+  "elapsed_sec": 21.73799669975415,
+  "fixture": {
+    "box_count": 1024,
+    "box_query_count": 512,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 512,
+    "seed": 2025
+  },
+  "generic_primitive": "AABB_INDEX_QUERY_2D",
+  "index": {
+    "indexed_boxes": 1024,
+    "native_index": "embree_generic_columnar_payload",
+    "primary_fields": [
+      "min_x",
+      "min_y",
+      "max_x"
+    ]
+  },
+  "matches_cpu_reference": true,
+  "mode": "embree_aabb_index",
+  "native_engine_customization": false,
+  "operation": "all",
+  "paper": {
+    "authors_code": "https://github.com/RTSpatial/RTSpatial",
+    "doi": "10.1145/3710848.3710850",
+    "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+    "venue": "PPoPP 2025"
+  },
+  "paper_reproduction": false,
+  "primitive_contract": "generic_prepared_aabb_index_query_2d",
+  "rt_core_accelerated": false,
+  "run_phases": {
+    "query_sec": 21.712680535856634,
+    "scene_prepare_sec": 0.025316163897514343
+  }
+}

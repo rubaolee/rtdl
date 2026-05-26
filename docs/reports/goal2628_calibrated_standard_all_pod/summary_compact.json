@@ -1,0 +1,508 @@
+{
+  "case_repeat": 1,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "LD_LIBRARY_PATH": "/usr/local/cuda-12.6/lib64:",
+      "OPTIX_PREFIX": "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "84b1ed3dbc19415342d884850532c909e1814987",
+    "git_status_short": "?? docs/reports/goal2627_embree_optix_all_benchmarks_quick_pod/\n?? docs/reports/goal2628_barnes_hut_large_pod/\n?? docs/reports/goal2628_calibrated_standard_all_pod/\n?? docs/reports/goal2628_embree_optix_standard_no_librts_pod/\n?? docs/reports/goal2628_envfixed_rt_dbscan_rtnn_quick_pod/\n?? docs/reports/goal2628_hausdorff_calibration_pod/\n?? docs/reports/goal2628_librts_calibration_pod/\n?? docs/reports/goal2628_rt_dbscan_calibration_pod/\n?? docs/reports/goal2628_rtnn_large_envfixed_pod/\n?? docs/reports/goal2628_triangle_large_pod/",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [
+      "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64/include/optix.h"
+    ],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2627/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-26T23:37:06+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "barnes_hut",
+      "comparison_group": "node_coverage_candidate_summary",
+      "embree_sec": 0.6146502469200641,
+      "embree_speedup_vs_optix": 2.30085335694089,
+      "metric_sources": {
+        "embree": "process_wall_median_sec",
+        "optix": "process_wall_median_sec"
+      },
+      "optix_sec": 1.4142200839705765,
+      "optix_speedup_vs_embree": 0.4346213534136545
+    },
+    {
+      "app_id": "contact_manifold",
+      "comparison_group": "native_collect_k_i64",
+      "embree_sec": 0.01279792096465826,
+      "embree_speedup_vs_optix": 0.9157929793504614,
+      "metric_sources": {
+        "embree": "native_collect_elapsed_sec",
+        "optix": "native_collect_elapsed_sec"
+      },
+      "optix_sec": 0.01172024616971612,
+      "optix_speedup_vs_embree": 1.0919498429757166
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "comparison_group": "hausdorff_threshold_decision",
+      "embree_sec": 0.09563857689499855,
+      "embree_speedup_vs_optix": 0.31506907752703883,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.030132758198305964,
+      "optix_speedup_vs_embree": 3.1739071566430734
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "comparison_group": "aabb_index_all_count_only",
+      "embree_sec": 21.161017769016325,
+      "embree_speedup_vs_optix": 0.032181690187265584,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.6809973178897053,
+      "optix_speedup_vs_embree": 31.073569914475897
+    },
+    {
+      "app_id": "robot_collision",
+      "comparison_group": "prepared_collision_flags",
+      "embree_sec": 0.009585788007825613,
+      "embree_speedup_vs_optix": 0.1536514753739837,
+      "metric_sources": {
+        "embree": "tail_medians.total_run_seconds",
+        "optix": "tail_medians.total_run_seconds"
+      },
+      "optix_sec": 0.0014728704700246453,
+      "optix_speedup_vs_embree": 6.508235586843706
+    },
+    {
+      "app_id": "rt_dbscan",
+      "comparison_group": "dbscan_cluster_signature",
+      "embree_sec": 21.062591359950602,
+      "embree_speedup_vs_optix": 0.0775202257497204,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 1.632776837097481,
+      "optix_speedup_vs_embree": 12.899859234525087
+    },
+    {
+      "app_id": "rtnn",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "embree_sec": 0.2791598830372095,
+      "embree_speedup_vs_optix": 0.005837217476542995,
+      "metric_sources": {
+        "embree": "elapsed_sec",
+        "optix": "elapsed_sec"
+      },
+      "optix_sec": 0.0016295169480144978,
+      "optix_speedup_vs_embree": 171.3145011332069
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "comparison_group": "rayjoin_all_generic_summary",
+      "embree_sec": 0.02154563507065177,
+      "embree_speedup_vs_optix": 48.3120718087543,
+      "metric_sources": {
+        "embree": "workloads.total_elapsed_sec",
+        "optix": "workloads.total_elapsed_sec"
+      },
+      "optix_sec": 1.0409142686985433,
+      "optix_speedup_vs_embree": 0.02069876042490061
+    },
+    {
+      "app_id": "triangle_counting",
+      "comparison_group": "triangle_count_summary",
+      "embree_sec": 0.612414097879082,
+      "embree_speedup_vs_optix": 2.4430570135871443,
+      "metric_sources": {
+        "embree": "process_wall_median_sec",
+        "optix": "process_wall_median_sec"
+      },
+      "optix_sec": 1.4961625570431352,
+      "optix_speedup_vs_embree": 0.40932323496278067
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "hausdorff_xhd",
+      "app_name": "Hausdorff / X-HD-style",
+      "backend": "embree",
+      "case_id": "hausdorff_embree_threshold",
+      "command": null,
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "Same threshold-decision contract as OptiX; despite option name, the prepared threshold path supports Embree.",
+      "primary_metric_sec": 0.09563857689499855,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 0.6192536049056798
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "app_name": "Hausdorff / X-HD-style",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_threshold",
+      "command": null,
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "",
+      "primary_metric_sec": 0.030132758198305964,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 1.772220348007977
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "app_name": "Spatial RayJoin-style",
+      "backend": "embree",
+      "case_id": "spatial_rayjoin_embree_generic",
+      "command": null,
+      "comparison_group": "rayjoin_all_generic_summary",
+      "notes": "",
+      "primary_metric_sec": 0.02154563507065177,
+      "primary_metric_source": "workloads.total_elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 0.4531495999544859
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "app_name": "Spatial RayJoin-style",
+      "backend": "optix",
+      "case_id": "spatial_rayjoin_optix_generic",
+      "command": null,
+      "comparison_group": "rayjoin_all_generic_summary",
+      "notes": "",
+      "primary_metric_sec": 1.0409142686985433,
+      "primary_metric_source": "workloads.total_elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 1.5419071780052036
+    },
+    {
+      "app_id": "rt_dbscan",
+      "app_name": "RT-DBSCAN-style",
+      "backend": "embree",
+      "case_id": "rt_dbscan_embree_fixed_radius_rows",
+      "command": null,
+      "comparison_group": "dbscan_cluster_signature",
+      "notes": "Same DBSCAN cluster-signature contract through generic Embree 3-D fixed-radius neighbor rows; not the optimized OptiX grouped-stream continuation.",
+      "primary_metric_sec": 21.062591359950602,
+      "primary_metric_source": "elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 22.199085598113015
+    },
+    {
+      "app_id": "rt_dbscan",
+      "app_name": "RT-DBSCAN-style",
+      "backend": "optix",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "command": null,
+      "comparison_group": "dbscan_cluster_signature",
+      "notes": "",
+      "primary_metric_sec": 1.632776837097481,
+      "primary_metric_source": "elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 2.3072638588491827
+    },
+    {
+      "app_id": "robot_collision",
+      "app_name": "Robot collision",
+      "backend": "embree",
+      "case_id": "robot_collision_embree_prepared_buffers",
+      "command": null,
+      "comparison_group": "prepared_collision_flags",
+      "notes": "",
+      "primary_metric_sec": 0.009585788007825613,
+      "primary_metric_source": "tail_medians.total_run_seconds",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 188.50756907998584
+    },
+    {
+      "app_id": "robot_collision",
+      "app_name": "Robot collision",
+      "backend": "optix",
+      "case_id": "robot_collision_optix_prepared_device_buffers",
+      "command": null,
+      "comparison_group": "prepared_collision_flags",
+      "notes": "",
+      "primary_metric_sec": 0.0014728704700246453,
+      "primary_metric_source": "tail_medians.total_run_seconds",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 191.26232344587334
+    },
+    {
+      "app_id": "raydb_style",
+      "app_name": "RayDB-style grouped aggregate",
+      "backend": "embree",
+      "case_id": "raydb_embree_count",
+      "command": null,
+      "comparison_group": "raydb_grouped_count",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
+      "primary_metric_sec": null,
+      "primary_metric_source": null,
+      "stage": "run",
+      "status": "failed",
+      "unsupported_reason": null,
+      "wall_median_sec": null
+    },
+    {
+      "app_id": "raydb_style",
+      "app_name": "RayDB-style grouped aggregate",
+      "backend": "optix",
+      "case_id": "raydb_optix_count",
+      "command": null,
+      "comparison_group": "raydb_grouped_count",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
+      "primary_metric_sec": null,
+      "primary_metric_source": null,
+      "stage": "run",
+      "status": "failed",
+      "unsupported_reason": null,
+      "wall_median_sec": null
+    },
+    {
+      "app_id": "raydb_style",
+      "app_name": "RayDB-style grouped aggregate",
+      "backend": "embree",
+      "case_id": "raydb_embree_sum",
+      "command": null,
+      "comparison_group": "raydb_grouped_sum",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
+      "primary_metric_sec": null,
+      "primary_metric_source": null,
+      "stage": "run",
+      "status": "failed",
+      "unsupported_reason": null,
+      "wall_median_sec": null
+    },
+    {
+      "app_id": "raydb_style",
+      "app_name": "RayDB-style grouped aggregate",
+      "backend": "optix",
+      "case_id": "raydb_optix_sum",
+      "command": null,
+      "comparison_group": "raydb_grouped_sum",
+      "notes": "Scaled synthetic RayDB-style grouped aggregate; primary metric is the generic grouped-reduction query phase.",
+      "primary_metric_sec": null,
+      "primary_metric_source": null,
+      "stage": "run",
+      "status": "failed",
+      "unsupported_reason": null,
+      "wall_median_sec": null
+    },
+    {
+      "app_id": "barnes_hut",
+      "app_name": "Barnes-Hut / RT-BarnesHut-style",
+      "backend": "embree",
+      "case_id": "barnes_hut_embree_node_coverage",
+      "command": null,
+      "comparison_group": "node_coverage_candidate_summary",
+      "notes": "",
+      "primary_metric_sec": 0.6146502469200641,
+      "primary_metric_source": "process_wall_median_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 0.6146502469200641
+    },
+    {
+      "app_id": "barnes_hut",
+      "app_name": "Barnes-Hut / RT-BarnesHut-style",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "command": null,
+      "comparison_group": "node_coverage_candidate_summary",
+      "notes": "",
+      "primary_metric_sec": 1.4142200839705765,
+      "primary_metric_source": "process_wall_median_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 1.4142200839705765
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "app_name": "LibRTS-style spatial index",
+      "backend": "embree",
+      "case_id": "librts_embree_aabb_index",
+      "command": null,
+      "comparison_group": "aabb_index_all_count_only",
+      "notes": "Embree path uses the generic columnar conjunctive-scan primitive for AABB predicates.",
+      "primary_metric_sec": 21.161017769016325,
+      "primary_metric_source": "elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 21.728691360913217
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "app_name": "LibRTS-style spatial index",
+      "backend": "optix",
+      "case_id": "librts_optix_aabb_index",
+      "command": null,
+      "comparison_group": "aabb_index_all_count_only",
+      "notes": "",
+      "primary_metric_sec": 0.6809973178897053,
+      "primary_metric_source": "elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 1.5233069038949907
+    },
+    {
+      "app_id": "rtnn",
+      "app_name": "RTNN neighbor search",
+      "backend": "embree",
+      "case_id": "rtnn_embree_prepared_3d_ranked_summary",
+      "command": null,
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "Same ranked-summary row schema, produced by generic Embree fixed-radius rows plus app-level summary folding.",
+      "primary_metric_sec": 0.2791598830372095,
+      "primary_metric_source": "elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 1.4977964840363711
+    },
+    {
+      "app_id": "rtnn",
+      "app_name": "RTNN neighbor search",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "command": null,
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "",
+      "primary_metric_sec": 0.0016295169480144978,
+      "primary_metric_source": "elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 1.9476863099262118
+    },
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "embree",
+      "case_id": "triangle_counting_embree_summary",
+      "command": null,
+      "comparison_group": "triangle_count_summary",
+      "notes": "",
+      "primary_metric_sec": 0.612414097879082,
+      "primary_metric_source": "process_wall_median_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 0.612414097879082
+    },
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "optix",
+      "case_id": "triangle_counting_optix_summary",
+      "command": null,
+      "comparison_group": "triangle_count_summary",
+      "notes": "",
+      "primary_metric_sec": 1.4961625570431352,
+      "primary_metric_source": "process_wall_median_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 1.4961625570431352
+    },
+    {
+      "app_id": "contact_manifold",
+      "app_name": "Bounded contact witness / contact-manifold",
+      "backend": "embree",
+      "case_id": "contact_manifold_embree_native_collect_k",
+      "command": null,
+      "comparison_group": "native_collect_k_i64",
+      "notes": "Measures the generic native COLLECT_K_BOUNDED i64 collector over Python oracle rows, not collision-specific engine logic.",
+      "primary_metric_sec": 0.01279792096465826,
+      "primary_metric_source": "native_collect_elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 291.92386708408594
+    },
+    {
+      "app_id": "contact_manifold",
+      "app_name": "Bounded contact witness / contact-manifold",
+      "backend": "optix",
+      "case_id": "contact_manifold_optix_native_collect_k",
+      "command": null,
+      "comparison_group": "native_collect_k_i64",
+      "notes": "Measures the generic native COLLECT_K_BOUNDED i64 collector over Python oracle rows, not collision-specific engine logic.",
+      "primary_metric_sec": 0.01172024616971612,
+      "primary_metric_source": "native_collect_elapsed_sec",
+      "stage": null,
+      "status": "ok",
+      "unsupported_reason": null,
+      "wall_median_sec": 291.0613794999663
+    }
+  ],
+  "scale": "standard"
+}
