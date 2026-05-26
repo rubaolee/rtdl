@@ -1,0 +1,35 @@
+{
+  "aabb_candidate_pair_count": {
+    "cpu": 8192,
+    "optix": 8192
+  },
+  "aabb_pruning_ratio": {
+    "cpu": 0.9887858033180237,
+    "optix": null
+  },
+  "app": "contact_manifold",
+  "cpu_discovery_backend": "cpu",
+  "cpu_phases": {
+    "collect_k_bounded_rows_sec": 0.014035702915862203,
+    "generic_aabb_broadphase_sec": 0.8133475929498672,
+    "python_exact_refinement_sec": 0.010052538011223078
+  },
+  "cpu_total_sec": 0.8374358338769525,
+  "matches_cpu_reference": {
+    "cpu": true,
+    "optix": true
+  },
+  "optix_discovery_backend": "optix",
+  "optix_phases": {
+    "collect_k_bounded_rows_sec": 0.0180650579277426,
+    "generic_aabb_broadphase_sec": 0.8984996711369604,
+    "python_exact_refinement_sec": 0.013297129888087511
+  },
+  "optix_speedup_vs_cpu_discovery": 0.9006024129434365,
+  "optix_total_sec": 0.9298618589527905,
+  "scenario": "grid_count=8192, witness_capacity=8192, aabb_broadphase_collect_k",
+  "valid_count": {
+    "cpu": 8192,
+    "optix": 8192
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "app": "robot_collision",
+  "embree": {
+    "all_measured_runs_match_probe_reference": true,
+    "all_run_signatures_identical": true,
+    "app_lowering_seconds": 1.2675584319513291,
+    "backend": "embree",
+    "case_shape": {
+      "group_count": 65536,
+      "link_count": 2,
+      "pose_count": 32768,
+      "probe_points_per_group": 9,
+      "segment_count": 589824,
+      "static_obstacle_triangle_count": 1024
+    },
+    "mode": "embree_prepared_buffers",
+    "native_query_output_buffers_reused": false,
+    "prepared_scene_reused": true,
+    "query_input_sequences_reused": true,
+    "tail_median_phase_timing_seconds": {
+      "output_clear": 0.0037962140049785376,
+      "output_postprocess": 0.00590185250621289,
+      "prepare_build": 0.002259979024529457,
+      "prepared_query_build": 2.3744834151584655,
+      "query_pack": 0.0,
+      "traversal": 0.019947805
+    },
+    "tail_median_total_run_seconds": 0.056897287955507636
+  },
+  "embree_sec": 0.056897287955507636,
+  "environment": "RTX A5000 pod; repo fetched from origin/main after Goal2626 baseline commit",
+  "interpretation": "steady-state prepared-query backend timing; CPU probe reference and app lowering are not included in tail_median_total_run_seconds",
+  "optix": {
+    "all_measured_runs_match_probe_reference": true,
+    "all_run_signatures_identical": true,
+    "app_lowering_seconds": 1.2486709121149033,
+    "backend": "optix",
+    "case_shape": {
+      "group_count": 65536,
+      "link_count": 2,
+      "pose_count": 32768,
+      "probe_points_per_group": 9,
+      "segment_count": 589824,
+      "static_obstacle_triangle_count": 1024
+    },
+    "mode": "optix_prepared_device_buffers",
+    "native_query_output_buffers_reused": true,
+    "prepared_scene_reused": true,
+    "query_input_sequences_reused": true,
+    "tail_median_phase_timing_seconds": {
+      "output_postprocess": 0.006104587577283382,
+      "prepare_build": 0.08699521492235363,
+      "prepared_query_build": 2.5547381178475916,
+      "query_pack": 0.0,
+      "traversal": 0.00026005600000000005
+    },
+    "tail_median_total_run_seconds": 0.006432774127461016
+  },
+  "optix_sec": 0.006432774127461016,
+  "optix_speedup_vs_embree": 8.844906851713867,
+  "prepared_query_build_seconds": {
+    "embree": 2.3744834151584655,
+    "optix": 2.5547381178475916
+  },
+  "scenario": "32768 poses, 512 obstacles, 2 links, repeats=3 warmup=1",
+  "traversal_seconds": {
+    "embree": 0.019947805,
+    "optix": 0.00026005600000000005
+  }
+}

@@ -1,0 +1,1542 @@
+{
+  "case_repeat": 1,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "CUDA_PREFIX": "/usr/local/cuda-12.6",
+      "LD_LIBRARY_PATH": "/root/rtdl_goal2626/rtdl/build:/usr/local/cuda-12.6/lib64:/usr/local/cuda-12.6/targets/x86_64-linux/lib:",
+      "OPTIX_PREFIX": "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2626/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2626/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "11da92848a30be3a71d76ac58d8f53b1c8621ba7",
+    "git_status_short": "?? docs/reports/goal2626_benchmark_embree_optix_stress_pod_large_no_robot/",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2626/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2626/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [
+      "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64/include/optix.h"
+    ],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2626/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-26T19:11:31+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "barnes_hut",
+      "comparison_group": "node_coverage_candidate_summary",
+      "embree_sec": 0.9499833839945495,
+      "embree_speedup_vs_optix": 1.8548334229537031,
+      "metric_sources": {
+        "embree": "process_wall_median_sec",
+        "optix": "process_wall_median_sec"
+      },
+      "optix_sec": 1.7620609318837523,
+      "optix_speedup_vs_embree": 0.5391319714346986
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "comparison_group": "hausdorff_threshold_decision",
+      "embree_sec": 0.3997357562184334,
+      "embree_speedup_vs_optix": 0.926603460869079,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.37039653514511883,
+      "optix_speedup_vs_embree": 1.0792103010947973
+    },
+    {
+      "app_id": "triangle_counting",
+      "comparison_group": "triangle_count_summary",
+      "embree_sec": 0.9153635948896408,
+      "embree_speedup_vs_optix": 1.7106121410818416,
+      "metric_sources": {
+        "embree": "process_wall_median_sec",
+        "optix": "process_wall_median_sec"
+      },
+      "optix_sec": 1.56583207892254,
+      "optix_speedup_vs_embree": 0.5845860531350903
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "hausdorff_xhd",
+      "app_name": "Hausdorff / X-HD-style",
+      "backend": "embree",
+      "case_id": "hausdorff_embree_threshold",
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "Same threshold-decision contract as OptiX; despite option name, the prepared threshold path supports Embree.",
+      "payload": {
+        "app": "hausdorff_distance",
+        "backend": "embree",
+        "copies": 16384,
+        "directed_a_to_b": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "a_to_b",
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.20506095816381276,
+            "scene_prepare_sec": 0.10941271902993321
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "directed_b_to_a": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "b_to_a",
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.19467479805462062,
+            "scene_prepare_sec": 0.10373975802212954
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "embree_result_mode": null,
+        "hausdorff_distance": null,
+        "hausdorff_threshold": 0.4,
+        "matches_oracle": true,
+        "native_continuation_active": true,
+        "native_continuation_backend": "embree_threshold_count",
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+        },
+        "optix_summary_mode": "directed_threshold_prepared",
+        "oracle": {
+          "directed_a_to_b": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 3,
+            "target_id": 103
+          },
+          "directed_b_to_a": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 103,
+            "target_id": 3
+          },
+          "hausdorff_distance": 0.30000000000000004,
+          "witness_direction": "b_to_a"
+        },
+        "oracle_decision_matches": true,
+        "oracle_identity_matches": true,
+        "oracle_within_threshold": true,
+        "point_count_a": 65536,
+        "point_count_b": 65536,
+        "rt_core_accelerated": false,
+        "rtdl_role": "RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.",
+        "run_phases": {
+          "input_construction_sec": 0.1481557150837034,
+          "python_postprocess_sec": 8.298084139823914e-07,
+          "query_fixed_radius_threshold_reached_count_sec": 0.3997357562184334,
+          "scene_prepare_sec": 0.21315247705206275,
+          "validation_sec": 0.00012619001790881157
+        },
+        "within_threshold": true
+      },
+      "primary_metric_sec": 0.3997357562184334,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "embree",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"embree\",\n  \"copies\": 16384,\n  \"directed_a_to_b\": {\n    \"covered_source_count\": 65536,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"label\": \"a_to_b\",\n    \"radius\": 0.4,\n    \"row_count\": null,\n    \"run_phases\": {\n      \"query_fixed_radius_threshold_reached_count_sec\": 0.20506095816381276,\n      \"scene_prepare_sec\": 0.10941271902993321\n    },\n    \"source_count\": 65536,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"violating_source_ids\": [],\n    \"within_threshold\": true\n  },\n  \"directed_b_to_a\": {\n    \"covered_source_count\": 65536,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"label\": \"b_to_a\",\n    \"radius\": 0.4,\n    \"row_count\": null,\n    \"run_phases\": {\n      \"query_fixed_radius_threshold_reached_count_sec\": 0.19467479805462062,\n      \"scene_prepare_sec\": 0.10373975802212954\n    },\n    \"source_count\": 65536,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"violating_source_ids\": [],\n    \"within_threshold\": true\n  },\n  \"embree_result_mode\": null,\n  \"hausdorff_distance\": null,\n  \"hausdorff_threshold\": 0.4,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"embree_threshold_count\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.\"\n  },\n  \"optix_summary_mode\": \"directed_threshold_prepared\",\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 65536,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 65536,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.1481557150837034,\n    \"python_postprocess_sec\": 8.298084139823914e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.3997357562184334,\n    \"scene_prepare_sec\": 0.21315247705206275,\n    \"validation_sec\": 0.00012619001790881157\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 1.247923539020121
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "directed_a_to_b.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.20506095816381276
+        ],
+        [
+          "directed_a_to_b.run_phases.scene_prepare_sec",
+          0.10941271902993321
+        ],
+        [
+          "directed_b_to_a.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.19467479805462062
+        ],
+        [
+          "directed_b_to_a.run_phases.scene_prepare_sec",
+          0.10373975802212954
+        ],
+        [
+          "run_phases.input_construction_sec",
+          0.1481557150837034
+        ],
+        [
+          "run_phases.python_postprocess_sec",
+          8.298084139823914e-07
+        ],
+        [
+          "run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.3997357562184334
+        ],
+        [
+          "run_phases.scene_prepare_sec",
+          0.21315247705206275
+        ],
+        [
+          "run_phases.validation_sec",
+          0.00012619001790881157
+        ]
+      ],
+      "wall_median_sec": 1.247923539020121
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "app_name": "Hausdorff / X-HD-style",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_threshold",
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "",
+      "payload": {
+        "app": "hausdorff_distance",
+        "backend": "optix",
+        "copies": 16384,
+        "directed_a_to_b": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "a_to_b",
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.30152483796700835,
+            "scene_prepare_sec": 1.2499497970566154
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "directed_b_to_a": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "b_to_a",
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.06887169717811048,
+            "scene_prepare_sec": 0.08766672783531249
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "embree_result_mode": null,
+        "hausdorff_distance": null,
+        "hausdorff_threshold": 0.4,
+        "matches_oracle": true,
+        "native_continuation_active": true,
+        "native_continuation_backend": "optix_threshold_count",
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+        },
+        "optix_summary_mode": "directed_threshold_prepared",
+        "oracle": {
+          "directed_a_to_b": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 3,
+            "target_id": 103
+          },
+          "directed_b_to_a": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 103,
+            "target_id": 3
+          },
+          "hausdorff_distance": 0.30000000000000004,
+          "witness_direction": "b_to_a"
+        },
+        "oracle_decision_matches": true,
+        "oracle_identity_matches": true,
+        "oracle_within_threshold": true,
+        "point_count_a": 65536,
+        "point_count_b": 65536,
+        "rt_core_accelerated": true,
+        "rtdl_role": "RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.",
+        "run_phases": {
+          "input_construction_sec": 0.14853173587471247,
+          "python_postprocess_sec": 1.0200310498476028e-06,
+          "query_fixed_radius_threshold_reached_count_sec": 0.37039653514511883,
+          "scene_prepare_sec": 1.3376165248919278,
+          "validation_sec": 0.00016333116218447685
+        },
+        "within_threshold": true
+      },
+      "primary_metric_sec": 0.37039653514511883,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "optix",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--require-rt-core"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"optix\",\n  \"copies\": 16384,\n  \"directed_a_to_b\": {\n    \"covered_source_count\": 65536,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"label\": \"a_to_b\",\n    \"radius\": 0.4,\n    \"row_count\": null,\n    \"run_phases\": {\n      \"query_fixed_radius_threshold_reached_count_sec\": 0.30152483796700835,\n      \"scene_prepare_sec\": 1.2499497970566154\n    },\n    \"source_count\": 65536,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"violating_source_ids\": [],\n    \"within_threshold\": true\n  },\n  \"directed_b_to_a\": {\n    \"covered_source_count\": 65536,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"label\": \"b_to_a\",\n    \"radius\": 0.4,\n    \"row_count\": null,\n    \"run_phases\": {\n      \"query_fixed_radius_threshold_reached_count_sec\": 0.06887169717811048,\n      \"scene_prepare_sec\": 0.08766672783531249\n    },\n    \"source_count\": 65536,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"violating_source_ids\": [],\n    \"within_threshold\": true\n  },\n  \"embree_result_mode\": null,\n  \"hausdorff_distance\": null,\n  \"hausdorff_threshold\": 0.4,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"optix_threshold_count\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.\"\n  },\n  \"optix_summary_mode\": \"directed_threshold_prepared\",\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 65536,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 65536,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.14853173587471247,\n    \"python_postprocess_sec\": 1.0200310498476028e-06,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.37039653514511883,\n    \"scene_prepare_sec\": 1.3376165248919278,\n    \"validation_sec\": 0.00016333116218447685\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 2.4370446980465204
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "directed_a_to_b.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.30152483796700835
+        ],
+        [
+          "directed_a_to_b.run_phases.scene_prepare_sec",
+          1.2499497970566154
+        ],
+        [
+          "directed_b_to_a.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.06887169717811048
+        ],
+        [
+          "directed_b_to_a.run_phases.scene_prepare_sec",
+          0.08766672783531249
+        ],
+        [
+          "run_phases.input_construction_sec",
+          0.14853173587471247
+        ],
+        [
+          "run_phases.python_postprocess_sec",
+          1.0200310498476028e-06
+        ],
+        [
+          "run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.37039653514511883
+        ],
+        [
+          "run_phases.scene_prepare_sec",
+          1.3376165248919278
+        ],
+        [
+          "run_phases.validation_sec",
+          0.00016333116218447685
+        ]
+      ],
+      "wall_median_sec": 2.4370446980465204
+    },
+    {
+      "app_id": "rt_dbscan",
+      "app_name": "RT-DBSCAN-style",
+      "backend": "embree",
+      "case_id": "rt_dbscan_embree_grouped_stream",
+      "command": null,
+      "comparison_group": "dbscan_grouped_stream_blocked_column_signature",
+      "notes": "",
+      "primary_metric_sec": null,
+      "primary_metric_source": null,
+      "status": "unsupported",
+      "unsupported_reason": "The promoted app front door has no Embree grouped fixed-radius continuation mode; current comparable row is OptiX-only."
+    },
+    {
+      "app_id": "rt_dbscan",
+      "app_name": "RT-DBSCAN-style",
+      "backend": "optix",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "comparison_group": "dbscan_grouped_stream_blocked_column_signature",
+      "notes": "",
+      "payload": {
+        "app": "rt_dbscan_benchmark",
+        "claim_boundary": {
+          "full_dbscan": true,
+          "host_bucket_index_used": false,
+          "native_dbscan_abi_added": false,
+          "paper_dataset_reproduction": false,
+          "paper_speedup_claim_authorized": false,
+          "rt_core_accelerated": true
+        },
+        "dataset": "clustered3d",
+        "elapsed_sec": 2.1441399320028722,
+        "matches_reference": null,
+        "metadata": {
+          "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+          "adjacency_write_pass_count": 0,
+          "all_core_flags_true": true,
+          "automatic_hidden_dispatcher": false,
+          "benchmark_timing_breakdown": {
+            "derived_sec": {
+              "adapter_non_native_estimated_sec": 0.14060635678470135,
+              "count_native_current_run_sec": 0.004876467864960432,
+              "elapsed_sec": 2.1441399320028722,
+              "grouped_native_sec": 0.805516203166917,
+              "known_host_phase_sec": 2.1438230997882783,
+              "known_native_current_run_sec": 0.8103926710318774,
+              "unattributed_elapsed_sec": 0.00031683221459388733
+            },
+            "host_observed_sec": {
+              "adapter_run_sec": 0.9509990278165787,
+              "column_signature_sec": 0.029504349920898676,
+              "prepare_sec": 1.163319722050801
+            },
+            "notes": [
+              "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+              "Native elapsed fields come from RTDL native metadata where available.",
+              "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+            ],
+            "performance_claim_authorized": false,
+            "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+          },
+          "component_label_policy": "positive_root_index_labels_noise_minus_one",
+          "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+          "core_flag_cache_reused": false,
+          "core_flag_threshold": 12,
+          "count_metadata": {
+            "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+            "app_count_host_materialization": false,
+            "app_count_materialization": "native_optix_rt_device_columns",
+            "direct_device_handoff_authorized": true,
+            "input_contract": "host_query_points_prepared_native_search_scene",
+            "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+            "native_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "materializes_neighbor_rows": false,
+              "native_elapsed_sec": 0.004876467864960432,
+              "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+              "native_execution_path": "prepared_rt_core_count_threshold_3d",
+              "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs",
+              "output_columns_true_zero_copy_authorized": true,
+              "paper_speedup_claim_authorized": false,
+              "query_count": 65536,
+              "radius": 0.055,
+              "rt_core_accelerated": true,
+              "search_count": 65536,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "cupy"
+              ],
+              "threshold": 12,
+              "transfer_mode": "host_query_points_to_device_threshold_columns",
+              "true_zero_copy_authorized": false,
+              "v2_0_release_authorized": false
+            },
+            "output_columns_reused": true,
+            "paper_speedup_claim_authorized": false,
+            "partner": "cupy",
+            "query_count": 65536,
+            "radius": 0.055,
+            "rt_core_accelerated": true,
+            "rt_core_speedup_claim_authorized": false,
+            "threshold": 12,
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "direct_device_handoff_authorized": true,
+          "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
+          "grouped_stream_continuation_pass_count": 16,
+          "grouped_stream_policy": "optix_applies_query_blocked_all_items_grouped_union_without_predicate_or_fallback_workspace",
+          "grouped_union_direct_side_effect_enabled": false,
+          "grouped_union_query_block_count": 16,
+          "grouped_union_query_block_size": 4096,
+          "grouped_union_query_blocked_candidate": true,
+          "grouped_union_same_root_culling_enabled": true,
+          "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+          "materializes_bounded_directed_adjacency_chunks": false,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "materializes_neighbor_summaries": false,
+          "materializes_python_rows": false,
+          "min_neighbors": 12,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_range_device_parent_workspace",
+          "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_range_device_workspaces",
+          "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+          "native_grouped_stream_metadata": {
+            "backend": "optix",
+            "direct_device_handoff_authorized": true,
+            "grouped_union_blocked_candidate": true,
+            "grouped_union_direct_side_effect_enabled": false,
+            "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+            "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+            "grouped_union_query_blocked": true,
+            "grouped_union_query_range_requested": true,
+            "grouped_union_same_root_culling_enabled": true,
+            "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+            "grouped_union_telemetry_contract": null,
+            "grouped_union_telemetry_requested": false,
+            "item_count": 65536,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_elapsed_sec": 0.805516203166917,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_range_device_parent_workspace",
+            "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+            "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs",
+            "output_columns_true_zero_copy_authorized": true,
+            "paper_speedup_claim_authorized": false,
+            "performance_claim_authorized": false,
+            "predicate_mode": "all_items_true_no_fallback_candidates",
+            "query_block_count": 16,
+            "query_block_policy": "explicit_contiguous_prepared_search_ranges",
+            "query_block_size": 4096,
+            "query_count": 4096,
+            "query_index_offset": 61440,
+            "query_range_end": 65536,
+            "query_range_policy": "explicit_contiguous_prepared_search_range",
+            "query_source": "prepared_search_points_self_query_device_range",
+            "radius": 0.055,
+            "range_native_metadata_sample": [
+              {
+                "backend": "optix",
+                "direct_device_handoff_authorized": true,
+                "grouped_union_blocked_candidate": true,
+                "grouped_union_direct_side_effect_enabled": false,
+                "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+                "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+                "grouped_union_query_range_requested": true,
+                "grouped_union_same_root_culling_enabled": true,
+                "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+                "grouped_union_telemetry_contract": null,
+                "grouped_union_telemetry_requested": false,
+                "item_count": 65536,
+                "materializes_directed_adjacency_stream": false,
+                "materializes_neighbor_rows": false,
+                "native_elapsed_sec": 0.3746108419727534,
+                "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_range_device_parent_workspace",
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_range",
+                "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs",
+                "output_columns_true_zero_copy_authorized": true,
+                "paper_speedup_claim_authorized": false,
+                "predicate_mode": "all_items_true_no_fallback_candidates",
+                "query_count": 4096,
+                "query_index_offset": 0,
+                "query_range_end": 4096,
+                "query_range_policy": "explicit_contiguous_prepared_search_range",
+                "query_source": "prepared_search_points_self_query_device_range",
+                "radius": 0.055,
+                "rt_core_accelerated": true,
+                "search_count": 65536,
+                "source_devices": [
+                  "cuda:0"
+                ],
+                "source_protocols": [
+                  "cupy"
+                ],
+                "transfer_mode": "prepared_device_search_points_self_range_grouped_union_workspaces",
+                "true_zero_copy_authorized": false,
+                "v2_0_release_authorized": false
+              },
+              {
+                "backend": "optix",
+                "direct_device_handoff_authorized": true,
+                "grouped_union_blocked_candidate": true,
+                "grouped_union_direct_side_effect_enabled": false,
+                "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+                "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+                "grouped_union_query_range_requested": true,
+                "grouped_union_same_root_culling_enabled": true,
+                "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+                "grouped_union_telemetry_contract": null,
+                "grouped_union_telemetry_requested": false,
+                "item_count": 65536,
+                "materializes_directed_adjacency_stream": false,
+                "materializes_neighbor_rows": false,
+                "native_elapsed_sec": 0.01959690311923623,
+                "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_range_device_parent_workspace",
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_range",
+                "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs",
+                "output_columns_true_zero_copy_authorized": true,
+                "paper_speedup_claim_authorized": false,
+                "predicate_mode": "all_items_true_no_fallback_candidates",
+                "query_count": 4096,
+                "query_index_offset": 61440,
+                "query_range_end": 65536,
+                "query_range_policy": "explicit_contiguous_prepared_search_range",
+                "query_source": "prepared_search_points_self_query_device_range",
+                "radius": 0.055,
+                "rt_core_accelerated": true,
+                "search_count": 65536,
+                "source_devices": [
+                  "cuda:0"
+                ],
+                "source_protocols": [
+                  "cupy"
+                ],
+                "transfer_mode": "prepared_device_search_points_self_range_grouped_union_workspaces",
+                "true_zero_copy_authorized": false,
+                "v2_0_release_authorized": false
+              }
+            ],
+            "rt_core_accelerated": true,
+            "search_count": 65536,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "cupy"
+            ],
+            "transfer_mode": "prepared_device_search_points_self_range_grouped_union_workspaces",
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false
+          },
+          "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+          "optix_backend_used": true,
+          "output_columns_reused": true,
+          "output_columns_true_zero_copy_authorized": true,
+          "partner": "cupy",
+          "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+          "path": "optix_rt_grouped_stream_blocked_cupy_radius_graph_column_signature_3d",
+          "point_count": 65536,
+          "prepared_grouped_stream_reused": false,
+          "prepared_grouped_stream_run_count": 1,
+          "prepared_optix_scene_reused": true,
+          "query_source": "prepared_search_points_self_query_device_range",
+          "radius": 0.055,
+          "rt_core_accelerated": true,
+          "rt_core_speedup_claim_authorized": false,
+          "signature_source": "partner_column_arrays_no_python_row_dicts",
+          "true_zero_copy_authorized": false,
+          "v2_0_release_authorized": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "min_neighbors": 12,
+        "mode": "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+        "paper": {
+          "authors": [
+            "Vani Nagarajan",
+            "Milind Kulkarni"
+          ],
+          "doi": "10.1109/IPDPS54959.2023.00100",
+          "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+          "venue": "IPDPS 2023"
+        },
+        "point_count": 65536,
+        "radius": 0.055,
+        "reference_signature": null,
+        "seed": 20260519,
+        "signature": {
+          "cluster_sizes": {
+            "1": 16384,
+            "2": 16384,
+            "3": 16384,
+            "4": 16384
+          },
+          "core_count": 65536,
+          "noise_count": 0
+        }
+      },
+      "primary_metric_sec": 2.1441399320028722,
+      "primary_metric_source": "elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+            "--mode",
+            "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
+            "--dataset",
+            "clustered3d",
+            "--point-count",
+            "65536",
+            "--partner",
+            "cupy",
+            "--grouped-union-query-block-size",
+            "4096",
+            "--no-validation"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "   },\n        {\n          \"backend\": \"optix\",\n          \"direct_device_handoff_authorized\": true,\n          \"grouped_union_blocked_candidate\": true,\n          \"grouped_union_direct_side_effect_enabled\": false,\n          \"grouped_union_direct_side_effect_policy\": \"disabled_by_default_anyhit_side_effect\",\n          \"grouped_union_intersection_culling_policy\": \"all_items_target_gt_source_before_anyhit\",\n          \"grouped_union_query_range_requested\": true,\n          \"grouped_union_same_root_culling_enabled\": true,\n          \"grouped_union_same_root_culling_policy\": \"parent_union_same_root_before_anyhit\",\n          \"grouped_union_telemetry_contract\": null,\n          \"grouped_union_telemetry_requested\": false,\n          \"item_count\": 65536,\n          \"materializes_directed_adjacency_stream\": false,\n          \"materializes_neighbor_rows\": false,\n          \"native_elapsed_sec\": 0.01959690311923623,\n          \"native_engine_row_contract\": \"generic_prepared_fixed_radius_grouped_union_3d_all_items_self_range_device_parent_workspace\",\n          \"native_execution_path\": \"prepared_rt_core_grouped_union_3d_self_query_range\",\n          \"native_symbol\": \"rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs\",\n          \"output_columns_true_zero_copy_authorized\": true,\n          \"paper_speedup_claim_authorized\": false,\n          \"predicate_mode\": \"all_items_true_no_fallback_candidates\",\n          \"query_count\": 4096,\n          \"query_index_offset\": 61440,\n          \"query_range_end\": 65536,\n          \"query_range_policy\": \"explicit_contiguous_prepared_search_range\",\n          \"query_source\": \"prepared_search_points_self_query_device_range\",\n          \"radius\": 0.055,\n          \"rt_core_accelerated\": true,\n          \"search_count\": 65536,\n          \"source_devices\": [\n            \"cuda:0\"\n          ],\n          \"source_protocols\": [\n            \"cupy\"\n          ],\n          \"transfer_mode\": \"prepared_device_search_points_self_range_grouped_union_workspaces\",\n          \"true_zero_copy_authorized\": false,\n          \"v2_0_release_authorized\": false\n        }\n      ],\n      \"rt_core_accelerated\": true,\n      \"search_count\": 65536,\n      \"source_devices\": [\n        \"cuda:0\"\n      ],\n      \"source_protocols\": [\n        \"cupy\"\n      ],\n      \"transfer_mode\": \"prepared_device_search_points_self_range_grouped_union_workspaces\",\n      \"true_zero_copy_authorized\": false,\n      \"v2_0_release_authorized\": false\n    },\n    \"neighbor_count_policy\": \"threshold_capped_at_min_neighbors_not_exact_full_degree\",\n    \"optix_backend_used\": true,\n    \"output_columns_reused\": true,\n    \"output_columns_true_zero_copy_authorized\": true,\n    \"partner\": \"cupy\",\n    \"partner_reference_contract\": \"generic_prepared_optix_cupy_grouped_stream_component_labels_3d\",\n    \"path\": \"optix_rt_grouped_stream_blocked_cupy_radius_graph_column_signature_3d\",\n    \"point_count\": 65536,\n    \"prepared_grouped_stream_reused\": false,\n    \"prepared_grouped_stream_run_count\": 1,\n    \"prepared_optix_scene_reused\": true,\n    \"query_source\": \"prepared_search_points_self_query_device_range\",\n    \"radius\": 0.055,\n    \"rt_core_accelerated\": true,\n    \"rt_core_speedup_claim_authorized\": false,\n    \"signature_source\": \"partner_column_arrays_no_python_row_dicts\",\n    \"true_zero_copy_authorized\": false,\n    \"v2_0_release_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"min_neighbors\": 12,\n  \"mode\": \"optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d\",\n  \"paper\": {\n    \"authors\": [\n      \"Vani Nagarajan\",\n      \"Milind Kulkarni\"\n    ],\n    \"doi\": \"10.1109/IPDPS54959.2023.00100\",\n    \"title\": \"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\",\n    \"venue\": \"IPDPS 2023\"\n  },\n  \"point_count\": 65536,\n  \"radius\": 0.055,\n  \"reference_signature\": null,\n  \"seed\": 20260519,\n  \"signature\": {\n    \"cluster_sizes\": {\n      \"1\": 16384,\n      \"2\": 16384,\n      \"3\": 16384,\n      \"4\": 16384\n    },\n    \"core_count\": 65536,\n    \"noise_count\": 0\n  }\n}\n",
+          "wall_elapsed_sec": 3.0388836299534887
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "elapsed_sec",
+          2.1441399320028722
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.derived_sec.adapter_non_native_estimated_sec",
+          0.14060635678470135
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.derived_sec.count_native_current_run_sec",
+          0.004876467864960432
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.derived_sec.elapsed_sec",
+          2.1441399320028722
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.derived_sec.grouped_native_sec",
+          0.805516203166917
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.derived_sec.known_host_phase_sec",
+          2.1438230997882783
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.derived_sec.known_native_current_run_sec",
+          0.8103926710318774
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.derived_sec.unattributed_elapsed_sec",
+          0.00031683221459388733
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.host_observed_sec.adapter_run_sec",
+          0.9509990278165787
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.host_observed_sec.column_signature_sec",
+          0.029504349920898676
+        ],
+        [
+          "metadata.benchmark_timing_breakdown.host_observed_sec.prepare_sec",
+          1.163319722050801
+        ],
+        [
+          "metadata.count_metadata.native_metadata.native_elapsed_sec",
+          0.004876467864960432
+        ],
+        [
+          "metadata.native_grouped_stream_metadata.native_elapsed_sec",
+          0.805516203166917
+        ],
+        [
+          "metadata.native_grouped_stream_metadata.range_native_metadata_sample.0.native_elapsed_sec",
+          0.3746108419727534
+        ],
+        [
+          "metadata.native_grouped_stream_metadata.range_native_metadata_sample.1.native_elapsed_sec",
+          0.01959690311923623
+        ]
+      ],
+      "wall_median_sec": 3.0388836299534887
+    },
+    {
+      "app_id": "barnes_hut",
+      "app_name": "Barnes-Hut / RT-BarnesHut-style",
+      "backend": "embree",
+      "case_id": "barnes_hut_embree_node_coverage",
+      "comparison_group": "node_coverage_candidate_summary",
+      "notes": "",
+      "payload": {
+        "app": "barnes_hut_force_app",
+        "app_boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+        "backend": "embree",
+        "benchmark_metadata": {
+          "authors_code_comparison": false,
+          "benchmark": "barnes_hut_ppopp2025_style",
+          "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+          "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+          "contract": "generic_fixed_radius_candidate_rows_embree_backend",
+          "mode": "embree_rows",
+          "native_engine_app_specific": false,
+          "paper_reference": {
+            "authors": [
+              "Vani Nagarajan",
+              "Rohan Gangaraju",
+              "Kirshanthan Sundararajah",
+              "Artem Pelenitsyn",
+              "Milind Kulkarni"
+            ],
+            "authors_code_comparison": false,
+            "doi": "10.1145/3710848.3710885",
+            "paper_reproduction": false,
+            "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+            "venue": "PPoPP 2025"
+          },
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "reconstruction_instrument": true,
+          "research_benchmark": true,
+          "rt_core_accelerated": false
+        },
+        "body_count": 32768,
+        "body_count_with_candidates": 32768,
+        "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+        "candidate_row_count": 131072,
+        "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+        "native_continuation_active": true,
+        "native_continuation_backend": "native_fixed_radius_candidate_summary",
+        "node_count": 4,
+        "node_count_seen": 4,
+        "node_radius": null,
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+        },
+        "optix_summary_mode": null,
+        "output_mode": "candidate_summary",
+        "rt_core_accelerated": false,
+        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+        "theta": 0.75
+      },
+      "primary_metric_sec": 0.9499833839945495,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+            "--mode",
+            "embree_rows",
+            "--body-count",
+            "32768",
+            "--skip-validation"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"app_boundary\": \"Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.\",\n  \"backend\": \"embree\",\n  \"benchmark_metadata\": {\n    \"authors_code_comparison\": false,\n    \"benchmark\": \"barnes_hut_ppopp2025_style\",\n    \"benchmark_scope\": \"RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.\",\n    \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n    \"contract\": \"generic_fixed_radius_candidate_rows_embree_backend\",\n    \"mode\": \"embree_rows\",\n    \"native_engine_app_specific\": false,\n    \"paper_reference\": {\n      \"authors\": [\n        \"Vani Nagarajan\",\n        \"Rohan Gangaraju\",\n        \"Kirshanthan Sundararajah\",\n        \"Artem Pelenitsyn\",\n        \"Milind Kulkarni\"\n      ],\n      \"authors_code_comparison\": false,\n      \"doi\": \"10.1145/3710848.3710885\",\n      \"paper_reproduction\": false,\n      \"title\": \"RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware\",\n      \"venue\": \"PPoPP 2025\"\n    },\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"reconstruction_instrument\": true,\n    \"research_benchmark\": true,\n    \"rt_core_accelerated\": false\n  },\n  \"body_count\": 32768,\n  \"body_count_with_candidates\": 32768,\n  \"boundary\": \"Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.\",\n  \"candidate_row_count\": 131072,\n  \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_fixed_radius_candidate_summary\",\n  \"node_count\": 4,\n  \"node_count_seen\": 4,\n  \"node_radius\": null,\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"candidate_summary\",\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+          "wall_elapsed_sec": 0.9499833839945495
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [],
+      "wall_median_sec": 0.9499833839945495
+    },
+    {
+      "app_id": "barnes_hut",
+      "app_name": "Barnes-Hut / RT-BarnesHut-style",
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "comparison_group": "node_coverage_candidate_summary",
+      "notes": "",
+      "payload": {
+        "app": "barnes_hut_force_app",
+        "app_boundary": "Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.",
+        "backend": "optix",
+        "benchmark_metadata": {
+          "authors_code_comparison": false,
+          "benchmark": "barnes_hut_ppopp2025_style",
+          "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+          "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+          "contract": "prepared_fixed_radius_node_coverage_threshold_decision_optix",
+          "mode": "optix_node_coverage_prepared",
+          "native_engine_app_specific": false,
+          "paper_reference": {
+            "authors": [
+              "Vani Nagarajan",
+              "Rohan Gangaraju",
+              "Kirshanthan Sundararajah",
+              "Artem Pelenitsyn",
+              "Milind Kulkarni"
+            ],
+            "authors_code_comparison": false,
+            "doi": "10.1145/3710848.3710885",
+            "paper_reproduction": false,
+            "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+            "venue": "PPoPP 2025"
+          },
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "reconstruction_instrument": true,
+          "research_benchmark": true,
+          "rt_core_accelerated": true
+        },
+        "body_count": 32768,
+        "boundary": "Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.",
+        "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+        "matches_oracle": true,
+        "node_count": 4,
+        "node_coverage": {
+          "all_bodies_have_node_candidate": true,
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "radius": 10.0,
+          "row_count": null,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "uncovered_body_ids": []
+        },
+        "node_radius": 10.0,
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+        },
+        "optix_summary_mode": "node_coverage_prepared",
+        "oracle_decision_matches": true,
+        "oracle_identity_matches": true,
+        "oracle_node_coverage": {
+          "all_bodies_have_node_candidate": true,
+          "body_count": 32768,
+          "covered_body_count": 32768,
+          "max_candidate_count": 4,
+          "min_candidate_count": 4,
+          "radius": 10.0,
+          "threshold": 1,
+          "uncovered_body_ids": []
+        },
+        "output_mode": "candidate_summary",
+        "rt_core_accelerated": true,
+        "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.",
+        "theta": 0.75
+      },
+      "primary_metric_sec": 1.7620609318837523,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+            "--mode",
+            "optix_node_coverage_prepared",
+            "--body-count",
+            "32768",
+            "--skip-validation",
+            "--require-rt-core"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"app_boundary\": \"Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.\",\n  \"backend\": \"optix\",\n  \"benchmark_metadata\": {\n    \"authors_code_comparison\": false,\n    \"benchmark\": \"barnes_hut_ppopp2025_style\",\n    \"benchmark_scope\": \"RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.\",\n    \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n    \"contract\": \"prepared_fixed_radius_node_coverage_threshold_decision_optix\",\n    \"mode\": \"optix_node_coverage_prepared\",\n    \"native_engine_app_specific\": false,\n    \"paper_reference\": {\n      \"authors\": [\n        \"Vani Nagarajan\",\n        \"Rohan Gangaraju\",\n        \"Kirshanthan Sundararajah\",\n        \"Artem Pelenitsyn\",\n        \"Milind Kulkarni\"\n      ],\n      \"authors_code_comparison\": false,\n      \"doi\": \"10.1145/3710848.3710885\",\n      \"paper_reproduction\": false,\n      \"title\": \"RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware\",\n      \"venue\": \"PPoPP 2025\"\n    },\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"reconstruction_instrument\": true,\n    \"research_benchmark\": true,\n    \"rt_core_accelerated\": true\n  },\n  \"body_count\": 32768,\n  \"boundary\": \"Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.\",\n  \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n  \"matches_oracle\": true,\n  \"node_count\": 4,\n  \"node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"body_count\": 32768,\n    \"covered_body_count\": 32768,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"radius\": 10.0,\n    \"row_count\": null,\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"uncovered_body_ids\": []\n  },\n  \"node_radius\": 10.0,\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": \"node_coverage_prepared\",\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"body_count\": 32768,\n    \"covered_body_count\": 32768,\n    \"max_candidate_count\": 4,\n    \"min_candidate_count\": 4,\n    \"radius\": 10.0,\n    \"threshold\": 1,\n    \"uncovered_body_ids\": []\n  },\n  \"output_mode\": \"candidate_summary\",\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.\",\n  \"theta\": 0.75\n}\n",
+          "wall_elapsed_sec": 1.7620609318837523
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [],
+      "wall_median_sec": 1.7620609318837523
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "app_name": "LibRTS-style spatial index",
+      "backend": "embree",
+      "case_id": "librts_embree_aabb_index",
+      "command": null,
+      "comparison_group": "aabb_index_all_count_only",
+      "notes": "",
+      "primary_metric_sec": null,
+      "primary_metric_source": null,
+      "status": "unsupported",
+      "unsupported_reason": "AABB_INDEX_QUERY_2D is currently implemented as generic CPU reference and OptiX native paths; there is no Embree AABB index front door."
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "app_name": "LibRTS-style spatial index",
+      "backend": "optix",
+      "case_id": "librts_optix_aabb_index",
+      "comparison_group": "aabb_index_all_count_only",
+      "notes": "",
+      "payload": {
+        "app": "librts_spatial_index",
+        "authors_code_comparison": false,
+        "claim_boundary": "Generic RTDL OptiX AABB_INDEX_QUERY_2D count-only path for point_contains, range_contains, and range_intersects. This is not a LibRTS-specific native symbol.",
+        "counts": {
+          "point_contains": 743957179,
+          "range_contains": 520437956,
+          "range_intersects": 1132355957
+        },
+        "elapsed_sec": 2.312779792584479,
+        "fixture": {
+          "box_count": 262144,
+          "box_query_count": 65536,
+          "dataset": "uniform",
+          "paper_equivalent_dataset": false,
+          "point_query_count": 65536,
+          "seed": 2025
+        },
+        "generic_primitive": "AABB_INDEX_QUERY_2D",
+        "mode": "optix_aabb_index",
+        "native_engine_customization": false,
+        "operation": "all",
+        "paper": {
+          "authors_code": "https://github.com/RTSpatial/RTSpatial",
+          "doi": "10.1145/3710848.3710850",
+          "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+          "venue": "PPoPP 2025"
+        },
+        "paper_reproduction": false,
+        "prepared_queries": true,
+        "primitive_contract": "generic_prepared_aabb_index_query_2d",
+        "rt_core_accelerated": true,
+        "run_phases": {
+          "query_prepare_sec": {
+            "point_contains": 0.030296333832666278,
+            "range_contains": 0.2802138580009341,
+            "range_intersects": 0.0
+          },
+          "query_sec": {
+            "point_contains": 0.5180765378754586,
+            "range_contains": 0.20408969395793974,
+            "range_intersects": 0.3598996358923614
+          },
+          "scene_prepare_sec": 0.9202037330251187
+        }
+      },
+      "primary_metric_sec": 2.312779792584479,
+      "primary_metric_source": "elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+            "--mode",
+            "optix_aabb_index",
+            "--dataset",
+            "uniform",
+            "--operation",
+            "all",
+            "--box-count",
+            "262144",
+            "--query-count",
+            "65536"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"librts_spatial_index\",\n  \"authors_code_comparison\": false,\n  \"claim_boundary\": \"Generic RTDL OptiX AABB_INDEX_QUERY_2D count-only path for point_contains, range_contains, and range_intersects. This is not a LibRTS-specific native symbol.\",\n  \"counts\": {\n    \"point_contains\": 743957179,\n    \"range_contains\": 520437956,\n    \"range_intersects\": 1132355957\n  },\n  \"elapsed_sec\": 2.312779792584479,\n  \"fixture\": {\n    \"box_count\": 262144,\n    \"box_query_count\": 65536,\n    \"dataset\": \"uniform\",\n    \"paper_equivalent_dataset\": false,\n    \"point_query_count\": 65536,\n    \"seed\": 2025\n  },\n  \"generic_primitive\": \"AABB_INDEX_QUERY_2D\",\n  \"mode\": \"optix_aabb_index\",\n  \"native_engine_customization\": false,\n  \"operation\": \"all\",\n  \"paper\": {\n    \"authors_code\": \"https://github.com/RTSpatial/RTSpatial\",\n    \"doi\": \"10.1145/3710848.3710850\",\n    \"title\": \"LibRTS: A Spatial Indexing Library by Ray Tracing\",\n    \"venue\": \"PPoPP 2025\"\n  },\n  \"paper_reproduction\": false,\n  \"prepared_queries\": true,\n  \"primitive_contract\": \"generic_prepared_aabb_index_query_2d\",\n  \"rt_core_accelerated\": true,\n  \"run_phases\": {\n    \"query_prepare_sec\": {\n      \"point_contains\": 0.030296333832666278,\n      \"range_contains\": 0.2802138580009341,\n      \"range_intersects\": 0.0\n    },\n    \"query_sec\": {\n      \"point_contains\": 0.5180765378754586,\n      \"range_contains\": 0.20408969395793974,\n      \"range_intersects\": 0.3598996358923614\n    },\n    \"scene_prepare_sec\": 0.9202037330251187\n  }\n}\n",
+          "wall_elapsed_sec": 3.660293725086376
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "elapsed_sec",
+          2.312779792584479
+        ],
+        [
+          "run_phases.scene_prepare_sec",
+          0.9202037330251187
+        ]
+      ],
+      "wall_median_sec": 3.660293725086376
+    },
+    {
+      "app_id": "rtnn",
+      "app_name": "RTNN neighbor search",
+      "backend": "embree",
+      "case_id": "rtnn_embree_prepared_3d_ranked_summary",
+      "command": null,
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "",
+      "primary_metric_sec": null,
+      "primary_metric_source": null,
+      "status": "unsupported",
+      "unsupported_reason": "The promoted RTNN benchmark path is a prepared 3-D OptiX fixed-radius ranked-summary row; no same-contract Embree front door exists."
+    },
+    {
+      "app_id": "rtnn",
+      "app_name": "RTNN neighbor search",
+      "backend": "optix",
+      "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+      "comparison_group": "prepared_3d_ranked_summary",
+      "notes": "",
+      "payload": {
+        "batch_count": 4,
+        "batch_phase_timings": [
+          {
+            "candidate_count_pass": 0.001335605,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 628275,
+            "row_download": 0.000268452,
+            "row_offset_upload": 0.0,
+            "upload": 0.000422032
+          },
+          {
+            "candidate_count_pass": 0.001319185,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 627669,
+            "row_download": 0.000271581,
+            "row_offset_upload": 0.0,
+            "upload": 0.000410372
+          },
+          {
+            "candidate_count_pass": 0.001334535,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 628790,
+            "row_download": 0.000260471,
+            "row_offset_upload": 0.0,
+            "upload": 0.000448742
+          },
+          {
+            "candidate_count_pass": 0.001342845,
+            "candidate_write_pass": 0.0,
+            "count_download_and_prefix": 0.0,
+            "emitted_count": 65536,
+            "exact_refine": 0.0,
+            "mode": "prepared_uniform_cell_ranked_summary_rows",
+            "prepare": 0.0,
+            "raw_candidate_count": 628088,
+            "row_download": 0.000254531,
+            "row_offset_upload": 0.0,
+            "upload": 0.000417931
+          }
+        ],
+        "claim_boundary": {
+          "broad_rt_core_speedup_claim_authorized": false,
+          "device_ranked_summary_rows": true,
+          "paper_equivalent_rtnn_row": false,
+          "partitioned_or_batched_like_rtnn": true,
+          "rt_core_neighbor_search_claim_authorized": false,
+          "rtdl_speedup_claim_authorized": false
+        },
+        "contract": {
+          "approximate": false,
+          "batched_queries": true,
+          "bounded_k": 50,
+          "exact": true,
+          "family": "fixed_radius_neighbors_3d",
+          "mode": "ranked-summary-raw",
+          "prepared_search_structure": true
+        },
+        "elapsed_runs_sec": [
+          0.013192838989198208,
+          0.010310599114745855,
+          0.01022684806957841
+        ],
+        "elapsed_sec": 0.01022684806957841,
+        "error": "",
+        "execution_prepare_sec": 0.9344437369145453,
+        "external": "RTDL current",
+        "input_load_sec": 0.3675155860837549,
+        "input_pack_sec": 0.0966839010361582,
+        "k_max": 50,
+        "mode": "current_3d_fixed_radius_neighbors_optix_batched",
+        "ok": true,
+        "query_batch_size": 65536,
+        "query_count": 262144,
+        "radius": 0.02,
+        "repeat": 3,
+        "result_mode": "ranked-summary-raw",
+        "row": "rtdl_batched_3d_neighbors",
+        "row_count": 262144,
+        "runner": "goal2348_rtnn_v2_2_external_runner",
+        "search_count": 262144
+      },
+      "primary_metric_sec": 0.01022684806957841,
+      "primary_metric_source": "elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2348_rtnn_v2_2_external_runner.py",
+            "run-rtdl-batched-3d-neighbors",
+            "--point-file",
+            "docs/reports/goal2626_benchmark_embree_optix_stress_pod_large_no_robot/rtnn_uniform_262144.csv",
+            "--radius",
+            "0.02",
+            "--k-max",
+            "50",
+            "--query-batch-size",
+            "65536",
+            "--result-mode",
+            "ranked-summary-raw",
+            "--repeat",
+            "3",
+            "--json-out",
+            "docs/reports/goal2626_benchmark_embree_optix_stress_pod_large_no_robot/rtnn_optix_262144.json"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "[goal2348] RTDL batched 3D start queries=262144 search=262144 batch_size=65536 batches=4 result_mode=ranked-summary-raw\n[goal2348] RTDL batched 3D repeat 1/3 ok=True sec=0.013193\n[goal2348] RTDL batched 3D repeat 2/3 ok=True sec=0.010311\n[goal2348] RTDL batched 3D repeat 3/3 ok=True sec=0.010227\n{\n  \"batch_count\": 4,\n  \"batch_phase_timings\": [\n    {\n      \"candidate_count_pass\": 0.001335605,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 628275,\n      \"row_download\": 0.000268452,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000422032\n    },\n    {\n      \"candidate_count_pass\": 0.001319185,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 627669,\n      \"row_download\": 0.000271581,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000410372\n    },\n    {\n      \"candidate_count_pass\": 0.001334535,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 628790,\n      \"row_download\": 0.000260471,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000448742\n    },\n    {\n      \"candidate_count_pass\": 0.001342845,\n      \"candidate_write_pass\": 0.0,\n      \"count_download_and_prefix\": 0.0,\n      \"emitted_count\": 65536,\n      \"exact_refine\": 0.0,\n      \"mode\": \"prepared_uniform_cell_ranked_summary_rows\",\n      \"prepare\": 0.0,\n      \"raw_candidate_count\": 628088,\n      \"row_download\": 0.000254531,\n      \"row_offset_upload\": 0.0,\n      \"upload\": 0.000417931\n    }\n  ],\n  \"claim_boundary\": {\n    \"broad_rt_core_speedup_claim_authorized\": false,\n    \"device_ranked_summary_rows\": true,\n    \"paper_equivalent_rtnn_row\": false,\n    \"partitioned_or_batched_like_rtnn\": true,\n    \"rt_core_neighbor_search_claim_authorized\": false,\n    \"rtdl_speedup_claim_authorized\": false\n  },\n  \"contract\": {\n    \"approximate\": false,\n    \"batched_queries\": true,\n    \"bounded_k\": 50,\n    \"exact\": true,\n    \"family\": \"fixed_radius_neighbors_3d\",\n    \"mode\": \"ranked-summary-raw\",\n    \"prepared_search_structure\": true\n  },\n  \"elapsed_runs_sec\": [\n    0.013192838989198208,\n    0.010310599114745855,\n    0.01022684806957841\n  ],\n  \"elapsed_sec\": 0.01022684806957841,\n  \"error\": \"\",\n  \"execution_prepare_sec\": 0.9344437369145453,\n  \"external\": \"RTDL current\",\n  \"input_load_sec\": 0.3675155860837549,\n  \"input_pack_sec\": 0.0966839010361582,\n  \"k_max\": 50,\n  \"mode\": \"current_3d_fixed_radius_neighbors_optix_batched\",\n  \"ok\": true,\n  \"query_batch_size\": 65536,\n  \"query_count\": 262144,\n  \"radius\": 0.02,\n  \"repeat\": 3,\n  \"result_mode\": \"ranked-summary-raw\",\n  \"row\": \"rtdl_batched_3d_neighbors\",\n  \"row_count\": 262144,\n  \"runner\": \"goal2348_rtnn_v2_2_external_runner\",\n  \"search_count\": 262144\n}\n",
+          "wall_elapsed_sec": 1.9720047691371292
+        }
+      ],
+      "setup_results": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2348_rtnn_v2_2_external_runner.py",
+            "generate",
+            "--point-file",
+            "docs/reports/goal2626_benchmark_embree_optix_stress_pod_large_no_robot/rtnn_uniform_262144.csv",
+            "--point-count",
+            "262144",
+            "--dimension",
+            "3",
+            "--distribution",
+            "uniform",
+            "--json-out",
+            "docs/reports/goal2626_benchmark_embree_optix_stress_pod_large_no_robot/rtnn_generate_262144.json"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"claim_boundary\": {\n    \"paper_dataset\": false,\n    \"synthetic_input_only\": true\n  },\n  \"generated\": {\n    \"dimension\": 3,\n    \"format\": \"rtnn_csv_xyz\",\n    \"path\": \"docs/reports/goal2626_benchmark_embree_optix_stress_pod_large_no_robot/rtnn_uniform_262144.csv\",\n    \"point_count\": 262144,\n    \"seed\": 2346\n  },\n  \"runner\": \"goal2348_rtnn_v2_2_external_runner\"\n}\n"
+        }
+      ],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "elapsed_sec",
+          0.01022684806957841
+        ],
+        [
+          "execution_prepare_sec",
+          0.9344437369145453
+        ],
+        [
+          "input_load_sec",
+          0.3675155860837549
+        ],
+        [
+          "input_pack_sec",
+          0.0966839010361582
+        ]
+      ],
+      "wall_median_sec": 1.9720047691371292
+    },
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "embree",
+      "case_id": "triangle_counting_embree_summary",
+      "comparison_group": "triangle_count_summary",
+      "notes": "",
+      "payload": {
+        "backend": "embree",
+        "benchmark_app": "triangle_counting",
+        "claim_boundary": {
+          "benchmark_app": true,
+          "bfs_in_benchmark": false,
+          "distributed_graph_claim": false,
+          "full_graph_database_claim": false,
+          "native_engine_customization": false,
+          "paper_code_intake_complete": true,
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "rt_graph_1a2_generic_rt_mapping": true,
+          "rt_graph_2a1_generic_rt_mapping": true,
+          "rt_graph_id_ascending_adapter": true,
+          "rt_graph_preprocessing_oracle": true,
+          "triangle_count_rt_core_claim_authorized": false,
+          "visibility_edges_in_benchmark": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "contract": "triangle_count_only",
+        "copies": 20000,
+        "excluded_operations": [
+          "bfs",
+          "visibility_edges"
+        ],
+        "mode": "run",
+        "output_mode": "summary",
+        "section": {
+          "app": "graph_triangle_count",
+          "backend": "embree",
+          "copies": 20000,
+          "graph_edge_count": 120000,
+          "graph_vertex_count": 80000,
+          "native_continuation_active": true,
+          "native_continuation_backend": "native_graph_triangle_raw_summary",
+          "optix_graph_mode": "not_applicable",
+          "optix_performance": {
+            "class": "host_indexed_fallback",
+            "note": "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated."
+          },
+          "output_mode": "summary",
+          "ray_tracing_accelerated": true,
+          "ray_tracing_note": "Embree uses ray traversal over graph-edge primitives to collect candidate neighbor sets; CPU-side set intersection and uniqueness bookkeeping remain outside the RT traversal.",
+          "row_count": 20000,
+          "rows": [],
+          "rt_core_accelerated": false,
+          "run_phases": {
+            "input_construction_sec": 0.05508453608490527,
+            "native_summary_postprocess_sec": 1.501757651567459e-07,
+            "query_and_materialize_sec": 0.39587627118453383,
+            "query_raw_view_sec": 0.39587627118453383,
+            "row_materialization_sec": 0.0
+          },
+          "seed_count": 60000,
+          "summary": {
+            "touched_vertex_count": 60000,
+            "triangle_count": 20000
+          }
+        },
+        "touched_vertex_count": 60000,
+        "triangle_count": 20000
+      },
+      "primary_metric_sec": 0.9153635948896408,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "--mode",
+            "run",
+            "--backend",
+            "embree",
+            "--copies",
+            "20000",
+            "--output-mode",
+            "summary"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"backend\": \"embree\",\n  \"benchmark_app\": \"triangle_counting\",\n  \"claim_boundary\": {\n    \"benchmark_app\": true,\n    \"bfs_in_benchmark\": false,\n    \"distributed_graph_claim\": false,\n    \"full_graph_database_claim\": false,\n    \"native_engine_customization\": false,\n    \"paper_code_intake_complete\": true,\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"rt_graph_1a2_generic_rt_mapping\": true,\n    \"rt_graph_2a1_generic_rt_mapping\": true,\n    \"rt_graph_id_ascending_adapter\": true,\n    \"rt_graph_preprocessing_oracle\": true,\n    \"triangle_count_rt_core_claim_authorized\": false,\n    \"visibility_edges_in_benchmark\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"triangle_count_only\",\n  \"copies\": 20000,\n  \"excluded_operations\": [\n    \"bfs\",\n    \"visibility_edges\"\n  ],\n  \"mode\": \"run\",\n  \"output_mode\": \"summary\",\n  \"section\": {\n    \"app\": \"graph_triangle_count\",\n    \"backend\": \"embree\",\n    \"copies\": 20000,\n    \"graph_edge_count\": 120000,\n    \"graph_vertex_count\": 80000,\n    \"native_continuation_active\": true,\n    \"native_continuation_backend\": \"native_graph_triangle_raw_summary\",\n    \"optix_graph_mode\": \"not_applicable\",\n    \"optix_performance\": {\n      \"class\": \"host_indexed_fallback\",\n      \"note\": \"OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n    },\n    \"output_mode\": \"summary\",\n    \"ray_tracing_accelerated\": true,\n    \"ray_tracing_note\": \"Embree uses ray traversal over graph-edge primitives to collect candidate neighbor sets; CPU-side set intersection and uniqueness bookkeeping remain outside the RT traversal.\",\n    \"row_count\": 20000,\n    \"rows\": [],\n    \"rt_core_accelerated\": false,\n    \"run_phases\": {\n      \"input_construction_sec\": 0.05508453608490527,\n      \"native_summary_postprocess_sec\": 1.501757651567459e-07,\n      \"query_and_materialize_sec\": 0.39587627118453383,\n      \"query_raw_view_sec\": 0.39587627118453383,\n      \"row_materialization_sec\": 0.0\n    },\n    \"seed_count\": 60000,\n    \"summary\": {\n      \"touched_vertex_count\": 60000,\n      \"triangle_count\": 20000\n    }\n  },\n  \"touched_vertex_count\": 60000,\n  \"triangle_count\": 20000\n}\n",
+          "wall_elapsed_sec": 0.9153635948896408
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "section.run_phases.input_construction_sec",
+          0.05508453608490527
+        ],
+        [
+          "section.run_phases.native_summary_postprocess_sec",
+          1.501757651567459e-07
+        ],
+        [
+          "section.run_phases.query_and_materialize_sec",
+          0.39587627118453383
+        ],
+        [
+          "section.run_phases.query_raw_view_sec",
+          0.39587627118453383
+        ],
+        [
+          "section.run_phases.row_materialization_sec",
+          0.0
+        ]
+      ],
+      "wall_median_sec": 0.9153635948896408
+    },
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "optix",
+      "case_id": "triangle_counting_optix_summary",
+      "comparison_group": "triangle_count_summary",
+      "notes": "",
+      "payload": {
+        "backend": "optix",
+        "benchmark_app": "triangle_counting",
+        "claim_boundary": {
+          "benchmark_app": true,
+          "bfs_in_benchmark": false,
+          "distributed_graph_claim": false,
+          "full_graph_database_claim": false,
+          "native_engine_customization": false,
+          "paper_code_intake_complete": true,
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "rt_graph_1a2_generic_rt_mapping": true,
+          "rt_graph_2a1_generic_rt_mapping": true,
+          "rt_graph_id_ascending_adapter": true,
+          "rt_graph_preprocessing_oracle": true,
+          "triangle_count_rt_core_claim_authorized": false,
+          "visibility_edges_in_benchmark": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "contract": "triangle_count_only",
+        "copies": 20000,
+        "excluded_operations": [
+          "bfs",
+          "visibility_edges"
+        ],
+        "mode": "run",
+        "output_mode": "summary",
+        "section": {
+          "app": "graph_triangle_count",
+          "backend": "optix",
+          "copies": 20000,
+          "graph_edge_count": 120000,
+          "graph_vertex_count": 80000,
+          "native_continuation_active": true,
+          "native_continuation_backend": "native_graph_triangle_raw_summary",
+          "optix_graph_mode": "native",
+          "optix_performance": {
+            "class": "host_indexed_fallback",
+            "note": "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated."
+          },
+          "output_mode": "summary",
+          "ray_tracing_accelerated": false,
+          "ray_tracing_note": "This backend is not currently classified as the graph triangle-count ray-tracing path.",
+          "row_count": 20000,
+          "rows": [],
+          "rt_core_accelerated": false,
+          "run_phases": {
+            "input_construction_sec": 0.056008898885920644,
+            "native_summary_postprocess_sec": 1.7997808754444122e-07,
+            "query_and_materialize_sec": 0.9419547840952873,
+            "query_raw_view_sec": 0.9419547840952873,
+            "row_materialization_sec": 0.0
+          },
+          "seed_count": 60000,
+          "summary": {
+            "touched_vertex_count": 60000,
+            "triangle_count": 20000
+          }
+        },
+        "touched_vertex_count": 60000,
+        "triangle_count": 20000
+      },
+      "primary_metric_sec": 1.56583207892254,
+      "primary_metric_source": "process_wall_median_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "--mode",
+            "run",
+            "--backend",
+            "optix",
+            "--copies",
+            "20000",
+            "--output-mode",
+            "summary",
+            "--optix-graph-mode",
+            "native"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"backend\": \"optix\",\n  \"benchmark_app\": \"triangle_counting\",\n  \"claim_boundary\": {\n    \"benchmark_app\": true,\n    \"bfs_in_benchmark\": false,\n    \"distributed_graph_claim\": false,\n    \"full_graph_database_claim\": false,\n    \"native_engine_customization\": false,\n    \"paper_code_intake_complete\": true,\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"rt_graph_1a2_generic_rt_mapping\": true,\n    \"rt_graph_2a1_generic_rt_mapping\": true,\n    \"rt_graph_id_ascending_adapter\": true,\n    \"rt_graph_preprocessing_oracle\": true,\n    \"triangle_count_rt_core_claim_authorized\": false,\n    \"visibility_edges_in_benchmark\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"triangle_count_only\",\n  \"copies\": 20000,\n  \"excluded_operations\": [\n    \"bfs\",\n    \"visibility_edges\"\n  ],\n  \"mode\": \"run\",\n  \"output_mode\": \"summary\",\n  \"section\": {\n    \"app\": \"graph_triangle_count\",\n    \"backend\": \"optix\",\n    \"copies\": 20000,\n    \"graph_edge_count\": 120000,\n    \"graph_vertex_count\": 80000,\n    \"native_continuation_active\": true,\n    \"native_continuation_backend\": \"native_graph_triangle_raw_summary\",\n    \"optix_graph_mode\": \"native\",\n    \"optix_performance\": {\n      \"class\": \"host_indexed_fallback\",\n      \"note\": \"OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n    },\n    \"output_mode\": \"summary\",\n    \"ray_tracing_accelerated\": false,\n    \"ray_tracing_note\": \"This backend is not currently classified as the graph triangle-count ray-tracing path.\",\n    \"row_count\": 20000,\n    \"rows\": [],\n    \"rt_core_accelerated\": false,\n    \"run_phases\": {\n      \"input_construction_sec\": 0.056008898885920644,\n      \"native_summary_postprocess_sec\": 1.7997808754444122e-07,\n      \"query_and_materialize_sec\": 0.9419547840952873,\n      \"query_raw_view_sec\": 0.9419547840952873,\n      \"row_materialization_sec\": 0.0\n    },\n    \"seed_count\": 60000,\n    \"summary\": {\n      \"touched_vertex_count\": 60000,\n      \"triangle_count\": 20000\n    }\n  },\n  \"touched_vertex_count\": 60000,\n  \"triangle_count\": 20000\n}\n",
+          "wall_elapsed_sec": 1.56583207892254
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "section.run_phases.input_construction_sec",
+          0.056008898885920644
+        ],
+        [
+          "section.run_phases.native_summary_postprocess_sec",
+          1.7997808754444122e-07
+        ],
+        [
+          "section.run_phases.query_and_materialize_sec",
+          0.9419547840952873
+        ],
+        [
+          "section.run_phases.query_raw_view_sec",
+          0.9419547840952873
+        ],
+        [
+          "section.run_phases.row_materialization_sec",
+          0.0
+        ]
+      ],
+      "wall_median_sec": 1.56583207892254
+    }
+  ],
+  "scale": "large"
+}
