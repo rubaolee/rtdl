@@ -71,7 +71,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
     barnes_bodies = _scale_value(scale, quick=256, standard=8192, large=32768)
     librts_boxes = _scale_value(scale, quick=512, standard=1024, large=2048)
     librts_queries = _scale_value(scale, quick=256, standard=512, large=1024)
-    raydb_copies = _scale_value(scale, quick=16384, standard=131072, large=524288)
+    raydb_copies = _scale_value(scale, quick=16384, standard=120000, large=120000)
     rtnn_points = _scale_value(scale, quick=4096, standard=65536, large=262144)
     triangle_copies = _scale_value(scale, quick=16, standard=5000, large=20000)
     contact_grid = _scale_value(scale, quick=64, standard=4096, large=8192)
