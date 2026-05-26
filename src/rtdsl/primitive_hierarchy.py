@@ -432,8 +432,11 @@ PRIMITIVE_HIERARCHY = (
                 id="continuation.segmented_chunked_rows",
                 title="Segmented / Chunked Row Continuation",
                 layer="continuation",
-                status="candidate_behavior",
-                summary="Chunk row streams to avoid unbounded materialization and device-memory pressure.",
+                status="internal_substrate",
+                summary=(
+                    "Page generic row streams with deterministic continuation tokens "
+                    "to avoid unbounded materialization and device-memory pressure."
+                ),
                 outputs=("row_pages", "continuation_state"),
                 depends_on=("rows.generic_candidate_rows", "execution.capacity_overflow_contract"),
             ),

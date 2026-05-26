@@ -127,7 +127,8 @@ Reduction
 Continuation
   fixed-radius graph continuation
   partner-resident continuation
-  segmented / chunked row continuation
+  segmented / chunked row continuation (`SEGMENTED_ROW_STREAM` /
+    `CHUNKED_ROW_CONTINUATION`)
   candidate-quality / ranked-summary continuation
 
 Candidate / Experimental
@@ -252,6 +253,30 @@ compact summaries.
 | `COLLECT_K_BOUNDED` | Stable primitive | Bounded row collection with exact fail-closed overflow policy | Promoted by Goal2621 contact-manifold evidence: local Mac Embree parity, RTX A5000 OptiX parity, standalone C++ CPU baseline, and 3-AI promotion consensus. Linux Embree parity has not been separately recorded. |
 | bounded witness-row collection | Stable behavior | App-facing witness rows over an app-owned row schema, routed through `COLLECT_K_BOUNDED` when bounded materialization is required | The app may call rows collision/contact witnesses, but the primitive only owns generic candidate-id row collection. |
 | witness/candidate row paths | App or partner code unless promoted | App-facing row materialization for a specific workflow | Must not silently truncate exact outputs. |
+
+### Continuation Layer: Segmented Row Streams
+
+These behaviors let RTDL and partner paths process large exact row outputs
+without requiring all rows to be materialized as one host table.
+
+| Primitive or operation | Status | Behavior | Boundary |
+| --- | --- | --- | --- |
+| `SEGMENTED_ROW_STREAM` | Internal substrate | Page a generic row stream into deterministic chunks with opaque continuation tokens | CPU/reference contract in `src/rtdsl/segmented_row_stream.py`; native OptiX/Embree page emission is future evidence work. |
+| `CHUNKED_ROW_CONTINUATION` | Alias / compatibility term | Same contract as `SEGMENTED_ROW_STREAM`, emphasizing continuation scheduling | No separate semantics. |
+
+Required contract properties:
+
+- row schema is explicit and app-independent;
+- page capacity is explicit and positive;
+- continuation tokens are deterministic and stream-local;
+- reconstructing a complete stream must exactly recover row order and values;
+- incomplete windows are marked with a non-null continuation token;
+- exact outputs must fail closed on capacity overflow, with no partial result
+  presented as complete.
+
+This primitive does not define graph, DBSCAN, contact, SQL, or other app
+semantics. Apps can attach meaning after reconstructing or consuming pages, but
+the engine only owns row pagination and completion metadata.
 
 ### Candidate / Experimental Layer: Aggregate Frontier And Tree Traversal
 

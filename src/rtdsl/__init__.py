@@ -65,6 +65,22 @@ from .primitive_hierarchy import iter_primitive_hierarchy_nodes
 from .primitive_hierarchy import primitive_hierarchy
 from .primitive_hierarchy import primitive_layer_map
 from .primitive_hierarchy import validate_primitive_hierarchy
+from .segmented_row_stream import CHUNKED_ROW_CONTINUATION_ALIAS
+from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT
+from .segmented_row_stream import SEGMENTED_ROW_STREAM_CONTRACT_VERSION
+from .segmented_row_stream import SEGMENTED_ROW_STREAM_DEFAULT_ID
+from .segmented_row_stream import SEGMENTED_ROW_STREAM_FAILURE_MODE
+from .segmented_row_stream import SEGMENTED_ROW_STREAM_PRIMITIVE
+from .segmented_row_stream import SegmentedRowPage
+from .segmented_row_stream import SegmentedRowStream
+from .segmented_row_stream import SegmentedRowStreamOverflowError
+from .segmented_row_stream import emit_segmented_row_page
+from .segmented_row_stream import emit_segmented_row_stream
+from .segmented_row_stream import make_segmented_row_token
+from .segmented_row_stream import parse_segmented_row_token
+from .segmented_row_stream import reconstruct_segmented_row_stream
+from .segmented_row_stream import segmented_row_stream_contract
+from .segmented_row_stream import validate_segmented_row_pages
 from .adaptive_runtime import ADAPTIVE_BACKEND_NAME
 from .adaptive_runtime import ADAPTIVE_COMPAT_MODE
 from .adaptive_runtime import ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE
@@ -1256,6 +1272,22 @@ __all__ = [
     "primitive_hierarchy",
     "primitive_layer_map",
     "validate_primitive_hierarchy",
+    "CHUNKED_ROW_CONTINUATION_ALIAS",
+    "SEGMENTED_ROW_STREAM_CONTRACT",
+    "SEGMENTED_ROW_STREAM_CONTRACT_VERSION",
+    "SEGMENTED_ROW_STREAM_DEFAULT_ID",
+    "SEGMENTED_ROW_STREAM_FAILURE_MODE",
+    "SEGMENTED_ROW_STREAM_PRIMITIVE",
+    "SegmentedRowPage",
+    "SegmentedRowStream",
+    "SegmentedRowStreamOverflowError",
+    "emit_segmented_row_page",
+    "emit_segmented_row_stream",
+    "make_segmented_row_token",
+    "parse_segmented_row_token",
+    "reconstruct_segmented_row_stream",
+    "segmented_row_stream_contract",
+    "validate_segmented_row_pages",
     "normalize_grouped_reduction_spec",
     "run_partner_ray_triangle_any_hit_2d",
     "validate_v2_0_partner_protocol_contract",
@@ -2148,6 +2180,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "closest_hit",
     "compile_kernel",
     "emit",
+    "emit_segmented_row_stream",
     "find_primitive_hierarchy_node",
     "grouped_count",
     "grouped_sum",
