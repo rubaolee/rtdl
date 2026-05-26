@@ -67,7 +67,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
     hausdorff_copies = _scale_value(scale, quick=16, standard=4096, large=16384)
     robot_poses = _scale_value(scale, quick=128, standard=8192, large=32768)
     robot_obstacles = _scale_value(scale, quick=16, standard=1024, large=2048)
-    dbscan_points = _scale_value(scale, quick=512, standard=32768, large=65536)
+    dbscan_points = _scale_value(scale, quick=2048, standard=8192, large=16384)
     barnes_bodies = _scale_value(scale, quick=256, standard=8192, large=32768)
     librts_boxes = _scale_value(scale, quick=512, standard=1024, large=2048)
     librts_queries = _scale_value(scale, quick=256, standard=512, large=1024)
