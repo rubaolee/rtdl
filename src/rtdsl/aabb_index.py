@@ -14,11 +14,12 @@ AABB_INDEX_2D_CONTRACT = {
         "point_contains": "indexed_box_contains_query_point",
         "range_contains": "indexed_box_contains_query_box",
         "range_intersects": "indexed_box_intersects_query_box",
+        "range_intersection_rows": "emit_query_box_indexed_box_intersection_pairs",
     },
     "backend_status": {
-        "cpu": "reference_uniform_grid",
+        "cpu": "reference_uniform_grid_counts_and_intersection_pair_rows",
         "embree": "not_implemented",
-        "optix": "native_count_only_point_contains_range_contains_range_intersects",
+        "optix": "native_count_point_contains_range_contains_range_intersects_and_range_intersection_rows",
     },
     "app_boundary": "app-name-free primitive; LibRTS, spatial joins, and collision broadphases may lower to it",
 }
@@ -59,6 +60,15 @@ class Aabb2D:
             and other.min_y <= self.max_y
             and other.max_y >= self.min_y
         )
+
+
+@dataclass(frozen=True)
+class _IdentifiedAabb2D:
+    id: int
+    min_x: float
+    min_y: float
+    max_x: float
+    max_y: float
 
 
 @dataclass(frozen=True)
@@ -152,7 +162,7 @@ class AabbIndex2D:
 
 @dataclass(frozen=True)
 class OptixAabbIndex2D:
-    """Prepared OptiX AABB index for the supported count-only native subpath."""
+    """Prepared OptiX AABB index for supported native count queries."""
 
     boxes: tuple[Aabb2D, ...]
     prepared: Any
@@ -202,7 +212,8 @@ class OptixAabbIndex2D:
             "native_engine_customization": False,
             "claim_boundary": (
                 "Generic OptiX AABB_INDEX_QUERY_2D count-only subpath for point_contains, "
-                "range_contains, and range_intersects; not LibRTS-specific."
+                "range_contains, and range_intersects; row output is exposed through "
+                "aabb_intersection_pair_rows_2d. Not LibRTS-specific."
             ),
         }
 
@@ -275,6 +286,192 @@ def query_aabb_index_2d(
         backend=normalized_backend,
     )
     return prepared.count(point_queries=point_queries, box_queries=box_queries, operation=operation)
+
+
+def aabb_intersection_pair_rows_2d(
+    indexed_boxes: Iterable[Any],
+    query_boxes: Iterable[Any],
+    *,
+    indexed_ids: Iterable[int] | None = None,
+    query_ids: Iterable[int] | None = None,
+    resolution: int = 32,
+    backend: str = "cpu",
+    row_capacity: int | None = None,
+) -> dict[str, Any]:
+    """Emit generic 2-D AABB intersection candidate-pair rows.
+
+    The row contract is intentionally geometry-generic: each output row is
+    ``(query_id, indexed_id)`` when a query AABB intersects an indexed AABB.
+    Downstream apps may refine those broadphase rows with app-owned predicates.
+    For the OptiX backend, ``row_capacity`` is required and must accommodate
+    the raw pre-deduplication bidirectional-pass hit count, which can be up to
+    twice the final unique pair count.
+    """
+
+    normalized_backend = _validate_backend(backend)
+    indexed_tuple = tuple(_normalize_aabb2d(box) for box in indexed_boxes)
+    query_tuple = tuple(_normalize_aabb2d(box) for box in query_boxes)
+    if not query_tuple:
+        raise ValueError("AABB intersection pair rows require at least one query box")
+    indexed_id_tuple = (
+        tuple(int(value) for value in indexed_ids)
+        if indexed_ids is not None
+        else tuple(range(len(indexed_tuple)))
+    )
+    query_id_tuple = (
+        tuple(int(value) for value in query_ids)
+        if query_ids is not None
+        else tuple(range(len(query_tuple)))
+    )
+    if len(indexed_id_tuple) != len(indexed_tuple):
+        raise ValueError("indexed_ids length must match indexed_boxes length")
+    if len(query_id_tuple) != len(query_tuple):
+        raise ValueError("query_ids length must match query_boxes length")
+
+    all_pairs_count = len(indexed_tuple) * len(query_tuple)
+    if normalized_backend == "optix":
+        if row_capacity is None:
+            raise ValueError("OptiX AABB row output requires explicit row_capacity")
+        resolved_row_capacity = int(row_capacity)
+        if resolved_row_capacity < 0:
+            raise ValueError("row_capacity must be non-negative")
+        _validate_u32_ids(indexed_id_tuple, label="indexed_ids")
+        _validate_u32_ids(query_id_tuple, label="query_ids")
+        indexed_records = tuple(
+            _IdentifiedAabb2D(
+                int(indexed_id_tuple[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(indexed_tuple)
+        )
+        query_records = tuple(
+            _IdentifiedAabb2D(
+                int(query_id_tuple[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(query_tuple)
+        )
+
+        from .optix_runtime import collect_aabb_intersection_pair_rows_2d_optix
+
+        row_start = time.perf_counter()
+        native = collect_aabb_intersection_pair_rows_2d_optix(
+            indexed_records,
+            query_records,
+            row_capacity=resolved_row_capacity,
+        )
+        row_query_sec = time.perf_counter() - row_start
+        rows = tuple(sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"]))
+
+        return {
+            "primitive": AABB_INDEX_2D_CONTRACT["primitive"],
+            "contract": "generic_aabb_intersection_pair_rows_2d",
+            "backend": normalized_backend,
+            "prepared": True,
+            "operation": "range_intersection_rows",
+            "row_schema": ("query_id", "indexed_id"),
+            "candidate_id_rows": rows,
+            "valid_count": len(rows),
+            "indexed_box_count": len(indexed_tuple),
+            "query_box_count": len(query_tuple),
+            "candidate_checks": None,
+            "all_pairs_count": all_pairs_count,
+            "candidate_checks_avoided": None,
+            "pruning_ratio": None,
+            "row_capacity": resolved_row_capacity,
+            "complete_candidate_coverage": bool(native["complete_candidate_coverage"]),
+            "index": {
+                "indexed_boxes": len(indexed_tuple),
+                "native_index": "optix_custom_aabb_gas",
+            },
+            "run_phases": {
+                "prepare_and_emit_aabb_intersection_pair_rows_2d_sec": row_query_sec,
+            },
+            "rt_core_accelerated": True,
+            "native_engine_customization": False,
+            "native_generic_symbol": native["native_generic_symbol"],
+            "claim_boundary": (
+                "Generic OptiX AABB_INDEX_QUERY_2D broadphase row output only; exact app "
+                "semantics and final witness interpretation remain outside the engine."
+            ),
+        }
+
+    prepare_start = time.perf_counter()
+    prepared = prepare_aabb_index_2d(
+        indexed_tuple,
+        box_queries=query_tuple,
+        resolution=resolution,
+        backend=normalized_backend,
+    )
+    prepare_sec = time.perf_counter() - prepare_start
+    if not isinstance(prepared, AabbIndex2D):
+        raise TypeError("CPU AABB row output expected AabbIndex2D")
+
+    row_start = time.perf_counter()
+    rows: set[tuple[int, int]] = set()
+    candidate_checks = 0
+    for query_index, query_box in enumerate(query_tuple):
+        candidates = prepared.box_candidates(query_box)
+        candidate_checks += len(candidates)
+        query_id = query_id_tuple[query_index]
+        for indexed_index in candidates:
+            indexed_box = prepared.boxes[indexed_index]
+            if indexed_box.intersects_box(query_box):
+                rows.add((query_id, indexed_id_tuple[indexed_index]))
+    row_query_sec = time.perf_counter() - row_start
+
+    return {
+        "primitive": AABB_INDEX_2D_CONTRACT["primitive"],
+        "contract": "generic_aabb_intersection_pair_rows_2d",
+        "backend": normalized_backend,
+        "prepared": True,
+        "operation": "range_intersection_rows",
+        "row_schema": ("query_id", "indexed_id"),
+        "candidate_id_rows": tuple(sorted(rows)),
+        "valid_count": len(rows),
+        "indexed_box_count": len(indexed_tuple),
+        "query_box_count": len(query_tuple),
+        "candidate_checks": candidate_checks,
+        "all_pairs_count": all_pairs_count,
+        "candidate_checks_avoided": max(0, all_pairs_count - candidate_checks),
+        "pruning_ratio": (
+            0.0
+            if all_pairs_count == 0
+            else max(0.0, 1.0 - (candidate_checks / float(all_pairs_count)))
+        ),
+        "complete_candidate_coverage": True,
+        "index": {
+            "resolution": prepared.resolution,
+            "bounds": list(prepared.bounds),
+            "occupied_cells": len(prepared.cells),
+            "candidate_entries": prepared.candidate_entries,
+        },
+        "run_phases": {
+            "prepare_aabb_index_2d_sec": prepare_sec,
+            "emit_aabb_intersection_pair_rows_2d_sec": row_query_sec,
+        },
+        "rt_core_accelerated": False,
+        "native_engine_customization": False,
+        "claim_boundary": (
+            "Generic CPU AABB_INDEX_QUERY_2D broadphase row output only; exact app "
+            "semantics and final witness interpretation remain outside the engine. "
+            "OptiX row output follows the same app-agnostic row contract when the native "
+            "backend symbol is available."
+        ),
+    }
+
+
+def _validate_u32_ids(ids: tuple[int, ...], *, label: str) -> None:
+    max_u32 = (1 << 32) - 1
+    for value in ids:
+        if value < 0 or value > max_u32:
+            raise ValueError(f"{label} values must fit uint32 for OptiX AABB row output")
 
 
 def _validate_backend(backend: str) -> str:

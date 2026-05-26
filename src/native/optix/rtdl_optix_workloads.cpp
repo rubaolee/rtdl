@@ -7159,11 +7159,14 @@ struct AabbIndexQueryLaunchParams {
     const GpuAabb2D* box_queries;
     const GpuAabb2D* indexed_boxes;
     unsigned long long* hit_count;
+    RtdlAabbPairRow* rows_out;
     uint32_t point_query_count;
     uint32_t box_query_count;
     uint32_t indexed_box_count;
+    uint32_t row_capacity;
     uint32_t operation;
     uint32_t intersect_pass;
+    uint32_t collect_rows;
 };
 
 static void validate_aabb2d_bounds(double min_x, double min_y, double max_x, double max_y)
@@ -7225,17 +7228,25 @@ struct GpuAabb2D {
     uint32_t id;
 };
 
+struct RtdlAabbPairRow {
+    uint32_t query_id;
+    uint32_t indexed_id;
+};
+
 struct AabbIndexQueryLaunchParams {
     OptixTraversableHandle traversable;
     const GpuPoint* point_queries;
     const GpuAabb2D* box_queries;
     const GpuAabb2D* indexed_boxes;
     unsigned long long* hit_count;
+    RtdlAabbPairRow* rows_out;
     uint32_t point_query_count;
     uint32_t box_query_count;
     uint32_t indexed_box_count;
+    uint32_t row_capacity;
     uint32_t operation;
     uint32_t intersect_pass;
+    uint32_t collect_rows;
 };
 
 extern "C" __constant__ AabbIndexQueryLaunchParams params;
@@ -7391,7 +7402,20 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
 }
 
 extern "C" __global__ void __anyhit__aabb_index_count() {
-    atomicAdd(params.hit_count, 1ULL);
+    const unsigned long long row_index = atomicAdd(params.hit_count, 1ULL);
+    if (params.collect_rows != 0u && params.operation == 3u && row_index < params.row_capacity) {
+        const uint32_t prim = optixGetPrimitiveIndex();
+        const uint32_t qidx = optixGetPayload_0();
+        RtdlAabbPairRow row;
+        if (params.intersect_pass == 0u) {
+            row.query_id = params.box_queries[qidx].id;
+            row.indexed_id = params.indexed_boxes[prim].id;
+        } else {
+            row.query_id = params.box_queries[prim].id;
+            row.indexed_id = params.indexed_boxes[qidx].id;
+        }
+        params.rows_out[row_index] = row;
+    }
     optixIgnoreIntersection();
 }
 )CUDA";
@@ -7547,21 +7571,29 @@ static void launch_aabb_index_count_pass_optix(
         uint32_t operation,
         uint32_t intersect_pass,
         size_t launch_count,
-        CUdeviceptr d_hit_count)
+        CUdeviceptr d_hit_count,
+        CUdeviceptr d_rows_out = 0,
+        size_t row_capacity = 0,
+        bool collect_rows = false)
 {
     ensure_aabb_index_count_2d_pipeline();
 
+    if (row_capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("AABB row output capacity exceeds uint32 launch limit");
     AabbIndexQueryLaunchParams lp = {};
     lp.traversable = traversable;
     lp.point_queries = reinterpret_cast<const GpuPoint*>(d_point_queries);
     lp.box_queries = reinterpret_cast<const GpuAabb2D*>(d_box_queries);
     lp.indexed_boxes = reinterpret_cast<const GpuAabb2D*>(d_indexed_boxes);
     lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count);
+    lp.rows_out = reinterpret_cast<RtdlAabbPairRow*>(d_rows_out);
     lp.point_query_count = static_cast<uint32_t>(point_query_count);
     lp.box_query_count = static_cast<uint32_t>(box_query_count);
     lp.indexed_box_count = static_cast<uint32_t>(indexed_box_count);
+    lp.row_capacity = static_cast<uint32_t>(row_capacity);
     lp.operation = operation;
     lp.intersect_pass = intersect_pass;
+    lp.collect_rows = collect_rows ? 1u : 0u;
 
     DevPtr d_params(sizeof(AabbIndexQueryLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -7768,6 +7800,98 @@ static void count_prepared_aabb_index_2d_packed_queries_optix(
         operation == kAabbIndexOpRangeContains ? prepared_queries->query_count : 0,
         operation,
         hit_count_out);
+}
+
+static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        const RtdlAabb2D* box_queries,
+        size_t box_query_count,
+        RtdlAabbPairRow* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
+    if (!overflowed_out) throw std::runtime_error("overflowed_out must not be null");
+    if (!rows_out && row_capacity != 0)
+        throw std::runtime_error("rows_out pointer must not be null when row_capacity is nonzero");
+    if (!box_queries && box_query_count != 0)
+        throw std::runtime_error("box_queries pointer must not be null when box_query_count is nonzero");
+    if (prepared->box_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("indexed box count exceeds uint32 launch limit");
+    if (box_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("box query count exceeds uint32 launch limit");
+    if (row_capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("AABB row output capacity exceeds uint32 launch limit");
+
+    *emitted_count_out = 0;
+    *overflowed_out = 0;
+    if (prepared->box_count == 0 || box_query_count == 0)
+        return;
+
+    PreparedAabbIndexQueries2DOptix prepared_queries(box_queries, box_query_count);
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
+    DevPtr d_rows(sizeof(RtdlAabbPairRow) * row_capacity);
+
+    launch_aabb_index_count_pass_optix(
+        prepared->accel.handle,
+        0,
+        0,
+        prepared_queries.d_box_queries.ptr,
+        prepared_queries.query_count,
+        prepared->d_boxes.ptr,
+        prepared->box_count,
+        kAabbIndexOpRangeIntersects,
+        kAabbIndexIntersectForwardPass,
+        prepared_queries.query_count,
+        d_hit_count.ptr,
+        d_rows.ptr,
+        row_capacity,
+        true);
+    launch_aabb_index_count_pass_optix(
+        prepared_queries.accel.handle,
+        0,
+        0,
+        prepared_queries.d_box_queries.ptr,
+        prepared_queries.query_count,
+        prepared->d_boxes.ptr,
+        prepared->box_count,
+        kAabbIndexOpRangeIntersects,
+        kAabbIndexIntersectBackwardPass,
+        prepared->box_count,
+        d_hit_count.ptr,
+        d_rows.ptr,
+        row_capacity,
+        true);
+
+    unsigned long long raw_count = 0ULL;
+    download(&raw_count, d_hit_count.ptr, 1);
+    if (raw_count > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
+        throw std::runtime_error("AABB row output count exceeds size_t range");
+    const size_t emitted = static_cast<size_t>(raw_count);
+    *emitted_count_out = emitted;
+    if (emitted > row_capacity) {
+        *overflowed_out = 1;
+        return;
+    }
+
+    std::vector<RtdlAabbPairRow> rows(emitted);
+    if (emitted != 0)
+        download(rows.data(), d_rows.ptr, emitted);
+    std::sort(rows.begin(), rows.end(), [](const RtdlAabbPairRow& a, const RtdlAabbPairRow& b) {
+        if (a.query_id != b.query_id)
+            return a.query_id < b.query_id;
+        return a.indexed_id < b.indexed_id;
+    });
+    rows.erase(std::unique(rows.begin(), rows.end(), [](const RtdlAabbPairRow& a, const RtdlAabbPairRow& b) {
+        return a.query_id == b.query_id && a.indexed_id == b.indexed_id;
+    }), rows.end());
+    *emitted_count_out = rows.size();
+    if (!rows.empty())
+        std::memcpy(rows_out, rows.data(), sizeof(RtdlAabbPairRow) * rows.size());
 }
 
 static void ensure_pack_triangle2d_device_columns_kernel()

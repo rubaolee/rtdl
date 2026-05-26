@@ -1,0 +1,249 @@
+{
+  "boundary": "Candidate app validates generic app-name-free COLLECT_K_BOUNDED i64 rows only; no native collision/contact logic is claimed.",
+  "build": {
+    "command": [
+      "make",
+      "build-optix",
+      "OPTIX_PREFIX=/root/vendor/optix-dev-9.0.0",
+      "CUDA_PREFIX=/usr/local/cuda-12.8",
+      "NVCC=/usr/local/cuda-12.8/bin/nvcc"
+    ],
+    "elapsed_sec_wall": 24.047153767198324,
+    "returncode": 0,
+    "stderr_tail": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n",
+    "stdout_tail": "mkdir -p build\n/usr/local/cuda-12.8/bin/nvcc -std=c++17 -O3 -shared -I/root/vendor/optix-dev-9.0.0/include -I/usr/local/cuda-12.8/include  -DRTDL_OPTIX_INCLUDE_DIR=\\\"/root/vendor/optix-dev-9.0.0/include\\\" -DRTDL_CUDA_INCLUDE_DIR=\\\"/usr/local/cuda-12.8/include\\\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\\\"/usr/include/x86_64-linux-gnu\\\" -Xcompiler -fPIC \\\n\tsrc/native/rtdl_optix.cpp \\\n\t-L/usr/local/cuda-12.8/lib64 -lcuda -lnvrtc  \\\n\t-o build/librtdl_optix.so\n"
+  },
+  "cuda_prefix": "/usr/local/cuda-12.8",
+  "gpu_summary": "NVIDIA RTX A5000, driver 570.211.01, 24564 MiB",
+  "native_library": "/root/rtdl_goal2621/build/librtdl_optix.so",
+  "optix_prefix": "/root/vendor/optix-dev-9.0.0",
+  "probe": {
+    "date": "2026-05-25",
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "elapsed_sec_wall": 0.0017695631831884384,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "8347f7eed1f96c986e72f7fcfb04f2f7a19308a5\n"
+    },
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "elapsed_sec_wall": 0.059897955507040024,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": " M docs/application_catalog.md\n M docs/rtdl_primitive_catalog.md\n M examples/v2_0/research_benchmarks/README.md\n M scripts/goal2617_surface_smoke.py\n?? docs/reports/goal2621_bounded_contact_witness_collect_k_3ai_consensus_2026-05-25.md\n?? docs/reports/goal2621_bounded_contact_witness_collect_k_candidate_2026-05-25.md\n?? docs/reports/goal2621_claude_bounded_contact_witness_review_2026-05-25.md\n?? docs/reports/goal2621_gemini_bounded_contact_witness_review_2026-05-25.md\n?? examples/v2_0/research_benchmarks/contact_manifold/\n?? tests/goal2621_contact_manifold_collect_k_bounded_benchmark_candidate_test.py\n"
+    },
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda-12.8/bin/nvcc",
+        "--version"
+      ],
+      "elapsed_sec_wall": 0.0019706301391124725,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "elapsed_sec_wall": 0.3263635188341141,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Mon May 25 21:32:30 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:57:00.0 Off |                  Off |\n| 30%   19C    P8             30W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n"
+    },
+    "optix_header": {
+      "command": [
+        "bash",
+        "-lc",
+        "test -f /root/vendor/optix-dev-9.0.0/include/optix.h && echo /root/vendor/optix-dev-9.0.0/include/optix.h"
+      ],
+      "elapsed_sec_wall": 0.004617899656295776,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "/root/vendor/optix-dev-9.0.0/include/optix.h\n"
+    },
+    "platform": "Linux-5.15.0-107-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "repo": "/root/rtdl_goal2621",
+    "ssh_command_requested": "ssh root@69.30.85.198 -p 22148 -i ~/.ssh/id_ed25519",
+    "ssh_key_used": "~/.ssh/id_ed25519_rtdl_codex"
+  },
+  "status": "ok",
+  "steps": {
+    "grid512_cpp_baseline": {
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "cpp_baseline",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "512",
+        "--repeat-count",
+        "5"
+      ],
+      "elapsed_sec_wall": 10.243283372372389,
+      "payload": {
+        "app": "bounded_collision_witness_contact_manifold",
+        "baseline": "standalone_cpp_exact_triangle_pairs",
+        "baseline_binary": "/root/rtdl_goal2621/build/goal2621_contact_witness_cpp_baseline",
+        "claim_boundary": "Standalone C++ exact baseline uses the same witness-row contract without RTDL engine calls; it is a CPU baseline, not an RT-core or native collision claim.",
+        "cpu_reference_valid_count": 512,
+        "dataset": "grid_512",
+        "elapsed_sec": 0.0232454,
+        "matches_cpu_reference": true,
+        "mode": "cpp_baseline",
+        "primitive_under_test": "COLLECT_K_BOUNDED",
+        "query_triangle_count": 512,
+        "repeat_count": 5,
+        "row_schema": [
+          "query_group_id",
+          "query_triangle_id",
+          "scene_triangle_id"
+        ],
+        "scene_triangle_count": 512,
+        "valid_count": 512
+      },
+      "returncode": 0,
+      "stderr_tail": ""
+    },
+    "grid512_optix_parity": {
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "512",
+        "--witness-capacity",
+        "512",
+        "--repeat-count",
+        "5"
+      ],
+      "elapsed_sec_wall": 9.596750754863024,
+      "payload": {
+        "app": "bounded_collision_witness_contact_manifold",
+        "backend": "optix",
+        "claim_boundary": "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.",
+        "complete_candidate_coverage": true,
+        "cpu_reference_elapsed_sec": 9.091012405231595,
+        "cpu_reference_valid_count": 512,
+        "dataset": "grid_512",
+        "engine_boundary": {
+          "contact_manifold_logic_owner": "Python app/reference or partner continuation",
+          "engine_primitive_owner": "COLLECT_K_BOUNDED",
+          "native_collision_logic_allowed": false
+        },
+        "library_path": "/root/rtdl_goal2621/build/librtdl_optix.so",
+        "matches_cpu_reference": true,
+        "mode": "native_collect_k",
+        "native_collect_elapsed_sec": 0.00221424363553524,
+        "native_generic_symbol": "rtdl_optix_collect_k_bounded_i64",
+        "overflowed": false,
+        "primitive_under_test": "COLLECT_K_BOUNDED",
+        "row_schema": [
+          "query_group_id",
+          "query_triangle_id",
+          "scene_triangle_id"
+        ],
+        "valid_count": 512,
+        "witness_capacity": 512
+      },
+      "returncode": 0,
+      "stderr_tail": ""
+    },
+    "tiny_optix_fail_closed_overflow": {
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "tiny",
+        "--witness-capacity",
+        "2",
+        "--repeat-count",
+        "1"
+      ],
+      "elapsed_sec_wall": 0.37552837282419205,
+      "returncode": 1,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/root/rtdl_goal2621/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py\", line 612, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/root/rtdl_goal2621/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py\", line 599, in main\n    payload = run_app(\n              ^^^^^^^^\n  File \"/root/rtdl_goal2621/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py\", line 557, in run_app\n    return native_collect_k_payload(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/rtdl_goal2621/examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py\", line 381, in native_collect_k_payload\n    native = rt.collect_native_i64_rows_with_backend_symbol(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/rtdl_goal2621/src/rtdsl/v1_5_1_collect_k_bounded.py\", line 976, in collect_native_i64_rows_with_backend_symbol\n    raise RuntimeError(\nRuntimeError: COLLECT_K_BOUNDED overflowed capacity 2; emitted 3; failure_mode=fail_closed_overflow; partial_result_returned=False\n",
+      "stdout_tail": ""
+    },
+    "tiny_optix_parity": {
+      "command": [
+        "python3",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "tiny",
+        "--witness-capacity",
+        "3",
+        "--repeat-count",
+        "3"
+      ],
+      "elapsed_sec_wall": 0.4189700819551945,
+      "payload": {
+        "app": "bounded_collision_witness_contact_manifold",
+        "backend": "optix",
+        "claim_boundary": "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.",
+        "complete_candidate_coverage": true,
+        "cpu_reference_elapsed_sec": 0.0003658067435026169,
+        "cpu_reference_valid_count": 3,
+        "dataset": "tiny",
+        "engine_boundary": {
+          "contact_manifold_logic_owner": "Python app/reference or partner continuation",
+          "engine_primitive_owner": "COLLECT_K_BOUNDED",
+          "native_collision_logic_allowed": false
+        },
+        "library_path": "/root/rtdl_goal2621/build/librtdl_optix.so",
+        "matches_cpu_reference": true,
+        "mode": "native_collect_k",
+        "native_collect_elapsed_sec": 0.0005520973354578018,
+        "native_generic_symbol": "rtdl_optix_collect_k_bounded_i64",
+        "overflowed": false,
+        "primitive_under_test": "COLLECT_K_BOUNDED",
+        "row_schema": [
+          "query_group_id",
+          "query_triangle_id",
+          "scene_triangle_id"
+        ],
+        "valid_count": 3,
+        "witness_capacity": 3
+      },
+      "returncode": 0,
+      "stderr_tail": ""
+    },
+    "unit_test": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tests/goal2621_contact_manifold_collect_k_bounded_benchmark_candidate_test.py"
+      ],
+      "elapsed_sec_wall": 0.4802191201597452,
+      "returncode": 0,
+      "stderr_tail": "...s....\n----------------------------------------------------------------------\nRan 8 tests in 0.005s\n\nOK (skipped=1)\n",
+      "stdout_tail": ""
+    }
+  }
+}

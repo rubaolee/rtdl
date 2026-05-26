@@ -195,6 +195,13 @@ class _RtdlAabb2D(ctypes.Structure):
     ]
 
 
+class _RtdlAabbPairRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("indexed_id", ctypes.c_uint32),
+    ]
+
+
 @dataclass(frozen=True)
 class PackedAabbs2D:
     records: object
@@ -7903,7 +7910,7 @@ def prepare_optix_aabb_box_queries_2d(box_queries) -> PreparedOptixAabbQueries2D
 
 
 class PreparedOptixAabbIndex2D:
-    """Prepared generic 2-D AABB index using OptiX RT traversal for count-only queries."""
+    """Prepared generic 2-D AABB index using OptiX RT traversal."""
 
     supported_operations = OPTIX_AABB_INDEX_SUPPORTED_OPERATIONS
 
@@ -8034,6 +8041,83 @@ class PreparedOptixAabbIndex2D:
         _check_status(status, error)
         return int(hit_count.value)
 
+    def collect_range_intersection_rows(self, box_queries, *, row_capacity: int) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX AABB index handle is closed")
+        if row_capacity < 0:
+            raise ValueError("row_capacity must be non-negative")
+        packed_boxes = pack_aabbs_2d(box_queries)
+        row_array = (
+            (_RtdlAabbPairRow * int(row_capacity))()
+            if int(row_capacity) != 0
+            else None
+        )
+        emitted_count = ctypes.c_size_t()
+        overflowed = ctypes.c_uint32()
+        lib = _load_optix_library()
+        collect_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows",
+        )
+        if collect_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = collect_symbol(
+            self._handle,
+            packed_boxes.records,
+            packed_boxes.count,
+            row_array,
+            int(row_capacity),
+            ctypes.byref(emitted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        emitted = int(emitted_count.value)
+        if int(overflowed.value) != 0:
+            raise RuntimeError(
+                "OptiX AABB_INDEX_QUERY_2D range_intersection_rows overflowed "
+                f"capacity {int(row_capacity)}; emitted at least {emitted}; "
+                "failure_mode=fail_closed_overflow"
+            )
+        if emitted > int(row_capacity):
+            raise RuntimeError(
+                "OptiX AABB_INDEX_QUERY_2D range_intersection_rows reported "
+                f"emitted_count {emitted} beyond capacity {int(row_capacity)}; "
+                "failure_mode=fail_closed_overflow"
+            )
+        rows = tuple(
+            (int(row_array[index].query_id), int(row_array[index].indexed_id))
+            for index in range(emitted)
+        )
+        return {
+            "primitive": "AABB_INDEX_QUERY_2D",
+            "contract": "generic_aabb_intersection_pair_rows_2d",
+            "backend": "optix",
+            "operation": "range_intersection_rows",
+            "row_schema": ("query_id", "indexed_id"),
+            "candidate_id_rows": rows,
+            "valid_count": len(rows),
+            "row_capacity": int(row_capacity),
+            "overflowed": False,
+            "complete_candidate_coverage": True,
+            "rt_core_accelerated": True,
+            "native_engine_customization": False,
+            "native_generic_symbol": (
+                "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows"
+            ),
+            "claim_boundary": (
+                "Generic OptiX AABB_INDEX_QUERY_2D range_intersection_rows output; "
+                "returns app-name-free query/indexed id pairs only. Exact app "
+                "semantics remain outside the engine."
+            ),
+        }
+
     def close(self) -> None:
         if self._closed:
             return
@@ -8061,6 +8145,19 @@ class PreparedOptixAabbIndex2D:
 
 def prepare_optix_aabb_index_2d(boxes) -> PreparedOptixAabbIndex2D:
     return PreparedOptixAabbIndex2D(boxes)
+
+
+def collect_aabb_intersection_pair_rows_2d_optix(
+    indexed_boxes,
+    query_boxes,
+    *,
+    row_capacity: int,
+) -> dict[str, object]:
+    with PreparedOptixAabbIndex2D(indexed_boxes) as prepared:
+        return prepared.collect_range_intersection_rows(
+            query_boxes,
+            row_capacity=row_capacity,
+        )
 
 
 @dataclass(frozen=True)
@@ -12438,6 +12535,23 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_aabb_index2d_packed_queries.restype = ctypes.c_int
+    optional_collect_aabb_index2d_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows",
+    )
+    if optional_collect_aabb_index2d_rows is not None:
+        optional_collect_aabb_index2d_rows.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAabbPairRow),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_aabb_index2d_rows.restype = ctypes.c_int
     optional_destroy_aabb_queries2d = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_destroy_prepared_aabb_queries_2d",

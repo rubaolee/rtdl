@@ -54,6 +54,17 @@ from .primitives import shape_hit_count
 from .primitives import shape_pair_overlap_rows
 from .primitives import shape_set_similarity
 from .primitives import within_radius
+from .primitive_hierarchy import APP_OWNED_BOUNDARY_EXCLUSIONS
+from .primitive_hierarchy import PRIMITIVE_HIERARCHY
+from .primitive_hierarchy import PRIMITIVE_HIERARCHY_LAYER_ORDER
+from .primitive_hierarchy import PRIMITIVE_HIERARCHY_STATUSES
+from .primitive_hierarchy import PRIMITIVE_HIERARCHY_VERSION
+from .primitive_hierarchy import PrimitiveHierarchyNode
+from .primitive_hierarchy import find_primitive_hierarchy_node
+from .primitive_hierarchy import iter_primitive_hierarchy_nodes
+from .primitive_hierarchy import primitive_hierarchy
+from .primitive_hierarchy import primitive_layer_map
+from .primitive_hierarchy import validate_primitive_hierarchy
 from .adaptive_runtime import ADAPTIVE_BACKEND_NAME
 from .adaptive_runtime import ADAPTIVE_COMPAT_MODE
 from .adaptive_runtime import ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE
@@ -459,6 +470,7 @@ from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d_device_search_columns
 from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
 from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
+from .optix_runtime import collect_aabb_intersection_pair_rows_2d_optix
 from .optix_runtime import prepare_optix_aabb_index_2d
 from .optix_runtime import prepare_optix_aabb_point_queries_2d
 from .optix_runtime import prepare_optix_aabb_box_queries_2d
@@ -865,6 +877,7 @@ from .aabb_index import AABB_INDEX_2D_OPERATIONS
 from .aabb_index import Aabb2D
 from .aabb_index import AabbIndex2D
 from .aabb_index import OptixAabbIndex2D
+from .aabb_index import aabb_intersection_pair_rows_2d
 from .aabb_index import prepare_aabb_index_2d
 from .aabb_index import query_aabb_index_2d
 from .generic_primitives import ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS
@@ -1146,6 +1159,12 @@ __all__ = [
     "GROUPED_REDUCTION_OUTPUT_MODE_COMPACT_ROWS",
     "GROUPED_REDUCTION_OVERFLOW_POLICY_FAIL_CLOSED",
     "GROUPED_REDUCTION_VALUE_OPERATIONS",
+    "APP_OWNED_BOUNDARY_EXCLUSIONS",
+    "PRIMITIVE_HIERARCHY",
+    "PRIMITIVE_HIERARCHY_LAYER_ORDER",
+    "PRIMITIVE_HIERARCHY_STATUSES",
+    "PRIMITIVE_HIERARCHY_VERSION",
+    "PrimitiveHierarchyNode",
     "PARTNER_RESIDENT_COLUMNAR_BACKENDS",
     "PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_STATUS",
     "PARTNER_RESIDENT_COLUMNAR_NATIVE_EXECUTION_TARGET",
@@ -1232,6 +1251,11 @@ __all__ = [
     "plan_columnar_aggregate_lowering",
     "grouped_reduction_contract_metadata",
     "grouped_reduction_spec_from_columnar_plan",
+    "find_primitive_hierarchy_node",
+    "iter_primitive_hierarchy_nodes",
+    "primitive_hierarchy",
+    "primitive_layer_map",
+    "validate_primitive_hierarchy",
     "normalize_grouped_reduction_spec",
     "run_partner_ray_triangle_any_hit_2d",
     "validate_v2_0_partner_protocol_contract",
@@ -1302,6 +1326,7 @@ __all__ = [
     "Aabb2D",
     "AabbIndex2D",
     "OptixAabbIndex2D",
+    "aabb_intersection_pair_rows_2d",
     "prepare_aabb_index_2d",
     "query_aabb_index_2d",
     "ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS",
@@ -1561,6 +1586,7 @@ __all__ = [
     "prepare_optix_fixed_radius_count_threshold_2d_device_search_columns",
     "prepare_optix_segment_polygon_anyhit_rows_2d",
     "prepare_optix_segment_polygon_hitcount_2d",
+    "collect_aabb_intersection_pair_rows_2d_optix",
     "prepare_optix_aabb_index_2d",
     "prepare_optix_aabb_point_queries_2d",
     "prepare_optix_aabb_box_queries_2d",
@@ -2122,6 +2148,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "closest_hit",
     "compile_kernel",
     "emit",
+    "find_primitive_hierarchy_node",
     "grouped_count",
     "grouped_sum",
     "hit_count",
@@ -2130,6 +2157,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "kernel",
     "nearest",
     "primitives",
+    "primitive_hierarchy",
     "refine",
     "run",
     "shape_any_hit_rows",

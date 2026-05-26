@@ -285,6 +285,13 @@ SMOKE_CASES: tuple[SmokeCase, ...] = (
         ("--mode", "cpu_reference", "--dataset", "tiny", "--repeats", "1", "--warmup", "0"),
     ),
     SmokeCase(
+        "contact_manifold_collect_k_benchmark",
+        "benchmark",
+        "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        ("--mode", "collect_k_reference", "--dataset", "tiny", "--witness-capacity", "3"),
+        note="Promoted benchmark smoke for stable generic COLLECT_K_BOUNDED fail-closed witness rows.",
+    ),
+    SmokeCase(
         "rt_dbscan_benchmark",
         "benchmark",
         "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",

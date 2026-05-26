@@ -98,6 +98,14 @@ struct RtdlAabb2D {
     double min_x, min_y, max_x, max_y;
 };
 
+struct RtdlAabbPairRow {
+    uint32_t query_id;
+    uint32_t indexed_id;
+};
+static_assert(offsetof(RtdlAabbPairRow, query_id) == 0, "RtdlAabbPairRow query offset mismatch");
+static_assert(offsetof(RtdlAabbPairRow, indexed_id) == 4, "RtdlAabbPairRow indexed offset mismatch");
+static_assert(sizeof(RtdlAabbPairRow) == 8, "RtdlAabbPairRow size mismatch");
+
 struct RtdlPoint3D {
     uint32_t id;
     double x, y, z;
@@ -777,6 +785,13 @@ int  rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
          void* prepared_queries,
          uint32_t operation,
          size_t* hit_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows(
+         void* prepared,
+         const RtdlAabb2D* box_queries, size_t box_query_count,
+         RtdlAabbPairRow* rows_out, size_t row_capacity,
+         size_t* emitted_count_out,
+         uint32_t* overflowed_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_aabb_queries_2d(void* prepared_queries);
 void rtdl_optix_destroy_prepared_aabb_index_2d(void* prepared);

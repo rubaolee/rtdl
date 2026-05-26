@@ -1,6 +1,6 @@
 # RTDL Primitive Catalog And Promotion Rules
 
-Date: 2026-05-23
+Date: 2026-05-26
 
 Status: internal architecture catalog. This document organizes the current
 RTDL primitive surface; it does not authorize public release wording, public
@@ -37,13 +37,105 @@ Examples:
 | Robot pose/link sampling | App code | It is robotics domain lowering. |
 | Barnes-Hut inverse-square force law | App/partner code | It is workload math, even if given a generic-looking name. |
 
-## Behavior-First Primitive Taxonomy
+## Hierarchical Primitive Organization
 
-The top-level organization is behavior. Stability, maturity, backend coverage,
-and implementation owner are metadata on a behavior family; they are not the
-primary taxonomy. A user should first ask "what runtime behavior do I need?",
-then check whether that behavior is stable, experimental, internal substrate,
-candidate, or app-owned.
+The top-level organization is a dependency hierarchy. Lower layers provide
+runtime substrate for higher layers. Stability, maturity, backend coverage, and
+implementation owner are metadata on each node; they are not the hierarchy.
+
+The source-of-truth code for this hierarchy is
+`src/rtdsl/primitive_hierarchy.py` and is exported as:
+
+```python
+rtdsl.primitive_hierarchy()
+rtdsl.primitive_layer_map()
+rtdsl.validate_primitive_hierarchy()
+```
+
+Approved layer order:
+
+```text
+1. Execution / Residency
+2. Traversal
+3. Row Emission
+4. Bounded Materialization
+5. Reduction
+6. Continuation
+7. Candidate / Experimental
+```
+
+Dependency rule:
+
+```text
+Execution / Residency
+-> Traversal
+-> Row Emission
+-> Bounded Materialization or Reduction
+-> Continuation
+-> App semantics
+```
+
+App semantics are deliberately outside the hierarchy. If a proposed native node
+needs DBSCAN, robot, contact, collision, RayDB, RayJoin, RTNN, Barnes-Hut
+force-law, SQL, or graph-domain meaning, it is app/partner code unless it is
+redesigned as an app-independent behavior.
+
+### Current Hierarchy
+
+```text
+Execution / Residency
+  prepared RT state
+  buffer descriptors
+  partner-resident handoff
+  capacity / overflow contracts
+
+Traversal
+  ANY_HIT
+  CLOSEST_HIT / first-hit-like paths
+  COUNT_HITS
+  AABB_INDEX_QUERY_2D predicates
+    point_contains
+    range_contains
+    range_intersects
+  FIXED_RADIUS_COUNT_THRESHOLD
+
+Row Emission
+  generic candidate / witness rows
+  AABB range_intersection_rows
+  segment / polygon rows
+  fixed-radius neighbor rows
+  graph / triangle witness rows
+
+Bounded Materialization
+  COLLECT_K_BOUNDED
+  prepared output buffers
+  row schema validation
+
+Reduction
+  scalar reductions
+    COUNT_HITS
+    REDUCE_INT(COUNT|SUM)
+    REDUCE_FLOAT(MIN|MAX|SUM)
+  grouped / keyed reductions
+    group_any
+    group_count
+    group_sum
+    group_min / group_max
+    group_sum_count / group_stats
+  columnar compact summary
+
+Continuation
+  fixed-radius graph continuation
+  partner-resident continuation
+  segmented / chunked row continuation
+  candidate-quality / ranked-summary continuation
+
+Candidate / Experimental
+  aggregate-frontier traversal
+  streamed / segmented graph lowering
+  device-resident grouped candidate merge / finalize
+  future zero-copy row streams
+```
 
 Status metadata used below:
 
@@ -56,7 +148,13 @@ Status metadata used below:
 | App or partner code | Domain semantics, custom math, or partner-specific implementation that RTDL does not own as a primitive. |
 | Rejected candidate | A proposed primitive violated app-independence or safety rules and must stay out of the engine. |
 
-### Hit And Traversal Predicates
+## Layer Details
+
+The sections below provide behavior details for the hierarchy nodes. A user
+should first identify the layer and behavior they need, then check status,
+backend coverage, and claim boundaries.
+
+### Traversal Layer
 
 These behaviors answer whether prepared/query geometry intersects or hits.
 
@@ -72,7 +170,7 @@ ANY_HIT -> group_any
 ANY_HIT -> app-owned postprocessing
 ```
 
-### Spatial Neighborhood Predicates
+### Spatial Neighborhood Traversal
 
 These behaviors evaluate fixed-radius spatial relationships without requiring
 full neighbor-row materialization.
@@ -98,7 +196,7 @@ The stable behavior is not a broad GIS overlay engine. Full overlay semantics,
 domain-specific score interpretation, and row-level app workflows remain
 outside the primitive.
 
-### Scalar Reductions
+### Reduction Layer: Scalar Reductions
 
 These behaviors reduce a stream of primitive outputs to scalar summaries.
 
@@ -111,7 +209,7 @@ These behaviors reduce a stream of primitive outputs to scalar summaries.
 | `REDUCE_INT(COUNT)` | Stable primitive | Integer count reduction. |
 | `REDUCE_INT(SUM)` | Stable primitive | Integer sum reduction. |
 
-### Grouped And Keyed Reductions
+### Reduction Layer: Grouped And Keyed Reductions
 
 These behaviors reduce rows by group key. They are recorded in
 `src/rtdsl/grouped_reduction.py` as `rtdl.grouped_reduction.v1`.
@@ -131,7 +229,7 @@ Grouped-reduction operations are reusable behavior, but backend support and
 external stability are separate decisions. Do not call them stable external
 primitives until promotion explicitly says so.
 
-### Columnar Compact Summaries
+### Reduction Layer: Columnar Compact Summaries
 
 These behaviors produce compact columnar aggregate summaries without claiming
 SQL or DBMS semantics.
@@ -143,17 +241,19 @@ SQL or DBMS semantics.
 This behavior is not SQL, a DBMS, a query planner, joins, indexes,
 transactions, or row-output materialization.
 
-### Collection And Row Materialization
+### Row Emission And Bounded Materialization Layers
 
 These behaviors return bounded rows or witness/candidate rows rather than only
 compact summaries.
 
 | Primitive or operation | Status | Behavior | Boundary |
 | --- | --- | --- | --- |
-| `COLLECT_K_BOUNDED` | Experimental primitive | Bounded row collection with exact fail-closed overflow policy | Requires native Embree/OptiX parity, benchmarks, and external review before stable promotion. |
+| `AABB_INDEX_QUERY_2D` range intersection rows | Internal generic row path | Emit `(query_id, indexed_id)` candidate rows for 2-D AABB intersections from a prepared generic index | Goal2622 added the CPU reference row path; Goal2623 added the generic OptiX native row emitter with explicit fail-closed capacity overflow. Exact app refinement remains outside the engine. |
+| `COLLECT_K_BOUNDED` | Stable primitive | Bounded row collection with exact fail-closed overflow policy | Promoted by Goal2621 contact-manifold evidence: local Mac Embree parity, RTX A5000 OptiX parity, standalone C++ CPU baseline, and 3-AI promotion consensus. Linux Embree parity has not been separately recorded. |
+| bounded witness-row collection | Stable behavior | App-facing witness rows over an app-owned row schema, routed through `COLLECT_K_BOUNDED` when bounded materialization is required | The app may call rows collision/contact witnesses, but the primitive only owns generic candidate-id row collection. |
 | witness/candidate row paths | App or partner code unless promoted | App-facing row materialization for a specific workflow | Must not silently truncate exact outputs. |
 
-### Aggregate Frontier And Tree Traversal
+### Candidate / Experimental Layer: Aggregate Frontier And Tree Traversal
 
 These behaviors are candidate areas exposed by Barnes-Hut-style workloads, but
 the accepted generic contract is not finished.
@@ -221,6 +321,7 @@ substrates.
 | --- | --- | --- |
 | RT-DBSCAN | Fixed-radius graph continuation, grouped union, adjacency and continuation memory pressure | Generic fixed-radius and grouped-continuation pressure; DBSCAN cluster expansion stayed app code. |
 | Robot collision | Prepared static scene reuse, grouped finite segment probes, group-any pose flags, count-only result | Generic prepared any-hit/group-any and buffer-reuse pressure; robot pose/link semantics stayed app code. |
+| Bounded contact witness / contact-manifold | Exact bounded witness rows, fail-closed overflow, and app-owned contact summaries | Promoted `COLLECT_K_BOUNDED` as a stable generic bounded row primitive with row schema `(query_group_id, query_triangle_id, scene_triangle_id)`; Goal2622 added generic `AABB_INDEX_QUERY_2D` broadphase candidate rows so full all-pairs discovery is no longer the optimized path; collision/contact semantics stay in Python app code. |
 | RayDB-style | Columnar grouped count/sum/min/max/stats, device column handoff, group capacity | `DeviceColumnDescriptor` and `rtdl.grouped_reduction.v1`; SQL/DBMS semantics stayed app code. |
 | Barnes-Hut | Aggregate frontier traversal and fused force accumulation pressure | Aggregate-frontier primitive remains future work; app-specific inverse-square native primitive was rejected. |
 

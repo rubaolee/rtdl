@@ -40,6 +40,7 @@ RTDL language/runtime design, not broad paper-reproduction claims.
 | LibRTS-style spatial index | `examples/v2_0/research_benchmarks/librts_spatial_index/` | Generic 2-D AABB point/range contains/intersects count-only paths | Promoted internal benchmark slice; not full mutable LibRTS reproduction |
 | RTNN neighbor search | `examples/v2_0/research_benchmarks/rtnn/` | Prepared 3-D fixed-radius bounded ranked-summary rows and ANN candidate-quality helpers | Promoted benchmark front door with strict same-contract boundary; not a full RTNN paper reproduction |
 | Triangle counting | `examples/v2_0/research_benchmarks/triangle_counting/` | RT-Graph-style triangle witness rows or compact triangle summary | Promoted graph benchmark slice; larger paper datasets require future segmented/streamed lowering |
+| Bounded contact witness / contact-manifold | `examples/v2_0/research_benchmarks/contact_manifold/` | Generic `AABB_INDEX_QUERY_2D` broadphase rows plus `COLLECT_K_BOUNDED` witness rows `(query_group_id, query_triangle_id, scene_triangle_id)` with exact fail-closed overflow | Promoted benchmark for generic bounded witness collection; Goal2622 removed full Python all-pairs discovery, Goal2623 adds generic OptiX AABB row output; no native contact/collision ABI and no speedup claim |
 
 ### Learner And Example Apps
 

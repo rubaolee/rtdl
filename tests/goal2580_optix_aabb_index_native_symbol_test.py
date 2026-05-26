@@ -18,8 +18,10 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
 
         for symbol in (
             "RtdlAabb2D",
+            "RtdlAabbPairRow",
             "rtdl_optix_prepare_aabb_index_2d",
             "rtdl_optix_count_prepared_aabb_index_2d",
+            "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows",
             "rtdl_optix_prepare_aabb_point_queries_2d",
             "rtdl_optix_prepare_aabb_box_queries_2d",
             "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",
@@ -29,6 +31,7 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         self.assertIn("PreparedAabbIndex2DOptix", workloads)
         self.assertIn("PreparedAabbIndexQueries2DOptix", workloads)
         self.assertIn("prepare_optix_aabb_index_2d", wrapper)
+        self.assertIn("collect_aabb_intersection_pair_rows_2d_optix", wrapper)
         self.assertIn("prepare_optix_aabb_point_queries_2d", wrapper)
         self.assertIn("prepare_optix_aabb_box_queries_2d", wrapper)
         self.assertNotIn("librts", (prelude + api + workloads).lower())
@@ -42,11 +45,12 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         self.assertIn("count_prepared_aabb_index_2d_range_intersects_optix", workloads)
         self.assertIn("OPTIX_AABB_INDEX_RANGE_INTERSECTS = 3", wrapper)
 
-    def test_contract_documents_count_only_optix_boundary(self) -> None:
+    def test_contract_documents_optix_row_output_boundary(self) -> None:
         self.assertEqual(
             rt.AABB_INDEX_2D_CONTRACT["backend_status"]["optix"],
-            "native_count_only_point_contains_range_contains_range_intersects",
+            "native_count_point_contains_range_contains_range_intersects_and_range_intersection_rows",
         )
+        self.assertIn("collect_aabb_intersection_pair_rows_2d_optix", rt.__all__)
         self.assertIn("prepare_optix_aabb_index_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_point_queries_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_box_queries_2d", rt.__all__)

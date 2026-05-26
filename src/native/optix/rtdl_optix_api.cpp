@@ -1209,6 +1209,26 @@ extern "C" int rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows(
+        void* prepared,
+        const RtdlAabb2D* box_queries, size_t box_query_count,
+        RtdlAabbPairRow* rows_out, size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_prepared_aabb_index_2d_range_intersection_rows_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            box_queries,
+            box_query_count,
+            rows_out,
+            row_capacity,
+            emitted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_aabb_queries_2d(void* prepared_queries)
 {
     delete reinterpret_cast<PreparedAabbIndexQueries2DOptix*>(prepared_queries);
