@@ -659,6 +659,15 @@ def _choose_primary_metric(
     metrics = _walk_metrics(payload)
     if hinted is not None and hinted_source is not None:
         return hinted, hinted_source, metrics
+    workloads = payload.get("workloads")
+    if isinstance(workloads, dict):
+        elapsed_values = [
+            _numeric(workload.get("elapsed_sec"))
+            for workload in workloads.values()
+            if isinstance(workload, dict)
+        ]
+        if elapsed_values and all(value is not None for value in elapsed_values):
+            return float(sum(elapsed_values)), "workloads.total_elapsed_sec", metrics
     preferred_names = (
         "elapsed_sec",
         "native_collect_elapsed_sec",

@@ -1,0 +1,955 @@
+{
+  "case_repeat": 3,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "CUDA_PREFIX": "/usr/local/cuda-12.6",
+      "LD_LIBRARY_PATH": "/root/rtdl_goal2626/rtdl/build:/usr/local/cuda-12.6/lib64:/usr/local/cuda-12.6/targets/x86_64-linux/lib:",
+      "OPTIX_PREFIX": "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2626/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2626/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "0a2ed76efeab07e79ccad004b978befde0d383db",
+    "git_status_short": "?? docs/reports/goal2626_benchmark_embree_optix_baseline_pod/\n?? docs/reports/goal2626_benchmark_embree_optix_baseline_pod_main9/\n?? docs/reports/goal2626_benchmark_embree_optix_baseline_pod_quick/\n?? docs/reports/goal2626_benchmark_embree_optix_baseline_pod_quick_rtnn_compute86/\n?? docs/reports/goal2626_benchmark_embree_optix_baseline_pod_quick_rtnn_cuda126/\n?? docs/reports/goal2626_benchmark_embree_optix_baseline_pod_quick_rtnn_cuda126_nvcc/",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2626/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2626/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [
+      "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64/include/optix.h"
+    ],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2626/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-26T18:48:26+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "contact_manifold",
+      "comparison_group": "native_collect_k_i64",
+      "embree_sec": 0.0003137611784040928,
+      "embree_speedup_vs_optix": 1.2434012024393104,
+      "metric_sources": {
+        "embree": "native_collect_elapsed_sec",
+        "optix": "native_collect_elapsed_sec"
+      },
+      "optix_sec": 0.00039013102650642395,
+      "optix_speedup_vs_embree": 0.8042456433516353
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "contact_manifold",
+      "app_name": "Bounded contact witness / contact-manifold",
+      "backend": "embree",
+      "case_id": "contact_manifold_embree_native_collect_k",
+      "comparison_group": "native_collect_k_i64",
+      "notes": "Measures the generic native COLLECT_K_BOUNDED i64 collector over Python oracle rows, not collision-specific engine logic.",
+      "payload": {
+        "app": "bounded_collision_witness_contact_manifold",
+        "backend": "embree",
+        "candidate_id_rows": [
+          [
+            0,
+            20000,
+            10000
+          ],
+          [
+            1,
+            20001,
+            10001
+          ],
+          [
+            2,
+            20002,
+            10002
+          ],
+          [
+            3,
+            20003,
+            10003
+          ],
+          [
+            4,
+            20004,
+            10004
+          ],
+          [
+            5,
+            20005,
+            10005
+          ],
+          [
+            6,
+            20006,
+            10006
+          ],
+          [
+            7,
+            20007,
+            10007
+          ],
+          [
+            8,
+            20008,
+            10008
+          ],
+          [
+            9,
+            20009,
+            10009
+          ],
+          [
+            10,
+            20010,
+            10010
+          ],
+          [
+            11,
+            20011,
+            10011
+          ],
+          [
+            12,
+            20012,
+            10012
+          ],
+          [
+            13,
+            20013,
+            10013
+          ],
+          [
+            14,
+            20014,
+            10014
+          ],
+          [
+            15,
+            20015,
+            10015
+          ],
+          [
+            16,
+            20016,
+            10016
+          ],
+          [
+            17,
+            20017,
+            10017
+          ],
+          [
+            18,
+            20018,
+            10018
+          ],
+          [
+            19,
+            20019,
+            10019
+          ],
+          [
+            20,
+            20020,
+            10020
+          ],
+          [
+            21,
+            20021,
+            10021
+          ],
+          [
+            22,
+            20022,
+            10022
+          ],
+          [
+            23,
+            20023,
+            10023
+          ],
+          [
+            24,
+            20024,
+            10024
+          ],
+          [
+            25,
+            20025,
+            10025
+          ],
+          [
+            26,
+            20026,
+            10026
+          ],
+          [
+            27,
+            20027,
+            10027
+          ],
+          [
+            28,
+            20028,
+            10028
+          ],
+          [
+            29,
+            20029,
+            10029
+          ],
+          [
+            30,
+            20030,
+            10030
+          ],
+          [
+            31,
+            20031,
+            10031
+          ],
+          [
+            32,
+            20032,
+            10032
+          ],
+          [
+            33,
+            20033,
+            10033
+          ],
+          [
+            34,
+            20034,
+            10034
+          ],
+          [
+            35,
+            20035,
+            10035
+          ],
+          [
+            36,
+            20036,
+            10036
+          ],
+          [
+            37,
+            20037,
+            10037
+          ],
+          [
+            38,
+            20038,
+            10038
+          ],
+          [
+            39,
+            20039,
+            10039
+          ],
+          [
+            40,
+            20040,
+            10040
+          ],
+          [
+            41,
+            20041,
+            10041
+          ],
+          [
+            42,
+            20042,
+            10042
+          ],
+          [
+            43,
+            20043,
+            10043
+          ],
+          [
+            44,
+            20044,
+            10044
+          ],
+          [
+            45,
+            20045,
+            10045
+          ],
+          [
+            46,
+            20046,
+            10046
+          ],
+          [
+            47,
+            20047,
+            10047
+          ],
+          [
+            48,
+            20048,
+            10048
+          ],
+          [
+            49,
+            20049,
+            10049
+          ],
+          [
+            50,
+            20050,
+            10050
+          ],
+          [
+            51,
+            20051,
+            10051
+          ],
+          [
+            52,
+            20052,
+            10052
+          ],
+          [
+            53,
+            20053,
+            10053
+          ],
+          [
+            54,
+            20054,
+            10054
+          ],
+          [
+            55,
+            20055,
+            10055
+          ],
+          [
+            56,
+            20056,
+            10056
+          ],
+          [
+            57,
+            20057,
+            10057
+          ],
+          [
+            58,
+            20058,
+            10058
+          ],
+          [
+            59,
+            20059,
+            10059
+          ],
+          [
+            60,
+            20060,
+            10060
+          ],
+          [
+            61,
+            20061,
+            10061
+          ],
+          [
+            62,
+            20062,
+            10062
+          ],
+          [
+            63,
+            20063,
+            10063
+          ]
+        ],
+        "claim_boundary": "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.",
+        "complete_candidate_coverage": true,
+        "cpu_reference_elapsed_sec": 0.06597646791487932,
+        "cpu_reference_valid_count": 64,
+        "dataset": "grid_64",
+        "engine_boundary": {
+          "candidate_discovery_owner": "AABB_INDEX_QUERY_2D",
+          "contact_manifold_logic_owner": "Python app/reference or partner continuation",
+          "engine_primitive_owner": "COLLECT_K_BOUNDED",
+          "native_collision_logic_allowed": false
+        },
+        "library_path": "/root/rtdl_goal2626/rtdl/build/librtdl_embree.so",
+        "matches_cpu_reference": true,
+        "mode": "native_collect_k",
+        "native_collect_elapsed_sec": 0.0003137611784040928,
+        "native_generic_symbol": "rtdl_embree_collect_k_bounded_i64",
+        "overflowed": false,
+        "primitive_under_test": "COLLECT_K_BOUNDED",
+        "row_schema": [
+          "query_group_id",
+          "query_triangle_id",
+          "scene_triangle_id"
+        ],
+        "valid_count": 64,
+        "witness_capacity": 64
+      },
+      "primary_metric_sec": 0.0003137611784040928,
+      "primary_metric_source": "native_collect_elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "--mode",
+            "native_collect_k",
+            "--dataset",
+            "grid",
+            "--grid-count",
+            "64",
+            "--witness-capacity",
+            "64",
+            "--backend",
+            "embree"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "02,\n      10002\n    ],\n    [\n      3,\n      20003,\n      10003\n    ],\n    [\n      4,\n      20004,\n      10004\n    ],\n    [\n      5,\n      20005,\n      10005\n    ],\n    [\n      6,\n      20006,\n      10006\n    ],\n    [\n      7,\n      20007,\n      10007\n    ],\n    [\n      8,\n      20008,\n      10008\n    ],\n    [\n      9,\n      20009,\n      10009\n    ],\n    [\n      10,\n      20010,\n      10010\n    ],\n    [\n      11,\n      20011,\n      10011\n    ],\n    [\n      12,\n      20012,\n      10012\n    ],\n    [\n      13,\n      20013,\n      10013\n    ],\n    [\n      14,\n      20014,\n      10014\n    ],\n    [\n      15,\n      20015,\n      10015\n    ],\n    [\n      16,\n      20016,\n      10016\n    ],\n    [\n      17,\n      20017,\n      10017\n    ],\n    [\n      18,\n      20018,\n      10018\n    ],\n    [\n      19,\n      20019,\n      10019\n    ],\n    [\n      20,\n      20020,\n      10020\n    ],\n    [\n      21,\n      20021,\n      10021\n    ],\n    [\n      22,\n      20022,\n      10022\n    ],\n    [\n      23,\n      20023,\n      10023\n    ],\n    [\n      24,\n      20024,\n      10024\n    ],\n    [\n      25,\n      20025,\n      10025\n    ],\n    [\n      26,\n      20026,\n      10026\n    ],\n    [\n      27,\n      20027,\n      10027\n    ],\n    [\n      28,\n      20028,\n      10028\n    ],\n    [\n      29,\n      20029,\n      10029\n    ],\n    [\n      30,\n      20030,\n      10030\n    ],\n    [\n      31,\n      20031,\n      10031\n    ],\n    [\n      32,\n      20032,\n      10032\n    ],\n    [\n      33,\n      20033,\n      10033\n    ],\n    [\n      34,\n      20034,\n      10034\n    ],\n    [\n      35,\n      20035,\n      10035\n    ],\n    [\n      36,\n      20036,\n      10036\n    ],\n    [\n      37,\n      20037,\n      10037\n    ],\n    [\n      38,\n      20038,\n      10038\n    ],\n    [\n      39,\n      20039,\n      10039\n    ],\n    [\n      40,\n      20040,\n      10040\n    ],\n    [\n      41,\n      20041,\n      10041\n    ],\n    [\n      42,\n      20042,\n      10042\n    ],\n    [\n      43,\n      20043,\n      10043\n    ],\n    [\n      44,\n      20044,\n      10044\n    ],\n    [\n      45,\n      20045,\n      10045\n    ],\n    [\n      46,\n      20046,\n      10046\n    ],\n    [\n      47,\n      20047,\n      10047\n    ],\n    [\n      48,\n      20048,\n      10048\n    ],\n    [\n      49,\n      20049,\n      10049\n    ],\n    [\n      50,\n      20050,\n      10050\n    ],\n    [\n      51,\n      20051,\n      10051\n    ],\n    [\n      52,\n      20052,\n      10052\n    ],\n    [\n      53,\n      20053,\n      10053\n    ],\n    [\n      54,\n      20054,\n      10054\n    ],\n    [\n      55,\n      20055,\n      10055\n    ],\n    [\n      56,\n      20056,\n      10056\n    ],\n    [\n      57,\n      20057,\n      10057\n    ],\n    [\n      58,\n      20058,\n      10058\n    ],\n    [\n      59,\n      20059,\n      10059\n    ],\n    [\n      60,\n      20060,\n      10060\n    ],\n    [\n      61,\n      20061,\n      10061\n    ],\n    [\n      62,\n      20062,\n      10062\n    ],\n    [\n      63,\n      20063,\n      10063\n    ]\n  ],\n  \"claim_boundary\": \"Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.\",\n  \"complete_candidate_coverage\": true,\n  \"cpu_reference_elapsed_sec\": 0.07397453812882304,\n  \"cpu_reference_valid_count\": 64,\n  \"dataset\": \"grid_64\",\n  \"engine_boundary\": {\n    \"candidate_discovery_owner\": \"AABB_INDEX_QUERY_2D\",\n    \"contact_manifold_logic_owner\": \"Python app/reference or partner continuation\",\n    \"engine_primitive_owner\": \"COLLECT_K_BOUNDED\",\n    \"native_collision_logic_allowed\": false\n  },\n  \"library_path\": \"/root/rtdl_goal2626/rtdl/build/librtdl_embree.so\",\n  \"matches_cpu_reference\": true,\n  \"mode\": \"native_collect_k\",\n  \"native_collect_elapsed_sec\": 0.0004273410886526108,\n  \"native_generic_symbol\": \"rtdl_embree_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"valid_count\": 64,\n  \"witness_capacity\": 64\n}\n",
+          "wall_elapsed_sec": 0.5259720308240503
+        },
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "--mode",
+            "native_collect_k",
+            "--dataset",
+            "grid",
+            "--grid-count",
+            "64",
+            "--witness-capacity",
+            "64",
+            "--backend",
+            "embree"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "02,\n      10002\n    ],\n    [\n      3,\n      20003,\n      10003\n    ],\n    [\n      4,\n      20004,\n      10004\n    ],\n    [\n      5,\n      20005,\n      10005\n    ],\n    [\n      6,\n      20006,\n      10006\n    ],\n    [\n      7,\n      20007,\n      10007\n    ],\n    [\n      8,\n      20008,\n      10008\n    ],\n    [\n      9,\n      20009,\n      10009\n    ],\n    [\n      10,\n      20010,\n      10010\n    ],\n    [\n      11,\n      20011,\n      10011\n    ],\n    [\n      12,\n      20012,\n      10012\n    ],\n    [\n      13,\n      20013,\n      10013\n    ],\n    [\n      14,\n      20014,\n      10014\n    ],\n    [\n      15,\n      20015,\n      10015\n    ],\n    [\n      16,\n      20016,\n      10016\n    ],\n    [\n      17,\n      20017,\n      10017\n    ],\n    [\n      18,\n      20018,\n      10018\n    ],\n    [\n      19,\n      20019,\n      10019\n    ],\n    [\n      20,\n      20020,\n      10020\n    ],\n    [\n      21,\n      20021,\n      10021\n    ],\n    [\n      22,\n      20022,\n      10022\n    ],\n    [\n      23,\n      20023,\n      10023\n    ],\n    [\n      24,\n      20024,\n      10024\n    ],\n    [\n      25,\n      20025,\n      10025\n    ],\n    [\n      26,\n      20026,\n      10026\n    ],\n    [\n      27,\n      20027,\n      10027\n    ],\n    [\n      28,\n      20028,\n      10028\n    ],\n    [\n      29,\n      20029,\n      10029\n    ],\n    [\n      30,\n      20030,\n      10030\n    ],\n    [\n      31,\n      20031,\n      10031\n    ],\n    [\n      32,\n      20032,\n      10032\n    ],\n    [\n      33,\n      20033,\n      10033\n    ],\n    [\n      34,\n      20034,\n      10034\n    ],\n    [\n      35,\n      20035,\n      10035\n    ],\n    [\n      36,\n      20036,\n      10036\n    ],\n    [\n      37,\n      20037,\n      10037\n    ],\n    [\n      38,\n      20038,\n      10038\n    ],\n    [\n      39,\n      20039,\n      10039\n    ],\n    [\n      40,\n      20040,\n      10040\n    ],\n    [\n      41,\n      20041,\n      10041\n    ],\n    [\n      42,\n      20042,\n      10042\n    ],\n    [\n      43,\n      20043,\n      10043\n    ],\n    [\n      44,\n      20044,\n      10044\n    ],\n    [\n      45,\n      20045,\n      10045\n    ],\n    [\n      46,\n      20046,\n      10046\n    ],\n    [\n      47,\n      20047,\n      10047\n    ],\n    [\n      48,\n      20048,\n      10048\n    ],\n    [\n      49,\n      20049,\n      10049\n    ],\n    [\n      50,\n      20050,\n      10050\n    ],\n    [\n      51,\n      20051,\n      10051\n    ],\n    [\n      52,\n      20052,\n      10052\n    ],\n    [\n      53,\n      20053,\n      10053\n    ],\n    [\n      54,\n      20054,\n      10054\n    ],\n    [\n      55,\n      20055,\n      10055\n    ],\n    [\n      56,\n      20056,\n      10056\n    ],\n    [\n      57,\n      20057,\n      10057\n    ],\n    [\n      58,\n      20058,\n      10058\n    ],\n    [\n      59,\n      20059,\n      10059\n    ],\n    [\n      60,\n      20060,\n      10060\n    ],\n    [\n      61,\n      20061,\n      10061\n    ],\n    [\n      62,\n      20062,\n      10062\n    ],\n    [\n      63,\n      20063,\n      10063\n    ]\n  ],\n  \"claim_boundary\": \"Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.\",\n  \"complete_candidate_coverage\": true,\n  \"cpu_reference_elapsed_sec\": 0.06923257000744343,\n  \"cpu_reference_valid_count\": 64,\n  \"dataset\": \"grid_64\",\n  \"engine_boundary\": {\n    \"candidate_discovery_owner\": \"AABB_INDEX_QUERY_2D\",\n    \"contact_manifold_logic_owner\": \"Python app/reference or partner continuation\",\n    \"engine_primitive_owner\": \"COLLECT_K_BOUNDED\",\n    \"native_collision_logic_allowed\": false\n  },\n  \"library_path\": \"/root/rtdl_goal2626/rtdl/build/librtdl_embree.so\",\n  \"matches_cpu_reference\": true,\n  \"mode\": \"native_collect_k\",\n  \"native_collect_elapsed_sec\": 0.0003170308191329241,\n  \"native_generic_symbol\": \"rtdl_embree_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"valid_count\": 64,\n  \"witness_capacity\": 64\n}\n",
+          "wall_elapsed_sec": 0.492040823912248
+        },
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "--mode",
+            "native_collect_k",
+            "--dataset",
+            "grid",
+            "--grid-count",
+            "64",
+            "--witness-capacity",
+            "64",
+            "--backend",
+            "embree"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "02,\n      10002\n    ],\n    [\n      3,\n      20003,\n      10003\n    ],\n    [\n      4,\n      20004,\n      10004\n    ],\n    [\n      5,\n      20005,\n      10005\n    ],\n    [\n      6,\n      20006,\n      10006\n    ],\n    [\n      7,\n      20007,\n      10007\n    ],\n    [\n      8,\n      20008,\n      10008\n    ],\n    [\n      9,\n      20009,\n      10009\n    ],\n    [\n      10,\n      20010,\n      10010\n    ],\n    [\n      11,\n      20011,\n      10011\n    ],\n    [\n      12,\n      20012,\n      10012\n    ],\n    [\n      13,\n      20013,\n      10013\n    ],\n    [\n      14,\n      20014,\n      10014\n    ],\n    [\n      15,\n      20015,\n      10015\n    ],\n    [\n      16,\n      20016,\n      10016\n    ],\n    [\n      17,\n      20017,\n      10017\n    ],\n    [\n      18,\n      20018,\n      10018\n    ],\n    [\n      19,\n      20019,\n      10019\n    ],\n    [\n      20,\n      20020,\n      10020\n    ],\n    [\n      21,\n      20021,\n      10021\n    ],\n    [\n      22,\n      20022,\n      10022\n    ],\n    [\n      23,\n      20023,\n      10023\n    ],\n    [\n      24,\n      20024,\n      10024\n    ],\n    [\n      25,\n      20025,\n      10025\n    ],\n    [\n      26,\n      20026,\n      10026\n    ],\n    [\n      27,\n      20027,\n      10027\n    ],\n    [\n      28,\n      20028,\n      10028\n    ],\n    [\n      29,\n      20029,\n      10029\n    ],\n    [\n      30,\n      20030,\n      10030\n    ],\n    [\n      31,\n      20031,\n      10031\n    ],\n    [\n      32,\n      20032,\n      10032\n    ],\n    [\n      33,\n      20033,\n      10033\n    ],\n    [\n      34,\n      20034,\n      10034\n    ],\n    [\n      35,\n      20035,\n      10035\n    ],\n    [\n      36,\n      20036,\n      10036\n    ],\n    [\n      37,\n      20037,\n      10037\n    ],\n    [\n      38,\n      20038,\n      10038\n    ],\n    [\n      39,\n      20039,\n      10039\n    ],\n    [\n      40,\n      20040,\n      10040\n    ],\n    [\n      41,\n      20041,\n      10041\n    ],\n    [\n      42,\n      20042,\n      10042\n    ],\n    [\n      43,\n      20043,\n      10043\n    ],\n    [\n      44,\n      20044,\n      10044\n    ],\n    [\n      45,\n      20045,\n      10045\n    ],\n    [\n      46,\n      20046,\n      10046\n    ],\n    [\n      47,\n      20047,\n      10047\n    ],\n    [\n      48,\n      20048,\n      10048\n    ],\n    [\n      49,\n      20049,\n      10049\n    ],\n    [\n      50,\n      20050,\n      10050\n    ],\n    [\n      51,\n      20051,\n      10051\n    ],\n    [\n      52,\n      20052,\n      10052\n    ],\n    [\n      53,\n      20053,\n      10053\n    ],\n    [\n      54,\n      20054,\n      10054\n    ],\n    [\n      55,\n      20055,\n      10055\n    ],\n    [\n      56,\n      20056,\n      10056\n    ],\n    [\n      57,\n      20057,\n      10057\n    ],\n    [\n      58,\n      20058,\n      10058\n    ],\n    [\n      59,\n      20059,\n      10059\n    ],\n    [\n      60,\n      20060,\n      10060\n    ],\n    [\n      61,\n      20061,\n      10061\n    ],\n    [\n      62,\n      20062,\n      10062\n    ],\n    [\n      63,\n      20063,\n      10063\n    ]\n  ],\n  \"claim_boundary\": \"Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.\",\n  \"complete_candidate_coverage\": true,\n  \"cpu_reference_elapsed_sec\": 0.06597646791487932,\n  \"cpu_reference_valid_count\": 64,\n  \"dataset\": \"grid_64\",\n  \"engine_boundary\": {\n    \"candidate_discovery_owner\": \"AABB_INDEX_QUERY_2D\",\n    \"contact_manifold_logic_owner\": \"Python app/reference or partner continuation\",\n    \"engine_primitive_owner\": \"COLLECT_K_BOUNDED\",\n    \"native_collision_logic_allowed\": false\n  },\n  \"library_path\": \"/root/rtdl_goal2626/rtdl/build/librtdl_embree.so\",\n  \"matches_cpu_reference\": true,\n  \"mode\": \"native_collect_k\",\n  \"native_collect_elapsed_sec\": 0.0003137611784040928,\n  \"native_generic_symbol\": \"rtdl_embree_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"valid_count\": 64,\n  \"witness_capacity\": 64\n}\n",
+          "wall_elapsed_sec": 0.49740583403036
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "cpu_reference_elapsed_sec",
+          0.06597646791487932
+        ],
+        [
+          "native_collect_elapsed_sec",
+          0.0003137611784040928
+        ]
+      ],
+      "wall_median_sec": 0.49740583403036
+    },
+    {
+      "app_id": "contact_manifold",
+      "app_name": "Bounded contact witness / contact-manifold",
+      "backend": "optix",
+      "case_id": "contact_manifold_optix_native_collect_k",
+      "comparison_group": "native_collect_k_i64",
+      "notes": "Measures the generic native COLLECT_K_BOUNDED i64 collector over Python oracle rows, not collision-specific engine logic.",
+      "payload": {
+        "app": "bounded_collision_witness_contact_manifold",
+        "backend": "optix",
+        "candidate_id_rows": [
+          [
+            0,
+            20000,
+            10000
+          ],
+          [
+            1,
+            20001,
+            10001
+          ],
+          [
+            2,
+            20002,
+            10002
+          ],
+          [
+            3,
+            20003,
+            10003
+          ],
+          [
+            4,
+            20004,
+            10004
+          ],
+          [
+            5,
+            20005,
+            10005
+          ],
+          [
+            6,
+            20006,
+            10006
+          ],
+          [
+            7,
+            20007,
+            10007
+          ],
+          [
+            8,
+            20008,
+            10008
+          ],
+          [
+            9,
+            20009,
+            10009
+          ],
+          [
+            10,
+            20010,
+            10010
+          ],
+          [
+            11,
+            20011,
+            10011
+          ],
+          [
+            12,
+            20012,
+            10012
+          ],
+          [
+            13,
+            20013,
+            10013
+          ],
+          [
+            14,
+            20014,
+            10014
+          ],
+          [
+            15,
+            20015,
+            10015
+          ],
+          [
+            16,
+            20016,
+            10016
+          ],
+          [
+            17,
+            20017,
+            10017
+          ],
+          [
+            18,
+            20018,
+            10018
+          ],
+          [
+            19,
+            20019,
+            10019
+          ],
+          [
+            20,
+            20020,
+            10020
+          ],
+          [
+            21,
+            20021,
+            10021
+          ],
+          [
+            22,
+            20022,
+            10022
+          ],
+          [
+            23,
+            20023,
+            10023
+          ],
+          [
+            24,
+            20024,
+            10024
+          ],
+          [
+            25,
+            20025,
+            10025
+          ],
+          [
+            26,
+            20026,
+            10026
+          ],
+          [
+            27,
+            20027,
+            10027
+          ],
+          [
+            28,
+            20028,
+            10028
+          ],
+          [
+            29,
+            20029,
+            10029
+          ],
+          [
+            30,
+            20030,
+            10030
+          ],
+          [
+            31,
+            20031,
+            10031
+          ],
+          [
+            32,
+            20032,
+            10032
+          ],
+          [
+            33,
+            20033,
+            10033
+          ],
+          [
+            34,
+            20034,
+            10034
+          ],
+          [
+            35,
+            20035,
+            10035
+          ],
+          [
+            36,
+            20036,
+            10036
+          ],
+          [
+            37,
+            20037,
+            10037
+          ],
+          [
+            38,
+            20038,
+            10038
+          ],
+          [
+            39,
+            20039,
+            10039
+          ],
+          [
+            40,
+            20040,
+            10040
+          ],
+          [
+            41,
+            20041,
+            10041
+          ],
+          [
+            42,
+            20042,
+            10042
+          ],
+          [
+            43,
+            20043,
+            10043
+          ],
+          [
+            44,
+            20044,
+            10044
+          ],
+          [
+            45,
+            20045,
+            10045
+          ],
+          [
+            46,
+            20046,
+            10046
+          ],
+          [
+            47,
+            20047,
+            10047
+          ],
+          [
+            48,
+            20048,
+            10048
+          ],
+          [
+            49,
+            20049,
+            10049
+          ],
+          [
+            50,
+            20050,
+            10050
+          ],
+          [
+            51,
+            20051,
+            10051
+          ],
+          [
+            52,
+            20052,
+            10052
+          ],
+          [
+            53,
+            20053,
+            10053
+          ],
+          [
+            54,
+            20054,
+            10054
+          ],
+          [
+            55,
+            20055,
+            10055
+          ],
+          [
+            56,
+            20056,
+            10056
+          ],
+          [
+            57,
+            20057,
+            10057
+          ],
+          [
+            58,
+            20058,
+            10058
+          ],
+          [
+            59,
+            20059,
+            10059
+          ],
+          [
+            60,
+            20060,
+            10060
+          ],
+          [
+            61,
+            20061,
+            10061
+          ],
+          [
+            62,
+            20062,
+            10062
+          ],
+          [
+            63,
+            20063,
+            10063
+          ]
+        ],
+        "claim_boundary": "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.",
+        "complete_candidate_coverage": true,
+        "cpu_reference_elapsed_sec": 0.07582227606326342,
+        "cpu_reference_valid_count": 64,
+        "dataset": "grid_64",
+        "engine_boundary": {
+          "candidate_discovery_owner": "AABB_INDEX_QUERY_2D",
+          "contact_manifold_logic_owner": "Python app/reference or partner continuation",
+          "engine_primitive_owner": "COLLECT_K_BOUNDED",
+          "native_collision_logic_allowed": false
+        },
+        "library_path": "/root/rtdl_goal2626/rtdl/build/librtdl_optix.so",
+        "matches_cpu_reference": true,
+        "mode": "native_collect_k",
+        "native_collect_elapsed_sec": 0.00039013102650642395,
+        "native_generic_symbol": "rtdl_optix_collect_k_bounded_i64",
+        "overflowed": false,
+        "primitive_under_test": "COLLECT_K_BOUNDED",
+        "row_schema": [
+          "query_group_id",
+          "query_triangle_id",
+          "scene_triangle_id"
+        ],
+        "valid_count": 64,
+        "witness_capacity": 64
+      },
+      "primary_metric_sec": 0.00039013102650642395,
+      "primary_metric_source": "native_collect_elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "--mode",
+            "native_collect_k",
+            "--dataset",
+            "grid",
+            "--grid-count",
+            "64",
+            "--witness-capacity",
+            "64",
+            "--backend",
+            "optix"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "0002,\n      10002\n    ],\n    [\n      3,\n      20003,\n      10003\n    ],\n    [\n      4,\n      20004,\n      10004\n    ],\n    [\n      5,\n      20005,\n      10005\n    ],\n    [\n      6,\n      20006,\n      10006\n    ],\n    [\n      7,\n      20007,\n      10007\n    ],\n    [\n      8,\n      20008,\n      10008\n    ],\n    [\n      9,\n      20009,\n      10009\n    ],\n    [\n      10,\n      20010,\n      10010\n    ],\n    [\n      11,\n      20011,\n      10011\n    ],\n    [\n      12,\n      20012,\n      10012\n    ],\n    [\n      13,\n      20013,\n      10013\n    ],\n    [\n      14,\n      20014,\n      10014\n    ],\n    [\n      15,\n      20015,\n      10015\n    ],\n    [\n      16,\n      20016,\n      10016\n    ],\n    [\n      17,\n      20017,\n      10017\n    ],\n    [\n      18,\n      20018,\n      10018\n    ],\n    [\n      19,\n      20019,\n      10019\n    ],\n    [\n      20,\n      20020,\n      10020\n    ],\n    [\n      21,\n      20021,\n      10021\n    ],\n    [\n      22,\n      20022,\n      10022\n    ],\n    [\n      23,\n      20023,\n      10023\n    ],\n    [\n      24,\n      20024,\n      10024\n    ],\n    [\n      25,\n      20025,\n      10025\n    ],\n    [\n      26,\n      20026,\n      10026\n    ],\n    [\n      27,\n      20027,\n      10027\n    ],\n    [\n      28,\n      20028,\n      10028\n    ],\n    [\n      29,\n      20029,\n      10029\n    ],\n    [\n      30,\n      20030,\n      10030\n    ],\n    [\n      31,\n      20031,\n      10031\n    ],\n    [\n      32,\n      20032,\n      10032\n    ],\n    [\n      33,\n      20033,\n      10033\n    ],\n    [\n      34,\n      20034,\n      10034\n    ],\n    [\n      35,\n      20035,\n      10035\n    ],\n    [\n      36,\n      20036,\n      10036\n    ],\n    [\n      37,\n      20037,\n      10037\n    ],\n    [\n      38,\n      20038,\n      10038\n    ],\n    [\n      39,\n      20039,\n      10039\n    ],\n    [\n      40,\n      20040,\n      10040\n    ],\n    [\n      41,\n      20041,\n      10041\n    ],\n    [\n      42,\n      20042,\n      10042\n    ],\n    [\n      43,\n      20043,\n      10043\n    ],\n    [\n      44,\n      20044,\n      10044\n    ],\n    [\n      45,\n      20045,\n      10045\n    ],\n    [\n      46,\n      20046,\n      10046\n    ],\n    [\n      47,\n      20047,\n      10047\n    ],\n    [\n      48,\n      20048,\n      10048\n    ],\n    [\n      49,\n      20049,\n      10049\n    ],\n    [\n      50,\n      20050,\n      10050\n    ],\n    [\n      51,\n      20051,\n      10051\n    ],\n    [\n      52,\n      20052,\n      10052\n    ],\n    [\n      53,\n      20053,\n      10053\n    ],\n    [\n      54,\n      20054,\n      10054\n    ],\n    [\n      55,\n      20055,\n      10055\n    ],\n    [\n      56,\n      20056,\n      10056\n    ],\n    [\n      57,\n      20057,\n      10057\n    ],\n    [\n      58,\n      20058,\n      10058\n    ],\n    [\n      59,\n      20059,\n      10059\n    ],\n    [\n      60,\n      20060,\n      10060\n    ],\n    [\n      61,\n      20061,\n      10061\n    ],\n    [\n      62,\n      20062,\n      10062\n    ],\n    [\n      63,\n      20063,\n      10063\n    ]\n  ],\n  \"claim_boundary\": \"Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.\",\n  \"complete_candidate_coverage\": true,\n  \"cpu_reference_elapsed_sec\": 0.06693784217350185,\n  \"cpu_reference_valid_count\": 64,\n  \"dataset\": \"grid_64\",\n  \"engine_boundary\": {\n    \"candidate_discovery_owner\": \"AABB_INDEX_QUERY_2D\",\n    \"contact_manifold_logic_owner\": \"Python app/reference or partner continuation\",\n    \"engine_primitive_owner\": \"COLLECT_K_BOUNDED\",\n    \"native_collision_logic_allowed\": false\n  },\n  \"library_path\": \"/root/rtdl_goal2626/rtdl/build/librtdl_optix.so\",\n  \"matches_cpu_reference\": true,\n  \"mode\": \"native_collect_k\",\n  \"native_collect_elapsed_sec\": 0.0003767020534723997,\n  \"native_generic_symbol\": \"rtdl_optix_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"valid_count\": 64,\n  \"witness_capacity\": 64\n}\n",
+          "wall_elapsed_sec": 0.5163153349421918
+        },
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "--mode",
+            "native_collect_k",
+            "--dataset",
+            "grid",
+            "--grid-count",
+            "64",
+            "--witness-capacity",
+            "64",
+            "--backend",
+            "optix"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "0002,\n      10002\n    ],\n    [\n      3,\n      20003,\n      10003\n    ],\n    [\n      4,\n      20004,\n      10004\n    ],\n    [\n      5,\n      20005,\n      10005\n    ],\n    [\n      6,\n      20006,\n      10006\n    ],\n    [\n      7,\n      20007,\n      10007\n    ],\n    [\n      8,\n      20008,\n      10008\n    ],\n    [\n      9,\n      20009,\n      10009\n    ],\n    [\n      10,\n      20010,\n      10010\n    ],\n    [\n      11,\n      20011,\n      10011\n    ],\n    [\n      12,\n      20012,\n      10012\n    ],\n    [\n      13,\n      20013,\n      10013\n    ],\n    [\n      14,\n      20014,\n      10014\n    ],\n    [\n      15,\n      20015,\n      10015\n    ],\n    [\n      16,\n      20016,\n      10016\n    ],\n    [\n      17,\n      20017,\n      10017\n    ],\n    [\n      18,\n      20018,\n      10018\n    ],\n    [\n      19,\n      20019,\n      10019\n    ],\n    [\n      20,\n      20020,\n      10020\n    ],\n    [\n      21,\n      20021,\n      10021\n    ],\n    [\n      22,\n      20022,\n      10022\n    ],\n    [\n      23,\n      20023,\n      10023\n    ],\n    [\n      24,\n      20024,\n      10024\n    ],\n    [\n      25,\n      20025,\n      10025\n    ],\n    [\n      26,\n      20026,\n      10026\n    ],\n    [\n      27,\n      20027,\n      10027\n    ],\n    [\n      28,\n      20028,\n      10028\n    ],\n    [\n      29,\n      20029,\n      10029\n    ],\n    [\n      30,\n      20030,\n      10030\n    ],\n    [\n      31,\n      20031,\n      10031\n    ],\n    [\n      32,\n      20032,\n      10032\n    ],\n    [\n      33,\n      20033,\n      10033\n    ],\n    [\n      34,\n      20034,\n      10034\n    ],\n    [\n      35,\n      20035,\n      10035\n    ],\n    [\n      36,\n      20036,\n      10036\n    ],\n    [\n      37,\n      20037,\n      10037\n    ],\n    [\n      38,\n      20038,\n      10038\n    ],\n    [\n      39,\n      20039,\n      10039\n    ],\n    [\n      40,\n      20040,\n      10040\n    ],\n    [\n      41,\n      20041,\n      10041\n    ],\n    [\n      42,\n      20042,\n      10042\n    ],\n    [\n      43,\n      20043,\n      10043\n    ],\n    [\n      44,\n      20044,\n      10044\n    ],\n    [\n      45,\n      20045,\n      10045\n    ],\n    [\n      46,\n      20046,\n      10046\n    ],\n    [\n      47,\n      20047,\n      10047\n    ],\n    [\n      48,\n      20048,\n      10048\n    ],\n    [\n      49,\n      20049,\n      10049\n    ],\n    [\n      50,\n      20050,\n      10050\n    ],\n    [\n      51,\n      20051,\n      10051\n    ],\n    [\n      52,\n      20052,\n      10052\n    ],\n    [\n      53,\n      20053,\n      10053\n    ],\n    [\n      54,\n      20054,\n      10054\n    ],\n    [\n      55,\n      20055,\n      10055\n    ],\n    [\n      56,\n      20056,\n      10056\n    ],\n    [\n      57,\n      20057,\n      10057\n    ],\n    [\n      58,\n      20058,\n      10058\n    ],\n    [\n      59,\n      20059,\n      10059\n    ],\n    [\n      60,\n      20060,\n      10060\n    ],\n    [\n      61,\n      20061,\n      10061\n    ],\n    [\n      62,\n      20062,\n      10062\n    ],\n    [\n      63,\n      20063,\n      10063\n    ]\n  ],\n  \"claim_boundary\": \"Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.\",\n  \"complete_candidate_coverage\": true,\n  \"cpu_reference_elapsed_sec\": 0.07514912285842001,\n  \"cpu_reference_valid_count\": 64,\n  \"dataset\": \"grid_64\",\n  \"engine_boundary\": {\n    \"candidate_discovery_owner\": \"AABB_INDEX_QUERY_2D\",\n    \"contact_manifold_logic_owner\": \"Python app/reference or partner continuation\",\n    \"engine_primitive_owner\": \"COLLECT_K_BOUNDED\",\n    \"native_collision_logic_allowed\": false\n  },\n  \"library_path\": \"/root/rtdl_goal2626/rtdl/build/librtdl_optix.so\",\n  \"matches_cpu_reference\": true,\n  \"mode\": \"native_collect_k\",\n  \"native_collect_elapsed_sec\": 0.0003449609503149986,\n  \"native_generic_symbol\": \"rtdl_optix_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"valid_count\": 64,\n  \"witness_capacity\": 64\n}\n",
+          "wall_elapsed_sec": 0.49320085789076984
+        },
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "--mode",
+            "native_collect_k",
+            "--dataset",
+            "grid",
+            "--grid-count",
+            "64",
+            "--witness-capacity",
+            "64",
+            "--backend",
+            "optix"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "002,\n      10002\n    ],\n    [\n      3,\n      20003,\n      10003\n    ],\n    [\n      4,\n      20004,\n      10004\n    ],\n    [\n      5,\n      20005,\n      10005\n    ],\n    [\n      6,\n      20006,\n      10006\n    ],\n    [\n      7,\n      20007,\n      10007\n    ],\n    [\n      8,\n      20008,\n      10008\n    ],\n    [\n      9,\n      20009,\n      10009\n    ],\n    [\n      10,\n      20010,\n      10010\n    ],\n    [\n      11,\n      20011,\n      10011\n    ],\n    [\n      12,\n      20012,\n      10012\n    ],\n    [\n      13,\n      20013,\n      10013\n    ],\n    [\n      14,\n      20014,\n      10014\n    ],\n    [\n      15,\n      20015,\n      10015\n    ],\n    [\n      16,\n      20016,\n      10016\n    ],\n    [\n      17,\n      20017,\n      10017\n    ],\n    [\n      18,\n      20018,\n      10018\n    ],\n    [\n      19,\n      20019,\n      10019\n    ],\n    [\n      20,\n      20020,\n      10020\n    ],\n    [\n      21,\n      20021,\n      10021\n    ],\n    [\n      22,\n      20022,\n      10022\n    ],\n    [\n      23,\n      20023,\n      10023\n    ],\n    [\n      24,\n      20024,\n      10024\n    ],\n    [\n      25,\n      20025,\n      10025\n    ],\n    [\n      26,\n      20026,\n      10026\n    ],\n    [\n      27,\n      20027,\n      10027\n    ],\n    [\n      28,\n      20028,\n      10028\n    ],\n    [\n      29,\n      20029,\n      10029\n    ],\n    [\n      30,\n      20030,\n      10030\n    ],\n    [\n      31,\n      20031,\n      10031\n    ],\n    [\n      32,\n      20032,\n      10032\n    ],\n    [\n      33,\n      20033,\n      10033\n    ],\n    [\n      34,\n      20034,\n      10034\n    ],\n    [\n      35,\n      20035,\n      10035\n    ],\n    [\n      36,\n      20036,\n      10036\n    ],\n    [\n      37,\n      20037,\n      10037\n    ],\n    [\n      38,\n      20038,\n      10038\n    ],\n    [\n      39,\n      20039,\n      10039\n    ],\n    [\n      40,\n      20040,\n      10040\n    ],\n    [\n      41,\n      20041,\n      10041\n    ],\n    [\n      42,\n      20042,\n      10042\n    ],\n    [\n      43,\n      20043,\n      10043\n    ],\n    [\n      44,\n      20044,\n      10044\n    ],\n    [\n      45,\n      20045,\n      10045\n    ],\n    [\n      46,\n      20046,\n      10046\n    ],\n    [\n      47,\n      20047,\n      10047\n    ],\n    [\n      48,\n      20048,\n      10048\n    ],\n    [\n      49,\n      20049,\n      10049\n    ],\n    [\n      50,\n      20050,\n      10050\n    ],\n    [\n      51,\n      20051,\n      10051\n    ],\n    [\n      52,\n      20052,\n      10052\n    ],\n    [\n      53,\n      20053,\n      10053\n    ],\n    [\n      54,\n      20054,\n      10054\n    ],\n    [\n      55,\n      20055,\n      10055\n    ],\n    [\n      56,\n      20056,\n      10056\n    ],\n    [\n      57,\n      20057,\n      10057\n    ],\n    [\n      58,\n      20058,\n      10058\n    ],\n    [\n      59,\n      20059,\n      10059\n    ],\n    [\n      60,\n      20060,\n      10060\n    ],\n    [\n      61,\n      20061,\n      10061\n    ],\n    [\n      62,\n      20062,\n      10062\n    ],\n    [\n      63,\n      20063,\n      10063\n    ]\n  ],\n  \"claim_boundary\": \"Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.\",\n  \"complete_candidate_coverage\": true,\n  \"cpu_reference_elapsed_sec\": 0.07582227606326342,\n  \"cpu_reference_valid_count\": 64,\n  \"dataset\": \"grid_64\",\n  \"engine_boundary\": {\n    \"candidate_discovery_owner\": \"AABB_INDEX_QUERY_2D\",\n    \"contact_manifold_logic_owner\": \"Python app/reference or partner continuation\",\n    \"engine_primitive_owner\": \"COLLECT_K_BOUNDED\",\n    \"native_collision_logic_allowed\": false\n  },\n  \"library_path\": \"/root/rtdl_goal2626/rtdl/build/librtdl_optix.so\",\n  \"matches_cpu_reference\": true,\n  \"mode\": \"native_collect_k\",\n  \"native_collect_elapsed_sec\": 0.00039013102650642395,\n  \"native_generic_symbol\": \"rtdl_optix_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"valid_count\": 64,\n  \"witness_capacity\": 64\n}\n",
+          "wall_elapsed_sec": 0.5108730639331043
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "cpu_reference_elapsed_sec",
+          0.07582227606326342
+        ],
+        [
+          "native_collect_elapsed_sec",
+          0.00039013102650642395
+        ]
+      ],
+      "wall_median_sec": 0.5108730639331043
+    }
+  ],
+  "scale": "quick"
+}

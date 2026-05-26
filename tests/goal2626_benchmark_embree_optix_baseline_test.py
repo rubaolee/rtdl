@@ -74,6 +74,23 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
         self.assertEqual("same", ratios[0]["comparison_group"])
         self.assertEqual(2.0, ratios[0]["optix_speedup_vs_embree"])
 
+    def test_workload_suite_metric_uses_total_elapsed_time(self) -> None:
+        sys.path.insert(0, str(ROOT))
+        from scripts import goal2626_benchmark_embree_optix_baseline as runner
+
+        metric, source, _ = runner._choose_primary_metric(
+            {
+                "workloads": {
+                    "first": {"elapsed_sec": 1.25},
+                    "second": {"elapsed_sec": 2.75},
+                }
+            },
+            hint=(),
+            wall_median_sec=99.0,
+        )
+        self.assertEqual(4.0, metric)
+        self.assertEqual("workloads.total_elapsed_sec", source)
+
     def test_dry_run_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             artifact_dir = Path(tmp) / "artifacts"

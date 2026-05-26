@@ -1,0 +1,14 @@
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "docs/reports/goal2626_benchmark_embree_optix_baseline_pod/rtnn_uniform_65536.csv",
+    "point_count": 65536,
+    "seed": 2346
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}
