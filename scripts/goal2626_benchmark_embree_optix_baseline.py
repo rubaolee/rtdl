@@ -74,6 +74,16 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
     raydb_copies = _scale_value(scale, quick=16384, standard=120000, large=120000)
     rtnn_points = _scale_value(scale, quick=4096, standard=65536, large=262144)
     triangle_copies = _scale_value(scale, quick=16, standard=5000, large=20000)
+    triangle_edge_file = artifact_dir / f"triangle_k4_cliques_{triangle_copies}.edge"
+    triangle_setup = (
+        _py(
+            "scripts/goal2631_generate_triangle_k4_binary.py",
+            "--output",
+            triangle_edge_file,
+            "--cliques",
+            triangle_copies,
+        ),
+    )
     contact_grid = _scale_value(scale, quick=64, standard=4096, large=8192)
 
     app = "examples/v2_0/research_benchmarks"
@@ -463,44 +473,59 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                 primary_metric_path=("elapsed_sec",),
             ),
             BenchmarkCase(
-                case_id="triangle_counting_embree_summary",
+                case_id="triangle_counting_embree_rt_graph_2a1",
                 app_id="triangle_counting",
                 app_name="Triangle counting",
-                comparison_group="triangle_count_summary",
+                comparison_group="triangle_count_rt_graph_2a1_summary",
                 backend="embree",
                 command=_py(
                     f"{app}/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
                     "--mode",
-                    "run",
+                    "rt_graph_2a1_generic_rt",
                     "--backend",
                     "embree",
-                    "--copies",
-                    triangle_copies,
-                    "--output-mode",
+                    "--edge-file",
+                    triangle_edge_file,
+                    "--edge-format",
+                    "binary",
+                    "--detail",
                     "summary",
                 ),
-                primary_metric_path=("section", "timing_ms", "run_backend"),
+                setup_commands=triangle_setup,
+                primary_metric_path=("timing_ms", "run_backend"),
+                notes=(
+                    "RT-Graph-style RT-2A1 mapping through generic 3-D ray/triangle any-hit rows. "
+                    "Graph preprocessing and geometry lowering are outside the primary backend metric."
+                ),
             ),
             BenchmarkCase(
-                case_id="triangle_counting_optix_summary",
+                case_id="triangle_counting_optix_rt_graph_2a1_partner",
                 app_id="triangle_counting",
                 app_name="Triangle counting",
-                comparison_group="triangle_count_summary",
+                comparison_group="triangle_count_rt_graph_2a1_summary",
                 backend="optix",
                 command=_py(
                     f"{app}/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
                     "--mode",
-                    "run",
+                    "rt_graph_2a1_generic_rt",
                     "--backend",
                     "optix",
-                    "--copies",
-                    triangle_copies,
-                    "--output-mode",
+                    "--edge-file",
+                    triangle_edge_file,
+                    "--edge-format",
+                    "binary",
+                    "--detail",
                     "summary",
-                    "--optix-graph-mode",
-                    "native",
+                    "--partner",
+                    "cupy",
                 ),
-                primary_metric_path=("section", "timing_ms", "run_backend"),
+                setup_commands=triangle_setup,
+                primary_metric_path=("timing_ms", "run_backend"),
+                notes=(
+                    "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle "
+                    "weighted any-hit summary with CuPy-owned graph preprocessing/device columns. "
+                    "This replaces the older graph-kernel host-indexed fallback row."
+                ),
             ),
             BenchmarkCase(
                 case_id="contact_manifold_embree_native_collect_k",

@@ -59,6 +59,28 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
         self.assertEqual(("metadata", "timings", "query_median_sec"), case.primary_metric_path)
         self.assertIn("partner-resident grouped-i64 dispatcher", case.notes)
 
+    def test_triangle_counting_uses_generic_rt_graph_2a1_path(self) -> None:
+        sys.path.insert(0, str(ROOT))
+        from scripts import goal2626_benchmark_embree_optix_baseline as runner
+
+        cases = {
+            case.case_id: case
+            for case in runner.build_cases("quick", ROOT / "scratch" / "goal2626_test")
+        }
+        embree = cases["triangle_counting_embree_rt_graph_2a1"]
+        optix = cases["triangle_counting_optix_rt_graph_2a1_partner"]
+        assert embree.command is not None
+        assert optix.command is not None
+        self.assertIn("rt_graph_2a1_generic_rt", embree.command)
+        self.assertIn("rt_graph_2a1_generic_rt", optix.command)
+        self.assertIn("--edge-file", embree.command)
+        self.assertIn("--edge-file", optix.command)
+        self.assertIn("--partner", optix.command)
+        self.assertIn("cupy", optix.command)
+        self.assertEqual(("timing_ms", "run_backend"), embree.primary_metric_path)
+        self.assertEqual(("timing_ms", "run_backend"), optix.primary_metric_path)
+        self.assertIn("host-indexed fallback", optix.notes)
+
     def test_ratios_only_for_same_app_and_comparison_group(self) -> None:
         sys.path.insert(0, str(ROOT))
         from scripts import goal2626_benchmark_embree_optix_baseline as runner

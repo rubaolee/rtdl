@@ -134,6 +134,7 @@ class Goal2589RTGraphTriangleContractTest(unittest.TestCase):
         self.assertTrue(payload["claim_boundary"]["rt_graph_id_ascending_adapter"])
         self.assertTrue(payload["claim_boundary"]["rt_graph_2a1_generic_rt_mapping"])
         self.assertTrue(payload["claim_boundary"]["rt_graph_1a2_generic_rt_mapping"])
+        self.assertTrue(payload["claim_boundary"]["generic_ray_triangle_rt_core_subpath_authorized"])
         self.assertFalse(payload["claim_boundary"]["paper_reproduction"])
         self.assertFalse(payload["claim_boundary"]["triangle_count_rt_core_claim_authorized"])
 

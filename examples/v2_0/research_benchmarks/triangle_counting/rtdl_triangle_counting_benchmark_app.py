@@ -45,6 +45,7 @@ CLAIM_BOUNDARY = {
     "rt_graph_id_ascending_adapter": True,
     "rt_graph_2a1_generic_rt_mapping": True,
     "rt_graph_1a2_generic_rt_mapping": True,
+    "generic_ray_triangle_rt_core_subpath_authorized": True,
     "native_engine_customization": False,
     "bfs_in_benchmark": False,
     "visibility_edges_in_benchmark": False,
@@ -84,8 +85,8 @@ def scope_payload() -> dict[str, Any]:
                 "contract": "triangle witness rows or compact triangle summary",
                 "rt_role": "generic graph-row production and summary continuation where supported",
                 "rt_graph_status": (
-                    "benchmark-owned Python preprocessing/oracle exists; authors-code "
-                    "pod reproduction and same-contract RTDL backend rows are pending"
+                    "benchmark-owned Python preprocessing/oracle exists; the RT-2A1 "
+                    "and RT-1A2 modes lower to generic ray/triangle RT primitives"
                 ),
             },
         ),
@@ -366,6 +367,8 @@ def rt_graph_2a1_generic_rt_payload(
         hit_weight_sum = sum(ray_weights[int(row["ray_id"])] for row in rows if int(row["any_hit"]))
     ran = time.perf_counter()
     reduced = time.perf_counter()
+    ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
+    rt_core_accelerated = normalized_backend == "optix"
     return {
         "app": BENCHMARK_NAME,
         "mode": "rt_graph_2a1_generic_rt",
@@ -374,6 +377,13 @@ def rt_graph_2a1_generic_rt_payload(
         "contract": "rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit",
         "authors_code_reproduction": False,
         "same_contract_native_timing": backend in {"embree", "optix"},
+        "ray_tracing_accelerated": ray_tracing_accelerated,
+        "rt_core_accelerated": rt_core_accelerated,
+        "rt_core_path": (
+            "generic_prepared_triangle_scene_3d_any_hit_weighted_sum"
+            if summary_result is not None and normalized_backend == "optix"
+            else ("generic_ray_triangle_any_hit_rows" if normalized_backend == "optix" else None)
+        ),
         "partner": partner,
         "partner_summary_contract_used": use_cupy_summary,
         "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
@@ -471,6 +481,8 @@ def rt_graph_1a2_generic_rt_payload(
     ran = time.perf_counter()
     reduced = time.perf_counter()
     max_adj_len = _max_out_degree(contract)
+    ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
+    rt_core_accelerated = normalized_backend == "optix"
     return {
         "app": BENCHMARK_NAME,
         "mode": "rt_graph_1a2_generic_rt",
@@ -479,6 +491,13 @@ def rt_graph_1a2_generic_rt_payload(
         "contract": "rt_graph_1a2_mapped_to_generic_ray_triangle_hit_count",
         "authors_code_reproduction": False,
         "same_contract_native_timing": backend in {"embree", "optix"},
+        "ray_tracing_accelerated": ray_tracing_accelerated,
+        "rt_core_accelerated": rt_core_accelerated,
+        "rt_core_path": (
+            "generic_prepared_triangle_scene_3d_hit_count_sum"
+            if summary_result is not None and normalized_backend == "optix"
+            else ("generic_ray_triangle_hit_count_rows" if normalized_backend == "optix" else None)
+        ),
         "partner": partner,
         "partner_summary_contract_used": use_cupy_summary,
         "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
