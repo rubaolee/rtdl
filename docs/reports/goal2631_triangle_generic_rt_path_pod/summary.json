@@ -1,0 +1,612 @@
+{
+  "case_repeat": 1,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "LD_LIBRARY_PATH": "/usr/local/cuda-12.6/lib64:",
+      "OPTIX_PREFIX": "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "ca8d96a7dbea7f1e3f6a566c2a0218f062710bb6",
+    "git_status_short": "",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [
+      "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64/include/optix.h"
+    ],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2627/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-27T03:47:32+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "triangle_counting",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "embree_sec": 0.05428702698554844,
+      "embree_speedup_vs_optix": 0.0060218066781325495,
+      "metric_sources": {
+        "embree": "timing_ms.query_median_ms converted-ms-to-sec",
+        "optix": "timing_ms.query_median_ms converted-ms-to-sec"
+      },
+      "optix_sec": 0.0003269059816375375,
+      "optix_speedup_vs_embree": 166.06311916843447
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "embree",
+      "case_id": "triangle_counting_embree_rt_graph_2a1",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "notes": "RT-Graph-style RT-2A1 mapping through generic 3-D ray/triangle any-hit rows. Graph preprocessing and geometry lowering are outside the primary backend metric.",
+      "payload": {
+        "app": "triangle_counting",
+        "authors_code_reproduction": false,
+        "backend": "embree",
+        "claim_boundary": {
+          "benchmark_app": true,
+          "bfs_in_benchmark": false,
+          "distributed_graph_claim": false,
+          "full_graph_database_claim": false,
+          "generic_ray_triangle_rt_core_subpath_authorized": true,
+          "native_engine_customization": false,
+          "paper_code_intake_complete": true,
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "rt_graph_1a2_generic_rt_mapping": true,
+          "rt_graph_2a1_generic_rt_mapping": true,
+          "rt_graph_id_ascending_adapter": true,
+          "rt_graph_preprocessing_oracle": true,
+          "triangle_count_rt_core_claim_authorized": false,
+          "visibility_edges_in_benchmark": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "contract": "rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit",
+        "generic_rt_summary": null,
+        "generic_rt_weighted_triangle_count": 20000,
+        "hit_rows": {
+          "materialized": true,
+          "row_count": 15000,
+          "summary_primitive": null
+        },
+        "input_source": {
+          "format": "binary",
+          "kind": "edge_file",
+          "path": "/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge"
+        },
+        "mode": "rt_graph_2a1_generic_rt",
+        "oracle_triangle_count": 20000,
+        "partner": "none",
+        "partner_summary_contract_used": false,
+        "partner_timing_ms": null,
+        "primitive_count": 30000,
+        "primitive_layout": {
+          "axis_offset": [
+            10000.0,
+            0.0,
+            10000.0
+          ],
+          "device_column_lowering": false,
+          "paper_method": "RT-2A1",
+          "primitive_side": "directed 1-hop edges as Triangle3D primitives",
+          "ray_side": "compacted 2-hop relations as Ray3D probes with add-value weights",
+          "ray_tmax": 0.2,
+          "triangle_eps": 0.2
+        },
+        "ray_count": 15000,
+        "ray_tracing_accelerated": true,
+        "ray_weights": {
+          "count": 15000,
+          "sum": 20000
+        },
+        "rt_core_accelerated": false,
+        "rt_core_path": null,
+        "rt_graph_contract": {
+          "compacted_vertex_count": 20000,
+          "directed_edge_count": 30000,
+          "directed_vertex_count": 20000,
+          "duplicate_two_hop_relation_count": 20000,
+          "id_ascending_adapter_materialized": false,
+          "id_ascending_edge_count": 0,
+          "id_ascending_triangle_count": 0,
+          "original_edge_count": 30000,
+          "partner": "python",
+          "partner_timing_ms": null,
+          "removed_duplicate_or_self_edge_count": 0,
+          "removed_low_degree_edge_count": 0,
+          "removed_low_degree_vertex_count": 0,
+          "triangle_count": 20000,
+          "two_hop_ray_count_2a1": 15000
+        },
+        "same_contract_native_timing": true,
+        "timing_ms": {
+          "build_contract": 109.09203416667879,
+          "build_geometry": 94.35922000557184,
+          "load_edges": 9.464208967983723,
+          "prepare_scene_ms": null,
+          "query_max_ms": 85.35314188338816,
+          "query_median_ms": 54.28702698554844,
+          "query_min_ms": 34.02260388247669,
+          "query_repeat": 12,
+          "query_warmup": 2,
+          "reduce_hits": 0.0003098975867033005,
+          "run_backend": 835.2010319940746,
+          "total": 1048.1168050318956
+        },
+        "triangle_count_matches_oracle": true
+      },
+      "primary_metric_sec": 0.05428702698554844,
+      "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "--mode",
+            "rt_graph_2a1_generic_rt",
+            "--backend",
+            "embree",
+            "--edge-file",
+            "/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge",
+            "--edge-format",
+            "binary",
+            "--detail",
+            "summary",
+            "--warmup",
+            "2",
+            "--repeat",
+            "12"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "{\n  \"app\": \"triangle_counting\",\n  \"authors_code_reproduction\": false,\n  \"backend\": \"embree\",\n  \"claim_boundary\": {\n    \"benchmark_app\": true,\n    \"bfs_in_benchmark\": false,\n    \"distributed_graph_claim\": false,\n    \"full_graph_database_claim\": false,\n    \"generic_ray_triangle_rt_core_subpath_authorized\": true,\n    \"native_engine_customization\": false,\n    \"paper_code_intake_complete\": true,\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"rt_graph_1a2_generic_rt_mapping\": true,\n    \"rt_graph_2a1_generic_rt_mapping\": true,\n    \"rt_graph_id_ascending_adapter\": true,\n    \"rt_graph_preprocessing_oracle\": true,\n    \"triangle_count_rt_core_claim_authorized\": false,\n    \"visibility_edges_in_benchmark\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit\",\n  \"generic_rt_summary\": null,\n  \"generic_rt_weighted_triangle_count\": 20000,\n  \"hit_rows\": {\n    \"materialized\": true,\n    \"row_count\": 15000,\n    \"summary_primitive\": null\n  },\n  \"input_source\": {\n    \"format\": \"binary\",\n    \"kind\": \"edge_file\",\n    \"path\": \"/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge\"\n  },\n  \"mode\": \"rt_graph_2a1_generic_rt\",\n  \"oracle_triangle_count\": 20000,\n  \"partner\": \"none\",\n  \"partner_summary_contract_used\": false,\n  \"partner_timing_ms\": null,\n  \"primitive_count\": 30000,\n  \"primitive_layout\": {\n    \"axis_offset\": [\n      10000.0,\n      0.0,\n      10000.0\n    ],\n    \"device_column_lowering\": false,\n    \"paper_method\": \"RT-2A1\",\n    \"primitive_side\": \"directed 1-hop edges as Triangle3D primitives\",\n    \"ray_side\": \"compacted 2-hop relations as Ray3D probes with add-value weights\",\n    \"ray_tmax\": 0.2,\n    \"triangle_eps\": 0.2\n  },\n  \"ray_count\": 15000,\n  \"ray_tracing_accelerated\": true,\n  \"ray_weights\": {\n    \"count\": 15000,\n    \"sum\": 20000\n  },\n  \"rt_core_accelerated\": false,\n  \"rt_core_path\": null,\n  \"rt_graph_contract\": {\n    \"compacted_vertex_count\": 20000,\n    \"directed_edge_count\": 30000,\n    \"directed_vertex_count\": 20000,\n    \"duplicate_two_hop_relation_count\": 20000,\n    \"id_ascending_adapter_materialized\": false,\n    \"id_ascending_edge_count\": 0,\n    \"id_ascending_triangle_count\": 0,\n    \"original_edge_count\": 30000,\n    \"partner\": \"python\",\n    \"partner_timing_ms\": null,\n    \"removed_duplicate_or_self_edge_count\": 0,\n    \"removed_low_degree_edge_count\": 0,\n    \"removed_low_degree_vertex_count\": 0,\n    \"triangle_count\": 20000,\n    \"two_hop_ray_count_2a1\": 15000\n  },\n  \"same_contract_native_timing\": true,\n  \"timing_ms\": {\n    \"build_contract\": 109.09203416667879,\n    \"build_geometry\": 94.35922000557184,\n    \"load_edges\": 9.464208967983723,\n    \"prepare_scene_ms\": null,\n    \"query_max_ms\": 85.35314188338816,\n    \"query_median_ms\": 54.28702698554844,\n    \"query_min_ms\": 34.02260388247669,\n    \"query_repeat\": 12,\n    \"query_warmup\": 2,\n    \"reduce_hits\": 0.0003098975867033005,\n    \"run_backend\": 835.2010319940746,\n    \"total\": 1048.1168050318956\n  },\n  \"triangle_count_matches_oracle\": true\n}\n",
+          "wall_elapsed_sec": 1.490213950863108
+        }
+      ],
+      "setup_results": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2631_generate_triangle_k4_binary.py",
+            "--output",
+            "/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge",
+            "--cliques",
+            "5000"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "wrote 30000 edges for 5000 K4 cliques to /root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge\n"
+        }
+      ],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "timing_ms.build_contract converted-ms-to-sec",
+          0.10909203416667879
+        ],
+        [
+          "timing_ms.build_geometry converted-ms-to-sec",
+          0.09435922000557184
+        ],
+        [
+          "timing_ms.load_edges converted-ms-to-sec",
+          0.009464208967983723
+        ],
+        [
+          "timing_ms.query_max_ms converted-ms-to-sec",
+          0.08535314188338816
+        ],
+        [
+          "timing_ms.query_median_ms converted-ms-to-sec",
+          0.05428702698554844
+        ],
+        [
+          "timing_ms.query_min_ms converted-ms-to-sec",
+          0.03402260388247669
+        ],
+        [
+          "timing_ms.query_repeat converted-ms-to-sec",
+          0.012
+        ],
+        [
+          "timing_ms.query_warmup converted-ms-to-sec",
+          0.002
+        ],
+        [
+          "timing_ms.reduce_hits converted-ms-to-sec",
+          3.098975867033005e-07
+        ],
+        [
+          "timing_ms.run_backend converted-ms-to-sec",
+          0.8352010319940746
+        ],
+        [
+          "timing_ms.total converted-ms-to-sec",
+          1.0481168050318956
+        ]
+      ],
+      "wall_median_sec": 1.490213950863108
+    },
+    {
+      "app_id": "triangle_counting",
+      "app_name": "Triangle counting",
+      "backend": "optix",
+      "case_id": "triangle_counting_optix_rt_graph_2a1_partner",
+      "comparison_group": "triangle_count_rt_graph_2a1_summary",
+      "notes": "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle weighted any-hit summary with CuPy-owned graph preprocessing/device columns. This replaces the older graph-kernel host-indexed fallback row.",
+      "payload": {
+        "app": "triangle_counting",
+        "authors_code_reproduction": false,
+        "backend": "optix",
+        "claim_boundary": {
+          "benchmark_app": true,
+          "bfs_in_benchmark": false,
+          "distributed_graph_claim": false,
+          "full_graph_database_claim": false,
+          "generic_ray_triangle_rt_core_subpath_authorized": true,
+          "native_engine_customization": false,
+          "paper_code_intake_complete": true,
+          "paper_reproduction": false,
+          "public_speedup_claim_authorized": false,
+          "rt_graph_1a2_generic_rt_mapping": true,
+          "rt_graph_2a1_generic_rt_mapping": true,
+          "rt_graph_id_ascending_adapter": true,
+          "rt_graph_preprocessing_oracle": true,
+          "triangle_count_rt_core_claim_authorized": false,
+          "visibility_edges_in_benchmark": false,
+          "whole_app_speedup_claim_authorized": false
+        },
+        "contract": "rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit",
+        "generic_rt_summary": {
+          "backend": "optix",
+          "claim_boundary": {
+            "native_app_api": false,
+            "public_speedup_claim": false,
+            "row_witnesses": false,
+            "true_zero_copy": false
+          },
+          "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1",
+          "phase_timing_seconds": {
+            "prepare_build": 0.33893552888184786,
+            "query_pack": 0.00021700002253055573,
+            "traversal": 5.3451e-05
+          },
+          "prepared_reused": true,
+          "prepared_run_index": 14,
+          "prepared_scene_used": true,
+          "ray_count": 15000,
+          "result_kind": "uint64_weighted_any_hit_sum",
+          "rows_materialized": false,
+          "transfer_metadata": {
+            "backend": "optix",
+            "direct_device_handoff_authorized": true,
+            "direct_device_pointer_observed": true,
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays",
+            "partner_phase_timings_s": {
+              "descriptor_validation_s": 0.0001721999142318964,
+              "weight_descriptor_validation_s": 2.6480061933398247e-05
+            },
+            "partner_tensor_handoff_authorized": true,
+            "per_ray_records_downloaded_to_host": false,
+            "query_rays_packed_on_device_each_run": true,
+            "query_rays_uploaded_each_run": false,
+            "ray_columns_true_zero_copy_authorized": false,
+            "ray_count": 15000,
+            "ray_weights_device_resident": true,
+            "ray_weights_uploaded_each_run": false,
+            "rt_core_speedup_claim_authorized": false,
+            "scalar_sum_returned_to_python": true,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "cupy"
+            ],
+            "static_scene_prepared_on_device": true,
+            "transfer_mode": "device_ray3d_columns_gpu_pack",
+            "true_zero_copy_authorized": false
+          },
+          "triangle_count": 30000,
+          "weighted_hit_sum": 20000
+        },
+        "generic_rt_weighted_triangle_count": 20000,
+        "hit_rows": {
+          "materialized": false,
+          "row_count": 15000,
+          "summary_primitive": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1"
+        },
+        "input_source": {
+          "format": "binary",
+          "kind": "edge_file",
+          "path": "/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge"
+        },
+        "mode": "rt_graph_2a1_generic_rt",
+        "oracle_triangle_count": 20000,
+        "partner": "cupy",
+        "partner_summary_contract_used": true,
+        "partner_timing_ms": {
+          "compact_unique_ms": 309.907,
+          "degree_ms": 3230.235,
+          "directed_csr_ms": 2.824,
+          "download_needed_columns_ms": 0.379,
+          "load_np_ms": 0.484,
+          "total_partner_ms": 3646.035,
+          "two_hop_and_count_ms": 100.256,
+          "upload_ms": 1.95
+        },
+        "primitive_count": 30000,
+        "primitive_layout": {
+          "axis_offset": [
+            10000.0,
+            0.0,
+            10000.0
+          ],
+          "device_column_lowering": true,
+          "paper_method": "RT-2A1",
+          "primitive_side": "directed 1-hop edges as Triangle3D primitives",
+          "ray_side": "compacted 2-hop relations as Ray3D probes with add-value weights",
+          "ray_tmax": 0.2,
+          "triangle_eps": 0.2
+        },
+        "ray_count": 15000,
+        "ray_tracing_accelerated": true,
+        "ray_weights": {
+          "count": 15000,
+          "device_resident": true,
+          "sum": 20000
+        },
+        "rt_core_accelerated": true,
+        "rt_core_path": "generic_prepared_triangle_scene_3d_any_hit_weighted_sum",
+        "rt_graph_contract": {
+          "compacted_vertex_count": 20000,
+          "directed_edge_count": 30000,
+          "directed_vertex_count": 20000,
+          "duplicate_two_hop_relation_count": 20000,
+          "id_ascending_adapter_materialized": false,
+          "id_ascending_edge_count": 0,
+          "id_ascending_triangle_count": 0,
+          "original_edge_count": 30000,
+          "partner": "cupy",
+          "partner_timing_ms": {
+            "compact_unique_ms": 309.907,
+            "degree_ms": 3230.235,
+            "directed_csr_ms": 2.824,
+            "download_needed_columns_ms": 0.379,
+            "load_np_ms": 0.484,
+            "total_partner_ms": 3646.035,
+            "two_hop_and_count_ms": 100.256,
+            "upload_ms": 1.95
+          },
+          "removed_duplicate_or_self_edge_count": 0,
+          "removed_low_degree_edge_count": 0,
+          "removed_low_degree_vertex_count": 0,
+          "triangle_count": 20000,
+          "two_hop_ray_count_2a1": 15000
+        },
+        "same_contract_native_timing": true,
+        "timing_ms": {
+          "build_contract": 7119.953321060166,
+          "build_geometry": 2.258467022329569,
+          "load_edges": 0.0018200371414422989,
+          "prepare_scene_ms": 345.0975390151143,
+          "query_max_ms": 0.356531934812665,
+          "query_median_ms": 0.3269059816375375,
+          "query_min_ms": 0.316911144182086,
+          "query_repeat": 12,
+          "query_warmup": 2,
+          "reduce_hits": 0.0004200264811515808,
+          "run_backend": 941.5924579370767,
+          "total": 8063.806486083195
+        },
+        "triangle_count_matches_oracle": true
+      },
+      "primary_metric_sec": 0.0003269059816375375,
+      "primary_metric_source": "timing_ms.query_median_ms converted-ms-to-sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "--mode",
+            "rt_graph_2a1_generic_rt",
+            "--backend",
+            "optix",
+            "--edge-file",
+            "/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge",
+            "--edge-format",
+            "binary",
+            "--detail",
+            "summary",
+            "--partner",
+            "cupy",
+            "--warmup",
+            "2",
+            "--repeat",
+            "12"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "backend\": \"optix\",\n      \"direct_device_handoff_authorized\": true,\n      \"direct_device_pointer_observed\": true,\n      \"native_symbol\": \"rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays\",\n      \"partner_phase_timings_s\": {\n        \"descriptor_validation_s\": 0.0001721999142318964,\n        \"weight_descriptor_validation_s\": 2.6480061933398247e-05\n      },\n      \"partner_tensor_handoff_authorized\": true,\n      \"per_ray_records_downloaded_to_host\": false,\n      \"query_rays_packed_on_device_each_run\": true,\n      \"query_rays_uploaded_each_run\": false,\n      \"ray_columns_true_zero_copy_authorized\": false,\n      \"ray_count\": 15000,\n      \"ray_weights_device_resident\": true,\n      \"ray_weights_uploaded_each_run\": false,\n      \"rt_core_speedup_claim_authorized\": false,\n      \"scalar_sum_returned_to_python\": true,\n      \"source_devices\": [\n        \"cuda:0\"\n      ],\n      \"source_protocols\": [\n        \"cupy\"\n      ],\n      \"static_scene_prepared_on_device\": true,\n      \"transfer_mode\": \"device_ray3d_columns_gpu_pack\",\n      \"true_zero_copy_authorized\": false\n    },\n    \"triangle_count\": 30000,\n    \"weighted_hit_sum\": 20000\n  },\n  \"generic_rt_weighted_triangle_count\": 20000,\n  \"hit_rows\": {\n    \"materialized\": false,\n    \"row_count\": 15000,\n    \"summary_primitive\": \"PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1\"\n  },\n  \"input_source\": {\n    \"format\": \"binary\",\n    \"kind\": \"edge_file\",\n    \"path\": \"/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge\"\n  },\n  \"mode\": \"rt_graph_2a1_generic_rt\",\n  \"oracle_triangle_count\": 20000,\n  \"partner\": \"cupy\",\n  \"partner_summary_contract_used\": true,\n  \"partner_timing_ms\": {\n    \"compact_unique_ms\": 309.907,\n    \"degree_ms\": 3230.235,\n    \"directed_csr_ms\": 2.824,\n    \"download_needed_columns_ms\": 0.379,\n    \"load_np_ms\": 0.484,\n    \"total_partner_ms\": 3646.035,\n    \"two_hop_and_count_ms\": 100.256,\n    \"upload_ms\": 1.95\n  },\n  \"primitive_count\": 30000,\n  \"primitive_layout\": {\n    \"axis_offset\": [\n      10000.0,\n      0.0,\n      10000.0\n    ],\n    \"device_column_lowering\": true,\n    \"paper_method\": \"RT-2A1\",\n    \"primitive_side\": \"directed 1-hop edges as Triangle3D primitives\",\n    \"ray_side\": \"compacted 2-hop relations as Ray3D probes with add-value weights\",\n    \"ray_tmax\": 0.2,\n    \"triangle_eps\": 0.2\n  },\n  \"ray_count\": 15000,\n  \"ray_tracing_accelerated\": true,\n  \"ray_weights\": {\n    \"count\": 15000,\n    \"device_resident\": true,\n    \"sum\": 20000\n  },\n  \"rt_core_accelerated\": true,\n  \"rt_core_path\": \"generic_prepared_triangle_scene_3d_any_hit_weighted_sum\",\n  \"rt_graph_contract\": {\n    \"compacted_vertex_count\": 20000,\n    \"directed_edge_count\": 30000,\n    \"directed_vertex_count\": 20000,\n    \"duplicate_two_hop_relation_count\": 20000,\n    \"id_ascending_adapter_materialized\": false,\n    \"id_ascending_edge_count\": 0,\n    \"id_ascending_triangle_count\": 0,\n    \"original_edge_count\": 30000,\n    \"partner\": \"cupy\",\n    \"partner_timing_ms\": {\n      \"compact_unique_ms\": 309.907,\n      \"degree_ms\": 3230.235,\n      \"directed_csr_ms\": 2.824,\n      \"download_needed_columns_ms\": 0.379,\n      \"load_np_ms\": 0.484,\n      \"total_partner_ms\": 3646.035,\n      \"two_hop_and_count_ms\": 100.256,\n      \"upload_ms\": 1.95\n    },\n    \"removed_duplicate_or_self_edge_count\": 0,\n    \"removed_low_degree_edge_count\": 0,\n    \"removed_low_degree_vertex_count\": 0,\n    \"triangle_count\": 20000,\n    \"two_hop_ray_count_2a1\": 15000\n  },\n  \"same_contract_native_timing\": true,\n  \"timing_ms\": {\n    \"build_contract\": 7119.953321060166,\n    \"build_geometry\": 2.258467022329569,\n    \"load_edges\": 0.0018200371414422989,\n    \"prepare_scene_ms\": 345.0975390151143,\n    \"query_max_ms\": 0.356531934812665,\n    \"query_median_ms\": 0.3269059816375375,\n    \"query_min_ms\": 0.316911144182086,\n    \"query_repeat\": 12,\n    \"query_warmup\": 2,\n    \"reduce_hits\": 0.0004200264811515808,\n    \"run_backend\": 941.5924579370767,\n    \"total\": 8063.806486083195\n  },\n  \"triangle_count_matches_oracle\": true\n}\n",
+          "wall_elapsed_sec": 8.746294850017875
+        }
+      ],
+      "setup_results": [
+        {
+          "command": [
+            "python3",
+            "scripts/goal2631_generate_triangle_k4_binary.py",
+            "--output",
+            "/root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge",
+            "--cliques",
+            "5000"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "wrote 30000 edges for 5000 K4 cliques to /root/rtdl_goal2627/triangle_goal2631_standard/triangle_k4_cliques_5000.edge\n"
+        }
+      ],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "partner_timing_ms.compact_unique_ms converted-ms-to-sec",
+          0.309907
+        ],
+        [
+          "partner_timing_ms.degree_ms converted-ms-to-sec",
+          3.230235
+        ],
+        [
+          "partner_timing_ms.directed_csr_ms converted-ms-to-sec",
+          0.0028239999999999997
+        ],
+        [
+          "partner_timing_ms.download_needed_columns_ms converted-ms-to-sec",
+          0.000379
+        ],
+        [
+          "partner_timing_ms.load_np_ms converted-ms-to-sec",
+          0.000484
+        ],
+        [
+          "partner_timing_ms.total_partner_ms converted-ms-to-sec",
+          3.646035
+        ],
+        [
+          "partner_timing_ms.two_hop_and_count_ms converted-ms-to-sec",
+          0.100256
+        ],
+        [
+          "partner_timing_ms.upload_ms converted-ms-to-sec",
+          0.00195
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.compact_unique_ms converted-ms-to-sec",
+          0.309907
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.degree_ms converted-ms-to-sec",
+          3.230235
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.directed_csr_ms converted-ms-to-sec",
+          0.0028239999999999997
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.download_needed_columns_ms converted-ms-to-sec",
+          0.000379
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.load_np_ms converted-ms-to-sec",
+          0.000484
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.total_partner_ms converted-ms-to-sec",
+          3.646035
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.two_hop_and_count_ms converted-ms-to-sec",
+          0.100256
+        ],
+        [
+          "rt_graph_contract.partner_timing_ms.upload_ms converted-ms-to-sec",
+          0.00195
+        ],
+        [
+          "timing_ms.build_contract converted-ms-to-sec",
+          7.119953321060166
+        ],
+        [
+          "timing_ms.build_geometry converted-ms-to-sec",
+          0.002258467022329569
+        ],
+        [
+          "timing_ms.load_edges converted-ms-to-sec",
+          1.8200371414422989e-06
+        ],
+        [
+          "timing_ms.prepare_scene_ms converted-ms-to-sec",
+          0.3450975390151143
+        ],
+        [
+          "timing_ms.query_max_ms converted-ms-to-sec",
+          0.000356531934812665
+        ],
+        [
+          "timing_ms.query_median_ms converted-ms-to-sec",
+          0.0003269059816375375
+        ],
+        [
+          "timing_ms.query_min_ms converted-ms-to-sec",
+          0.000316911144182086
+        ],
+        [
+          "timing_ms.query_repeat converted-ms-to-sec",
+          0.012
+        ],
+        [
+          "timing_ms.query_warmup converted-ms-to-sec",
+          0.002
+        ],
+        [
+          "timing_ms.reduce_hits converted-ms-to-sec",
+          4.200264811515808e-07
+        ],
+        [
+          "timing_ms.run_backend converted-ms-to-sec",
+          0.9415924579370767
+        ],
+        [
+          "timing_ms.total converted-ms-to-sec",
+          8.063806486083195
+        ]
+      ],
+      "wall_median_sec": 8.746294850017875
+    }
+  ],
+  "scale": "standard"
+}
