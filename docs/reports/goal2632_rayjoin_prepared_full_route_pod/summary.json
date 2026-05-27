@@ -1,0 +1,451 @@
+{
+  "case_repeat": 1,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "LD_LIBRARY_PATH": "/usr/local/cuda-12.6/lib64:",
+      "OPTIX_PREFIX": "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so"
+    },
+    "git_commit": "4960079ebe4d72689da49a5bf05cfd824b36a887",
+    "git_status_short": "",
+    "native_libraries": {
+      "embree": "/root/rtdl_goal2627/rtdl/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_goal2627/rtdl/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX A5000, 565.57.01, 24564 MiB"
+    },
+    "optix_headers": [
+      "/root/vendor/NVIDIA-OptiX-SDK-8.1.0-linux64-x86_64/include/optix.h"
+    ],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_goal2627/rtdl",
+    "uname": "Linux c61d96076369 6.8.0-45-generic #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-05-27T03:54:40+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "spatial_rayjoin",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "embree_sec": 0.019952280912548304,
+      "embree_speedup_vs_optix": 0.026827005743222828,
+      "metric_sources": {
+        "embree": "workloads.total_elapsed_sec",
+        "optix": "prepared_query_total_sec"
+      },
+      "optix_sec": 0.0005352599546313286,
+      "optix_speedup_vs_embree": 37.27587079868669
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "spatial_rayjoin",
+      "app_name": "Spatial RayJoin-style",
+      "backend": "embree",
+      "case_id": "spatial_rayjoin_embree_generic",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "notes": "Embree same-front-door route over PIP, LSI, and overlay-seed. Primary metric is the summed backend workload elapsed time.",
+      "payload": {
+        "all_match_cpu_python_reference": true,
+        "app": "rayjoin_v2_spatial_join",
+        "backend": "embree",
+        "execution_route": "generic_kernel",
+        "implementation_stage": "first_v2_user_slice",
+        "next_stage": "Run the same suite on an OptiX pod, then promote the highest-value path from compatibility evidence into reviewed performance evidence.",
+        "paper": "RayJoin: Fast and Precise Spatial Join, ICS 2024",
+        "workloads": {
+          "lsi": {
+            "app": "rayjoin_v2_spatial_join",
+            "backend": "embree",
+            "claim_boundary": {
+              "full_rayjoin_reproduction": false,
+              "paper_scale_perf_claim_authorized": false,
+              "requires_pod_for_optix_perf": true,
+              "v2_0_release_authorized": false
+            },
+            "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+            "dataset_note": "Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
+            "elapsed_sec": 0.001202333951368928,
+            "native_engine_boundary": "The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.",
+            "parity_vs_cpu_python_reference": true,
+            "row_count": 1,
+            "rt_core_accelerated": false,
+            "summary": {
+              "intersection_count": 1,
+              "output_contract": "segment_segment_intersection_rows"
+            },
+            "workload": "lsi"
+          },
+          "overlay_seed": {
+            "app": "rayjoin_v2_spatial_join",
+            "backend": "embree",
+            "claim_boundary": {
+              "full_rayjoin_reproduction": false,
+              "paper_scale_perf_claim_authorized": false,
+              "requires_pod_for_optix_perf": true,
+              "v2_0_release_authorized": false
+            },
+            "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb",
+            "dataset_note": "County and soil subset chain-derived polygons for overlay seed generation.",
+            "elapsed_sec": 0.0003316309303045273,
+            "native_engine_boundary": "The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.",
+            "parity_vs_cpu_python_reference": true,
+            "row_count": 0,
+            "rt_core_accelerated": false,
+            "summary": {
+              "active_seed_count": 0,
+              "active_seed_pairs": [],
+              "output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
+              "pair_dependency_row_count": 0
+            },
+            "workload": "overlay_seed"
+          },
+          "pip": {
+            "app": "rayjoin_v2_spatial_join",
+            "backend": "embree",
+            "claim_boundary": {
+              "full_rayjoin_reproduction": false,
+              "paper_scale_perf_claim_authorized": false,
+              "requires_pod_for_optix_perf": true,
+              "v2_0_release_authorized": false
+            },
+            "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+            "dataset_note": "County subset probe points against deterministic chain-derived polygons.",
+            "elapsed_sec": 0.01841831603087485,
+            "native_engine_boundary": "The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.",
+            "parity_vs_cpu_python_reference": true,
+            "row_count": 6,
+            "rt_core_accelerated": false,
+            "summary": {
+              "output_contract": "point_to_polygon_positive_hit_rows",
+              "positive_assignment_count": 6,
+              "positive_assignments": [
+                {
+                  "point_id": 1,
+                  "polygon_id": 1
+                },
+                {
+                  "point_id": 1,
+                  "polygon_id": 2
+                },
+                {
+                  "point_id": 2,
+                  "polygon_id": 1
+                },
+                {
+                  "point_id": 2,
+                  "polygon_id": 2
+                },
+                {
+                  "point_id": 3,
+                  "polygon_id": 1
+                },
+                {
+                  "point_id": 3,
+                  "polygon_id": 2
+                }
+              ],
+              "positive_hit_row_count": 6
+            },
+            "workload": "pip"
+          }
+        }
+      },
+      "primary_metric_sec": 0.019952280912548304,
+      "primary_metric_source": "workloads.total_elapsed_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+            "--workload",
+            "all",
+            "--backend",
+            "embree",
+            "--no-rows"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "implementation_stage\": \"first_v2_user_slice\",\n  \"next_stage\": \"Run the same suite on an OptiX pod, then promote the highest-value path from compatibility evidence into reviewed performance evidence.\",\n  \"paper\": \"RayJoin: Fast and Precise Spatial Join, ICS 2024\",\n  \"workloads\": {\n    \"lsi\": {\n      \"app\": \"rayjoin_v2_spatial_join\",\n      \"backend\": \"embree\",\n      \"claim_boundary\": {\n        \"full_rayjoin_reproduction\": false,\n        \"paper_scale_perf_claim_authorized\": false,\n        \"requires_pod_for_optix_perf\": true,\n        \"v2_0_release_authorized\": false\n      },\n      \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb\",\n      \"dataset_note\": \"Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.\",\n      \"elapsed_sec\": 0.001202333951368928,\n      \"native_engine_boundary\": \"The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.\",\n      \"parity_vs_cpu_python_reference\": true,\n      \"row_count\": 1,\n      \"rt_core_accelerated\": false,\n      \"summary\": {\n        \"intersection_count\": 1,\n        \"output_contract\": \"segment_segment_intersection_rows\"\n      },\n      \"workload\": \"lsi\"\n    },\n    \"overlay_seed\": {\n      \"app\": \"rayjoin_v2_spatial_join\",\n      \"backend\": \"embree\",\n      \"claim_boundary\": {\n        \"full_rayjoin_reproduction\": false,\n        \"paper_scale_perf_claim_authorized\": false,\n        \"requires_pod_for_optix_perf\": true,\n        \"v2_0_release_authorized\": false\n      },\n      \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb\",\n      \"dataset_note\": \"County and soil subset chain-derived polygons for overlay seed generation.\",\n      \"elapsed_sec\": 0.0003316309303045273,\n      \"native_engine_boundary\": \"The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.\",\n      \"parity_vs_cpu_python_reference\": true,\n      \"row_count\": 0,\n      \"rt_core_accelerated\": false,\n      \"summary\": {\n        \"active_seed_count\": 0,\n        \"active_seed_pairs\": [],\n        \"output_contract\": \"overlay_pair_dependency_rows_with_lsi_pip_flags\",\n        \"pair_dependency_row_count\": 0\n      },\n      \"workload\": \"overlay_seed\"\n    },\n    \"pip\": {\n      \"app\": \"rayjoin_v2_spatial_join\",\n      \"backend\": \"embree\",\n      \"claim_boundary\": {\n        \"full_rayjoin_reproduction\": false,\n        \"paper_scale_perf_claim_authorized\": false,\n        \"requires_pod_for_optix_perf\": true,\n        \"v2_0_release_authorized\": false\n      },\n      \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb\",\n      \"dataset_note\": \"County subset probe points against deterministic chain-derived polygons.\",\n      \"elapsed_sec\": 0.01841831603087485,\n      \"native_engine_boundary\": \"The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.\",\n      \"parity_vs_cpu_python_reference\": true,\n      \"row_count\": 6,\n      \"rt_core_accelerated\": false,\n      \"summary\": {\n        \"output_contract\": \"point_to_polygon_positive_hit_rows\",\n        \"positive_assignment_count\": 6,\n        \"positive_assignments\": [\n          {\n            \"point_id\": 1,\n            \"polygon_id\": 1\n          },\n          {\n            \"point_id\": 1,\n            \"polygon_id\": 2\n          },\n          {\n            \"point_id\": 2,\n            \"polygon_id\": 1\n          },\n          {\n            \"point_id\": 2,\n            \"polygon_id\": 2\n          },\n          {\n            \"point_id\": 3,\n            \"polygon_id\": 1\n          },\n          {\n            \"point_id\": 3,\n            \"polygon_id\": 2\n          }\n        ],\n        \"positive_hit_row_count\": 6\n      },\n      \"workload\": \"pip\"\n    }\n  }\n}\n",
+          "wall_elapsed_sec": 0.47655158094130456
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "workloads.lsi.elapsed_sec",
+          0.001202333951368928
+        ],
+        [
+          "workloads.overlay_seed.elapsed_sec",
+          0.0003316309303045273
+        ],
+        [
+          "workloads.pip.elapsed_sec",
+          0.01841831603087485
+        ]
+      ],
+      "wall_median_sec": 0.47655158094130456
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "app_name": "Spatial RayJoin-style",
+      "backend": "optix",
+      "case_id": "spatial_rayjoin_optix_prepared_full_route",
+      "comparison_group": "rayjoin_all_backend_query_summary",
+      "notes": "Prepared OptiX route over PIP, LSI, and overlay-seed pair-dependency flags. The native engine sees generic point/closed-shape, segment-pair, and shape-pair prepared contracts; full polygon overlay materialization is outside this benchmark.",
+      "payload": {
+        "all_match_cpu_python_reference": null,
+        "app": "rayjoin_v2_spatial_join",
+        "backend": "optix",
+        "execution_route": "prepared_optix",
+        "implementation_stage": "prepared_v2_benchmark_route",
+        "next_stage": "Run this route on an RTX pod against RayJoin-exported streams and compare phase boundaries to RayJoin query_exec. Full polygon materialization remains outside the overlay-seed benchmark contract.",
+        "paper": "RayJoin: Fast and Precise Spatial Join, ICS 2024",
+        "prepared_pack_total_sec": 0.0003297401126474142,
+        "prepared_query_total_sec": 0.0005352599546313286,
+        "prepared_scene_total_sec": 1.4290719942655414,
+        "workloads": {
+          "lsi": {
+            "app": "rayjoin_v2_spatial_join",
+            "backend": "optix",
+            "claim_boundary": {
+              "full_rayjoin_reproduction": false,
+              "paper_scale_perf_claim_authorized": false,
+              "requires_pod_for_optix_perf": false,
+              "rtdl_beats_rayjoin_claim_authorized": false,
+              "v2_0_release_authorized": false,
+              "whole_app_speedup_claim_authorized": false
+            },
+            "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+            "dataset_note": "Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
+            "device_resident_continuation_status": "not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work",
+            "execution_route": "prepared_optix",
+            "native_engine_boundary": "The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.",
+            "native_phase_timings": {
+              "candidate_count_pass": 6.811e-05,
+              "candidate_download": 5.83e-06,
+              "candidate_write_pass": 4.843e-05,
+              "emitted_count": 1,
+              "exact_refine": 1.6e-06,
+              "left_upload": 5.78e-06,
+              "mode": "count",
+              "raw_candidate_count": 1
+            },
+            "phases_sec": {
+              "prepare_static_scene_sec": 0.25460266089066863,
+              "prepared_query_sec": 0.00019045989029109478,
+              "query_pack_sec": 0.00016329996287822723
+            },
+            "result_mode": "count",
+            "row_count": 1,
+            "summary": {
+              "intersection_count": 1,
+              "output_contract": "segment_segment_intersection_count"
+            },
+            "workload": "lsi"
+          },
+          "overlay_seed": {
+            "app": "rayjoin_v2_spatial_join",
+            "backend": "optix",
+            "claim_boundary": {
+              "full_rayjoin_reproduction": false,
+              "paper_scale_perf_claim_authorized": false,
+              "requires_pod_for_optix_perf": false,
+              "rtdl_beats_rayjoin_claim_authorized": false,
+              "v2_0_release_authorized": false,
+              "whole_app_speedup_claim_authorized": false
+            },
+            "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb",
+            "dataset_note": "County and soil subset chain-derived polygons for overlay seed generation.",
+            "device_resident_continuation_status": "overlay_seed_prepared_pair_dependency_flags_complete",
+            "execution_route": "prepared_optix",
+            "native_engine_boundary": "The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.",
+            "native_phase_timings": {
+              "native_row_count": 0,
+              "prepared_shape_pair_relation": true
+            },
+            "phases_sec": {
+              "prepare_static_scene_sec": 0.36039855517446995,
+              "prepared_query_sec": 9.553018026053905e-05,
+              "query_pack_sec": 5.291006527841091e-05,
+              "static_shape_pack_sec": 4.537985660135746e-05
+            },
+            "result_mode": "count",
+            "row_count": 0,
+            "summary": {
+              "output_contract": "overlay_pair_dependency_count",
+              "pair_dependency_row_count": 0
+            },
+            "workload": "overlay_seed"
+          },
+          "pip": {
+            "app": "rayjoin_v2_spatial_join",
+            "backend": "optix",
+            "claim_boundary": {
+              "full_rayjoin_reproduction": false,
+              "paper_scale_perf_claim_authorized": false,
+              "requires_pod_for_optix_perf": false,
+              "rtdl_beats_rayjoin_claim_authorized": false,
+              "v2_0_release_authorized": false,
+              "whole_app_speedup_claim_authorized": false
+            },
+            "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+            "dataset_note": "County subset probe points against deterministic chain-derived polygons.",
+            "device_resident_continuation_status": "not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work",
+            "execution_route": "prepared_optix",
+            "native_engine_boundary": "The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.",
+            "native_phase_timings": {
+              "candidate_count_pass": 0.0,
+              "candidate_download": 7.03e-06,
+              "candidate_write_pass": 5.159e-05,
+              "emitted_count": 6,
+              "exact_refine": 2.676e-05,
+              "mode": "count",
+              "point_pack": 3.2e-07,
+              "point_upload": 2.152e-05,
+              "raw_candidate_count": 6
+            },
+            "phases_sec": {
+              "prepare_static_scene_sec": 0.8140707782004029,
+              "prepared_query_sec": 0.00024926988407969475,
+              "query_pack_sec": 1.316005364060402e-05,
+              "static_shape_pack_sec": 5.499017424881458e-05
+            },
+            "result_mode": "count",
+            "row_count": 6,
+            "summary": {
+              "output_contract": "point_to_shape_positive_hit_count",
+              "positive_assignment_count": 6,
+              "positive_hit_row_count": 6
+            },
+            "workload": "pip"
+          }
+        }
+      },
+      "primary_metric_sec": 0.0005352599546313286,
+      "primary_metric_source": "prepared_query_total_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+            "--workload",
+            "all",
+            "--execution-route",
+            "prepared_optix",
+            "--result-mode",
+            "count",
+            "--no-rows"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "te_write_pass\": 4.843e-05,\n        \"emitted_count\": 1,\n        \"exact_refine\": 1.6e-06,\n        \"left_upload\": 5.78e-06,\n        \"mode\": \"count\",\n        \"raw_candidate_count\": 1\n      },\n      \"phases_sec\": {\n        \"prepare_static_scene_sec\": 0.25460266089066863,\n        \"prepared_query_sec\": 0.00019045989029109478,\n        \"query_pack_sec\": 0.00016329996287822723\n      },\n      \"result_mode\": \"count\",\n      \"row_count\": 1,\n      \"summary\": {\n        \"intersection_count\": 1,\n        \"output_contract\": \"segment_segment_intersection_count\"\n      },\n      \"workload\": \"lsi\"\n    },\n    \"overlay_seed\": {\n      \"app\": \"rayjoin_v2_spatial_join\",\n      \"backend\": \"optix\",\n      \"claim_boundary\": {\n        \"full_rayjoin_reproduction\": false,\n        \"paper_scale_perf_claim_authorized\": false,\n        \"requires_pod_for_optix_perf\": false,\n        \"rtdl_beats_rayjoin_claim_authorized\": false,\n        \"v2_0_release_authorized\": false,\n        \"whole_app_speedup_claim_authorized\": false\n      },\n      \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb\",\n      \"dataset_note\": \"County and soil subset chain-derived polygons for overlay seed generation.\",\n      \"device_resident_continuation_status\": \"overlay_seed_prepared_pair_dependency_flags_complete\",\n      \"execution_route\": \"prepared_optix\",\n      \"native_engine_boundary\": \"The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.\",\n      \"native_phase_timings\": {\n        \"native_row_count\": 0,\n        \"prepared_shape_pair_relation\": true\n      },\n      \"phases_sec\": {\n        \"prepare_static_scene_sec\": 0.36039855517446995,\n        \"prepared_query_sec\": 9.553018026053905e-05,\n        \"query_pack_sec\": 5.291006527841091e-05,\n        \"static_shape_pack_sec\": 4.537985660135746e-05\n      },\n      \"result_mode\": \"count\",\n      \"row_count\": 0,\n      \"summary\": {\n        \"output_contract\": \"overlay_pair_dependency_count\",\n        \"pair_dependency_row_count\": 0\n      },\n      \"workload\": \"overlay_seed\"\n    },\n    \"pip\": {\n      \"app\": \"rayjoin_v2_spatial_join\",\n      \"backend\": \"optix\",\n      \"claim_boundary\": {\n        \"full_rayjoin_reproduction\": false,\n        \"paper_scale_perf_claim_authorized\": false,\n        \"requires_pod_for_optix_perf\": false,\n        \"rtdl_beats_rayjoin_claim_authorized\": false,\n        \"v2_0_release_authorized\": false,\n        \"whole_app_speedup_claim_authorized\": false\n      },\n      \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb\",\n      \"dataset_note\": \"County subset probe points against deterministic chain-derived polygons.\",\n      \"device_resident_continuation_status\": \"not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work\",\n      \"execution_route\": \"prepared_optix\",\n      \"native_engine_boundary\": \"The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.\",\n      \"native_phase_timings\": {\n        \"candidate_count_pass\": 0.0,\n        \"candidate_download\": 7.03e-06,\n        \"candidate_write_pass\": 5.159e-05,\n        \"emitted_count\": 6,\n        \"exact_refine\": 2.676e-05,\n        \"mode\": \"count\",\n        \"point_pack\": 3.2e-07,\n        \"point_upload\": 2.152e-05,\n        \"raw_candidate_count\": 6\n      },\n      \"phases_sec\": {\n        \"prepare_static_scene_sec\": 0.8140707782004029,\n        \"prepared_query_sec\": 0.00024926988407969475,\n        \"query_pack_sec\": 1.316005364060402e-05,\n        \"static_shape_pack_sec\": 5.499017424881458e-05\n      },\n      \"result_mode\": \"count\",\n      \"row_count\": 6,\n      \"summary\": {\n        \"output_contract\": \"point_to_shape_positive_hit_count\",\n        \"positive_assignment_count\": 6,\n        \"positive_hit_row_count\": 6\n      },\n      \"workload\": \"pip\"\n    }\n  }\n}\n",
+          "wall_elapsed_sec": 1.935971369035542
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "prepared_pack_total_sec",
+          0.0003297401126474142
+        ],
+        [
+          "prepared_query_total_sec",
+          0.0005352599546313286
+        ],
+        [
+          "prepared_scene_total_sec",
+          1.4290719942655414
+        ],
+        [
+          "workloads.lsi.phases_sec.prepare_static_scene_sec",
+          0.25460266089066863
+        ],
+        [
+          "workloads.lsi.phases_sec.prepared_query_sec",
+          0.00019045989029109478
+        ],
+        [
+          "workloads.lsi.phases_sec.query_pack_sec",
+          0.00016329996287822723
+        ],
+        [
+          "workloads.overlay_seed.phases_sec.prepare_static_scene_sec",
+          0.36039855517446995
+        ],
+        [
+          "workloads.overlay_seed.phases_sec.prepared_query_sec",
+          9.553018026053905e-05
+        ],
+        [
+          "workloads.overlay_seed.phases_sec.query_pack_sec",
+          5.291006527841091e-05
+        ],
+        [
+          "workloads.overlay_seed.phases_sec.static_shape_pack_sec",
+          4.537985660135746e-05
+        ],
+        [
+          "workloads.pip.phases_sec.prepare_static_scene_sec",
+          0.8140707782004029
+        ],
+        [
+          "workloads.pip.phases_sec.prepared_query_sec",
+          0.00024926988407969475
+        ],
+        [
+          "workloads.pip.phases_sec.query_pack_sec",
+          1.316005364060402e-05
+        ],
+        [
+          "workloads.pip.phases_sec.static_shape_pack_sec",
+          5.499017424881458e-05
+        ]
+      ],
+      "wall_median_sec": 1.935971369035542
+    }
+  ],
+  "scale": "quick"
+}
