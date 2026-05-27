@@ -77,8 +77,12 @@ class Goal2626BenchmarkEmbreeOptixBaselineTest(unittest.TestCase):
         self.assertIn("--edge-file", optix.command)
         self.assertIn("--partner", optix.command)
         self.assertIn("cupy", optix.command)
-        self.assertEqual(("timing_ms", "run_backend"), embree.primary_metric_path)
-        self.assertEqual(("timing_ms", "run_backend"), optix.primary_metric_path)
+        self.assertIn("--warmup", embree.command)
+        self.assertIn("--repeat", embree.command)
+        self.assertIn("--warmup", optix.command)
+        self.assertIn("--repeat", optix.command)
+        self.assertEqual(("timing_ms", "query_median_ms"), embree.primary_metric_path)
+        self.assertEqual(("timing_ms", "query_median_ms"), optix.primary_metric_path)
         self.assertIn("host-indexed fallback", optix.notes)
 
     def test_ratios_only_for_same_app_and_comparison_group(self) -> None:

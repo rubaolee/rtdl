@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import statistics
 import sys
 import time
 from pathlib import Path
@@ -320,7 +321,10 @@ def rt_graph_2a1_generic_rt_payload(
     backend: str,
     detail: str,
     partner: str,
+    warmup: int,
+    repeat: int,
 ) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
     started = time.perf_counter()
     use_cupy_summary = _use_cupy_summary_partner(
         partner=partner,
@@ -354,16 +358,42 @@ def rt_graph_2a1_generic_rt_payload(
         triangles, rays, ray_weights = _build_rt_graph_2a1_geometry(contract)
     lowered = time.perf_counter()
     summary_result = None
+    query_timings_ms: list[float] = []
+    prepare_scene_ms: float | None = None
     if device_column_summary:
-        summary_result = _run_optix_ray_triangle_any_hit_weighted_sum_3d_device_columns(rays, triangles, ray_weights)
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
         rows = None
         hit_weight_sum = int(summary_result["weighted_hit_sum"])
     elif normalized_backend == "optix" and detail == "summary":
-        summary_result = _run_optix_ray_triangle_any_hit_weighted_sum_3d(rays, triangles, ray_weights)
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
         rows = None
         hit_weight_sum = int(summary_result["weighted_hit_sum"])
     else:
-        rows = rt.run_generic_ray_triangle_any_hit(rays, triangles, backend=backend)
+        rows = ()
+        for index in range(warmup + repeat):
+            query_started = time.perf_counter()
+            rows = rt.run_generic_ray_triangle_any_hit(rays, triangles, backend=backend)
+            elapsed = _elapsed_ms(query_started, time.perf_counter())
+            if index >= warmup:
+                query_timings_ms.append(elapsed)
         hit_weight_sum = sum(ray_weights[int(row["ray_id"])] for row in rows if int(row["any_hit"]))
     ran = time.perf_counter()
     reduced = time.perf_counter()
@@ -406,6 +436,12 @@ def rt_graph_2a1_generic_rt_payload(
             "build_contract": _elapsed_ms(loaded, built),
             "build_geometry": _elapsed_ms(built, lowered),
             "run_backend": _elapsed_ms(lowered, ran),
+            "prepare_scene_ms": prepare_scene_ms,
+            "query_median_ms": _median(query_timings_ms),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -433,7 +469,10 @@ def rt_graph_1a2_generic_rt_payload(
     backend: str,
     detail: str,
     partner: str,
+    warmup: int,
+    repeat: int,
 ) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
     started = time.perf_counter()
     use_cupy_summary = _use_cupy_summary_partner(
         partner=partner,
@@ -467,16 +506,42 @@ def rt_graph_1a2_generic_rt_payload(
         triangles, rays = _build_rt_graph_1a2_geometry(contract)
     lowered = time.perf_counter()
     summary_result = None
+    query_timings_ms: list[float] = []
+    prepare_scene_ms: float | None = None
     if device_column_summary:
-        summary_result = _run_optix_ray_triangle_hit_count_sum_3d_device_columns(rays, triangles)
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_hit_count_sum_device_columns(rays)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
         rows = None
         hit_count_sum = int(summary_result["hit_count_sum"])
     elif normalized_backend == "optix" and detail == "summary":
-        summary_result = _run_optix_ray_triangle_hit_count_sum_3d(rays, triangles)
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_hit_count_sum(rays)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
         rows = None
         hit_count_sum = int(summary_result["hit_count_sum"])
     else:
-        rows = _run_ray_triangle_hit_count_3d(rays, triangles, backend=backend)
+        rows = ()
+        for index in range(warmup + repeat):
+            query_started = time.perf_counter()
+            rows = _run_ray_triangle_hit_count_3d(rays, triangles, backend=backend)
+            elapsed = _elapsed_ms(query_started, time.perf_counter())
+            if index >= warmup:
+                query_timings_ms.append(elapsed)
         hit_count_sum = sum(int(row["hit_count"]) for row in rows)
     ran = time.perf_counter()
     reduced = time.perf_counter()
@@ -519,6 +584,12 @@ def rt_graph_1a2_generic_rt_payload(
             "build_contract": _elapsed_ms(loaded, built),
             "build_geometry": _elapsed_ms(built, lowered),
             "run_backend": _elapsed_ms(lowered, ran),
+            "prepare_scene_ms": prepare_scene_ms,
+            "query_median_ms": _median(query_timings_ms),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -616,6 +687,17 @@ def _contract_payload(contract, *, detail: str) -> dict[str, object]:
 
 def _elapsed_ms(started: float, ended: float) -> float:
     return (ended - started) * 1000.0
+
+
+def _median(values: list[float]) -> float:
+    return float(statistics.median(values))
+
+
+def _validate_repetition(*, warmup: int, repeat: int) -> None:
+    if warmup < 0:
+        raise ValueError("warmup must be nonnegative")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
 
 
 def _record_count(records) -> int:
@@ -1096,6 +1178,8 @@ def run_app(
     edge_format: str = "text",
     detail: str = "full",
     partner: str = "none",
+    warmup: int = 0,
+    repeat: int = 1,
 ) -> dict[str, Any]:
     if mode == "scope":
         return scope_payload()
@@ -1131,6 +1215,8 @@ def run_app(
             backend=backend,
             detail=detail,
             partner=partner,
+            warmup=warmup,
+            repeat=repeat,
         )
     if mode == "rt_graph_1a2_generic_rt":
         return rt_graph_1a2_generic_rt_payload(
@@ -1140,6 +1226,8 @@ def run_app(
             backend=backend,
             detail=detail,
             partner=partner,
+            warmup=warmup,
+            repeat=repeat,
         )
     raise ValueError(f"unsupported mode: {mode}")
 
@@ -1178,6 +1266,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--edge-format", choices=("text", "binary"), default="text")
     parser.add_argument("--detail", choices=("full", "summary"), default="full")
     parser.add_argument("--partner", choices=("none", "cupy"), default="none")
+    parser.add_argument("--warmup", type=int, default=0)
+    parser.add_argument("--repeat", type=int, default=1)
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -1190,9 +1280,11 @@ def main(argv: list[str] | None = None) -> int:
                 fixture=args.fixture,
                 edge_file=args.edge_file,
                 edge_format=args.edge_format,
-                detail=args.detail,
-                partner=args.partner,
-            ),
+            detail=args.detail,
+            partner=args.partner,
+            warmup=args.warmup,
+            repeat=args.repeat,
+        ),
             indent=2,
             sort_keys=True,
         )

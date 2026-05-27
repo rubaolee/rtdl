@@ -490,9 +490,13 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     "binary",
                     "--detail",
                     "summary",
+                    "--warmup",
+                    "2",
+                    "--repeat",
+                    "12",
                 ),
                 setup_commands=triangle_setup,
-                primary_metric_path=("timing_ms", "run_backend"),
+                primary_metric_path=("timing_ms", "query_median_ms"),
                 notes=(
                     "RT-Graph-style RT-2A1 mapping through generic 3-D ray/triangle any-hit rows. "
                     "Graph preprocessing and geometry lowering are outside the primary backend metric."
@@ -518,9 +522,13 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
                     "summary",
                     "--partner",
                     "cupy",
+                    "--warmup",
+                    "2",
+                    "--repeat",
+                    "12",
                 ),
                 setup_commands=triangle_setup,
-                primary_metric_path=("timing_ms", "run_backend"),
+                primary_metric_path=("timing_ms", "query_median_ms"),
                 notes=(
                     "RT-Graph-style RT-2A1 mapping through generic prepared 3-D ray/triangle "
                     "weighted any-hit summary with CuPy-owned graph preprocessing/device columns. "
